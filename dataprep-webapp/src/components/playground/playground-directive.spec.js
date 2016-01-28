@@ -106,7 +106,6 @@ describe('Playground directive', function () {
         $translateProvider.preferredLanguage('en');
     }));
 
-
     beforeEach(inject(function ($state, $rootScope, $compile, $q, $timeout, PreparationService, PlaygroundService, ExportService) {
         stateMock.playground.visible = true;
         scope = $rootScope.$new();
@@ -315,6 +314,20 @@ describe('Playground directive', function () {
             //then
             expect(chkboxOnOff.prop('checked')).toBe(true);
         }));
+    });
+
+    describe('dataset parameters', function() {
+        it('should render dataset parameters', function () {
+            //given
+            stateMock.playground.dataset = metadata;
+
+            //when
+            createElement();
+
+            //then : check dataset parameters is present
+            var playground = angular.element('body').find('.playground').eq(0);
+            expect(playground.find('.dataset-parameters').length).toBe(1);
+        });
     });
 
     describe('datagrid', function() {

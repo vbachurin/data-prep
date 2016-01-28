@@ -5,7 +5,7 @@ describe('Dataset Service', function () {
         {id: '22', name: 'my second dataset'},
         {id: '33', name: 'my second dataset (1)'},
         {id: '44', name: 'my second dataset (2)'}];
-
+    var encodings = ['UTF-8', 'UTF-16'];
     var preparationConsolidation, datasetConsolidation;
     var promiseWithProgress, stateMock;
     var preparations = [{id: '4385fa764bce39593a405d91bc23'}];
@@ -23,7 +23,7 @@ describe('Dataset Service', function () {
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(inject(function ($q, DatasetListService, DatasetRestService, PreparationListService) {
+    beforeEach(inject(function ($q, DatasetListService, DatasetRestService, PreparationListService, StateService) {
         preparationConsolidation = $q.when(preparations);
         datasetConsolidation = $q.when(true);
         promiseWithProgress = $q.when(true);
@@ -38,14 +38,15 @@ describe('Dataset Service', function () {
         spyOn(DatasetListService, 'clone').and.returnValue($q.when(true));
         spyOn(DatasetListService, 'processCertification').and.returnValue($q.when(true));
         spyOn(DatasetListService, 'move').and.returnValue($q.when(true));
+        spyOn(DatasetListService, 'refreshDatasets').and.returnValue($q.when(datasets));
 
         spyOn(DatasetRestService, 'getContent').and.returnValue($q.when({}));
         spyOn(DatasetRestService, 'getSheetPreview').and.returnValue($q.when({}));
-        spyOn(DatasetRestService, 'updateMetadata').and.returnValue($q.when({}));
         spyOn(DatasetRestService, 'toggleFavorite').and.returnValue($q.when({}));
+        spyOn(DatasetRestService, 'getEncodings').and.returnValue($q.when(encodings));
 
-        spyOn(DatasetListService, 'refreshDatasets').and.returnValue($q.when(datasets));
         spyOn(PreparationListService, 'refreshMetadataInfos').and.returnValue(preparationConsolidation);
+        spyOn(StateService, 'setDatasetEncodings').and.returnValue();
     }));
 
     afterEach(inject(function () {
@@ -54,7 +55,7 @@ describe('Dataset Service', function () {
 
     describe('lifecycle', function () {
 
-        describe('import', function() {
+        describe('import', function () {
             it('should import remote and return the http promise', inject(function ($rootScope, DatasetService, DatasetListService) {
                 //given
                 var importParameters = {
@@ -63,7 +64,7 @@ describe('Dataset Service', function () {
                     url: 'http://talend.com'
                 };
 
-                var folder = {id : '', path: '', name: 'Home'};
+                var folder = {id: '', path: '', name: 'Home'};
 
                 //when
                 var result = DatasetService.import(importParameters, folder);
@@ -75,11 +76,11 @@ describe('Dataset Service', function () {
             }));
         });
 
-        describe('create', function() {
+        describe('create', function () {
             it('should create a dataset and return the http promise (with progress function)', inject(function ($rootScope, DatasetService, DatasetListService) {
                 //given
                 var dataset = stateMock.inventory.datasets[0];
-                var folder = {id : '', path: '', name: 'Home'};
+                var folder = {id: '', path: '', name: 'Home'};
 
                 //when
                 var result = DatasetService.create(dataset, folder);
@@ -104,7 +105,7 @@ describe('Dataset Service', function () {
             }));
         });
 
-        describe('update', function() {
+        describe('update', function () {
             it('should update a dataset and return the http promise (with progress function)', inject(function ($rootScope, DatasetService, DatasetListService) {
                 //given
                 var dataset = stateMock.inventory.datasets[0];
@@ -133,7 +134,7 @@ describe('Dataset Service', function () {
 
         });
 
-        describe('delete', function() {
+        describe('delete', function () {
             it('should delete a dataset', inject(function ($rootScope, DatasetService, DatasetListService) {
                 //given
                 var dataset = stateMock.inventory.datasets[0];
@@ -173,11 +174,11 @@ describe('Dataset Service', function () {
             }));
         });
 
-        describe('clone', function() {
+        describe('clone', function () {
             it('should clone a dataset and return the http promise (with progress function)', inject(function ($rootScope, DatasetService, DatasetListService) {
                 //given
                 var dataset = stateMock.inventory.datasets[0];
-                var newFolder = {id:'/wine/beer'};
+                var newFolder = {id: '/wine/beer'};
                 var name = 'my clone';
                 var mockPromise = {};
 
@@ -203,12 +204,12 @@ describe('Dataset Service', function () {
             }));
         });
 
-        describe('move', function() {
+        describe('move', function () {
             it('should love a dataset and return the http promise (with progress function)', inject(function ($rootScope, DatasetService, DatasetListService) {
                 //given
                 var dataset = stateMock.inventory.datasets[0];
-                var folder = {id:'/wine/foo'};
-                var newFolder = {id:'/wine/beer'};
+                var folder = {id: '/wine/foo'};
+                var newFolder = {id: '/wine/beer'};
                 var name = 'my clone';
                 var mockPromise = {};
 
@@ -302,10 +303,11 @@ describe('Dataset Service', function () {
                 expect(DatasetRestService.getSheetPreview).toHaveBeenCalledWith(metadata.id, sheetName);
             }));
 
-            it('should set metadata sheet', inject(function (DatasetService, DatasetRestService) {
+            it('should set metadata sheet', inject(function ($q, DatasetService, DatasetRestService) {
                 //given
                 var metadata = {id: '7c98ae64154bc', sheetName: 'my old sheet'};
                 var sheetName = 'my sheet';
+                spyOn(DatasetRestService, 'updateMetadata').and.returnValue($q.when({}));
 
                 //when
                 DatasetService.setDatasetSheet(metadata, sheetName);
@@ -313,6 +315,104 @@ describe('Dataset Service', function () {
                 //then
                 expect(metadata.sheetName).toBe(sheetName);
                 expect(DatasetRestService.updateMetadata).toHaveBeenCalledWith(metadata);
+            }));
+        });
+
+        describe('dataset parameters', function () {
+            it('should get supported encodings and set them in state', inject(function ($rootScope, DatasetService, DatasetRestService, StateService){
+                //given
+                expect(DatasetRestService.getEncodings).not.toHaveBeenCalled();
+                expect(StateService.setDatasetEncodings).not.toHaveBeenCalled();
+
+                //when
+                DatasetService.refreshSupportedEncodings();
+                expect(DatasetRestService.getEncodings).toHaveBeenCalled();
+                expect(StateService.setDatasetEncodings).not.toHaveBeenCalled();
+                $rootScope.$digest();
+
+                //then
+                expect(StateService.setDatasetEncodings).toHaveBeenCalledWith(encodings);
+            }));
+
+            it('should update parameters (without its preparation to avoid cyclic ref: waiting for TDP-1348)', inject(function ($q, DatasetService, DatasetRestService){
+                //given
+                var metadata = {
+                    id: '543a216fc796e354',
+                    defaultPreparation: {id: '876a32bc545a846'},
+                    preparations: [{id: '876a32bc545a846'}, {id: '799dc6b2562a186'}],
+                    encoding: 'UTF-8',
+                    parameters: {SEPARATOR: '|'}
+                };
+                var parameters = {
+                    separator: ';',
+                    encoding: 'UTF-16'
+                };
+                spyOn(DatasetRestService, 'updateMetadata').and.returnValue($q.when());
+                expect(DatasetRestService.updateMetadata).not.toHaveBeenCalled();
+
+                //when
+                DatasetService.updateParameters(metadata, parameters);
+
+                //then
+                expect(DatasetRestService.updateMetadata).toHaveBeenCalled();
+                expect(metadata.defaultPreparation).toBeFalsy();
+                expect(metadata.preparations).toBeFalsy();
+            }));
+
+            it('should set back preparations after parameters update (waiting for TDP-1348)', inject(function ($rootScope, $q, DatasetService, DatasetRestService){
+                //given
+                var metadata = {
+                    id: '543a216fc796e354',
+                    defaultPreparation: {id: '876a32bc545a846', parameters: {SEPARATOR: '|'}},
+                    preparations: [{id: '876a32bc545a846'}, {id: '799dc6b2562a186'}],
+                    encoding: 'UTF-8',
+                    parameters: {SEPARATOR: '|'}
+                };
+                var parameters = {
+                    separator: ';',
+                    encoding: 'UTF-16'
+                };
+                spyOn(DatasetRestService, 'updateMetadata').and.returnValue($q.when());
+
+                //when
+                DatasetService.updateParameters(metadata, parameters);
+                expect(metadata.defaultPreparation).toBeFalsy();
+                expect(metadata.preparations).toBeFalsy();
+                $rootScope.$digest();
+
+                //then
+                expect(metadata.defaultPreparation).toEqual({id: '876a32bc545a846', parameters: {SEPARATOR: '|'}});
+                expect(metadata.preparations).toEqual([{id: '876a32bc545a846'}, {id: '799dc6b2562a186'}]);
+            }));
+
+            it('should set back old parameters and preparations (waiting for TDP-1348) when update fails', inject(function ($rootScope, $q, DatasetService, DatasetRestService){
+                //given
+                var metadata = {
+                    id: '543a216fc796e354',
+                    defaultPreparation: {id: '876a32bc545a846', parameters: {SEPARATOR: '|'}},
+                    preparations: [{id: '876a32bc545a846'}, {id: '799dc6b2562a186'}],
+                    encoding: 'UTF-8',
+                    parameters: {SEPARATOR: '|'}
+                };
+                var parameters = {
+                    separator: ';',
+                    encoding: 'UTF-16'
+                };
+                spyOn(DatasetRestService, 'updateMetadata').and.returnValue($q.reject());
+
+                //when
+                DatasetService.updateParameters(metadata, parameters);
+                expect(metadata.parameters.SEPARATOR).toBe(';');
+                expect(metadata.encoding).toBe('UTF-16');
+                expect(metadata.defaultPreparation).toBeFalsy();
+                expect(metadata.preparations).toBeFalsy();
+                $rootScope.$digest();
+
+                //then
+                expect(metadata.parameters.SEPARATOR).toBe('|');
+                expect(metadata.encoding).toBe('UTF-8');
+                expect(metadata.defaultPreparation).toEqual({id: '876a32bc545a846', parameters: {SEPARATOR: '|'}});
+                expect(metadata.preparations).toEqual([{id: '876a32bc545a846'}, {id: '799dc6b2562a186'}]);
             }));
         });
     });

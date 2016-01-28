@@ -590,6 +590,68 @@ public class DataSetServiceTests extends DataSetBaseTest {
     }
 
     /**
+     * see https://jira.talendforge.org/browse/TDP-1066
+     */
+    @Test
+    public void shouldUpdateSeparator() throws Exception {
+
+        // given
+        String dataSetId = createCSVDataSet(this.getClass().getResourceAsStream("../avengers.psv"));
+        InputStream metadataInput = when().get("/datasets/{id}/metadata", dataSetId).asInputStream();
+        DataSet dataSet = builder.build().readerFor(DataSet.class).readValue(metadataInput);
+        DataSetMetadata metadata = dataSet.getMetadata();
+
+        // when
+        final Map<String, String> parameters = metadata.getContent().getParameters();
+        parameters.put(CSVFormatGuess.SEPARATOR_PARAMETER, "|");
+        parameters.remove(CSVFormatGuess.HEADER_COLUMNS_PARAMETER);
+        final int statusCode = given() //
+                .contentType(JSON) //
+                .body(builder.build().writer().writeValueAsString(metadata)) //
+                .expect().statusCode(200).log().ifError() //
+                .when().put("/datasets/{id}", dataSetId).getStatusCode();
+
+        assertThat(statusCode, is(200));
+        assertQueueMessages(dataSetId);
+
+        // then
+        InputStream expected = this.getClass().getResourceAsStream("../avengers_expected.json");
+        String datasetContent = given().when().get("/datasets/{id}/content?metadata=true", dataSetId).asString();
+
+        assertThat(datasetContent, sameJSONAsFile(expected));
+    }
+
+    /**
+     * see https://jira.talendforge.org/browse/TDP-1066
+     */
+    @Test
+    public void shouldUpdateLimit() throws Exception {
+
+        // given
+        String dataSetId = createCSVDataSet(this.getClass().getResourceAsStream("../avengers.csv"));
+        InputStream metadataInput = when().get("/datasets/{id}/metadata", dataSetId).asInputStream();
+        DataSet dataSet = builder.build().readerFor(DataSet.class).readValue(metadataInput);
+        DataSetMetadata metadata = dataSet.getMetadata();
+
+        // when
+        metadata.getContent().setLimit(2L);
+        final int statusCode = given() //
+                .contentType(JSON) //
+                .body(builder.build().writer().writeValueAsString(metadata)) //
+                .expect().statusCode(200).log().ifError() //
+                .when().put("/datasets/{id}", dataSetId).getStatusCode();
+
+        assertThat(statusCode, is(200));
+        assertQueueMessages(dataSetId);
+
+        // then
+        InputStream expected = this.getClass().getResourceAsStream("../avengers_expected_limit_2.json");
+        String datasetContent = given().when().get("/datasets/{id}/content?metadata=true", dataSetId).asString();
+
+        assertThat(datasetContent, sameJSONAsFile(expected));
+    }
+
+    /**
      * Test the import of a csv file with a really low separator coefficient variation.
      *
      * @see CSVFormatGuesser

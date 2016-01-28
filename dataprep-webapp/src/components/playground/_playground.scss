@@ -5,11 +5,20 @@
     position: relative;
     @extend .flex-center;
 
-    #filter-bar {
-      margin: 10px 10px 5px 10px;
+    #playground-dataset-parameters {
+      > * {
+        margin: 10px;
+      }
+
+      @include slidable-top(130px, 0px);
+      box-shadow: 3px 3px 18px 3px transparentize(black, 0.8);
     }
 
-    .datagrid-container {
+    #playground-filter-bar > * {
+      margin: 10px;
+    }
+
+    #playground-datagrid-container {
       margin: 10px;
       @include calc(height, "100vh - 130px");
     }
@@ -31,6 +40,17 @@
   .playground-dataset-name {
     @include ellipsis(500px);
     vertical-align: top;
+  }
+
+  #playground-gear-icon {
+    cursor: pointer;
+    height: 25px;
+    width: 25px;
+    display: inline-block;
+    vertical-align: middle;
+    background: url("/assets/images/parameters/gear.svg") no-repeat center;
+    background-size: 25px;
+    margin: 0 5px;
   }
 }
 
