@@ -106,7 +106,10 @@ export default function PreparationListService(PreparationRestService, StateServ
      */
     function clone(preparationId) {
         return PreparationRestService.clone(preparationId)
-            .then(refreshPreparations);
+            .then((preparationCloneId) => {
+                refreshPreparations();
+                    return preparationCloneId;
+            });
     }
 
     /**
@@ -120,8 +123,8 @@ export default function PreparationListService(PreparationRestService, StateServ
      */
     function update(preparationId, name) {
         var updatedPreparationId;
-        return PreparationRestService.update(preparationId, name)
-            .then((result) => updatedPreparationId = result.data)
+        return PreparationRestService.update(preparationId, {name: name})
+            .then((result) => updatedPreparationId = result)
             .then(refreshPreparations)
             .then((preparations) => _.find(preparations, {id: updatedPreparationId}));
     }

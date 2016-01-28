@@ -1,4 +1,4 @@
-/*  ============================================================================
+                                                                                                                                                                                           /*  ============================================================================
 
  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
@@ -14,7 +14,10 @@
 export const playgroundState = {
     preparationName: '',
     previousState: 'nav.index.datasets',
-    previousStateOptions: {folderPath: ''}
+    previousStateOptions: {folderPath: ''},
+    preparation: null,
+    candidatePreparations: [],
+    displayPreparationPicker: false
 };
 
 export function PlaygroundStateService(RecipeStateService, recipeState,
@@ -47,6 +50,8 @@ export function PlaygroundStateService(RecipeStateService, recipeState,
         setPreviousStateOptions: setPreviousStateOptions,
         updateDatasetRecord: updateDatasetRecord,
         updateDatasetStatistics: updateDatasetStatistics,
+        setCandidatePreparations: setCandidatePreparations,
+        updatePreparationPickerDisplay: updatePreparationPickerDisplay,
 
         //parameters
         toggleDatasetParameters: toggleDatasetParameters,
@@ -147,6 +152,13 @@ export function PlaygroundStateService(RecipeStateService, recipeState,
         playgroundState.isFetchingStats = value;
     }
 
+    function setCandidatePreparations (preparationsList) {
+        playgroundState.candidatePreparations = preparationsList;
+    }
+
+    function updatePreparationPickerDisplay (display) {
+        playgroundState.displayPreparationPicker = display;
+    }
     //--------------------------------------------------------------------------------------------------------------
     //-------------------------------------------------PARAMETERS---------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------

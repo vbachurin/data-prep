@@ -47,7 +47,9 @@ const PlaygroundHeader = {
         onLookup: '&',
         onOnboarding: '&',
         onFeedback: '&',
-        onClose: '&'
+        onClose: '&',
+        onOpenPreparationPicker: '&',
+        activePreprationPickerBtn: '<'
     }
 };
 

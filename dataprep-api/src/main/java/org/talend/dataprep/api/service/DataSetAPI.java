@@ -16,10 +16,15 @@ package org.talend.dataprep.api.service;
 import static org.springframework.http.MediaType.*;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.netflix.hystrix.exception.HystrixRuntimeException;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.HttpClient;
 import org.springframework.http.HttpStatus;
@@ -27,11 +32,14 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.DataSetMoveRequest;
+import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.service.command.common.HttpResponse;
 import org.talend.dataprep.api.service.command.dataset.*;
+import org.talend.dataprep.api.service.command.preparation.PreparationList;
 import org.talend.dataprep.api.service.command.transformation.SuggestDataSetActions;
 import org.talend.dataprep.api.service.command.transformation.SuggestLookupActions;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.error.APIErrorCodes;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.http.HttpResponseContext;
 import org.talend.dataprep.metrics.Timed;
@@ -57,8 +65,7 @@ public class DataSetAPI extends APIService {
     public String create(
             @ApiParam(value = "User readable name of the data set (e.g. 'Finance Report 2015', 'Test Data Set').") @RequestParam(defaultValue = "", required = false) String name,
             @ApiParam(value = "The folder path to create the entry.") @RequestParam(defaultValue = "/", required = false) String folderPath,
-            @RequestHeader("Content-Type") String contentType,
-            @ApiParam(value = "content") InputStream dataSetContent) {
+            @RequestHeader("Content-Type") String contentType, @ApiParam(value = "content") InputStream dataSetContent) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Creating dataset (pool: {} )...", getConnectionStats());
         }
@@ -183,6 +190,7 @@ public class DataSetAPI extends APIService {
      * @param id the dataset id to clone
      * @param folderPath the folder path to clone the dataset
      * @param cloneName the name of the dataset clone
+     * @return The dataset id.
      */
     @RequestMapping(value = "/api/datasets/clone/{id}", method = PUT, produces = TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Create a data set", produces = TEXT_PLAIN_VALUE, notes = "Clone a data set based the id provided.")
@@ -324,6 +332,69 @@ public class DataSetAPI extends APIService {
         }
     }
 
+    /**
+     * Returns a list containing all preparations that are compatible with the data set with id <tt>id</tt>. If no
+     * compatible preparation is found an empty list is returned.
+     *
+     * @param dataSetId the specified data set id
+     * @param sort the sort criterion: either name or date.
+     * @param order the sorting order: either asc or desc
+     * @return a list containing all preparations that are compatible with the data set with id <tt>id</tt> and empty
+     * list if no preparation is compatible.
+     */
+    @RequestMapping(value = "/api/datasets/{id}/compatiblepreparations", method = GET, consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "List compatible preparations.", produces = APPLICATION_JSON_VALUE, notes = "Returns a list of data sets that are compatible with the specified one.")
+    public void listCompatiblePreparations(
+            @ApiParam(value = "Id of the data set to get") @PathVariable(value = "id") String dataSetId,
+            @ApiParam(value = "Sort key (by name or date), defaults to 'date'.") @RequestParam(defaultValue = "MODIF", required = false) String sort,
+            @ApiParam(value = "Order for sort key (desc or asc), defaults to 'desc'.") @RequestParam(defaultValue = "DESC", required = false) String order,
+            final OutputStream output) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Listing compatible preparations (pool: {})...", getConnectionStats());
+        }
+        HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
+        HttpClient client = getClient();
+        try {
+            // get the list of compatible data sets
+            final ByteArrayOutputStream temp = new ByteArrayOutputStream();
+            listCompatibleDatasets(dataSetId, "", order, temp);
+            final Iterable<DataSetMetadata> dataSetMetadataCollection = readServiceResult(
+                    new TypeReference<Iterable<DataSetMetadata>>() {
+                    }, temp);
+            final Set<String> compatibleDataSetIds = StreamSupport.stream(dataSetMetadataCollection.spliterator(), false)
+                    .map(DataSetMetadata::getId).collect(Collectors.toSet());
+            // add the current dataset
+            compatibleDataSetIds.add(dataSetId);
+
+            // get list of preparations
+            HystrixCommand<InputStream> listCommand = getCommand(PreparationList.class, client, PreparationList.Format.LONG, sort,
+                    order);
+            try {
+                String preparationsJson = IOUtils.toString(listCommand.execute());
+                final Collection<Preparation> preparationsList = builder.build()
+                        .readerFor(new TypeReference<Collection<Preparation>>() {
+                        }).readValue(preparationsJson);
+
+                // filter and keep only data sets ids that are compatible
+                List<Preparation> preparations = preparationsList.stream()
+                        .filter(p -> compatibleDataSetIds.contains(p.getDataSetId())).collect(Collectors.toList());
+
+                InputStream content = IOUtils.toInputStream(builder.build().writeValueAsString(preparations));
+                IOUtils.copyLarge(content, output);
+                output.flush();
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Listing compatible datasets (pool: {}) done.", getConnectionStats());
+                }
+            } catch (HystrixRuntimeException e) {
+                throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_PREPARATION_LIST, e);
+            }
+
+        } catch (IOException e) {
+            throw new TDPException(APIErrorCodes.UNABLE_TO_LIST_COMPATIBLE_PREPARATIONS, e);
+        }
+
+    }
+
     @RequestMapping(value = "/api/datasets/{id}", method = DELETE, consumes = ALL_VALUE, produces = TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Delete a data set by id", notes = "Delete a data set content based on provided id. Id should be a UUID returned by the list operation. Not valid or non existing data set id returns empty content.")
     @Timed
@@ -393,6 +464,19 @@ public class DataSetAPI extends APIService {
         return result;
     }
 
+    private <T> T readServiceResult(TypeReference<T> type, ByteArrayOutputStream byteArray) {
+        final String json;
+        try {
+            json = new String(byteArray.toByteArray());
+            final T object = builder.build().readerFor(type).readValue(json);
+            return object;
+        } catch (IOException e) {
+            throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON);
+        } finally {
+            IOUtils.closeQuietly(byteArray);
+        }
+
+    }
     @RequestMapping(value = "/api/datasets/encodings", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List supported dataset encodings.", notes = "Returns the supported dataset encodings.")
     @Timed

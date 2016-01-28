@@ -44,6 +44,8 @@ export function StateService(PlaygroundStateService, playgroundState, //
         setPreviousStateOptions: PlaygroundStateService.setPreviousStateOptions,
         updateDatasetStatistics: PlaygroundStateService.updateDatasetStatistics,
         updateDatasetRecord: PlaygroundStateService.updateDatasetRecord,
+        setCandidatePreparations: PlaygroundStateService.setCandidatePreparations,
+        updatePreparationPickerDisplay: PlaygroundStateService.updatePreparationPickerDisplay,
 
         //playground - dataset parameters
         toggleDatasetParameters: PlaygroundStateService.toggleDatasetParameters,

@@ -55,6 +55,9 @@ export default function DatasetService($q, state, StateService, DatasetListServi
         updateParameters: updateParameters,
         refreshSupportedEncodings: refreshSupportedEncodings,
 
+        //compatible preparation list
+        getCompatiblePreparations: getCompatiblePreparations,
+
         //utils
         getUniqueName: getUniqueName,
         createDatasetInfo: createDatasetInfo
@@ -266,5 +269,16 @@ export default function DatasetService($q, state, StateService, DatasetListServi
     function refreshSupportedEncodings() {
         return DatasetRestService.getEncodings()
             .then(StateService.setDatasetEncodings);
+    }
+
+    /**
+     * @ngdoc method
+     * @name getCompatiblePreparations
+     * @methodOf data-prep.services.dataset.service:DatasetService
+     * @description fetches the compatible preparations for a given dataset
+     * @returns {Promise} The GET Promise
+     */
+    function getCompatiblePreparations(datasetId) {
+        return DatasetRestService.getCompatiblePreparations(datasetId);
     }
 }

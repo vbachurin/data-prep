@@ -126,7 +126,7 @@ export default function PreparationRestService($http, RestURLs) {
             method: 'PUT',
             url: RestURLs.preparationUrl + '/clone/' + preparationId
         };
-        return $http(request);
+        return $http(request).then((resp) => resp.data);
     }
 
     /**
@@ -138,17 +138,17 @@ export default function PreparationRestService($http, RestURLs) {
      * @description Update the current preparation name
      * @returns {promise} The PUT promise
      */
-    function update(preparationId, name) {
+    function update(preparationId, newData) {
         var request = {
             method: 'PUT',
             url: RestURLs.preparationUrl + '/' + preparationId,
             headers: {
                 'Content-Type': 'application/json'
             },
-            data: {name: name}
+            data: newData
         };
 
-        return $http(request);
+        return $http(request).then((resp) => resp.data);
     }
 
     /**

@@ -49,6 +49,21 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
      */
     vm.showNameValidation = false;
 
+    /**
+     * @ngdoc property
+     * @name displayPreprationPicker
+     * @propertyOf data-prep.playground.controller:PlaygroundCtrl
+     * @description Flag that controls the display of preparation picker form.
+     */
+    vm.displayPreprationPicker = false;
+
+    //--------------------------------------------------------------------------------------------------------------
+    //--------------------------------------------------PREPARATION PICKER------------------------------------------
+    //--------------------------------------------------------------------------------------------------------------
+    vm.openPreparationPicker = function openPreparationPicker() {
+        StateService.updatePreparationPickerDisplay(!vm.state.playground.displayPreparationPicker);
+    };
+
     //--------------------------------------------------------------------------------------------------------------
     //--------------------------------------------------RECIPE HEADER-----------------------------------------------
     //--------------------------------------------------------------------------------------------------------------
@@ -106,7 +121,8 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
      * @ngdoc method
      * @name beforeClose
      * @methodOf data-prep.playground.controller:PlaygroundCtrl
-     * @description When the preparation is an implicit preparation, we show the save/discard modal and block the playground close.
+     * @description When the preparation is an implicit preparation, we show the save/discard modal and block the
+     *     playground close.
      * @returns {boolean} True if the playground can be closed (no implicit preparation), False otherwise
      */
     vm.beforeClose = function beforeClose() {
@@ -263,7 +279,8 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
  * @name hasActiveStep
  * @propertyOf data-prep.playground.controller:PlaygroundCtrl
  * @description checks if there is at least 1 active step, by checking the 1st step in the recipe
- * It is bound to {@link data-prep.services.recipe.service:RecipeService RecipeService} status of the 1st step in the returned recipe array by the getRecipe() function
+ * It is bound to {@link data-prep.services.recipe.service:RecipeService RecipeService} status of the 1st step in the
+ *     returned recipe array by the getRecipe() function
  * @type boolean
  */
 Object.defineProperty(PlaygroundCtrl.prototype,

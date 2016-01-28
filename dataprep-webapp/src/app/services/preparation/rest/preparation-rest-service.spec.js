@@ -134,7 +134,7 @@ describe('Preparation REST Service', function () {
                 .respond(200);
 
             //when
-            PreparationRestService.update(preparationId, name)
+            PreparationRestService.update(preparationId, {name: name})
                 .then(function() {
                     updateDone = true;
                 });

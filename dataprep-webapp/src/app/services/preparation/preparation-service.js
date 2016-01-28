@@ -35,6 +35,7 @@ export default function PreparationService($stateParams, $q, state, $state, Stat
         //preparation lifecycle
         create: create,
         clone: PreparationListService.clone,
+        update: PreparationRestService.update,
         delete: deletePreparation,
         setName: setName,
         open: open,

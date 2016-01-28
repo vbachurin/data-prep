@@ -39,7 +39,9 @@ export default function DatasetRestService($rootScope, $upload, $http, RestURLs)
         getEncodings: getEncodings,
 
         processCertification: processCertification,
-        toggleFavorite: toggleFavorite
+        toggleFavorite: toggleFavorite,
+
+        getCompatiblePreparations: getCompatiblePreparations
     };
 
     //--------------------------------------------------------------------------------------------------------------
@@ -319,6 +321,20 @@ export default function DatasetRestService($rootScope, $upload, $http, RestURLs)
      */
     function getEncodings() {
         return $http.get(RestURLs.datasetUrl + '/encodings')
+            .then(function (response) {
+                return response.data;
+            });
+    }
+
+    /**
+     * @ngdoc method
+     * @name getCompatiblePreparations
+     * @methodOf data-prep.services.dataset.service:DatasetRestService
+     * @description Get the compatible preparation list for a given dataset
+     * @returns {Promise} The GET promise
+     */
+    function getCompatiblePreparations(datasetId) {
+        return $http.get(RestURLs.datasetUrl+ '/' + datasetId  + '/compatiblepreparations')
             .then(function (response) {
                 return response.data;
             });

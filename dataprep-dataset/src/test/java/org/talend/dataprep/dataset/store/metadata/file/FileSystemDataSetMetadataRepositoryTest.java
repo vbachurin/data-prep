@@ -231,7 +231,7 @@ public class FileSystemDataSetMetadataRepositoryTest extends DataSetBaseTest {
 
     @Test
     public void shouldOnlyReturnDataSetWithSimilarSchema() {
-        DataSetMetadataRepositoryTestUtils.ensureThatOnlyCompatibleDataSetsAreReturned(repository);
+        DataSetMetadataRepositoryTestUtils.ensureThatOnlyCompatibleDataSetsAreReturned(repository, metadataBuilder);
     }
 
 }
