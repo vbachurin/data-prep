@@ -2,7 +2,6 @@ package org.talend.dataprep.dataset.store.metadata;
 
 import static org.junit.Assert.assertEquals;
 import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
-import static org.talend.dataprep.api.dataset.DataSetMetadata.Builder.metadata;
 
 import java.util.Arrays;
 import java.util.List;
@@ -10,19 +9,21 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.api.dataset.DataSetMetadataBuilder;
 import org.talend.dataprep.api.type.Type;
 
 public class DataSetMetadataRepositoryTestUtils {
 
-    public static void ensureThatOnlyCompatibleDataSetsAreReturned(DataSetMetadataRepository repository) {
+    public static void ensureThatOnlyCompatibleDataSetsAreReturned(DataSetMetadataRepository repository,
+            DataSetMetadataBuilder builder) {
         // given
-        final DataSetMetadata metadata1 = metadata().id("0001") //
+        final DataSetMetadata metadata1 = builder.metadata().id("0001") //
                 .row(column().type(Type.STRING).name("first"), column().type(Type.STRING).name("last")) //
                 .build();
-        final DataSetMetadata metadata2 = metadata().id("0002") //
+        final DataSetMetadata metadata2 = builder.metadata().id("0002") //
                 .row(column().type(Type.STRING).name("last"), column().type(Type.STRING).name("first")) //
                 .build();
-        final DataSetMetadata metadata3 = metadata().id("0003") //
+        final DataSetMetadata metadata3 = builder.metadata().id("0003") //
                 .row(column().type(Type.STRING).name("first"), column().type(Type.INTEGER).name("last")) //
                 .build();
         List<DataSetMetadata> metadatas = Arrays.asList(metadata1, metadata2, metadata3);

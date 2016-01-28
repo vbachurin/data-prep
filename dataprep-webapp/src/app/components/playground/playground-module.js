@@ -13,7 +13,7 @@
 
 import PlaygroundCtrl from './playground-controller';
 import Playground from './playground-directive';
-import PlaygroundHeader from './header/playground-header-directive';
+import PlaygroundHeader from './header/playground-header-component';
 
 (() => {
     'use strict';
@@ -36,6 +36,7 @@ import PlaygroundHeader from './header/playground-header-directive';
      * @requires data-prep.services.recipe
      * @requires data-prep.services.state
      * @requires data-prep.suggestions-stats
+     * @requires data-prep.preparation-picker
      */
     angular.module('data-prep.playground',
         [
@@ -55,6 +56,7 @@ import PlaygroundHeader from './header/playground-header-directive';
             'data-prep.services.playground',
             'data-prep.services.recipe',
             'data-prep.services.state',
+            'data-prep.preparation-picker',
             'data-prep.documentation-search'
         ])
         .controller('PlaygroundCtrl', PlaygroundCtrl)

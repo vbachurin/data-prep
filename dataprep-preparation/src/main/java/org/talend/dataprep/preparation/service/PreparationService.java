@@ -22,10 +22,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 import static org.talend.dataprep.exception.error.PreparationErrorCodes.*;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -41,9 +38,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.talend.daikon.exception.ExceptionContext;
+import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.preparation.*;
 import org.talend.dataprep.api.service.info.VersionService;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.error.CommonErrorCodes;
+import org.talend.dataprep.exception.error.DataSetErrorCodes;
 import org.talend.dataprep.exception.error.PreparationErrorCodes;
 import org.talend.dataprep.exception.json.JsonErrorCodeDescription;
 import org.talend.dataprep.metrics.Timed;
@@ -90,9 +90,12 @@ public class PreparationService {
     @RequestMapping(value = "/preparations", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List all preparations id", notes = "Returns the list of preparations ids the current user is allowed to see. Creation date is always displayed in UTC time zone. See 'preparations/all' to get all details at once.")
     @Timed
-    public List<String> list() {
+    public List<String> list(
+            @ApiParam(value = "Sort key (by name or date).") @RequestParam(defaultValue = "MODIF", required = false) String sort,
+            @ApiParam(value = "Order for sort key (desc or asc).") @RequestParam(defaultValue = "DESC", required = false) String order) {
         LOGGER.debug("Get list of preparations (summary).");
-        return preparationRepository.listAll(Preparation.class).stream().map(Preparation::id).collect(toList());
+        return preparationRepository.listAll(Preparation.class).stream().collect(Collectors.toList()).stream()
+                .sorted(getPreparationComparator(sort, getOrderComparator(order))).map(Preparation::id).collect(toList());
     }
 
     @RequestMapping(value = "/preparations", method = GET, params = "dataSetId", produces = APPLICATION_JSON_VALUE)
@@ -100,7 +103,6 @@ public class PreparationService {
     @Timed
     public Collection<PreparationDetails> listByDataSet(@RequestParam("dataSetId") @ApiParam("dataSetId") String dataSetId) {
         Collection<Preparation> preparations = preparationRepository.getByDataSet(dataSetId);
-
         LOGGER.debug("{} preparation(s) use dataset {}.", preparations.size(), dataSetId);
         return getDetails(preparations);
     }
@@ -120,7 +122,9 @@ public class PreparationService {
     @RequestMapping(value = "/preparations/all", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List all preparations", notes = "Returns the list of preparations the current user is allowed to see. Creation date is always displayed in UTC time zone. This operation return all details on the preparations.")
     @Timed
-    public Collection<PreparationDetails> listAll() {
+    public Collection<PreparationDetails> listAll(
+            @ApiParam(value = "Sort key (by name or date).") @RequestParam(defaultValue = "MODIF", required = false) String sort,
+            @ApiParam(value = "Order for sort key (desc or asc).") @RequestParam(defaultValue = "DESC", required = false) String order) {
         LOGGER.debug("Get list of preparations (with details).");
         Collection<Preparation> preparations = preparationRepository.listAll(Preparation.class);
         preparations = preparations.stream()
@@ -710,4 +714,54 @@ public class PreparationService {
         return new PreparationDetails(preparation);
     }
 
+    // ------------------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------COMPARATORS------------------------------------------------------
+    // ------------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Return a dataset metadata comparator from the given parameters.
+     *
+     * @param sort the sort key.
+     * @param comparisonOrder the order comparator to use.
+     * @return a dataset metadata comparator from the given parameters.
+     */
+    private Comparator<Preparation> getPreparationComparator(String sort, Comparator<String> comparisonOrder) {
+        // Select comparator for sort (either by name or date)
+        final Comparator<Preparation> comparator;
+        switch (sort.toUpperCase()) {
+        case "NAME":
+            comparator = Comparator.comparing(Preparation::getName, comparisonOrder);
+            break;
+        case "DATE":
+            comparator = Comparator.comparing(p -> String.valueOf(p.getCreationDate()), comparisonOrder);
+            break;
+        case "MODIF":
+            comparator = Comparator.comparing(p -> String.valueOf(p.getLastModificationDate()), comparisonOrder);
+            break;
+        default:
+            throw new TDPException(CommonErrorCodes.ILLEGAL_SORT_FOR_LIST, ExceptionContext.build().put("sort", sort));
+        }
+        return comparator;
+    }
+    /**
+     * Return an order comparator.
+     *
+     * @param order the order key.
+     * @return an order comparator.
+     */
+    private Comparator<String> getOrderComparator(String order) {
+        // Select order (asc or desc)
+        final Comparator<String> comparisonOrder;
+        switch (order.toUpperCase()) {
+        case "ASC":
+            comparisonOrder = Comparator.naturalOrder();
+            break;
+        case "DESC":
+            comparisonOrder = Comparator.reverseOrder();
+            break;
+        default:
+            throw new TDPException(CommonErrorCodes.ILLEGAL_ORDER_FOR_LIST, ExceptionContext.build().put("order", order));
+        }
+        return comparisonOrder;
+    }
 }
