@@ -4,7 +4,9 @@ import static org.talend.dataprep.transformation.format.CSVFormat.CSV;
 
 import java.io.*;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -89,6 +91,10 @@ public class CSVWriter implements TransformerWriter {
         try (InputStream input = new FileInputStream(bufferFile)) {
             IOUtils.copy(input, output);
         }
+ finally {
+            recordsWriter.close();
+        }
+
     }
 
     /**
@@ -97,7 +103,10 @@ public class CSVWriter implements TransformerWriter {
      */
     @Override
     public void write(final DataSetRow row) throws IOException {
-        recordsWriter.writeNext(row.toArray(DataSetRow.SKIP_TDP_ID));
+        // values need to be written in the same order as the columns
+        final List<ColumnMetadata> columns = row.getRowMetadata().getColumns();
+        final List<String> values = columns.stream().map(c -> row.get(c.getId())).collect(Collectors.toList());
+        recordsWriter.writeNext(values.toArray(new String[] {}));
     }
 
     /**
