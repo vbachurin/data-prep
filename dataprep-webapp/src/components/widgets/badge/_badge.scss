@@ -43,7 +43,7 @@ $matches: $brown;
       color: $white;
     }
 
-}
+  }
 
   &.empty_records {
 
@@ -125,6 +125,7 @@ $matches: $brown;
 
   .textEllipsis {
     @include ellipsis(180px);
+    display: block;
   }
 
   input[type="text"] {
