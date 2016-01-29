@@ -81,14 +81,18 @@ public class CSVWriter implements TransformerWriter {
     public void write(final RowMetadata rowMetadata) throws IOException {
         // write the columns names
         String[] columnsName = rowMetadata.getColumns().stream().map(ColumnMetadata::getName).toArray(String[]::new);
-        au.com.bytecode.opencsv.CSVWriter csvWriter = new au.com.bytecode.opencsv.CSVWriter(new OutputStreamWriter(output), separator);
+        au.com.bytecode.opencsv.CSVWriter csvWriter = //
+        new au.com.bytecode.opencsv.CSVWriter(new OutputStreamWriter(output), separator);
         csvWriter.writeNext(columnsName);
         csvWriter.flush();
         // Write buffered records
         recordsWriter.flush();
         try (InputStream input = new FileInputStream(bufferFile)) {
             IOUtils.copy(input, output);
+        } finally {
+            recordsWriter.close();
         }
+
     }
 
     /**
@@ -97,7 +101,8 @@ public class CSVWriter implements TransformerWriter {
      */
     @Override
     public void write(final DataSetRow row) throws IOException {
-        recordsWriter.writeNext(row.toArray(DataSetRow.SKIP_TDP_ID));
+        // values need to be written in the same order as the columns
+        recordsWriter.writeNext(row.order().toArray(DataSetRow.SKIP_TDP_ID));
     }
 
     /**
