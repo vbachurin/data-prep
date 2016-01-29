@@ -28,38 +28,8 @@
 //-----------------------------------------------------------------------------------------------------------
 //-----------------------------------------------------HEADER------------------------------------------------
 //-----------------------------------------------------------------------------------------------------------
-.left-header {
-  float: left;
-
-  .file-lines-count {
-    color: $dark-green;
-    @include ellipsis(100px);
-    vertical-align: top;
-  }
-
-  .playground-dataset-name {
-    @include ellipsis(500px);
-    vertical-align: top;
-  }
-
-  #playground-gear-icon {
-    cursor: pointer;
-    height: 25px;
-    width: 25px;
-    display: inline-block;
-    vertical-align: middle;
-    background: url("/assets/images/parameters/gear.svg") no-repeat center;
-    background-size: 25px;
-    margin: 0 5px;
-  }
-}
-
-.right-header {
-  float: right;
-  margin-right: 51px;
-
-  #playground-onboarding-icon,
-  #playground-feedback-icon {
+.playground-header {
+  .icon {
     color: darken($white, 10%);
     padding-left: 10px;
     padding-right: 10px;
@@ -75,7 +45,7 @@
 
     .file-lines-count {
       color: $dark-green;
-      @include ellipsis(100px);
+      @include ellipsis(300px);
       vertical-align: top;
     }
 
@@ -86,6 +56,7 @@
 
     #playground-gear-icon {
       font-size: 0.6em;
+      vertical-align: top;
     }
   }
 
