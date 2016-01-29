@@ -53,7 +53,7 @@
                 <li class="divider"></li>
                 <li ng-repeat="relatedItem in inventoryItemCtrl.relatedInventories track by $index"
                     ng-click="inventoryItemCtrl.openRelatedInventoryItem(relatedItem)">
-                        <span class="inventory-actions-related-item-name">{{relatedItem.name}}</span>
+                        <span class="inventory-actions-related-item-name" title="{{relatedItem.name}}">{{relatedItem.name}}</span>
                         <span >&nbsp;-&nbsp;</span>
                         <span translate-once="REL_INV_MODIFIED"></span>
                         <span>&nbsp;{{'PREPARATION_DETAILS_SINCE' | translate : {since : relatedItem.lastModificationDate} }}</span>

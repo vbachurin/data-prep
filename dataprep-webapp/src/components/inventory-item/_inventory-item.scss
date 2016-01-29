@@ -62,6 +62,8 @@
             font-size: 1.15em;
             font-weight: bold;
             text-transform: uppercase;
+            @include ellipsis(350px);
+            vertical-align: bottom;
           }
         }
       }
