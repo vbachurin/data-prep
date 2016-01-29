@@ -29,7 +29,7 @@
     outline:none;
 
     li:hover {
-      background-color: #B6BE00;
+      background-color: $light-gray;
     }
 
     .dropdown-container-li {
@@ -43,6 +43,8 @@
         .related-inv {
           font-weight: 700;
           text-transform: uppercase;
+          @include ellipsis(350px);
+          vertical-align: top;
         }
       }
       &.divider {

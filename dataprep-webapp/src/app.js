@@ -93,6 +93,9 @@ var fetchConfiguration, bootstrapDataPrepApplication;
 
                 angular.module('data-prep.services.utils')
                     .value('version', config.data.version);
+
+                angular.module('data-prep.services.utils')
+                    .value('copyRights', config.data.copyRights);
             });
     };
 
