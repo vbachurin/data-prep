@@ -4,9 +4,7 @@ import static org.talend.dataprep.transformation.format.CSVFormat.CSV;
 
 import java.io.*;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -83,15 +81,15 @@ public class CSVWriter implements TransformerWriter {
     public void write(final RowMetadata rowMetadata) throws IOException {
         // write the columns names
         String[] columnsName = rowMetadata.getColumns().stream().map(ColumnMetadata::getName).toArray(String[]::new);
-        au.com.bytecode.opencsv.CSVWriter csvWriter = new au.com.bytecode.opencsv.CSVWriter(new OutputStreamWriter(output), separator);
+        au.com.bytecode.opencsv.CSVWriter csvWriter = //
+        new au.com.bytecode.opencsv.CSVWriter(new OutputStreamWriter(output), separator);
         csvWriter.writeNext(columnsName);
         csvWriter.flush();
         // Write buffered records
         recordsWriter.flush();
         try (InputStream input = new FileInputStream(bufferFile)) {
             IOUtils.copy(input, output);
-        }
- finally {
+        } finally {
             recordsWriter.close();
         }
 
@@ -104,9 +102,7 @@ public class CSVWriter implements TransformerWriter {
     @Override
     public void write(final DataSetRow row) throws IOException {
         // values need to be written in the same order as the columns
-        final List<ColumnMetadata> columns = row.getRowMetadata().getColumns();
-        final List<String> values = columns.stream().map(c -> row.get(c.getId())).collect(Collectors.toList());
-        recordsWriter.writeNext(values.toArray(new String[] {}));
+        recordsWriter.writeNext(row.order().toArray(DataSetRow.SKIP_TDP_ID));
     }
 
     /**
