@@ -4,66 +4,67 @@
     @include ellipsis(430px);
   }
 
-  .buttons-group {
-    width: 75px;
-    display: flex;
-
-    .preparations {
-      padding-left: 10px;
-      padding-right: 25px;
-    }
-
-    .preparations-dropdown {
-      font-size: 1.5em;
-      color: $white;
-      position: absolute;
-      left: -33px;
-      &:hover {
-        color: $medium-gray;
-      }
-    }
-  }
-
-
-  .dropdown-menu{
-    outline:none;
-
-    li:hover {
-      background-color: $light-gray;
-    }
-
-    .dropdown-container-li {
-      margin: 10px;
-      font-size: 1.05em;
-      a {
-        color: $black;
-        .dropdown-container-middle{
-          vertical-align: middle;
-        }
-        .related-inv {
-          font-weight: 700;
-          text-transform: uppercase;
-          @include ellipsis(350px);
-          vertical-align: top;
-        }
-      }
-      &.divider {
-        min-height: 1px;
-        height: 1px;
-        width: 100%;
-        margin: 9px 0;
-        overflow: hidden;
-        background-color: #e5e5e5;
-        padding: 0;
-      }
-      &.hover {
-        background-color: $light-gray;
-      }
-    }
-  }
-
-
   .edition-text-input {
     width: 220px;
+  }
+
+  .inventory-actions-related-item {
+    padding-right: 0;
+
+    button.button-dropdown-main,
+    button.button-dropdown-side {
+      border: none;
+      background: transparent;
+      padding: 0;
+      margin: 0;
+    }
+
+    .button-dropdown-side {
+      width: 20px;
+    }
+
+    .line-separator {
+      display: none;
+    }
+
+    .button-dropdown-main-icon {
+      @include filter(none);
+      font-size: 1em;
+      padding: 0;
+    }
+
+    .dropdown-menu {
+      width: auto;
+
+      &:before {
+        top: -1.2em;
+      }
+
+      ul.inventory-actions-related-item-menu {
+        font-family: $sourcesanspro;
+        color: $black;
+
+        > li {
+          border: none;
+          font-size: 0.8em;
+
+          &:not(:first-child) {
+            padding-left: 15px;
+          }
+
+          &.divider {
+            border-bottom: 1px solid #e5e5e5;
+            padding: 0;
+            margin: 0;
+          }
+
+          .inventory-actions-related-item-name {
+            font-size: 1.15em;
+            font-weight: bold;
+            text-transform: uppercase;
+          }
+        }
+      }
+    }
   }
 }

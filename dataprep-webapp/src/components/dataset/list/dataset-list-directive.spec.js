@@ -144,8 +144,8 @@ describe('DatasetList directive', function () {
     }));
 
     it('should create related preparations list', inject(function(){
-        expect(element.find('.inventory-item').eq(0).find('.dropdown-container-li').length).toBe(4);
-        expect(element.find('.inventory-item').eq(1).find('.dropdown-container-li').length).toBe(3);
-        expect(element.find('.inventory-item').eq(2).find('.dropdown-container-li').length).toBe(0);
+        expect(element.find('.inventory-item').eq(0).find('.inventory-actions-related-item-menu > li').length).toBe(4);
+        expect(element.find('.inventory-item').eq(1).find('.inventory-actions-related-item-menu > li').length).toBe(3);
+        expect(element.find('.inventory-item').eq(2).find('.inventory-actions-related-item-menu > li').length).toBe(0);
     }));
 });
