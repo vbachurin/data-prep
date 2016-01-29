@@ -33,7 +33,7 @@
 
   .file-lines-count {
     color: $dark-green;
-    @include ellipsis(100px);
+    @include ellipsis(300px);
     vertical-align: top;
   }
 
