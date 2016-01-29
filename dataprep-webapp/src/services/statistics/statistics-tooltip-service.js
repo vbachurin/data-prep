@@ -23,6 +23,15 @@
             );
         });
 
+        var TOOLTIP_FILTERED_AGGREG_TEMPLATE =  _.template('');
+        $translate(['TOOLTIP_MATCHING_FILTER', 'TOOLTIP_MATCHING_FULL']).then(function(messages) {
+            TOOLTIP_FILTERED_TEMPLATE =  _.template(
+                '<strong><%= label %> ' + messages.TOOLTIP_MATCHING_FILTER + ': </strong><span style="color:yellow"><%= primaryValue %></span>' +
+                '<br/><br/>' +
+                '<strong><%= title %>: </strong><span style="color:yellow"><%= key %></span>'
+            );
+        });
+
         return {
             getTooltip: getTooltip
         };
