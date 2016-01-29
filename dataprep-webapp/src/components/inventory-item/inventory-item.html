@@ -61,7 +61,7 @@
                         <li class="dropdown-container-li divider"></li>
                         <li class="dropdown-container-li" ng-repeat="prepa in inventoryItemCtrl.relatedInventories track by $index" ng-click="inventoryItemCtrl.openRelatedInventoryItem(prepa)">
                             <a >
-                                <span class="related-inv">{{prepa.name}}</span>
+                                <span class="related-inv" title="{{prepa.name}}">{{prepa.name}}</span>
                                 <span >&nbsp;-&nbsp;</span>
                                 <span  translate-once="REL_INV_MODIFIED"></span>
                                 <span>&nbsp;{{'PREPARATION_DETAILS_SINCE' | translate : {since : prepa.lastModificationDate} }}</span>
