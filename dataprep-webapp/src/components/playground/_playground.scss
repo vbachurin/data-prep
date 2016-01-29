@@ -28,38 +28,8 @@
 //-----------------------------------------------------------------------------------------------------------
 //-----------------------------------------------------HEADER------------------------------------------------
 //-----------------------------------------------------------------------------------------------------------
-.left-header {
-  float: left;
-
-  .file-lines-count {
-    color: $dark-green;
-    @include ellipsis(100px);
-    vertical-align: top;
-  }
-
-  .playground-dataset-name {
-    @include ellipsis(500px);
-    vertical-align: top;
-  }
-
-  #playground-gear-icon {
-    cursor: pointer;
-    height: 25px;
-    width: 25px;
-    display: inline-block;
-    vertical-align: middle;
-    background: url("/assets/images/parameters/gear.svg") no-repeat center;
-    background-size: 25px;
-    margin: 0 5px;
-  }
-}
-
-.right-header {
-  float: right;
-  margin-right: 51px;
-
-  #playground-onboarding-icon,
-  #playground-feedback-icon {
+.playground-header {
+  .icon {
     color: darken($white, 10%);
     padding-left: 10px;
     padding-right: 10px;
@@ -70,32 +40,56 @@
     }
   }
 
-  .preview {
+  .left-header {
+    float: left;
 
-    .previewBadge {
-      line-height: 36px;
-      height: 36px;
-      padding: 0 5px;
-      border-radius: 5px;
-      background: rgba(255, 255, 255, 0.5);
+    .file-lines-count {
+      color: $dark-green;
+      @include ellipsis(100px);
+      vertical-align: top;
+    }
 
-      .previewBadgeElement {
+    .playground-dataset-name {
+      @include ellipsis(500px);
+      vertical-align: top;
+    }
+
+    #playground-gear-icon {
+      font-size: 0.6em;
+    }
+  }
+
+  .right-header {
+    float: right;
+    margin-right: 51px;
+
+    .preview {
+
+      .previewBadge {
+        line-height: 36px;
+        height: 36px;
         padding: 0 5px;
+        border-radius: 5px;
+        background: rgba(255, 255, 255, 0.5);
+
+        .previewBadgeElement {
+          padding: 0 5px;
+          vertical-align: middle;
+        }
+      }
+    }
+
+    #playground-lookup-icon {
+      padding: 8px;
+
+      > img {
         vertical-align: middle;
       }
     }
-  }
 
-  #playground-lookup-icon {
-    padding: 8px;
-
-    > img {
-      vertical-align: middle;
+    .pressed {
+      @include background(linear-gradient(#4D4D50, #6E6D71) left repeat);
     }
-  }
-
-  .pressed {
-    @include background(linear-gradient(#4D4D50, #6E6D71) left repeat);
   }
 }
 
