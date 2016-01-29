@@ -295,7 +295,7 @@ public abstract class ActionMetadata {
                 // For following actions, returns the row as modifiable to allow further modifications.
                 return row.modifiable();
             } catch (Exception e) {
-                LOGGER.error("Unable to use action '{}' due to unexpected error.", this.getName(), e);
+                LOGGER.error("Unable to use action '{}' (parameters: {}) due to unexpected error.", this.getName(), parameters, e);
                 context.setActionStatus(ActionContext.ActionStatus.CANCELED);
                 return row.modifiable();
             }

@@ -69,14 +69,14 @@ public class BaseTransformer {
                         final List<ColumnMetadata> previousColumns = actionContext.getOutputRowMetadata().getColumns();
                         final List<ColumnMetadata> transformedColumns = current.getRowMetadata().getColumns();
                         if (previousColumns.size() == transformedColumns.size()) {
-                            boolean changedName = false;
+                            int nameModifications = 0;
                             for (int i = 0; i < transformedColumns.size(); i++) {
                                 if (!transformedColumns.get(i).getName().equals(previousColumns.get(i).getName())) {
-                                    changedName = true;
+                                    nameModifications++;
                                 }
                             }
-                            if (changedName) {
-                                LOGGER.debug("Detected column name change. Propagate change to next actions.");
+                            if (nameModifications > 1) {
+                                LOGGER.debug("Detected many column name changes. Propagate changes to next actions.");
                                 actionContext.setOutputRowMetadata(current.getRowMetadata());
                             }
                         }
