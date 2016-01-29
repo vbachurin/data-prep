@@ -10,7 +10,7 @@ describe('Export controller', function() {
             'id': 'CSV',
             'needParameters': 'true',
             'defaultExport': 'false',
-            'enabled': 'true',
+            'enabled': true,
             'parameters': [{
                 'name': 'csvSeparator',
                 'labelKey': 'CHOOSE_SEPARATOR',
@@ -34,7 +34,7 @@ describe('Export controller', function() {
             'id': 'TABLEAU',
             'needParameters': 'false',
             'defaultExport': 'false',
-            'enabled': 'true'
+            'enabled': true
         },
         {
             'mimeType': 'application/vnd.ms-excel',
@@ -42,7 +42,7 @@ describe('Export controller', function() {
             'id': 'XLSX',
             'needParameters': 'false',
             'defaultExport': 'true',
-            'enabled': 'true'
+            'enabled': true
         }
     ];
     var currentParameters = {exportType: 'XLSX'};
@@ -179,6 +179,38 @@ describe('Export controller', function() {
 
             //then
             expect(ctrl.showModal).toBe(true);
+            expect(form.submit).not.toHaveBeenCalled();
+        });
+
+        it('should do nothing when export type is not enable', function() {
+            //given
+            var ctrl = createController();
+            scope.$apply();
+            expect(ctrl.showModal).toBeFalsy();
+
+            var oldType = exportTypes[0];
+            ctrl.exportService.currentExportType = oldType;
+            var disabledType = {
+                'mimeType': 'application/tde',
+                'extension': '.tde',
+                'id': 'TABLEAU',
+                'needParameters': 'false',
+                'defaultExport': 'false',
+                'enabled': false,
+                'parameters': [{
+                    'name': 'fileName',
+                    'labelKey': 'EXPORT_FILENAME"',
+                    'type': 'text',
+                    'defaultValue': {'value': ';', 'labelKey': 'EXPORT_FILENAME_DEFAULT'}
+                }]
+            };
+
+            //when
+            ctrl.changeTypeAndExport(disabledType);
+
+            //then
+            expect(ctrl.showModal).toBeFalsy();
+            expect(ctrl.exportService.currentExportType).toBe(oldType);
             expect(form.submit).not.toHaveBeenCalled();
         });
     });
