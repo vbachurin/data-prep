@@ -91,8 +91,9 @@ describe('InventoryItem directive', function () {
             createElement();
 
             //then
-            expect(element.find('.dropdown-container-li').length).toBe(4);
-            var relatedPrepsList = element.find('.dropdown-container-li').eq(3).find('a').eq(0).text().trim();
+            var menuItems = element.find('.inventory-actions-related-item-menu > li');
+            expect(menuItems.length).toBe(4);
+            var relatedPrepsList = menuItems.eq(3).text().trim();
             expect(relatedPrepsList.indexOf(dataset.preparations[1].name) > -1).toBeTruthy();
         }));
 
@@ -105,7 +106,7 @@ describe('InventoryItem directive', function () {
             createElement();
 
             //then
-            expect(element.find('.dropdown-container').length).toBe(0);
+            expect(element.find('.inventory-actions-related-item-menu > li').length).toBe(0);
         }));
 
         describe('current Inventory Item openings:', function(){
@@ -168,7 +169,7 @@ describe('InventoryItem directive', function () {
 
             it('should open related inventory item on bottle click', inject(function () {
                 //given
-                var bottle = element.find('.inventory-actions').eq(0).find('a').eq(0);
+                var bottle = element.find('.inventory-actions-related-item .button-dropdown-main').eq(0);
 
                 //when
                 bottle.click();
@@ -190,7 +191,7 @@ describe('InventoryItem directive', function () {
 
             it('should open new inventory item and not the related inventory', inject(function () {
                 //given
-                var newPreparation = element.find('.dropdown-container-li').eq(0);
+                var newPreparation = element.find('.inventory-actions-related-item-menu > li').eq(0);
 
                 //when
                 newPreparation.click();
@@ -201,7 +202,7 @@ describe('InventoryItem directive', function () {
 
             it('should open 2nd related inventory item', inject(function () {
                 //given
-                var secRelatedInv = element.find('.dropdown-container-li').eq(3);
+                var secRelatedInv = element.find('.inventory-actions-related-item-menu > li').eq(3);
 
                 //when
                 secRelatedInv.dblclick();
