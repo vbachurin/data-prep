@@ -3,8 +3,8 @@
 
     /**
      * @ngdoc directive
-     * @name data-prep.dataset-parameters.directive:datasetParameters
-     * @description Dataset parameters edition form element
+     * @name data-prep.actions-list.directive:actionsList
+     * @description list of the action to apply on a (column, cell or dataset)
      * @restrict E
      * @usage
      *     <action-list
