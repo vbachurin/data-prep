@@ -37,10 +37,12 @@
     </div>
 
     <!-- Not draft actions icons -->
-    <div ng-if="!inventoryItemCtrl.item.draft" class="inventory-actions">
+    <div ng-if="!inventoryItemCtrl.item.draft"
+         class="inventory-actions">
         <talend-button-dropdown class="inventory-actions-related-item btn-icon btn-transparent"
                                 button-icon="c"
                                 button-action="inventoryItemCtrl.openRelatedInventoryItem(inventoryItemCtrl.relatedInventories[0])"
+                                ng-if="inventoryItemCtrl.relatedInventories.length"
                                 title="{{'OPEN_ACTION' | translate:inventoryItemCtrl.getTooltipContent()}}">
             <ul class="inventory-actions-related-item-menu"
                 ng-if="inventoryItemCtrl.relatedInventories.length">

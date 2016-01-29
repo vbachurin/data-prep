@@ -82,7 +82,7 @@ describe('InventoryItem directive', function () {
             expect(element.find('a').length).toBe(3); //copy, remove and favorite actions
         }));
 
-        it('should list the related inventory items', inject(function () {
+        it('should render the related inventory icon and items list', inject(function () {
             //given
             scope.item = dataset;
             scope.preparations = dataset.preparations;
@@ -91,13 +91,14 @@ describe('InventoryItem directive', function () {
             createElement();
 
             //then
+            expect(element.find('.inventory-actions-related-item').length).toBe(1);
             var menuItems = element.find('.inventory-actions-related-item-menu > li');
             expect(menuItems.length).toBe(4);
             var relatedPrepsList = menuItems.eq(3).text().trim();
             expect(relatedPrepsList.indexOf(dataset.preparations[1].name) > -1).toBeTruthy();
         }));
 
-        it('should NOT list the related inventory items', inject(function () {
+        it('should NOT render the related inventory icon and items list when the list is empty', inject(function () {
             //given
             scope.item = dataset;
             scope.preparations = [];
@@ -106,7 +107,7 @@ describe('InventoryItem directive', function () {
             createElement();
 
             //then
-            expect(element.find('.inventory-actions-related-item-menu > li').length).toBe(0);
+            expect(element.find('.inventory-actions-related-item').length).toBe(0);
         }));
 
         describe('current Inventory Item openings:', function(){
