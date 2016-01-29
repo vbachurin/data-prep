@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -29,6 +31,8 @@ import org.talend.dataprep.transformation.api.action.parameters.SelectParameter;
  */
 @Component(ChangeNumberFormat.ACTION_BEAN_PREFIX + ChangeNumberFormat.ACTION_NAME)
 public class ChangeNumberFormat extends ActionMetadata implements ColumnAction {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ChangeNumberFormat.class);
 
     /** Action name. */
     public static final String ACTION_NAME = "change_number_format"; //$NON-NLS-1$
@@ -238,37 +242,44 @@ public class ChangeNumberFormat extends ActionMetadata implements ColumnAction {
 
         final String value = row.get(columnId);
         if (StringUtils.isBlank(value)) {
+            LOGGER.debug("Unable to parse {} value as Number, it is blank", value);
             return;
         }
 
-        BigDecimal bd = null;
+        try {
+            BigDecimal bd = null;
 
-        switch (context.getParameters().get(FROM_SEPARATORS)) {
-        case UNKNOWN_SEPARATORS:
-        case US_SEPARATORS:
-            bd = BigDecimalParser.toBigDecimal(value);
-            break;
-        case EU_SEPARATORS:
-            bd = BigDecimalParser.toBigDecimal(value, ',', '.');
-            break;
-        case CUSTOM:
-            String decSep = getCustomizableParam(FROM + DECIMAL + SEPARATOR, context.getParameters());
-            String groupSep = getCustomizableParam(FROM + GROUPING + SEPARATOR, context.getParameters());
+            switch (context.getParameters().get(FROM_SEPARATORS)) {
+            case UNKNOWN_SEPARATORS:
+            case US_SEPARATORS:
+                bd = BigDecimalParser.toBigDecimal(value);
+                break;
+            case EU_SEPARATORS:
+                bd = BigDecimalParser.toBigDecimal(value, ',', '.');
+                break;
+            case CUSTOM:
+                String decSep = getCustomizableParam(FROM + DECIMAL + SEPARATOR, context.getParameters());
+                String groupSep = getCustomizableParam(FROM + GROUPING + SEPARATOR, context.getParameters());
 
-            if (StringUtils.isEmpty(decSep)) {
-                decSep = ".";
+                if (StringUtils.isEmpty(decSep)) {
+                    decSep = ".";
+                }
+                if (StringUtils.isEmpty(groupSep)) {
+                    groupSep = ",";
+                }
+
+                bd = BigDecimalParser.toBigDecimal(value, decSep.charAt(0), groupSep.charAt(0));
+                break;
             }
-            if (StringUtils.isEmpty(groupSep)) {
-                groupSep = ",";
-            }
 
-            bd = BigDecimalParser.toBigDecimal(value, decSep.charAt(0), groupSep.charAt(0));
-            break;
+            String newValue = BigDecimalFormatter.format(bd, decimalTargetFormat);
+
+            row.set(columnId, newValue);
         }
-
-        String newValue = BigDecimalFormatter.format(bd, decimalTargetFormat);
-
-        row.set(columnId, newValue);
+        catch (NumberFormatException e){
+            LOGGER.debug("Unable to parse {} value as Number", value);
+            return;
+        }
     }
 
 }
