@@ -8,18 +8,14 @@ import org.talend.dataprep.schema.SchemaParser;
 import org.talend.dataprep.schema.Serializer;
 
 @Service(CSVFormatGuess.BEAN_ID)
+@SuppressWarnings("InsufficientBranchCoverage")
 public class CSVFormatGuess implements FormatGuess {
 
+    /** Name of the separator parameter. */
     public static final String SEPARATOR_PARAMETER = "SEPARATOR"; //$NON-NLS-1$
-
-    /**
-     * The parameter used to set and retrieve header information
-     */
+    /** The parameter used to set and retrieve header information. */
     public static final String HEADER_COLUMNS_PARAMETER = "COLUMN_HEADERS";
-
-    /**
-     * The parameter used to set and retrieve the number of lines spanned by the header
-     */
+    /** The parameter used to set and retrieve the number of lines spanned by the header. */
     public static final String HEADER_NB_LINES_PARAMETER = "HEADER_NB_LINES";
 
     public static final String BEAN_ID = "formatGuess#csv";

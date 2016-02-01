@@ -593,7 +593,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
      * see https://jira.talendforge.org/browse/TDP-1066
      */
     @Test
-    public void shouldUpdateSeparator() throws Exception {
+    public void shouldUpdateSeparatorWithHeader() throws Exception {
 
         // given
         String dataSetId = createCSVDataSet(this.getClass().getResourceAsStream("../avengers.psv"));
@@ -619,6 +619,42 @@ public class DataSetServiceTests extends DataSetBaseTest {
         String datasetContent = given().when().get("/datasets/{id}/content?metadata=true", dataSetId).asString();
 
         assertThat(datasetContent, sameJSONAsFile(expected));
+    }
+
+    /**
+     * see https://jira.talendforge.org/browse/TDP-1066
+     */
+    @Test
+    public void shouldUpdateSeparatorWithoutHeader() throws Exception {
+
+        // given
+        String dataSetId = createCSVDataSet(this.getClass().getResourceAsStream("../tdp-1066_no_header.ssv"));
+        InputStream metadataInput = when().get("/datasets/{id}/metadata", dataSetId).asInputStream();
+        DataSet dataSet = builder.build().readerFor(DataSet.class).readValue(metadataInput);
+        DataSetMetadata metadata = dataSet.getMetadata();
+
+        // then
+        assertThat(metadata.getRowMetadata().getColumns().size(), is(2)); // ';' is guessed as separator ==> 2 columns
+
+        // when
+        final Map<String, String> parameters = metadata.getContent().getParameters();
+        parameters.put(CSVFormatGuess.SEPARATOR_PARAMETER, " ");
+        parameters.remove(CSVFormatGuess.HEADER_COLUMNS_PARAMETER);
+        final int statusCode = given() //
+                .contentType(JSON) //
+                .body(builder.build().writer().writeValueAsString(metadata)) //
+                .expect().statusCode(200).log().ifError() //
+                .when().put("/datasets/{id}", dataSetId).getStatusCode();
+
+        assertThat(statusCode, is(200));
+        assertQueueMessages(dataSetId);
+
+        // then
+        InputStream datasetContent = given().when().get("/datasets/{id}/content?metadata=true", dataSetId).asInputStream();
+        final DataSet actual = builder.build().readerFor(DataSet.class).readValue(datasetContent);
+        final DataSetMetadata actualMetadata = actual.getMetadata();
+
+        assertThat(actualMetadata.getRowMetadata().getColumns().size(), is(10)); // with ' ' as separator ==> 10 columns
     }
 
     /**

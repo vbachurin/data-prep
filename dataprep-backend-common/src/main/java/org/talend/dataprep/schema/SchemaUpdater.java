@@ -17,11 +17,11 @@ public interface SchemaUpdater {
 
     /**
      * Update the schema of the given metadata.
-     * 
-     * @param original the original dataset metadata.
-     * @param updated the metadata to update.
+     *
+     * @param request the schema parser request.
+     * @return the format guesser result.
      */
-    void updateSchema(DataSetMetadata original, DataSetMetadata updated);
+    FormatGuesser.Result updateSchema(SchemaParser.Request request);
 
     /**
      * @return the format guess.
