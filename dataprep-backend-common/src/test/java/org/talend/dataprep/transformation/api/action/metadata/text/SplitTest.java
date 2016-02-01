@@ -305,11 +305,13 @@ public class SplitTest extends AbstractMetadataBaseTest {
 
         assertTrue(originalStats != row.getRowMetadata().getById("0003").getStatistics());
         assertTrue(originalQuality != row.getRowMetadata().getById("0003").getQuality());
-        assertTrue(originalDomains == Collections.<SemanticDomain>emptyList() || originalDomains != row.getRowMetadata().getById("0003").getSemanticDomains());
+        assertTrue(originalDomains == Collections.<SemanticDomain> emptyList()
+                || originalDomains != row.getRowMetadata().getById("0003").getSemanticDomains());
 
         assertTrue(originalStats != row.getRowMetadata().getById("0004").getStatistics());
         assertTrue(originalQuality != row.getRowMetadata().getById("0004").getQuality());
-        assertTrue(originalDomains == Collections.<SemanticDomain>emptyList() || originalDomains != row.getRowMetadata().getById("0004").getSemanticDomains());
+        assertTrue(originalDomains == Collections.<SemanticDomain> emptyList()
+                || originalDomains != row.getRowMetadata().getById("0004").getSemanticDomains());
     }
 
     /**
@@ -503,6 +505,17 @@ public class SplitTest extends AbstractMetadataBaseTest {
         assertFalse(action.acceptColumn(getColumn(Type.FLOAT)));
         assertFalse(action.acceptColumn(getColumn(Type.DATE)));
         assertFalse(action.acceptColumn(getColumn(Type.BOOLEAN)));
+    }
+
+    @Test
+    public void should_have_separator_that_could_be_blank() {
+        Optional<Parameter> parameter = new Split().getParameters().stream()
+                .filter(p -> StringUtils.equals(p.getName(), Split.SEPARATOR_PARAMETER)).findFirst();
+        if (parameter.isPresent()) {
+            assertTrue(parameter.get().isCanBeBlank());
+        } else {
+            fail();
+        }
     }
 
     /**
