@@ -25,7 +25,7 @@
 
         var TOOLTIP_FILTERED_AGGREG_TEMPLATE =  _.template('');
         $translate(['TOOLTIP_MATCHING_FILTER', 'TOOLTIP_MATCHING_FULL']).then(function(messages) {
-            TOOLTIP_FILTERED_TEMPLATE =  _.template(
+            TOOLTIP_FILTERED_AGGREG_TEMPLATE =  _.template(
                 '<strong><%= label %> ' + messages.TOOLTIP_MATCHING_FILTER + ': </strong><span style="color:yellow"><%= primaryValue %></span>' +
                 '<br/><br/>' +
                 '<strong><%= title %>: </strong><span style="color:yellow"><%= key %></span>'
@@ -77,15 +77,25 @@
             }
 
             if (state.playground.filter.gridFilters.length) {
-                var percentage = getPercentage(secondaryValue, primaryValue);
-                return TOOLTIP_FILTERED_TEMPLATE({
-                    label: keyLabel,
-                    title: title,
-                    percentage: percentage,
-                    key: keyString,
-                    primaryValue: primaryValue,
-                    secondaryValue: secondaryValue
-                });
+                if(state.playground.statistics.histogram.aggregation){
+                    return TOOLTIP_FILTERED_AGGREG_TEMPLATE({
+                        label: keyLabel,
+                        title: title,
+                        key: keyString,
+                        primaryValue: primaryValue
+                    });
+                }
+                else {
+                    var percentage = getPercentage(secondaryValue, primaryValue);
+                    return TOOLTIP_FILTERED_TEMPLATE({
+                        label: keyLabel,
+                        title: title,
+                        percentage: percentage,
+                        key: keyString,
+                        primaryValue: primaryValue,
+                        secondaryValue: secondaryValue
+                    });
+                }
             }
             else {
                 return TOOLTIP_TEMPLATE({
