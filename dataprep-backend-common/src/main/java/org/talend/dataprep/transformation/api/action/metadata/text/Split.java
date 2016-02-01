@@ -89,6 +89,7 @@ public class Split extends ActionMetadata implements ColumnAction {
         //@formatter:off
         parameters.add(SelectParameter.Builder.builder()
                         .name(SEPARATOR_PARAMETER)
+                        .canBeBlank(true)
                         .item(":")
                         .item(";")
                         .item(",")
