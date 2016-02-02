@@ -76,7 +76,6 @@ describe('Lookup controller', function () {
         'lookup_selected_cols': ['0002', '0003']
     };
 
-    /*jshint camelcase: false */
     var step = {
         column: {
             id: '0000',

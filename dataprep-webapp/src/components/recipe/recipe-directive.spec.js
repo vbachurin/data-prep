@@ -11,7 +11,6 @@
 
   ============================================================================*/
 
-/*jshint camelcase: false */
 describe('Recipe directive', function () {
     'use strict';
     var scope, element;

@@ -1,36 +1,102 @@
 'use strict';
 
+var path = require('path');
+var conf = require('./gulp/conf');
+
+var _ = require('lodash');
+var wiredep = require('wiredep');
+
+var pathSrcHtml = [
+  path.join(conf.paths.src, '/**/*.html')
+];
+
+function listFiles() {
+  var wiredepOptions = _.extend({}, conf.wiredep, {
+    dependencies: true,
+    devDependencies: true
+  });
+
+  var patterns = wiredep(wiredepOptions).js
+    .concat([
+      path.join(conf.paths.tmp, '/serve/app/index.module.js'),
+    ])
+    .concat(pathSrcHtml);
+
+  var files = patterns.map(function(pattern) {
+    return {
+      pattern: pattern
+    };
+  });
+  files.push({
+    pattern: path.join(conf.paths.src, '/assets/**/*'),
+    included: false,
+    served: true,
+    watched: false
+  });
+  return files;
+}
+
 module.exports = function(config) {
 
-    config.set({
-        autoWatch : false,
-        frameworks: ['jasmine'],
-        browsers : ['PhantomJS'],
+  var configuration = {
+    files: listFiles(),
 
-        plugins : [
-            'karma-phantomjs-launcher',
-            'karma-jasmine',
-            'karma-coverage',
-            'karma-ng-html2js-preprocessor',
-            'karma-junit-reporter'//junit is used in jenkins tests but not launch is dev tests
-        ],
-        reporters: ['progress', 'coverage'],
-        preprocessors: {
-            // source files, that you wanna generate coverage for
-            // do not include tests or libraries
-            // (these files will be instrumented by Istanbul)
-            'src/**/!(*spec|*mock).js': ['coverage'],
-            'src/**/*.html':['ng-html2js']
-        },
-        ngHtml2JsPreprocessor: {
-            stripPrefix: 'src/',
-            moduleName: 'htmlTemplates'
-        },
-        coverageReporter: {
-            dir: 'coverage/'
-        },
-        junitReporter    : {
-            outputFile : 'target/surefire-reports/TEST-karma-results.xml'
-        }
-    });
+    singleRun: true,
+
+    autoWatch: false,
+
+    ngHtml2JsPreprocessor: {
+      stripPrefix: conf.paths.src + '/',
+      moduleName: 'baseEs6'
+    },
+
+    logLevel: 'WARN',
+
+    frameworks: ['jasmine'],
+
+    browsers : ['PhantomJS'],
+
+    plugins : [
+      'karma-phantomjs-launcher',
+      'karma-coverage',
+      'karma-jasmine',
+      'karma-ng-html2js-preprocessor'
+    ],
+
+    coverageReporter: {
+      type : 'html',
+      dir : 'coverage/'
+    },
+
+    reporters: ['progress'],
+
+    proxies: {
+      '/assets/': path.join('/base/', conf.paths.src, '/assets/')
+    }
+  };
+
+  // This is the default preprocessors configuration for a usage with Karma cli
+  // The coverage preprocessor is added in gulp/unit-test.js only for single tests
+  // It was not possible to do it there because karma doesn't let us now if we are
+  // running a single test or not
+  configuration.preprocessors = {};
+  pathSrcHtml.forEach(function(path) {
+    configuration.preprocessors[path] = ['ng-html2js'];
+  });
+
+  // This block is needed to execute Chrome on Travis
+  // If you ever plan to use Chrome and Travis, you can keep it
+  // If not, you can safely remove it
+  // https://github.com/karma-runner/karma/issues/1144#issuecomment-53633076
+  if(configuration.browsers[0] === 'Chrome' && process.env.TRAVIS) {
+    configuration.customLaunchers = {
+      'chrome-travis-ci': {
+        base: 'Chrome',
+        flags: ['--no-sandbox']
+      }
+    };
+    configuration.browsers = ['chrome-travis-ci'];
+  }
+
+  config.set(configuration);
 };

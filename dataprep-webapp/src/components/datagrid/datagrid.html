@@ -20,8 +20,8 @@
 <span id="tooltip-ruler" class="tooltip-ruler"></span>
 
 <talend-tooltip
-        position="datagridCtrl.tooltip.position"
-        requested-state="datagridCtrl.showTooltip"
-        class="datagrid-tooltip">
-    <div ng-bind-html="datagridCtrl.tooltip.htmlStr" class="datagrid-tooltip-content"></div>
+        class="datagrid-tooltip"
+        position="datagridCtrl.datagridTooltipService.tooltip.position"
+        requested-state="datagridCtrl.datagridTooltipService.showTooltip">
+    <div ng-bind-html="datagridCtrl.datagridTooltipService.tooltip.htmlStr" class="datagrid-tooltip-content"></div>
 </talend-tooltip>

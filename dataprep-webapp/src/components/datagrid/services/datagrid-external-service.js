@@ -1,119 +1,101 @@
-/*  ============================================================================
+/**
+ * @ngdoc service
+ * @name data-prep.datagrid.service:DatagridExternalService
+ * @description Datagrid private service that manage the selected column action to the outer world (non dratagrid)
+ * @requires data-prep.services.statistics.service:StatisticsService
+ * @requires data-prep.services.transformation.service:SuggestionService
+ * @requires data-prep.services.transformation.service:ColumnSuggestionService
+ * @requires data-prep.services.playground.service:PreviewService
+ * @requires data-prep.services.lookup.service:LookupService
+ *
+ */
+export default function DatagridExternalService($timeout, state, StatisticsService, SuggestionService, PreviewService, LookupService) {
+    'ngInject';
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+    var grid;
+    var suggestionTimeout;
+    var scrollTimeout;
+    var lastSelectedTab;
+    var lastSelectedColumn;
+    var lastSelectedLine;
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
-
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
-
-  ============================================================================*/
-
-(function () {
-    'use strict';
+    return {
+        init: init,
+        updateSuggestionPanel: updateSuggestionPanel
+    };
 
     /**
-     * @ngdoc service
-     * @name data-prep.datagrid.service:DatagridExternalService
-     * @description Datagrid private service that manage the selected column action to the outer world (non dratagrid)
-     * @requires data-prep.services.statistics.service:StatisticsService
-     * @requires data-prep.services.transformation.service:SuggestionService
-     * @requires data-prep.services.transformation.service:ColumnSuggestionService
-     * @requires data-prep.services.playground.service:PreviewService
-     * @requires data-prep.services.lookup.service:LookupService
-     *
+     * @ngdoc method
+     * @name updateSuggestionPanel
+     * @methodOf data-prep.datagrid.service:DatagridExternalService
+     * @param {boolean} updateImmediately Update suggestions without timeout
+     * @description Set the selected column into external services except the index column. This will trigger actions that use this property
+     * Ex : StatisticsService for dataviz, ColumnSuggestionService for transformation list
      */
-    function DatagridExternalService($timeout, state, StatisticsService, SuggestionService, PreviewService, LookupService) {
-        var grid;
-        var suggestionTimeout;
-        var scrollTimeout;
-        var lastSelectedTab;
-        var lastSelectedColumn;
-        var lastSelectedLine;
 
-        return {
-            init: init,
-            updateSuggestionPanel: updateSuggestionPanel
-        };
+    function updateSuggestionPanel(updateImmediately) {
+        var column = state.playground.grid.selectedColumn;
+        var line = state.playground.grid.selectedLine;
 
-        /**
-         * @ngdoc method
-         * @name updateSuggestionPanel
-         * @methodOf data-prep.datagrid.service:DatagridExternalService
-         * @param {boolean} updateImmediately Update suggestions without timeout
-         * @description Set the selected column into external services except the index column. This will trigger actions that use this property
-         * Ex : StatisticsService for dataviz, ColumnSuggestionService for transformation list
-         */
+        var columnHasChanged = column !== lastSelectedColumn;
+        var lineHasChanged = line !== lastSelectedLine;
 
-        function updateSuggestionPanel(updateImmediately) {
-            var column = state.playground.grid.selectedColumn;
-            var line = state.playground.grid.selectedLine;
+        if(!columnHasChanged && !lineHasChanged) {
+            return;
+        }
 
-            var columnHasChanged = column !== lastSelectedColumn;
-            var lineHasChanged = line !== lastSelectedLine;
+        $timeout.cancel(suggestionTimeout);
+        suggestionTimeout = $timeout(function () {
+            lastSelectedColumn = column;
+            lastSelectedLine = line;
+            lastSelectedTab = !column ? 'LINE' : 'COLUMN';
 
-            if(!columnHasChanged && !lineHasChanged) {
-                return;
+            //change tab
+            SuggestionService.selectTab(lastSelectedTab);
+
+            //reset charts if we have no selected column
+            if(!lastSelectedColumn) {
+                StatisticsService.reset();
             }
 
-            $timeout.cancel(suggestionTimeout);
-            suggestionTimeout = $timeout(function () {
-                lastSelectedColumn = column;
-                lastSelectedLine = line;
-                lastSelectedTab = !column ? 'LINE' : 'COLUMN';
+            //update line scope transformations if line has changed
+            if(lastSelectedLine && lineHasChanged) {
+                SuggestionService.setLine(lastSelectedLine);
+            }
 
-                //change tab
-                SuggestionService.selectTab(lastSelectedTab);
-
-                //reset charts if we have no selected column
-                if(!lastSelectedColumn) {
-                    StatisticsService.reset();
-                }
-
-                //update line scope transformations if line has changed
-                if(lastSelectedLine && lineHasChanged) {
-                    SuggestionService.setLine(lastSelectedLine);
-                }
-
-                //update column scope transformations and charts if we have a selected column that has changed
-                if (lastSelectedColumn && columnHasChanged) {
-                    StatisticsService.updateStatistics();
-                    SuggestionService.setColumn(lastSelectedColumn);
-                    LookupService.updateTargetColumn();
-                }
-            }, updateImmediately ? 0 : 300);
-        }
-
-        /**
-         * @ngdoc method
-         * @name attachGridScroll
-         * @methodOf data-prep.datagrid.service:DatagridExternalService
-         * @description Attach grid scroll listener. It will update the displayed range for preview
-         */
-        function attachGridScrollListener() {
-            grid.onScroll.subscribe(function () {
-                clearTimeout(scrollTimeout);
-                scrollTimeout = setTimeout(function () {
-                    PreviewService.gridRangeIndex = grid.getRenderedRange();
-                }, 200);
-            });
-        }
-
-        /**
-         * @ngdoc method
-         * @name init
-         * @methodOf data-prep.datagrid.service:DatagridExternalService
-         * @param {object} newGrid The new grid
-         * @description Initialize the grid
-         */
-        function init(newGrid) {
-            grid = newGrid;
-            attachGridScrollListener();
-        }
+            //update column scope transformations and charts if we have a selected column that has changed
+            if (lastSelectedColumn && columnHasChanged) {
+                StatisticsService.updateStatistics();
+                SuggestionService.setColumn(lastSelectedColumn);
+                LookupService.updateTargetColumn();
+            }
+        }, updateImmediately ? 0 : 300);
     }
 
-    angular.module('data-prep.datagrid')
-        .service('DatagridExternalService', DatagridExternalService);
-})();
+    /**
+     * @ngdoc method
+     * @name attachGridScroll
+     * @methodOf data-prep.datagrid.service:DatagridExternalService
+     * @description Attach grid scroll listener. It will update the displayed range for preview
+     */
+    function attachGridScrollListener() {
+        grid.onScroll.subscribe(function () {
+            $timeout.cancel(scrollTimeout);
+            scrollTimeout = $timeout(function () {
+                PreviewService.gridRangeIndex = grid.getRenderedRange();
+            }, 200, false);
+        });
+    }
+
+    /**
+     * @ngdoc method
+     * @name init
+     * @methodOf data-prep.datagrid.service:DatagridExternalService
+     * @param {object} newGrid The new grid
+     * @description Initialize the grid
+     */
+    function init(newGrid) {
+        grid = newGrid;
+        attachGridScrollListener();
+    }
+}

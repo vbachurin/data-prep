@@ -1,17 +1,7 @@
-/*  ============================================================================
+import RecipeCtrl from './recipe-controller';
+import Recipe from './recipe-directive';
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
-
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
-
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
-
-  ============================================================================*/
-
-(function() {
+(() => {
     'use strict';
 
     /**
@@ -26,16 +16,19 @@
      * @requires data-prep.recipe-bullet
      * @requires data-prep.transformation-form
      */
-    angular.module('data-prep.recipe', [
-        'pascalprecht.translate',
-        'talend.widget',
-        'data-prep.services.playground',
-        'data-prep.services.recipe',
-        'data-prep.services.preparation',
-        'data-prep.services.state',
-        'data-prep.recipe-bullet',
-        'data-prep.transformation-form',
-        'data-prep.services.filter',
-        'data-prep.services.utils'
-    ]);
+    angular.module('data-prep.recipe',
+        [
+            'pascalprecht.translate',
+            'talend.widget',
+            'data-prep.services.playground',
+            'data-prep.services.recipe',
+            'data-prep.services.preparation',
+            'data-prep.services.state',
+            'data-prep.recipe-bullet',
+            'data-prep.transformation-form',
+            'data-prep.services.filter',
+            'data-prep.services.utils'
+        ])
+        .controller('RecipeCtrl', RecipeCtrl)
+        .directive('recipe', Recipe);
 })();

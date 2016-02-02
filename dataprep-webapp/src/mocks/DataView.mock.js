@@ -11,7 +11,6 @@
 
   ============================================================================*/
 
-/* jshint ignore:start */
 function DataViewMock() {
 	var filter, filterArgs, idProperty;
 	var data = [];
@@ -79,4 +78,3 @@ function DataViewMock() {
 		subscribe: function () {}
 	};
 }
-/* jshint ignore:end */

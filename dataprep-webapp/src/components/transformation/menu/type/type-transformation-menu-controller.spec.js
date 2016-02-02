@@ -11,8 +11,6 @@
 
   ============================================================================*/
 
-/*jshint camelcase: false */
-
 describe('Type transform menu controller', function () {
     'use strict';
 

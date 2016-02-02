@@ -1,17 +1,7 @@
-/*  ============================================================================
+import Home from './home-directive';
+import HomeCtrl from './home-controller';
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
-
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
-
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
-
-  ============================================================================*/
-
-(function() {
+(() => {
     'use strict';
 
     /**
@@ -30,17 +20,20 @@
      * @requires data-prep.folder
      * @requires data-prep.services.folder
      */
-    angular.module('data-prep.home', [
-        'talend.widget',
-        'data-prep.dataset-upload-list',
-        'data-prep.dataset-list',
-        'data-prep.playground',
-        'data-prep.preparation-list',
-        'data-prep.services.dataset',
-        'data-prep.services.utils',
-        'data-prep.services.datasetWorkflowService',
-        'data-prep.services.state',
-        'data-prep.services.folder',
-        'data-prep.folder'
-    ]);
+    angular.module('data-prep.home',
+        [
+            'talend.widget',
+            'data-prep.dataset-list',
+            'data-prep.dataset-upload-list',
+            'data-prep.folder',
+            'data-prep.playground',
+            'data-prep.preparation-list',
+            'data-prep.services.dataset',
+            'data-prep.services.datasetWorkflowService',
+            'data-prep.services.folder',
+            'data-prep.services.state',
+            'data-prep.services.utils'
+        ])
+        .controller('HomeCtrl', HomeCtrl)
+        .directive('home', Home);
 })();

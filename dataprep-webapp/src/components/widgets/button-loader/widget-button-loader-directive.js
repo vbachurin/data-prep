@@ -1,55 +1,34 @@
-/*  ============================================================================
+/**
+ * @ngdoc directive
+ * @name talend.widget.directive:TalendButtonLoader
+ * @description This directive create a button that switch content to a loading icon
+ * @restrict E
+ * @usage
+ <talend-button-loader
+     button-class=""
+     disable-condition=""
+     loading=""
+     loading-class="">
+ </talend-button-loader>
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
-
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
-
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
-
-  ============================================================================*/
-
-(function () {
-    'use strict';
-
-    /**
-     * @ngdoc directive
-     * @name talend.widget.directive:TalendButtonLoader
-     * @description This directive create a button that switch content to a loading icon
-     * @restrict E
-     * @usage
-     *
-     <talend-button-loader
-         button-class=""
-         disable-condition=""
-         loading=""
-         loading-class="">
-     </talend-button-loader>
-
-     * @param {string} button-class The css class to add to the button
-     * @param {boolean} disable-condition The condition to disable the button
-     * @param {boolean} loading The loading flag
-     * @param {string} loading-class The class to add to the loader
-     */
-    function TalendButtonLoader() {
-        return {
-            restrict: 'E',
-            templateUrl: 'components/widgets/button-loader/button-loader.html',
-            transclude: true,
-            scope: {
-                buttonClass: '@',
-                disableCondition: '=',
-                loading: '=',
-                loadingClass: '@'
-            },
-            bindToController: true,
-            controller: function () {},
-            controllerAs: 'buttonLoaderCtrl'
-        };
-    }
-
-    angular.module('talend.widget')
-        .directive('talendButtonLoader', TalendButtonLoader);
-})();
+ * @param {string} button-class The css class to add to the button
+ * @param {boolean} disable-condition The condition to disable the button
+ * @param {boolean} loading The loading flag
+ * @param {string} loading-class The class to add to the loader
+ */
+export default function TalendButtonLoader() {
+    return {
+        restrict: 'E',
+        templateUrl: 'app/components/widgets/button-loader/button-loader.html',
+        transclude: true,
+        scope: {
+            buttonClass: '@',
+            disableCondition: '=',
+            loading: '=',
+            loadingClass: '@'
+        },
+        bindToController: true,
+        controller: () => {},
+        controllerAs: 'buttonLoaderCtrl'
+    };
+}

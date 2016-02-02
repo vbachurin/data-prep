@@ -193,7 +193,6 @@ describe('filter search controller', function() {
         ctrl.filterSearch = 'ala';
 
         //when
-        /*jshint camelcase: false */
         ctrl.filterSuggestOptions.on_select({
             label: 'ala in <b>State</b>',
             value: 'ala',
@@ -214,7 +213,6 @@ describe('filter search controller', function() {
         expect(FilterService.addFilter).not.toHaveBeenCalled();
 
         //when
-        /*jshint camelcase: false */
         ctrl.filterSuggestOptions.on_select({
             label: 'ala in <b>State</b>',
             value: 'ala',

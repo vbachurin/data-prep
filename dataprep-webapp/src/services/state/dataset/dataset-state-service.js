@@ -1,44 +1,23 @@
-/*  ============================================================================
+export const datasetState = {
+    uploadingDatasets: []
+};
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+export function DatasetStateService() {
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+    return {
+        //uploading datasets
+        startUploadingDataset: startUploadingDataset,
+        finishUploadingDataset: finishUploadingDataset
+    };
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+    //--------------------------------------------------------------------------------------------------------------
+    //----------------------------------------------UPLOADING DATASETS----------------------------------------------
+    //--------------------------------------------------------------------------------------------------------------
+    function startUploadingDataset(dataset) {
+        datasetState.uploadingDatasets.push(dataset);
+    }
 
-  ============================================================================*/
-
-(function() {
-	'use strict';
-
-	var datasetState = {
-		uploadingDatasets:[]
-	};
-
-	function DatasetStateService() {
-
-		return {
-			//uploading datasets
-			startUploadingDataset: startUploadingDataset,
-			finishUploadingDataset: finishUploadingDataset
-		};
-
-		//--------------------------------------------------------------------------------------------------------------
-		//----------------------------------------------UPLOADING DATASETS----------------------------------------------
-		//--------------------------------------------------------------------------------------------------------------
-		function startUploadingDataset (dataset){
-			datasetState.uploadingDatasets.push(dataset);
-		}
-		function finishUploadingDataset (dataset){
-			datasetState.uploadingDatasets.splice(datasetState.uploadingDatasets.indexOf(dataset), 1);
-		}
-
-	}
-
-	angular.module('data-prep.services.state')
-		.service('DatasetStateService', DatasetStateService)
-		.constant('datasetState', datasetState);
-})();
+    function finishUploadingDataset(dataset) {
+        datasetState.uploadingDatasets.splice(datasetState.uploadingDatasets.indexOf(dataset), 1);
+    }
+}

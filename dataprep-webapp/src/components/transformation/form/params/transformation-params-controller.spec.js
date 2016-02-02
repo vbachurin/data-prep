@@ -11,8 +11,6 @@
 
   ============================================================================*/
 
-/*jshint camelcase: false */
-
 describe('Transform params controller', function () {
     'use strict';
 

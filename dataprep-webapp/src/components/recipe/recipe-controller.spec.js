@@ -11,7 +11,6 @@
 
   ============================================================================*/
 
-/*jshint camelcase: false */
 describe('Recipe controller', function () {
     'use strict';
 

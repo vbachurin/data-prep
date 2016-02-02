@@ -230,7 +230,6 @@ describe('Lookup state service', function () {
     });
 
     describe('init update mode', function() {
-        /*jshint camelcase: false */
         var stepToUpdate = {
             actionParameters: {
                 parameters: {

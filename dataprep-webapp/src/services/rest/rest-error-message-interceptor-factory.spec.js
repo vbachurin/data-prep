@@ -80,7 +80,6 @@ describe('Rest message interceptor factory', function () {
 
     it('should show expected error message if exist', inject(function ($rootScope, $http, MessageService) {
         //given
-        /*jshint camelcase: false */
         $httpBackend.expectGET('testService').respond(400, {message_title : 'TDP_API_DATASET_STILL_IN_USE_TITLE', message: 'TDP_API_DATASET_STILL_IN_USE' });
 
         //when
@@ -94,7 +93,6 @@ describe('Rest message interceptor factory', function () {
 
     it('should not show expected error message if not exist', inject(function ($rootScope, $http, MessageService) {
         //given
-        /*jshint camelcase: false */
         $httpBackend.expectGET('testService').respond(400, '');
 
         //when

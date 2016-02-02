@@ -11,7 +11,6 @@
 
   ============================================================================*/
 
-/* jshint ignore:start */
 function SlickGridMock () {
     return {
         //mock functions
@@ -64,5 +63,3 @@ function SlickGridMock () {
         updateRowCount: function() {}
     };
 }
-
-/* jshint ignore:end */

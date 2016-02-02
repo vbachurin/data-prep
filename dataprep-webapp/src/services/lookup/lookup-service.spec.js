@@ -119,7 +119,6 @@ describe('lookup service', function () {
     var firstLookupAction = lookupActions[0];
 
     //recipe
-    /*jshint camelcase: false */
     var lookupStep = {
         column: {
             id: '0000',

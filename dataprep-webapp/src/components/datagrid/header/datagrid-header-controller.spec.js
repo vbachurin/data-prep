@@ -216,7 +216,6 @@ describe('Datagrid header controller', function () {
 
             //then
             expect(PlaygroundService.appendStep).toHaveBeenCalledWith('rename_column', {
-                /*jshint camelcase: false */
                 new_column_name: 'new name',
                 scope: 'column',
                 column_id: '0001',

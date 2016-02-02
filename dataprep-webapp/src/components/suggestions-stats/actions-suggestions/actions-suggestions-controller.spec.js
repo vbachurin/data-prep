@@ -11,7 +11,6 @@
 
   ============================================================================*/
 
-/*jshint camelcase: false */
 describe('Actions suggestions-stats controller', function () {
     'use strict';
 

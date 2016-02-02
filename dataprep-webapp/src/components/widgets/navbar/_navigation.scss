@@ -290,16 +290,6 @@ header.navigation {
     }
   }
 
-  .sign-up {
-    @include button(flat, $base-accent-color);
-    display: inline;
-    float: right;
-    font-size: 0.8em;
-    margin-top: 1em;
-    padding: 0.75em 1em;
-    text-transform: uppercase;
-  }
-
   // Search bar
 
   .search-bar {
@@ -315,7 +305,7 @@ header.navigation {
       position: relative;
 
       input[type=search] {
-        @include box-sizing(border-box);
+        box-sizing: border-box;
         border-radius: $base-border-radius * 2;
         border: $navigation-search-border;
         color: $navigation-color;
@@ -338,7 +328,7 @@ header.navigation {
       width: 100%;
 
       input {
-        @include box-sizing(border-box);
+        box-sizing: border-box;
         display: block;
       }
     }

@@ -1,107 +1,86 @@
-/*  ============================================================================
+export const suggestionsState = {
+    isLoading: false,
+    line: {
+        allTransformations: [],
+        filteredTransformations: [],
+        allCategories: null
+    },
+    column: {
+        allSuggestions: [],             // all selected column suggestions
+        allTransformations: [],         // all selected column transformations
+        filteredTransformations: [],    // categories with their transformations to display, result of filter
+        allCategories: null,
+        searchActionString: ''
+    },
+    transformationsForEmptyCells: [],   // all column transformations applied to empty cells
+    transformationsForInvalidCells: []  // all column transformations applied to invalid cells,
+};
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+export function SuggestionsStateService() {
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+    return {
+        setColumnTransformations: setColumnTransformations,
+        setLineTransformations: setLineTransformations,
+        setTransformationsForEmptyCells: setTransformationsForEmptyCells,
+        setTransformationsForInvalidCells: setTransformationsForInvalidCells,
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
-
-  ============================================================================*/
-
-(function () {
-    'use strict';
-
-    var suggestionsState = {
-        isLoading: false,
-        line: {
-            allTransformations: [],
-            filteredTransformations: [],
-            allCategories: null
-        },
-        column: {
-            allSuggestions: [],             // all selected column suggestions
-            allTransformations: [],         // all selected column transformations
-            filteredTransformations: [],    // categories with their transformations to display, result of filter
-            allCategories: null,
-            searchActionString: ''
-        },
-        transformationsForEmptyCells: [],   // all column transformations applied to empty cells
-        transformationsForInvalidCells: []  // all column transformations applied to invalid cells,
+        setLoading: setLoading,
+        updateFilteredTransformations: updateFilteredTransformations,
+        reset: reset
     };
 
-    function SuggestionsStateService() {
+    function setLoading(isLoading) {
+        suggestionsState.isLoading = isLoading;
+    }
 
-        return {
-            setColumnTransformations: setColumnTransformations,
-            setLineTransformations: setLineTransformations,
-            setTransformationsForEmptyCells: setTransformationsForEmptyCells,
-            setTransformationsForInvalidCells: setTransformationsForInvalidCells,
+    function setLineTransformations(lineTransformations) {
+        suggestionsState.line = lineTransformations;
+    }
 
-            setLoading: setLoading,
-            updateFilteredTransformations: updateFilteredTransformations,
-            reset: reset
-        };
-
-        function setLoading(isLoading) {
-            suggestionsState.isLoading = isLoading;
-        }
-
-        function setLineTransformations(lineTransformations) {
-            suggestionsState.line = lineTransformations;
-        }
-
-        function setColumnTransformations(columnTransformations) {
-            suggestionsState.column = columnTransformations || {
-                    allSuggestions: [],
-                    allTransformations: [],
-                    filteredTransformations: [],
-                    allCategories: null,
-                    searchActionString: ''
-                };
-        }
-
-        function updateFilteredTransformations(filteredTransformations) {
-            suggestionsState.column.filteredTransformations = filteredTransformations;
-        }
-
-        function setTransformationsForEmptyCells(transformations) {
-            suggestionsState.transformationsForEmptyCells = transformations;
-        }
-
-        function setTransformationsForInvalidCells(transformations) {
-            suggestionsState.transformationsForInvalidCells = transformations;
-        }
-
-        function resetColumnSuggestions() {
-            suggestionsState.column = {
+    function setColumnTransformations(columnTransformations) {
+        suggestionsState.column = columnTransformations || {
                 allSuggestions: [],
                 allTransformations: [],
                 filteredTransformations: [],
                 allCategories: null,
                 searchActionString: ''
             };
-        }
-
-        function resetLineSuggestions() {
-            suggestionsState.line = {
-                allTransformations: [],
-                filteredTransformations: [],
-                allCategories: null
-            };
-        }
-
-        function reset() {
-            suggestionsState.isLoading = false;
-
-            resetLineSuggestions();
-            resetColumnSuggestions();
-        }
     }
 
-    angular.module('data-prep.services.state')
-        .service('SuggestionsStateService', SuggestionsStateService)
-        .constant('suggestionsState', suggestionsState);
-})();
+    function updateFilteredTransformations(filteredTransformations) {
+        suggestionsState.column.filteredTransformations = filteredTransformations;
+    }
+
+    function setTransformationsForEmptyCells(transformations) {
+        suggestionsState.transformationsForEmptyCells = transformations;
+    }
+
+    function setTransformationsForInvalidCells(transformations) {
+        suggestionsState.transformationsForInvalidCells = transformations;
+    }
+
+    function resetColumnSuggestions() {
+        suggestionsState.column = {
+            allSuggestions: [],
+            allTransformations: [],
+            filteredTransformations: [],
+            allCategories: null,
+            searchActionString: ''
+        };
+    }
+
+    function resetLineSuggestions() {
+        suggestionsState.line = {
+            allTransformations: [],
+            filteredTransformations: [],
+            allCategories: null
+        };
+    }
+
+    function reset() {
+        suggestionsState.isLoading = false;
+
+        resetLineSuggestions();
+        resetColumnSuggestions();
+    }
+}
