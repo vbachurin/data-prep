@@ -24,6 +24,7 @@ package org.talend.dataprep.transformation.api.action.metadata.category;
  */
 public enum ActionScope {
 
+    EQUALS, //
     INVALID, //
     EMPTY, //
     COLUMN_METADATA;
