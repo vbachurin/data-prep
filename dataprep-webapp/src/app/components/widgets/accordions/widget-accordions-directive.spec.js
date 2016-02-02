@@ -133,7 +133,7 @@ describe('Accordion directive', function () {
     describe('with open callback', function() {
         beforeEach(inject(function ($rootScope, $compile, $timeout) {
             scope = $rootScope.$new();
-            scope.onOpen = function() {};
+            scope.onOpen = jasmine.createSpy('onOpen');
 
             createElement = function () {
                 var template = '<talend-accordions>' +
@@ -158,8 +158,6 @@ describe('Accordion directive', function () {
                 $timeout.flush();
                 return element;
             };
-
-            spyOn(scope, 'onOpen').and.returnValue(true);
         }));
 
 

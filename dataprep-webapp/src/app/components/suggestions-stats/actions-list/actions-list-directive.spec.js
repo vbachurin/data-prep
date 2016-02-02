@@ -70,10 +70,10 @@ describe('Suggestions stats directive', function() {
             createElement();
 
             //then
-            expect(element.find('.actions-category').length).toBe(2);
-            expect(element.find('.actions-category').eq(0).text()).toBe('Category 1');
-            expect(element.find('.actions-category').eq(1).text()).toBe('Category 2');
-            expect(element.find('.actions-group').length).toBe(2);
+            expect(element.find('.actions-group .actions-category').length).toBe(2);
+            expect(element.find('.actions-group .actions-category').eq(0).text()).toBe('Category 1');
+            expect(element.find('.actions-group .actions-category').eq(1).text()).toBe('Category 2');
+            expect(element.find('.actions-group').length).toBe(1);
         }));
 
         it('should render actions', inject(function() {
@@ -184,7 +184,7 @@ describe('Suggestions stats directive', function() {
             expect(element.find('.actions-category').length).toBe(2);
             expect(element.find('.actions-category').eq(0).text()).toBe('Category 1');
             expect(element.find('.actions-category').eq(1).text()).toBe('Category 2');
-            expect(element.find('.actions-group').length).toBe(2);
+            expect(element.find('.actions-group').length).toBe(1);
             expect(element.find('.actions-group .trigger').length).toBe(4);
             expect(element.find('.actions-group .trigger').eq(0).text()).toBe('action 1');
             expect(element.find('.actions-group .trigger').eq(1).text()).toBe('action 3');

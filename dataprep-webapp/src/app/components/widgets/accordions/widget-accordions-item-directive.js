@@ -35,7 +35,6 @@
  * @param {div} content The content element that is shown/hidden
  * @param {function} on-open The function to execute on accordion item open
  * @param {boolean} default The default accordion to open
- * @param {function} action Action to perform on open //TODO cnugyen : remove this and use on-open
  */
 export default function talendAccordionsItem($timeout) {
     'ngInject';
@@ -47,8 +46,7 @@ export default function talendAccordionsItem($timeout) {
         require: '^^talendAccordions',
         scope: {
             'default': '=',
-            'onOpen': '&',
-            'action': '='
+            'onOpen': '&'
         },
         bindToController: true,
         controller: () => {},
@@ -126,10 +124,6 @@ export default function talendAccordionsItem($timeout) {
                 getContentElement().slideDown('fast');
                 iElement.addClass('open');
                 ctrl.onOpen();
-                if (ctrl.action) {
-                    ctrl.action(iElement);
-                }
-
             };
 
             /**

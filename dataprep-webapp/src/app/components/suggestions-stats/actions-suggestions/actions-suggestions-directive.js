@@ -30,14 +30,15 @@ export default function ActionsSuggestions($timeout) {
         link: function (scope, iElement, iAttrs, ctrl) {
 
             //Scroll the actual tab container to the bottom of the element to display
-            ctrl.scrollToBottom = function scrollToBottom(elementToDisplay) {
+            ctrl.scrollToBottom = function scrollToBottom() {
                 $timeout(function () {
                     var splitHandler = angular.element('.split-handler').eq(0);
                     var tabContainer = iElement.find('.action-suggestion-tab-items').eq(0);
-                    var etdContainer = elementToDisplay.find('>.accordion >.content-container >.content');
-                    if (!etdContainer.length) {
+                    var elementToDisplay = tabContainer.find('talend-accordions-item.open').eq(0);
+                    if (!elementToDisplay.length) {
                         return;
                     }
+                    var etdContainer = elementToDisplay.find('>.accordion >.content-container >.content').eq(0);
 
                     var tabOffset = tabContainer.offset();
                     var etdOffset = etdContainer.offset();
