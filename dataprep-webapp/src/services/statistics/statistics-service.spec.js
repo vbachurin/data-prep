@@ -2768,7 +2768,16 @@ describe('Statistics service', function () {
             StatisticsService.updateFilteredStatistics();
 
             //then
-            expect(StatisticsRestService.getAggregations).toHaveBeenCalled();
+            expect(StatisticsRestService.getAggregations).toHaveBeenCalledWith({
+                datasetId: null,
+                preparationId: '2132548345365',
+                stepId: '9878645468',
+                operations: [{
+                    operator:  'MAX',
+                    columnId: '0002'
+                }],
+                groupBy: ['0010']
+            });
         }));
     });
 
