@@ -26,7 +26,7 @@ These files must be used together with the common code contained in [daikon](htt
 
 ### UI
 
-The following projects provides UI for Data Prep.
+The following project provides UI for Data Prep.
 
 | _Project_                  | _Description_ |
 |:-------------------------|-------------|
@@ -35,13 +35,13 @@ The following projects provides UI for Data Prep.
 ### Back-end
 
 #### Services
-The following projects provides back-end services exposed as REST API.
+The following projects provide back-end services exposed as REST API.
 
 | _Project_                  | _Description_ |
 |:-------------------------|-------------|
 | [dataprep-api](dataprep-api)         | *Back-end API service for Data Preparation Web UI.* |
-| [dataprep-transformation](dataprep-transformation)         | *Back-end service for data set transformation.* |
-| [dataprep-dataset](dataprep-dataset)         | *Back-end service for data set operations (create, update, content index, get data set metadata...)* |
+| [dataprep-transformation](dataprep-transformation)         | *Back-end service for dataset transformation.* |
+| [dataprep-dataset](dataprep-dataset)         | *Back-end service for dataset operations (create, update, content index, get dataset metadata...)* |
 | [dataprep-preparation](dataprep-preparation)         | *Back-end service for preparation operations (create, update, get content, add or edit steps in preparations...)* |
 
 
@@ -81,7 +81,7 @@ Using the bug tracker [Talend bugtracker](http://jira.talendforge.org/) is the b
 
 ### Build
 - All project are maven based.
-- A parent in pom build the web-app and its dependencies.
+- A parent pom builds the web-app and its dependencies.
 - Specific Maven settings are required. See instructions in [tooling](/tooling/).
 - See each module (e.g. [dataprep-dataset](/dataprep-dataset/)) for specific build instructions.
 
