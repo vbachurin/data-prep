@@ -19,7 +19,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
+import java.util.OptionalLong;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -53,7 +53,7 @@ public class DataSetContent implements Serializable {
     /** If the dataset is too big, */
     @JsonProperty("limit")
     @JsonInclude(value = NON_ABSENT, content = NON_ABSENT)
-    private Optional<Long> limit = Optional.empty();
+    private OptionalLong limit = OptionalLong.empty();
 
     /**
      * @return A map that contains additional information about the format (e.g. a separator for a CSV format).
@@ -113,7 +113,7 @@ public class DataSetContent implements Serializable {
     /**
      * @return the Limit
      */
-    public Optional<Long> getLimit() {
+    public OptionalLong getLimit() {
         return limit;
     }
 
@@ -122,7 +122,7 @@ public class DataSetContent implements Serializable {
      */
     public void setLimit(Long limit) {
         if (limit != null) {
-            this.limit = Optional.of(limit);
+            this.limit = OptionalLong.of(limit);
         }
     }
 

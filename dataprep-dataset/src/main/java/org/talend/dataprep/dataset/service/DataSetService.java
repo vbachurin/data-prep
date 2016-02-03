@@ -814,9 +814,9 @@ public class DataSetService {
                 metadataForUpdate.setEncoding(dataSetMetadata.getEncoding());
 
                 // update limit
-                final Optional<Long> newLimit = dataSetMetadata.getContent().getLimit();
+                final OptionalLong newLimit = dataSetMetadata.getContent().getLimit();
                 if (newLimit.isPresent()) {
-                    metadataForUpdate.getContent().setLimit(newLimit.get());
+                    metadataForUpdate.getContent().setLimit(newLimit.getAsLong());
                 }
 
                 // Validate that the new data set metadata and removes the draft status
