@@ -44,10 +44,6 @@
                 <folder></folder>
             </li>
         </ul>
-        <div class="subheader-right" ng-if="false"> <!-- Hide button since data inventory is not implemented-->
-            <a data-icon="{{homeCtrl.showRightPanelIcon}}" class="expand-panel" ng-click="homeCtrl.toggleRightPanel()"></a>
-            <span data-icon="o" class="view-mode" title="{{'COMING_SOON' | translate}}"></span>
-        </div>
     </div>
 
     <!-- Import dataset from local file -->
@@ -136,20 +132,6 @@
             <ui-view name="home-content"></ui-view>
         </div>
     </div>
-
-    <talend-slidable class="inventory-data"
-                     visible="homeCtrl.showRightPanel"
-                     side="right"
-                     control-bar="false"
-                     resizable="inventory-data">
-        <p class="title" translate-once="INVENTORY_DATA"></p>
-        <hr/>
-        <p class="empty">
-            <i data-icon="i" class="iconfont large"></i>
-            <br/>
-            <span translate-once="SELECT_DATASET_DESCRIPTION"></span>
-        </p>
-    </talend-slidable>
 </div>
 
 <dataset-xls-preview></dataset-xls-preview>

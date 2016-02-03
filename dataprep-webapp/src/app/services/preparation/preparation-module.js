@@ -22,14 +22,13 @@ import PreparationService from './preparation-service';
      * @ngdoc object
      * @name data-prep.services.preparation
      * @description This module contains the services to manipulate preparations
-     * @requires data-prep.services.dataset
      * @requires data-prep.services.preparation
      * @requires data-prep.services.utils
      */
     angular.module('data-prep.services.preparation',
         [
-            'data-prep.services.dataset',
             'data-prep.services.preparation',
+            'data-prep.services.state',
             'data-prep.services.utils'
         ])
         .service('PreparationRestService', PreparationRestService)

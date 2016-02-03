@@ -15,12 +15,13 @@ describe('UploadWorkflow Service', function () {
     'use strict';
 
     beforeEach(angular.mock.module('data-prep.services.datasetWorkflowService'));
-    beforeEach(inject(function ($state, $q, DatasetSheetPreviewService, MessageService, DatasetService) {
+    beforeEach(inject(function ($state, $q, DatasetSheetPreviewService, MessageService, DatasetListService) {
         spyOn($state, 'go').and.returnValue(null);
         spyOn(DatasetSheetPreviewService, 'loadPreview').and.returnValue($q.when(true));
         spyOn(DatasetSheetPreviewService, 'display').and.returnValue();
         spyOn(MessageService, 'error').and.returnValue(null);
-        spyOn(DatasetService, 'refreshDatasets').and.returnValue($q.when(true));
+        spyOn(DatasetListService, 'refreshDatasets').and.returnValue();
+
     }));
 
     it('should redirect to dataset playground when dataset is not a draft', inject(function (UploadWorkflowService, $state) {
@@ -31,7 +32,7 @@ describe('UploadWorkflow Service', function () {
         UploadWorkflowService.openDataset(dataset);
 
         //then
-        expect($state.go).toHaveBeenCalledWith('nav.home.datasets', {datasetid: dataset.id});
+        expect($state.go).toHaveBeenCalledWith('playground', {datasetid: dataset.id});
     }));
 
     it('should redirect load sheet preview when dataset is a draft', inject(function ($q, $rootScope, UploadWorkflowService, DatasetSheetPreviewService) {
@@ -79,7 +80,7 @@ describe('UploadWorkflow Service', function () {
         expect(MessageService.error).toHaveBeenCalledWith('PREVIEW_NOT_IMPLEMENTED_FOR_TYPE_TITLE', 'PREVIEW_NOT_IMPLEMENTED_FOR_TYPE_TITLE');
     }));
 
-    it('should refresh dataset list and display error when draft has no type yet', inject(function (UploadWorkflowService, $q, DatasetSheetPreviewService, DatasetService, MessageService) {
+    it('should refresh dataset list and display error when draft has no type yet', inject(function (UploadWorkflowService, $q, DatasetSheetPreviewService, DatasetService, MessageService, DatasetListService) {
         //given
         var draft = {};
 
@@ -91,6 +92,6 @@ describe('UploadWorkflow Service', function () {
         expect(DatasetSheetPreviewService.loadPreview).not.toHaveBeenCalled();
         expect(DatasetSheetPreviewService.display).not.toHaveBeenCalled();
         expect(MessageService.error).toHaveBeenCalledWith('FILE_FORMAT_ANALYSIS_NOT_READY_TITLE', 'FILE_FORMAT_ANALYSIS_NOT_READY_CONTENT');
-        expect(DatasetService.refreshDatasets).toHaveBeenCalled();
+        expect(DatasetListService.refreshDatasets).toHaveBeenCalled();
     }));
 });

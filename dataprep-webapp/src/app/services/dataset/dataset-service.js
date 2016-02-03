@@ -1,15 +1,15 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
 
 /**
  * @ngdoc service
@@ -22,30 +22,30 @@
  * @requires data-prep.services.utils.service:StorageService
  *
  */
-export default function DatasetService($q, state, StateService, DatasetListService, DatasetRestService, PreparationListService, StorageService) {
+export default function DatasetService($q, state, StateService, DatasetListService, DatasetRestService, StorageService) {
     'ngInject';
 
     return {
         //lifecycle
-        import: importRemoteDataset,
-        create: create,
-        update: update,
+        import: DatasetListService.importRemoteDataset,
+        create: DatasetListService.create,
+        update: DatasetListService.update,
         delete: deleteDataset,
-        clone: cloneDataset,
-        move: moveDataset,
+        clone: DatasetListService.clone,
+        move: DatasetListService.move,
 
         //dataset actions
         updateColumn: DatasetRestService.updateColumn,
-        processCertification: processCertification,
-        toggleFavorite: toggleFavorite,
+        processCertification: DatasetListService.processCertification,
+        toggleFavorite: DatasetListService.toggleFavorite,
 
         //content
         getMetadata: DatasetRestService.getMetadata,
         getContent: DatasetRestService.getContent,
 
-        //dataset getters
+        //dataset getters, refresher
+        refreshDatasets: DatasetListService.refreshDatasets,
         getDatasets: getDatasets,           //promise that resolves datasets list
-        refreshDatasets: refreshDatasets,   //force refresh datasets list
         getDatasetById: getDatasetById,     //retrieve dataset by id
         getDatasetByName: getDatasetByName, //retrieve dataset by name
         getSheetPreview: getSheetPreview,
@@ -75,113 +75,15 @@ export default function DatasetService($q, state, StateService, DatasetListServi
      */
     function deleteDataset(dataset) {
         return DatasetListService.delete(dataset)
-            .then(consolidatePreparationsAndDatasets)
             .then(function (response) {
                 StorageService.removeAllAggregations(dataset.id);
                 return response;
             });
     }
 
-    /**
-     * @ngdoc method
-     * @name create
-     * @methodOf data-prep.services.dataset.service:DatasetService
-     * @param {object} dataset The dataset to create
-     * @param {object} folder - the dataset folder
-     * @description Create a dataset. It just call {@link data-prep.services.dataset.service:DatasetListService
-         *     DatasetListService} create function
-     * @returns {promise} The pending CREATE promise
-     */
-    function create(dataset, folder) {
-        var promise = DatasetListService.create(dataset, folder);
-        promise.then(consolidatePreparationsAndDatasets);
-        return promise;
-    }
-
-    /**
-     * @ngdoc method
-     * @name importRemoteDataset
-     * @methodOf data-prep.services.dataset.service:DatasetService
-     * @param {object} parameters The import parameters (type, url, username...)
-     * @param {object} folder - the dataset folder
-     * @description Import call the backend to import the remote. It just call {@link
-        *     data-prep.services.dataset.service:DatasetListService DatasetListService} import function
-     * @returns {promise} The pending IMPORT promise
-     */
-    function importRemoteDataset(parameters, folder) {
-        var promise = DatasetListService.importRemoteDataset(parameters, folder);
-        promise.then(consolidatePreparationsAndDatasets);
-        return promise;
-    }
-
-    /**
-     * @ngdoc method
-     * @name update
-     * @methodOf data-prep.services.dataset.service:DatasetService
-     * @param {object} dataset The dataset to update
-     * @description Update a dataset. It just call {@link data-prep.services.dataset.service:DatasetListService
-         *     DatasetListService} update function
-     * @returns {promise} The pending PUT promise
-     */
-    function update(dataset) {
-        var promise = DatasetListService.update(dataset);
-        promise
-            .then(DatasetListService.getDatasetsPromise)
-            .then(consolidatePreparationsAndDatasets);
-        return promise;
-    }
-
-    /**
-     * @ngdoc method
-     * @name cloneDataset
-     * @methodOf data-prep.services.dataset.service:DatasetService
-     * @param {object} dataset The dataset to clone
-     * @param {object} folder the folder to clone the dataset
-     * @param {string} cloneName the name for the cloned dataset
-     * @description Clone a dataset
-     * @returns {promise} The pending CREATE promise
-     */
-    function cloneDataset(dataset, folder, cloneName, abortPromise) {
-        var promise = DatasetListService.clone(dataset, folder, cloneName, abortPromise);
-        promise.then(consolidatePreparationsAndDatasets);
-        return promise;
-    }
-
-    /**
-     * @ngdoc method
-     * @name moveDataset
-     * @methodOf data-prep.services.dataset.service:DatasetService
-     * @param {dataset} dataset the dataset infos to move
-     * @param {folder) folder the original folder of the dataset
-     * @param {folder) newFolder the folder to move the dataset
-     * @param {string) newName the name for the moved dataset (optional)
-     * @description Move a dataset
-     * @returns {promise} The pending PUT promise
-     */
-    function moveDataset(dataset, folder, newFolder, newName, abortPromise) {
-        var promise = DatasetListService.move(dataset, folder, newFolder, newName, abortPromise);
-        promise.then(consolidatePreparationsAndDatasets);
-        return promise;
-    }
-
     //--------------------------------------------------------------------------------------------------------------
     //---------------------------------------------------Metadata---------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------
-
-
-    /**
-     * @ngdoc method
-     * @name consolidatePreparationsAndDatasets
-     * @methodOf data-prep.services.dataset.service:DatasetService
-     * @description [PRIVATE] Refresh the metadata within the preparations
-     */
-    function consolidatePreparationsAndDatasets(response) {
-        PreparationListService.refreshMetadataInfos(state.inventory.datasets)
-            .then(DatasetListService.refreshPreparations);
-
-        return response;
-    }
-
     /**
      * @ngdoc method
      * @name getDatasets
@@ -190,50 +92,14 @@ export default function DatasetService($q, state, StateService, DatasetListServi
      * @returns {promise} The pending GET or resolved promise
      */
     function getDatasets() {
-        return DatasetListService.hasDatasetsPromise() ?
-            DatasetListService.getDatasetsPromise() :
-            refreshDatasets();
-    }
-
-    /**
-     * @ngdoc method
-     * @name refreshDatasets
-     * @methodOf data-prep.services.dataset.service:DatasetService
-     * @description Refresh the dataset list with sorting parameters
-     * @returns {promise} The process promise
-     */
-    function refreshDatasets() {
-        return DatasetListService.refreshDatasets()
-            .then(consolidatePreparationsAndDatasets);
-    }
-
-    /**
-     * @ngdoc method
-     * @name processCertification
-     * @methodOf data-prep.services.dataset.service:DatasetService
-     * @param {object} dataset The target dataset for certification
-     * @description Ask certification for a dataset
-     * @returns {promise} The pending PUT promise
-     */
-    function processCertification(dataset) {
-        return DatasetListService.processCertification(dataset)
-            .then(consolidatePreparationsAndDatasets);
-    }
-
-    /**
-     * @ngdoc method
-     * @name toggleFavorite
-     * @methodOf data-prep.services.dataset.service:DatasetService
-     * @param {object} dataset The target dataset to set or unset favorite
-     * @description Set or Unset the dataset as favorite
-     * @returns {promise} The pending POST promise
-     */
-    function toggleFavorite(dataset) {
-        return DatasetRestService.toggleFavorite(dataset)
-            .then(function () {
-                dataset.favorite = !dataset.favorite; //update currentFolderContent.datasets
-                refreshDatasets(); //update inventory.datasets
-            });
+        if (DatasetListService.hasDatasetsPromise()) {
+            return DatasetListService.getDatasetsPromise();
+        }
+        else {
+            return state.inventory.datasets !== null ?
+                $q.when(state.inventory.datasets) :
+                DatasetListService.refreshDatasets();
+        }
     }
 
     /**
@@ -246,7 +112,7 @@ export default function DatasetService($q, state, StateService, DatasetListServi
      */
     function getDatasetByName(name) {
         var lowerCaseName = name.toLowerCase();
-        return _.find(state.folder.currentFolderContent.datasets, function (dataset) {
+        return _.find(state.inventory.currentFolderContent.datasets, function (dataset) {
             return dataset.name.toLowerCase() === lowerCaseName;
         });
     }

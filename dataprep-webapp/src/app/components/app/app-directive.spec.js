@@ -59,14 +59,6 @@ describe('App directive', function() {
         expect(element.find('talend-loading').length).toBe(1);
     });
 
-    it('should hold playground element', function() {
-        //when
-        createElement();
-
-        //then
-        expect(element.find('playground').length).toBe(1);
-    });
-
     it('should render router insertion point', function() {
         //when
         createElement();

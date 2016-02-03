@@ -1,35 +1,36 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
 
 /**
  * @ngdoc controller
  * @name data-prep.dataset-list.controller:DatasetListCtrl
  * @description Dataset list controller.
  On creation, it fetch dataset list from backend and load playground if 'datasetid' query param is provided
+ * @requires data-prep.services.state.constant:state
  * @requires data-prep.services.state.service:StateService
  * @requires data-prep.services.dataset.service:DatasetService
- * @requires data-prep.services.folder.service:FolderService
- * @requires data-prep.services.playground.service:PlaygroundService
- * @requires data-prep.services.uploadWorkflowService.service:UploadWorkflowService
+ *
+ * @requires data-prep.services.datasetWorkflowService.service:UploadWorkflowService
  * @requires data-prep.services.datasetWorkflowService.service:UpdateWorkflowService
- * @requires data-prep.services.utils.service:MessageService
+ *
  * @requires talend.widget.service:TalendConfirmService
+ * @requires data-prep.services.utils.service:MessageService
  * @requires data-prep.services.utils.service:StorageService
- * @requires data-prep.services.dataset.service:DatasetListService
+ * @requires data-prep.services.folder.service:FolderService
  */
-export default function DatasetListCtrl(state, $timeout, $translate, $stateParams, StateService, DatasetService, PlaygroundService,
-                                        TalendConfirmService, MessageService, UploadWorkflowService, UpdateWorkflowService,
-                                        FolderService, StorageService) {
+export default function DatasetListCtrl($timeout, $state, $translate, state, StateService, DatasetService,
+                                        UploadWorkflowService, UpdateWorkflowService,
+                                        TalendConfirmService, MessageService, FolderService, StorageService) {
     'ngInject';
     var vm = this;
 
@@ -76,7 +77,7 @@ export default function DatasetListCtrl(state, $timeout, $translate, $stateParam
         StateService.setDatasetsSort(sortType);
         StorageService.setDatasetsSort(sortType.id);
 
-        FolderService.getContent(state.folder.currentFolder)
+        FolderService.getContent(state.inventory.currentFolder)
             .catch(function () {
                 StateService.setDatasetsSort(oldSort);
                 StorageService.setDatasetsSort(oldSort.id);
@@ -100,26 +101,12 @@ export default function DatasetListCtrl(state, $timeout, $translate, $stateParam
         StateService.setDatasetsOrder(order);
         StorageService.setDatasetsOrder(order.id);
 
-        FolderService.getContent(state.folder.currentFolder)
+        FolderService.getContent(state.inventory.currentFolder)
             .catch(function () {
                 StateService.setDatasetsOrder(oldOrder);
                 StorageService.setDatasetsOrder(oldOrder.id);
             });
     };
-
-    /**
-     * @ngdoc method
-     * @name open
-     * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
-     * @description [PRIVATE] Initiate a new preparation from dataset
-     * @param {object} dataset The dataset to open
-     */
-    function open(dataset) {
-        PlaygroundService.initPlayground(dataset)
-            .then(function () {
-                $timeout(StateService.showPlayground);
-            });
-    }
 
     /**
      * @ngdoc method
@@ -129,11 +116,8 @@ export default function DatasetListCtrl(state, $timeout, $translate, $stateParam
      * @param {object} preparation The preparation to open
      */
     vm.openPreparation = function openPreparation(preparation) {
-        PlaygroundService
-            .load(preparation)
-            .then(function () {
-                $timeout(StateService.showPlayground);
-            });
+        StateService.setPreviousState('nav.home.datasets');
+        $state.go('playground', {prepid: preparation.id});
     };
 
     /**
@@ -162,7 +146,7 @@ export default function DatasetListCtrl(state, $timeout, $translate, $stateParam
                 return DatasetService.delete(dataset);
             })
             .then(function () {
-                FolderService.getContent(state.folder.currentFolder);
+                FolderService.getContent(state.inventory.currentFolder);
                 MessageService.success('REMOVE_SUCCESS_TITLE', 'REMOVE_SUCCESS', {
                     type: 'dataset',
                     name: dataset.name
@@ -185,7 +169,7 @@ export default function DatasetListCtrl(state, $timeout, $translate, $stateParam
                 MessageService.success('COPY_SUCCESS_TITLE', 'COPY_SUCCESS');
 
                 // force going to current folder to refresh the content
-                FolderService.getContent(state.folder.currentFolder);
+                FolderService.getContent(state.inventory.currentFolder);
                 // reset some values to initial values
                 vm.folderDestinationModal = false;
                 vm.datasetToClone = null;
@@ -210,12 +194,12 @@ export default function DatasetListCtrl(state, $timeout, $translate, $stateParam
         vm.isMovingDs = true;
         vm.cloneNameForm.$commitViewValue();
 
-        DatasetService.move(vm.datasetToClone, state.folder.currentFolder, vm.folderDestination, vm.cloneName)
+        DatasetService.move(vm.datasetToClone, state.inventory.currentFolder, vm.folderDestination, vm.cloneName)
             .then(function () {
                 MessageService.success('MOVE_SUCCESS_TITLE', 'MOVE_SUCCESS');
 
                 // force going to current folder to refresh the content
-                FolderService.getContent(state.folder.currentFolder);
+                FolderService.getContent(state.inventory.currentFolder);
 
                 // reset some values to initial values
                 vm.folderDestinationModal = false;
@@ -269,29 +253,6 @@ export default function DatasetListCtrl(state, $timeout, $translate, $stateParam
 
     /**
      * @ngdoc method
-     * @name loadUrlSelectedDataset
-     * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
-     * @description [PRIVATE] Load playground with provided dataset id, if present in route param
-     * @param {object[]} datasets List of all user's datasets
-     */
-    var loadUrlSelectedDataset = function loadUrlSelectedDataset(datasets) {
-        if ($stateParams.datasetid) {
-            var selectedDataset = _.find(datasets, function (dataset) {
-                return dataset.id === $stateParams.datasetid;
-            });
-
-            if (selectedDataset) {
-                open(selectedDataset);
-            }
-            else {
-                MessageService.error('PLAYGROUND_FILE_NOT_FOUND_TITLE', 'PLAYGROUND_FILE_NOT_FOUND', {type: 'dataset'});
-            }
-        }
-    };
-
-
-    /**
-     * @ngdoc method
      * @name processCertification
      * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
      * @description [PRIVATE] Ask certification for a dataset
@@ -300,7 +261,7 @@ export default function DatasetListCtrl(state, $timeout, $translate, $stateParam
     vm.processCertification = function (dataset) {
         vm.datasetService
             .processCertification(dataset)
-            .then(FolderService.getContent.bind(null, state.folder.currentFolder));
+            .then(FolderService.getContent.bind(null, state.inventory.currentFolder));
     };
 
     //-------------------------------
@@ -329,10 +290,10 @@ export default function DatasetListCtrl(state, $timeout, $translate, $stateParam
     vm.addFolder = function addFolder() {
         vm.folderNameForm.$commitViewValue();
 
-        var pathToCreate = (state.folder.currentFolder.id ? state.folder.currentFolder.id : '') + '/' + vm.folderName;
+        var pathToCreate = (state.inventory.currentFolder.id ? state.inventory.currentFolder.id : '') + '/' + vm.folderName;
         FolderService.create(pathToCreate)
             .then(function () {
-                FolderService.getContent(state.folder.currentFolder);
+                FolderService.getContent(state.inventory.currentFolder);
                 vm.folderNameModal = false;
             });
     };
@@ -351,7 +312,7 @@ export default function DatasetListCtrl(state, $timeout, $translate, $stateParam
         var newPath = path.substring(0, lastSlashIndex) + '/' + newName;
         FolderService.rename(path, newPath)
             .then(function () {
-                FolderService.getContent(state.folder.currentFolder);
+                FolderService.getContent(state.inventory.currentFolder);
             });
     };
 
@@ -365,7 +326,7 @@ export default function DatasetListCtrl(state, $timeout, $translate, $stateParam
     vm.removeFolder = function removeFolder(folder) {
         FolderService.remove(folder.id)
             .then(function () {
-                FolderService.getContent(state.folder.currentFolder);
+                FolderService.getContent(state.inventory.currentFolder);
             });
     };
 
@@ -383,10 +344,10 @@ export default function DatasetListCtrl(state, $timeout, $translate, $stateParam
         vm.searchFolderQuery = '';
         vm.cloneName = dataset.name;
 
-        var toggleToCurrentFolder = state.folder && state.folder.currentFolder && state.folder.currentFolder.id;
+        var toggleToCurrentFolder = state.inventory && state.inventory.currentFolder && state.inventory.currentFolder.id;
 
         if (toggleToCurrentFolder) {
-            var pathParts = state.folder.currentFolder.id.split('/');
+            var pathParts = state.inventory.currentFolder.id.split('/');
             var currentPath = pathParts[0];
         }
 
@@ -422,7 +383,8 @@ export default function DatasetListCtrl(state, $timeout, $translate, $stateParam
     vm.toggle = function toggle(folder, pathParts, currentPath) {
         if (!folder.collapsed) {
             folder.collapsed = true;
-        } else {
+        }
+        else {
             if (!folder.nodes) {
                 FolderService.children(folder.id)
                     .then(function (res) {
@@ -439,12 +401,12 @@ export default function DatasetListCtrl(state, $timeout, $translate, $stateParam
                         }
                     });
 
-            } else {
+            }
+            else {
                 vm.collapseNodes(folder);
             }
         }
     };
-
 
     /**
      * @ngdoc method
@@ -475,11 +437,11 @@ export default function DatasetListCtrl(state, $timeout, $translate, $stateParam
         });
         if (node.nodes.length > 0) {
             node.collapsed = false;
-        } else {
+        }
+        else {
             node.collapsed = !node.collapsed;
         }
     };
-
 
     /**
      * @ngdoc method
@@ -507,14 +469,9 @@ export default function DatasetListCtrl(state, $timeout, $translate, $stateParam
                         vm.chooseFolder(vm.foldersFound[0]); //Select by default first folder
                     }
                 });
-        } else {
+        }
+        else {
             vm.chooseFolder(vm.folders[0]);  //Select by default first folder
         }
-
     };
-
-    // load the datasets
-    DatasetService
-        .getDatasets()
-        .then(loadUrlSelectedDataset);
 }

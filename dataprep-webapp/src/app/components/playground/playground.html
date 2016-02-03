@@ -13,11 +13,8 @@
   ~ ============================================================================
   -->
 
-<talend-modal fullscreen="true"
-              state="playgroundCtrl.state.playground.visible"
-              close-button="true"
-              before-close="playgroundCtrl.beforeClose()"
-              on-close="playgroundCtrl.close()">
+<div class="playground-container fullscreen">
+    <label class="talend-modal-close modal-header-close" ng-click="playgroundCtrl.beforeClose()"></label>
     <div class="modal-header playground-header">
         <ul class="left-header" insertion-playground-left-header>
             <li id="dataset-header-details"
@@ -135,8 +132,8 @@
             <suggestions-stats></suggestions-stats>
         </talend-slidable>
     </div>
-</talend-modal>
-
+</div>
+</div>
 <talend-modal
         fullscreen="false"
         state="playgroundCtrl.showNameValidation"
@@ -144,11 +141,13 @@
         close-button="true">
     <div class="modal-title" translate-once="SAVE_CHANGE"></div>
     <br/>
+
     <div translate-once="SAVE_CHANGE_DESCRITION_1"></div>
     <div translate-once="SAVE_CHANGE_DESCRITION_2"></div>
     <br/><br/>
 
-    <form id="playground-save-form" name="savePreparationForm" ng-submit="savePreparationForm.$valid && playgroundCtrl.confirmSaveOnClose()">
+    <form id="playground-save-form" name="savePreparationForm"
+          ng-submit="savePreparationForm.$valid && playgroundCtrl.confirmSaveOnClose()">
 
         <div class="modal-form-row">
             <div class="param-name" translate-once="PREPARATION_NAME"></div>

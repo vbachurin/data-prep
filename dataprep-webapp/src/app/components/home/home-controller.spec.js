@@ -23,7 +23,7 @@ describe('Home controller', function () {
             dataset: {
                 uploadingDatasets:[]
             },
-            folder: {
+            inventory: {
                 currentFolder: {id : '', path: '', name: 'Home'},
                 currentFolderContent: {
                     folders: [],

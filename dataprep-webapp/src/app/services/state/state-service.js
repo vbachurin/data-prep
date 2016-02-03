@@ -20,7 +20,6 @@ export const state = {};
  */
 export function StateService(PlaygroundStateService, playgroundState, //
                              DatasetStateService, datasetState, //
-                             FolderStateService, folderState,  //
                              EasterEggsStateService, easterEggsState, //
                              InventoryStateService, inventoryState,
                              FeedbackStateService, feedbackState) {
@@ -28,7 +27,6 @@ export function StateService(PlaygroundStateService, playgroundState, //
 
     state.playground = playgroundState;
     state.dataset = datasetState;
-    state.folder = folderState;
     state.easterEggsState = easterEggsState;
     state.inventory = inventoryState;
     state.feedback = feedbackState;
@@ -41,9 +39,11 @@ export function StateService(PlaygroundStateService, playgroundState, //
         setCurrentDataset: PlaygroundStateService.setDataset,
         setCurrentData: PlaygroundStateService.setData,
         setCurrentPreparation: PlaygroundStateService.setPreparation,
-        setPreparationName: PlaygroundStateService.setPreparationName,
         setNameEditionMode: PlaygroundStateService.setNameEditionMode,
+        setPreparationName: PlaygroundStateService.setPreparationName,
+        setPreviousState: PlaygroundStateService.setPreviousState,
         updateDatasetStatistics: PlaygroundStateService.updateDatasetStatistics,
+        updateDatasetRecord: PlaygroundStateService.updateDatasetRecord,
 
         //playground - dataset parameters
         toggleDatasetParameters: PlaygroundStateService.toggleDatasetParameters,
@@ -99,12 +99,6 @@ export function StateService(PlaygroundStateService, playgroundState, //
         startUploadingDataset: DatasetStateService.startUploadingDataset,
         finishUploadingDataset: DatasetStateService.finishUploadingDataset,
 
-        //folder
-        setCurrentFolder: FolderStateService.setCurrentFolder,
-        setCurrentFolderContent: FolderStateService.setCurrentFolderContent,
-        setFoldersStack: FolderStateService.setFoldersStack,
-        setMenuChildren: FolderStateService.setMenuChildren,
-
         //easter eggs
         enableEasterEgg: EasterEggsStateService.enableEasterEgg,
         disableEasterEgg: EasterEggsStateService.disableEasterEgg,
@@ -116,6 +110,11 @@ export function StateService(PlaygroundStateService, playgroundState, //
         removeDataset: InventoryStateService.removeDataset,
         setDatasetsSort: InventoryStateService.setSort,
         setDatasetsOrder: InventoryStateService.setOrder,
+
+        setCurrentFolder: InventoryStateService.setCurrentFolder,
+        setCurrentFolderContent: InventoryStateService.setCurrentFolderContent,
+        setFoldersStack: InventoryStateService.setFoldersStack,
+        setMenuChildren: InventoryStateService.setMenuChildren,
 
         //feedback
         showFeedback: FeedbackStateService.show,

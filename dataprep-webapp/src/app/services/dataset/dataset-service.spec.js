@@ -19,31 +19,25 @@ describe('Dataset Service', function () {
         {id: '33', name: 'my second dataset (1)'},
         {id: '44', name: 'my second dataset (2)'}];
     var encodings = ['UTF-8', 'UTF-16'];
-    var preparationConsolidation, datasetConsolidation;
     var promiseWithProgress, stateMock;
-    var preparations = [{id: '4385fa764bce39593a405d91bc23'}];
 
     beforeEach(angular.mock.module('data-prep.services.dataset', function ($provide) {
         stateMock = {
-            folder: {
+            inventory: {
+                datasets: [],
                 currentFolderContent: {
                     datasets: datasets
                 }
-            }, inventory: {
-                datasets: []
             }
         };
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(inject(function ($q, DatasetListService, DatasetRestService, PreparationListService, StateService) {
-        preparationConsolidation = $q.when(preparations);
-        datasetConsolidation = $q.when(true);
+    beforeEach(inject(function ($q, DatasetListService, DatasetRestService, StateService) {
         promiseWithProgress = $q.when(true);
 
         stateMock.inventory.datasets = datasets;
 
-        spyOn(DatasetListService, 'refreshPreparations').and.returnValue(datasetConsolidation);
         spyOn(DatasetListService, 'delete').and.returnValue($q.when(true));
         spyOn(DatasetListService, 'create').and.returnValue(promiseWithProgress);
         spyOn(DatasetListService, 'importRemoteDataset').and.returnValue(promiseWithProgress);
@@ -58,7 +52,6 @@ describe('Dataset Service', function () {
         spyOn(DatasetRestService, 'toggleFavorite').and.returnValue($q.when({}));
         spyOn(DatasetRestService, 'getEncodings').and.returnValue($q.when(encodings));
 
-        spyOn(PreparationListService, 'refreshMetadataInfos').and.returnValue(preparationConsolidation);
         spyOn(StateService, 'setDatasetEncodings').and.returnValue();
     }));
 
@@ -103,19 +96,6 @@ describe('Dataset Service', function () {
                 expect(result).toBe(promiseWithProgress);
                 expect(DatasetListService.create).toHaveBeenCalledWith(dataset, folder);
             }));
-
-            it('should consolidate preparations and datasets', inject(function ($rootScope, DatasetService, DatasetListService, PreparationListService) {
-                //given
-                var dataset = stateMock.inventory.datasets[0];
-
-                //when
-                DatasetService.create(dataset);
-                $rootScope.$digest();
-
-                //then
-                expect(PreparationListService.refreshMetadataInfos).toHaveBeenCalledWith(datasets);
-                expect(DatasetListService.refreshPreparations).toHaveBeenCalledWith(preparations);
-            }));
         });
 
         describe('update', function () {
@@ -130,21 +110,6 @@ describe('Dataset Service', function () {
                 expect(result).toBe(promiseWithProgress);
                 expect(DatasetListService.update).toHaveBeenCalledWith(dataset);
             }));
-
-            it('should consolidate preparations and datasets', inject(function ($rootScope, $q, DatasetService, DatasetListService, PreparationListService) {
-                //given
-                spyOn(DatasetListService, 'getDatasetsPromise').and.returnValue($q.when(datasets));
-                var dataset = stateMock.inventory.datasets[0];
-
-                //when
-                DatasetService.update(dataset);
-                $rootScope.$digest();
-
-                //then
-                expect(PreparationListService.refreshMetadataInfos).toHaveBeenCalledWith(datasets);
-                expect(DatasetListService.refreshPreparations).toHaveBeenCalledWith(preparations);
-            }));
-
         });
 
         describe('delete', function () {
@@ -160,20 +125,7 @@ describe('Dataset Service', function () {
                 expect(DatasetListService.delete).toHaveBeenCalledWith(dataset);
             }));
 
-            it('should consolidate preparations and datasets', inject(function ($rootScope, DatasetService, DatasetListService, PreparationListService) {
-                //given
-                var dataset = stateMock.inventory.datasets[0];
-
-                //when
-                DatasetService.delete(dataset);
-                $rootScope.$digest();
-
-                //then
-                expect(PreparationListService.refreshMetadataInfos).toHaveBeenCalledWith(datasets);
-                expect(DatasetListService.refreshPreparations).toHaveBeenCalledWith(preparations);
-            }));
-
-            it('should consolidate preparations and datasets', inject(function ($rootScope, DatasetService, DatasetListService, PreparationListService, StorageService) {
+            it('should remove aggregations from local storage on the removed dataset', inject(function ($rootScope, DatasetService, StorageService) {
                 //given
                 var dataset = stateMock.inventory.datasets[0];
                 spyOn(StorageService, 'removeAllAggregations').and.returnValue();
@@ -201,20 +153,6 @@ describe('Dataset Service', function () {
                 //then
                 expect(DatasetListService.clone).toHaveBeenCalledWith(dataset, newFolder, name, mockPromise);
             }));
-
-            it('should consolidate preparations and datasets', inject(function ($rootScope, DatasetService, DatasetListService, PreparationListService) {
-                //given
-                var dataset = stateMock.inventory.datasets[0];
-                var name = 'my clone';
-
-                //when
-                DatasetService.clone(dataset, name);
-                $rootScope.$digest();
-
-                //then
-                expect(PreparationListService.refreshMetadataInfos).toHaveBeenCalledWith(datasets);
-                expect(DatasetListService.refreshPreparations).toHaveBeenCalledWith(preparations);
-            }));
         });
 
         describe('move', function () {
@@ -232,77 +170,11 @@ describe('Dataset Service', function () {
                 //then
                 expect(DatasetListService.move).toHaveBeenCalledWith(dataset, folder, newFolder, name, mockPromise);
             }));
-
-            it('should consolidate preparations and datasets', inject(function ($rootScope, DatasetService, DatasetListService, PreparationListService) {
-                //given
-                var dataset = stateMock.inventory.datasets[0];
-                var name = 'my clone';
-
-                //when
-                DatasetService.move(dataset, name);
-                $rootScope.$digest();
-
-                //then
-                expect(PreparationListService.refreshMetadataInfos).toHaveBeenCalledWith(datasets);
-                expect(DatasetListService.refreshPreparations).toHaveBeenCalledWith(preparations);
-            }));
         });
 
     });
 
     describe('metadata actions', function () {
-        describe('certification', function () {
-            it('should process certification on dataset', inject(function ($rootScope, DatasetService, DatasetListService) {
-                //given
-                var dataset = stateMock.inventory.datasets[0];
-
-                //when
-                DatasetService.processCertification(dataset);
-                $rootScope.$digest();
-
-                //then
-                expect(DatasetListService.processCertification).toHaveBeenCalledWith(dataset);
-            }));
-
-            it('should consolidate preparations and datasets', inject(function ($rootScope, DatasetService, DatasetListService, PreparationListService) {
-                //given
-                var dataset = stateMock.inventory.datasets[0];
-
-                //when
-                DatasetService.processCertification(dataset);
-                $rootScope.$digest();
-
-                //then
-                expect(PreparationListService.refreshMetadataInfos).toHaveBeenCalledWith(datasets);
-                expect(DatasetListService.refreshPreparations).toHaveBeenCalledWith(preparations);
-            }));
-        });
-
-        describe('favorite', function () {
-            it('should toggle favorite in a dataset', inject(function ($rootScope, DatasetService, DatasetListService, DatasetRestService) {
-                //given
-                var dataset = stateMock.inventory.datasets[0];
-                dataset.favorite = false;
-                //when
-                DatasetService.toggleFavorite(dataset);
-                $rootScope.$digest();
-
-                //then
-                expect(DatasetRestService.toggleFavorite).toHaveBeenCalledWith(dataset);
-                expect(dataset.favorite).toBeTruthy();
-
-                //check the unset too
-                //when
-                DatasetService.toggleFavorite(dataset);
-                $rootScope.$digest();
-
-                //then
-                expect(DatasetRestService.toggleFavorite).toHaveBeenCalledWith(dataset);
-                expect(dataset.favorite).toBeFalsy();
-
-            }));
-        });
-
         describe('sheet management', function () {
             it('should get sheet preview from rest service', inject(function (DatasetService, DatasetRestService) {
                 //given
@@ -489,39 +361,6 @@ describe('Dataset Service', function () {
             //then
             expect(results).toBe(datasets);
             expect(DatasetListService.refreshDatasets).toHaveBeenCalled();
-        }));
-
-        it('should consolidate preparations and datasets on new dataset fetch', inject(function ($rootScope, DatasetService, DatasetListService, PreparationListService) {
-            //given
-            stateMock.inventory.datasets = null;
-
-            //when
-            DatasetService.getDatasets();
-            stateMock.inventory.datasets = datasets; // simulate dataset list initialisation
-            $rootScope.$digest();
-
-            //then
-            expect(PreparationListService.refreshMetadataInfos).toHaveBeenCalledWith(datasets);
-            expect(DatasetListService.refreshPreparations).toHaveBeenCalledWith(preparations);
-        }));
-
-        it('should refresh dataset list', inject(function (DatasetService, DatasetListService) {
-            //when
-            DatasetService.refreshDatasets();
-
-            //then
-            expect(DatasetListService.refreshDatasets).toHaveBeenCalled();
-        }));
-
-        it('should consolidate preparations and datasets on datasets refresh', inject(function ($rootScope, DatasetService, DatasetListService, PreparationListService) {
-            //when
-            DatasetService.refreshDatasets();
-            stateMock.inventory.datasets = datasets; // simulate dataset list initialisation
-            $rootScope.$digest();
-
-            //then
-            expect(PreparationListService.refreshMetadataInfos).toHaveBeenCalledWith(datasets);
-            expect(DatasetListService.refreshPreparations).toHaveBeenCalledWith(preparations);
         }));
 
         it('should find dataset by name', inject(function (DatasetService) {

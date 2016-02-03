@@ -1,15 +1,15 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
 
 /**
  * @ngdoc service
@@ -18,16 +18,14 @@
  * @requires data-prep.services.utils.service:StorageService
  * @requires data-prep.services.preparation.service:PreparationListService
  * @requires data-prep.services.preparation.service:PreparationRestService
- * @requires data-prep.services.dataset.service:DatasetListService
- * @requires data-prep.services.folder.service:FolderService
  */
-export default function PreparationService($q, state, StorageService, PreparationListService, PreparationRestService, DatasetListService, FolderService) {
+export default function PreparationService($q, state, StorageService, PreparationListService, PreparationRestService) {
     'ngInject';
 
     return {
         //get, refresh preparations
-        refreshPreparations: refreshPreparations,
         getPreparations: getPreparations,
+        refreshPreparations: PreparationListService.refreshPreparations,
 
         //details, content
         getContent: PreparationRestService.getContent,
@@ -35,7 +33,7 @@ export default function PreparationService($q, state, StorageService, Preparatio
 
         //preparation lifecycle
         create: create,
-        clone: clone,
+        clone: PreparationListService.clone,
         delete: deletePreparation,
         setName: setName,
 
@@ -56,32 +54,6 @@ export default function PreparationService($q, state, StorageService, Preparatio
     //---------------------------------------------------------------------------------
     //------------------------------------GET/REFRESH----------------------------------
     //---------------------------------------------------------------------------------
-
-    /**
-     * @ngdoc method
-     * @name refreshPreparationsMetadata
-     * @methodOf data-prep.services.preparation.service:PreparationService
-     * @description [PRIVATE] Refresh the default preparation within each dataset
-     */
-    function consolidatePreparationsAndDatasets(response) {
-        DatasetListService.refreshPreparations(state.inventory.preparations)
-            .then(PreparationListService.refreshMetadataInfos)
-            .then(FolderService.refreshPreparations);
-        return response;
-    }
-
-    /**
-     * @ngdoc method
-     * @name refreshPreparations
-     * @methodOf data-prep.services.preparation.service:PreparationService
-     * @description Refresh the preparations list
-     * @returns {promise} The process promise
-     */
-    function refreshPreparations() {
-        return PreparationListService.refreshPreparations()
-            .then(consolidatePreparationsAndDatasets);
-    }
-
     /**
      * @ngdoc method
      * @name getPreparations
@@ -90,9 +62,14 @@ export default function PreparationService($q, state, StorageService, Preparatio
      * @returns {promise} The process promise
      */
     function getPreparations() {
-        return state.inventory.preparations !== null ?
-            $q.when(state.inventory.preparations) :
-            refreshPreparations();
+        if (PreparationListService.hasPreparationsPromise()) {
+            return PreparationListService.getPreparationsPromise();
+        }
+        else {
+            return state.inventory.preparations !== null ?
+                $q.when(state.inventory.preparations) :
+                PreparationListService.refreshPreparations();
+        }
     }
 
     //---------------------------------------------------------------------------------
@@ -109,25 +86,11 @@ export default function PreparationService($q, state, StorageService, Preparatio
      */
     function create(datasetId, name) {
         return PreparationListService.create(datasetId, name)
-            .then(consolidatePreparationsAndDatasets)
             .then(function (preparation) {
                 //get all dataset aggregations per columns from localStorage and save them for the new preparation
                 StorageService.savePreparationAggregationsFromDataset(datasetId, preparation.id);
                 return preparation;
             });
-    }
-
-    /**
-     * @ngdoc method
-     * @name clone
-     * @methodOf data-prep.services.preparation.service:PreparationService
-     * @param {string} preparationId The preparation id
-     * @description Create a new preparation, and keep the current preparation id
-     * @returns {promise} The POST promise
-     */
-    function clone(preparationId) {
-        return PreparationListService.clone(preparationId)
-            .then(consolidatePreparationsAndDatasets);
     }
 
     /**
@@ -140,7 +103,6 @@ export default function PreparationService($q, state, StorageService, Preparatio
      */
     function deletePreparation(preparation) {
         return PreparationListService.delete(preparation)
-            .then(consolidatePreparationsAndDatasets)
             .then(function (response) {
                 //get remove all preparation aggregations per columns in localStorage
                 StorageService.removeAllAggregations(preparation.dataSetId, preparation.id);
@@ -163,7 +125,6 @@ export default function PreparationService($q, state, StorageService, Preparatio
      */
     function setName(preparationId, name) {
         return PreparationListService.update(preparationId, name)
-            .then(consolidatePreparationsAndDatasets)
             .then(function (preparation) {
                 StorageService.moveAggregations(preparation.dataSetId, preparationId, preparation.id);
                 return preparation;

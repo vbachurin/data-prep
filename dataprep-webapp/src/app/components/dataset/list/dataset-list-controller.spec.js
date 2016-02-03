@@ -46,18 +46,16 @@ describe('Dataset list controller', function () {
 
     beforeEach(angular.mock.module('data-prep.dataset-list', function ($provide) {
         stateMock = {
-            folder: {
-                currentFolder: theCurrentFolder,
-                currentFolderContent: {
-                    datasets: [datasets[0]]
-                }
-            },
             inventory: {
                 datasets: [],
                 sortList: sortList,
                 orderList: orderList,
                 sort: sortList[0],
-                order: orderList[0]
+                order: orderList[0],
+                currentFolder: theCurrentFolder,
+                currentFolderContent: {
+                    datasets: [datasets[0]]
+                }
             }
         };
         $provide.constant('state', stateMock);
@@ -86,50 +84,12 @@ describe('Dataset list controller', function () {
         spyOn(StateService, 'showPlayground').and.returnValue();
         spyOn(MessageService, 'error').and.returnValue();
         spyOn($state, 'go').and.returnValue();
+        spyOn(StateService, 'setPreviousState').and.returnValue();
     }));
 
     afterEach(inject(function ($stateParams) {
         $stateParams.datasetid = null;
     }));
-
-    it('should get dataset on creation', inject(function (DatasetService) {
-        //when
-        createController();
-        scope.$digest();
-
-        //then
-        expect(DatasetService.getDatasets).toHaveBeenCalled();
-    }));
-
-    describe('dataset in query params load', function () {
-        it('should init playground with the provided datasetId from url', inject(function ($stateParams, $timeout, PlaygroundService, StateService) {
-            //given
-            $stateParams.datasetid = 'ab45f893d8e923';
-
-            //when
-            createController();
-            scope.$digest();
-            $timeout.flush();
-
-            //then
-            expect(PlaygroundService.initPlayground).toHaveBeenCalledWith(datasets[1]);
-            expect(StateService.showPlayground).toHaveBeenCalled();
-        }));
-
-        it('should show error message when dataset id is not in users dataset', inject(function ($stateParams, $timeout, PlaygroundService, MessageService) {
-            //given
-            $stateParams.datasetid = 'azerty';
-
-            //when
-            createController();
-            scope.$digest();
-            $timeout.flush();
-
-            //then
-            expect(PlaygroundService.initPlayground).not.toHaveBeenCalled();
-            expect(MessageService.error).toHaveBeenCalledWith('PLAYGROUND_FILE_NOT_FOUND_TITLE', 'PLAYGROUND_FILE_NOT_FOUND', {type: 'dataset'});
-        }));
-    });
 
     describe('sort parameters', function () {
 
@@ -261,7 +221,6 @@ describe('Dataset list controller', function () {
 
     describe('remove dataset', function () {
         beforeEach(inject(function ($q, MessageService, DatasetService, TalendConfirmService, FolderService) {
-            spyOn(DatasetService, 'refreshDatasets').and.returnValue($q.when(true));
             spyOn(FolderService, 'getContent').and.returnValue($q.when(true));
             spyOn(DatasetService, 'delete').and.returnValue($q.when(true));
             spyOn(MessageService, 'success').and.returnValue();
@@ -353,7 +312,7 @@ describe('Dataset list controller', function () {
 
         it('should add folder with root folder path', inject(function ($q, FolderService) {
             //given
-            stateMock.folder.currentFolder = {id: '', path: '', name: 'Home'};
+            stateMock.inventory.currentFolder = {id: '', path: '', name: 'Home'};
 
             var ctrl = createController();
             ctrl.folderName = '1';
@@ -421,11 +380,10 @@ describe('Dataset list controller', function () {
             expect(DatasetService.update).toHaveBeenCalledWith(dataset);
         }));
 
-        it('should show confirmation message', inject(function ($q, DatasetService, MessageService, PreparationListService) {
+        it('should show confirmation message', inject(function ($q, DatasetService, MessageService) {
             //given
             spyOn(DatasetService, 'update').and.returnValue($q.when(true));
             spyOn(MessageService, 'success').and.returnValue();
-            spyOn(PreparationListService, 'refreshMetadataInfos').and.returnValue($q.when({id: 'preparation'}));
 
             var ctrl = createController();
             var dataset = {name: 'my old name'};
@@ -536,10 +494,9 @@ describe('Dataset list controller', function () {
 
     describe('clone', function () {
 
-        beforeEach(inject(function ($q, MessageService, FolderService, DatasetService, PreparationListService) {
+        beforeEach(inject(function ($q, MessageService, FolderService) {
             spyOn(MessageService, 'success').and.returnValue();
             spyOn(FolderService, 'getContent').and.returnValue($q.when(true));
-            spyOn(PreparationListService, 'refreshMetadataInfos').and.returnValue($q.when(true));
         }));
 
         describe('when success', function () {
@@ -622,10 +579,9 @@ describe('Dataset list controller', function () {
 
     describe('move', function () {
 
-        beforeEach(inject(function ($q, MessageService, FolderService, DatasetService, PreparationListService) {
+        beforeEach(inject(function ($q, MessageService, FolderService) {
             spyOn(MessageService, 'success').and.returnValue();
             spyOn(FolderService, 'getContent').and.returnValue($q.when(true));
-            spyOn(PreparationListService, 'refreshMetadataInfos').and.returnValue($q.when(true));
         }));
 
         describe('when success', function () {
@@ -730,7 +686,7 @@ describe('Dataset list controller', function () {
         it('should call children service and open modal', inject(function (FolderService) {
             // given
             var ctrl = createController();
-            stateMock.folder.currentFolder = {id: 'folder-1', path: 'folder-1', name: 'folder-1'};
+            stateMock.inventory.currentFolder = {id: 'folder-1', path: 'folder-1', name: 'folder-1'};
             scope.$digest();
             spyOn(ctrl, 'chooseFolder').and.returnValue();
             spyOn(ctrl, 'toggle').and.returnValue();
@@ -945,7 +901,7 @@ describe('Dataset list controller', function () {
 
     describe('related preparations', function () {
 
-        it('should load preparation and show playground', inject(function ($timeout, PlaygroundService, StateService) {
+        it('should load preparation and show playground', inject(function ($state, $timeout, StateService) {
             //given
             var ctrl = createController();
             var preparation = {
@@ -960,8 +916,8 @@ describe('Dataset list controller', function () {
             $timeout.flush();
 
             //then
-            expect(PlaygroundService.load).toHaveBeenCalledWith(preparation);
-            expect(StateService.showPlayground).toHaveBeenCalled();
+            expect(StateService.setPreviousState).toHaveBeenCalledWith('nav.home.datasets');
+            expect($state.go).toHaveBeenCalledWith('playground', {prepid: preparation.id});
         }));
     });
 });

@@ -177,10 +177,10 @@ export default function HomeCtrl($window, $document, $state,
         var dataset = DatasetService.createDatasetInfo(null, importParameters.name);
         StateService.startUploadingDataset(dataset);
 
-        DatasetService.import(importParameters, state.folder.currentFolder)
+        DatasetService.import(importParameters, state.inventory.currentFolder)
             .then(function (event) {
                 DatasetService.getDatasetById(event.data).then(UploadWorkflowService.openDataset);
-                FolderService.getContent(state.folder.currentFolder);
+                FolderService.getContent(state.inventory.currentFolder);
             })
             .catch(function () {
                 dataset.error = true;
@@ -206,10 +206,10 @@ export default function HomeCtrl($window, $document, $state,
         var dataset = DatasetService.createDatasetInfo(null, importParameters.name);
         StateService.startUploadingDataset(dataset);
 
-        DatasetService.import(importParameters, state.folder.currentFolder)
+        DatasetService.import(importParameters, state.inventory.currentFolder)
             .then(function (event) {
                 DatasetService.getDatasetById(event.data).then(UploadWorkflowService.openDataset);
-                FolderService.getContent(state.folder.currentFolder);
+                FolderService.getContent(state.inventory.currentFolder);
             })
             .catch(function () {
                 dataset.error = true;
@@ -310,13 +310,13 @@ export default function HomeCtrl($window, $document, $state,
         var dataset = DatasetService.createDatasetInfo(file, name);
         StateService.startUploadingDataset(dataset);
 
-        DatasetService.create(dataset, state.folder.currentFolder)
+        DatasetService.create(dataset, state.inventory.currentFolder)
             .progress(function (event) {
                 dataset.progress = parseInt(100.0 * event.loaded / event.total);
             })
             .then(function (event) {
                 DatasetService.getDatasetById(event.data).then(UploadWorkflowService.openDataset);
-                FolderService.getContent(state.folder.currentFolder);
+                FolderService.getContent(state.inventory.currentFolder);
             })
             .catch(function () {
                 dataset.error = true;

@@ -1,43 +1,47 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
 
 /**
  * @ngdoc service
  * @name data-prep.services.playground.service:PlaygroundService
  * @description Playground service. This service provides the entry point to load properly the playground
+ * @requires data-prep.services.state.constant:state
+ * @requires data-prep.services.state.service:StateService
  * @requires data-prep.services.dataset.service:DatasetService
  * @requires data-prep.services.playground.service:DatagridService
  * @requires data-prep.services.playground.service:PreviewService
+ * @requires data-prep.services.preparation.service:PreparationService
+ * @requires data-prep.services.preparation.service:PreparationListService
  * @requires data-prep.services.recipe.service:RecipeService
  * @requires data-prep.services.transformation.service:TransformationCacheService
- * @requires data-prep.services.preparation.service:PreparationService
  * @requires data-prep.services.statistics.service:StatisticsService
  * @requires data-prep.services.history.service:HistoryService
- * @requires data-prep.services.state.service:StateService
  * @requires data-prep.services.onboarding.service:OnboardingService
  * @requires data-prep.services.utils.service:MessageService
  * @requires data-prep.services.export.service:ExportService
  */
-export default function PlaygroundService($rootScope, $q, $translate, $timeout,
-                                          state, DatasetService, DatagridService, PreviewService,
-                                          RecipeService, TransformationCacheService, PreparationService,
-                                          StatisticsService, HistoryService, StateService,
+export default function PlaygroundService($state, $rootScope, $q, $translate, $timeout,
+                                          state, StateService,
+                                          DatasetService, DatagridService, PreviewService,
+                                          PreparationService, PreparationListService,
+                                          RecipeService, TransformationCacheService,
+                                          StatisticsService, HistoryService,
                                           OnboardingService, MessageService, ExportService) {
     'ngInject';
 
     var INVENTORY_SUFFIX = ' ' + $translate.instant('PREPARATION');
 
-    function wrapInventoryName (invName){
+    function wrapInventoryName(invName) {
         return invName + INVENTORY_SUFFIX;
     }
 
@@ -170,6 +174,29 @@ export default function PlaygroundService($rootScope, $q, $translate, $timeout,
             });
     }
 
+    function getMetadata() {
+        if (state.playground.preparation) {
+            return PreparationService.getContent(state.playground.preparation.id, 'head')
+                .then(function (response) {
+                    if (!response.metadata.columns[0].statistics.frequencyTable.length) {
+                        return $q.reject();
+                    }
+                    StateService.updateDatasetRecord(response.records.length);
+                    return response.metadata;
+                });
+        }
+        else {
+            return DatasetService.getMetadata(state.playground.dataset.id)
+                .then(function (response) {
+                    if (!response.columns[0].statistics.frequencyTable.length) {
+                        return $q.reject();
+                    }
+                    StateService.updateDatasetRecord(response.records);
+                    return response;
+                });
+        }
+    }
+
     /**
      * @ngdoc method
      * @name updateStatistics
@@ -178,13 +205,7 @@ export default function PlaygroundService($rootScope, $q, $translate, $timeout,
      * @returns {Promise} The process promise
      */
     function updateStatistics() {
-        return DatasetService.getMetadata(state.playground.dataset.id)
-            .then(function (response) {
-                if (!response.columns[0].statistics.frequencyTable.length) {
-                    return $q.reject();
-                }
-                return response;
-            })
+        return getMetadata()
             .then(StateService.updateDatasetStatistics)
             .then(StatisticsService.updateStatistics);
     }
@@ -273,7 +294,7 @@ export default function PlaygroundService($rootScope, $q, $translate, $timeout,
                 });
 
         return prepCreation
-            //append step
+        //append step
             .then(function (preparation) {
                 return PreparationService.appendStep(preparation.id, {action: action, parameters: parameters});
             })
@@ -294,6 +315,7 @@ export default function PlaygroundService($rootScope, $q, $translate, $timeout,
             //hide loading screen
             .finally(function () {
                 $rootScope.$emit('talend.loading.stop');
+                $state.go('playground', {prepid: state.playground.preparation.id});
             });
     }
 
@@ -311,7 +333,7 @@ export default function PlaygroundService($rootScope, $q, $translate, $timeout,
         PreviewService.cancelPreview();
         PreparationService.copyImplicitParameters(newParams, step.actionParameters.parameters);
 
-        if(! PreparationService.paramsHasChanged(step, newParams)) {
+        if (!PreparationService.paramsHasChanged(step, newParams)) {
             return;
         }
 
@@ -420,7 +442,7 @@ export default function PlaygroundService($rootScope, $q, $translate, $timeout,
         PreparationService.copyImplicitParameters(params, originalParameters);
 
         //Parameters has not changed
-        if(updateStep.inactive || ! PreparationService.paramsHasChanged(updateStep, params)) {
+        if (updateStep.inactive || !PreparationService.paramsHasChanged(updateStep, params)) {
             return $q.when();
         }
 
@@ -446,8 +468,8 @@ export default function PlaygroundService($rootScope, $q, $translate, $timeout,
             RecipeService.getActiveThresholdStepIndex() :
             null;
         return DatasetService.updateParameters(dataset, params)
-            .then(function() {
-                if(isPreparation) {
+            .then(function () {
+                if (isPreparation) {
                     var activeStep = RecipeService.getStep(lastActiveStepIndex, true);
                     return loadStep(activeStep);
                 }

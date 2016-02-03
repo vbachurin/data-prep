@@ -18,12 +18,12 @@ describe('Dataset xls preview controller', function () {
     var content = {column: [], records: []};
 
     beforeEach(angular.mock.module('data-prep.dataset-xls-preview', function ($provide) {
-        stateMock = {folder: {currentFolder: {path :'HOME'}}};
+        stateMock = {inventory: {currentFolder: {path :'HOME'}}};
         $provide.constant('state', stateMock);
     }));
 
 
-    beforeEach(inject(function ($rootScope, $controller, $q, DatasetSheetPreviewService, DatasetService, DatasetRestService, PlaygroundService, StateService, FolderService) {
+    beforeEach(inject(function ($rootScope, $controller, $q, DatasetSheetPreviewService, DatasetService, DatasetRestService, PlaygroundService, StateService, FolderService, DatasetListService) {
         scope = $rootScope.$new();
 
         createController = function () {
@@ -38,11 +38,11 @@ describe('Dataset xls preview controller', function () {
 
         spyOn(DatasetSheetPreviewService, 'loadSheet').and.returnValue();
         spyOn(DatasetSheetPreviewService, 'setDatasetSheet').and.returnValue($q.when(true));
-        spyOn(DatasetService, 'refreshDatasets').and.returnValue($q.when(true));
         spyOn(DatasetService, 'getContent').and.returnValue($q.when(content));
         spyOn(PlaygroundService, 'initPlayground').and.returnValue($q.when());
         spyOn(StateService, 'showPlayground').and.returnValue();
         spyOn(FolderService, 'getContent').and.returnValue();
+        spyOn(DatasetListService, 'refreshDatasets').and.returnValue();
     }));
 
     afterEach(function() {
@@ -157,7 +157,6 @@ describe('Dataset xls preview controller', function () {
         scope.$digest();
 
         //then
-        expect(DatasetService.refreshDatasets).toHaveBeenCalled();
         expect(FolderService.getContent).toHaveBeenCalledWith({path :'HOME'});
     }));
 

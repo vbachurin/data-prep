@@ -1,18 +1,19 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
 
 export const playgroundState = {
-    preparationName: ''
+    preparationName: '',
+    previousState: 'nav.home.datasets'
 };
 
 export function PlaygroundStateService(RecipeStateService, recipeState,
@@ -36,12 +37,14 @@ export function PlaygroundStateService(RecipeStateService, recipeState,
         //playground
         show: show,
         hide: hide,
+        reset: reset,
         setDataset: setDataset,
         setPreparation: setPreparation,
         setPreparationName: setPreparationName,
         setNameEditionMode: setNameEditionMode,
-        reset: reset,
         setData: setData,
+        setPreviousState: setPreviousState,
+        updateDatasetRecord: updateDatasetRecord,
         updateDatasetStatistics: updateDatasetStatistics,
 
         //parameters
@@ -129,18 +132,25 @@ export function PlaygroundStateService(RecipeStateService, recipeState,
     }
 
     function updateDatasetStatistics(metadata) {
-        _.forEach(playgroundState.data.metadata.columns, function(col) {
+        _.forEach(playgroundState.data.metadata.columns, function (col) {
             var correspondingColumn = _.find(metadata.columns, {id: col.id});
             col.statistics = correspondingColumn.statistics;
         });
-        playgroundState.dataset.records = metadata.records;
+    }
+
+    function updateDatasetRecord(records) {
+        playgroundState.dataset.records = records;
+    }
+
+    function setPreviousState(previousState) {
+        playgroundState.previousState = previousState;
     }
 
     //--------------------------------------------------------------------------------------------------------------
     //-------------------------------------------------PARAMETERS---------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------
     function toggleDatasetParameters() {
-        if(parametersState.visible) {
+        if (parametersState.visible) {
             ParametersStateService.hide();
         }
         else {
@@ -184,6 +194,7 @@ export function PlaygroundStateService(RecipeStateService, recipeState,
         playgroundState.lookupData = null;
         playgroundState.exportParameters = null;
 
+        RecipeStateService.hide();
         FilterStateService.reset();
         GridStateService.reset();
         LookupStateService.reset();

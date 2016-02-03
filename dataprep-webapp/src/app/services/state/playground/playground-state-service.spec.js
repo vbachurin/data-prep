@@ -162,6 +162,17 @@ describe('Playground state service', function () {
             expect(playgroundState.visible).toBe(false);
         }));
 
+        it('should set the previous state of playground', inject(function (playgroundState, PlaygroundStateService) {
+            //given
+            playgroundState.previousState  = '';
+
+            //when
+            PlaygroundStateService.setPreviousState('home');
+
+            //then
+            expect(playgroundState.previousState).toBe('home');
+        }));
+
         it('should update columns statistics', inject(function (playgroundState, PlaygroundStateService) {
             //given
             playgroundState.data = {
@@ -192,33 +203,20 @@ describe('Playground state service', function () {
             expect(playgroundState.data.metadata.columns[2].statistics).toBe(newMetadata.columns[2].statistics);
         }));
 
-        it('should update dataset metadata line number statistics', inject(function (playgroundState, PlaygroundStateService) {
-            //given
-            playgroundState.dataset = {records: 0};
-            playgroundState.data = {
-                metadata: {
-                    columns: [
-                        {id: '0000', statistics: {}},
-                        {id: '0001', statistics: {}},
-                        {id: '0002', statistics: {}}
-                    ]
-                }
-            };
 
-            var newMetadata = {
-                columns: [
-                    {id: '0000', statistics: {frequencyTable: [{data: '5.0', occurrences: 98}]}},
-                    {id: '0001', statistics: {frequencyTable: [{data: 'Toto', occurrences: 5}]}},
-                    {id: '0002', statistics: {frequencyTable: [{data: '', occurrences: 66}]}}
-                ],
-                records: 256
+        it('should update Dataset Records', inject(function (playgroundState, PlaygroundStateService) {
+            //given
+             playgroundState.dataset = {
+                id: '958cb63f235e4565',
+                records: 10
             };
+            expect(playgroundState.dataset.records).toBe(10);
 
             //when
-            PlaygroundStateService.updateDatasetStatistics(newMetadata);
+            PlaygroundStateService.updateDatasetRecord(15);
 
             //then
-            expect(playgroundState.dataset.records).toBe(256);
+            expect(playgroundState.dataset.records).toBe(15);
         }));
     });
 

@@ -60,15 +60,13 @@ describe('DatasetList directive', function () {
 
     beforeEach(angular.mock.module('data-prep.dataset-list', function ($provide) {
         stateMock = {
-            folder: {
-                currentFolderContent: {
-                    datasets: datasets
-                }
-            },
             inventory: {
                 datasets: [],
                 sortList: sortList,
-                orderList: orderList
+                orderList: orderList,
+                currentFolderContent: {
+                    datasets: datasets
+                }
             }
         };
         $provide.constant('state', stateMock);

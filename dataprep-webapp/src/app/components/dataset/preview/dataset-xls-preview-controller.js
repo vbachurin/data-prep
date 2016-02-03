@@ -16,12 +16,12 @@
  * @name data-prep.dataset-xls-preview.controller:DatasetPreviewXlsCtrl
  * @description Dataset preview grid controller.
  * @requires data-prep.services.dataset.service:DatasetSheetPreviewService
- * @requires data-prep.services.dataset.service:DatasetService
+ * @requires data-prep.services.dataset.service:DatasetListService
  * @requires data-prep.services.playground.service:PlaygroundService
  * @requires data-prep.services.state.service:StateService
  * @requires data-prep.services.folder.service:FolderService
  */
-export default function DatasetXlsPreviewCtrl(state, $timeout, DatasetSheetPreviewService, DatasetService, PlaygroundService, StateService, FolderService) {
+export default function DatasetXlsPreviewCtrl(state, $timeout, DatasetSheetPreviewService, DatasetListService, PlaygroundService, StateService, FolderService) {
     'ngInject';
 
     var vm = this;
@@ -65,8 +65,8 @@ export default function DatasetXlsPreviewCtrl(state, $timeout, DatasetSheetPrevi
     vm.setDatasetSheet = function () {
         DatasetSheetPreviewService.setDatasetSheet(vm.selectedSheetName)
             .then(function () {
-                DatasetService.refreshDatasets();
-                FolderService.getContent(state.folder.currentFolder);
+                DatasetListService.refreshDatasets();
+                FolderService.getContent(state.inventory.currentFolder);
             })
             .then(function () {
                 vm.state = false;

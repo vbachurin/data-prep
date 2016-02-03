@@ -42,7 +42,7 @@
     </div>
 
     <div class="inventory-list" id="datasets-list">
-        <div class="inventory-entry" ng-repeat="folder in datasetListCtrl.state.folder.currentFolderContent.folders track by folder.id">
+        <div class="inventory-entry" ng-repeat="folder in datasetListCtrl.state.inventory.currentFolderContent.folders track by folder.id">
             <div class="inventory-icon inventory-folder" ng-click="datasetListCtrl.goToFolder(folder)">
                 <img src="assets/images/folder/folder-icon.png"/>
             </div>
@@ -62,7 +62,7 @@
             </div>
         </div>
 
-        <div ng-repeat="dataset in datasetListCtrl.state.folder.currentFolderContent.datasets track by dataset.id" id="dataset_{{$index}}">
+        <div ng-repeat="dataset in datasetListCtrl.state.inventory.currentFolderContent.datasets track by dataset.id" id="dataset_{{$index}}">
             <inventory-item
                 copy="datasetListCtrl.openFolderChoice"
                 details="INVENTORY_DETAILS"
@@ -92,7 +92,7 @@
             <input type="text"
                    ng-model="datasetListCtrl.folderName"
                    ng-model-options="{debounce: { default: 300, blur: 0 }}"
-                   unique-folder="datasetListCtrl.state.folder.currentFolderContent.folders"/>
+                   unique-folder="datasetListCtrl.state.inventory.currentFolderContent.folders"/>
 
             <div class="modal-buttons">
                 <button type="button" class="talend-modal-close btn-secondary modal-secondary-button" translate-once="CANCEL">

@@ -14,19 +14,103 @@
 describe('Inventory state service', function(){
     'use strict';
 
-    var preparations = [{id: 'toto'}, {id: 'titi'}];
+        var datasets = [
+            {
+                'id': 'de3cc32a-b624-484e-b8e7-dab9061a009c',
+                'name': 'customers_jso_light',
+                'author': 'anonymousUser',
+                'records': 15,
+                'nbLinesHeader': 1,
+                'nbLinesFooter': 0,
+                'created': '03-30-2015 08:06'
+            },
+            {
+                'id': '3b21388c-f54a-4334-9bef-748912d0806f',
+                'name': 'customers_jso',
+                'author': 'anonymousUser',
+                'records': 1000,
+                'nbLinesHeader': 1,
+                'nbLinesFooter': 0,
+                'created': '03-30-2015 07:35'
+            }
+        ];
+
+        var preparations = [
+            {
+                'id': 'ab136cbf0923a7f11bea713adb74ecf919e05cfa',
+                'dataSetId': 'de3cc32a-b624-484e-b8e7-dab9061a009c',
+                'author': 'anonymousUser',
+                'creationDate': 1427447300300
+            },
+            {
+                'id': 'fbaa18e82e913e97e5f0e9d40f04413412be1126',
+                'dataSetId': '3b21388c-f54a-4334-9bef-748912d0806f',
+                'author': 'anonymousUser',
+                'creationDate': 1427447330693
+            }
+        ];
+
+    var currentFolder = {
+        'id': 'lookups',
+        'path': 'lookups',
+        'name': 'lookups',
+        'creationDate': 1448880133000,
+        'modificationDate': 1448880133000
+    };
+
+    var currentFolderContent = {
+        'folders': [
+            {
+                'id': 'lookups/simple_lookup'
+            }
+        ],
+        'datasets': [
+            {
+                'id': '601f9785-c5b1-403f-bba9-952d8f674a37',
+                'favorite': false,
+                'lifecycle': {
+                    'inProgress': false
+                },
+                'records': 50
+            }
+        ]
+    };
+
+    var foldersStack = [
+        {'id':'','path':'','name':'Home'},
+        {'id':'lookups','path':'lookups','name':'lookups'}
+    ];
+
+    var menuChildren = [
+        {
+            'id':'lookups/simple_lookup',
+            'path':'lookups/simple_lookup',
+            'name':'simple_lookup',
+            'creationDate':1448880158000,
+            'modificationDate':1448880158000
+        }
+    ];
 
     beforeEach(angular.mock.module('data-prep.services.state'));
 
     it('should update preparations list', inject(function (inventoryState, InventoryStateService) {
         //given
         inventoryState.preparations = null;
+        inventoryState.datasets  = datasets;
+        inventoryState.currentFolderContent.datasets  = datasets;
 
         //when
         InventoryStateService.setPreparations(preparations);
 
         //then
-        expect(inventoryState.preparations.length).toBe(2);
+        expect(inventoryState.datasets[0].preparations[0]).toBe(preparations[0]);
+        expect(inventoryState.datasets[1].preparations[0]).toBe(preparations[1]);
+
+        expect(inventoryState.currentFolderContent.datasets[0].preparations[0]).toBe(preparations[0]);
+        expect(inventoryState.currentFolderContent.datasets[1].preparations[0]).toBe(preparations[1]);
+
+        expect(inventoryState.preparations[0].dataset).toBe(datasets[0]);
+        expect(inventoryState.preparations[1].dataset).toBe(datasets[1]);
     }));
 
     it('should remove a preparation from preparations list', inject(function (inventoryState, InventoryStateService) {
@@ -39,6 +123,102 @@ describe('Inventory state service', function(){
 
         //then
         expect(inventoryState.preparations.length).toBe(1);
-        expect(inventoryState.preparations[0].id).toBe('titi');
+        expect(inventoryState.preparations[0].id).toBe('fbaa18e82e913e97e5f0e9d40f04413412be1126');
+    }));
+
+    it('should set datasets in the playground', inject(function (inventoryState, InventoryStateService) {
+        //given
+        inventoryState.preparations = preparations;
+        inventoryState.datasets  = null;
+
+        //when
+        InventoryStateService.setDatasets(datasets);
+
+        //then
+        expect(inventoryState.datasets[0].preparations[0]).toBe(preparations[0]);
+        expect(inventoryState.datasets[1].preparations[0]).toBe(preparations[1]);
+
+        expect(inventoryState.preparations[0].dataset).toBe(datasets[0]);
+        expect(inventoryState.preparations[1].dataset).toBe(datasets[1]);
+    }));
+
+    it('should remove a dataset  from datasets list', inject(function (inventoryState, InventoryStateService) {
+        //given
+        inventoryState.datasets = null;
+        InventoryStateService.setDatasets(datasets);
+
+        //when
+        InventoryStateService.removeDataset(datasets[0]);
+
+        //then
+        expect(inventoryState.datasets.length).toBe(1);
+        expect(inventoryState.datasets[0].id).toBe('3b21388c-f54a-4334-9bef-748912d0806f');
+    }));
+
+    it('should set CurrentFolder', inject(function (inventoryState, InventoryStateService) {
+        //given
+        inventoryState.currentFolder = null;
+
+        //when
+        InventoryStateService.setCurrentFolder(currentFolder);
+
+        //then
+        expect(inventoryState.currentFolder).toBe(currentFolder);
+    }));
+
+    it('should set currentFolderContent', inject(function (inventoryState, InventoryStateService) {
+        //given
+        inventoryState.currentFolderContent = null;
+
+        //when
+        InventoryStateService.setCurrentFolderContent(currentFolderContent);
+
+        //then
+        expect(inventoryState.currentFolderContent).toBe(currentFolderContent);
+    }));
+
+    it('should set foldersStack', inject(function (inventoryState, InventoryStateService) {
+        //given
+        inventoryState.foldersStack = [];
+
+        //when
+        InventoryStateService.setFoldersStack(foldersStack);
+
+        //then
+        expect(inventoryState.foldersStack).toBe(foldersStack);
+    }));
+
+    it('should set menuChildren', inject(function (inventoryState, InventoryStateService) {
+        //given
+        inventoryState.menuChildren = [];
+
+        //when
+        InventoryStateService.setMenuChildren(menuChildren);
+
+        //then
+        expect(inventoryState.menuChildren).toBe(menuChildren);
+    }));
+
+
+    it('should set sort', inject(function (inventoryState, InventoryStateService) {
+        //given
+        inventoryState.sort  = '';
+
+        //when
+        InventoryStateService.setSort('name');
+
+        //then
+        expect(inventoryState.sort ).toBe('name');
+    }));
+
+    it('should set order', inject(function (inventoryState, InventoryStateService) {
+        //given
+        inventoryState.order  = '';
+
+        //when
+        InventoryStateService.setOrder('desc');
+
+        //then
+        expect(inventoryState.order).toBe('desc');
     }));
 });

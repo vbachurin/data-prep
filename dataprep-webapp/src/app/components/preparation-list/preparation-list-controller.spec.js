@@ -87,7 +87,7 @@ describe('Preparation list controller', function () {
 
     beforeEach(angular.mock.module('data-prep.preparation-list'));
 
-    beforeEach(inject(function ($q, $rootScope, $controller, PreparationService, PlaygroundService, MessageService, StateService) {
+    beforeEach(inject(function ($state, $q, $rootScope, $controller, PreparationService, PlaygroundService, MessageService, StateService) {
         scope = $rootScope.$new();
 
         createController = function () {
@@ -105,9 +105,11 @@ describe('Preparation list controller', function () {
         });
         spyOn(PreparationService, 'setName').and.returnValue($q.when(true));
         spyOn(PlaygroundService, 'load').and.returnValue($q.when(true));
-        spyOn(StateService, 'showPlayground').and.returnValue();
+        spyOn(StateService, 'setPreviousState').and.returnValue();
         spyOn(MessageService, 'success').and.returnValue(null);
         spyOn(MessageService, 'error').and.returnValue(null);
+
+        spyOn($state, 'go').and.returnValue();
 
     }));
 
@@ -115,45 +117,7 @@ describe('Preparation list controller', function () {
         $stateParams.prepid = null;
     }));
 
-    it('should init preparations', inject(function (PreparationService) {
-        //given
-
-        //when
-        createController();
-        scope.$digest();
-
-        //then
-        expect(PreparationService.getPreparations).toHaveBeenCalled();
-    }));
-
-    it('should load preparation if requested in url', inject(function ($stateParams, $timeout, PlaygroundService, StateService) {
-        //given
-        $stateParams.prepid = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
-
-        //when
-        createController();
-        scope.$digest();
-        $timeout.flush();
-
-        //then
-        expect(PlaygroundService.load).toHaveBeenCalledWith(allPreparations[1]);
-        expect(StateService.showPlayground).toHaveBeenCalled();
-    }));
-
-    it('should show error message if requested preparation is not in preparation list', inject(function ($stateParams, PlaygroundService, MessageService) {
-        //given
-        $stateParams.prepid = 'azerty';
-
-        //when
-        createController();
-        scope.$digest();
-
-        //then
-        expect(PlaygroundService.load).not.toHaveBeenCalled();
-        expect(MessageService.error).toHaveBeenCalledWith('PLAYGROUND_FILE_NOT_FOUND_TITLE', 'PLAYGROUND_FILE_NOT_FOUND', {type: 'preparation'});
-    }));
-
-    it('should load preparation and show playground', inject(function ($timeout, PlaygroundService, StateService) {
+    it('should load preparation and show playground', inject(function ($state, PlaygroundService, StateService) {
         //given
         var ctrl = createController();
         var preparation = {
@@ -166,16 +130,13 @@ describe('Preparation list controller', function () {
             ],
             actions: []
         };
-        expect(PlaygroundService.load).not.toHaveBeenCalled();
-
         //when
         ctrl.load(preparation);
         scope.$digest();
-        $timeout.flush();
 
         //then
-        expect(PlaygroundService.load).toHaveBeenCalledWith(preparation);
-        expect(StateService.showPlayground).toHaveBeenCalled();
+        expect(StateService.setPreviousState).toHaveBeenCalledWith('nav.home.preparations');
+        expect($state.go).toHaveBeenCalledWith('playground', {prepid: preparation.id});
     }));
 
     it('should remove preparation, show success message on confirm', inject(function ($q, TalendConfirmService, PreparationService, MessageService) {

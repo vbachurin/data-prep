@@ -16,16 +16,14 @@
  * @name data-prep.preparation-list.controller:PreparationListCtrl
  * @description Preparation list controller.
  * On creation, it fetch the user's preparations and load the requested one if a `prepid` is present as query param
+ * @requires data-prep.services.state.constant:state
  * @requires data-prep.services.state.service:StateService
- * @requires data-prep.services.playground.service:PlaygroundService
  * @requires data-prep.services.preparation.service:PreparationService
  * @requires data-prep.services.utils.service:MessageService
  * @requires talend.widget.service:TalendConfirmService
  */
-export default function PreparationListCtrl($rootScope, $stateParams, $timeout,
-                                            state, StateService,
-                                            PlaygroundService, PreparationService,
-                                            TalendConfirmService, MessageService) {
+export default function PreparationListCtrl($rootScope, $state, state, StateService,
+                                            PreparationService, MessageService, TalendConfirmService) {
     'ngInject';
 
     var vm = this;
@@ -40,11 +38,8 @@ export default function PreparationListCtrl($rootScope, $stateParams, $timeout,
      * @description Load a preparation in the playground
      */
     vm.load = function load(preparation) {
-        PlaygroundService
-            .load(preparation)
-            .then(function () {
-                $timeout(StateService.showPlayground);
-            });
+        StateService.setPreviousState('nav.home.preparations');
+        $state.go('playground', {prepid: preparation.id});
     };
 
     /**
@@ -109,32 +104,4 @@ export default function PreparationListCtrl($rootScope, $stateParams, $timeout,
                 $rootScope.$emit('talend.loading.stop');
             });
     };
-
-    /**
-     * @ngdoc method
-     * @name loadUrlSelectedPreparation
-     * @methodOf data-prep.preparation-list.controller:PreparationListCtrl
-     * @param {object} preparations - list of all user's preparation
-     * @description [PRIVATE] Load playground with provided preparation id, if present in route param
-     */
-    var loadUrlSelectedPreparation = function loadUrlSelectedPreparation(preparations) {
-        if ($stateParams.prepid) {
-            var selectedPrep = _.find(preparations, function (preparation) {
-                return preparation.id === $stateParams.prepid;
-            });
-
-            if (selectedPrep) {
-                vm.load(selectedPrep);
-            }
-            else {
-                MessageService.error('PLAYGROUND_FILE_NOT_FOUND_TITLE', 'PLAYGROUND_FILE_NOT_FOUND', {type: 'preparation'});
-            }
-        }
-    };
-
-    /**
-     * Load preparations list if needed, and load playground if route has preparation id
-     */
-    PreparationService.getPreparations()
-        .then(loadUrlSelectedPreparation);
 }

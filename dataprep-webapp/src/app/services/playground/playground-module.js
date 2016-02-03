@@ -36,6 +36,7 @@ import PreviewService from './preview/preview-service';
      */
     angular.module('data-prep.services.playground',
         [
+            'ui.router',
             'data-prep.services.dataset',
             'data-prep.services.filter',
             'data-prep.services.history',

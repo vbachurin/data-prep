@@ -52,6 +52,5 @@ describe('Home directive', function() {
         expect(home.length).toBe(1);
         expect(home.find('.side-menu').length).toBe(1);
         expect(home.find('ui-view[name="home-content"]').length).toBe(1);
-        expect(home.find('.inventory-data').length).toBe(1);
     }));
 });

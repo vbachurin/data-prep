@@ -1,15 +1,15 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
 
 /**
  * @ngdoc service
@@ -18,9 +18,8 @@
  * @requires data-prep.services.state.constant:state
  * @requires data-prep.services.state.service:StateService
  * @requires data-prep.services.folder.service:FolderRestService
- * @requires data-prep.services.preparation.service:PreparationListService
  */
-export default function FolderService($translate, state, StateService, FolderRestService, PreparationListService) {
+export default function FolderService($translate, state, StateService, FolderRestService) {
     'ngInject';
 
     var ROOT_FOLDER = {
@@ -40,7 +39,6 @@ export default function FolderService($translate, state, StateService, FolderRes
         remove: FolderRestService.remove,
         search: FolderRestService.search,
         getContent: getContent,
-        refreshPreparations: refreshPreparations,
 
         // shared folder ui mngt
         populateMenuChildren: populateMenuChildren
@@ -94,29 +92,6 @@ export default function FolderService($translate, state, StateService, FolderRes
 
     /**
      * @ngdoc method
-     * @name refreshPreparations
-     * @methodOf data-prep.folder.controller:FolderCtrl
-     * @description Inject the default preparation in the current folder datasets
-     * @param {object} preparations The whole list of preparations
-     */
-    function refreshPreparations(preparations) {
-        // group preparation per dataset
-        var datasetPreps = _.groupBy(preparations, function (preparation) {
-            return preparation.dataSetId;
-        });
-
-        // reset default preparation for all datasets
-        _.forEach(state.folder.currentFolderContent.datasets, function (dataset) {
-            var preparations = datasetPreps[dataset.id];
-            dataset.preparations = preparations || [];
-            dataset.preparations = _.sortByOrder(dataset.preparations, 'lastModificationDate', false);
-        });
-
-        return preparations;
-    }
-
-    /**
-     * @ngdoc method
      * @name getContent
      * @methodOf data-prep.folder.controller:FolderCtrl
      * @param {object} folder The folder to list
@@ -128,16 +103,14 @@ export default function FolderService($translate, state, StateService, FolderRes
         var promise = FolderRestService.getContent(folder && folder.id, sort, order);
 
         promise.then(function (result) {
-                var content = result.data;
-                var foldersStack = buildStackFromId(folder ? folder.id : '');
-                var currentFolder = folder ? folder : ROOT_FOLDER;
+            var content = result.data;
+            var foldersStack = buildStackFromId(folder ? folder.id : '');
+            var currentFolder = folder ? folder : ROOT_FOLDER;
 
-                StateService.setCurrentFolder(currentFolder);
-                StateService.setCurrentFolderContent(content);
-                StateService.setFoldersStack(foldersStack);
-            })
-            .then(PreparationListService.getPreparationsPromise)
-            .then(refreshPreparations);
+            StateService.setCurrentFolder(currentFolder);
+            StateService.setCurrentFolderContent(content);
+            StateService.setFoldersStack(foldersStack);
+        });
         return promise;
     }
 }

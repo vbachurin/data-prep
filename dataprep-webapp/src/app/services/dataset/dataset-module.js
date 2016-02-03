@@ -25,7 +25,6 @@ import DatasetService from './dataset-service';
      * @name data-prep.services.dataset
      * @description This module contains the services to manipulate datasets
      * @requires data-prep.services.folder
-     * @requires data-prep.services.preparation
      * @requires data-prep.services.state
      * @requires data-prep.services.utils
      */
@@ -33,7 +32,6 @@ import DatasetService from './dataset-service';
         [
             'angularFileUpload', //file upload with progress support
             'data-prep.services.folder',
-            'data-prep.services.preparation',
             'data-prep.services.state',
             'data-prep.services.utils'
         ])

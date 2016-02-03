@@ -27,7 +27,12 @@ describe('folder directive', function() {
 
 	beforeEach(angular.mock.module('data-prep.folder', function($provide){
 		stateMock = {
-			folder : {
+			inventory: {
+				datasets: [],
+				sortList: sortList,
+				orderList: orderList,
+				sort: sortList[1],
+				order: orderList[1],
 				foldersStack : [
 					{id:'', path:'', name: 'HOME_FOLDER'},
 					{id : '1', path: '1', name: '1'},
@@ -37,13 +42,6 @@ describe('folder directive', function() {
 					{'id':'TDP-714','path':'TDP-714','name':'TDP-714','creationDate':1448984715000,'modificationDate':1448984715000},
 					{'id':'lookups','path':'lookups','name':'lookups','creationDate':1448895776000,'modificationDate':1448895776000}
 				]
-			},
-			inventory: {
-				datasets: [],
-				sortList: sortList,
-				orderList: orderList,
-				sort: sortList[1],
-				order: orderList[1]
 			}
 		};
 		$provide.constant('state', stateMock);
@@ -120,7 +118,7 @@ describe('folder directive', function() {
 			scope.$digest();
 
 			//then
-			expect(FolderService.populateMenuChildren).toHaveBeenCalledWith(stateMock.folder.foldersStack[1]);
+			expect(FolderService.populateMenuChildren).toHaveBeenCalledWith(stateMock.inventory.foldersStack[1]);
 		}));
 
 		it('should show menu children', function(){
@@ -148,7 +146,7 @@ describe('folder directive', function() {
 			scope.$digest();
 
 			//then
-			expect(FolderService.getContent).toHaveBeenCalledWith(stateMock.folder.menuChildren[0]);
+			expect(FolderService.getContent).toHaveBeenCalledWith(stateMock.inventory.menuChildren[0]);
 		}));
 	});
 });

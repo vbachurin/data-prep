@@ -35,10 +35,10 @@ export default function ActionsSuggestions($timeout) {
                     var splitHandler = angular.element('.split-handler').eq(0);
                     var tabContainer = iElement.find('.action-suggestion-tab-items').eq(0);
                     var elementToDisplay = tabContainer.find('talend-accordions-item.open').eq(0);
-                    if (!elementToDisplay.length) {
+                    var etdContainer = elementToDisplay.find('>.accordion >.content-container >.content').eq(0);
+                    if (!etdContainer.length) {
                         return;
                     }
-                    var etdContainer = elementToDisplay.find('>.accordion >.content-container >.content').eq(0);
 
                     var tabOffset = tabContainer.offset();
                     var etdOffset = etdContainer.offset();

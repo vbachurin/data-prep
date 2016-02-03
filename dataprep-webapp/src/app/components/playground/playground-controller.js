@@ -1,15 +1,15 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
 
 /**
  * @ngdoc controller
@@ -24,11 +24,11 @@
  * @requires data-prep.services.recipe.service:RecipeBulletService
  * @requires data-prep.services.onboarding.service:OnboardingService
  * @requires data-prep.services.lookup.service:LookupService
- * @requires data-prep.services.folder.service:FolderService
+ * @requires data-prep.services.utils.service:MessageService
  */
 export default function PlaygroundCtrl($state, $stateParams, state, StateService, PlaygroundService, PreparationService,
                                        PreviewService, RecipeService, RecipeBulletService, OnboardingService,
-                                       LookupService, FolderService) {
+                                       LookupService, MessageService) {
     'ngInject';
 
     var vm = this;
@@ -72,7 +72,7 @@ export default function PlaygroundCtrl($state, $stateParams, state, StateService
         if (!vm.changeNameInProgress && cleanName) {
             changeName(cleanName)
                 .then(function () {
-                    return $state.go('nav.home.preparations', {prepid: state.playground.preparation.id}, {
+                    return $state.go(state.playground.previousState, {}, {
                         location: 'replace',
                         inherit: false
                     });
@@ -106,7 +106,7 @@ export default function PlaygroundCtrl($state, $stateParams, state, StateService
      * @description show hides lookup panel and populates its grid
      */
     vm.toggleLookup = function toggleLookup() {
-        if(state.playground.lookup.visibility) {
+        if (state.playground.lookup.visibility) {
             StateService.setLookupVisibility(false);
         }
         else {
@@ -126,7 +126,7 @@ export default function PlaygroundCtrl($state, $stateParams, state, StateService
      */
     function hideAll() {
         vm.showNameValidation = false;
-        StateService.hidePlayground();
+        vm.close();
     }
 
     /**
@@ -140,9 +140,10 @@ export default function PlaygroundCtrl($state, $stateParams, state, StateService
         var isDraft = state.playground.preparation && state.playground.preparation.draft;
         if (isDraft) {
             vm.showNameValidation = true;
-            return false;
         }
-        return true;
+        else {
+            vm.close();
+        }
     };
 
     /**
@@ -169,7 +170,6 @@ export default function PlaygroundCtrl($state, $stateParams, state, StateService
             .then(hideAll)
             .finally(function () {
                 vm.saveInProgress = false;
-                FolderService.getContent(state.folder.currentFolder);
             });
     };
 
@@ -180,13 +180,8 @@ export default function PlaygroundCtrl($state, $stateParams, state, StateService
      * @description Playground close callback. It change the location and refresh the preparations if needed
      */
     vm.close = function () {
-        PreparationService.refreshPreparations();
-        if ($stateParams.prepid) {
-            $state.go('nav.home.preparations', {prepid: null});
-        }
-        else if ($stateParams.datasetid) {
-            $state.go('nav.home.datasets', {datasetid: null});
-        }
+        StateService.resetPlayground();
+        $state.go(state.playground.previousState);
     };
 
     //--------------------------------------------------------------------------------------------------------------
@@ -205,6 +200,30 @@ export default function PlaygroundCtrl($state, $stateParams, state, StateService
             .then(StateService.hideDatasetParameters)
             .finally(StateService.setIsSendingDatasetParameters.bind(null, false));
     };
+
+    //--------------------------------------------------------------------------------------------------------------
+    //------------------------------------------------INIT----------------------------------------------------------
+    //--------------------------------------------------------------------------------------------------------------
+    if ($stateParams.prepid) {
+        var preparation = _.find(state.inventory.preparations, {id: $stateParams.prepid});
+        if (preparation) {
+            PlaygroundService.load(preparation);
+        }
+        else {
+            MessageService.error('PLAYGROUND_FILE_NOT_FOUND_TITLE', 'PLAYGROUND_FILE_NOT_FOUND', {type: 'preparation'});
+            $state.go(state.playground.previousState);
+        }
+    }
+    else if ($stateParams.datasetid) {
+        var dataset = _.find(state.inventory.datasets, {id: $stateParams.datasetid});
+        if (dataset) {
+            PlaygroundService.initPlayground(dataset);
+        }
+        else {
+            MessageService.error('PLAYGROUND_FILE_NOT_FOUND_TITLE', 'PLAYGROUND_FILE_NOT_FOUND', {type: 'dataset'});
+            $state.go(state.playground.previousState);
+        }
+    }
 }
 
 /**

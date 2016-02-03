@@ -15,14 +15,49 @@ describe('Playground controller', function () {
     'use strict';
 
     var createController, scope, stateMock;
+    var datasets = [
+        {
+            'id': 'de3cc32a-b624-484e-b8e7-dab9061a009c',
+            'name': 'customers_jso_light',
+            'author': 'anonymousUser',
+            'records': 15,
+            'nbLinesHeader': 1,
+            'nbLinesFooter': 0,
+            'created': '03-30-2015 08:06'
+        },
+        {
+            'id': '3b21388c-f54a-4334-9bef-748912d0806f',
+            'name': 'customers_jso',
+            'author': 'anonymousUser',
+            'records': 1000,
+            'nbLinesHeader': 1,
+            'nbLinesFooter': 0,
+            'created': '03-30-2015 07:35'
+        }
+    ];
 
+    var preparations = [
+        {
+            'id': 'ab136cbf0923a7f11bea713adb74ecf919e05cfa',
+            'dataSetId': 'de3cc32a-b624-484e-b8e7-dab9061a009c',
+            'author': 'anonymousUser',
+            'creationDate': 1427447300300
+        },
+        {
+            'id': 'fbaa18e82e913e97e5f0e9d40f04413412be1126',
+            'dataSetId': '3b21388c-f54a-4334-9bef-748912d0806f',
+            'author': 'anonymousUser',
+            'creationDate': 1427447330693
+        }
+    ];
     beforeEach(angular.mock.module('data-prep.playground', function ($provide) {
         stateMock = {playground: {
             dataset: {},
             lookup: {
                 actions: []
             },
-            preparationName:''
+            previousState: 'nav.home.preparations',
+            preparationName: ''
         }};
         $provide.constant('state', stateMock);
     }));
@@ -80,7 +115,7 @@ describe('Playground controller', function () {
             $rootScope.$digest();
 
             //then
-            expect($state.go).toHaveBeenCalledWith('nav.home.preparations', {prepid: 'fe6843da512545e'}, {
+            expect($state.go).toHaveBeenCalledWith('nav.home.preparations', {}, {
                 location: 'replace',
                 inherit: false
             });
@@ -105,30 +140,33 @@ describe('Playground controller', function () {
         beforeEach(inject(function ($q, PreparationService, StateService) {
             preparation = {id: '9af874865e42b546', draft: true};
             stateMock.playground.preparation = preparation;
+            stateMock.playground.previousState = 'nav.home.preparations';
 
             spyOn(PreparationService, 'delete').and.returnValue($q.when(true));
-            spyOn(StateService, 'hidePlayground').and.returnValue();
+            spyOn(StateService, 'resetPlayground').and.returnValue();
 
             ctrl = createController();
+
         }));
 
         it('should return true (allow playground close) with NOT implicit preparation', function () {
             //given
             preparation.draft = false;
+            spyOn(ctrl, 'close').and.returnValue();
 
             //when
-            var result = ctrl.beforeClose();
+            ctrl.beforeClose();
 
             //then
-            expect(result).toBe(true);
+            expect(ctrl.close).toHaveBeenCalled();
         });
 
         it('should return false (block playground close) with implicit preparation', function () {
             //when
-            var result = ctrl.beforeClose();
+            ctrl.beforeClose();
 
             //then
-            expect(result).toBe(false);
+            expect(ctrl.showNameValidation).toBe(true);
         });
 
         it('should show save/discard modal with implicit preparation', function () {
@@ -150,10 +188,9 @@ describe('Playground controller', function () {
             expect(PreparationService.delete).toHaveBeenCalledWith(preparation);
         }));
 
-        it('should hide save/discard and playground modals on save discard', inject(function (StateService) {
+        it('should go back to previous state on save discard', inject(function ($state, StateService) {
             //given
             ctrl.showNameValidation = true;
-            expect(StateService.hidePlayground).not.toHaveBeenCalled();
 
             //when
             ctrl.discardSaveOnClose();
@@ -161,7 +198,8 @@ describe('Playground controller', function () {
 
             //then
             expect(ctrl.showNameValidation).toBe(false);
-            expect(StateService.hidePlayground).toHaveBeenCalled();
+            expect(StateService.resetPlayground).toHaveBeenCalled();
+            expect($state.go).toHaveBeenCalledWith('nav.home.preparations');
         }));
 
         it('should change preparation name on save confirm', inject(function (PlaygroundService) {
@@ -175,23 +213,9 @@ describe('Playground controller', function () {
             expect(PlaygroundService.createOrUpdatePreparation).toHaveBeenCalledWith('my preparation');
         }));
 
-        it('should manage saving flag on save confirm', function () {
-            //given
-            expect(ctrl.saveInProgress).toBeFalsy();
-
-            //when
-            ctrl.confirmSaveOnClose();
-            expect(ctrl.saveInProgress).toBe(true);
-            scope.$digest();
-
-            //then
-            expect(ctrl.saveInProgress).toBe(false);
-        });
-
-        it('should hide save/discard and playground modals on save confirm', inject(function (StateService) {
+        it('should hide save/discard and playground modals on save confirm', inject(function ($state, StateService) {
             //given
             ctrl.showNameValidation = true;
-            expect(StateService.hidePlayground).not.toHaveBeenCalled();
 
             //when
             ctrl.confirmSaveOnClose();
@@ -199,7 +223,8 @@ describe('Playground controller', function () {
 
             //then
             expect(ctrl.showNameValidation).toBe(false);
-            expect(StateService.hidePlayground).toHaveBeenCalled();
+            expect(StateService.resetPlayground).toHaveBeenCalled();
+            expect($state.go).toHaveBeenCalledWith('nav.home.preparations');
         }));
     });
 
@@ -328,6 +353,63 @@ describe('Playground controller', function () {
 
             //then
             expect(StateService.hideDatasetParameters).toHaveBeenCalled();
+        }));
+    });
+
+    describe('initialization', function() {
+        beforeEach(inject(function (MessageService, PlaygroundService) {
+            spyOn(MessageService, 'error').and.returnValue();
+            spyOn(PlaygroundService, 'load').and.returnValue();
+            spyOn(PlaygroundService, 'initPlayground').and.returnValue();
+            stateMock.inventory= {preparations : preparations, datasets: datasets};
+        }));
+
+        it('should load playground', inject(function ($stateParams,PlaygroundService) {
+
+            $stateParams.prepid = 'ab136cbf0923a7f11bea713adb74ecf919e05cfa';
+
+            //given
+            createController();
+
+            //then
+            expect(PlaygroundService.load).toHaveBeenCalledWith(preparations[0]);
+        }));
+
+        it('should go back to previous state from preparation playground', inject(function ($state, $stateParams,MessageService) {
+
+            $stateParams.prepid = '1';
+
+            //given
+            createController();
+
+            //then
+            expect(MessageService.error).toHaveBeenCalled();
+            expect($state.go).toHaveBeenCalledWith('nav.home.preparations');
+        }));
+
+        it('should init playground', inject(function ($stateParams,PlaygroundService) {
+
+            $stateParams.prepid = '';
+            $stateParams.datasetid = 'de3cc32a-b624-484e-b8e7-dab9061a009c';
+
+            //given
+            createController();
+
+            //then
+            expect(PlaygroundService.initPlayground).toHaveBeenCalledWith(datasets[0]);
+        }));
+
+        it('should go back to previous state from dataset playground', inject(function ($state, $stateParams,MessageService) {
+
+            $stateParams.prepid = '';
+            $stateParams.datasetid = '1';
+
+            //given
+            createController();
+
+            //then
+            expect(MessageService.error).toHaveBeenCalled();
+            expect($state.go).toHaveBeenCalledWith('nav.home.preparations');
         }));
     });
 });

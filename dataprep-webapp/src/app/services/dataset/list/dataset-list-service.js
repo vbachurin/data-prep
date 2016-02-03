@@ -27,21 +27,21 @@ export default function DatasetListService($q, state, DatasetRestService, StateS
     var deferredCancel;
     var datasetsPromise;
 
-    var service = {
+    return {
         refreshDatasets: refreshDatasets,
+        getDatasetsPromise: getDatasetsPromise,
+        hasDatasetsPromise: hasDatasetsPromise,
+
         create: create,
         clone: clone,
         move: move,
-        importRemoteDataset: importRemoteDataset,
         update: update,
-        processCertification: processCertification,
         delete: deleteDataset,
-        refreshPreparations: refreshPreparations,
-        getDatasetsPromise: getDatasetsPromise,
-        hasDatasetsPromise: hasDatasetsPromise
-    };
 
-    return service;
+        importRemoteDataset: importRemoteDataset,
+        processCertification: processCertification,
+        toggleFavorite: toggleFavorite
+    };
 
     /**
      * @ngdoc method
@@ -71,6 +71,7 @@ export default function DatasetListService($q, state, DatasetRestService, StateS
         deferredCancel = $q.defer();
         datasetsPromise = DatasetRestService.getDatasets(sort, order, deferredCancel)
             .then(function (res) {
+                datasetsPromise = null;
                 StateService.setDatasets(res.data);
                 return res.data;
             });
@@ -212,33 +213,6 @@ export default function DatasetListService($q, state, DatasetRestService, StateS
 
     /**
      * @ngdoc method
-     * @name refreshPreparations
-     * @methodOf data-prep.services.dataset.service:DatasetListService
-     * @param {object[]} preparations The preparations to use
-     * @description [PRIVATE] Set the default preparation to each dataset
-     * @returns {promise} The process promise
-     */
-    function refreshPreparations(preparations) {
-        return getDatasetsPromise()
-            .then(function (datasets) {
-                // group preparation per dataset
-                var datasetPreps = _.groupBy(preparations, function (preparation) {
-                    return preparation.dataSetId;
-                });
-
-                // reset default preparation for all datasets
-                _.forEach(datasets, function (dataset) {
-                    var preparations = datasetPreps[dataset.id];
-                    dataset.preparations = preparations || [];
-                    dataset.preparations = _.sortByOrder(dataset.preparations, 'lastModificationDate', false);
-                });
-
-                return datasets;
-            });
-    }
-
-    /**
-     * @ngdoc method
      * @name getDatasetsPromise
      * @methodOf data-prep.services.dataset.service:DatasetListService
      * @description Return resolved or unresolved promise that returns the most updated datasetsList
@@ -259,4 +233,19 @@ export default function DatasetListService($q, state, DatasetRestService, StateS
         return datasetsPromise;
     }
 
+    /**
+     * @ngdoc method
+     * @name toggleFavorite
+     * @methodOf data-prep.services.dataset.service:DatasetListService
+     * @param {object} dataset The target dataset to set or unset favorite
+     * @description Set or Unset the dataset as favorite
+     * @returns {promise} The pending POST promise
+     */
+    function toggleFavorite(dataset) {
+        return DatasetRestService.toggleFavorite(dataset)
+            .then(function () {
+                dataset.favorite = !dataset.favorite; //update currentFolderContent.datasets
+                refreshDatasets(); //update inventory.datasets
+            })
+    }
 }

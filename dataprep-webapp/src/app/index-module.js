@@ -69,10 +69,21 @@
                 .state('nav.home', {
                     abstract: true,
                     url: '/home',
-                    template: '<home></home>'
+                    template: '<home></home>',
+                    resolve:{
+                        promiseInventory: function ($q, DatasetService, PreparationService) {
+                            return $q.all(
+                                [
+                                    DatasetService.refreshDatasets(),
+                                    PreparationService.refreshPreparations()
+                                ]
+                            );
+                        }
+                    }
+
                 })
                 .state('nav.home.datasets', {
-                    url: '/datasets?datasetid',
+                    url: '/datasets',
                     views: {
                         'home-content': {
                             template: '<dataset-list></dataset-list>'
@@ -80,15 +91,28 @@
                     },
                     folder: 'dataset'
                 })
+                .state('playground', {
+                    url: '/playground?datasetid&prepid',
+                    template: '<playground></playground>',
+                    resolve:{
+                        promisePlayground: function ($q, DatasetService, PreparationService) {
+                            return $q.all(
+                                [
+                                    DatasetService.getDatasets(),
+                                    PreparationService.getPreparations()
+                                ]
+                            );
+                        }
+                    }
+                })
                 .state('nav.home.preparations', {
-                    url: '/preparations?prepid',
+                    url: '/preparations',
                     views: {
                         'home-content': {
                             template: '<preparation-list></preparation-list>'
                         }
                     }
                 });
-
             $urlRouterProvider.otherwise('/home/datasets');
         })
 
