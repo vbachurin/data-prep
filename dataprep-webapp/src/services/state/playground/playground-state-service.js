@@ -1,7 +1,9 @@
 (function() {
     'use strict';
 
-    var playgroundState = {};
+    var playgroundState = {
+        preparationName : ''
+    };
 
     function PlaygroundStateService(
         RecipeStateService, recipeState,
@@ -26,6 +28,7 @@
             hide: hide,
             setDataset: setDataset,
             setPreparation: setPreparation,
+            setPreparationName: setPreparationName,
             setNameEditionMode: setNameEditionMode,
             reset: reset,
             setData: setData,
@@ -97,6 +100,10 @@
 
         function setPreparation(preparation) {
             playgroundState.preparation = preparation;
+        }
+
+        function setPreparationName(preparationName) {
+            playgroundState.preparationName = preparationName;
         }
 
         function setNameEditionMode(editionMode) {

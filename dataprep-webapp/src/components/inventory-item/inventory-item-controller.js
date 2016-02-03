@@ -17,8 +17,8 @@
          * @description opens the inventory related to the current inventory item
          */
         vm.openRelatedInventoryItem = function openRelatedInventoryItem (relatedInventory) {
-            if (vm.openRelatedInv) {
-                vm.openRelatedInv(relatedInventory);
+            if (vm.openRelatedInventory) {
+                vm.openRelatedInventory(relatedInventory);
             }
         };
 

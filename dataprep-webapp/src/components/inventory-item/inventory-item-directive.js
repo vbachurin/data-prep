@@ -14,7 +14,7 @@
      *  file-model="datasetListCtrl.updateDatasetFile"
      *  item="dataset"
      *  open="datasetListCtrl.uploadWorkflowService.openDataset"
-     *  open-related-inv="datasetListCtrl.openPreparation"
+     *  open-related-inventory="datasetListCtrl.openPreparation"
      *  process-certification="datasetListCtrl.processCertification"
      *  remove="datasetListCtrl.remove"
      *  rename="datasetListCtrl.rename"
@@ -54,7 +54,7 @@
                 fileModel : '=',
                 item : '=',
                 open : '=',
-                openRelatedInv : '=',
+                openRelatedInventory : '=',
                 processCertification : '=',
                 remove : '=',
                 rename : '=',

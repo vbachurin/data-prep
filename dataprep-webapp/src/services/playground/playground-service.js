@@ -23,22 +23,13 @@
                                StatisticsService, HistoryService, StateService,
                                OnboardingService, MessageService, ExportService, $translate) {
 
-        var INVENTORY_PREFIX = '';
         var INVENTORY_SUFFIX = ' ' + $translate.instant('PREPARATION');
 
         function wrapInventoryName (invName){
-            return INVENTORY_PREFIX + invName + INVENTORY_SUFFIX;
+            return invName + INVENTORY_SUFFIX;
         }
 
         var service = {
-            /**
-             * @ngdoc property
-             * @name preparationName
-             * @propertyOf data-prep.services.playground.service:PlaygroundService
-             * @description the current preparation
-             */
-            preparationName: '',
-
             //init/load
             initPlayground: initPlayground,     // load dataset
             load: load,                         // load preparation
@@ -97,7 +88,7 @@
                         throw Error('Empty data');
                     }
 
-                        service.preparationName = wrapInventoryName(dataset.name);
+                        StateService.setPreparationName(dataset.name);
                         reset(dataset, data);
                         StateService.hideRecipe();
                         StateService.setNameEditionMode(true);
@@ -132,7 +123,7 @@
                 $rootScope.$emit('talend.loading.start');
                 return PreparationService.getContent(preparation.id, 'head')
                     .then(function (response) {
-                        service.preparationName = preparation.name;
+                        StateService.setPreparationName(preparation.name);
                         reset(preparation.dataset ? preparation.dataset : {id: preparation.dataSetId}, response, preparation);
                         StateService.showRecipe();
                         StateService.setNameEditionMode(false);
@@ -204,7 +195,7 @@
 
             return promise.then(function (preparation) {
                 StateService.setCurrentPreparation(preparation);
-                service.preparationName = preparation.name;
+                StateService.setPreparationName(preparation.name);
                 return preparation;
             });
         }

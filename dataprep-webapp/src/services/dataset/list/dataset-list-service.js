@@ -19,15 +19,15 @@
         var service = {
             refreshDatasets : refreshDatasets,
             create : create,
-            clone: clone,
-            move: move,
+            clone : clone,
+            move : move,
             importRemoteDataset : importRemoteDataset,
             update : update,
             processCertification : processCertification,
             delete : deleteDataset,
             refreshPreparations : refreshPreparations,
             getDatasetsPromise : getDatasetsPromise,
-            hasDatasetsPromise: hasDatasetsPromise
+            hasDatasetsPromise : hasDatasetsPromise
         };
 
         return service;

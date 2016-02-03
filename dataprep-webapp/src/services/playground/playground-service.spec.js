@@ -31,10 +31,12 @@ describe('Playground Service', function () {
     beforeEach(inject(function ($injector, $q, StateService, DatasetService, RecipeService, DatagridService,
                                 PreparationService, TransformationCacheService, SuggestionService,
                                 HistoryService, PreviewService, ExportService) {
-        stateMock.playground = {};
+        stateMock.playground = {
+            preparationName : ''
+        };
         createdPreparation = {
             id: '32cd7869f8426465e164ab85',
-            name: 'my Preparation'
+            name: 'created preparation name'
         };
 
         spyOn(DatagridService, 'updateData').and.returnValue();
@@ -52,12 +54,13 @@ describe('Playground Service', function () {
         spyOn(StateService, 'setCurrentData').and.returnValue();
         spyOn(StateService, 'setCurrentDataset').and.returnValue();
         spyOn(StateService, 'setCurrentPreparation').and.returnValue();
+        spyOn(StateService, 'setPreparationName').and.returnValue();
         spyOn(StateService, 'setNameEditionMode').and.returnValue();
         spyOn(TransformationCacheService, 'invalidateCache').and.returnValue();
         spyOn(ExportService, 'reset').and.returnValue();
     }));
 
-    it('should set new name to the preparation name', inject(function ($rootScope, PlaygroundService, PreparationService) {
+    it('should set new name to the preparation name', inject(function ($rootScope, PlaygroundService, PreparationService, StateService) {
         //given
         var name = 'My preparation';
         var newName = 'My new preparation name';
@@ -73,7 +76,7 @@ describe('Playground Service', function () {
         //then
         expect(PreparationService.create).not.toHaveBeenCalled();
         expect(PreparationService.setName).toHaveBeenCalledWith('e85afAa78556d5425bc2', newName);
-        expect(PlaygroundService.preparationName).toBe('my Preparation');
+        expect(StateService.setPreparationName).toHaveBeenCalledWith(createdPreparation.name);
     }));
 
     describe('init new preparation', function () {
@@ -144,7 +147,7 @@ describe('Playground Service', function () {
             expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.stop');
         }));
 
-        it('should reset preparation name', inject(function ($rootScope, PlaygroundService) {
+        it('should reset preparation name', inject(function ($rootScope, PlaygroundService, StateService) {
             //given
             PlaygroundService.preparationName = 'preparation name';
 
@@ -153,7 +156,7 @@ describe('Playground Service', function () {
             $rootScope.$digest();
 
             //then
-            expect(PlaygroundService.preparationName).toBe('dataset name Preparation');
+            expect(StateService.setPreparationName).toHaveBeenCalledWith(dataset.name);
         }));
 
         it('should start playground unboarding tour', inject(function ($rootScope, PlaygroundService, OnboardingService) {

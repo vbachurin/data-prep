@@ -8,7 +8,8 @@ describe('Playground controller', function () {
             dataset: {},
             lookup: {
                 actions: []
-            }
+            },
+            preparationName:''
         }};
         $provide.constant('state', stateMock);
     }));
@@ -28,30 +29,6 @@ describe('Playground controller', function () {
     }));
 
     describe('bindings', function () {
-        it('should bind preparationName getter with PlaygroundService', inject(function (PlaygroundService) {
-            //given
-            var ctrl = createController();
-            expect(ctrl.preparationName).toBeFalsy();
-
-            //when
-            PlaygroundService.preparationName = 'My preparation';
-
-            //then
-            expect(ctrl.preparationName).toBe('My preparation');
-        }));
-
-        it('should bind preparationName setter with PlaygroundService', inject(function (PlaygroundService) {
-            //given
-            var ctrl = createController();
-            expect(PlaygroundService.preparationName).toBeFalsy();
-
-            //when
-            ctrl.preparationName = 'My preparation';
-
-            //then
-            expect(PlaygroundService.preparationName).toBe('My preparation');
-        }));
-
         it('should bind previewInProgress getter with PreviewService', inject(function (PreviewService) {
             //given
             var ctrl = createController();
@@ -70,10 +47,10 @@ describe('Playground controller', function () {
         it('should create/update preparation with clean name on name edition confirmation', inject(function (PlaygroundService) {
             //given
             var ctrl = createController();
-            ctrl.preparationName = 'my old name';
+            stateMock.playground.preparationName = '  my new name  ';
 
             //when
-            ctrl.confirmPrepNameEdition('  my new name  ');
+            ctrl.confirmPrepNameEdition(stateMock.playground.preparationName);
 
             //then
             expect(PlaygroundService.createOrUpdatePreparation).toHaveBeenCalledWith('my new name');
@@ -82,11 +59,11 @@ describe('Playground controller', function () {
         it('should change route to preparation route on name edition confirmation', inject(function ($rootScope, $state) {
             //given
             var ctrl = createController();
-            ctrl.preparationName = 'My old preparation ';
+            stateMock.playground.preparationName = '  my new name  ';
             stateMock.playground.preparation = {id: 'fe6843da512545e'};
 
             //when
-            ctrl.confirmPrepNameEdition('My preparation ');
+            ctrl.confirmPrepNameEdition(stateMock.playground.preparationName);
             $rootScope.$digest();
 
             //then
@@ -176,7 +153,7 @@ describe('Playground controller', function () {
 
         it('should change preparation name on save confirm', inject(function (PlaygroundService) {
             //given
-            ctrl.preparationName = '  my preparation ';
+            stateMock.playground.preparationName = '  my preparation ';
 
             //when
             ctrl.confirmSaveOnClose();

@@ -156,7 +156,7 @@
          */
         vm.confirmSaveOnClose = function confirmSaveOnClose() {
             vm.saveInProgress = true;
-            var cleanName = vm.preparationName.trim();
+            var cleanName = vm.state.playground.preparationName.trim();
             changeName(cleanName)
                 .then(hideAll)
                 .finally(function () {
@@ -198,25 +198,6 @@
                 .finally(StateService.setIsSendingDatasetParameters.bind(null, false));
         };
     }
-
-    /**
-     * @ngdoc property
-     * @name preparationName
-     * @propertyOf data-prep.playground.controller:PlaygroundCtrl
-     * @description The preparation name
-     * It is bound to {@link data-prep.services.playground.service:PlaygroundService PlaygroundService} property
-     */
-    Object.defineProperty(PlaygroundCtrl.prototype,
-        'preparationName', {
-            enumerable: true,
-            configurable: false,
-            get: function () {
-                return this.playgroundService.preparationName;
-            },
-            set: function (value) {
-                this.playgroundService.preparationName = value;
-            }
-        });
 
     /**
      * @ngdoc property

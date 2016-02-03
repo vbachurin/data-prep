@@ -18,7 +18,7 @@ describe('Inventory Item controller', function () {
         beforeEach(inject(function() {
             ctrl = createController();
             ctrl.open = jasmine.createSpy('open');
-            ctrl.openRelatedInv = jasmine.createSpy('openRelatedInv');
+            ctrl.openRelatedInventory = jasmine.createSpy('openRelatedInventory');
         }));
 
         it('should call open related inventory callback', inject(function () {
@@ -29,19 +29,19 @@ describe('Inventory Item controller', function () {
             ctrl.openRelatedInventoryItem(prep);
 
             //then
-            expect(ctrl.openRelatedInv).toHaveBeenCalledWith(prep);
+            expect(ctrl.openRelatedInventory).toHaveBeenCalledWith(prep);
         }));
 
         //it('should NOT call open related inventory callback', inject(function () {
         //    //given
         //    var prep = {};
-        //    ctrl.openRelatedInv = null;
+        //    ctrl.openRelatedInventory = null;
         //
         //    //when
         //    ctrl.openRelatedInventoryItem(prep);
         //
         //    //then
-        //    expect(ctrl.openRelatedInv).not.toHaveBeenCalledWith();
+        //    expect(ctrl.openRelatedInventory).not.toHaveBeenCalledWith();
         //}));
 
         it('should process the tooltip data to compile it when related inventories do NOT exist', inject(function () {
@@ -86,7 +86,7 @@ describe('Inventory Item controller', function () {
             ctrl.openInventoryItem();
 
             //then
-            expect(ctrl.openRelatedInv).toHaveBeenCalledWith(ctrl.relatedInventories[0]);
+            expect(ctrl.openRelatedInventory).toHaveBeenCalledWith(ctrl.relatedInventories[0]);
         }));
 
         it('should open an inventory Item: the case of the item itself', inject(function () {

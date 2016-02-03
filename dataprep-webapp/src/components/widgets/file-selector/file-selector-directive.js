@@ -4,7 +4,6 @@
         return {
             restrict: 'E',
             templateUrl: 'components/widgets/file-selector/file-selector.html',
-            replace: true,
             scope: {
                 buttonDataIcon: '@',
                 buttonTitle: '@',
