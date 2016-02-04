@@ -18,11 +18,11 @@ describe('Datagrid size service', function () {
 
     var storageKey = 'org.talend.dataprep.col_size_00000000';
 
-    beforeEach(module('data-prep.datagrid', function ($provide) {
+    beforeEach(angular.mock.module('data-prep.datagrid', function ($provide) {
         $provide.factory('$window', function () {
             windowMock = jasmine.createSpy('$window');
             /*global window:false */
-            windowMock.localStorage = window.localStorage;
+            windowMock.localStorage = window.localStorage; //eslint-disable-line angular/window-service
             windowMock.addEventListener = function() {};
             return windowMock;
         });
@@ -32,7 +32,6 @@ describe('Datagrid size service', function () {
     }));
 
     beforeEach(inject(function (_$window_, $window) {
-        /*global SlickGridMock:false */
         gridMock = new SlickGridMock();
         gridColumns = [
             {id: '0000', name: 'col0', width: 10, minWidth: 80},

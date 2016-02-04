@@ -23,7 +23,7 @@ describe('Onboarding service', function() {
         start: function() {}
     };
 
-    beforeEach(module('data-prep.services.onboarding'));
+    beforeEach(angular.mock.module('data-prep.services.onboarding'));
 
     beforeEach(inject(function($window) {
         $window.introJs = function() {

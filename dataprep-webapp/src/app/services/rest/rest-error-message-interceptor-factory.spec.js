@@ -17,7 +17,7 @@ describe('Rest message interceptor factory', function () {
     var $httpBackend;
     var httpProvider;
 
-    beforeEach(module('data-prep.services.rest', function ($httpProvider) {
+    beforeEach(angular.mock.module('data-prep.services.rest', function ($httpProvider) {
         httpProvider = $httpProvider;
     }));
 

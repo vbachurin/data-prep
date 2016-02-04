@@ -219,7 +219,7 @@ describe('Transformation Service', function () {
         ];
     };
 
-    beforeEach(module('data-prep.services.transformation'));
+    beforeEach(angular.mock.module('data-prep.services.transformation'));
 
     beforeEach(inject(function ($q, TransformationRestService) {
         spyOn(TransformationRestService, 'getLineTransformations').and.returnValue($q.when({data: transformationsRestMock()}));

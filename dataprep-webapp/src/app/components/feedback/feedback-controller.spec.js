@@ -16,7 +16,7 @@ describe('Feedback controller', function () {
 
     var createController, scope, $stateMock;
 
-    beforeEach(module('data-prep.feedback'));
+    beforeEach(angular.mock.module('data-prep.feedback'));
 
     beforeEach(inject(function ($rootScope, $controller) {
         jasmine.clock().install();

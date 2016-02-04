@@ -26,7 +26,7 @@ describe('Column types Service', function () {
         {'id': 'DATE', 'name': 'date', 'labelKey': 'DATE'}
     ];
 
-    beforeEach(module('data-prep.services.dataset'));
+    beforeEach(angular.mock.module('data-prep.services.dataset'));
 
     beforeEach(inject(function ($rootScope, $injector, RestURLs) {
         RestURLs.setServerUrl('');

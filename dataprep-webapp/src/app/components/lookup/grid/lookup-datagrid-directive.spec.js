@@ -30,7 +30,7 @@ describe('Lookup datagrid directive', function () {
     });
 
 
-    beforeEach(module('data-prep.lookup', function ($provide) {
+    beforeEach(angular.mock.module('data-prep.lookup', function ($provide) {
         stateMock = {
             playground: {
                 metadata: {
@@ -42,7 +42,7 @@ describe('Lookup datagrid directive', function () {
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(module('htmlTemplates'));
+    beforeEach(angular.mock.module('htmlTemplates'));
 
     beforeEach(inject(function ($rootScope, $compile, LookupDatagridGridService, LookupDatagridColumnService, LookupDatagridStyleService) {
         scope = $rootScope.$new();
@@ -68,13 +68,7 @@ describe('Lookup datagrid directive', function () {
         spyOn(LookupDatagridStyleService, 'updateColumnClass').and.returnValue();
     }));
 
-    beforeEach(function () {
-        jasmine.clock().install();
-    });
-
     afterEach(function () {
-        jasmine.clock().uninstall();
-
         scope.$destroy();
         element.remove();
     });
@@ -82,7 +76,7 @@ describe('Lookup datagrid directive', function () {
     describe('on data change', function () {
         var data;
 
-        beforeEach(inject(function (LookupDatagridColumnService) {
+        beforeEach(inject(function ($timeout, LookupDatagridColumnService) {
             //given
             spyOn(LookupDatagridColumnService, 'createColumns').and.returnValue(createdColumns);
 
@@ -99,7 +93,7 @@ describe('Lookup datagrid directive', function () {
             //when
             stateMock.playground.lookup.data = data;
             scope.$digest();
-            jasmine.clock().tick(1);
+            $timeout.flush(1);
         }));
 
         describe('init', function () {
@@ -136,33 +130,33 @@ describe('Lookup datagrid directive', function () {
             });
 
             describe('column style', function () {
-                it('should reset cell styles when there is a selected column', inject(function (LookupDatagridStyleService) {
+                it('should reset cell styles when there is a selected column', inject(function ($timeout, LookupDatagridStyleService) {
                     //given
                     stateMock.playground.lookup.selectedColumn = {id: '0001'};
 
                     //when
                     stateMock.playground.lookup.data = {metadata: {}};
                     scope.$digest();
-                    jasmine.clock().tick(1);
+                    $timeout.flush(1);
 
                     //then
                     expect(LookupDatagridStyleService.updateColumnClass).toHaveBeenCalledWith(createdColumns, data.metadata.columns[1]);
                 }));
 
-                it('should reset cell styles when there is NOT a selected cell', inject(function (LookupDatagridStyleService) {
+                it('should reset cell styles when there is NOT a selected cell', inject(function ($timeout, LookupDatagridStyleService) {
                     //given
                     stateMock.playground.lookup.selectedColumn = undefined;
 
                     //when
                     stateMock.playground.lookup.data = {metadata: {}};
                     scope.$digest();
-                    jasmine.clock().tick(1);
+                    $timeout.flush(1);
 
                     //then
                     expect(LookupDatagridStyleService.updateColumnClass).toHaveBeenCalledWith(createdColumns, null);
                 }));
 
-                it('should update selected column style', inject(function (LookupDatagridStyleService) {
+                it('should update selected column style', inject(function ($timeout, LookupDatagridStyleService) {
                     //given
                     stateMock.playground.lookup.selectedColumn = {id: '0001'};
                     expect(LookupDatagridStyleService.updateColumnClass).not.toHaveBeenCalledWith(createdColumns, data.metadata.columns[1]);
@@ -170,7 +164,7 @@ describe('Lookup datagrid directive', function () {
                     //when
                     stateMock.playground.lookup.data = {metadata: {}};
                     scope.$digest();
-                    jasmine.clock().tick(1);
+                    $timeout.flush(1);
 
                     //then
                     expect(LookupDatagridStyleService.updateColumnClass).toHaveBeenCalledWith(createdColumns, data.metadata.columns[1]);
@@ -184,7 +178,7 @@ describe('Lookup datagrid directive', function () {
                 }));
             });
 
-            it('should execute the grid update only once when the second call is triggered before the first timeout', inject(function (LookupDatagridGridService, LookupDatagridColumnService) {
+            it('should execute the grid update only once when the second call is triggered before the first timeout', inject(function ($timeout, LookupDatagridGridService, LookupDatagridColumnService) {
                 //given
                 expect(LookupDatagridColumnService.createColumns.calls.count()).toBe(1);
 
@@ -198,7 +192,7 @@ describe('Lookup datagrid directive', function () {
 
                 stateMock.playground.lookup.data = {metadata: {}};
                 scope.$digest();
-                jasmine.clock().tick(1);
+                $timeout.flush(1);
 
                 //then
                 expect(LookupDatagridColumnService.createColumns.calls.count()).toBe(2);

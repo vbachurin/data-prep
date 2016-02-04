@@ -16,7 +16,7 @@ describe('Recipe Bullet controller', function () {
 
     var createController, scope, step;
 
-    beforeEach(module('data-prep.recipe-bullet'));
+    beforeEach(angular.mock.module('data-prep.recipe-bullet'));
 
     beforeEach(inject(function ($rootScope, $controller) {
         scope = $rootScope.$new();

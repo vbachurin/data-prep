@@ -14,7 +14,7 @@
 describe('Easter Eggs', function () {
 	'use strict';
 
-	beforeEach(module('data-prep.services.state'));
+	beforeEach(angular.mock.module('data-prep.services.state'));
 
 	describe('state service', function() {
 

@@ -16,8 +16,8 @@ describe('App directive', function() {
 
     var scope, createElement, element;
 
-    beforeEach(module('data-prep.app'));
-    beforeEach(module('htmlTemplates'));
+    beforeEach(angular.mock.module('data-prep.app'));
+    beforeEach(angular.mock.module('htmlTemplates'));
 
     beforeEach(inject(function($rootScope, $compile) {
         scope = $rootScope.$new();

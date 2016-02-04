@@ -166,7 +166,7 @@ describe('Preparation list service', function () {
         ];
     }
 
-    beforeEach(module('data-prep.services.preparation', function ($provide) {
+    beforeEach(angular.mock.module('data-prep.services.preparation', function ($provide) {
         stateMock = {
             inventory: {
                 preparations: null

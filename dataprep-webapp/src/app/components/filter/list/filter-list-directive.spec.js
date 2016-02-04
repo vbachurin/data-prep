@@ -65,8 +65,8 @@ describe('Filter list directive', function() {
         }
     ];
 
-    beforeEach(module('data-prep.filter-list'));
-    beforeEach(module('htmlTemplates'));
+    beforeEach(angular.mock.module('data-prep.filter-list'));
+    beforeEach(angular.mock.module('htmlTemplates'));
 
     beforeEach(inject(function($rootScope, $compile) {
         scope = $rootScope.$new();

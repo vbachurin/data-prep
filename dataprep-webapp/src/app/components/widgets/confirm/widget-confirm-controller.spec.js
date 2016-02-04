@@ -16,7 +16,7 @@ describe('Confirm directive', function() {
 
     var ctrl, createController, scope;
 
-    beforeEach(module('talend.widget'));
+    beforeEach(angular.mock.module('talend.widget'));
 
     beforeEach(inject(function($rootScope, $controller, TalendConfirmService) {
         scope = $rootScope.$new();

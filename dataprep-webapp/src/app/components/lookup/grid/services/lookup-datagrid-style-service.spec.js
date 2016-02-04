@@ -22,13 +22,12 @@ describe('Lookup Datagrid style service', function () {
 		});
 	}
 
-	beforeEach(module('data-prep.lookup', function ($provide) {
+	beforeEach(angular.mock.module('data-prep.lookup', function ($provide) {
 		stateMock = {playground: {lookup: {}}};
 		$provide.constant('state', stateMock);
 	}));
 
 	beforeEach(inject(function () {
-		jasmine.clock().install();
 		gridColumns = [
 			{id: '0000', field: 'col0', tdpColMetadata: {id: '0000', name: 'col0', type: 'string'}},
 			{id: '0001', field: 'col1', tdpColMetadata: {id: '0001', name: 'col1', type: 'integer'}},
@@ -49,10 +48,6 @@ describe('Lookup Datagrid style service', function () {
 		spyOn(gridMock, 'resetActiveCell').and.returnValue();
 		spyOn(gridMock, 'invalidate').and.returnValue();
 	}));
-
-	afterEach(function() {
-		jasmine.clock().uninstall();
-	});
 
 	describe('on creation', function () {
 		it('should add header click listener', inject(function (LookupDatagridStyleService) {
@@ -186,7 +181,7 @@ describe('Lookup Datagrid style service', function () {
 			stateMock.playground.lookup.dataView = dataViewMock;
 		});
 
-		it('should set "selected" column class', inject(function (LookupDatagridStyleService) {
+		it('should set "selected" column class', inject(function ($timeout, LookupDatagridStyleService) {
 			//given
 			LookupDatagridStyleService.init(gridMock);
 			var args = {cell: 1};
@@ -196,7 +191,7 @@ describe('Lookup Datagrid style service', function () {
 			//when
 			var onActiveCellChanged = gridMock.onActiveCellChanged.subscribe.calls.argsFor(0)[0];
 			onActiveCellChanged(null, args);
-			jasmine.clock().tick(200);
+			$timeout.flush(200);
 
 			//then
 			expect(gridColumns[0].cssClass).toBeFalsy();
@@ -207,7 +202,7 @@ describe('Lookup Datagrid style service', function () {
 			expect(gridColumns[5].cssClass).toBe('index-column');
 		}));
 
-		it('should NOT change "selected" column class if it has not changed', inject(function (LookupDatagridStyleService) {
+		it('should NOT change "selected" column class if it has not changed', inject(function ($timeout, LookupDatagridStyleService) {
 			//given
 			LookupDatagridStyleService.init(gridMock);
 			var args = {cell: 1};
@@ -216,7 +211,7 @@ describe('Lookup Datagrid style service', function () {
 
 			var onActiveCellChanged = gridMock.onActiveCellChanged.subscribe.calls.argsFor(0)[0];
 			onActiveCellChanged(null, args);
-			jasmine.clock().tick(200);
+			$timeout.flush(200);
 
 			expect(gridColumns[0].cssClass).toBeFalsy();
 			expect(gridColumns[1].cssClass.indexOf('selected') > -1).toBe(true);
@@ -227,7 +222,7 @@ describe('Lookup Datagrid style service', function () {
 
 			//when
 			onActiveCellChanged(null, args);
-			jasmine.clock().tick(200);
+			$timeout.flush(200);
 
 			//then
 			expect(gridColumns[0].cssClass).toBeFalsy();
@@ -238,7 +233,7 @@ describe('Lookup Datagrid style service', function () {
 			expect(gridColumns[5].cssClass).toBe('index-column');
 		}));
 
-		it('should invalidate grid', inject(function (LookupDatagridStyleService) {
+		it('should invalidate grid', inject(function ($timeout, LookupDatagridStyleService) {
 			//given
 			LookupDatagridStyleService.init(gridMock);
 			var args = {cell: 1};
@@ -246,7 +241,7 @@ describe('Lookup Datagrid style service', function () {
 			//when
 			var onActiveCellChanged = gridMock.onActiveCellChanged.subscribe.calls.argsFor(0)[0];
 			onActiveCellChanged(null, args);
-			jasmine.clock().tick(200);
+			$timeout.flush(200);
 
 			//then
 			expect(gridMock.invalidate).toHaveBeenCalled();

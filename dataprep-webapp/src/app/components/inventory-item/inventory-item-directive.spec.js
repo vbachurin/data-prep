@@ -30,10 +30,10 @@ describe('InventoryItem directive', function () {
     };
 
 
-    beforeEach(module('data-prep.inventory-item'));
+    beforeEach(angular.mock.module('data-prep.inventory-item'));
 
-    beforeEach(module('htmlTemplates'));
-    beforeEach(module('pascalprecht.translate', function ($translateProvider) {
+    beforeEach(angular.mock.module('htmlTemplates'));
+    beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
             'INVENTORY_DETAILS': 'owned by {{author}}, created {{created | TDPMoment}}, contains {{records}} lines'
         });

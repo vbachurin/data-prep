@@ -14,7 +14,7 @@
 describe('Moment filter', function () {
     'use strict';
 
-    beforeEach(module('data-prep.services.utils'));
+    beforeEach(angular.mock.module('data-prep.services.utils'));
 
     it('should transform timestamp to human readable moment', inject(function ($filter) {
         // given

@@ -13,7 +13,7 @@ describe('Preparation Service', function () {
     var updatedDatasetId = '99ac8561e62f34131';
     var updatedPreparationId = '5ea51464f515125e3';
 
-    beforeEach(module('data-prep.services.preparation', function ($provide) {
+    beforeEach(angular.mock.module('data-prep.services.preparation', function ($provide) {
         stateMock = {
             inventory: {
                 preparations: null

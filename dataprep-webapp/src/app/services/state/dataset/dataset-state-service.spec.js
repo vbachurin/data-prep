@@ -16,8 +16,8 @@ describe('dataset state service', function(){
 
 	var dataset = {};
 
-	beforeEach(module('data-prep.services.state'));
-	beforeEach(module('data-prep.services.playground'));
+	beforeEach(angular.mock.module('data-prep.services.state'));
+	beforeEach(angular.mock.module('data-prep.services.playground'));
 
 	it('should add 2 currently added datasets to be shown in the progress bar', inject(function (DatasetStateService, datasetState) {
 		//given

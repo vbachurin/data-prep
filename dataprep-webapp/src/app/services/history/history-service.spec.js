@@ -18,7 +18,7 @@ describe('History service', function() {
     var secondUndoAction, secondRedoAction;
     var errorUndoAction, errorRedoAction;
 
-    beforeEach(module('data-prep.services.history'));
+    beforeEach(angular.mock.module('data-prep.services.history'));
     beforeEach(inject(function($q) {
         firstUndoAction = jasmine.createSpy('firstUndoAction');
         firstRedoAction = jasmine.createSpy('firstRedoAction');

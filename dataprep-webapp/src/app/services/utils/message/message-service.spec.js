@@ -14,9 +14,9 @@
 describe('Message service', function() {
     'use strict';
 
-    beforeEach(module('data-prep.services.utils'));
+    beforeEach(angular.mock.module('data-prep.services.utils'));
 
-    beforeEach(module('pascalprecht.translate', function ($translateProvider) {
+    beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en_US', {
             'TITLE': 'TITLE_VALUE',
             'CONTENT_WITHOUT_ARG': 'CONTENT_WITHOUT_ARG_VALUE',

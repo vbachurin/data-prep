@@ -28,7 +28,10 @@ export default function Datagrid($timeout, state, DatagridGridService, DatagridC
         templateUrl: 'app/components/datagrid/datagrid.html',
         bindToController: true,
         controllerAs: 'datagridCtrl',
-        controller: 'DatagridCtrl',
+        controller: function() {
+            this.state = state;
+            this.datagridTooltipService = DatagridTooltipService;
+        },
         link: function (scope, iElement) {
             var grid;
             var columnTimeout, columnStyleTimeout, cellHighlightTimeout, externalTimeout, focusTimeout;
@@ -210,9 +213,7 @@ export default function Datagrid($timeout, state, DatagridGridService, DatagridC
              */
             function resize() {
                 if (grid) {
-                    $timeout.cancel(function () {
-                        grid.resizeCanvas();
-                    }, 250, false);
+                    $timeout(grid.resizeCanvas, 250, false);
                 }
             }
 

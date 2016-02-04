@@ -11,24 +11,21 @@
 
   ============================================================================*/
 
-/*global window:false */
-/*global SlickGridMock:false */
-
 describe('Datagrid grid service', function () {
     'use strict';
 
     var realSlickGrid = Slick;
     var dataViewMock, stateMock;
 
-    beforeEach(module('data-prep.datagrid'));
-    beforeEach(module('data-prep.suggestions-stats'));
+    beforeEach(angular.mock.module('data-prep.datagrid'));
+    beforeEach(angular.mock.module('data-prep.suggestions-stats'));
 
     beforeEach(function () {
         dataViewMock = new DataViewMock();
     });
 
 
-    beforeEach(module('data-prep.datagrid', function ($provide) {
+    beforeEach(angular.mock.module('data-prep.datagrid', function ($provide) {
         stateMock = {playground: {grid: {
             dataView: dataViewMock
         }}};
@@ -47,15 +44,15 @@ describe('Datagrid grid service', function () {
         spyOn(DatagridTooltipService, 'init').and.returnValue();
     }));
 
-    beforeEach(function () {
-        window.Slick = {
+    beforeEach(inject(function ($window) {
+        $window.Slick = {
             Grid: SlickGridMock
         };
-    });
+    }));
 
-    afterEach(function () {
-        window.Slick = realSlickGrid;
-    });
+    afterEach(inject(function ($window) {
+        $window.Slick = realSlickGrid;
+    }));
 
     describe('on creation', function() {
         it('should init the other datagrid services', inject(function (DatagridGridService, DatagridColumnService,

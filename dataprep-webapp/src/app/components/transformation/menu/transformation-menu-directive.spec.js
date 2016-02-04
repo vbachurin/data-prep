@@ -20,8 +20,8 @@ describe('Transformation menu directive', function () {
         type: 'text'
     };
 
-    beforeEach(module('data-prep.transformation-menu'));
-    beforeEach(module('htmlTemplates'));
+    beforeEach(angular.mock.module('data-prep.transformation-menu'));
+    beforeEach(angular.mock.module('htmlTemplates'));
 
     beforeEach(inject(function ($q, $rootScope, $compile, ColumnTypesService) {
         spyOn(ColumnTypesService, 'getTypes').and.returnValue($q.when([]));
@@ -200,7 +200,7 @@ describe('Transformation menu directive', function () {
                             ]
                         }
                     }
-                ],
+                ]
             },
             {
                 name: 'menuWithParam',

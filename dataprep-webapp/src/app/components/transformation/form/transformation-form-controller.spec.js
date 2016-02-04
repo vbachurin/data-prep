@@ -16,7 +16,7 @@ describe('Transform params controller', function () {
 
     var createController, scope, extractedParams, transformation;
 
-    beforeEach(module('data-prep.transformation-form'));
+    beforeEach(angular.mock.module('data-prep.transformation-form'));
 
     beforeEach(inject(function ($rootScope, $controller) {
         extractedParams = null;

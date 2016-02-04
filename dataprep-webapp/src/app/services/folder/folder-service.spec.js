@@ -26,7 +26,7 @@ describe('Folder services', function () {
         {id: 'desc', name: 'DESC_ORDER'}
     ];
 
-    beforeEach(module('data-prep.services.folder', function ($provide) {
+    beforeEach(angular.mock.module('data-prep.services.folder', function ($provide) {
         stateMock = {
             folder: {
                 currentFolderContent: {}
@@ -42,7 +42,7 @@ describe('Folder services', function () {
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(module('pascalprecht.translate', function ($translateProvider) {
+    beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
             'HOME_FOLDER': 'Home'
         });

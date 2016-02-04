@@ -16,9 +16,9 @@ describe('Filter bar directive', function() {
 
     var scope, createElement, element;
 
-    beforeEach(module('data-prep.filter-bar'));
-    beforeEach(module('htmlTemplates'));
-    beforeEach(module('pascalprecht.translate', function ($translateProvider) {
+    beforeEach(angular.mock.module('data-prep.filter-bar'));
+    beforeEach(angular.mock.module('htmlTemplates'));
+    beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
             'FILTER': 'Search and filter',
             'COLON': ': '

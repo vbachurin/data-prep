@@ -111,7 +111,7 @@ describe('Transformation cache service', function() {
     };
     var column = {id: '0002', name: 'Firstname'};
 
-    beforeEach(module('data-prep.services.transformation'));
+    beforeEach(angular.mock.module('data-prep.services.transformation'));
 
     describe('transformations', function() {
         beforeEach(inject(function($q, TransformationService) {

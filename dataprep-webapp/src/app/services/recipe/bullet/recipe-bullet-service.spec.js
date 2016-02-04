@@ -14,28 +14,19 @@
 describe('Recipe Bullet service', function () {
     'use strict';
 
-    var createController, scope;
     var previousStep = {column:{id:'0003'}};
     var lastActiveStep = {inactive: false};
 
     var preparationId = '4635fa41864b74ef64';
     var stateMock;
 
-    beforeEach(module('data-prep.services.recipe', function($provide) {
+    beforeEach(angular.mock.module('data-prep.services.recipe', function($provide) {
         stateMock = {playground: {preparation: {id: preparationId}}};
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(inject(function ($rootScope, $controller, $q, $timeout,
+    beforeEach(inject(function ($rootScope, $q, $timeout,
                                 PlaygroundService, RecipeBulletService, RecipeService, PreparationService, PreviewService) {
-        scope = $rootScope.$new();
-
-        createController = function () {
-            return $controller('RecipeCtrl', {
-                $scope: scope
-            });
-        };
-
         spyOn($rootScope, '$emit').and.returnValue();
         spyOn(RecipeService, 'getPreviousStep').and.returnValue(previousStep);
         spyOn(RecipeService, 'getActiveThresholdStepIndex').and.returnValue(3);
@@ -52,13 +43,6 @@ describe('Recipe Bullet service', function () {
         spyOn($timeout, 'cancel').and.returnValue();
     }));
 
-    beforeEach(function () {
-        jasmine.clock().install();
-    });
-    afterEach(function () {
-        jasmine.clock().uninstall();
-    });
-
     it('should trigger append preview on inactive step hover after a delay of 300ms', inject(function ($timeout, RecipeService, PreviewService, RecipeBulletService) {
         //given
         var recipe = RecipeService.getRecipe();
@@ -72,9 +56,9 @@ describe('Recipe Bullet service', function () {
 
         //when
         RecipeBulletService.stepHoverStart(recipe[2]);
-        jasmine.clock().tick(299);
+        $timeout.flush(299);
         expect(PreviewService.getPreviewDiffRecords).not.toHaveBeenCalled();
-        jasmine.clock().tick(1);
+        $timeout.flush(1);
 
         //then
         expect(PreviewService.getPreviewDiffRecords).toHaveBeenCalledWith(preparationId, recipe[0], recipe[2], '0004');
@@ -156,9 +140,9 @@ describe('Recipe Bullet service', function () {
 
         //when
         RecipeBulletService.stepHoverStart(recipe[2]);
-        jasmine.clock().tick(299);
+        $timeout.flush(299);
         expect(PreviewService.getPreviewDiffRecords).not.toHaveBeenCalled();
-        jasmine.clock().tick(1);
+        $timeout.flush(1);
 
         //then
         expect(PreviewService.getPreviewDiffRecords).toHaveBeenCalledWith(preparationId, recipe[3], previousStep, '0000');
@@ -171,8 +155,7 @@ describe('Recipe Bullet service', function () {
         //when
         RecipeBulletService.stepHoverEnd(step);
         expect(PreviewService.cancelPreview).not.toHaveBeenCalled();
-        jasmine.clock().tick(100);
-        $timeout.flush();
+        $timeout.flush(100);
 
         //then
         expect(PreviewService.cancelPreview).toHaveBeenCalled();
@@ -184,8 +167,7 @@ describe('Recipe Bullet service', function () {
 
         //when
         RecipeBulletService.stepHoverEnd(step);
-        jasmine.clock().tick(100);
-        $timeout.flush();
+        $timeout.flush(100);
 
         //then
         expect(PreviewService.getPreviewDiffRecords).not.toHaveBeenCalled();

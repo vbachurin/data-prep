@@ -17,7 +17,7 @@ describe('Actions list controller', function () {
     var createController, scope;
     var stateMock;
 
-    beforeEach(module('data-prep.actions-list', function ($provide) {
+    beforeEach(angular.mock.module('data-prep.actions-list', function ($provide) {
         stateMock = {playground: {
             grid: {},
             filter: {}
@@ -43,14 +43,6 @@ describe('Actions list controller', function () {
         spyOn(EarlyPreviewService, 'cancelPendingPreview').and.returnValue();
         spyOn(EarlyPreviewService, 'earlyPreview').and.returnValue();
     }));
-
-    beforeEach(function() {
-        jasmine.clock().install();
-    });
-
-    afterEach(function() {
-        jasmine.clock().uninstall();
-    });
 
     describe('init', function () {
         it('should init vars and flags', inject(function () {
@@ -143,7 +135,7 @@ describe('Actions list controller', function () {
             expect(EarlyPreviewService.cancelPendingPreview).toHaveBeenCalled();
         }));
 
-        it('should re-enable early preview after 500ms', inject(function (EarlyPreviewService) {
+        it('should re-enable early preview after 500ms', inject(function ($timeout, EarlyPreviewService) {
             //given
             var transformation = {name: 'tolowercase'};
             var params = {param: 'value'};
@@ -157,7 +149,7 @@ describe('Actions list controller', function () {
             scope.$digest();
 
             expect(EarlyPreviewService.activatePreview).not.toHaveBeenCalled();
-            jasmine.clock().tick(500);
+            $timeout.flush(500);
 
             //then
             expect(EarlyPreviewService.activatePreview).toHaveBeenCalled();

@@ -2,7 +2,7 @@ describe('Statistics Tooltip service', function () {
     'use strict';
     var stateMock;
 
-    beforeEach(module('pascalprecht.translate', function ($translateProvider) {
+    beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
             'TOOLTIP_MATCHING_FILTER': 'matching your filter',
             'TOOLTIP_MATCHING_FULL': 'in entire dataset'
@@ -10,7 +10,7 @@ describe('Statistics Tooltip service', function () {
         $translateProvider.preferredLanguage('en');
     }));
 
-    beforeEach(module('data-prep.services.statistics', function ($provide) {
+    beforeEach(angular.mock.module('data-prep.services.statistics', function ($provide) {
         stateMock = {
             playground: {
                 filter: {gridFilters: []},

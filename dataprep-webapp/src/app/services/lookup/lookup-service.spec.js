@@ -173,7 +173,7 @@ describe('lookup service', function () {
         {id: 'desc', name: 'DESC_ORDER'}
     ];
 
-    beforeEach(module('data-prep.services.lookup', function ($provide) {
+    beforeEach(angular.mock.module('data-prep.services.lookup', function ($provide) {
         stateMock = {
             playground: {
                 data: null,

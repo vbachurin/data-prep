@@ -16,8 +16,8 @@
 describe('Dataset upload list directive', function() {
     var scope, createElement;
 
-    beforeEach(module('data-prep.dataset-upload-list'));
-    beforeEach(module('htmlTemplates'));
+    beforeEach(angular.mock.module('data-prep.dataset-upload-list'));
+    beforeEach(angular.mock.module('htmlTemplates'));
 
     beforeEach(inject(function($rootScope, $compile) {
         scope = $rootScope.$new();
@@ -32,7 +32,7 @@ describe('Dataset upload list directive', function() {
     it('should render progressing upload dataset', function() {
         //given
         scope.datasets = [
-            {name: 'Customers (50 lines)', progress: 10, error: false, type: 'file'},
+            {name: 'Customers (50 lines)', progress: 10, error: false, type: 'file'}
         ];
 
         //when
@@ -50,7 +50,7 @@ describe('Dataset upload list directive', function() {
     it('should render progressing remote dataset import', function() {
         //given
         scope.datasets = [
-            {name: 'remote 1', progress: 0, error: false, type: 'remote'},
+            {name: 'remote 1', progress: 0, error: false, type: 'remote'}
         ];
 
         //when
@@ -67,7 +67,7 @@ describe('Dataset upload list directive', function() {
     it('should render upload error dataset', function() {
         //given
         scope.datasets = [
-            {name: 'Customers (50 lines)', progress: 10, error: true},
+            {name: 'Customers (50 lines)', progress: 10, error: true}
         ];
 
         //when

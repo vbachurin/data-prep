@@ -11,7 +11,7 @@
 
   ============================================================================*/
 
-describe('horizontalBarchart directive', function () {
+describe('Horizontal Barchart directive', function () {
     'use strict';
 
     var createElement, element, scope, statsData, filteredStatsData;
@@ -24,7 +24,7 @@ describe('horizontalBarchart directive', function () {
         Date.now = now;
     };
 
-    beforeEach(module('talend.widget'));
+    beforeEach(angular.mock.module('talend.widget'));
 
     beforeEach(inject(function ($rootScope, $compile) {
         statsData = [
@@ -73,26 +73,20 @@ describe('horizontalBarchart directive', function () {
         };
     }));
 
-    beforeEach(function () {
-        jasmine.clock().install();
-    });
-
     afterEach(function () {
-        jasmine.clock().uninstall();
-
         scope.$destroy();
         element.remove();
     });
 
     describe('render', function () {
-        it('should render labels after a 100ms delay', function () {
+        it('should render labels after a 100ms delay', inject(function ($timeout) {
             //given
             createElement();
 
             //when
             scope.primaryData = statsData;
             scope.$digest();
-            jasmine.clock().tick(100);
+            $timeout.flush(100);
 
             //then
             expect(element.find('.label').length).toBe(statsData.length);
@@ -104,22 +98,22 @@ describe('horizontalBarchart directive', function () {
             expect(element.find('.label').eq(5).text()).toBe('Quincy');
             expect(element.find('.label').eq(6).text()).toBe('Clinton');
             expect(element.find('.label').eq(7).text()).toBe('Harrison');
-        });
+        }));
 
-        it('should render hover rect after a 100ms delay', function () {
+        it('should render hover rect after a 100ms delay', inject(function ($timeout) {
             //given
             createElement();
 
             //when
             scope.primaryData = statsData;
             scope.$digest();
-            jasmine.clock().tick(100);
+            $timeout.flush(100);
 
             //then
             expect(element.find('.bg-rect').length).toBe(statsData.length);
-        });
+        }));
 
-        it('should render grid after a 100ms delay with maximum occurrences >= 1e9', function () {
+        it('should render grid after a 100ms delay with maximum occurrences >= 1e9', inject(function ($timeout) {
             //given
             createElement();
 
@@ -129,15 +123,15 @@ describe('horizontalBarchart directive', function () {
                 {'data': 'Roosevelt', 'occurrences': 8}
             ];
             scope.$digest();
-            jasmine.clock().tick(100);
+            $timeout.flush(100);
 
             //then
             expect(element.find('.grid text').length).toBe(2);
             expect(element.find('.grid text').eq(0).text()).toBe('0');
             expect(element.find('.grid text').eq(1).text()).toBe('5,000,000,000');
-        });
+        }));
 
-        it('should render grid after a 100ms delay with (1e6<= maximum occurrences < 1e9)', function () {
+        it('should render grid after a 100ms delay with (1e6<= maximum occurrences < 1e9)', inject(function ($timeout) {
             //given
             createElement();
 
@@ -147,16 +141,16 @@ describe('horizontalBarchart directive', function () {
                 {'data': 'Roosevelt', 'occurrences': 8}
             ];
             scope.$digest();
-            jasmine.clock().tick(100);
+            $timeout.flush(100);
 
             //then
             expect(element.find('.grid text').length).toBe(3);
             expect(element.find('.grid text').eq(0).text()).toBe('0');
             expect(element.find('.grid text').eq(1).text()).toBe('50,000,000');
             expect(element.find('.grid text').eq(2).text()).toBe('100,000,000');
-        });
+        }));
 
-        it('should render grid after a 100ms delay with (1e3<= maximum occurrences < 1e6)', function () {
+        it('should render grid after a 100ms delay with (1e3<= maximum occurrences < 1e6)', inject(function ($timeout) {
             //given
             createElement();
 
@@ -166,7 +160,7 @@ describe('horizontalBarchart directive', function () {
                 {'data': 'Roosevelt', 'occurrences': 8}
             ];
             scope.$digest();
-            jasmine.clock().tick(100);
+            $timeout.flush(100);
 
             //then
             expect(element.find('.grid text').length).toBe(6);
@@ -176,16 +170,16 @@ describe('horizontalBarchart directive', function () {
             expect(element.find('.grid text').eq(3).text()).toBe('60,000');
             expect(element.find('.grid text').eq(4).text()).toBe('80,000');
             expect(element.find('.grid text').eq(5).text()).toBe('100,000');
-        });
+        }));
 
-        it('should render grid after a 100ms delay with maximum of ticks < 1e3', function () {
+        it('should render grid after a 100ms delay with maximum of ticks < 1e3', inject(function ($timeout) {
             //given
             createElement();
 
             //when
             scope.primaryData = statsData;
             scope.$digest();
-            jasmine.clock().tick(100);
+            $timeout.flush(100);
 
             //then
             expect(element.find('.grid text').length).toBe(10);
@@ -199,23 +193,23 @@ describe('horizontalBarchart directive', function () {
             expect(element.find('.grid text').eq(7).text()).toBe('7');
             expect(element.find('.grid text').eq(8).text()).toBe('8');
             expect(element.find('.grid text').eq(9).text()).toBe('9');
-        });
+        }));
 
-        it('should render primary data after a 100ms delay', function () {
+        it('should render primary data after a 100ms delay', inject(function ($timeout) {
             //given
             createElement();
 
             //when
             scope.primaryData = statsData;
             scope.$digest();
-            jasmine.clock().tick(100);
+            $timeout.flush(100);
 
             //then
             expect(element.find('.primaryBar > rect').length).toBe(statsData.length);
             expect(element.find('.secondaryBar > rect').length).toBe(0);
-        });
+        }));
 
-        it('should render primary and secondary data after a 100ms delay', function () {
+        it('should render primary and secondary data after a 100ms delay', inject(function ($timeout) {
             //given
             createElement();
 
@@ -223,32 +217,32 @@ describe('horizontalBarchart directive', function () {
             scope.primaryData = statsData;
             scope.secondaryData = filteredStatsData;
             scope.$digest();
-            jasmine.clock().tick(100);
+            $timeout.flush(100);
 
             //then
             expect(element.find('.primaryBar > rect').length).toBe(statsData.length);
             expect(element.find('.secondaryBar > rect').length).toBe(statsData.length);
-        });
+        }));
 
-        it('should render secondary data after a 100ms delay', function () {
+        it('should render secondary data after a 100ms delay', inject(function ($timeout) {
             //given
             createElement();
             scope.primaryData = statsData;
             scope.$digest();
-            jasmine.clock().tick(100);
+            $timeout.flush(100);
 
             expect(element.find('.secondaryBar > rect').length).toBe(0);
 
             //when
             scope.secondaryData = filteredStatsData;
             scope.$digest();
-            jasmine.clock().tick(100);
+            $timeout.flush(100);
 
             //then
             expect(element.find('.secondaryBar > rect').length).toBe(statsData.length);
-        });
+        }));
 
-        it('should render tiny bars with a 3px width bar', function () {
+        it('should render tiny bars with a 3px width bar', inject(function ($timeout) {
             //given
             createElement();
 
@@ -259,31 +253,31 @@ describe('horizontalBarchart directive', function () {
                 {'data': 'Roosevelt', 'occurrences': 1}
             ];
             scope.$digest();
-            jasmine.clock().tick(100);
+            $timeout.flush(100);
             flushAllD3Transitions();
 
             //then
             expect(element.find('.primaryBar > rect').eq(0).attr('width')).toBe('220');
             expect(element.find('.primaryBar > rect').eq(1).attr('width')).toBe('0');
             expect(element.find('.primaryBar > rect').eq(2).attr('width')).toBe('3');
-        });
+        }));
     });
 
     describe('bar class name', function () {
-        it('should set "transparentBar" class as primary bars default class name', function () {
+        it('should set "transparentBar" class as primary bars default class name', inject(function ($timeout) {
             //given
             createElement();
 
             //when
             scope.primaryData = statsData;
             scope.$digest();
-            jasmine.clock().tick(100);
+            $timeout.flush(100);
 
             //then
             expect(element.find('.primaryBar > rect.transparentBar').length).toBe(statsData.length);
-        });
+        }));
 
-        it('should set "blueBar" class as secondary bars default class name', function () {
+        it('should set "blueBar" class as secondary bars default class name', inject(function ($timeout) {
             //given
             createElement();
 
@@ -291,13 +285,13 @@ describe('horizontalBarchart directive', function () {
             scope.primaryData = statsData;
             scope.secondaryData = filteredStatsData;
             scope.$digest();
-            jasmine.clock().tick(100);
+            $timeout.flush(100);
 
             //then
             expect(element.find('.secondaryBar > rect.blueBar').length).toBe(statsData.length);
-        });
+        }));
 
-        it('should set custom secondary bars class name', function () {
+        it('should set custom secondary bars class name', inject(function ($timeout) {
             //given
             createElement();
 
@@ -307,11 +301,11 @@ describe('horizontalBarchart directive', function () {
             scope.secondaryData = filteredStatsData;
             scope.secondaryBarClass = 'brownBar';
             scope.$digest();
-            jasmine.clock().tick(100);
+            $timeout.flush(100);
 
             //then
             expect(element.find('.primaryBar > rect.blueBar').length).toBe(statsData.length);
             expect(element.find('.secondaryBar > rect.brownBar').length).toBe(statsData.length);
-        });
+        }));
     });
 });

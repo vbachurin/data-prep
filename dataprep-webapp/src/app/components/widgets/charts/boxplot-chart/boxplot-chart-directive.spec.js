@@ -11,12 +11,12 @@
 
   ============================================================================*/
 
-describe('boxplot chart directive', function () {
+describe('Boxplot chart directive', function () {
 	'use strict';
 
 	var createElement, element, scope, boxValues;
 
-	beforeEach(module('talend.widget'));
+	beforeEach(angular.mock.module('talend.widget'));
 	beforeEach(inject(function ($rootScope, $compile) {
 		boxValues = {
 			min:0,
@@ -29,7 +29,6 @@ describe('boxplot chart directive', function () {
 		};
 
 		createElement = function () {
-
 			scope = $rootScope.$new();
 			scope.boxValues = null;
 			element = angular.element('<boxplot-chart id="boxplotId" width="200" height="400" boxplot-data="boxValues"></boxplot-chart>');
@@ -40,24 +39,19 @@ describe('boxplot chart directive', function () {
 		};
 	}));
 
-	beforeEach(function () {
-		jasmine.clock().install();
-	});
 	afterEach(function () {
-		jasmine.clock().uninstall();
-
 		scope.$destroy();
 		element.remove();
 	});
 
-	it('should render the different basic components of the boxplot after a 100ms delay', function () {
+	it('should render the different basic components of the boxplot after a 100ms delay', inject(function ($timeout) {
 		//given
 		createElement();
 
 		//when
 		scope.boxValues = boxValues;
 		scope.$digest();
-		jasmine.clock().tick(100);
+		$timeout.flush(100);
 
 		//then
 		expect(element.find('rect').length).toBe(2);
@@ -67,6 +61,6 @@ describe('boxplot chart directive', function () {
 		expect(element.find('.mean-labels').length).toBe(1);
 		expect(element.find('.whiskerPolyg').length).toBe(2);
 		expect(element.find('.max-min-labels').length).toBe(4);
-	});
+	}));
 
 });

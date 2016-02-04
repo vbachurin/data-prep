@@ -17,14 +17,14 @@ describe('Column suggestion service', function () {
     var firstSelectedColumn = {id: '0001', name: 'col1'};
     var stateMock, columnTransformations, columnSuggestions, allCategories;
 
-    beforeEach(module('pascalprecht.translate', function ($translateProvider) {
+    beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
             'ACTION_SUGGESTION': 'Suggestion'
         });
         $translateProvider.preferredLanguage('en');
     }));
 
-    beforeEach(module('data-prep.services.transformation', function ($provide) {
+    beforeEach(angular.mock.module('data-prep.services.transformation', function ($provide) {
         stateMock = {
             playground: {
                 suggestions: {

@@ -212,14 +212,8 @@ describe('Recipe service', function () {
                             'label': 'parameter.default_value.label',
                             'configuration': {
                                 'values': [
-                                    {
-                                        'name': 'True',
-                                        'value': 'True',
-                                    },
-                                    {
-                                        'name': 'False',
-                                        'value': 'False',
-                                    }
+                                    {'name': 'True', 'value': 'True'},
+                                    {'name': 'False', 'value': 'False'}
                                 ]
                             },
                             'default': 'True'
@@ -452,7 +446,7 @@ describe('Recipe service', function () {
 
     var stateMock;
 
-    beforeEach(module('data-prep.services.recipe', function($provide) {
+    beforeEach(angular.mock.module('data-prep.services.recipe', function($provide) {
         stateMock = {playground: {}};
         $provide.constant('state', stateMock);
     }));

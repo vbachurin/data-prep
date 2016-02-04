@@ -17,7 +17,7 @@ describe('Dataset xls preview controller', function () {
     var createController, scope, gridElement, stateMock;
     var content = {column: [], records: []};
 
-    beforeEach(module('data-prep.dataset-xls-preview', function ($provide) {
+    beforeEach(angular.mock.module('data-prep.dataset-xls-preview', function ($provide) {
         stateMock = {folder: {currentFolder: {path :'HOME'}}};
         $provide.constant('state', stateMock);
     }));

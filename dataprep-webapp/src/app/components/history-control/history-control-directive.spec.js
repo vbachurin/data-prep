@@ -16,8 +16,8 @@ describe('History control directive', function() {
 
     var createElement, element, scope, body;
 
-    beforeEach(module('data-prep.history-control'));
-    beforeEach(module('htmlTemplates'));
+    beforeEach(angular.mock.module('data-prep.history-control'));
+    beforeEach(angular.mock.module('htmlTemplates'));
 
     beforeEach(inject(function($rootScope, $compile, HistoryService) {
         body = angular.element('body');

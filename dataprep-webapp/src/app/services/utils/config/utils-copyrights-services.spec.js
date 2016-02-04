@@ -14,7 +14,7 @@
 describe('Copyrights service', function() {
     'use strict';
 
-    beforeEach(module('data-prep.services.utils'));
+    beforeEach(angular.mock.module('data-prep.services.utils'));
 
     it('should set value by default', inject(function(copyRights) {
         //then

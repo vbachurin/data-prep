@@ -16,8 +16,8 @@ describe('Home directive', function() {
 
     var scope, createElement, element;
 
-    beforeEach(module('data-prep.home'));
-    beforeEach(module('htmlTemplates'));
+    beforeEach(angular.mock.module('data-prep.home'));
+    beforeEach(angular.mock.module('htmlTemplates'));
 
     beforeEach(inject(function($rootScope, $compile, $q, FolderService) {
         scope = $rootScope.$new();

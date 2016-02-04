@@ -16,7 +16,7 @@ describe('Statistics REST service', function () {
 
     var $httpBackend;
 
-    beforeEach(module('data-prep.services.statistics'));
+    beforeEach(angular.mock.module('data-prep.services.statistics'));
 
     beforeEach(inject(function ($injector, RestURLs) {
         RestURLs.setServerUrl('');

@@ -16,7 +16,7 @@ describe('Transformation Rest Service', function () {
 
     var $httpBackend;
 
-    beforeEach(module('data-prep.services.transformation'));
+    beforeEach(angular.mock.module('data-prep.services.transformation'));
 
     beforeEach(inject(function ($injector) {
         $httpBackend = $injector.get('$httpBackend');

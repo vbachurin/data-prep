@@ -125,7 +125,7 @@ describe('Datagrid header controller', function () {
         };
     };
 
-    beforeEach(module('data-prep.datagrid-header'));
+    beforeEach(angular.mock.module('data-prep.datagrid-header'));
 
     beforeEach(inject(function ($rootScope, $controller) {
         scope = $rootScope.$new();

@@ -18,7 +18,7 @@ describe('Actions suggestions-stats controller', function () {
 
     var stateMock;
 
-    beforeEach(module('data-prep.actions-suggestions', function($provide) {
+    beforeEach(angular.mock.module('data-prep.actions-suggestions', function($provide) {
         stateMock = {playground: {filter: {}}};
         $provide.constant('state', stateMock);
     }));

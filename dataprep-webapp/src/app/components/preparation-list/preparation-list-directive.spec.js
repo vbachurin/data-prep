@@ -127,7 +127,7 @@ describe('Preparation list directive', function () {
         }
     ];
 
-    beforeEach(module('data-prep.preparation-list', function ($provide) {
+    beforeEach(angular.mock.module('data-prep.preparation-list', function ($provide) {
         stateMock = {
             inventory: {
                 preparations: allPreparations
@@ -136,7 +136,7 @@ describe('Preparation list directive', function () {
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(module('htmlTemplates'));
+    beforeEach(angular.mock.module('htmlTemplates'));
 
     beforeEach(inject(function ($rootScope, $compile, $q, PreparationService) {
         scope = $rootScope.$new();

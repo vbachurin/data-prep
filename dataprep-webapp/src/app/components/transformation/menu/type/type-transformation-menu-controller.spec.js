@@ -28,7 +28,7 @@ describe('Type transform menu controller', function () {
         {'id': 'DATE', 'name': 'date', 'labelKey': 'DATE'}
     ];
 
-    beforeEach(module('data-prep.type-transformation-menu'));
+    beforeEach(angular.mock.module('data-prep.type-transformation-menu'));
 
     beforeEach(inject(function ($rootScope, $controller, $q, state, ColumnTypesService) {
         scope = $rootScope.$new();

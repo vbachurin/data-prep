@@ -16,9 +16,9 @@ describe('Filter monitor directive', function() {
 
     var scope, createElement, element;
 
-    beforeEach(module('data-prep.filter-monitor'));
-    beforeEach(module('htmlTemplates'));
-    beforeEach(module('pascalprecht.translate', function ($translateProvider) {
+    beforeEach(angular.mock.module('data-prep.filter-monitor'));
+    beforeEach(angular.mock.module('htmlTemplates'));
+    beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
             'REMOVE_ALL_FILTER': 'Remove all filters',
             'NB_LINES_MATCHING_FILTERS': '{{percentage}}% of lines are matching your filter(s)'

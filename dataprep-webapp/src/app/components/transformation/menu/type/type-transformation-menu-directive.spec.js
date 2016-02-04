@@ -13,7 +13,7 @@
 
 describe('Transformation menu directive', function () {
     'use strict';
-    var scope, createElement, element, ctrl;
+    var scope, createElement, element;
 
     var types = [
         {'id': 'ANY', 'name': 'any', 'labelKey': 'ANY'},
@@ -26,10 +26,10 @@ describe('Transformation menu directive', function () {
         {'id': 'DATE', 'name': 'date', 'labelKey': 'DATE'}
     ];
 
-    beforeEach(module('data-prep.transformation-menu'));
-    beforeEach(module('htmlTemplates'));
+    beforeEach(angular.mock.module('data-prep.transformation-menu'));
+    beforeEach(angular.mock.module('htmlTemplates'));
 
-    beforeEach(module('pascalprecht.translate', function ($translateProvider) {
+    beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
             'COLUMN_TYPE_IS': 'This column is a ',
             'COLUMN_TYPE_SET': 'Set as',
@@ -60,8 +60,6 @@ describe('Transformation menu directive', function () {
             element = angular.element('<type-transform-menu column="column"></type-transform-menu>');
             $compile(element)(scope);
             scope.$digest();
-
-            ctrl = element.controller('typeTransformMenu');
             return element;
         };
     }));

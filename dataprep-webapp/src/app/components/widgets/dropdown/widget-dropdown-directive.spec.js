@@ -16,8 +16,8 @@
 describe('Dropdown directive', function () {
     var scope, element;
 
-    beforeEach(module('talend.widget'));
-    beforeEach(module('htmlTemplates'));
+    beforeEach(angular.mock.module('talend.widget'));
+    beforeEach(angular.mock.module('htmlTemplates'));
 
     var clickDropdownToggle = function (elm) {
         elm = elm || element;
@@ -29,12 +29,7 @@ describe('Dropdown directive', function () {
         elm.find('a[role="menuitem"]').eq(0).click();
     };
 
-    beforeEach(function () {
-        jasmine.clock().install();
-    });
     afterEach(function () {
-        jasmine.clock().uninstall();
-
         scope.$destroy();
         element.remove();
     });
@@ -75,19 +70,19 @@ describe('Dropdown directive', function () {
             expect(menu.hasClass('show-menu')).toBe(true);
         });
 
-        it('should focus on dropdown menu when it is shown', function () {
+        it('should focus on dropdown menu when it is shown', inject(function ($document) {
             //given
             var menu = element.find('.dropdown-menu').eq(0)[0];
             var body = angular.element('body');
             body.append(element);
-            expect(document.activeElement).not.toBe(menu);
+            expect($document.activeElement).not.toBe(menu);
 
             //when
             clickDropdownToggle();
 
             //then
-            expect(document.activeElement).not.toBe(element.find('.dropdown-menu').eq(0)[0]);
-        });
+            expect($document.activeElement).not.toBe(element.find('.dropdown-menu').eq(0)[0]);
+        }));
 
         it('should hide dropdown-menu on dropdown-action click when menu is visible', function () {
             //given
@@ -204,12 +199,12 @@ describe('Dropdown directive', function () {
             expect(menu.hasClass('show-menu')).toBe(true);
         });
 
-        it('should focus on dropdown action when menu is hidden by ESC', function () {
+        it('should focus on dropdown action when menu is hidden by ESC', inject(function ($timeout) {
             //given
             var action = element.find('.dropdown-action').eq(0);
             var menu = element.find('.dropdown-menu').eq(0);
             angular.element('body').append(element);
-            expect(document.activeElement).not.toBe(menu[0]);
+            expect(document.activeElement).not.toBe(menu[0]); //eslint-disable-line angular/document-service
 
             clickDropdownToggle();
 
@@ -218,11 +213,11 @@ describe('Dropdown directive', function () {
 
             //when
             menu.trigger(event);
-            jasmine.clock().tick(100);
+            $timeout.flush(100);
 
             //then
-            expect(document.activeElement).toBe(action[0]);
-        });
+            expect(document.activeElement).toBe(action[0]); //eslint-disable-line angular/document-service
+        }));
 
         it('should show menu on first click then close menu on the second click', function () {
             //given

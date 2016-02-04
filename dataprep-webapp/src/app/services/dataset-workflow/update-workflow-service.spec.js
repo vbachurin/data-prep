@@ -19,7 +19,7 @@ describe('UploadWorkflow Service', function () {
 	var existingDataset = {};
 	var dataset = {id: 'ec4834d9bc2af8', name: 'Customers (50 lines)', draft: false};
 
-	beforeEach(module('data-prep.services.datasetWorkflowService'));
+	beforeEach(angular.mock.module('data-prep.services.datasetWorkflowService'));
 
 	beforeEach(inject(function ($q) {
 		uploadDefer = $q.defer();

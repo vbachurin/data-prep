@@ -85,7 +85,7 @@ describe('Preparation list controller', function () {
         }
     ];
 
-    beforeEach(module('data-prep.preparation-list'));
+    beforeEach(angular.mock.module('data-prep.preparation-list'));
 
     beforeEach(inject(function ($q, $rootScope, $controller, PreparationService, PlaygroundService, MessageService, StateService) {
         scope = $rootScope.$new();

@@ -27,7 +27,7 @@ describe('Dataset Sheet Preview Service', function() {
         records: [{1: 'value1', 2: 'value2', 3: 'value3'}]
     };
 
-    beforeEach(module('data-prep.services.dataset'));
+    beforeEach(angular.mock.module('data-prep.services.dataset'));
 
     beforeEach(inject(function($q, DatasetService) {
         gridMockElement = angular.element('<div id="gridMock"></div>');

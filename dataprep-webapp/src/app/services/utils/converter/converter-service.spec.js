@@ -14,7 +14,7 @@
 describe('Converter service', function() {
     'use strict';
 
-    beforeEach(module('data-prep.services.utils'));
+    beforeEach(angular.mock.module('data-prep.services.utils'));
 
     it('should return number when input type is numeric, integer, double or float', inject(function(ConverterService) {
         checkToInputType(ConverterService, ['numeric', 'integer', 'double', 'float'], 'number');

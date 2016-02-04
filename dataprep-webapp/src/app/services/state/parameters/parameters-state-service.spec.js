@@ -14,7 +14,7 @@
 describe('Playground state service', function () {
     'use strict';
 
-    beforeEach(module('data-prep.services.state'));
+    beforeEach(angular.mock.module('data-prep.services.state'));
 
     describe('init', function() {
         it('should init visible to false', inject(function (parametersState) {

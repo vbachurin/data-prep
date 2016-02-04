@@ -16,7 +16,7 @@ describe('Inventory state service', function(){
 
     var preparations = [{id: 'toto'}, {id: 'titi'}];
 
-    beforeEach(module('data-prep.services.state'));
+    beforeEach(angular.mock.module('data-prep.services.state'));
 
     it('should update preparations list', inject(function (inventoryState, InventoryStateService) {
         //given

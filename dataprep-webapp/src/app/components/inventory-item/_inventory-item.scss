@@ -25,60 +25,62 @@
     padding-right: 0;
     height: 45px;
 
-    button.button-dropdown-main,
-    button.button-dropdown-side {
-      border: none;
-      background: transparent;
-      padding: 0;
-      margin: 0;
-    }
-
-    .button-dropdown-side {
-      width: 20px;
-    }
-
     .line-separator {
       display: none;
     }
 
-    .button-dropdown-main-icon {
-      @include flex-row-center();
-      @include filter(none);
-      font-size: 1em;
-      padding: 0;
-    }
-
-    .dropdown-menu {
-      width: auto;
-
-      &:before {
-        top: -1.2em;
+    .button-dropdown {
+      button.button-dropdown-main,
+      button.button-dropdown-side {
+        border: none;
+        background: transparent;
+        padding: 0;
+        margin: 0;
       }
 
-      ul.inventory-actions-related-item-menu {
-        font-family: $sourcesanspro;
-        color: $black;
+      .button-dropdown-side {
+        width: 20px;
+      }
 
-        > li {
-          border: none;
-          font-size: 0.8em;
+      .button-dropdown-main-icon {
+        @include flex-row-center();
+        @include filter(none);
+        font-size: 1em;
+        padding: 0;
+      }
 
-          &:not(:first-child) {
-            padding-left: 15px;
-          }
+      .dropdown-menu {
+        width: auto;
 
-          &.divider {
-            border-bottom: 1px solid #e5e5e5;
-            padding: 0;
-            margin: 0;
-          }
+        &:before {
+          top: -1.2em;
+        }
 
-          .inventory-actions-related-item-name {
-            font-size: 1.15em;
-            font-weight: bold;
-            text-transform: uppercase;
-            @include ellipsis(350px);
-            vertical-align: bottom;
+        ul.inventory-actions-related-item-menu {
+          font-family: $sourcesanspro;
+          color: $black;
+
+          > li {
+            border: none;
+            font-size: 0.8em;
+
+            &:not(:first-child) {
+              padding-left: 15px;
+            }
+
+            &.divider {
+              border-bottom: 1px solid #e5e5e5;
+              padding: 0;
+              margin: 0;
+            }
+
+            .inventory-actions-related-item-name {
+              font-size: 1.15em;
+              font-weight: bold;
+              text-transform: uppercase;
+              @include ellipsis(350px);
+              vertical-align: bottom;
+            }
           }
         }
       }

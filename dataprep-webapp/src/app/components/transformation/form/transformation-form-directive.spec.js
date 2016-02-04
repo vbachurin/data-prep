@@ -13,12 +13,12 @@
 
 describe('Transformation params directive', function () {
     'use strict';
-    var scope, createElement, extractedParams;
+    var scope, createElement;
 
-    beforeEach(module('data-prep.transformation-form'));
-    beforeEach(module('htmlTemplates'));
+    beforeEach(angular.mock.module('data-prep.transformation-form'));
+    beforeEach(angular.mock.module('htmlTemplates'));
 
-    beforeEach(module('pascalprecht.translate', function ($translateProvider) {
+    beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
             'COLON': ': '
         });
@@ -26,11 +26,7 @@ describe('Transformation params directive', function () {
     }));
 
     beforeEach(inject(function ($rootScope, $compile) {
-        extractedParams = null;
         scope = $rootScope.$new();
-        scope.onSubmit = function (args) {
-            extractedParams = args.params;
-        };
 
         createElement = function () {
             var element = angular.element('<transform-form transformation="transformation" on-submit="onSubmit"></transform-form>');

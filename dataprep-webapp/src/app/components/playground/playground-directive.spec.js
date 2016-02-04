@@ -85,7 +85,7 @@ describe('Playground directive', function () {
         {id: 'desc', name: 'DESC_ORDER'}
     ];
 
-    beforeEach(module('data-prep.playground', function($provide) {
+    beforeEach(angular.mock.module('data-prep.playground', function($provide) {
         stateMock = {
             playground: {
                 visible: true,
@@ -109,8 +109,8 @@ describe('Playground directive', function () {
         };
         $provide.constant('state', stateMock);
     }));
-    beforeEach(module('htmlTemplates'));
-    beforeEach(module('pascalprecht.translate', function ($translateProvider) {
+    beforeEach(angular.mock.module('htmlTemplates'));
+    beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
             'FILE_DETAILS_NAME': 'File: {{name}}',
             'FILE_DETAILS_LINES': '{{records}} lines',

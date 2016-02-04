@@ -62,7 +62,7 @@ describe('Export controller', function() {
 
     var stateMock;
 
-    beforeEach(module('data-prep.export', function($provide) {
+    beforeEach(angular.mock.module('data-prep.export', function($provide) {
         stateMock = {
             playground: {
                 preparation : {name: 'prepname'},

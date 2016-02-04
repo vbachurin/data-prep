@@ -14,7 +14,7 @@
 describe('folder directive', function() {
 	'use strict';
 
-	var scope, createElement, element, stateMock, controller;
+	var scope, createElement, element, stateMock;
 	var sortList = [
 		{id: 'name', name: 'NAME_SORT', property: 'name'},
 		{id: 'date', name: 'DATE_SORT', property: 'created'}
@@ -25,7 +25,7 @@ describe('folder directive', function() {
 		{id: 'desc', name: 'DESC_ORDER'}
 	];
 
-	beforeEach(module('data-prep.folder', function($provide){
+	beforeEach(angular.mock.module('data-prep.folder', function($provide){
 		stateMock = {
 			folder : {
 				foldersStack : [
@@ -49,8 +49,8 @@ describe('folder directive', function() {
 		$provide.constant('state', stateMock);
 	}));
 
-	beforeEach(module('htmlTemplates'));
-	beforeEach(module('pascalprecht.translate', function ($translateProvider) {
+	beforeEach(angular.mock.module('htmlTemplates'));
+	beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
 		$translateProvider.translations('en', {
 			'LOADING': 'Loading...'
 		});
@@ -65,8 +65,6 @@ describe('folder directive', function() {
 			element = angular.element('<folder></folder>');
 			$compile(element)(scope);
 			scope.$digest();
-
-			controller = element.controller('folder');
 		};
 	}));
 

@@ -16,8 +16,8 @@
 describe('Datetimepicker directive', function () {
     var scope, element, html;
 
-    beforeEach(module('talend.widget'));
-    beforeEach(module('htmlTemplates'));
+    beforeEach(angular.mock.module('talend.widget'));
+    beforeEach(angular.mock.module('htmlTemplates'));
 
     var showCalendarInput = function (elm) {
         elm = elm || element;

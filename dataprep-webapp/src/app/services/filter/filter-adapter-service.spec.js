@@ -15,7 +15,7 @@ describe('Filter Adapter Service', function () {
     'use strict';
 
     var stateMock;
-    beforeEach(module('data-prep.services.filter', function ($provide) {
+    beforeEach(angular.mock.module('data-prep.services.filter', function ($provide) {
         stateMock = {
             playground: {
                 data: {

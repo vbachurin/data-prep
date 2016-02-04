@@ -102,7 +102,7 @@ describe('Lookup state service', function () {
     ];
     var lookupAction = actions[0];
 
-    beforeEach(module('data-prep.services.state'));
+    beforeEach(angular.mock.module('data-prep.services.state'));
 
     beforeEach(inject(function (lookupState) {
         lookupState.dataView = new DataViewMock();

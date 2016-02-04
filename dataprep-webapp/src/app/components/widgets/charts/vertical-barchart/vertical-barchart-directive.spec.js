@@ -24,7 +24,7 @@ describe('verticalBarchart directive', function () {
         Date.now = now;
     };
 
-    beforeEach(module('talend.widget'));
+    beforeEach(angular.mock.module('talend.widget'));
 
     beforeEach(inject(function ($rootScope, $compile) {
         statsData = [
@@ -77,28 +77,28 @@ describe('verticalBarchart directive', function () {
     });
 
     describe('render', function() {
-        it('should render y axis after a 100ms delay', function () {
+        it('should render y axis after a 100ms delay', inject(function ($timeout) {
             //given
             createElement();
 
             //when
             scope.primaryData = statsData;
             scope.$digest();
-            jasmine.clock().tick(100);
+            $timeout.flush(100);
 
             //then
             expect(element.find('.yAxis > text').length).toBe(1);
             expect(element.find('.yAxis > text').text()).toBe('Occurrences');
-        });
+        }));
 
-        it('should render grid after a 100ms delay', function () {
+        it('should render grid after a 100ms delay', inject(function ($timeout) {
             //given
             createElement();
 
             //when
             scope.primaryData = statsData;
             scope.$digest();
-            jasmine.clock().tick(100);
+            $timeout.flush(100);
 
             //then
             expect(element.find('.grid > .tick').length).toBe(10);
@@ -112,38 +112,38 @@ describe('verticalBarchart directive', function () {
             expect(element.find('.grid > .tick').eq(7).text()).toBe('7');
             expect(element.find('.grid > .tick').eq(8).text()).toBe('8');
             expect(element.find('.grid > .tick').eq(9).text()).toBe('9');
-        });
+        }));
 
-        it('should render hover bars after a 100ms delay', function () {
+        it('should render hover bars after a 100ms delay', inject(function ($timeout) {
             //given
             createElement();
 
             //when
             scope.primaryData = statsData;
             scope.$digest();
-            jasmine.clock().tick(100);
+            $timeout.flush(100);
 
             //then
             expect(element.find('.bg-rect').length).toBe(statsData.length);
-        });
+        }));
 
-        it('should render primary bars after a 100ms delay', function () {
+        it('should render primary bars after a 100ms delay', inject(function ($timeout) {
             //given
             createElement();
 
             //when
             scope.primaryData = statsData;
             scope.$digest();
-            jasmine.clock().tick(100);
+            $timeout.flush(100);
 
             //then
             expect(element.find('.primaryBar > rect').length).toBe(statsData.length);
             expect(element.find('.secondaryBar > rect').length).toBe(0);
             expect(element.find('.grid').length).toBe(1);
             expect(element.find('.bg-rect').length).toBe(statsData.length);
-        });
+        }));
 
-        it('should render x-axis', function () {
+        it('should render x-axis', inject(function ($timeout) {
             //given
             createElement();
 
@@ -152,13 +152,13 @@ describe('verticalBarchart directive', function () {
             scope.secondaryData = secondaryStatsData;
             scope.showXAxis = true;
             scope.$digest();
-            jasmine.clock().tick(100);
+            $timeout.flush(100);
 
             //then
             expect(element.find('.x.axis').length).toBe(1);
-        });
+        }));
 
-        it('should NOT render x-axis', function () {
+        it('should NOT render x-axis', inject(function ($timeout) {
             //given
             createElement();
 
@@ -167,13 +167,13 @@ describe('verticalBarchart directive', function () {
             scope.secondaryData = secondaryStatsData;
             scope.dataType = false;
             scope.$digest();
-            jasmine.clock().tick(100);
+            $timeout.flush(100);
 
             //then
             expect(element.find('.x.axis').length).toBe(0);
-        });
+        }));
 
-        it('should render primary and secondary bars after a 100ms delay', function () {
+        it('should render primary and secondary bars after a 100ms delay', inject(function ($timeout) {
             //given
             createElement();
 
@@ -181,33 +181,33 @@ describe('verticalBarchart directive', function () {
             scope.primaryData = statsData;
             scope.secondaryData = secondaryStatsData;
             scope.$digest();
-            jasmine.clock().tick(100);
+            $timeout.flush(100);
 
             //then
             expect(element.find('.primaryBar > rect').length).toBe(statsData.length);
             expect(element.find('.secondaryBar > rect').length).toBe(statsData.length);
-        });
+        }));
 
-        it('should render secondary bars after a 100ms delay', function () {
+        it('should render secondary bars after a 100ms delay', inject(function ($timeout) {
             //given
             createElement();
 
             scope.primaryData = statsData;
             scope.$digest();
-            jasmine.clock().tick(100);
+            $timeout.flush(100);
 
             expect(element.find('.secondaryBar > rect').length).toBe(0);
 
             //when
             scope.secondaryData = secondaryStatsData;
             scope.$digest();
-            jasmine.clock().tick(100);
+            $timeout.flush(100);
 
             //then
             expect(element.find('.secondaryBar > rect').length).toBe(statsData.length);
-        });
+        }));
 
-        it('should render tiny bars with a 3px height bar', function () {
+        it('should render tiny bars with a 3px height bar', inject(function ($timeout) {
             //given
             createElement();
 
@@ -218,7 +218,7 @@ describe('verticalBarchart directive', function () {
                 {'data': {min: 10, max: 15}, 'occurrences': 1}
             ];
             scope.$digest();
-            jasmine.clock().tick(100);
+            $timeout.flush(100);
             flushAllD3Transitions();
 
             //then
@@ -229,38 +229,38 @@ describe('verticalBarchart directive', function () {
             expect(element.find('.primaryBar > rect').eq(0).attr('y')).toBe('0');
             expect(element.find('.primaryBar > rect').eq(1).attr('y')).toBe('380'); // 400 - 20px margin
             expect(element.find('.primaryBar > rect').eq(2).attr('y')).toBe('377'); // 400 - 20px margin - 3px bar height
-        });
+        }));
     });
 
     describe('active bars', function() {
-        it('should set the initial bars to full opacity', function () {
+        it('should set the initial bars to full opacity', inject(function ($timeout) {
             //given
             createElement();
 
             //when
             scope.primaryData = statsData;
             scope.$digest();
-            jasmine.clock().tick(100);
+            $timeout.flush(100);
 
             //then
             _.each(isolateScope.buckets[0], function (bucket) {
                 expect(d3.select(bucket).style('opacity')).toBe('1');
             });
-        });
+        }));
 
-        it('should set the bars to inactive opacity = 0.4', function () {
+        it('should set the bars to inactive opacity = 0.4', inject(function ($timeout) {
             //given
             createElement();
 
             scope.primaryData = statsData;
             scope.$digest();
-            jasmine.clock().tick(100);
+            $timeout.flush(100);
             flushAllD3Transitions();
 
             //when
             scope.activeLimits = [105, 200];
             scope.$digest();
-            jasmine.clock().tick(500);
+            $timeout.flush(500);
             flushAllD3Transitions();
 
             //then
@@ -268,21 +268,21 @@ describe('verticalBarchart directive', function () {
                 var opacity = Number(d3.select(bucket).style('opacity')).toFixed(1);
                 expect(opacity).toBe('0.4');
             });
-        });
+        }));
 
-        it('should update the bars opacity depending on the active limits', function () {
+        it('should update the bars opacity depending on the active limits', inject(function ($timeout) {
             //given
             createElement();
 
             scope.primaryData = statsData;
             scope.$digest();
-            jasmine.clock().tick(100);
+            $timeout.flush(100);
             flushAllD3Transitions();
 
             //when
             scope.activeLimits = [15, 20];
             scope.$digest();
-            jasmine.clock().tick(600);
+            $timeout.flush(600);
             flushAllD3Transitions();
 
             //then
@@ -292,21 +292,21 @@ describe('verticalBarchart directive', function () {
                 var opacity = Number(d3.select(bucket).style('opacity')).toFixed(1);
                 expect(opacity).toBe(expectedOpacities[index]);
             });
-        });
+        }));
 
-        it('should set bars opacity to full opacity when it is in the intersection or a limit', function () {
+        it('should set bars opacity to full opacity when it is in the intersection or a limit', inject(function ($timeout) {
             //given
             createElement();
 
             scope.primaryData = statsData;
             scope.$digest();
-            jasmine.clock().tick(100);
+            $timeout.flush(100);
             flushAllD3Transitions();
 
             //when
             scope.activeLimits = [13, 20];
             scope.$digest();
-            jasmine.clock().tick(600);
+            $timeout.flush(600);
 
             flushAllD3Transitions();
 
@@ -317,6 +317,6 @@ describe('verticalBarchart directive', function () {
                 var opacity = Number(d3.select(bucket).style('opacity')).toFixed(1);
                 expect(opacity).toBe(expectedOpacities[index]);
             });
-        });
+        }));
     });
 });

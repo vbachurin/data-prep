@@ -25,7 +25,7 @@ describe('Datagrid external service', function () {
         {id: 'tdpId', field: 'tdpId', tdpColMetadata: {id: 'tdpId', name: 'tdpId'}}
     ];
 
-    beforeEach(module('data-prep.datagrid', function($provide) {
+    beforeEach(angular.mock.module('data-prep.datagrid', function($provide) {
         stateMock = {
             playground: {
                 grid: {}

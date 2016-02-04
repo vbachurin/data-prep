@@ -16,7 +16,7 @@ describe('Stats-details controller', function () {
 
     var createController, scope, stateMock;
 
-    beforeEach(module('data-prep.stats-details', function($provide) {
+    beforeEach(angular.mock.module('data-prep.stats-details', function($provide) {
         stateMock = {
             playground: {
                 grid: {}

@@ -5,7 +5,6 @@ import DatagridGridService from './services/datagrid-grid-service';
 import DatagridSizeService from './services/datagrid-size-service';
 import DatagridStyleService from './services/datagrid-style-service';
 import DatagridTooltipService from './services/datagrid-tooltip-service';
-import DatagridCtrl from './datagrid-controller';
 import Datagrid from './datagrid-directive';
 
 (function () {
@@ -35,6 +34,5 @@ import Datagrid from './datagrid-directive';
         .service('DatagridSizeService', DatagridSizeService)
         .service('DatagridStyleService', DatagridStyleService)
         .service('DatagridTooltipService', DatagridTooltipService)
-        .controller('DatagridCtrl', DatagridCtrl)
         .directive('datagrid', Datagrid);
 })();

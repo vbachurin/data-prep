@@ -23,7 +23,7 @@ describe('Dataset Service', function () {
     var promiseWithProgress, stateMock;
     var preparations = [{id: '4385fa764bce39593a405d91bc23'}];
 
-    beforeEach(module('data-prep.services.dataset', function ($provide) {
+    beforeEach(angular.mock.module('data-prep.services.dataset', function ($provide) {
         stateMock = {
             folder: {
                 currentFolderContent: {

@@ -16,16 +16,16 @@ describe('Actions suggestions-stats directive', function() {
 
     var scope, element, createElement, stateMock;
     var body = angular.element('body');
-    beforeEach(module('data-prep.actions-suggestions', function($provide) {
+    beforeEach(angular.mock.module('data-prep.actions-suggestions', function($provide) {
         stateMock = {playground: {
             grid: {},
             suggestions: {}
         }};
         $provide.constant('state', stateMock);
     }));
-    beforeEach(module('htmlTemplates'));
+    beforeEach(angular.mock.module('htmlTemplates'));
 
-    beforeEach(module('pascalprecht.translate', function ($translateProvider) {
+    beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
             'COLON': ': ',
             'REFRESHING_WAIT': 'Fetching, please wait...'

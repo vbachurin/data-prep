@@ -16,7 +16,7 @@ describe('Dataset parameters controller', function () {
 
     var scope, createController;
 
-    beforeEach(module('data-prep.dataset-parameters'));
+    beforeEach(angular.mock.module('data-prep.dataset-parameters'));
 
     beforeEach(inject(function($rootScope, $controller) {
         scope = $rootScope.$new(true);

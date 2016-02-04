@@ -16,7 +16,7 @@ describe('Tabs widget controller', function () {
 
     var createController, scope;
 
-    beforeEach(module('talend.widget'));
+    beforeEach(angular.mock.module('talend.widget'));
 
     beforeEach(inject(function($rootScope, $controller) {
         scope = $rootScope.$new();

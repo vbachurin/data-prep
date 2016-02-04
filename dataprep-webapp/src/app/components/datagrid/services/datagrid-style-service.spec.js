@@ -22,7 +22,7 @@ describe('Datagrid style service', function () {
         });
     }
 
-    beforeEach(module('data-prep.datagrid', function ($provide) {
+    beforeEach(angular.mock.module('data-prep.datagrid', function ($provide) {
         stateMock = {playground: {grid: {}}};
         $provide.constant('state', stateMock);
     }));

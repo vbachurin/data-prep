@@ -14,7 +14,7 @@
 describe('Suggestions state service', function () {
     'use strict';
 
-    beforeEach(module('data-prep.services.state'));
+    beforeEach(angular.mock.module('data-prep.services.state'));
 
     describe('loading flag', function() {
         it('should set loading flag', inject(function (suggestionsState, SuggestionsStateService) {

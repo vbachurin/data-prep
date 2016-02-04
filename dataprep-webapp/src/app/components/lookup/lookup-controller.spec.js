@@ -101,12 +101,7 @@ describe('Lookup controller', function () {
                 lookup_join_on: '0000',
                 scope: 'dataset',
                 column_name: 'id',
-                lookup_selected_cols: [
-                    {
-                        id: '0001',
-                        name: 'uglystate',
-                    }
-                ],
+                lookup_selected_cols: [{id: '0001', name: 'uglystate'}],
                 row_id: '11',
                 lookup_ds_url: 'dsLookupUrl',
                 lookup_join_on_name: 'id',
@@ -131,7 +126,7 @@ describe('Lookup controller', function () {
         {id: 'desc', name: 'DESC_ORDER'}
     ];
 
-    beforeEach(module('data-prep.lookup', function ($provide) {
+    beforeEach(angular.mock.module('data-prep.lookup', function ($provide) {
         stateMock = {
             playground: {
                 preparation: {
@@ -171,14 +166,6 @@ describe('Lookup controller', function () {
             });
         };
     }));
-
-    beforeEach(function () {
-        jasmine.clock().install();
-    });
-
-    afterEach(function () {
-        jasmine.clock().uninstall();
-    });
 
     describe('preview', function () {
         it('should trigger lookup preview', inject(function (EarlyPreviewService) {
@@ -229,7 +216,7 @@ describe('Lookup controller', function () {
             expect(EarlyPreviewService.cancelPendingPreview).toHaveBeenCalled();
         }));
 
-        it('should reactivate preview after the operation with a delay of 500ms', inject(function ($q, TransformationApplicationService, EarlyPreviewService) {
+        it('should reactivate preview after the operation with a delay of 500ms', inject(function ($q, $timeout, TransformationApplicationService, EarlyPreviewService) {
             //given
             var ctrl = createController();
 
@@ -237,7 +224,7 @@ describe('Lookup controller', function () {
             ctrl.submit();
             expect(EarlyPreviewService.activatePreview).not.toHaveBeenCalled();
             scope.$digest();
-            jasmine.clock().tick(500);
+            $timeout.flush(500);
 
             //then
             expect(EarlyPreviewService.activatePreview).toHaveBeenCalled();

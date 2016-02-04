@@ -14,7 +14,7 @@
 describe('Storage service', function() {
     'use strict';
 
-    beforeEach(module('data-prep.services.utils'));
+    beforeEach(angular.mock.module('data-prep.services.utils'));
 
     afterEach(inject(function($window) {
         $window.localStorage.clear();

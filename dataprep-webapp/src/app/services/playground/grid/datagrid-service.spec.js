@@ -47,7 +47,7 @@ describe('Datagrid service', function () {
         metadata: {columns: [{id: '0000', name: 'lastname'}, {id: '0001', name: 'firstname'}, {id: '0002', name: 'age'}]}
     };
 
-    beforeEach(module('data-prep.services.playground', function ($provide) {
+    beforeEach(angular.mock.module('data-prep.services.playground', function ($provide) {
         dataViewMock = new DataViewMock();
         stateMock = {playground: {grid: {dataView: dataViewMock}}};
         $provide.constant('state', stateMock);

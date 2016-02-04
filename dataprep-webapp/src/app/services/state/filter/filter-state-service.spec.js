@@ -14,7 +14,7 @@
 describe('Filter state service', function () {
     'use strict';
 
-    beforeEach(module('data-prep.services.state'));
+    beforeEach(angular.mock.module('data-prep.services.state'));
 
     describe('reset', function() {
         it('should reset grid filter', inject(function(filterState, FilterStateService) {

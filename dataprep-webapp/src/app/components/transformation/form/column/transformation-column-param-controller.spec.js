@@ -18,7 +18,7 @@ describe('Transform column param controller', function () {
     var parameter;
     var stateMock;
 
-    beforeEach(module('data-prep.transformation-form', function ($provide) {
+    beforeEach(angular.mock.module('data-prep.transformation-form', function ($provide) {
         var columns =  [
             {id: '0001', name: 'first name'},
             {id: '0002', name: 'last name'},

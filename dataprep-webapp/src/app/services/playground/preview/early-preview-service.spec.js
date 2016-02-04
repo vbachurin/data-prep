@@ -10,7 +10,7 @@ describe('Early Preview Service', function () {
     var transformation;
     var params;
 
-    beforeEach(module('data-prep.services.playground', function ($provide) {
+    beforeEach(angular.mock.module('data-prep.services.playground', function ($provide) {
         stateMock = {playground: {
             dataset: dataset,
             preparation: preparation,

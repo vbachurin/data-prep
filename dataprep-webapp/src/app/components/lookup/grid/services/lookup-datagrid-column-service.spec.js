@@ -16,7 +16,7 @@ describe('Lookup Datagrid column service', function () {
 
 	var gridMock, columnsMetadata;
 
-	beforeEach(module('data-prep.lookup'));
+	beforeEach(angular.mock.module('data-prep.lookup'));
 
 	beforeEach(inject(function () {
 		columnsMetadata = [
@@ -130,21 +130,9 @@ describe('Lookup Datagrid column service', function () {
 	});
 
 	describe('on column header rendered event', function() {
-		var availableScope;
-		var availableHeader;
-
 		beforeEach(inject(function(LookupDatagridColumnService) {
-			//spyOn(gridMock.onBeforeHeaderCellDestroy, 'subscribe').and.returnValue();
 			spyOn(gridMock.onHeaderCellRendered, 'subscribe').and.returnValue();
-
 			LookupDatagridColumnService.init(gridMock);
-
-			//save header in available headers list
-			availableScope = {$destroy: function() {}, $digest: function() {}};
-			availableHeader = angular.element('<div id="availableHeader"></div>');
-			//saveHeader('0001', availableScope, availableHeader);
-
-			spyOn(availableScope, '$digest').and.returnValue();
 		}));
 
 		it('should create and attach a new header', inject(function() {

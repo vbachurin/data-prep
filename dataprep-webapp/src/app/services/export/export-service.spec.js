@@ -51,7 +51,7 @@ describe('Export service', function() {
         }
     ];
 
-    beforeEach(module('data-prep.services.export'));
+    beforeEach(angular.mock.module('data-prep.services.export'));
 
     beforeEach(inject(function($q, ExportRestService) {
         spyOn(ExportRestService, 'exportTypes').and.returnValue($q.when({data: exportTypes}));

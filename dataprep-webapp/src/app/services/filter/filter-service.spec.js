@@ -15,7 +15,7 @@ describe('Filter service', function () {
     'use strict';
 
     var stateMock;
-    beforeEach(module('data-prep.services.filter', function ($provide) {
+    beforeEach(angular.mock.module('data-prep.services.filter', function ($provide) {
         var columns = [
             {id: '0000', name: 'id'},
             {id: '0001', name: 'name'}

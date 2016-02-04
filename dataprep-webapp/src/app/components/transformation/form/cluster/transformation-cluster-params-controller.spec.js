@@ -196,7 +196,7 @@ describe('Transform cluster params controller', function () {
         };
     }
 
-    beforeEach(module('data-prep.transformation-form'));
+    beforeEach(angular.mock.module('data-prep.transformation-form'));
 
     beforeEach(inject(function ($rootScope, $controller) {
         scope = $rootScope.$new();

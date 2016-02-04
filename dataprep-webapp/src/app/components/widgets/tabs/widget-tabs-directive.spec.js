@@ -16,8 +16,8 @@ describe('Tabs directive', function () {
 
     var scope, element, createElement;
     var body = angular.element('body');
-    beforeEach(module('talend.widget'));
-    beforeEach(module('htmlTemplates'));
+    beforeEach(angular.mock.module('talend.widget'));
+    beforeEach(angular.mock.module('htmlTemplates'));
 
     afterEach(function () {
         scope.$destroy();

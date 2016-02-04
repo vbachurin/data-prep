@@ -175,7 +175,7 @@ describe('Dataset List Service', function () {
         {id: 'desc', name: 'DESC_ORDER'}
     ];
 
-    beforeEach(module('data-prep.services.dataset', function ($provide) {
+    beforeEach(angular.mock.module('data-prep.services.dataset', function ($provide) {
         stateMock = {
             inventory: {
                 datasets: [],

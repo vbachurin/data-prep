@@ -16,8 +16,8 @@ describe('Quality bar directive', function() {
 
     var scope, element, createElement, controller;
 
-    beforeEach(module('talend.widget'));
-    beforeEach(module('htmlTemplates'));
+    beforeEach(angular.mock.module('talend.widget'));
+    beforeEach(angular.mock.module('htmlTemplates'));
 
     beforeEach(inject(function ($rootScope) {
         scope = $rootScope.$new();

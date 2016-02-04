@@ -16,7 +16,7 @@ describe('unique folder validation directive', function() {
 
     var scope, createElement;
 
-    beforeEach(module('data-prep.validation'));
+    beforeEach(angular.mock.module('data-prep.validation'));
 
     beforeEach(inject(function($rootScope, $compile) {
         scope = $rootScope.$new();

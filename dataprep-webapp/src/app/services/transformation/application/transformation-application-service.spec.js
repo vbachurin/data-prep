@@ -2,7 +2,7 @@ describe('Transformation Application Service', function () {
     'use strict';
     var stateMock;
 
-    beforeEach(module('data-prep.services.transformation', function ($provide) {
+    beforeEach(angular.mock.module('data-prep.services.transformation', function ($provide) {
         stateMock = {playground: {grid: {}}};
         stateMock.playground.filter = {
             applyTransformationOnFilters: true,

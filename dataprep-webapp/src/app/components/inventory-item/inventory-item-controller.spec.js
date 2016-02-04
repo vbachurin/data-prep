@@ -16,7 +16,7 @@ describe('Inventory Item controller', function () {
 
     var createController, scope, ctrl;
 
-    beforeEach(module('data-prep.inventory-item'));
+    beforeEach(angular.mock.module('data-prep.inventory-item'));
 
     beforeEach(inject(function ($rootScope, $controller) {
         scope = $rootScope.$new();

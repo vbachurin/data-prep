@@ -16,7 +16,7 @@ describe('Transform date param controller', function () {
 
     var createController, scope, parameter;
 
-    beforeEach(module('data-prep.transformation-form'));
+    beforeEach(angular.mock.module('data-prep.transformation-form'));
 
     beforeEach(inject(function ($rootScope, $controller) {
         scope = $rootScope.$new();

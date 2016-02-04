@@ -36,7 +36,7 @@ describe('Line suggestion service', function () {
         }
     ];
 
-    beforeEach(module('data-prep.services.transformation'));
+    beforeEach(angular.mock.module('data-prep.services.transformation'));
 
     beforeEach(inject(function ($q, StateService, TransformationCacheService) {
         spyOn(TransformationCacheService, 'getLineTransformations').and.returnValue($q.when({

@@ -14,8 +14,8 @@
 describe('Dataprep app', function() {
     'use strict';
 
-    beforeEach(module('pascalprecht.translate'));
-    beforeEach(module('data-prep.services.utils'));
+    beforeEach(angular.mock.module('pascalprecht.translate'));
+    beforeEach(angular.mock.module('data-prep.services.utils'));
 
     describe('run', function() {
         it('should set language from navigator', inject(function($rootScope, $injector, $window, $translate) {
@@ -40,7 +40,7 @@ describe('Dataprep app', function() {
             var httpProviderIt = null;
 
             //when
-            module('data-prep', function($httpProvider) {
+            angular.mock.module('data-prep', function($httpProvider) {
                 httpProviderIt = $httpProvider;
             });
             inject(function($injector) {

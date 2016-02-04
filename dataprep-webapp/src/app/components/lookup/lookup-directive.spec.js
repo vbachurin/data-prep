@@ -26,7 +26,7 @@ describe('Lookup directive', function () {
         {id: 'desc', name: 'DESC_ORDER'}
     ];
 
-    beforeEach(module('data-prep.lookup', function ($provide) {
+    beforeEach(angular.mock.module('data-prep.lookup', function ($provide) {
         StateMock = {
             playground: {
                 lookup: {
@@ -44,7 +44,7 @@ describe('Lookup directive', function () {
         $provide.constant('state', StateMock);
     }));
 
-    beforeEach(module('htmlTemplates'));
+    beforeEach(angular.mock.module('htmlTemplates'));
 
     beforeEach(inject(function ($rootScope, $compile) {
         scope = $rootScope.$new();

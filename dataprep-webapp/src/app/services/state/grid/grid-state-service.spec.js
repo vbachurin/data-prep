@@ -65,7 +65,7 @@ describe('Grid state service', function () {
         preview: true
     };
 
-    beforeEach(module('data-prep.services.state'));
+    beforeEach(angular.mock.module('data-prep.services.state'));
 
     beforeEach(inject(function(gridState) {
         gridState.dataView = new DataViewMock();

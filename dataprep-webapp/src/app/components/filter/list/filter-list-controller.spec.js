@@ -17,7 +17,7 @@ describe('filter list controller', function () {
     var createController, scope;
     var onFilterChange, onFilterRemove;
 
-    beforeEach(module('data-prep.filter-list'));
+    beforeEach(angular.mock.module('data-prep.filter-list'));
 
     beforeEach(inject(function ($rootScope, $controller) {
         onFilterChange = jasmine.createSpy('onFilterChange');

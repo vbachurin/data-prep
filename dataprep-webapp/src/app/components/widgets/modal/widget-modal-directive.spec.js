@@ -11,13 +11,13 @@
 
   ============================================================================*/
 
-describe('Dropdown directive', function () {
+describe('Modal directive', function () {
     'use strict';
 
     var scope, element, createElement, disableElementHide, createFormElement, createNestedElement, createButtonElement, createBeforeCloseElement;
 
-    beforeEach(module('talend.widget'));
-    beforeEach(module('htmlTemplates'));
+    beforeEach(angular.mock.module('talend.widget'));
+    beforeEach(angular.mock.module('htmlTemplates'));
 
     afterEach(function () {
         scope.$destroy();
@@ -406,19 +406,18 @@ describe('Dropdown directive', function () {
 
             var body = angular.element('body');
             body.append(element);
-            expect(document.activeElement).not.toBe(element);
+            expect(document.activeElement).not.toBe(element); //eslint-disable-line angular/document-service
 
             //when
             scope.state = true;
             scope.$digest();
 
             //then
-            expect(document.activeElement.className).toBe('modal-inner');
+            expect(document.activeElement.className).toBe('modal-inner'); //eslint-disable-line angular/document-service
         });
 
-        it('should focus on second input on show and select the text coz first has "no-focus" class', inject(function() {
+        it('should focus on second input on show and select the text coz first has "no-focus" class', inject(function($timeout, $window) {
             //given
-            jasmine.clock().install();
             scope.fullscreen = false;
             scope.state = false;
             scope.closeButton = false;
@@ -429,19 +428,17 @@ describe('Dropdown directive', function () {
 
             element.find('#secondInput').val('city');
 
-            expect(document.activeElement).not.toBe(element);
-            expect(window.getSelection().toString()).toBeFalsy();
+            expect(document.activeElement).not.toBe(element); //eslint-disable-line angular/document-service
+            expect($window.getSelection().toString()).toBeFalsy();
 
             //when
             scope.state = true;
             scope.$digest();
-            jasmine.clock().tick(200);
+            $timeout.flush(200);
 
             //then
-            expect(document.activeElement.id).toBe('secondInput');
-            expect(window.getSelection().toString()).toBe('city');
-
-            jasmine.clock().uninstall();
+            expect(document.activeElement.id).toBe('secondInput'); //eslint-disable-line angular/document-service
+            expect($window.getSelection().toString()).toBe('city');
         }));
 
         it('should focus on next last shown modal on focused modal close', function () {
@@ -456,26 +453,26 @@ describe('Dropdown directive', function () {
 
             var body = angular.element('body');
             body.append(element);
-            expect(document.activeElement).not.toBe(element);
+            expect(document.activeElement).not.toBe(element); //eslint-disable-line angular/document-service
 
             //given : show outer modal
             scope.state = true;
             scope.$digest();
             var outerModal = body.find('#outerModal').eq(0).find('.modal-inner').eq(0)[0];
-            expect(document.activeElement).toBe(outerModal);
+            expect(document.activeElement).toBe(outerModal); //eslint-disable-line angular/document-service
 
             //given : show inner modal
             scope.innerState = true;
             scope.$digest();
             var innerModal = body.find('#innerModal').eq(0).find('.modal-inner').eq(0)[0];
-            expect(document.activeElement).toBe(innerModal);
+            expect(document.activeElement).toBe(innerModal); //eslint-disable-line angular/document-service
 
             //when
             scope.innerState = false;
             scope.$digest();
 
             //then
-            expect(document.activeElement).toBe(outerModal);
+            expect(document.activeElement).toBe(outerModal); //eslint-disable-line angular/document-service
         });
     });
 

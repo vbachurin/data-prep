@@ -14,7 +14,7 @@
 describe('Feedback state', function () {
     'use strict';
 
-    beforeEach(module('data-prep.services.state'));
+    beforeEach(angular.mock.module('data-prep.services.state'));
 
     it('should init visibility to false', inject(function (feedbackState) {
         //then

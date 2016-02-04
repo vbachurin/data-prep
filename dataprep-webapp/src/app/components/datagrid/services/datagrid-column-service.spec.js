@@ -16,7 +16,7 @@ describe('Datagrid column service', function () {
 
     var gridMock, columnsMetadata;
 
-    beforeEach(module('data-prep.datagrid'));
+    beforeEach(angular.mock.module('data-prep.datagrid'));
 
     beforeEach(inject(function () {
         columnsMetadata = [

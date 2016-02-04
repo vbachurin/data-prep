@@ -28,8 +28,8 @@ describe('Dataset column header directive', function () {
 
 	var added = {isAdded: false};
 
-	beforeEach(module('data-prep.lookup-datagrid-header'));
-	beforeEach(module('htmlTemplates'));
+	beforeEach(angular.mock.module('data-prep.lookup-datagrid-header'));
+	beforeEach(angular.mock.module('htmlTemplates'));
 
 	beforeEach(inject(function ($rootScope, $compile, $timeout) {
 		scope = $rootScope.$new(true);

@@ -17,7 +17,7 @@ describe('Worker service', function () {
     var $rootScope, createWorker, createWorkerFromFunction, createWorkerWithNamedHelpers;
     var jasmineOriginalTimeout;
 
-    beforeEach(module('data-prep.services.utils'));
+    beforeEach(angular.mock.module('data-prep.services.utils'));
 
     beforeEach(inject(function() {
         jasmineOriginalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
@@ -28,7 +28,7 @@ describe('Worker service', function () {
         jasmine.DEFAULT_TIMEOUT_INTERVAL = jasmineOriginalTimeout;
     });
 
-    beforeEach(inject(function(_$rootScope_, WorkerService) {
+    beforeEach(inject(function(_$rootScope_, $window, WorkerService) {
         $rootScope = _$rootScope_;
 
         function add(a, b) {
@@ -60,7 +60,7 @@ describe('Worker service', function () {
             return WorkerService.create(null, null, fn);
         };
 
-        spyOn(window.URL, 'revokeObjectURL').and.callThrough();
+        spyOn($window.URL, 'revokeObjectURL').and.callThrough();
     }));
 
     it('should execute a named function code', function (done) {
@@ -77,7 +77,7 @@ describe('Worker service', function () {
             });
 
         // $q needs a digest so lets call one after the worker should be finished
-        setTimeout(function() {
+        setTimeout(function() { //eslint-disable-line angular/timeout-service
             $rootScope.$digest();
         }, 500);
     });
@@ -98,7 +98,7 @@ describe('Worker service', function () {
             });
 
         // $q needs a digest so lets call one after the worker should be finished
-        setTimeout(function() {
+        setTimeout(function() { //eslint-disable-line angular/timeout-service
             $rootScope.$digest();
         }, 500);
     });
@@ -117,12 +117,12 @@ describe('Worker service', function () {
             });
 
         // $q needs a digest so lets call one after the worker should be finished
-        setTimeout(function() {
+        setTimeout(function() { //eslint-disable-line angular/timeout-service
             $rootScope.$digest();
         }, 500);
     });
 
-    it('should revoke blob url', function () {
+    it('should revoke blob url', inject(function ($window) {
         //given
         var workerWrapper = createWorker();
 
@@ -130,6 +130,6 @@ describe('Worker service', function () {
         workerWrapper.terminate();
 
         //Then
-        expect(window.URL.revokeObjectURL).toHaveBeenCalled();
-    });
+        expect($window.URL.revokeObjectURL).toHaveBeenCalled();
+    }));
 });

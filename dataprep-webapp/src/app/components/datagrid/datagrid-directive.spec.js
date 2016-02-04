@@ -25,7 +25,7 @@ describe('Datagrid directive', function () {
         spyOn(dataViewMock.onRowsChanged, 'subscribe').and.returnValue();
     });
 
-    beforeEach(module('data-prep.datagrid', function ($provide) {
+    beforeEach(angular.mock.module('data-prep.datagrid', function ($provide) {
         stateMock = {
             playground: {
                 filter: {gridFilters: []},
@@ -36,7 +36,7 @@ describe('Datagrid directive', function () {
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(module('htmlTemplates'));
+    beforeEach(angular.mock.module('htmlTemplates'));
 
     beforeEach(inject(function ($rootScope, $compile, DatagridGridService, DatagridColumnService, DatagridSizeService, DatagridStyleService, DatagridExternalService, StateService) {
         scope = $rootScope.$new();
@@ -73,13 +73,7 @@ describe('Datagrid directive', function () {
         spyOn(StateService, 'setGridSelection').and.returnValue();
     }));
 
-    beforeEach(function () {
-        jasmine.clock().install();
-    });
-
     afterEach(function () {
-        jasmine.clock().uninstall();
-
         scope.$destroy();
         element.remove();
     });
@@ -87,7 +81,7 @@ describe('Datagrid directive', function () {
     describe('on data change', function () {
         var data;
 
-        beforeEach(inject(function () {
+        beforeEach(inject(function ($timeout) {
             //given
             createElement();
             data = {metadata: {columns: [{id: '0000'}, {id: '0001', tdpColMetadata: {id: '0001'}}]}, preview: false};
@@ -95,7 +89,7 @@ describe('Datagrid directive', function () {
             //when
             stateMock.playground.data = data;
             scope.$digest();
-            jasmine.clock().tick(1);
+            $timeout.flush(1);
         }));
 
         describe('init', function () {
@@ -143,7 +137,7 @@ describe('Datagrid directive', function () {
                 }));
             });
 
-            it('should execute the grid update only once when the second call is triggered before the first timeout', inject(function (DatagridColumnService) {
+            it('should execute the grid update only once when the second call is triggered before the first timeout', inject(function ($timeout, DatagridColumnService) {
                 //given
                 expect(DatagridColumnService.createColumns.calls.count()).toBe(1);
 
@@ -155,13 +149,13 @@ describe('Datagrid directive', function () {
 
                 stateMock.playground.data = {metadata:{}};
                 scope.$digest();
-                jasmine.clock().tick(300);
+                $timeout.flush(300);
 
                 //then
                 expect(DatagridColumnService.createColumns.calls.count()).toBe(2);
             }));
 
-            it('should focus on wanted column (not necessarily the selected column) in async mode with a 300ms delay', inject(function(DatagridGridService) {
+            it('should focus on wanted column (not necessarily the selected column) in async mode with a 300ms delay', inject(function($timeout, DatagridGridService) {
                 //given
                 createElement();
 
@@ -169,7 +163,7 @@ describe('Datagrid directive', function () {
                 stateMock.playground.data = data;
                 scope.$digest();
                 expect(DatagridGridService.navigateToFocusedColumn).not.toHaveBeenCalled();
-                jasmine.clock().tick(300);
+                $timeout.flush(300);
 
                 //then
                 expect(DatagridGridService.navigateToFocusedColumn).toHaveBeenCalled();
@@ -201,19 +195,19 @@ describe('Datagrid directive', function () {
     });
 
     describe('on resize', function () {
-        it('should resize grid canvas on lookup visibility change', inject(function () {
+        it('should resize grid canvas on lookup visibility change', inject(function ($timeout) {
             //given
             createElement();
             stateMock.playground.data = {metadata: {columns: [{id: '0000'}, {id: '0001'}]}, preview: false};
             scope.$digest();
 
-            jasmine.clock().tick(250);
+            $timeout.flush(250);
             expect(grid.resizeCanvas).not.toHaveBeenCalled();
 
             //when
             stateMock.playground.lookup.visibility = true;
             scope.$digest();
-            jasmine.clock().tick(250);
+            $timeout.flush(250);
 
             //then
             expect(grid.resizeCanvas).toHaveBeenCalled();
@@ -247,7 +241,7 @@ describe('Datagrid directive', function () {
         var data = {metadata: {columns: [{id: '0000'}, {id: '0001'}]}, preview: false};
         var previewData = {metadata: {columns: [{id: '0000'}, {id: '0001'}]}, preview: true};
 
-        it('should reset grid styles when there is no selected line', inject(function(DatagridStyleService) {
+        it('should reset grid styles when there is no selected line', inject(function($timeout, DatagridStyleService) {
             //given
             createElement();
             stateMock.playground.data = data;
@@ -258,13 +252,13 @@ describe('Datagrid directive', function () {
             stateMock.playground.grid.selectedColumn = {id: '0001'};
             scope.$digest();
             expect(DatagridStyleService.resetStyles).not.toHaveBeenCalled();
-            jasmine.clock().tick(1);
+            $timeout.flush(1);
 
             //then
             expect(DatagridStyleService.resetStyles).toHaveBeenCalledWith('0001');
         }));
 
-        it('should only update columns styles (not the entire grid style) when there is a selected line', inject(function(DatagridStyleService) {
+        it('should only update columns styles (not the entire grid style) when there is a selected line', inject(function($timeout, DatagridStyleService) {
             //given
             createElement();
             stateMock.playground.data = data;
@@ -275,13 +269,13 @@ describe('Datagrid directive', function () {
             stateMock.playground.grid.selectedColumn = {id: '0001'};
             scope.$digest();
             expect(DatagridStyleService.updateColumnClass).not.toHaveBeenCalled();
-            jasmine.clock().tick(1);
+            $timeout.flush(1);
 
             //then
             expect(DatagridStyleService.updateColumnClass).toHaveBeenCalledWith('0001');
         }));
 
-        it('should update suggestions panel in async mode', inject(function(DatagridExternalService) {
+        it('should update suggestions panel in async mode', inject(function($timeout, DatagridExternalService) {
             //given
             createElement();
             stateMock.playground.data = data;
@@ -291,13 +285,13 @@ describe('Datagrid directive', function () {
             stateMock.playground.grid.selectedColumn = {id: '0001'};
             scope.$digest();
             expect(DatagridExternalService.updateSuggestionPanel).not.toHaveBeenCalled();
-            jasmine.clock().tick(300);
+            $timeout.flush(300);
 
             //then
             expect(DatagridExternalService.updateSuggestionPanel).toHaveBeenCalledWith(true);
         }));
 
-        it('should NOT update suggestion panel when in preview mode', inject(function (DatagridExternalService) {
+        it('should NOT update suggestion panel when in preview mode', inject(function ($timeout, DatagridExternalService) {
             //given
             createElement();
             stateMock.playground.data = previewData;
@@ -306,13 +300,13 @@ describe('Datagrid directive', function () {
             //when
             stateMock.playground.grid.selectedColumn = {id: '0001'};
             scope.$digest();
-            jasmine.clock().tick(1);
+            $timeout.flush(1);
 
             //then
             expect(DatagridExternalService.updateSuggestionPanel).not.toHaveBeenCalled();
         }));
 
-        it('should highlight cells containing the same value as selected cell in async mode with a 500ms delay when there is a selected line', inject(function(DatagridStyleService) {
+        it('should highlight cells containing the same value as selected cell in async mode with a 500ms delay when there is a selected line', inject(function($timeout, DatagridStyleService) {
             //given
             createElement();
             stateMock.playground.data = data;
@@ -323,13 +317,13 @@ describe('Datagrid directive', function () {
             stateMock.playground.grid.selectedColumn = {id: '0001'};
             scope.$digest();
             expect(DatagridStyleService.highlightCellsContaining).not.toHaveBeenCalled();
-            jasmine.clock().tick(500);
+            $timeout.flush(500);
 
             //then
             expect(DatagridStyleService.highlightCellsContaining).toHaveBeenCalledWith('0001', 'tata');
         }));
 
-        it('should NOT highlight cells when in preview mode', inject(function(DatagridStyleService) {
+        it('should NOT highlight cells when in preview mode', inject(function($timeout, DatagridStyleService) {
             //given
             createElement();
             stateMock.playground.data = previewData;
@@ -339,13 +333,13 @@ describe('Datagrid directive', function () {
             stateMock.playground.grid.selectedLine = {'0000': 'toto', '0001': 'tata'};
             stateMock.playground.grid.selectedColumn = {id: '0001'};
             scope.$digest();
-            jasmine.clock().tick(500);
+            $timeout.flush(500);
 
             //then
             expect(DatagridStyleService.highlightCellsContaining).not.toHaveBeenCalled();
         }));
 
-        it('should NOT highlight cells when there is no selected line', inject(function(DatagridStyleService) {
+        it('should NOT highlight cells when there is no selected line', inject(function($timeout, DatagridStyleService) {
             //given
             createElement();
             stateMock.playground.data = data;
@@ -355,7 +349,7 @@ describe('Datagrid directive', function () {
             stateMock.playground.grid.selectedLine = null;
             stateMock.playground.grid.selectedColumn = {id: '0001'};
             scope.$digest();
-            jasmine.clock().tick(500);
+            $timeout.flush(500);
 
             //then
             expect(DatagridStyleService.highlightCellsContaining).not.toHaveBeenCalled();

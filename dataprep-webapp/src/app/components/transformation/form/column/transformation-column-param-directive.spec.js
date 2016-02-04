@@ -34,7 +34,7 @@ describe('Transformation column param directive', function () {
         }
     };
 
-    beforeEach(module('data-prep.transformation-form', function ($provide) {
+    beforeEach(angular.mock.module('data-prep.transformation-form', function ($provide) {
 
         // set the selected column to the first one
         stateMock.playground.grid.selectedColumn = stateMock.playground.data.metadata.columns[0];
@@ -42,7 +42,7 @@ describe('Transformation column param directive', function () {
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(module('htmlTemplates'));
+    beforeEach(angular.mock.module('htmlTemplates'));
 
     beforeEach(inject(function($rootScope, $compile) {
         scope = $rootScope.$new();

@@ -39,8 +39,8 @@ describe('Single recipeBullet directive ', function () {
         return getSvgElementAttribute('circle', 0, 'cy');
     }
 
-    beforeEach(module('data-prep.recipe-bullet'));
-    beforeEach(module('htmlTemplates'));
+    beforeEach(angular.mock.module('data-prep.recipe-bullet'));
+    beforeEach(angular.mock.module('htmlTemplates'));
     beforeEach(inject(function ($rootScope, $compile, $timeout, RecipeService, RecipeBulletService) {
         steps = [
             {
@@ -117,7 +117,6 @@ describe('Single recipeBullet directive ', function () {
         });
 
     });
-
 });
 
 
@@ -148,8 +147,8 @@ describe('Multi recipeBullet directive', function () {
         return getSvgElementAttribute('circle', 0, 'class');
     }
 
-    beforeEach(module('data-prep.recipe-bullet'));
-    beforeEach(module('htmlTemplates'));
+    beforeEach(angular.mock.module('data-prep.recipe-bullet'));
+    beforeEach(angular.mock.module('htmlTemplates'));
     beforeEach(inject(function ($rootScope, $compile, $timeout, RecipeService, RecipeBulletService) {
         steps = [
             {
@@ -273,7 +272,6 @@ describe('Multi recipeBullet directive', function () {
         }
         expect(classes[4] && classes[4].indexOf('ng-hide') > -1).toBeTruthy();
     });
-
 
     it('should call hover start actions on mouseover', inject(function (RecipeBulletService) {
         //given

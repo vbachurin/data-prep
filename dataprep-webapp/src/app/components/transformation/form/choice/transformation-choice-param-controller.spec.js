@@ -14,12 +14,11 @@
 describe('Transform choice params controller', function () {
     'use strict';
 
-    var createController, scope, extractedParams, parameter;
+    var createController, scope, parameter;
 
-    beforeEach(module('data-prep.transformation-form'));
+    beforeEach(angular.mock.module('data-prep.transformation-form'));
 
     beforeEach(inject(function ($rootScope, $controller) {
-        extractedParams = null;
         scope = $rootScope.$new();
 
         createController = function () {

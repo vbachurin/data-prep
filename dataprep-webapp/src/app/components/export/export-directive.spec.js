@@ -57,11 +57,11 @@ describe('Export directive', function () {
 
     var stateMock;
 
-    beforeEach(module('data-prep.export', function($provide) {
+    beforeEach(angular.mock.module('data-prep.export', function($provide) {
         stateMock = {playground: {exportParameters : { exportType: 'CSV', 'exportParameters.csvSeparator': ';' , 'exportParameters.fileName': 'prepname' }}};
         $provide.constant('state', stateMock);
     }));
-    beforeEach(module('htmlTemplates'));
+    beforeEach(angular.mock.module('htmlTemplates'));
 
     beforeEach(inject(function ($rootScope, $compile, $q, ExportService) {
         spyOn(ExportService, 'refreshTypes').and.returnValue($q.when(exportTypes));

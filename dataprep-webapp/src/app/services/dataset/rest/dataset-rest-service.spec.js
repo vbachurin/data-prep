@@ -16,7 +16,7 @@ describe('Dataset Rest Service', function () {
 
     var $httpBackend;
 
-    beforeEach(module('data-prep.services.dataset'));
+    beforeEach(angular.mock.module('data-prep.services.dataset'));
 
     beforeEach(inject(function ($rootScope, $injector, RestURLs) {
         RestURLs.setServerUrl('');

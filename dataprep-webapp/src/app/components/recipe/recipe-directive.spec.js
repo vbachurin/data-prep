@@ -706,10 +706,10 @@ describe('Recipe directive', function () {
         }
     ];
 
-    beforeEach(module('data-prep.recipe'));
-    beforeEach(module('htmlTemplates'));
+    beforeEach(angular.mock.module('data-prep.recipe'));
+    beforeEach(angular.mock.module('htmlTemplates'));
 
-    beforeEach(module('pascalprecht.translate', function ($translateProvider) {
+    beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
             'RECIPE_ITEM_ON_COL': 'on column {{columnName}}',
             'RECIPE_ITEM_ON_CELL': 'on cell',
@@ -730,12 +730,9 @@ describe('Recipe directive', function () {
         element = angular.element('<recipe></recipe>');
         $compile(element)(scope);
         scope.$digest();
-
-        jasmine.clock().install();
     }));
 
     afterEach(function () {
-        jasmine.clock().uninstall();
         scope.$destroy();
         element.remove();
     });
@@ -803,11 +800,11 @@ describe('Recipe directive', function () {
         expect(body.find('.modal-inner').find('.cluster').length).toBe(1);
     }));
 
-    it('should highlight steps that will be deleted on remove icon mouse over', inject(function(RecipeService) {
+    it('should highlight steps that will be deleted on remove icon mouse over', inject(function($timeout, RecipeService) {
         //given
         spyOn(RecipeService, 'getRecipe').and.returnValue(recipeWithDiff);
         scope.$digest();
-        jasmine.clock().tick(1);
+        $timeout.flush(1);
 
         //when
         element.find('#step-remove-260a4b7a3d1f2c03509d865a7961a481e594142e').mouseover();
@@ -818,11 +815,11 @@ describe('Recipe directive', function () {
         expect(element.find('#step-2f749665763cffe0382ab581ac1a7c4bffb5afbc').hasClass('remove')).toBe(true);
     }));
 
-    it('should remove highlight class on remove icon mouse out', inject(function(RecipeService) {
+    it('should remove highlight class on remove icon mouse out', inject(function($timeout, RecipeService) {
         //given
         spyOn(RecipeService, 'getRecipe').and.returnValue(recipeWithDiff);
         scope.$digest();
-        jasmine.clock().tick(1);
+        $timeout.flush(1);
         element.find('#step-remove-260a4b7a3d1f2c03509d865a7961a481e594142e').mouseover();
 
         expect(element.find('#step-260a4b7a3d1f2c03509d865a7961a481e594142e').hasClass('remove')).toBe(true);

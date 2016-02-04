@@ -21,9 +21,9 @@ describe('Badge controller', function () {
         close: function() {}
     };
 
-    beforeEach(module('talend.widget'));
+    beforeEach(angular.mock.module('talend.widget'));
 
-    beforeEach(module('pascalprecht.translate', function ($translateProvider) {
+    beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
             'COLON': ': '
         });

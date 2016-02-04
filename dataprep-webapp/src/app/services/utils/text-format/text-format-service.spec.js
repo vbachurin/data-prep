@@ -14,7 +14,7 @@
 describe('Text format service', function () {
     'use strict';
 
-    beforeEach(module('data-prep.services.utils'));
+    beforeEach(angular.mock.module('data-prep.services.utils'));
 
     describe('lookup-datagrid constraints', function () {
         it('should return value when it is empty', inject(function (TextFormatService) {

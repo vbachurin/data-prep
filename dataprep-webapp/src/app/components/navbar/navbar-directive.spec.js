@@ -16,8 +16,8 @@ describe('Navbar directive', function() {
 
     var scope, createElement, element;
 
-    beforeEach(module('data-prep.navbar'));
-    beforeEach(module('htmlTemplates'));
+    beforeEach(angular.mock.module('data-prep.navbar'));
+    beforeEach(angular.mock.module('htmlTemplates'));
 
     beforeEach(inject(function($rootScope, $compile) {
         scope = $rootScope.$new();

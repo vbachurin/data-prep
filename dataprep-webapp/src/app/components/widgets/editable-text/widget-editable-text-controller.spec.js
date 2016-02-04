@@ -17,8 +17,8 @@ describe('Editable Text Widget', function() {
     var createController, scope;
     var onValidateFn, onCancelFn;
 
-    beforeEach(module('talend.widget'));
-    beforeEach(module('htmlTemplates'));
+    beforeEach(angular.mock.module('talend.widget'));
+    beforeEach(angular.mock.module('htmlTemplates'));
 
     beforeEach(inject(function ($rootScope, $controller) {
         scope = $rootScope.$new();

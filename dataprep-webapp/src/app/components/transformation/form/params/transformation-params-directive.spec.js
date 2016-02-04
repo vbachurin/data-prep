@@ -16,14 +16,14 @@ describe('Transformation params directive', function () {
     var scope, createElement;
     var stateMock;
 
-    beforeEach(module('data-prep.transformation-form', function ($provide) {
+    beforeEach(angular.mock.module('data-prep.transformation-form', function ($provide) {
         stateMock = {playground: {
             data: {metadata: {columns: []}},
             grid: {selectedColumn: '0001'}
         }};
         $provide.constant('state', stateMock);
     }));
-    beforeEach(module('htmlTemplates'));
+    beforeEach(angular.mock.module('htmlTemplates'));
 
     beforeEach(inject(function ($rootScope, $compile) {
         scope = $rootScope.$new();

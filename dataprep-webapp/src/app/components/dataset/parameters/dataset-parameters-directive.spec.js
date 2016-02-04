@@ -16,7 +16,7 @@ describe('Dataset parameters directive', function() {
 
     var scope, createElement, element;
 
-    beforeEach(module('pascalprecht.translate', function ($translateProvider) {
+    beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
             'DATASET_PARAMETERS': 'Dataset parameters',
             'DATASET_PARAMETERS_ENCODING': 'Encoding',
@@ -24,8 +24,8 @@ describe('Dataset parameters directive', function() {
         });
         $translateProvider.preferredLanguage('en');
     }));
-    beforeEach(module('data-prep.dataset-parameters'));
-    beforeEach(module('htmlTemplates'));
+    beforeEach(angular.mock.module('data-prep.dataset-parameters'));
+    beforeEach(angular.mock.module('htmlTemplates'));
 
     beforeEach(inject(function($rootScope, $compile) {
         scope = $rootScope.$new();

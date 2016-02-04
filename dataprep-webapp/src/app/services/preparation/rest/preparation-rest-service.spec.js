@@ -96,7 +96,7 @@ describe('Preparation REST Service', function () {
         }]
     };
 
-    beforeEach(module('data-prep.services.preparation'));
+    beforeEach(angular.mock.module('data-prep.services.preparation'));
 
     beforeEach(inject(function ($injector, RestURLs) {
         RestURLs.setServerUrl('');

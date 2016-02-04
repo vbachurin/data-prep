@@ -16,7 +16,7 @@ describe('Feedback Rest Service', function () {
 
     var $httpBackend;
 
-    beforeEach(module('data-prep.services.feedback'));
+    beforeEach(angular.mock.module('data-prep.services.feedback'));
 
     beforeEach(inject(function ($rootScope, $injector, RestURLs) {
         RestURLs.setServerUrl('');

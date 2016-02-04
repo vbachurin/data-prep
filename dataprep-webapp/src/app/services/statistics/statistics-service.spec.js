@@ -674,7 +674,7 @@ describe('Statistics service', function () {
     var stateMock;
     var workerWrapper;
 
-    beforeEach(module('data-prep.services.statistics', function ($provide) {
+    beforeEach(angular.mock.module('data-prep.services.statistics', function ($provide) {
         stateMock = {
             playground: {
                 grid: {},

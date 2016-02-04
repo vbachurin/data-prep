@@ -18,7 +18,7 @@ describe('Recipe controller', function () {
     var lastActiveStep = {inactive: false};
     var stateMock;
 
-    beforeEach(module('data-prep.recipe', function ($provide) {
+    beforeEach(angular.mock.module('data-prep.recipe', function ($provide) {
         stateMock = {
             playground: {
                 preparation: {

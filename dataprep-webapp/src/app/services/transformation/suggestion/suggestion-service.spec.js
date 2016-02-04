@@ -14,7 +14,7 @@
 describe('Suggestion Service', function() {
     'use strict';
 
-    beforeEach(module('data-prep.services.transformation'));
+    beforeEach(angular.mock.module('data-prep.services.transformation'));
 
     beforeEach(inject(function(ColumnSuggestionService, LineSuggestionService) {
         spyOn(LineSuggestionService, 'initTransformations').and.returnValue();

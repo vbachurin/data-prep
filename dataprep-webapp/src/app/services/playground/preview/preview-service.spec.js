@@ -40,7 +40,7 @@ describe('Preview Service', function () {
     var previewExecutor = {};
     var reverterExecutor = {};
 
-    beforeEach(module('data-prep.services.playground', function ($provide) {
+    beforeEach(angular.mock.module('data-prep.services.playground', function ($provide) {
         stateMock = {playground: {grid: {}}};
         $provide.constant('state', stateMock);
     }));
@@ -157,13 +157,13 @@ describe('Preview Service', function () {
             var previewArgs = PreparationService.getPreviewDiff.calls.mostRecent().args;
             var previewCanceler = previewArgs[1];
 
-            expect(previewCanceler.promise.$$state.status).toBe(0);
+            expect(previewCanceler.promise.$$state.status).toBe(0); //eslint-disable-line angular/no-private-call
 
             //when
             PreviewService.getPreviewDiffRecords(preparationId, currentStep, previewStep, null);
 
             //then
-            expect(previewCanceler.promise.$$state.status).toBe(1);
+            expect(previewCanceler.promise.$$state.status).toBe(1); //eslint-disable-line angular/no-private-call
         }));
     });
 
@@ -248,13 +248,13 @@ describe('Preview Service', function () {
             var previewArgs = PreparationService.getPreviewUpdate.calls.mostRecent().args;
             var previewCanceler = previewArgs[1];
 
-            expect(previewCanceler.promise.$$state.status).toBe(0);
+            expect(previewCanceler.promise.$$state.status).toBe(0); //eslint-disable-line angular/no-private-call
 
             //when
             PreviewService.getPreviewUpdateRecords(preparationId, currentStep, updateStep, newParams);
 
             //then
-            expect(previewCanceler.promise.$$state.status).toBe(1);
+            expect(previewCanceler.promise.$$state.status).toBe(1); //eslint-disable-line angular/no-private-call
         }));
 
     });
@@ -327,13 +327,13 @@ describe('Preview Service', function () {
             var previewArgs = PreparationService.getPreviewAdd.calls.mostRecent().args;
             var previewCanceler = previewArgs[1];
 
-            expect(previewCanceler.promise.$$state.status).toBe(0);
+            expect(previewCanceler.promise.$$state.status).toBe(0); //eslint-disable-line angular/no-private-call
 
             //when
             PreviewService.getPreviewAddRecords(datasetId, action, params);
 
             //then
-            expect(previewCanceler.promise.$$state.status).toBe(1);
+            expect(previewCanceler.promise.$$state.status).toBe(1); //eslint-disable-line angular/no-private-call
         }));
     });
 
@@ -358,13 +358,13 @@ describe('Preview Service', function () {
             var previewArgs = PreparationService.getPreviewDiff.calls.mostRecent().args;
             var previewCanceler = previewArgs[1];
 
-            expect(previewCanceler.promise.$$state.status).toBe(0);
+            expect(previewCanceler.promise.$$state.status).toBe(0); //eslint-disable-line angular/no-private-call
 
             //when
             PreviewService.stopPendingPreview();
 
             //then
-            expect(previewCanceler.promise.$$state.status).toBe(1);
+            expect(previewCanceler.promise.$$state.status).toBe(1); //eslint-disable-line angular/no-private-call
         }));
 
         it('should restore original data on reset', inject(function($rootScope, PreviewService, DatagridService) {
@@ -398,13 +398,13 @@ describe('Preview Service', function () {
             var previewArgs = PreparationService.getPreviewDiff.calls.mostRecent().args;
             var previewCanceler = previewArgs[1];
 
-            expect(previewCanceler.promise.$$state.status).toBe(0);
+            expect(previewCanceler.promise.$$state.status).toBe(0); //eslint-disable-line angular/no-private-call
 
             //when
             PreviewService.cancelPreview();
 
             //then
-            expect(previewCanceler.promise.$$state.status).toBe(1);
+            expect(previewCanceler.promise.$$state.status).toBe(1); //eslint-disable-line angular/no-private-call
         }));
 
         it('should set focused column and restore original data on cancel call', inject(function($rootScope, PreviewService, DatagridService) {

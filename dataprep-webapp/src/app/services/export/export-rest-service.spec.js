@@ -50,7 +50,7 @@ describe('Export REST Service', function () {
         }
     ];
 
-    beforeEach(module('data-prep.services.export'));
+    beforeEach(angular.mock.module('data-prep.services.export'));
 
     beforeEach(inject(function ($injector) {
         $httpBackend = $injector.get('$httpBackend');

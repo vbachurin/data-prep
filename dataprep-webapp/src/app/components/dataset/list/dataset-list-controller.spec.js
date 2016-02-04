@@ -27,7 +27,7 @@ describe('Dataset list controller', function () {
 
     var theCurrentFolder = {id: 'folder-16/folder-1/sub-1', path: 'folder-16/folder-1/sub-1', name: 'sub-1'};
 
-    beforeEach(module('pascalprecht.translate', function ($translateProvider) {
+    beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
             'HOME_FOLDER': 'Home'
         });
@@ -44,7 +44,7 @@ describe('Dataset list controller', function () {
         {id: 'desc', name: 'DESC_ORDER'}
     ];
 
-    beforeEach(module('data-prep.dataset-list', function ($provide) {
+    beforeEach(angular.mock.module('data-prep.dataset-list', function ($provide) {
         stateMock = {
             folder: {
                 currentFolder: theCurrentFolder,

@@ -14,7 +14,7 @@
 describe('REST urls service', function() {
     'use strict';
 
-    beforeEach(module('data-prep.services.utils'));
+    beforeEach(angular.mock.module('data-prep.services.utils'));
     beforeEach(inject(function (RestURLs) {
         RestURLs.setServerUrl('');
     }));

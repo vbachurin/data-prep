@@ -26,7 +26,7 @@ describe('Folder controller', function () {
         {id: 'desc', name: 'DESC_ORDER'}
     ];
 
-    beforeEach(module('data-prep.folder', function($provide){
+    beforeEach(angular.mock.module('data-prep.folder', function($provide){
         stateMock = {
             inventory: {
                 datasets: [],
@@ -39,7 +39,7 @@ describe('Folder controller', function () {
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(module('data-prep.folder'));
+    beforeEach(angular.mock.module('data-prep.folder'));
 
     beforeEach(inject(function($rootScope, $controller, $q, FolderService, StateService) {
         scope = $rootScope.$new();

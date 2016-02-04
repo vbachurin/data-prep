@@ -14,7 +14,7 @@
 describe('Statistics state service', function () {
     'use strict';
 
-    beforeEach(module('data-prep.services.state'));
+    beforeEach(angular.mock.module('data-prep.services.state'));
 
     it('should set histogram', inject(function (statisticsState, StatisticsStateService) {
         //given

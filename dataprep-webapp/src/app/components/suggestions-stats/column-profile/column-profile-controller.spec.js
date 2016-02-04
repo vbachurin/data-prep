@@ -20,7 +20,7 @@ describe('ColumnProfile controller', function () {
     var removeFilterFn = function () {
     };
 
-    beforeEach(module('data-prep.column-profile', function ($provide) {
+    beforeEach(angular.mock.module('data-prep.column-profile', function ($provide) {
         stateMock = {
             playground: {
                 grid: {},

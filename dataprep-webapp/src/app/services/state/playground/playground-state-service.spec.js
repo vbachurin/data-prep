@@ -16,7 +16,7 @@ describe('Playground state service', function () {
 
     var recipeStateMock, gridStateMock, filterStateMock, parametersStateMock;
 
-    beforeEach(module('data-prep.services.state', function ($provide) {
+    beforeEach(angular.mock.module('data-prep.services.state', function ($provide) {
         recipeStateMock = {};
         gridStateMock = {};
         filterStateMock = {};

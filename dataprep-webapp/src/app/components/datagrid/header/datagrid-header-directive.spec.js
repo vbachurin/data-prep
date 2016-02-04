@@ -11,7 +11,7 @@
 
   ============================================================================*/
 
-describe('Dataset column header directive', function () {
+describe('Datagrid header directive', function () {
     'use strict';
     var scope, createElement, element, ctrl;
     var body = angular.element('body');
@@ -26,8 +26,8 @@ describe('Dataset column header directive', function () {
         'type': 'string'
     };
 
-    beforeEach(module('data-prep.datagrid-header'));
-    beforeEach(module('htmlTemplates'));
+    beforeEach(angular.mock.module('data-prep.datagrid-header'));
+    beforeEach(angular.mock.module('htmlTemplates'));
 
     beforeEach(inject(function ($rootScope, $compile, $timeout) {
         scope = $rootScope.$new(true);
@@ -45,13 +45,7 @@ describe('Dataset column header directive', function () {
         };
     }));
 
-    beforeEach(function() {
-        jasmine.clock().install();
-    });
-
     afterEach(function () {
-        jasmine.clock().uninstall();
-
         scope.$destroy();
         element.remove();
     });
@@ -87,7 +81,7 @@ describe('Dataset column header directive', function () {
         expect(element.find('.grid-header-type').text()).toBe('text');
     });
 
-    it('should close dropdown on get transform list error', function () {
+    it('should close dropdown on get transform list error', inject(function ($timeout) {
         //given
         createElement();
         var menu = element.find('.grid-header-menu').eq(0);
@@ -96,11 +90,11 @@ describe('Dataset column header directive', function () {
         //when
         element.controller('datagridHeader').transformationsRetrieveError = true;
         scope.$apply();
-        jasmine.clock().tick(250);
+        $timeout.flush(250);
 
         //then
         expect(menu.hasClass('show-menu')).toBe(false);
-    });
+    }));
 
     it('should show input to rename column name when double click', function () {
         //given
@@ -116,7 +110,7 @@ describe('Dataset column header directive', function () {
         expect(ctrl.isEditMode).toBeTruthy();
     });
 
-    it('should select input text when edition mode is tuned on', function () {
+    it('should select input text when edition mode is tuned on', inject(function ($window, $timeout) {
         //given
         createElement();
 
@@ -124,12 +118,12 @@ describe('Dataset column header directive', function () {
 
         //when
         headerTitle.dblclick();
-        jasmine.clock().tick(100);
+        $timeout.flush(100);
 
         //then
-        expect(document.activeElement).toBe(element.find('.grid-header-title-input').eq(0)[0]);
-        expect(window.getSelection().toString()).toBe('MostPopulousCity');
-    });
+        expect(document.activeElement).toBe(element.find('.grid-header-title-input').eq(0)[0]); //eslint-disable-line angular/document-service
+        expect($window.getSelection().toString()).toBe('MostPopulousCity');
+    }));
 
     it('should switch from input to text on ESC keydown', function () {
         //given

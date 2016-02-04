@@ -55,7 +55,7 @@ describe('Folder state service', function () {
 		}
 	];
 
-	beforeEach(module('data-prep.services.state'));
+	beforeEach(angular.mock.module('data-prep.services.state'));
 
 	describe('setters', function () {
 		it('should set CurrentFolder', inject(function (folderState, FolderStateService) {

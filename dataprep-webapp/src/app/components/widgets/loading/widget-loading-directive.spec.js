@@ -16,8 +16,8 @@ describe('Loading directive', function () {
 
     var scope, element;
 
-    beforeEach(module('talend.widget'));
-    beforeEach(module('htmlTemplates'));
+    beforeEach(angular.mock.module('talend.widget'));
+    beforeEach(angular.mock.module('htmlTemplates'));
 
     beforeEach(inject(function ($rootScope, $compile) {
         scope = $rootScope.$new();
@@ -26,13 +26,6 @@ describe('Loading directive', function () {
         element = $compile(html)(scope);
         scope.$digest();
     }));
-
-    beforeEach(function () {
-        jasmine.clock().install();
-    });
-    afterEach(function () {
-        jasmine.clock().uninstall();
-    });
 
     it('should immediatly add "is-loading" class when "talend.loading.start" is emitted', inject(function ($rootScope) {
         //given
@@ -46,7 +39,7 @@ describe('Loading directive', function () {
         expect(element.hasClass('is-loading')).toBe(true);
     }));
 
-    it('should add "show-loading" class after 200ms when "talend.loading.start" is emitted', inject(function ($rootScope) {
+    it('should add "show-loading" class after 200ms when "talend.loading.start" is emitted', inject(function ($timeout, $rootScope) {
         //given
         expect(element.hasClass('show-loading')).toBe(false);
 
@@ -54,7 +47,7 @@ describe('Loading directive', function () {
         $rootScope.$emit('talend.loading.start');
         $rootScope.$digest();
         expect(element.hasClass('show-loading')).toBe(false);
-        jasmine.clock().tick(200);
+        $timeout.flush(200);
 
         //then
         expect(element.hasClass('show-loading')).toBe(true);

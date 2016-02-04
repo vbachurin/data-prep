@@ -16,7 +16,7 @@ describe('Suggestions stats directive', function() {
 
     var scope, createElement, element, stateMock;
 
-    beforeEach(module('data-prep.suggestions-stats', function ($provide) {
+    beforeEach(angular.mock.module('data-prep.suggestions-stats', function ($provide) {
         stateMock = {playground: {
             suggestions: {
                 isLoading: false
@@ -24,7 +24,7 @@ describe('Suggestions stats directive', function() {
         }};
         $provide.constant('state', stateMock);
     }));
-    beforeEach(module('htmlTemplates'));
+    beforeEach(angular.mock.module('htmlTemplates'));
 
     beforeEach(inject(function($rootScope, $compile, $timeout) {
         scope = $rootScope.$new();

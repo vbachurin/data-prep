@@ -11,7 +11,7 @@
 
   ============================================================================*/
 
-describe('rangeSlider directive', function () {
+describe('Range slider directive', function () {
     'use strict';
 
     var createElement, element, scope, ctrl;
@@ -29,8 +29,8 @@ describe('rangeSlider directive', function () {
         Date.now = now;
     };
 
-    beforeEach(module('htmlTemplates'));
-    beforeEach(module('talend.widget'));
+    beforeEach(angular.mock.module('htmlTemplates'));
+    beforeEach(angular.mock.module('talend.widget'));
 
     beforeEach(inject(function ($rootScope, $compile) {
         scope = $rootScope.$new(true);
@@ -61,19 +61,13 @@ describe('rangeSlider directive', function () {
         };
     }));
 
-    beforeEach(function () {
-        jasmine.clock().install();
-    });
-
     afterEach(function () {
-        jasmine.clock().uninstall();
-
         scope.$destroy();
         element.remove();
     });
 
     describe('brush', function() {
-        it('should set the brush to the min/max position when there is no brush values', function () {
+        it('should set the brush to the min/max position when there is no brush values', inject(function ($timeout) {
             //given
             scope.rangeLimits = {
                 min: 0,
@@ -82,7 +76,7 @@ describe('rangeSlider directive', function () {
 
             //when
             createElement();
-            jasmine.clock().tick(100);
+            $timeout.flush(100);
             flushAllD3Transitions();
 
             //then: brush extent width should be all the range size
@@ -91,12 +85,12 @@ describe('rangeSlider directive', function () {
                 .range([0, (250 - (margins.left + margins.right))]);
             expect(d3.select('.extent').attr('width')).toBe('' + (x(scope.rangeLimits.max) - x(scope.rangeLimits.min)));
             expect(d3.select('.extent').attr('x')).toBe('' + x(scope.rangeLimits.min));
-        });
+        }));
 
-        it('should set the brush to the provided values', function () {
+        it('should set the brush to the provided values', inject(function ($timeout) {
             //when
             createElement();
-            jasmine.clock().tick(100);
+            $timeout.flush(100);
             flushAllD3Transitions();
 
             //then : brush extent width should be between [5...15]
@@ -113,9 +107,9 @@ describe('rangeSlider directive', function () {
             d3.select('.brush').call(brush.event)
                 .call(brush.extent([0, 20]));
             expect(d3.select('.extent').attr('width')).toBe('' + (x(scope.rangeLimits.max) - x(scope.rangeLimits.min)));
-        });
+        }));
 
-        it('should init brush with a delta when minBrush = maxBrush', function () {
+        it('should init brush with a delta when minBrush = maxBrush', inject(function ($timeout) {
             //given
             scope.rangeLimits = {
                 min: 0.000001,
@@ -126,14 +120,14 @@ describe('rangeSlider directive', function () {
                 maxFilterVal: 35
             };
             createElement();
-            jasmine.clock().tick(100);
+            $timeout.flush(100);
             flushAllD3Transitions();
 
             //then
             expect(ctrl.brush.extent()).toEqual([20, 20.01]);
-        });
+        }));
 
-        it('should the min and max labels to the provided min/max values', function () {
+        it('should the min and max labels to the provided min/max values', inject(function ($timeout) {
             //given
             scope.rangeLimits = {
                 min: -50000,
@@ -144,25 +138,25 @@ describe('rangeSlider directive', function () {
                 maxFilterVal: 10001
             };
             createElement();
-            jasmine.clock().tick(100);
+            $timeout.flush(100);
             flushAllD3Transitions();
 
             //then
             expect(element.find('text.the-minimum-label').eq(0).text()).toBe('-50,000');
             expect(element.find('text.the-maximum-label').eq(0).text()).toBe('20,000');
-        });
+        }));
     });
 
     describe('inputs', function() {
 
-        it('should init inputs with the provided min/max when minFilterVal and maxFilterVal are undefined (no filter)', function () {
+        it('should init inputs with the provided min/max when minFilterVal and maxFilterVal are undefined (no filter)', inject(function ($timeout) {
             //given
             scope.rangeLimits = {
                 min: -50000,
                 max: 20000
             };
             createElement();
-            jasmine.clock().tick(100);
+            $timeout.flush(100);
             flushAllD3Transitions();
 
             //when
@@ -172,9 +166,9 @@ describe('rangeSlider directive', function () {
             //then
             expect(element.find('input').eq(0)[0].value).toBe('-50000');
             expect(element.find('input').eq(1)[0].value).toBe('20000');
-        });
+        }));
 
-        it('should init inputs with the provided filter values', function () {
+        it('should init inputs with the provided filter values', inject(function ($timeout) {
             //given
             scope.rangeLimits = {
                 min: 0.000001,
@@ -185,7 +179,7 @@ describe('rangeSlider directive', function () {
                 maxFilterVal: 35
             };
             createElement();
-            jasmine.clock().tick(100);
+            $timeout.flush(100);
             flushAllD3Transitions();
 
             //when
@@ -195,15 +189,15 @@ describe('rangeSlider directive', function () {
             //then
             expect(element.find('input').eq(0)[0].value).toBe('25');
             expect(element.find('input').eq(1)[0].value).toBe('35');
-        });
+        }));
 
         describe('events', function() {
 
             describe('ENTER keyup', function() {
-                it('should update brush with input values and call brushend callback', function () {
+                it('should update brush with input values and call brushend callback', inject(function ($timeout) {
                     //given
                     createElement();
-                    jasmine.clock().tick(100);
+                    $timeout.flush(100);
                     expect(ctrl.brush.extent()).toEqual([5, 15]);
 
                     ctrl.showRangeInputs = true;
@@ -225,12 +219,12 @@ describe('rangeSlider directive', function () {
                     expect(ctrl.brush.extent()).toEqual([8, 10]);
                     expect(scope.brushEnd).toHaveBeenCalledWith({min: 8, max: 10});
                     expect(minInput[0].value).toBe('8');
-                });
+                }));
 
-                it('should invert min and max if min > max at brush end callback', function () {
+                it('should invert min and max if min > max at brush end callback', inject(function ($timeout) {
                     //given
                     createElement();
-                    jasmine.clock().tick(100);
+                    $timeout.flush(100);
                     expect(scope.brushEnd).not.toHaveBeenCalled();
 
                     ctrl.showRangeInputs = true;
@@ -249,12 +243,12 @@ describe('rangeSlider directive', function () {
 
                     //then
                     expect(scope.brushEnd).toHaveBeenCalledWith({min: 8, max: 10});
-                });
+                }));
 
                 it('should cancel the entered value when value is incorrect', inject(function ($timeout) {
                     //given
                     createElement();
-                    jasmine.clock().tick(100);
+                    $timeout.flush(100);
                     flushAllD3Transitions();
 
                     ctrl.showRangeInputs = true;
@@ -278,10 +272,10 @@ describe('rangeSlider directive', function () {
                     expect(minInput[0].value).toEqual('5');
                 }));
 
-                it('should NOT call brush end callback when value is incorrect', function () {
+                it('should NOT call brush end callback when value is incorrect', inject(function ($timeout) {
                     //given
                     createElement();
-                    jasmine.clock().tick(100);
+                    $timeout.flush(100);
                     flushAllD3Transitions();
 
                     var minInput = element.find('input').eq(0);
@@ -297,14 +291,14 @@ describe('rangeSlider directive', function () {
 
                     //then
                     expect(scope.brushEnd).not.toHaveBeenCalled();
-                });
+                }));
             });
 
             describe('TAB keyup', function() {
-                it('should update brush with input values', function () {
+                it('should update brush with input values', inject(function ($timeout) {
                     //given
                     createElement();
-                    jasmine.clock().tick(100);
+                    $timeout.flush(100);
                     expect(ctrl.brush.extent()).toEqual([5, 15]);
 
                     ctrl.showRangeInputs = true;
@@ -323,12 +317,12 @@ describe('rangeSlider directive', function () {
 
                     //then
                     expect(ctrl.brush.extent()).toEqual([8, 10]);
-                });
+                }));
 
-                it('should call brush end callback', function () {
+                it('should call brush end callback', inject(function ($timeout) {
                     //given
                     createElement();
-                    jasmine.clock().tick(100);
+                    $timeout.flush(100);
                     expect(scope.brushEnd).not.toHaveBeenCalled();
 
                     ctrl.showRangeInputs = true;
@@ -346,12 +340,12 @@ describe('rangeSlider directive', function () {
 
                     //then
                     expect(scope.brushEnd).toHaveBeenCalledWith({min: 8, max: 10});
-                });
+                }));
 
-                it('should invert min and max if min > max at brush end callback', function () {
+                it('should invert min and max if min > max at brush end callback', inject(function ($timeout) {
                     //given
                     createElement();
-                    jasmine.clock().tick(100);
+                    $timeout.flush(100);
                     expect(scope.brushEnd).not.toHaveBeenCalled();
 
                     ctrl.showRangeInputs = true;
@@ -369,12 +363,12 @@ describe('rangeSlider directive', function () {
 
                     //then
                     expect(scope.brushEnd).toHaveBeenCalledWith({min: 8, max: 10});
-                });
+                }));
 
                 it('should cancel the typed value when value is incorrect', inject(function ($timeout) {
                     //given
                     createElement();
-                    jasmine.clock().tick(100);
+                    $timeout.flush(100);
                     flushAllD3Transitions();
 
                     ctrl.showRangeInputs = true;
@@ -398,10 +392,10 @@ describe('rangeSlider directive', function () {
                     expect(maxInput[0].value).toEqual('15');
                 }));
 
-                it('should NOT call brush end callback when value is incorrect', function () {
+                it('should NOT call brush end callback when value is incorrect', inject(function ($timeout) {
                     //given
                     createElement();
-                    jasmine.clock().tick(100);
+                    $timeout.flush(100);
                     flushAllD3Transitions();
 
                     var minInput = element.find('input').eq(0);
@@ -417,14 +411,14 @@ describe('rangeSlider directive', function () {
 
                     //then
                     expect(scope.brushEnd).not.toHaveBeenCalled();
-                });
+                }));
             });
 
             describe('Blur keyup', function() {
-                it('should update brush with input values', function () {
+                it('should update brush with input values', inject(function ($timeout) {
                     //given
                     createElement();
-                    jasmine.clock().tick(100);
+                    $timeout.flush(100);
                     expect(ctrl.brush.extent()).toEqual([5, 15]);
 
                     ctrl.showRangeInputs = true;
@@ -443,12 +437,12 @@ describe('rangeSlider directive', function () {
 
                     //then
                     expect(ctrl.brush.extent()).toEqual([5, 17]);
-                });
+                }));
 
-                it('should NOT update brush with invalid input values', function () {
+                it('should NOT update brush with invalid input values', inject(function ($timeout) {
                     //given
                     createElement();
-                    jasmine.clock().tick(100);
+                    $timeout.flush(100);
                     expect(ctrl.brush.extent()).toEqual([5, 15]);
 
                     ctrl.showRangeInputs = true;
@@ -467,12 +461,12 @@ describe('rangeSlider directive', function () {
 
                     //then
                     expect(ctrl.brush.extent()).toEqual([5, 15]);
-                });
+                }));
 
-                it('should call brush end callback', function () {
+                it('should call brush end callback', inject(function ($timeout) {
                     //given
                     createElement();
-                    jasmine.clock().tick(100);
+                    $timeout.flush(100);
                     expect(scope.brushEnd).not.toHaveBeenCalled();
 
                     ctrl.showRangeInputs = true;
@@ -489,14 +483,14 @@ describe('rangeSlider directive', function () {
 
                     //then
                     expect(scope.brushEnd).toHaveBeenCalledWith({min: 5, max: 17});
-                });
+                }));
             });
 
             describe('ESC keyup', function() {
                 it('should cancel the typed input values even with invalid value', inject(function ($timeout) {
                     //given
                     createElement();
-                    jasmine.clock().tick(100);
+                    $timeout.flush(100);
                     flushAllD3Transitions();
 
                     ctrl.showRangeInputs = true;
@@ -527,7 +521,7 @@ describe('rangeSlider directive', function () {
                 it('should NOT update brush', inject(function ($timeout) {
                     //given
                     createElement();
-                    jasmine.clock().tick(100);
+                    $timeout.flush(100);
                     expect(ctrl.brush.extent()).toEqual([5, 15]);
 
                     ctrl.showRangeInputs = true;
@@ -553,7 +547,7 @@ describe('rangeSlider directive', function () {
                 it('should NOT call brush end callback', inject(function ($timeout) {
                     //given
                     createElement();
-                    jasmine.clock().tick(100);
+                    $timeout.flush(100);
                     expect(scope.brushEnd).not.toHaveBeenCalled();
 
                     ctrl.showRangeInputs = true;
@@ -579,10 +573,10 @@ describe('rangeSlider directive', function () {
         });
 
         describe('errors', function() {
-            it('should show error message when value is incorrect', function () {
+            it('should show error message when value is incorrect', inject(function ($timeout) {
                 //given
                 createElement();
-                jasmine.clock().tick(100);
+                $timeout.flush(100);
                 flushAllD3Transitions();
 
                 ctrl.showRangeInputs = true;
@@ -602,12 +596,12 @@ describe('rangeSlider directive', function () {
                 //then
                 expect(element.find('.error').eq(0).hasClass('ng-hide')).toBe(false);
                 expect(element.find('.error').eq(1).hasClass('ng-hide')).toBe(true);
-            });
+            }));
 
             it('should hide error message when value was incorrect and the user hits ENTER', inject(function ($timeout) {
                 //given
                 createElement();
-                jasmine.clock().tick(100);
+                $timeout.flush(100);
                 flushAllD3Transitions();
 
                 ctrl.showRangeInputs = true;
@@ -640,7 +634,7 @@ describe('rangeSlider directive', function () {
             it('should hide error message when value was incorrect and the user hits TAB', inject(function ($timeout) {
                 //given
                 createElement();
-                jasmine.clock().tick(100);
+                $timeout.flush(100);
                 flushAllD3Transitions();
 
                 ctrl.showRangeInputs = true;

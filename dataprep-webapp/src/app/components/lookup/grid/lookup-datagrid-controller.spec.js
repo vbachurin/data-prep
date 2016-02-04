@@ -16,7 +16,7 @@ describe('Lookup Datagrid controller', function () {
 
 	var createController, scope;
 
-	beforeEach(module('data-prep.lookup'));
+	beforeEach(angular.mock.module('data-prep.lookup'));
 
 	beforeEach(inject(function($rootScope, $controller) {
 		scope = $rootScope.$new();

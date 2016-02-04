@@ -25,7 +25,7 @@ describe('Lookup Datagrid tooltip service', function() {
 			return this.savedText.length * 4;
 		},
 		height: function() {
-			return ((this.savedText.match(new RegExp('\n', 'g')) || []).length + 1) * 20;
+			return ((this.savedText.match(new RegExp('\n', 'g')) || []).length + 1) * 20; //eslint-disable-line no-control-regex
 		}
 	};
 
@@ -49,7 +49,7 @@ describe('Lookup Datagrid tooltip service', function() {
 		{id: 'tdpId', name: '#'}
 	];
 
-	beforeEach(module('data-prep.lookup', function ($provide) {
+	beforeEach(angular.mock.module('data-prep.lookup', function ($provide) {
 		dataViewMock = new DataViewMock();
 		stateMock = {playground: {lookup: {
 			dataView: dataViewMock
@@ -59,7 +59,6 @@ describe('Lookup Datagrid tooltip service', function() {
 	}));
 
 	beforeEach(inject(function(LookupDatagridTooltipService) {
-		/*global SlickGridMock:false */
 		gridMock = new SlickGridMock();
 
 		gridMock.initColumnsMock(columns);

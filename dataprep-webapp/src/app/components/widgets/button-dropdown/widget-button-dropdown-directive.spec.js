@@ -16,8 +16,8 @@
 describe('Button Dropdown directive', function () {
     var scope, element, createElementWithAction, createElementWithoutAction;
 
-    beforeEach(module('talend.widget'));
-    beforeEach(module('htmlTemplates'));
+    beforeEach(angular.mock.module('talend.widget'));
+    beforeEach(angular.mock.module('htmlTemplates'));
 
     afterEach(function () {
         scope.$destroy();

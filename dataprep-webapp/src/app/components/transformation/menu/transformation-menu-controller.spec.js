@@ -68,7 +68,7 @@ describe('Transform menu controller', function () {
 
     var stateMock;
 
-    beforeEach(module('data-prep.transformation-menu', function ($provide) {
+    beforeEach(angular.mock.module('data-prep.transformation-menu', function ($provide) {
         stateMock = {playground: {}};
         $provide.constant('state', stateMock);
     }));

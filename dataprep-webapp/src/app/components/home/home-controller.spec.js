@@ -18,7 +18,7 @@ describe('Home controller', function () {
     var DATA_INVENTORY_PANEL_KEY = 'org.talend.dataprep.data_inventory_panel_display';
     var dataset = {id: 'ec4834d9bc2af8', name: 'Customers (50 lines)', draft: false};
 
-    beforeEach(module('data-prep.home', function ($provide) {
+    beforeEach(angular.mock.module('data-prep.home', function ($provide) {
         StateMock = {
             dataset: {
                 uploadingDatasets:[]

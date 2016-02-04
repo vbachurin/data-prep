@@ -16,7 +16,7 @@ describe('Playground controller', function () {
 
     var createController, scope, stateMock;
 
-    beforeEach(module('data-prep.playground', function ($provide) {
+    beforeEach(angular.mock.module('data-prep.playground', function ($provide) {
         stateMock = {playground: {
             dataset: {},
             lookup: {

@@ -108,7 +108,7 @@ describe('filter search controller', function() {
         ]
     };
 
-    beforeEach(module('data-prep.filter-search', function ($provide) {
+    beforeEach(angular.mock.module('data-prep.filter-search', function ($provide) {
         stateMock = {playground: {}};
         $provide.constant('state', stateMock);
     }));

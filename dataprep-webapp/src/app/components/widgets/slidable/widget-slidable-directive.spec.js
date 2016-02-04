@@ -18,8 +18,8 @@ describe('Slidable directive', function () {
     var resizableId = 'resizableId';
     var widthStorageKey = 'org.talend.dataprep.' + resizableId + '.width';
 
-    beforeEach(module('talend.widget'));
-    beforeEach(module('htmlTemplates'));
+    beforeEach(angular.mock.module('talend.widget'));
+    beforeEach(angular.mock.module('htmlTemplates'));
 
     afterEach(inject(function ($window) {
         scope.$destroy();

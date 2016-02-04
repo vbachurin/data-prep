@@ -58,7 +58,7 @@ describe('DatasetList directive', function () {
         {id: 'desc', name: 'DESC_ORDER'}
     ];
 
-    beforeEach(module('data-prep.dataset-list', function ($provide) {
+    beforeEach(angular.mock.module('data-prep.dataset-list', function ($provide) {
         stateMock = {
             folder: {
                 currentFolderContent: {
@@ -74,11 +74,11 @@ describe('DatasetList directive', function () {
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(module('data-prep.services.onboarding'));
-    beforeEach(module('data-prep.datagrid'));
+    beforeEach(angular.mock.module('data-prep.services.onboarding'));
+    beforeEach(angular.mock.module('data-prep.datagrid'));
 
-    beforeEach(module('htmlTemplates'));
-    beforeEach(module('pascalprecht.translate', function ($translateProvider) {
+    beforeEach(angular.mock.module('htmlTemplates'));
+    beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
             'INVENTORY_DETAILS': 'owned by {{author}}, created {{created | TDPMoment}}, contains {{records}} lines'
         });
@@ -152,7 +152,7 @@ describe('DatasetList directive', function () {
         ctrl.focusOnNameInput();
 
         //then
-        var activeEl = document.activeElement;
+        var activeEl = document.activeElement; //eslint-disable-line angular/document-service
         expect(angular.element(activeEl).attr('id')).toBe('new-name-input-id');
     }));
 

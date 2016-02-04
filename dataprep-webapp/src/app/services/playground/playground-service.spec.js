@@ -15,12 +15,11 @@ describe('Playground Service', function () {
     var stateMock = {};
     var lastActiveStep = {inactive: false};
 
-    beforeEach(module('data-prep.services.playground', function ($provide) {
+    beforeEach(angular.mock.module('data-prep.services.playground', function ($provide) {
         $provide.constant('state', stateMock);
     }));
 
-
-    beforeEach(module('pascalprecht.translate', function ($translateProvider) {
+    beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
             'PREPARATION': 'Preparation'
         });
@@ -80,7 +79,7 @@ describe('Playground Service', function () {
             id: 'e85afAa78556d5425bc2',
             name: 'dataset name'
         };
-        var assertNewPreparationInitialization, assertNewPreparationNotInitialized;
+        var assertNewPreparationInitialization;
 
         beforeEach(inject(function ($rootScope, PlaygroundService, DatasetService,
                                     RecipeService, DatagridService, TransformationCacheService,
@@ -99,24 +98,7 @@ describe('Playground Service', function () {
                 expect(PreviewService.reset).toHaveBeenCalledWith(false);
                 expect(ExportService.reset).toHaveBeenCalled();
             };
-            assertNewPreparationNotInitialized = function () {
-                expect(StateService.resetPlayground).not.toHaveBeenCalled();
-                expect(StateService.setCurrentDataset).not.toHaveBeenCalled();
-                expect(StateService.setCurrentData).not.toHaveBeenCalled();
-                expect(StateService.removeAllGridFilters).not.toHaveBeenCalled();
-                expect(RecipeService.refresh).not.toHaveBeenCalled();
-                expect(TransformationCacheService.invalidateCache).not.toHaveBeenCalled();
-                expect(HistoryService.clear).not.toHaveBeenCalled();
-                expect(PreviewService.reset).not.toHaveBeenCalled();
-                expect(ExportService.reset).not.toHaveBeenCalled();
-            };
-
-            jasmine.clock().install();
         }));
-
-        afterEach(function () {
-            jasmine.clock().uninstall();
-        });
 
         it('should init playground', inject(function ($rootScope, PlaygroundService, PreparationService) {
             //given
@@ -155,7 +137,7 @@ describe('Playground Service', function () {
             expect(PlaygroundService.preparationName).toBe('dataset name Preparation');
         }));
 
-        it('should start playground unboarding tour', inject(function ($rootScope, PlaygroundService, OnboardingService) {
+        it('should start playground unboarding tour', inject(function ($rootScope, $timeout, PlaygroundService, OnboardingService) {
             //given
             spyOn(OnboardingService, 'shouldStartTour').and.returnValue(true);
             spyOn(OnboardingService, 'startTour').and.returnValue();
@@ -164,14 +146,14 @@ describe('Playground Service', function () {
             //when
             PlaygroundService.initPlayground(dataset);
             $rootScope.$digest();
-            jasmine.clock().tick(300);
+            $timeout.flush(300);
 
             //then
             expect(OnboardingService.shouldStartTour).toHaveBeenCalledWith('playground');
             expect(OnboardingService.startTour).toHaveBeenCalledWith('playground');
         }));
 
-        it('should NOT start playground unboarding tour', inject(function ($rootScope, PlaygroundService, OnboardingService) {
+        it('should NOT start playground unboarding tour', inject(function ($rootScope, $timeout, PlaygroundService, OnboardingService) {
             //given
             spyOn(OnboardingService, 'shouldStartTour').and.returnValue(false);
             spyOn(OnboardingService, 'startTour').and.returnValue();
@@ -180,7 +162,7 @@ describe('Playground Service', function () {
             //when
             PlaygroundService.initPlayground(dataset);
             $rootScope.$digest();
-            jasmine.clock().tick(300);
+            $timeout.flush(300);
 
             //then
             expect(OnboardingService.shouldStartTour).toHaveBeenCalledWith('playground');
@@ -1009,13 +991,7 @@ describe('Playground Service', function () {
             });
             spyOn(StateService, 'showRecipe').and.returnValue();
             spyOn(StateService, 'hideRecipe').and.returnValue();
-
-            jasmine.clock().install();
         }));
-
-        afterEach(function () {
-            jasmine.clock().uninstall();
-        });
 
         it('should hide recipe on dataset playground init', inject(function ($rootScope, PlaygroundService, StateService) {
             //given
@@ -1082,7 +1058,7 @@ describe('Playground Service', function () {
             expect(StateService.showRecipe).not.toHaveBeenCalled();
         }));
 
-        it('should show recipe and display onboarding on third step append if the tour has not been completed yet', inject(function ($rootScope, PlaygroundService, StateService, OnboardingService) {
+        it('should show recipe and display onboarding on third step append if the tour has not been completed yet', inject(function ($rootScope, $timeout, PlaygroundService, StateService, OnboardingService) {
             //given
             stateMock.playground.dataset = {id: '123456'};
             spyOn(OnboardingService, 'startTour').and.returnValue();
@@ -1096,11 +1072,11 @@ describe('Playground Service', function () {
             PlaygroundService.appendStep(action, column, parameters);
             stateMock.playground.preparation = createdPreparation;
             $rootScope.$digest();
-            jasmine.clock().tick(300);
+            $timeout.flush(300);
 
             //given : second action call
             PlaygroundService.appendStep(action, column, parameters);
-            jasmine.clock().tick(300);
+            $timeout.flush(300);
             $rootScope.$digest();
 
             expect(StateService.showRecipe.calls.count()).toBe(1); //called on 1st action
@@ -1109,14 +1085,14 @@ describe('Playground Service', function () {
             //when
             PlaygroundService.appendStep(action, column, parameters);
             $rootScope.$digest();
-            jasmine.clock().tick(300);
+            $timeout.flush(300);
 
             //then
             expect(StateService.showRecipe.calls.count()).toBe(2);
             expect(OnboardingService.startTour).toHaveBeenCalled();
         }));
 
-        it('should NOT show recipe and display onboarding on third step append if the tour has already been completed', inject(function ($rootScope, PlaygroundService, StateService, OnboardingService) {
+        it('should NOT show recipe and display onboarding on third step append if the tour has already been completed', inject(function ($rootScope, $timeout, PlaygroundService, StateService, OnboardingService) {
             //given
             stateMock.playground.dataset = {id: '123456'};
             spyOn(OnboardingService, 'startTour').and.returnValue();
@@ -1130,11 +1106,11 @@ describe('Playground Service', function () {
             PlaygroundService.appendStep(action, column, parameters);
             stateMock.playground.preparation = createdPreparation;
             $rootScope.$digest();
-            jasmine.clock().tick(300);
+            $timeout.flush(300);
 
             //given : second action call
             PlaygroundService.appendStep(action, column, parameters);
-            jasmine.clock().tick(300);
+            $timeout.flush(300);
             $rootScope.$digest();
 
             expect(StateService.showRecipe.calls.count()).toBe(1); //called on 1st action
@@ -1143,7 +1119,7 @@ describe('Playground Service', function () {
             //when
             PlaygroundService.appendStep(action, column, parameters);
             $rootScope.$digest();
-            jasmine.clock().tick(300);
+            $timeout.flush(300);
 
             //then
             expect(StateService.showRecipe.calls.count()).toBe(1);

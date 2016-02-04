@@ -16,9 +16,9 @@ describe('Editable regex widget controller', function() {
 
     var scope, createController;
 
-    beforeEach(module('talend.widget'));
+    beforeEach(angular.mock.module('talend.widget'));
 
-    beforeEach(module('pascalprecht.translate', function ($translateProvider) {
+    beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
             'EQUALS': 'Equals',
             'CONTAINS': 'Contains',

@@ -15,10 +15,10 @@ describe('Transformation choice params directive', function () {
     'use strict';
     var scope, createElement;
 
-    beforeEach(module('data-prep.transformation-form'));
-    beforeEach(module('htmlTemplates'));
+    beforeEach(angular.mock.module('data-prep.transformation-form'));
+    beforeEach(angular.mock.module('htmlTemplates'));
 
-    beforeEach(module('pascalprecht.translate', function ($translateProvider) {
+    beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
             'COLON': ': '
         });
