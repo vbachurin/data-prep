@@ -16,7 +16,7 @@ package org.talend.dataprep.dataset.service.analysis.synchronous;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
-import java.util.OptionalLong;
+import java.util.Optional;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,9 +83,9 @@ public class ContentAnalysisTest extends DataSetBaseTest {
         ReflectionTestUtils.setField(contentAnalysis, "sizeLimit", originalLimit);
 
         final DataSetMetadata actual = dataSetMetadataRepository.get(metadata.getId());
-        final OptionalLong limit = actual.getContent().getLimit();
+        final Optional<Long> limit = actual.getContent().getLimit();
         assertTrue(limit.isPresent());
-        assertThat(limit.getAsLong(), is(newLimit));
+        assertThat(limit.get(), is(newLimit));
     }
 
     @Test

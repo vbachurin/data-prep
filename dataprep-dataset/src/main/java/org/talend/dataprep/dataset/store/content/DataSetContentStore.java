@@ -14,7 +14,7 @@
 package org.talend.dataprep.dataset.store.content;
 
 import java.io.InputStream;
-import java.util.OptionalLong;
+import java.util.Optional;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -86,9 +86,9 @@ public abstract class DataSetContentStore {
         Stream<DataSetRow> dataSetRowStream = StreamSupport.stream(rowIterable.spliterator(), false);
 
         // deal with dataset size limit (ignored if limit is <= 0)
-        final OptionalLong limit = dataSetMetadata.getContent().getLimit();
-        if (limit.isPresent() && limit.getAsLong() > 0) {
-            dataSetRowStream = dataSetRowStream.limit(limit.getAsLong());
+        final Optional<Long> limit = dataSetMetadata.getContent().getLimit();
+        if (limit.isPresent() && limit.get() > 0) {
+            dataSetRowStream = dataSetRowStream.limit(limit.get());
         }
 
         // make sure to close the original input stream when closing this one

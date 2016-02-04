@@ -91,7 +91,7 @@ public class DataSetMetadataBuilder {
     /**
      * @see org.talend.dataprep.api.dataset.DataSetContent#limit
      */
-    private long limit;
+    private Long limit;
 
     /**
      * @see org.talend.dataprep.api.dataset.DataSetContent#nbLinesInHeader
@@ -312,7 +312,7 @@ public class DataSetMetadataBuilder {
         this.location = original.getLocation();
         this.size = original.getContent().getNbRecords();
         if (original.getContent().getLimit().isPresent()) {
-            this.limit = original.getContent().getLimit().getAsLong();
+            this.limit = original.getContent().getLimit().get();
         }
         this.headerSize = original.getContent().getNbLinesInHeader();
         this.footerSize = original.getContent().getNbLinesInFooter();
