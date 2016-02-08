@@ -1,15 +1,15 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
@@ -34,12 +34,13 @@ import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.metadata.AbstractMetadataBaseTest;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
+import org.talend.dataprep.transformation.api.action.metadata.common.AbstractCompareAction;
 import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 /**
  * Unit test for the CompareNumbers action.
- * 
+ *
  * @see CompareNumbers
  */
 public class CompareNumbersTest extends AbstractMetadataBaseTest {
@@ -66,9 +67,9 @@ public class CompareNumbersTest extends AbstractMetadataBaseTest {
     public void testActionParameters() throws Exception {
         final List<Parameter> parameters = action.getParameters();
         assertEquals(6, parameters.size());
-        assertTrue(parameters.stream().filter(p -> StringUtils.equals(p.getName(), CompareNumbers.COMPARE_MODE)).findFirst()
+        assertTrue(parameters.stream().filter(p -> StringUtils.equals(p.getName(), CompareNumbers.COMPARE_MODE)).findFirst() //
                 .isPresent());
-        assertTrue(parameters.stream().filter(p -> StringUtils.equals(p.getName(), CompareNumbers.MODE_PARAMETER)).findFirst()
+        assertTrue(parameters.stream().filter(p -> StringUtils.equals(p.getName(), CompareNumbers.MODE_PARAMETER)).findFirst() //
                 .isPresent());
     }
 
@@ -86,22 +87,22 @@ public class CompareNumbersTest extends AbstractMetadataBaseTest {
 
     @Test
     public void testComputeIntegerOperand() {
-        assertTrue(action.compare("3", "3", "eq"));
-        assertTrue(action.compare("003", "3.0", "eq"));
-        assertFalse(action.compare("1 200", "2,300", "gt"));
+        assertTrue(Boolean.parseBoolean( action.toStringCompareResult(new AbstractCompareAction.ComparisonRequest().setValue1("3").setValue2("3").setMode("eq"))));
+        assertTrue(Boolean.parseBoolean( action.toStringCompareResult(new AbstractCompareAction.ComparisonRequest().setValue1("003").setValue2("3.0").setMode("eq"))));
+        assertFalse(Boolean.parseBoolean( action.toStringCompareResult(new AbstractCompareAction.ComparisonRequest().setValue1("1 200").setValue2("2,300").setMode("gt"))));
     }
 
     @Test
     public void testComputeDecimalOperand() {
-        assertTrue(action.compare("3.0", "003", "eq"));
-        assertTrue(action.compare("003.5333", "0", "gt"));
-        assertFalse(action.compare("1 200.5", "2,300.5", "gt"));
+        assertTrue(Boolean.parseBoolean( action.toStringCompareResult(new AbstractCompareAction.ComparisonRequest().setValue1("3.0").setValue2("003").setMode("eq"))));
+        assertTrue(Boolean.parseBoolean( action.toStringCompareResult(new AbstractCompareAction.ComparisonRequest().setValue1("003.5333").setValue2("0").setMode("gt"))));
+        assertFalse(Boolean.parseBoolean( action.toStringCompareResult(new AbstractCompareAction.ComparisonRequest().setValue1("1 200.5").setValue2("2,300.5").setMode("gt"))));
     }
 
     @Test
     public void testComputeScientificOperand() {
-        assertTrue(action.compare("1.2E3", "1200", "eq"));
-        assertFalse(action.compare("1.2E3", "1200", "ne"));
+        assertTrue(Boolean.parseBoolean( action.toStringCompareResult(new AbstractCompareAction.ComparisonRequest().setValue1("1.2E3").setValue2("1200").setMode("eq"))));
+        assertFalse(Boolean.parseBoolean( action.toStringCompareResult(new AbstractCompareAction.ComparisonRequest().setValue1("1.2E3").setValue2("1200").setMode("ne"))));
     }
 
     @Test
@@ -245,6 +246,19 @@ public class CompareNumbersTest extends AbstractMetadataBaseTest {
         assertEquals(row.get("0000"), "5");
         assertEquals(row.get("0001"), "3");
         assertEquals(row.get("0002"), "Done !");
+    }
+
+    @Test
+    public void should_apply_on_column_not_valid() {
+        // given
+        DataSetRow row = getRow("5", "Beer", "Done !");
+
+        // when
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+
+        // then
+        DataSetRow expected = getRow("5", "Beer", "Done !", "");
+        assertEquals(expected, row);
     }
 
     @Test
