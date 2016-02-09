@@ -27,6 +27,7 @@ import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepositoryAdapt
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.DataSetErrorCodes;
 import org.talend.dataprep.lock.DistributedLock;
+import org.talend.dataprep.util.Files;
 import org.talend.dataprep.util.ReentrantReadWriteLockGroup;
 
 /**
@@ -116,9 +117,7 @@ public class FileSystemDataSetMetadataRepository extends DataSetMetadataReposito
     @Override
     public void remove(String id) {
         final File file = getFile(id);
-        if (file.exists() && !isNFSSpecificFile(file)) {
-            file.delete();
-        }
+        Files.deleteQuietly(file);
         LOG.debug("metadata {} successfully deleted", id);
     }
 
@@ -184,16 +183,6 @@ public class FileSystemDataSetMetadataRepository extends DataSetMetadataReposito
      */
     private File getRootFolder() {
         return new File(storeLocation + '/');
-    }
-
-    /**
-     * Specific OS NFS files must be not be deleted.
-     * 
-     * @param file the file to read.
-     * @return True if the given belongs to the operating system and is NFS related (starts with ".nfs")
-     */
-    private boolean isNFSSpecificFile(File file) {
-        return file.getName().startsWith(".nfs");
     }
 
 }

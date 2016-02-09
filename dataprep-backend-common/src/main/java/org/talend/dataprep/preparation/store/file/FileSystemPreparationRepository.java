@@ -30,6 +30,7 @@ import org.talend.dataprep.api.preparation.Step;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.preparation.store.PreparationRepository;
+import org.talend.dataprep.util.Files;
 
 
 /**
@@ -168,9 +169,7 @@ public class FileSystemPreparationRepository implements PreparationRepository {
         // clear all files
         final File[] preparations = getRootFolder().listFiles();
         for (File file : preparations) {
-            if (!isNFSSpecificFile(file)) {
-                file.delete();
-            }
+            Files.deleteQuietly(file);
         }
 
         // add the default files
@@ -178,16 +177,6 @@ public class FileSystemPreparationRepository implements PreparationRepository {
         add(rootStep);
 
         LOG.debug("preparation repository cleared");
-    }
-
-    /**
-     * Specific operating system NFS files must be left to the OS and cannot be deleted.
-     * 
-     * @param file the file to inspect.
-     * @return True if the given file is NFS specific (starts with ".nfs")
-     */
-    private boolean isNFSSpecificFile(File file) {
-        return file.getName().startsWith(".nfs");
     }
 
     /**
@@ -199,9 +188,7 @@ public class FileSystemPreparationRepository implements PreparationRepository {
             return;
         }
         final File file = getIdentifiableFile(object);
-        if (file.exists() && !isNFSSpecificFile(file)) {
-            file.delete();
-        }
+        Files.deleteQuietly(file);
         LOG.debug("preparation #{} removed", object.id());
     }
 
