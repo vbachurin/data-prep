@@ -1,3 +1,18 @@
+<!--
+  ~ ============================================================================
+  ~
+  ~  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+  ~
+  ~  This source code is available under agreement available at
+  ~  https://github.com/Talend/data-prep/blob/master/LICENSE
+  ~
+  ~  You should have received a copy of the agreement
+  ~  along with this program; if not, write to Talend SA
+  ~  9 rue Pages 92150 Suresnes, France
+  ~
+  ~ ============================================================================
+  -->
+
 <div class="lookup">
     <div class="lookup-header"></div>
 
@@ -84,7 +99,6 @@
                         <input class="add-dataset-input" type="checkbox" ng-model="dataset.addedToLookup" ng-disabled="!dataset.enableToAddToLookup"/>
                         <inventory-item
                                 ng-click="lookupCtrl.toogleSelect(dataset)"
-                                class="inventory-entry"
                                 type="dataset"
                                 item="dataset"
                                 details="INVENTORY_DETAILS"

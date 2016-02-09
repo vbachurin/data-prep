@@ -1,15 +1,27 @@
-<div class="slidable"
-     ng-class="{'slide-left': slidableCtrl.side === 'left', 'slide-right': slidableCtrl.side === 'right', 'slide-top': slidableCtrl.side === 'top', 'slide-bottom': slidableCtrl.side === 'bottom' , 'slide-hide': !slidableCtrl.visible }">
-    <div class="content">
-        <div class="content-container">
-            <ng-transclude class="fixed-content"></ng-transclude>
-        </div>
+<!--
+  ~ ============================================================================
+  ~
+  ~  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+  ~
+  ~  This source code is available under agreement available at
+  ~  https://github.com/Talend/data-prep/blob/master/LICENSE
+  ~
+  ~  You should have received a copy of the agreement
+  ~  along with this program; if not, write to Talend SA
+  ~  9 rue Pages 92150 Suresnes, France
+  ~
+  ~ ============================================================================
+  -->
 
+<div class="content">
+    <div class="content-container">
+        <ng-transclude class="fixed-content"></ng-transclude>
     </div>
+</div>
 
-    <div class="action {{slidableCtrl.actionCssClass}}"
-         ng-if="slidableCtrl.hasControlButton"
-         ng-click="slidableCtrl.toggle()">
+<div class="action {{slidableCtrl.actionCssClass}}"
+     ng-if="slidableCtrl.hasControlButton"
+     ng-click="slidableCtrl.toggle()">
         <span ng-if="::(slidableCtrl.side == 'left')">
             <span ng-show="slidableCtrl.visible">&#8249;</span>
             <span ng-show="!slidableCtrl.visible">&#8250;</span>
@@ -18,6 +30,4 @@
             <span ng-show="slidableCtrl.visible">&#8250;</span>
             <span ng-show="!slidableCtrl.visible">&#8249;</span>
         </span>
-    </div>
-
 </div>

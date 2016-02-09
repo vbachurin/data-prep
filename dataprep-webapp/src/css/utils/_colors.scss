@@ -1,3 +1,16 @@
+/*  ============================================================================
+
+  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+
+  This source code is available under agreement available at
+  https://github.com/Talend/data-prep/blob/master/LICENSE
+
+  You should have received a copy of the agreement
+  along with this program; if not, write to Talend SA
+  9 rue Pages 92150 Suresnes, France
+
+  ============================================================================*/
+
 // Application width (data-prep grid is full-screen)
 $max-width: 1140px !important;
 
@@ -29,8 +42,9 @@ $color-error: #ce6564 ;
 // drop shadows
 $icon-drop-shadow: 0px 1px 1px rgba(0, 0, 0, 1);
 $box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.5);
-$box-shadow-to-right: 5px 0px 8px rgba(0, 0, 0, 0.1);
-$box-shadow-to-left: -5px 0px 8px rgba(0, 0, 0, 0.1);
+$box-shadow-to-right: 5px 0px 8px rgba(0, 0, 0, 0.2);
+$box-shadow-to-left: -5px 0px 8px rgba(0, 0, 0, 0.2);
+$box-shadow-to-bottom: 3px 3px 18px 3px rgba(0, 0, 0, 0.2);
 
 // colors
 $white: #FFFFFF ;

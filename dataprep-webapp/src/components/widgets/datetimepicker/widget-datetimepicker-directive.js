@@ -1,22 +1,30 @@
+/*  ============================================================================
+
+  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+
+  This source code is available under agreement available at
+  https://github.com/Talend/data-prep/blob/master/LICENSE
+
+  You should have received a copy of the agreement
+  along with this program; if not, write to Talend SA
+  9 rue Pages 92150 Suresnes, France
+
+  ============================================================================*/
+
 (function () {
     'use strict';
 
     /**
      * @ngdoc directive
      * @name talend.widget.directive:TalendDatetimePicker
-     * @description This directive create a datetimepicker element.<br/>
-     * Key action :
-     * <ul>
-     *     <li>ESC : close the dropdown</li>
-     * </ul>
+     * @description This directive create a datetimepicker element.
      * @restrict E
      */
     function TalendDatetimePicker() {
 
         return {
             restrict: 'E',
-            replace: true,
-            templateUrl: 'components/widgets/datetimepicker/datetimepicker.html',
+            template: '<input class="datetimepicker" type="text" ng-model="ctrl.value" />',
             scope: {
                 value: '=ngModel'
             },
@@ -35,50 +43,20 @@
                 var formatTime = iAttrs.formatTime ? iAttrs.formatTime : 'hh:mm:ss';
                 var formatDate = iAttrs.formatDate ? iAttrs.formatDate : 'DD/MM/YYYY';
 
-                iElement.datetimepicker({
+                var input = iElement.find('.datetimepicker');
+                input.datetimepicker({
                         format: format,
                         formatTime: formatTime,
                         formatDate: formatDate
                     }
                 );
-
-                /**
-                 * @ngdoc method
-                 * @name hideCalendar
-                 * @methodOf talend.widget.directive:TalendDatetimePicker
-                 * @description [PRIVATE] hide calendar widget
-                 */
-                var hideCalendar = function () {
-                    iElement.datetimepicker('hide');
-                };
-
-                /**
-                 * @ngdoc method
-                 * @name attachKeyMap
-                 * @methodOf talend.widget.directive:TalendDatetimePicker
-                 * @description [PRIVATE] Attach ESC actions
-                 * <ul>
-                 *     <li>ESC : hide the calendar</li>
-                 * </ul>
-                 */
-                var attachKeyMap = function () {
-                    iElement.bind('keydown', function (event) {
-                        // hide calendar on 'ESC' keydown
-                        if (event.keyCode === 27) {
-                            hideCalendar();
-                            event.stopPropagation();
-                        }
-                    });
-                };
-
-                /**
-                 * on element destroy, we destroy the scope which unregister body mousedown
-                 */
-                iElement.on('$destroy', function () {
-                    scope.$destroy();
+                input.bind('keydown', function (event) {
+                    // hide calendar on 'ESC' keydown
+                    if (event.keyCode === 27) {
+                        input.datetimepicker('hide');
+                        event.stopPropagation();
+                    }
                 });
-
-                attachKeyMap();
             }
         };
 

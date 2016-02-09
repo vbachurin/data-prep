@@ -1,3 +1,16 @@
+/*  ============================================================================
+
+  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+
+  This source code is available under agreement available at
+  https://github.com/Talend/data-prep/blob/master/LICENSE
+
+  You should have received a copy of the agreement
+  along with this program; if not, write to Talend SA
+  9 rue Pages 92150 Suresnes, France
+
+  ============================================================================*/
+
 (function () {
     'use strict';
 
@@ -23,12 +36,15 @@
                     $timeout(function () {
                         var splitHandler = angular.element('.split-handler').eq(0);
                         var tabContainer = iElement.find('.action-suggestion-tab-items').eq(0);
-                        var etdContainer = elementToDisplay.find('>.content-container');
+                        var etdContainer = elementToDisplay.find('>.accordion >.content-container >.content');
+                        if (!etdContainer.length) {
+                            return;
+                        }
 
                         var tabOffset = tabContainer.offset();
                         var etdOffset = etdContainer.offset();
 
-                        var etdHeight = etdContainer.context.clientHeight;
+                        var etdHeight = etdContainer.height();
 
                         var availableTopSpace = etdOffset.top - tabOffset.top;
                         var scrollDistance;
@@ -41,7 +57,8 @@
                             }
                         }
                         else {
-                            scrollDistance = tabContainer[0].scrollTop + availableTopSpace - angular.element('.accordion').height();
+                            var accordionTriggerHeight = elementToDisplay.find('>.accordion >.trigger-container').height();
+                            scrollDistance = tabContainer[0].scrollTop + availableTopSpace - accordionTriggerHeight;
                             tabContainer.animate({
                                 scrollTop: scrollDistance
                             }, 500);

@@ -1,3 +1,16 @@
+/*  ============================================================================
+
+  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+
+  This source code is available under agreement available at
+  https://github.com/Talend/data-prep/blob/master/LICENSE
+
+  You should have received a copy of the agreement
+  along with this program; if not, write to Talend SA
+  9 rue Pages 92150 Suresnes, France
+
+  ============================================================================*/
+
 /*jshint camelcase: false */
 describe('Recipe directive', function () {
     'use strict';
@@ -737,11 +750,11 @@ describe('Recipe directive', function () {
         scope.$digest();
 
         //then
-        expect(element.find('>ul .accordion').length).toBe(4);
-        expect(element.find('>ul .accordion .trigger').eq(0).text().trim().replace(/\s+/g, ' ')).toBe('1. Split on column COL1');
-        expect(element.find('>ul .accordion .trigger').eq(1).text().trim().replace(/\s+/g, ' ')).toBe('2. To uppercase on column COL2');
-        expect(element.find('>ul .accordion .trigger').eq(2).text().trim().replace(/\s+/g, ' ')).toBe('3. Replace value on cell');
-        expect(element.find('>ul .accordion .trigger').eq(3).text().trim().replace(/\s+/g, ' ')).toBe('4. Delete Line #125');
+        expect(element.find('>.recipe >ul .accordion').length).toBe(4);
+        expect(element.find('>.recipe >ul .accordion .trigger').eq(0).text().trim().replace(/\s+/g, ' ')).toBe('1. Split on column COL1');
+        expect(element.find('>.recipe >ul .accordion .trigger').eq(1).text().trim().replace(/\s+/g, ' ')).toBe('2. To uppercase on column COL2');
+        expect(element.find('>.recipe >ul .accordion .trigger').eq(2).text().trim().replace(/\s+/g, ' ')).toBe('3. Replace value on cell');
+        expect(element.find('>.recipe >ul .accordion .trigger').eq(3).text().trim().replace(/\s+/g, ' ')).toBe('4. Delete Line #125');
     }));
 
     it('should render recipe Lookup entry', inject(function (RecipeService) {
@@ -750,8 +763,8 @@ describe('Recipe directive', function () {
         scope.$digest();
 
         //then
-        expect(element.find('>ul .accordion').length).toBe(1);
-        expect(element.find('>ul .accordion .trigger').eq(0).text().trim().replace(/\s+/g, ' ')).toBe('1. Lookup done with dataset customers_100_with_pb. Join has been set between id and id. firstname , lastname and 2 other column(s) have been added.');
+        expect(element.find('>.recipe >ul .accordion').length).toBe(1);
+        expect(element.find('>.recipe >ul .accordion .trigger').eq(0).text().trim().replace(/\s+/g, ' ')).toBe('1. Lookup done with dataset customers_100_with_pb. Join has been set between id and id. firstname , lastname and 2 other column(s) have been added.');
     }));
 
     it('should render early preview step', inject(function (RecipeService) {
@@ -762,10 +775,10 @@ describe('Recipe directive', function () {
         scope.$digest();
 
         //then
-        expect(element.find('>ul .accordion').length).toBe(3);
-        expect(element.find('>ul .accordion').eq(0).hasClass('preview')).toBe(false);
-        expect(element.find('>ul .accordion').eq(1).hasClass('preview')).toBe(false);
-        expect(element.find('>ul .accordion').eq(2).hasClass('preview')).toBe(true);
+        expect(element.find('>.recipe >ul talend-accordions-item').length).toBe(3);
+        expect(element.find('>.recipe >ul talend-accordions-item').eq(0).hasClass('preview')).toBe(false);
+        expect(element.find('>.recipe >ul talend-accordions-item').eq(1).hasClass('preview')).toBe(false);
+        expect(element.find('>.recipe >ul talend-accordions-item').eq(2).hasClass('preview')).toBe(true);
     }));
 
     it('should render recipe params', inject(function (RecipeService) {
@@ -774,8 +787,8 @@ describe('Recipe directive', function () {
         scope.$digest();
 
         //then
-        expect(element.find('>ul .accordion .content').length).toBe(1);
-        expect(element.find('>ul .accordion .content').eq(0).find('.transformation-form').length).toBe(1);
+        expect(element.find('>.recipe >ul .accordion .content').length).toBe(1);
+        expect(element.find('>.recipe >ul .accordion .content').eq(0).find('.transformation-form').length).toBe(1);
     }));
 
     it('should render recipe cluster params', inject(function (RecipeService) {

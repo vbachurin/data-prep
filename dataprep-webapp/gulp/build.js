@@ -2,6 +2,7 @@
 
 var gulp = require('gulp');
 var sass = require('gulp-ruby-sass');
+var licences = require('./licences.js');
 
 var $ = require('gulp-load-plugins')({
     pattern: ['gulp-*', 'main-bower-files', 'uglify-save-license', 'del']
@@ -76,8 +77,11 @@ gulp.task('partials', function () {
 
 gulp.task('html', ['wiredep', 'injector:css', 'injector:js', 'partials'], function () {
     var htmlFilter = $.filter('*.html');
+    var htmlIndexFilter = $.filter('index.html');
     var jsFilter = $.filter('**/*.js');
+    var jsAppFilter = $.filter('**/app-*.js');
     var cssFilter = $.filter('**/*.css');
+    var cssAppFilter = $.filter('**/app-*.css');
     var assets;
 
     return gulp.src(['src/*.html', '.tmp/*.html'])
@@ -96,12 +100,20 @@ gulp.task('html', ['wiredep', 'injector:css', 'injector:js', 'partials'], functi
                 //those can be used to pass external functions to the web worker
                 except: ['workerFn0', 'workerFn1', 'workerFn2', 'workerFn3', 'workerFn4', 'workerFn5', 'workerFn6', 'workerFn7', 'workerFn8', 'workerFn9']
             },
-            preserveComments: $.uglifySaveLicense
+            preserveComments: function(node, comment) {
+                return $.uglifySaveLicense(node, comment) && comment.value.indexOf('Talend Inc') < 0;
+            }
         }))
         .pipe(jsFilter.restore())
+        .pipe(jsAppFilter)
+        .pipe($.header(licences.js, {year: new Date().getFullYear()}))
+        .pipe(jsAppFilter.restore())
         .pipe(cssFilter)
         .pipe($.csso())
         .pipe(cssFilter.restore())
+        .pipe(cssAppFilter)
+        .pipe($.header(licences.css, {year: new Date().getFullYear()}))
+        .pipe(cssAppFilter.restore())
         .pipe(assets.restore())
         .pipe($.useref())
         .pipe($.revReplace())
@@ -112,6 +124,9 @@ gulp.task('html', ['wiredep', 'injector:css', 'injector:js', 'partials'], functi
             quotes: true
         }))
         .pipe(htmlFilter.restore())
+        .pipe(htmlIndexFilter)
+        .pipe($.header(licences.html, {year: new Date().getFullYear()}))
+        .pipe(htmlIndexFilter.restore())
         .pipe(gulp.dest('dist/'))
         .pipe($.size({title: 'dist/', showFiles: true}));
 });

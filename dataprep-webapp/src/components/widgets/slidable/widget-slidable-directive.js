@@ -1,3 +1,16 @@
+/*  ============================================================================
+
+  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+
+  This source code is available under agreement available at
+  https://github.com/Talend/data-prep/blob/master/LICENSE
+
+  You should have received a copy of the agreement
+  along with this program; if not, write to Talend SA
+  9 rue Pages 92150 Suresnes, France
+
+  ============================================================================*/
+
 (function() {
     'use strict';
 
@@ -38,7 +51,6 @@
         return {
             restrict: 'E',
             transclude: true,
-            replace: true,
             templateUrl: 'components/widgets/slidable/slidable.html',
             scope: {
                 side: '@',
@@ -60,6 +72,9 @@
                 };
             },
             link: function(scope, iElement, iAttrs, ctrl) {
+                iElement.addClass('slidable');
+                iElement.addClass('slide-' + (ctrl.side ? ctrl.side : 'left'));
+
                 if(ctrl.resizable) {
                     var localStorageWidthKey = 'org.talend.dataprep.' + ctrl.resizable + '.width';
                     var width = $window.localStorage.getItem(localStorageWidthKey);
@@ -84,6 +99,18 @@
                         }
                     });
                 }
+
+                scope.$watch(function() {
+                    return ctrl.visible;
+                },
+                function(visible) {
+                    if(visible) {
+                        iElement.removeClass('slide-hide');
+                    }
+                    else {
+                        iElement.addClass('slide-hide');
+                    }
+                });
             }
         };
     }

@@ -1,3 +1,16 @@
+/*  ============================================================================
+
+  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+
+  This source code is available under agreement available at
+  https://github.com/Talend/data-prep/blob/master/LICENSE
+
+  You should have received a copy of the agreement
+  along with this program; if not, write to Talend SA
+  9 rue Pages 92150 Suresnes, France
+
+  ============================================================================*/
+
 (function() {
     'use strict';
 
@@ -30,7 +43,6 @@
     function talendAccordionsItem($timeout) {
         return {
             restrict: 'E',
-            replace: true,
             transclude : true,
             templateUrl: 'components/widgets/accordions/accordions-item.html',
             require: '^^talendAccordions',
@@ -45,8 +57,8 @@
             link: function (scope, iElement, iAttrs, accordionsCtrl) {
                 var ctrl = scope.accordionsItemCtrl;
                 var contentElement, accordionItem;
-                var triggerContainer = iElement.find('>.trigger-container');
-                var contentContainer = iElement.find('>.content-container');
+                var triggerContainer = iElement.find('>.accordion >.trigger-container');
+                var contentContainer = iElement.find('>.accordion >.content-container');
 
                 //------------------------------------------------------------------------------------------------
                 //---------------------------------------------INIT-----------------------------------------------

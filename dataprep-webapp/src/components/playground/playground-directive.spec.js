@@ -1,3 +1,16 @@
+/*  ============================================================================
+
+  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+
+  This source code is available under agreement available at
+  https://github.com/Talend/data-prep/blob/master/LICENSE
+
+  You should have received a copy of the agreement
+  along with this program; if not, write to Talend SA
+  9 rue Pages 92150 Suresnes, France
+
+  ============================================================================*/
+
 describe('Playground directive', function () {
     'use strict';
 
@@ -206,8 +219,8 @@ describe('Playground directive', function () {
 
             //then: check right slidable is displayed transformations with right slide action
             var playground = angular.element('body').find('.playground').eq(0);
-            expect(playground.eq(0).find('.suggestions').eq(0).hasClass('slide-hide')).toBe(false);
-            expect(playground.eq(0).find('.suggestions').eq(0).find('.action').eq(0).hasClass('right')).toBe(true);
+            expect(playground.eq(0).find('.playground-suggestions').eq(0).hasClass('slide-hide')).toBe(false);
+            expect(playground.eq(0).find('.playground-suggestions').eq(0).find('.action').eq(0).hasClass('right')).toBe(true);
         });
     });
 
@@ -228,8 +241,8 @@ describe('Playground directive', function () {
 
             //then : check left slidable is hidden recipe with left slide action
             var playground = angular.element('body').find('.playground').eq(0);
-            expect(playground.eq(0).find('.recipe').eq(0).hasClass('slide-hide')).toBe(true);
-            expect(playground.eq(0).find('.recipe').eq(0).find('.action').eq(0).hasClass('right')).toBe(false);
+            expect(playground.eq(0).find('.playground-recipe').eq(0).hasClass('slide-hide')).toBe(true);
+            expect(playground.eq(0).find('.playground-recipe').eq(0).find('.action').eq(0).hasClass('right')).toBe(false);
         });
 
         it('should render editable text on preparation title', function () {

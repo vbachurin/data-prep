@@ -1,3 +1,18 @@
+<!--
+  ~ ============================================================================
+  ~
+  ~  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+  ~
+  ~  This source code is available under agreement available at
+  ~  https://github.com/Talend/data-prep/blob/master/LICENSE
+  ~
+  ~  You should have received a copy of the agreement
+  ~  along with this program; if not, write to Talend SA
+  ~  9 rue Pages 92150 Suresnes, France
+  ~
+  ~ ============================================================================
+  -->
+
 <header class="subheader">
     <div class="subheader-wrapper">
         <ul id="help-dataset-nav">
@@ -103,18 +118,17 @@
             </button>
         </div>
     </talend-modal>
-
 </header>
 
 <div class="home">
-    <div class="flex-left-panel side-menu">
+    <div class="side-menu">
         <ul>
             <li id="nav_home_datasets"><a ui-sref="nav.home.datasets" ui-sref-active="selected" translate-once="ALL_FOLDERS"></a></li>
             <li id="nav_home_preparations"><a ui-sref="nav.home.preparations" ui-sref-active="selected" translate-once="ALL_PREPARATIONS"></a></li>
         </ul>
     </div>
 
-    <div class="flex-center flex-column">
+    <div class="home-main">
         <div id="upload-list-container">
             <dataset-upload-list datasets="homeCtrl.uploadingDatasets"></dataset-upload-list>
         </div>
@@ -123,7 +137,7 @@
         </div>
     </div>
 
-    <talend-slidable class="flex-right-panel inventory-data"
+    <talend-slidable class="inventory-data"
                      visible="homeCtrl.showRightPanel"
                      side="right"
                      control-bar="false"
