@@ -3,6 +3,7 @@
 var path = require('path');
 var gulp = require('gulp');
 var conf = require('./conf');
+var licences = require('./licences.js');
 
 var $ = require('gulp-load-plugins')({
     pattern: ['gulp-*', 'main-bower-files', 'uglify-save-license', 'del']
@@ -34,8 +35,11 @@ gulp.task('html', ['inject', 'partials'], function () {
     };
 
     var htmlFilter = $.filter('*.html', {restore: true});
+    var htmlIndexFilter = $.filter('index.html', {restore: true});
     var jsFilter = $.filter('**/*.js', {restore: true});
+    var jsAppFilter = $.filter('**/app-*.js', {restore: true});
     var cssFilter = $.filter('**/*.css', {restore: true});
+    var cssAppFilter = $.filter('**/app-*.css', {restore: true});
     var assets;
 
     return gulp.src(path.join(conf.paths.tmp, '/serve/*.html'))
@@ -50,13 +54,21 @@ gulp.task('html', ['inject', 'partials'], function () {
                 //those can be used to pass external functions to the web worker
                 except: ['workerFn0', 'workerFn1', 'workerFn2', 'workerFn3', 'workerFn4', 'workerFn5', 'workerFn6', 'workerFn7', 'workerFn8', 'workerFn9']
             },
-            preserveComments: $.uglifySaveLicense
+            preserveComments: function(node, comment) {
+                return $.uglifySaveLicense(node, comment) && comment.value.indexOf('Talend Inc') < 0;
+            }
         })).on('error', conf.errorHandler('Uglify'))
+        .pipe(jsAppFilter)
+        .pipe($.header(licences.js, {year: new Date().getFullYear()}))
+        .pipe(jsAppFilter.restore)
         .pipe($.sourcemaps.write('maps'))
         .pipe(jsFilter.restore)
         .pipe(cssFilter)
         .pipe($.sourcemaps.init())
         .pipe($.minifyCss({processImport: false}))
+        .pipe(cssAppFilter)
+        .pipe($.header(licences.css, {year: new Date().getFullYear()}))
+        .pipe(cssAppFilter.restore)
         .pipe($.sourcemaps.write('maps'))
         .pipe(cssFilter.restore)
         .pipe(assets.restore())
@@ -70,6 +82,9 @@ gulp.task('html', ['inject', 'partials'], function () {
             conditionals: true
         }))
         .pipe(htmlFilter.restore)
+        .pipe(htmlIndexFilter)
+        .pipe($.header(licences.html, {year: new Date().getFullYear()}))
+        .pipe(htmlIndexFilter.restore)
         .pipe(gulp.dest(path.join(conf.paths.dist, '/')))
         .pipe($.size({title: path.join(conf.paths.dist, '/'), showFiles: true}));
 });
