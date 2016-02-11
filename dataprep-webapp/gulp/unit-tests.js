@@ -51,6 +51,6 @@ gulp.task('test:auto', ['scripts:test-watch'], function (done) {
     runTests(false, done);
 });
 
-gulp.task('test:ci', function (done) {
+gulp.task('test:ci', ['scripts:test'], function (done) {
     runTests(true, done, path.join(__dirname, '/../karma.conf.ci.js'));
 });
