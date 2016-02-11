@@ -23,7 +23,8 @@ function listFiles() {
 
     var patterns = wiredep(wiredepOptions).js
         .concat([
-            path.join(conf.paths.tmp, '/serve/app/index.module.js')
+            path.join(conf.paths.tmp, '/serve/app/index.module.js'),
+            path.join(conf.paths.tmp, '/serve/app/index.module.spec.js')
         ])
         .concat(pathSrcHtml)
         .concat(pathSrcMock);

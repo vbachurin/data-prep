@@ -14,7 +14,7 @@ var pathSrcJs = [
     path.join(conf.paths.tmp, '/serve/app/index.module.js')
 ];
 
-function runTests(singleRun, done) {
+function runTests(singleRun, done, karmaConfPath) {
     var reporters = ['progress'];
     var preprocessors = {};
 
@@ -30,7 +30,7 @@ function runTests(singleRun, done) {
     }
 
     var localConfig = {
-        configFile: path.join(__dirname, '/../karma.conf.js'),
+        configFile: karmaConfPath || path.join(__dirname, '/../karma.conf.js'),
         singleRun: singleRun,
         autoWatch: !singleRun,
         reporters: reporters,
@@ -49,4 +49,8 @@ gulp.task('test', ['scripts:test'], function (done) {
 
 gulp.task('test:auto', ['scripts:test-watch'], function (done) {
     runTests(false, done);
+});
+
+gulp.task('test:ci', function (done) {
+    runTests(true, done, path.join(__dirname, '/../karma.conf.ci.js'));
 });
