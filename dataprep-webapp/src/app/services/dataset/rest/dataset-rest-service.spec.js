@@ -558,8 +558,8 @@ describe('Dataset Rest Service', function () {
         it('should call move w/o new name', inject(function ($rootScope, DatasetRestService, RestURLs) {
             //given
             var dataset = {id: 'foobar'};
-            var folder = {id:'/'};
-            var newFolder = {id:'/wine/beer'};
+            var folder = {path:'/'};
+            var newFolder = {path:'/wine/beer'};
 
             var moveRequest = {folderPath: folder.path, newFolderPath: newFolder.path};
 
@@ -580,7 +580,7 @@ describe('Dataset Rest Service', function () {
             //given
             var dataset = {id: 'foobar'};
             var folder = {path:'/'};
-            var newFolder = {id:'/wine/beer'};
+            var newFolder = {path:'/wine/beer'};
             var newName = 'good one';
 
             var moveRequest = {folderPath: folder.path, newFolderPath: newFolder.path, newName: newName};

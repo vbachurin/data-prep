@@ -55,7 +55,7 @@ export default function DatasetRestService($rootScope, $upload, $http, RestURLs)
      * @returns {Promise} the $upload promise
      */
     function create(dataset, folder) {
-        var folderPath = folder && folder.id ? folder.id : '/';
+        var folderPath = folder && folder.path ? folder.path : '/';
         return $upload.http({
             url: RestURLs.datasetUrl + '?name=' + encodeURIComponent(dataset.name) + '&folderPath=' + encodeURIComponent(folderPath),
             headers: {'Content-Type': 'text/plain'},
@@ -73,7 +73,7 @@ export default function DatasetRestService($rootScope, $upload, $http, RestURLs)
      * @returns {Promise} The POST promise
      */
     function importRemoteDataset(parameters, folder) {
-        var folderPath = folder && folder.id ? folder.id : '/';
+        var folderPath = folder && folder.path ? folder.path : '/';
         var req = {
             method: 'POST',
             url: RestURLs.datasetUrl + '?name=' + encodeURIComponent(parameters.name) + '&folderPath=' + encodeURIComponent(folderPath),
@@ -127,7 +127,7 @@ export default function DatasetRestService($rootScope, $upload, $http, RestURLs)
     function cloneDataset(dataset, folder, cloneName) {
         var url = RestURLs.datasetUrl + '/clone/' + dataset.id;
         if (folder) {
-            url += '?folderPath=' + encodeURIComponent(folder.id);
+            url += '?folderPath=' + encodeURIComponent(folder.path);
             if (cloneName) {
                 url += '&cloneName=' + encodeURIComponent(cloneName);
             }
@@ -156,8 +156,8 @@ export default function DatasetRestService($rootScope, $upload, $http, RestURLs)
 
         return $http.put(url,
             {
-                folderPath: folder.id,
-                newFolderPath: newFolder.id,
+                folderPath: folder.path,
+                newFolderPath: newFolder.path,
                 newName: newName
             }
         );

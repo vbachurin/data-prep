@@ -23,7 +23,6 @@ export default function FolderService($translate, state, StateService, FolderRes
     'ngInject';
 
     var ROOT_FOLDER = {
-        id: '/',
         path: '/',
         name: '/'
     };
@@ -62,12 +61,11 @@ export default function FolderService($translate, state, StateService, FolderRes
                 if (paths[i - 1]) {
                     if (i > 1) {
                         foldersStack.push({
-                            id: foldersStack[i - 1].id + '/' + paths[i - 1],
-                            path: foldersStack[i - 1].id + '/' + paths[i - 1],
+                            path: foldersStack[i - 1].path + '/' + paths[i - 1],
                             name: paths[i - 1]
                         });
                     } else {
-                        foldersStack.push({id: paths[i - 1], path: paths[i - 1], name: paths[i - 1]});
+                        foldersStack.push({path: paths[i - 1], name: paths[i - 1]});
                     }
                 }
             }
@@ -84,7 +82,7 @@ export default function FolderService($translate, state, StateService, FolderRes
      * @param {object} folder The folder definition
      */
     function populateMenuChildren(folder) {
-        return FolderRestService.getContent(folder && folder.id)
+        return FolderRestService.getContent(folder && folder.path)
             .then(function (content) {
                 StateService.setMenuChildren(content.data.folders);
             });
@@ -100,11 +98,11 @@ export default function FolderService($translate, state, StateService, FolderRes
     function getContent(folder) {
         var sort = state.inventory.sort.id;
         var order = state.inventory.order.id;
-        var promise = FolderRestService.getContent(folder && folder.id, sort, order);
+        var promise = FolderRestService.getContent(folder && folder.path, sort, order);
 
         promise.then(function (result) {
             var content = result.data;
-            var foldersStack = buildStackFromId(folder ? folder.id : '');
+            var foldersStack = buildStackFromId(folder ? folder.path : '');
             var currentFolder = folder ? folder : ROOT_FOLDER;
 
             StateService.setCurrentFolder(currentFolder);

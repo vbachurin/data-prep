@@ -25,7 +25,7 @@ describe('Dataset list controller', function () {
         {id: 'ab45f893d8e923', name: 'Us states'}
     ];
 
-    var theCurrentFolder = {id: 'folder-16/folder-1/sub-1', path: 'folder-16/folder-1/sub-1', name: 'sub-1'};
+    var theCurrentFolder = {path: 'folder-16/folder-1/sub-1', name: 'sub-1'};
 
     beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {

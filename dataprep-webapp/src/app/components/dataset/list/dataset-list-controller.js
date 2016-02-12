@@ -290,7 +290,7 @@ export default function DatasetListCtrl($timeout, $state, $translate, state, Sta
     vm.addFolder = function addFolder() {
         vm.folderNameForm.$commitViewValue();
 
-        var pathToCreate = (state.inventory.currentFolder.id ? state.inventory.currentFolder.id : '') + '/' + vm.folderName;
+        var pathToCreate = (state.inventory.currentFolder.path ? state.inventory.currentFolder.path : '') + '/' + vm.folderName;
         FolderService.create(pathToCreate)
             .then(function () {
                 FolderService.getContent(state.inventory.currentFolder);
@@ -307,7 +307,7 @@ export default function DatasetListCtrl($timeout, $state, $translate, state, Sta
      * @param {string} newName the new last part of the path
      */
     vm.renameFolder = function renameFolder(folder, newName) {
-        var path = folder.id;
+        var path = folder.path;
         var lastSlashIndex = path.lastIndexOf('/');
         var newPath = path.substring(0, lastSlashIndex) + '/' + newName;
         FolderService.rename(path, newPath)
@@ -324,7 +324,7 @@ export default function DatasetListCtrl($timeout, $state, $translate, state, Sta
      * @param {object} folder The folder to remove
      */
     vm.removeFolder = function removeFolder(folder) {
-        FolderService.remove(folder.id)
+        FolderService.remove(folder.path)
             .then(function () {
                 FolderService.getContent(state.inventory.currentFolder);
             });
@@ -344,14 +344,14 @@ export default function DatasetListCtrl($timeout, $state, $translate, state, Sta
         vm.searchFolderQuery = '';
         vm.cloneName = dataset.name;
 
-        var toggleToCurrentFolder = state.inventory && state.inventory.currentFolder && state.inventory.currentFolder.id;
+        var toggleToCurrentFolder = state.inventory && state.inventory.currentFolder && state.inventory.currentFolder.path;
 
         if (toggleToCurrentFolder) {
-            var pathParts = state.inventory.currentFolder.id.split('/');
+            var pathParts = state.inventory.currentFolder.path.split('/');
             var currentPath = pathParts[0];
         }
 
-        var rootFolder = {id: '', path: '', collapsed: false, name: $translate.instant('HOME_FOLDER')};
+        var rootFolder = {path: '', collapsed: false, name: $translate.instant('HOME_FOLDER')};
 
         FolderService.children()
             .then(function (res) {
@@ -362,7 +362,7 @@ export default function DatasetListCtrl($timeout, $state, $translate, state, Sta
                 _.forEach(vm.folders[0].nodes, function (folder) {
                     folder.collapsed = true;
                     // recursive toggle until we reach the current folder
-                    if (toggleToCurrentFolder && folder.id === currentPath) {
+                    if (toggleToCurrentFolder && folder.path === currentPath) {
                         vm.toggle(folder, pathParts.length > 0 ? _.slice(pathParts, 1) : null, currentPath);
                         vm.chooseFolder(folder);
                     }
@@ -386,14 +386,14 @@ export default function DatasetListCtrl($timeout, $state, $translate, state, Sta
         }
         else {
             if (!folder.nodes) {
-                FolderService.children(folder.id)
+                FolderService.children(folder.path)
                     .then(function (res) {
                         folder.nodes = res.data ? res.data : [];
                         vm.collapseNodes(folder);
                         if (pathParts && pathParts[0]) {
                             currentPath += currentPath ? '/' + pathParts[0] : pathParts[0];
                             _.forEach(folder.nodes, function (folder) {
-                                if (folder.id === currentPath) {
+                                if (folder.path === currentPath) {
                                     vm.toggle(folder, pathParts.length > 0 ? _.slice(pathParts, 1) : null, currentPath);
                                     vm.chooseFolder(folder);
                                 }
@@ -459,7 +459,7 @@ export default function DatasetListCtrl($timeout, $state, $translate, state, Sta
             FolderService.search(vm.searchFolderQuery)
                 .then(function (response) {
                     if (n > -1) {
-                        var rootFolder = {id: '', path: '', name: $translate.instant('HOME_FOLDER')};
+                        var rootFolder = {path: '', name: $translate.instant('HOME_FOLDER')};
                         vm.foldersFound.push(rootFolder);
                         vm.foldersFound = vm.foldersFound.concat(response.data);
                     } else {
