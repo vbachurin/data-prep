@@ -56,6 +56,7 @@ export default function FolderService($translate, state, StateService, FolderRes
         foldersStack.push(ROOT_FOLDER);
 
         if (folderId) {
+            folderId = _.trim(folderId, '/'); //remove leading & ending '/' coming from the enterprise version
             var paths = folderId.split('/');
             for (var i = 1; i <= paths.length + 1; i++) {
                 if (paths[i - 1]) {
