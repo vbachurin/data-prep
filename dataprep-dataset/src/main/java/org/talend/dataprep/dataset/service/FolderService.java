@@ -18,7 +18,10 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 import javax.inject.Inject;
 
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.talend.dataprep.api.folder.Folder;
 import org.talend.dataprep.api.folder.FolderEntry;
 import org.talend.dataprep.exception.TDPException;
@@ -86,8 +89,7 @@ public class FolderService {
     @ApiOperation(value = "Create a Folder", produces = MediaType.APPLICATION_JSON_VALUE, notes = "Create a folder")
     @Timed
     public Folder addFolder(@RequestParam String path){
-        Folder folder = folderRepository.addFolder(path);
-        return folder;
+        return folderRepository.addFolder(path);
     }
 
     /**
@@ -119,21 +121,6 @@ public class FolderService {
         folderRepository.renameFolder( path, newPath );
     }
 
-
-    /**
-     * no javadoc here so see description in @ApiOperation notes.
-     * @param folderEntry
-     * @return
-     */
-    @RequestMapping(value = "/folders/entries", method = PUT, produces = MediaType.APPLICATION_JSON_VALUE, consumes =  MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Add a FolderEntry", produces = MediaType.APPLICATION_JSON_VALUE, notes = "Add the folder entry")
-    @Timed
-    public FolderEntry addFolderEntry(@RequestBody FolderEntry folderEntry){
-        // jackson/json deserialization use empty constructor so we need to ensure id is build
-        folderEntry.buildId();
-        return folderRepository.addFolderEntry( folderEntry );
-    }
-
     /**
      * no javadoc here so see description in @ApiOperation notes.
      * @param contentId
@@ -145,21 +132,20 @@ public class FolderService {
     @Timed
     public void deleteFolderEntry(@RequestParam String path, @PathVariable(value = "id") String contentId, //
                                   @PathVariable(value = "contentType") String contentType){
-
         folderRepository.removeFolderEntry( path, contentId, contentType );
     }
 
     /**
-     * no javadoc here so see description in @ApiOperation notes.
-     * @param path
-     * @param contentType
-     * @return
+     * Return the list of folder entries out of the given path.
+     * @param path the path where to look for entries.
+     * @param contentType the type of wanted entries.
+     * @return the list of folder entries out of the given path.
      */
     @RequestMapping(value = "/folders/entries", method = GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List folder entries", produces = MediaType.APPLICATION_JSON_VALUE, notes = "List all folder entries of the given content type")
     @Timed
     public Iterable<FolderEntry> entries(@RequestParam String path, @RequestParam String contentType){
-        return folderRepository.entries( path, contentType );
+        return folderRepository.entries(path, contentType );
     }
 
 

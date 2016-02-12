@@ -293,7 +293,7 @@ describe('Dataset list controller', function () {
             scope.$digest();
             //then
             expect(ctrl.folderNameForm.$commitViewValue).toHaveBeenCalled();
-            expect(FolderService.create).toHaveBeenCalledWith(theCurrentFolder.id + '/1');
+            expect(FolderService.create).toHaveBeenCalledWith(theCurrentFolder.path + '/1');
             expect(FolderService.getContent).toHaveBeenCalledWith(theCurrentFolder);
 
         }));
@@ -301,7 +301,7 @@ describe('Dataset list controller', function () {
 
         it('should add folder with root folder path', inject(function ($q, FolderService) {
             //given
-            stateMock.inventory.currentFolder = {id: '', path: '', name: 'Home'};
+            stateMock.inventory.currentFolder = {path: '', name: 'Home'};
 
             var ctrl = createController();
             ctrl.folderName = '1';
@@ -318,7 +318,7 @@ describe('Dataset list controller', function () {
             //then
             expect(ctrl.folderNameForm.$commitViewValue).toHaveBeenCalled();
             expect(FolderService.create).toHaveBeenCalledWith('/1');
-            expect(FolderService.getContent).toHaveBeenCalledWith({id: '', path: '', name: 'Home'});
+            expect(FolderService.getContent).toHaveBeenCalledWith({path: '', name: 'Home'});
 
         }));
 
@@ -495,7 +495,7 @@ describe('Dataset list controller', function () {
 
             it('should call clone service', inject(function ($q, DatasetService, FolderService) {
                 //given
-                var folder = {id: 'foo'};
+                var folder = {path: 'foo'};
                 var cloneName = 'bar';
                 var ctrl = createController();
                 ctrl.datasetToClone = datasets[0];
@@ -517,7 +517,7 @@ describe('Dataset list controller', function () {
 
             it('should display message on success', inject(function ($q, MessageService, DatasetService, FolderService) {
                 //given
-                var folder = {id: 'foo'};
+                var folder = {path: 'foo'};
                 var ctrl = createController();
                 var cloneName = 'bar';
                 ctrl.datasetToClone = datasets[0];
@@ -544,7 +544,7 @@ describe('Dataset list controller', function () {
 
             it('should faill on clone service call', inject(function ($q, DatasetService) {
                 //given
-                var folder = {id: 'foo'};
+                var folder = {path: 'foo'};
                 var cloneName = 'bar';
                 var ctrl = createController();
                 ctrl.datasetToClone = datasets[0];
@@ -580,7 +580,7 @@ describe('Dataset list controller', function () {
 
             it('should call move service', inject(function ($q, DatasetService, FolderService) {
                 //given
-                var folder = {id: 'foo'};
+                var folder = {path: 'foo'};
                 var cloneName = 'bar';
                 var ctrl = createController();
                 ctrl.datasetToClone = datasets[0];
@@ -602,7 +602,7 @@ describe('Dataset list controller', function () {
 
             it('should display message on success', inject(function ($q, MessageService, DatasetService, FolderService) {
                 //given
-                var folder = {id: 'foo'};
+                var folder = {path: 'foo'};
                 var ctrl = createController();
                 var cloneName = 'bar';
 
@@ -630,7 +630,7 @@ describe('Dataset list controller', function () {
 
             it('should fail on move service call', inject(function ($q, DatasetService) {
                 //given
-                var folder = {id: 'foo'};
+                var folder = {path: 'foo'};
                 var cloneName = 'bar';
                 var ctrl = createController();
                 ctrl.datasetToClone = datasets[0];
@@ -661,9 +661,9 @@ describe('Dataset list controller', function () {
             ];
 
             var childrenFolders = [
-                {id: 'folder-1/beer', path: 'folder-1/beer', name: 'folder-1/beer'},
-                {id: 'folder-2', path: 'folder-2', name: 'folder-2'},
-                {id: 'folder-3', path: 'folder-3', name: 'folder-3'}
+                {path: 'folder-1/beer', name: 'folder-1/beer'},
+                {path: 'folder-2', name: 'folder-2'},
+                {path: 'folder-3', name: 'folder-3'}
             ];
 
             spyOn(FolderService, 'children').and.returnValue($q.when({data: childrenFolders}));
@@ -675,7 +675,7 @@ describe('Dataset list controller', function () {
         it('should call children service and open modal', inject(function (FolderService) {
             // given
             var ctrl = createController();
-            stateMock.inventory.currentFolder = {id: 'folder-1', path: 'folder-1', name: 'folder-1'};
+            stateMock.inventory.currentFolder = {path: 'folder-1', name: 'folder-1'};
             scope.$digest();
             spyOn(ctrl, 'chooseFolder').and.returnValue();
             spyOn(ctrl, 'toggle').and.returnValue();
@@ -691,10 +691,14 @@ describe('Dataset list controller', function () {
             expect(ctrl.foldersFound).toEqual([]);
             expect(ctrl.searchFolderQuery).toBe('');
             expect(ctrl.folders).toEqual([{
-                id: '', path: '', collapsed: false, name: 'Home',
-                nodes: [{id: 'folder-1/beer', path: 'folder-1/beer', name: 'folder-1/beer', collapsed: true},
-                    {id: 'folder-2', path: 'folder-2', name: 'folder-2', collapsed: true},
-                    {id: 'folder-3', path: 'folder-3', name: 'folder-3', collapsed: true}]
+                path: '',
+                collapsed: false,
+                name: 'Home',
+                nodes: [
+                    {path: 'folder-1/beer', name: 'folder-1/beer', collapsed: true},
+                    {path: 'folder-2', name: 'folder-2', collapsed: true},
+                    {path: 'folder-3', name: 'folder-3', collapsed: true}
+                ]
             }]);
 
         }));
@@ -725,7 +729,7 @@ describe('Dataset list controller', function () {
         it('should call filter root folder and search folders service', inject(function (FolderService) {
             //given
             var foldersFromSearch = [
-                {id: '', path: '', name: 'Home'},
+                {path: '', name: 'Home'},
                 {path: 'folder-1', name: 'folder-1'},
                 {path: 'folder-1/sub-1', name: 'sub-1'},
                 {path: 'folder-1/sub-2/folder-1-beer', name: 'folder-1-beer'}
@@ -734,7 +738,7 @@ describe('Dataset list controller', function () {
             var ctrl = createController();
             ctrl.searchFolderQuery = 'H';
             spyOn(ctrl, 'chooseFolder').and.returnValue();
-            var rootFolder = {id: '', path: '', name: 'Home'};
+            var rootFolder = {path: '', name: 'Home'};
 
             //when
             ctrl.searchFolders();
@@ -782,7 +786,7 @@ describe('Dataset list controller', function () {
 
         it('toggle should call children service', inject(function (FolderService) {
             //given
-            var folder = {id: 'folder-1', collapsed: true};
+            var folder = {path: 'folder-1', collapsed: true};
             var ctrl = createController();
             spyOn(ctrl, 'chooseFolder').and.returnValue();
 
@@ -791,12 +795,12 @@ describe('Dataset list controller', function () {
             scope.$digest();
 
             //then
-            expect(FolderService.children).toHaveBeenCalledWith(folder.id);
+            expect(FolderService.children).toHaveBeenCalledWith(folder.path);
         }));
 
         it('toggle should not call children service because already children', inject(function (FolderService) {
             //given
-            var folder = {id: '/foo/beer', collapsed: true, nodes: [{id: 'wine'}]};
+            var folder = {path: '/foo/beer', collapsed: true, nodes: [{id: 'wine'}]};
             var ctrl = createController();
 
             //when
@@ -809,7 +813,7 @@ describe('Dataset list controller', function () {
 
         it('toggle should not call children service because not collapsed', inject(function (FolderService) {
             //given
-            var folder = {id: '/foo/beer', collapsed: false};
+            var folder = {path: '/foo/beer', collapsed: false};
             var ctrl = createController();
 
             //when
@@ -822,7 +826,7 @@ describe('Dataset list controller', function () {
 
         it('collapseNodes should mark children as collapsed', function () {
             //given
-            var folder = {id: '/foo/beer', collapsed: true, nodes: [{id: 'wine'}, {id: 'cheese'}]};
+            var folder = {path: '/foo/beer', collapsed: true, nodes: [{id: 'wine'}, {id: 'cheese'}]};
             var ctrl = createController();
 
             //when
@@ -840,7 +844,7 @@ describe('Dataset list controller', function () {
             spyOn(FolderService, 'rename').and.returnValue($q.when());
             spyOn(FolderService, 'getContent').and.returnValue($q.when());
             var ctrl = createController();
-            var folderToRename = {id: 'toto/1'};
+            var folderToRename = {path: 'toto/1'};
 
             //when
             ctrl.renameFolder(folderToRename, '2');
@@ -856,13 +860,13 @@ describe('Dataset list controller', function () {
             spyOn(FolderService, 'getContent').and.returnValue($q.when(true));
             var ctrl = createController();
 
-            var folder = {id: 'toto'};
+            var folder = {path: 'toto'};
 
             //when
             ctrl.removeFolder(folder);
             scope.$digest();
             //then
-            expect(FolderService.remove).toHaveBeenCalledWith(folder.id);
+            expect(FolderService.remove).toHaveBeenCalledWith(folder.path);
             expect(FolderService.getContent).toHaveBeenCalledWith(theCurrentFolder);
         }));
 

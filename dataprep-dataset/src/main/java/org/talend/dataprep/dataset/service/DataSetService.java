@@ -212,7 +212,7 @@ public class DataSetService {
                                  if (dataSetMetadata != null){
                                      metadatas.add( dataSetMetadataRepository.get( folderEntry.getContentId() ) );
                                  } else {
-                                    folderRepository.removeFolderEntry( folderEntry.getPath(), //
+                                    folderRepository.removeFolderEntry( folderEntry.getFolderId(), //
                                                                         folderEntry.getContentId(), //
                                                                         folderEntry.getContentType() );
                                  }
@@ -312,8 +312,8 @@ public class DataSetService {
         queueEvents(id);
 
         // create associated folderEntry
-        FolderEntry folderEntry = new FolderEntry( "dataset", id, folderPath );
-        folderRepository.addFolderEntry( folderEntry );
+        FolderEntry folderEntry = new FolderEntry( "dataset", id);
+        folderRepository.addFolderEntry(folderEntry, folderPath);
 
         LOG.debug(marker, "Created!");
 
@@ -492,8 +492,8 @@ public class DataSetService {
         queueEvents(newId);
 
         // create associated folderEntry
-        FolderEntry folderEntry = new FolderEntry("dataset", newId, folderPath);
-        folderRepository.addFolderEntry(folderEntry);
+        FolderEntry folderEntry = new FolderEntry("dataset", newId);
+        folderRepository.addFolderEntry(folderEntry, folderPath);
 
         LOG.debug(marker, "Cloned!");
 
@@ -507,10 +507,10 @@ public class DataSetService {
      * @param newFolderPath The new folder path of the dataset
      */
     @RequestMapping(value = "/datasets/move/{id}", method = PUT, produces = MediaType.TEXT_PLAIN_VALUE)
-    @ApiOperation(value = "Clone a data set", produces = MediaType.TEXT_PLAIN_VALUE, notes = "Move a data set to an other folder.")
+    @ApiOperation(value = "Move a data set", produces = MediaType.TEXT_PLAIN_VALUE, notes = "Move a data set to an other folder.")
     @Timed
     public void move(
-            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to clone") String dataSetId,
+            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to move") String dataSetId,
             @ApiParam(value = "The original folder path of the dataset.") @RequestParam(defaultValue = "", required = false) String folderPath,
             @ApiParam(value = "The new folder path of the dataset.") @RequestParam(defaultValue = "", required = false) String newFolderPath,
             @ApiParam(value = "The new name of the moved dataset.") @RequestParam(defaultValue = "", required = false) String newName)
@@ -552,9 +552,9 @@ public class DataSetService {
                 datasetLock.unlock();
             }
         }
-        FolderEntry folderEntry = new FolderEntry("dataset", dataSetId, folderPath);
+        FolderEntry folderEntry = new FolderEntry("dataset", dataSetId);
 
-        folderRepository.moveFolderEntry(folderEntry, newFolderPath);
+        folderRepository.moveFolderEntry(folderEntry, folderPath, newFolderPath);
     }
 
 
@@ -583,7 +583,7 @@ public class DataSetService {
         // delete the associated folder entries
         // TODO make this async?
         for( FolderEntry folderEntry : folderRepository.findFolderEntries( dataSetId, "dataset" )){
-            folderRepository.removeFolderEntry( folderEntry.getPath(), //
+            folderRepository.removeFolderEntry( folderEntry.getFolderId(), //
                                                 folderEntry.getContentId(), //
                                                 folderEntry.getContentType() );
         }

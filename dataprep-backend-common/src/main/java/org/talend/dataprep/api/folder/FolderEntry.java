@@ -14,58 +14,29 @@
 package org.talend.dataprep.api.folder;
 
 import java.io.Serializable;
-
-import org.springframework.data.annotation.Id;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.Objects;
 
 public class FolderEntry implements Serializable {
 
     /** Serialization UID. */
     private static final long serialVersionUID = 1L;
 
-    @Id
-    @JsonProperty("id")
-    private String id;
-
-    @JsonProperty("contentType")
-    /**
-     * this is the type of the content dataset or preparation or something else..
-     */
+    /** Type of this folder entry (dataset / preparation...). */
     private String contentType;
 
-    /* id of the content i.e datasetId or preparationId or something else */
-    @JsonProperty("contentId")
+    /** Content id of this entry (datasetId or PerparationId). */
     private String contentId;
 
-    @JsonProperty("path")
-    private String path;
+    /** Id of the folder for this entry. It is set by the FolderRepository implementation. */
+    private String folderId;
 
     public FolderEntry() {
         // no op only to help Jackson
     }
 
-    public FolderEntry(String contentType, String contentId, String path) {
+    public FolderEntry(String contentType, String contentId) {
         this.contentType = contentType;
         this.contentId = contentId;
-        this.path = path;
-        this.buildId();
-    }
-
-    public void buildId() {
-        this.id = contentType + '@' + contentId + '@' + path;
-    }
-
-    public String id() {
-        return this.getId();
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public String getContentType() {
@@ -84,37 +55,50 @@ public class FolderEntry implements Serializable {
         this.contentId = contentId;
     }
 
-    public String getPath() {
-        return path;
+    /**
+     * @return the FolderId
+     */
+    public String getFolderId() {
+        return folderId;
     }
 
-    public void setPath(String path) {
-        this.path = path;
+    /**
+     * @param folderId the folderId to set.
+     */
+    public void setFolderId(String folderId) {
+        this.folderId = folderId;
     }
 
+    /**
+     * @see Object#toString()
+     */
     @Override
     public String toString() {
-        return "FolderEntry{" + "contentId='" + contentId + '\'' + ", id='" + id + '\'' + ", contentType='" + contentType + '\''
-                + ", path='" + path + '\'' + '}';
+        return "FolderEntry{" +
+                "contentType='" + contentType + '\'' +
+                ", contentId='" + contentId + '\'' +
+                ", folderId='" + folderId + '\'' +
+                '}';
     }
 
+    /**
+     * @see Object#equals(Object)
+     */
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
         FolderEntry that = (FolderEntry) o;
-
-        return id.equals(that.id);
-
+        return Objects.equals(contentType, that.contentType) &&
+                Objects.equals(contentId, that.contentId) &&
+                Objects.equals(folderId, that.folderId);
     }
 
+    /**
+     * @see Object#hashCode()
+     */
     @Override
     public int hashCode() {
-        return id.hashCode();
+        return Objects.hash(contentType, contentId, folderId);
     }
 }

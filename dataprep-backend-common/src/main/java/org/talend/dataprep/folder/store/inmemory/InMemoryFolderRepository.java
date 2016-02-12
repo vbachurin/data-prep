@@ -19,8 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
@@ -44,16 +42,10 @@ public class InMemoryFolderRepository extends FolderRepositoryAdapter implements
      */
     private Map<String, List<FolderEntry>> folderEntriesMap = new ConcurrentSkipListMap<>();
 
-    @PostConstruct
-    private void init() {
-        // no op
-    }
-
     @Override
-    public Folder addFolder(String path) {
-        path = cleanPath(path);
-        Folder folder = new Folder(path);
-        folder.setName(extractName(path));
+    public Folder addFolder(String givenPath) {
+        String path = cleanPath(givenPath);
+        Folder folder = new Folder(path, extractName(path));
         foldersMap.put(path, folder);
         return folder;
     }
@@ -140,9 +132,8 @@ public class InMemoryFolderRepository extends FolderRepositoryAdapter implements
                 this.folderEntriesMap.put(newKey, entries);
                 this.folderEntriesMap.remove(key);
                 entries.forEach(folderEntry -> {
-                    String newFolderPath = StringUtils.replace(folderEntry.getPath(), cleanPath, cleanNewPath, 1);
-                    folderEntry.setPath(newFolderPath);
-                    folderEntry.buildId();
+                    String newFolderPath = StringUtils.replace(folderEntry.getFolderId(), cleanPath, cleanNewPath, 1);
+                    folderEntry.setFolderId(newFolderPath);
                 });
             }
         });
@@ -155,35 +146,33 @@ public class InMemoryFolderRepository extends FolderRepositoryAdapter implements
     }
 
     @Override
-    public FolderEntry addFolderEntry(FolderEntry folderEntry) {
-        folderEntry.setPath(cleanPath(folderEntry.getPath()));
-        List<FolderEntry> folderEntries = folderEntriesMap.get(folderEntry.getPath());
+    public FolderEntry addFolderEntry(FolderEntry folderEntry, String path) {
+        folderEntry.setFolderId(cleanPath(path));
+        List<FolderEntry> folderEntries = folderEntriesMap.get(folderEntry.getFolderId());
         if (folderEntries == null) {
             folderEntries = new ArrayList<>();
-            folderEntriesMap.put(folderEntry.getPath(), folderEntries);
+            folderEntriesMap.put(folderEntry.getFolderId(), folderEntries);
         }
-        folderEntry.buildId();
         folderEntries.add(folderEntry);
         return folderEntry;
     }
 
     @Override
     public void copyFolderEntry(FolderEntry folderEntry, String destinationPath) {
-        FolderEntry cloned = new FolderEntry(folderEntry.getContentType(), //
-                folderEntry.getContentId(), //
-                cleanPath(destinationPath));
-        this.addFolderEntry(cloned);
+        FolderEntry cloned = new FolderEntry(folderEntry.getContentType(), folderEntry.getContentId());
+        cloned.setFolderId(cleanPath(destinationPath));
+        this.addFolderEntry(cloned, cloned.getFolderId());
     }
 
     @Override
-    public void moveFolderEntry(FolderEntry folderEntry, String destinationPath) {
+    public void moveFolderEntry(FolderEntry folderEntry, String sourcePath, String destinationPath) {
         destinationPath = cleanPath(destinationPath);
-        List<FolderEntry> entries = folderEntriesMap.get(cleanPath(folderEntry.getPath()));
+        List<FolderEntry> entries = folderEntriesMap.get(cleanPath(folderEntry.getFolderId()));
         if (entries != null) {
             entries.remove(folderEntry);
         }
-        folderEntry.setPath(destinationPath);
-        addFolderEntry(folderEntry);
+        folderEntry.setFolderId(destinationPath);
+        addFolderEntry(folderEntry, destinationPath);
     }
 
     @Override
@@ -214,10 +203,8 @@ public class InMemoryFolderRepository extends FolderRepositoryAdapter implements
         Iterator<String>  paths = this.folderEntriesMap.keySet().iterator();
         while (paths.hasNext()) {
             String currentPath = paths.next();
-            if (StringUtils.startsWith(currentPath, path)) {
-                if (!this.folderEntriesMap.get( currentPath ).isEmpty()) {
-                    throw new NotEmptyFolderException( "The folder or a child contains data" );
-                }
+            if (StringUtils.startsWith(currentPath, path) && !this.folderEntriesMap.get( currentPath ).isEmpty()) {
+                throw new NotEmptyFolderException( "The folder or a child contains data" );
             }
         }
 
@@ -243,11 +230,13 @@ public class InMemoryFolderRepository extends FolderRepositoryAdapter implements
     public void removeFolderEntry(String folderPath, String contentId, String contentType) {
         folderPath = cleanPath(folderPath);
         List<FolderEntry> entries = folderEntriesMap.get(folderPath);
-        entries.remove(new FolderEntry(contentType, contentId, folderPath));
+        final FolderEntry entry = new FolderEntry(contentType, contentId);
+        entry.setFolderId(folderPath);
+        entries.remove(entry);
     }
 
     @Override
-    public int size() {
+    public long size() {
         return this.foldersMap.size();
     }
 

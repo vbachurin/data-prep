@@ -504,7 +504,7 @@ describe('Dataset Rest Service', function () {
             var newFolder = {id:'/wine/beer'};
 
             $httpBackend
-                .expectPUT(RestURLs.datasetUrl + '/clone/foobar?folderPath=' + encodeURIComponent(newFolder.id))
+                .expectPUT(RestURLs.datasetUrl + '/clone/foobar?folderPath=' + encodeURIComponent(newFolder.path))
                 .respond(200);
 
             //when
@@ -523,7 +523,7 @@ describe('Dataset Rest Service', function () {
             var cloneName = 'foo-bar';
 
             $httpBackend
-                .expectPUT(RestURLs.datasetUrl + '/clone/foobar?folderPath=' + encodeURIComponent(newFolder.id) + '&cloneName=' + encodeURIComponent(cloneName))
+                .expectPUT(RestURLs.datasetUrl + '/clone/foobar?folderPath=' + encodeURIComponent(newFolder.path) + '&cloneName=' + encodeURIComponent(cloneName))
                 .respond(200);
 
             //when
@@ -561,7 +561,7 @@ describe('Dataset Rest Service', function () {
             var folder = {id:'/'};
             var newFolder = {id:'/wine/beer'};
 
-            var moveRequest = {folderPath: folder.id, newFolderPath: newFolder.id};
+            var moveRequest = {folderPath: folder.path, newFolderPath: newFolder.path};
 
             $httpBackend
                 .expectPUT(RestURLs.datasetUrl + '/move/foobar', moveRequest)
@@ -579,11 +579,11 @@ describe('Dataset Rest Service', function () {
         it('should call move w a new name', inject(function ($rootScope, DatasetRestService, RestURLs) {
             //given
             var dataset = {id: 'foobar'};
-            var folder = {id:'/'};
+            var folder = {path:'/'};
             var newFolder = {id:'/wine/beer'};
             var newName = 'good one';
 
-            var moveRequest = {folderPath: folder.id, newFolderPath: newFolder.id, newName: newName};
+            var moveRequest = {folderPath: folder.path, newFolderPath: newFolder.path, newName: newName};
 
             $httpBackend
                 .expectPUT(RestURLs.datasetUrl + '/move/foobar', moveRequest)

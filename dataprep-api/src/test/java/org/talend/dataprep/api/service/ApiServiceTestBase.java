@@ -84,7 +84,7 @@ public abstract class ApiServiceTestBase {
     protected ContentCache cache;
 
     @Autowired
-    private FolderRepository folderRepository;
+    protected FolderRepository folderRepository;
 
     @Autowired
     TransformationServiceUrlRuntimeUpdater transformationUrlUpdater;

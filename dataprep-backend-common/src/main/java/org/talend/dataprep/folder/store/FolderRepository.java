@@ -13,17 +13,12 @@
 
 package org.talend.dataprep.folder.store;
 
-import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.folder.Folder;
 import org.talend.dataprep.api.folder.FolderEntry;
 import org.talend.dataprep.lock.DistributedLock;
 
 
 public interface FolderRepository {
-
-    String HOME_FOLDER_KEY = "HOME_FOLDER";
-
-    char PATH_SEPARATOR = '/';
 
     /**
      * @return A {@link java.lang.Iterable iterable} of children {@link Folder folder}. Returned folders are expected to be
@@ -39,15 +34,15 @@ public interface FolderRepository {
     Folder addFolder(String path);
 
     /**
-     * remove folder and content recursively
+     * Remove folder and content recursively only if no entry is found.
      * 
-     * @param path the path to remove only the last part is remove
+     * @param path the path to remove only the last part is removed.
      * @throws NotEmptyFolderException if folder recursively contains any entries (dataset etc...)
      */
     void removeFolder(String path) throws NotEmptyFolderException;
 
     /**
-     * remove folder and content recursively
+     * Rename a folder and its content recursively.
      *
      * @param path the path to rename
      * @param newPath the full new path
@@ -55,13 +50,15 @@ public interface FolderRepository {
     void renameFolder(String path, String newPath);
 
     /**
-     * add or replace (if already exists) the entry
-     * @param folderEntry the {@link FolderEntry} to add
+     * add or replace (if already exists) the entry.
+     * @param folderEntry the {@link FolderEntry} to add.
+     * @param path where to add this folder entry.
      */
-    FolderEntry addFolderEntry(FolderEntry folderEntry);
+    FolderEntry addFolderEntry(FolderEntry folderEntry, String path);
 
     /**
-     * remove a {@link FolderEntry}
+     * Remove a {@link FolderEntry}.
+     *
      * @param folderPath the folder path containing the entry
      * @param contentId the id
      * @param contentType  the type dataset, preparation
@@ -69,7 +66,7 @@ public interface FolderRepository {
     void removeFolderEntry(String folderPath, String contentId, String contentType);
 
     /**
-     *
+     * List the {@link FolderEntry} of the wanted type within the given path.
      * @param path the parent path
      * @param contentType the contentClass to filter folder entries
      * @return A {@link java.lang.Iterable iterable} of {@link FolderEntry} content filtered for the given type
@@ -77,29 +74,33 @@ public interface FolderRepository {
     Iterable<FolderEntry> entries(String path, String contentType);
 
     /**
+     * Look for all the {@link FolderEntry} that points to an existing content.
+     *
+     * It's useful when you want to delete a dataset hence all its references.
+     *
      * @param contentId the id
      * @param contentType  the type dataset, preparation
-     * @return A {@link Iterable} of the {@link FolderEntry} containing the folderEntry as described by contentType and contentId
+     * @return A {@link Iterable} of the {@link FolderEntry} containing the folderEntry as described by contentType and contentId.
      */
     Iterable<FolderEntry> findFolderEntries(String contentId, String contentType);
 
     /**
      * <b>if the destination or entry doesn't exist a {@link IllegalArgumentException} will be thrown</b>
-     *
-     * @param folderEntry the {@link FolderEntry} to move
-     * @param destinationPath the destination where to move the entry
+     *  @param folderEntry the {@link FolderEntry} to move.
+     * @param sourcePath where to look for the folder entry.
+     * @param destinationPath the destination where to move the entry.
      */
-    void moveFolderEntry(FolderEntry folderEntry, String destinationPath);
+    void moveFolderEntry(FolderEntry folderEntry, String sourcePath, String destinationPath);
 
     /**
-     *
+     * Copy the given folder entry to the target destination.
      * @param folderEntry the {@link FolderEntry} to move
      * @param destinationPath the destination where to copy the entry
      */
     void copyFolderEntry(FolderEntry folderEntry, String destinationPath);
 
     /**
-     * clear the whole content
+     * Clear the whole content.
      */
     void clear();
 
@@ -108,7 +109,7 @@ public interface FolderRepository {
      * 
      * @return the number of created {@link Folder}
      */
-    int size();
+    long size();
 
     /**
      *
@@ -124,33 +125,5 @@ public interface FolderRepository {
     Iterable<Folder> searchFolders(String queryString);
 
     DistributedLock createFolderLock(String id);
-
-    /**
-     * @param path a path as /beer/wine /foo
-     * @return extract last part of a path /beer/wine -> wine /foo -> foo, / -> HOME_FOLDER
-     */
-    default String extractName(String path) {
-        if (StringUtils.isEmpty(path) || StringUtils.equals(path, "/")) {
-            return HOME_FOLDER_KEY;
-        }
-
-        return StringUtils.contains(path, "/") ? //
-                StringUtils.substringAfterLast(path, "/") : path;
-    }
-
-    /**
-     * we remove / from start and end to use consistent paths
-     *
-     * @param path
-     * @return
-     */
-    default String cleanPath(String path) {
-        if (StringUtils.isEmpty(path)) {
-            return "/";
-        }
-        path = StringUtils.removeStart(path, "/");
-        path = StringUtils.removeEnd(path, "/");
-        return path;
-    }
 
 }

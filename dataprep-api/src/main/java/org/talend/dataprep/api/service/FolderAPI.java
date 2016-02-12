@@ -26,9 +26,11 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.HttpClient;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.talend.dataprep.api.folder.FolderContent;
-import org.talend.dataprep.api.folder.FolderEntry;
 import org.talend.dataprep.api.service.command.common.HttpResponse;
 import org.talend.dataprep.api.service.command.folder.*;
 import org.talend.dataprep.exception.TDPException;
@@ -158,27 +160,6 @@ public class FolderAPI extends APIService {
             renameFolder.execute();
         } catch (Exception e) {
             throw new TDPException(APIErrorCodes.UNABLE_TO_RENAME_FOLDER, e);
-        }
-    }
-
-    /**
-     * no javadoc here so see description in @ApiOperation notes.
-     * 
-     * @param folderEntry
-     * @return
-     */
-    @RequestMapping(value = "/api/folders/entries", method = PUT, consumes = APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Add a FolderEntry", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    @Timed
-    @VolumeMetered
-    public void addFolderEntry(@RequestBody FolderEntry folderEntry, final OutputStream output) {
-        try {
-            final HystrixCommand<InputStream> createFolderEntry = getCommand(CreateFolderEntry.class, getClient(), folderEntry);
-            HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
-            IOUtils.copyLarge(createFolderEntry.execute(), output);
-            output.flush();
-        } catch (Exception e) {
-            throw new TDPException(APIErrorCodes.UNABLE_TO_CREATE_FOLDER_ENTRY, e);
         }
     }
 
