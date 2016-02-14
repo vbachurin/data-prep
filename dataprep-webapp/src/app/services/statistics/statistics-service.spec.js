@@ -688,14 +688,15 @@ describe('Statistics service', function () {
 
     beforeEach(inject(function ($q, WorkerService, StateService) {
         workerWrapper = null;
-        spyOn(WorkerService, 'create').and.callFake(function (importLibs, helperFns, mainFn) {
+        spyOn(WorkerService, 'create').and.callFake(function (parameters) {
             workerWrapper = {
-                postMessage: function (args) {
-                    var workerPostedMessage = mainFn.apply(null, args);
+                importScripts: jasmine.createSpy('importScripts').and.callFake(() => {return workerWrapper}),
+                require: jasmine.createSpy('require').and.callFake(() => {return workerWrapper}),
+                run: function (mainFn) {
+                    var workerPostedMessage = mainFn.call(null, parameters);
                     return $q.when(workerPostedMessage);
                 },
-                terminate: jasmine.createSpy('terminate'),
-                clean: jasmine.createSpy('clean')
+                cancel: jasmine.createSpy('cancel')
             };
             return workerWrapper;
         });
@@ -2823,13 +2824,13 @@ describe('Statistics service', function () {
             expect(StatisticsService.histogram).toBeFalsy();
 
             StatisticsService.processClassicChart(); //create the worker
-            expect(workerWrapper.terminate).not.toHaveBeenCalled();
+            expect(workerWrapper.cancel).not.toHaveBeenCalled();
 
             //when
             StatisticsService.reset();
 
             //then
-            expect(workerWrapper.terminate).toHaveBeenCalled();
+            expect(workerWrapper.cancel).toHaveBeenCalled();
         }));
 
         it('should reset date pattern filtered occurrence worker', inject(function (StatisticsService) {
@@ -2859,13 +2860,13 @@ describe('Statistics service', function () {
             ];
 
             StatisticsService.updateStatistics(); //create the worker
-            expect(workerWrapper.terminate).not.toHaveBeenCalled();
+            expect(workerWrapper.cancel).not.toHaveBeenCalled();
 
             //when
             StatisticsService.reset();
 
             //then
-            expect(workerWrapper.terminate).toHaveBeenCalled();
+            expect(workerWrapper.cancel).toHaveBeenCalled();
         }));
 
         it('should get numeric columns (as aggregation columns) from lookup-datagrid service', inject(function (StatisticsService, DatagridService) {

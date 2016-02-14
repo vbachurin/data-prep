@@ -1,135 +1,153 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
 
-describe('Worker service', function () {
+describe('Worker service', () => {
     'use strict';
 
-    var $rootScope, createWorker, createWorkerFromFunction, createWorkerWithNamedHelpers;
-    var jasmineOriginalTimeout;
+    var originalParallel;
 
     beforeEach(angular.mock.module('data-prep.services.utils'));
 
-    beforeEach(inject(function() {
-        jasmineOriginalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;//default value === 5000 ms
+    beforeEach(inject(($window) => {
+        originalParallel = $window.Parallel;
+        $window.Parallel = ParallelMock;
     }));
 
-    afterEach(function() {
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = jasmineOriginalTimeout;
-    });
-
-    beforeEach(inject(function(_$rootScope_, $window, WorkerService) {
-        $rootScope = _$rootScope_;
-
-        function add(a, b) {
-            return a + b;
-        }
-        function multiply(a, b) {
-            return a * b;
-        }
-        function calculate(a, b) {
-            return multiply(a, b) - add(a, b);
-        }
-
-        createWorker = function() {
-            return WorkerService.create(null, [add, multiply], calculate);
-        };
-
-        createWorkerWithNamedHelpers = function() {
-            var myAdd = add;
-            var myMultiply = multiply;
-            return WorkerService.create(null, [{
-                myAdd: myAdd,
-                myMultiply: myMultiply
-            }], function calculate(a, b) {
-                return myMultiply(a, b) - myAdd(a, b);
-            });
-        };
-
-        createWorkerFromFunction = function(fn) {
-            return WorkerService.create(null, null, fn);
-        };
-
-        spyOn($window.URL, 'revokeObjectURL').and.callThrough();
+    afterEach(inject(($window) => {
+        $window.Parallel = originalParallel;
     }));
 
-    it('should execute a named function code', function (done) {
+    it('should create a Parallel worker wrapper', inject((WorkerService) => {
         //given
-        var workerWrapper = createWorker();
+        const parameters = {a: 5, b: 8};
+        const options = {};
 
         //when
-        workerWrapper.postMessage([5, 8])
+        const workerWrapper = WorkerService.create(parameters, options);
 
-            //then
-            .then(function(result) {
-                expect(result).toBe(27);
-                done();
-            });
-
-        // $q needs a digest so lets call one after the worker should be finished
-        setTimeout(function() { //eslint-disable-line angular/timeout-service
-            $rootScope.$digest();
-        }, 500);
-    });
-
-    it('should execute an unnamed function code', function (done) {
-        //given
-        var workerWrapper = createWorkerFromFunction(function() {
-            return 3 + 4;
-        });
-
-        //when
-        workerWrapper.postMessage()
-
-            //then
-            .then(function(result) {
-                expect(result).toBe(7);
-                done();
-            });
-
-        // $q needs a digest so lets call one after the worker should be finished
-        setTimeout(function() { //eslint-disable-line angular/timeout-service
-            $rootScope.$digest();
-        }, 500);
-    });
-
-    it('should execute a function code with named helper functions', function (done) {
-        //given
-        var workerWrapper = createWorkerWithNamedHelpers();
-
-        //when
-        workerWrapper.postMessage([5, 8])
-
-            //then
-            .then(function(result) {
-                expect(result).toBe(27);
-                done();
-            });
-
-        // $q needs a digest so lets call one after the worker should be finished
-        setTimeout(function() { //eslint-disable-line angular/timeout-service
-            $rootScope.$digest();
-        }, 500);
-    });
-
-    it('should revoke blob url', inject(function ($window) {
-        //given
-        var workerWrapper = createWorker();
-
-        //when
-        workerWrapper.terminate();
-
-        //Then
-        expect($window.URL.revokeObjectURL).toHaveBeenCalled();
+        //then
+        expect(workerWrapper.operation).toBeDefined();
+        expect(workerWrapper.operation.parameters).toBe(parameters);
+        expect(workerWrapper.operation.options).toBe(options);
     }));
+
+    describe('importScripts', () => {
+        it('should add external script to Parallel operation', inject((WorkerService) => {
+            //given
+            const parameters = {a: 5, b: 8};
+            const options = {};
+            const workerWrapper = WorkerService.create(parameters, options);
+            spyOn(workerWrapper.operation, 'require').and.returnValue();
+
+            const scriptsUrl = 'my scripts';
+
+            //when
+            workerWrapper.importScripts(scriptsUrl);
+
+            //then
+            expect(workerWrapper.operation.require).toHaveBeenCalledWith(scriptsUrl);
+        }));
+
+        it('should return worker wrapper to allow fluid api', inject((WorkerService) => {
+            //given
+            const parameters = {a: 5, b: 8};
+            const options = {};
+            const workerWrapper = WorkerService.create(parameters, options);
+
+            const scriptsUrl = 'my scripts';
+
+            //when
+            const result = workerWrapper.importScripts(scriptsUrl);
+
+            //then
+            expect(result).toBe(workerWrapper);
+        }));
+    });
+
+    describe('require', () => {
+        it('should add local function to Parallel operation', inject((WorkerService) => {
+            //given
+            const parameters = {a: 5, b: 8};
+            const options = {};
+            const workerWrapper = WorkerService.create(parameters, options);
+            spyOn(workerWrapper.operation, 'require').and.returnValue();
+
+            const fn = () => {};
+
+            //when
+            workerWrapper.require(fn);
+
+            //then
+            expect(workerWrapper.operation.require).toHaveBeenCalledWith(fn);
+        }));
+
+        it('should return worker wrapper to allow fluid api', inject((WorkerService) => {
+            //given
+            const parameters = {a: 5, b: 8};
+            const options = {};
+            const workerWrapper = WorkerService.create(parameters, options);
+
+            const fn = () => {};
+
+            //when
+            const result = workerWrapper.require(fn);
+
+            //then
+            expect(result).toBe(workerWrapper);
+        }));
+    });
+
+    describe('run', () => {
+        it('should run main function and resolve promise', inject(($rootScope, $q, WorkerService) => {
+            //given
+            const parameters = {a: 5, b: 8};
+            const options = {};
+            const workerWrapper = WorkerService.create(parameters, options);
+            spyOn(workerWrapper.operation, 'spawn').and.callFake((mainFn) => $q.when(mainFn(parameters)));
+
+            const fn = (params) => params.a + params.b;
+            let result = null;
+
+            //when
+            workerWrapper.run(fn)
+                .then((res) => result = res);
+            $rootScope.$digest();
+
+            //then
+            expect(result).toBe(13);
+        }));
+    });
+
+    describe('cancel', () => {
+        it('should cancel worker wrapper promise', inject(($rootScope, $q, WorkerService) => {
+            //given
+            const parameters = {a: 5, b: 8};
+            const options = {};
+            const workerWrapper = WorkerService.create(parameters, options);
+            spyOn(workerWrapper.operation, 'spawn').and.callFake((mainFn) => $q.when(mainFn(parameters)));
+
+            const fn = (params) => params.a + params.b;
+            let result = null;
+
+            //when
+            workerWrapper.run(fn)
+                .then((res) => result = res)
+                .catch((err) => result = err);
+            workerWrapper.cancel();
+            $rootScope.$digest();
+
+            //then
+            expect(result).toBe('user cancel');
+        }));
+    });
 });

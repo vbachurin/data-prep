@@ -25,7 +25,9 @@
     "moment": true,
     "Parallel": true,
     "Slick": true,
-    "SlickGridMock": true,
-    "DataViewMock": true
+
+    "DataViewMock": true,
+    "ParallelMock": true,
+    "SlickGridMock": true
   }
 }

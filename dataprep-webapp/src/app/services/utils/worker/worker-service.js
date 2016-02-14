@@ -41,8 +41,8 @@ export default function WorkerService($q) {
             operation.require(scriptUrl);
             return workerOperator;
         };
-        workerOperator.require = (scriptUrl) => {
-            operation.require(scriptUrl);
+        workerOperator.require = (script) => {
+            operation.require(script);
             return workerOperator;
         };
         workerOperator.run = (mainFn) => {
@@ -55,25 +55,4 @@ export default function WorkerService($q) {
 
         return workerOperator;
     }
-/*
-    function importScripts(scriptUrl) {
-        this.operation.require(scriptUrl);
-        return this;
-    }
-
-    function require(fn) {
-        this.operation.require(fn);
-        return this;
-    }
-
-    function run(mainFn) {
-        this.defer = $q.defer();
-        this.operation.spawn(mainFn).then(this.defer.resolve, this.defer.reject);
-        return this.defer.promise;
-    }
-
-    function cancel() {
-        this.defer.reject('user cancel');
-    }
-    */
 }
