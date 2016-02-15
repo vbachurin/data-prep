@@ -117,6 +117,18 @@ describe('Playground state service', function () {
             expect(playgroundState.preparation).toBe(preparation);
         }));
 
+        it('should set preparation name in state', inject(function (playgroundState, PlaygroundStateService) {
+            //given
+            expect(playgroundState.preparationName).toBeFalsy();
+            var preparationName = 'the preparation name';
+
+            //when
+            PlaygroundStateService.setPreparationName(preparationName);
+
+            //then
+            expect(playgroundState.preparationName).toBe(preparationName);
+        }));
+
         it('should set name edition flag in state', inject(function (playgroundState, PlaygroundStateService) {
             //given
             expect(playgroundState.nameEditionMode).toBeFalsy();

@@ -35,22 +35,13 @@ export default function PlaygroundService($rootScope, $q, $translate, $timeout,
                                           OnboardingService, MessageService, ExportService) {
     'ngInject';
 
-    var INVENTORY_PREFIX = '';
     var INVENTORY_SUFFIX = ' ' + $translate.instant('PREPARATION');
 
-    function wrapInventoryName(invName) {
-        return INVENTORY_PREFIX + invName + INVENTORY_SUFFIX;
+    function wrapInventoryName (invName){
+        return invName + INVENTORY_SUFFIX;
     }
 
     var service = {
-        /**
-         * @ngdoc property
-         * @name preparationName
-         * @propertyOf data-prep.services.playground.service:PlaygroundService
-         * @description the current preparation
-         */
-        preparationName: '',
-
         //init/load
         initPlayground: initPlayground,     // load dataset
         load: load,                         // load preparation
@@ -109,7 +100,7 @@ export default function PlaygroundService($rootScope, $q, $translate, $timeout,
                     throw Error('Empty data');
                 }
 
-                service.preparationName = wrapInventoryName(dataset.name);
+                StateService.setPreparationName(dataset.name);
                 reset(dataset, data);
                 StateService.hideRecipe();
                 StateService.setNameEditionMode(true);
@@ -144,7 +135,7 @@ export default function PlaygroundService($rootScope, $q, $translate, $timeout,
             $rootScope.$emit('talend.loading.start');
             return PreparationService.getContent(preparation.id, 'head')
                 .then(function (response) {
-                    service.preparationName = preparation.name;
+                    StateService.setPreparationName(preparation.name);
                     reset(preparation.dataset ? preparation.dataset : {id: preparation.dataSetId}, response, preparation);
                     StateService.showRecipe();
                     StateService.setNameEditionMode(false);
@@ -216,7 +207,7 @@ export default function PlaygroundService($rootScope, $q, $translate, $timeout,
 
         return promise.then(function (preparation) {
             StateService.setCurrentPreparation(preparation);
-            service.preparationName = preparation.name;
+            StateService.setPreparationName(preparation.name);
             return preparation;
         });
     }
@@ -269,6 +260,7 @@ export default function PlaygroundService($rootScope, $q, $translate, $timeout,
      * in actions history. It there is no preparation yet, it is created first and tagged as draft.
      */
     function appendStep(action, parameters) {
+        /*jshint camelcase: false */
         $rootScope.$emit('talend.loading.start');
 
         //create the preparation and taf it draft if it does not exist
@@ -281,7 +273,7 @@ export default function PlaygroundService($rootScope, $q, $translate, $timeout,
                 });
 
         return prepCreation
-        //append step
+            //append step
             .then(function (preparation) {
                 return PreparationService.appendStep(preparation.id, {action: action, parameters: parameters});
             })
@@ -319,10 +311,11 @@ export default function PlaygroundService($rootScope, $q, $translate, $timeout,
         PreviewService.cancelPreview();
         PreparationService.copyImplicitParameters(newParams, step.actionParameters.parameters);
 
-        if (!PreparationService.paramsHasChanged(step, newParams)) {
+        if(! PreparationService.paramsHasChanged(step, newParams)) {
             return;
         }
 
+        /*jshint camelcase: false */
         $rootScope.$emit('talend.loading.start');
 
         //save the head before transformation for undo
@@ -359,6 +352,7 @@ export default function PlaygroundService($rootScope, $q, $translate, $timeout,
      * in actions history
      */
     function removeStep(step) {
+        /*jshint camelcase: false */
         $rootScope.$emit('talend.loading.start');
 
         //save the head before transformation for undo
@@ -393,6 +387,7 @@ export default function PlaygroundService($rootScope, $q, $translate, $timeout,
      * @description Perform a cell or a column edition
      */
     function editCell(rowItem, column, newValue, updateAllCellWithValue) {
+        /*jshint camelcase: false */
         var params = {
             scope: updateAllCellWithValue ? 'column' : 'cell',
             column_id: column.id,
@@ -425,7 +420,7 @@ export default function PlaygroundService($rootScope, $q, $translate, $timeout,
         PreparationService.copyImplicitParameters(params, originalParameters);
 
         //Parameters has not changed
-        if (updateStep.inactive || !PreparationService.paramsHasChanged(updateStep, params)) {
+        if(updateStep.inactive || ! PreparationService.paramsHasChanged(updateStep, params)) {
             return $q.when();
         }
 
@@ -451,8 +446,8 @@ export default function PlaygroundService($rootScope, $q, $translate, $timeout,
             RecipeService.getActiveThresholdStepIndex() :
             null;
         return DatasetService.updateParameters(dataset, params)
-            .then(function () {
-                if (isPreparation) {
+            .then(function() {
+                if(isPreparation) {
                     var activeStep = RecipeService.getStep(lastActiveStepIndex, true);
                     return loadStep(activeStep);
                 }

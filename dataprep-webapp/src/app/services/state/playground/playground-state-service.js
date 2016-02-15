@@ -11,7 +11,9 @@
 
   ============================================================================*/
 
-export const playgroundState = {};
+export const playgroundState = {
+    preparationName: ''
+};
 
 export function PlaygroundStateService(RecipeStateService, recipeState,
                                        GridStateService, gridState,
@@ -36,6 +38,7 @@ export function PlaygroundStateService(RecipeStateService, recipeState,
         hide: hide,
         setDataset: setDataset,
         setPreparation: setPreparation,
+        setPreparationName: setPreparationName,
         setNameEditionMode: setNameEditionMode,
         reset: reset,
         setData: setData,
@@ -109,6 +112,10 @@ export function PlaygroundStateService(RecipeStateService, recipeState,
         playgroundState.preparation = preparation;
     }
 
+    function setPreparationName(preparationName) {
+        playgroundState.preparationName = preparationName;
+    }
+
     function setNameEditionMode(editionMode) {
         playgroundState.nameEditionMode = editionMode;
     }
@@ -122,7 +129,7 @@ export function PlaygroundStateService(RecipeStateService, recipeState,
     }
 
     function updateDatasetStatistics(metadata) {
-        _.forEach(playgroundState.data.metadata.columns, function (col) {
+        _.forEach(playgroundState.data.metadata.columns, function(col) {
             var correspondingColumn = _.find(metadata.columns, {id: col.id});
             col.statistics = correspondingColumn.statistics;
         });
@@ -133,7 +140,7 @@ export function PlaygroundStateService(RecipeStateService, recipeState,
     //-------------------------------------------------PARAMETERS---------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------
     function toggleDatasetParameters() {
-        if (parametersState.visible) {
+        if(parametersState.visible) {
             ParametersStateService.hide();
         }
         else {
