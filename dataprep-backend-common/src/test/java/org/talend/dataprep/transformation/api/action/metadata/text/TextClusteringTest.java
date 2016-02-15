@@ -18,19 +18,26 @@ import static org.junit.Assert.*;
 import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
 import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
+import org.talend.dataprep.transformation.api.action.metadata.date.BaseDateTests;
 
-public class TextClusteringTest {
+public class TextClusteringTest extends BaseDateTests {
 
-    private TextClustering textClustering = new TextClustering();
+    @Autowired
+    private TextClustering textClustering;
 
     @Test
     public void create_should_build_textclustering_consumer() {
@@ -54,8 +61,7 @@ public class TextClusteringTest {
         ActionTestWorkbench.test(rows, textClustering.create(parameters).getRowAction());
 
         // then
-        rows.stream().map(row -> row.get(columnId))
-                .forEach(uglyState -> Assertions.assertThat(uglyState).isEqualTo("Tata"));
+        rows.stream().map(row -> row.get(columnId)).forEach(uglyState -> Assertions.assertThat(uglyState).isEqualTo("Tata"));
     }
 
     @Test
@@ -92,8 +98,7 @@ public class TextClusteringTest {
         ActionTestWorkbench.test(rows, textClustering.create(parameters).getRowAction());
 
         // then
-        rows.stream().map((row) -> row.get(columnId))
-                .forEach(uglyState -> Assertions.assertThat(uglyState).isNotEqualTo("Tata"));
+        rows.stream().map((row) -> row.get(columnId)).forEach(uglyState -> Assertions.assertThat(uglyState).isNotEqualTo("Tata"));
     }
 
     private DataSetRow createRow(final String key, final String value) {

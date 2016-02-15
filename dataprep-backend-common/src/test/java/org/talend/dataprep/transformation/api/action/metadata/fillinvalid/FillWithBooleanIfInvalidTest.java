@@ -18,10 +18,15 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
@@ -29,24 +34,25 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
+import org.talend.dataprep.transformation.api.action.metadata.date.BaseDateTests;
 import org.talend.dataprep.transformation.api.action.metadata.fill.AbstractFillWith;
 import org.talend.dataprep.transformation.api.action.metadata.fill.FillInvalid;
+
+import javax.annotation.PostConstruct;
 
 /**
  * Unit test for FillWithBooleanIfInvalid action.
  *
  * @see FillInvalid
  */
-public class FillWithBooleanIfInvalidTest {
+public class FillWithBooleanIfInvalidTest extends BaseDateTests {
 
     /** The action to test. */
+    @Autowired
     private FillInvalid action;
 
-    /**
-     * Default empty constructor.
-     */
-    public FillWithBooleanIfInvalidTest() {
-        action = new FillInvalid();
+    @PostConstruct
+    public void init() {
         action = (FillInvalid) action.adapt(ColumnMetadata.Builder.column().type(Type.BOOLEAN).build());
     }
 
@@ -168,7 +174,7 @@ public class FillWithBooleanIfInvalidTest {
         Assert.assertEquals("False", row.get("0002"));
         Assert.assertEquals("David Bowie", row.get("0001"));
     }
-    
+
     @Test
     public void should_accept_column() {
         assertTrue(action.acceptColumn(getColumn(Type.BOOLEAN)));

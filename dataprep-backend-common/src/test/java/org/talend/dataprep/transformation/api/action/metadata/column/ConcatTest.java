@@ -25,32 +25,29 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
+import org.talend.dataprep.transformation.api.action.metadata.date.BaseDateTests;
 
 /**
  * Unit test for the Concat action.
  * 
  * @see Concat
  */
-public class ConcatTest {
+public class ConcatTest extends BaseDateTests {
 
     /** The action to test. */
+    @Autowired
     private Concat action;
 
     /** The action parameters. */
     private Map<String, String> parameters;
 
-    /**
-     * Constructor.
-     */
-    public ConcatTest() throws IOException {
-        action = new Concat();
-    }
 
     @Before
     public void setUp() throws Exception {

@@ -10,6 +10,7 @@
 //  9 rue Pages 92150 Suresnes, France
 //
 //  ============================================================================
+
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -24,24 +25,27 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
+import org.talend.dataprep.transformation.api.action.metadata.date.BaseDateTests;
 
 /**
  * Unit test for the absolute actions.
  *
  * @see Absolute
  */
-public class AbsoluteTest {
+public class AbsoluteTest extends BaseDateTests {
 
     private static final String FLOAT_COLUMN = "float_column"; //$NON-NLS-1$
 
     private static final String INT_COLUMN = "int_column"; //$NON-NLS-1$
 
+    @Autowired
     private Absolute absolute;
 
     private Map<String, String> absFloatParameters;
@@ -50,8 +54,6 @@ public class AbsoluteTest {
 
     @Before
     public void init() throws IOException {
-        absolute = new Absolute();
-
         absFloatParameters = ActionMetadataTestUtils
                 .parseParameters(AbsoluteTest.class.getResourceAsStream("absoluteFloatAction.json"));
         absIntParameters = ActionMetadataTestUtils

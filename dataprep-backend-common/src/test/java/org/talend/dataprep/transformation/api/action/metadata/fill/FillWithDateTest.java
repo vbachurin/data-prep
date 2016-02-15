@@ -13,8 +13,12 @@
 
 package org.talend.dataprep.transformation.api.action.metadata.fill;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
 import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
 import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.setStatistics;
 
@@ -35,6 +39,8 @@ import org.talend.dataprep.transformation.api.action.metadata.AbstractMetadataBa
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.date.ChangeDatePatternTest;
 
+import javax.annotation.PostConstruct;
+
 /**
  * Unit test for the FillWithStringIfEmpty action.
  *
@@ -46,12 +52,16 @@ public class FillWithDateTest extends AbstractMetadataBaseTest {
     @Autowired
     private FillWithValue action;
 
-    /**
-     * Set the action up.
-     */
-    @Before
-    public void setUp() throws Exception {
+    @PostConstruct
+    public void init() {
         action = (FillWithValue) action.adapt(ColumnMetadata.Builder.column().type(Type.DATE).build());
+    }
+
+    @Test
+    public void test_adapt() throws Exception {
+        assertThat(action.adapt((ColumnMetadata) null), is(action));
+        ColumnMetadata column = column().name("myColumn").id(0).type(Type.DATE).build();
+        assertThat(action.adapt(column), is(action));
     }
 
     @Test

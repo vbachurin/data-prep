@@ -13,8 +13,12 @@
 
 package org.talend.dataprep.transformation.api.action.metadata.fill;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
 import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
 
 import java.util.Collections;
@@ -23,29 +27,38 @@ import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
+import org.talend.dataprep.transformation.api.action.metadata.date.BaseDateTests;
+
+import javax.annotation.PostConstruct;
 
 /**
  * Unit test for the FillWithStringIfEmpty action.
  *
- * @see FillIfEmpty
+ * @see FillWithValue
  */
-public class FillWithStringTest {
+public class FillWithStringTest extends BaseDateTests {
 
     /** The action to test. */
+    @Autowired
     private FillWithValue action;
 
-    /**
-     * Default empty constructor.
-     */
-    public FillWithStringTest() {
-        action = new FillWithValue();
+    @PostConstruct
+    public void init() {
         action = (FillWithValue) action.adapt(ColumnMetadata.Builder.column().type(Type.STRING).build());
+    }
+
+    @Test
+    public void test_adapt() throws Exception {
+        assertThat(action.adapt((ColumnMetadata) null), is(action));
+        ColumnMetadata column = column().name("myColumn").id(0).type(Type.STRING).build();
+        assertThat(action.adapt(column), is(action));
     }
 
     @Test
@@ -120,7 +133,7 @@ public class FillWithStringTest {
 
         Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
                 this.getClass().getResourceAsStream("fillEmptyStringAction.json"));
-        parameters.put(AbstractFillWith.DEFAULT_VALUE_PARAMETER,"12.5");
+        parameters.put(AbstractFillWith.DEFAULT_VALUE_PARAMETER, "12.5");
 
         // when
         ActionTestWorkbench.test(row, action.create(parameters).getRowAction());

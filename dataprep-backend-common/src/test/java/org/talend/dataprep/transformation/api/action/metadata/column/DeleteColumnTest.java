@@ -18,10 +18,15 @@ import static org.junit.Assert.*;
 import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
 import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
@@ -29,12 +34,15 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
+import org.talend.dataprep.transformation.api.action.metadata.date.BaseDateTests;
 
-public class DeleteColumnTest {
+public class DeleteColumnTest extends BaseDateTests {
 
+    @Autowired
     private DeleteColumn deleteColumn;
 
     private RowMetadata rowMetadata;
+
     private Map<String, String> parameters;
 
     @Before
@@ -58,7 +66,6 @@ public class DeleteColumnTest {
         columns.add(columnMetadata);
         rowMetadata = new RowMetadata();
         rowMetadata.setColumns(columns);
-        deleteColumn = new DeleteColumn();
 
         parameters = new HashMap<>();
         parameters.put(ImplicitParameters.SCOPE.getKey().toLowerCase(), "column");

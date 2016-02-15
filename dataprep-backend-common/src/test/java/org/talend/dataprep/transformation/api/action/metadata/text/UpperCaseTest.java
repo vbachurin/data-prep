@@ -10,6 +10,7 @@
 //  9 rue Pages 92150 Suresnes, France
 //
 //  ============================================================================
+
 package org.talend.dataprep.transformation.api.action.metadata.text;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -23,12 +24,14 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
+import org.talend.dataprep.transformation.api.action.metadata.date.BaseDateTests;
 
 /**
  * Test class for LowerCase action. Creates one consumer, and test it.
@@ -36,16 +39,16 @@ import org.talend.dataprep.transformation.api.action.metadata.category.ActionCat
  * @see UpperCase
  */
 
-public class UpperCaseTest {
+public class UpperCaseTest extends BaseDateTests {
 
     /** The action to test. */
+    @Autowired
     private UpperCase action;
 
     private Map<String, String> parameters;
 
     @Before
     public void init() throws IOException {
-        action = new UpperCase();
         parameters = ActionMetadataTestUtils.parseParameters(UpperCaseTest.class.getResourceAsStream("uppercase.json"));
     }
 
@@ -66,7 +69,7 @@ public class UpperCaseTest {
      */
     @Test
     public void should_uppercase() {
-        //given
+        // given
         final Map<String, String> values = new HashMap<>();
         values.put("city", "Vancouver");
         values.put("country", "Canada");
@@ -76,10 +79,10 @@ public class UpperCaseTest {
         expectedValues.put("city", "VANCOUVER"); // Vancouver --> VANCOUVER
         expectedValues.put("country", "Canada");
 
-        //when
+        // when
         ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
-        //then
+        // then
         assertEquals(expectedValues, row.values());
     }
 
@@ -88,7 +91,7 @@ public class UpperCaseTest {
      */
     @Test()
     public void should_do_nothing_since_column_does_not_exist() {
-        //given
+        // given
         final Map<String, String> values = new HashMap<>();
         values.put("country", "Canada");
         values.put("capital", "Ottawa");
@@ -98,10 +101,10 @@ public class UpperCaseTest {
         expectedValues.put("country", "Canada");
         expectedValues.put("capital", "Ottawa");
 
-        //when
+        // when
         ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
-        //then
+        // then
         assertEquals(expectedValues, row.values());
     }
 

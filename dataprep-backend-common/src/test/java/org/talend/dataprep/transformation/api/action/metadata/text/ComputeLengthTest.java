@@ -10,6 +10,7 @@
 //  9 rue Pages 92150 Suresnes, France
 //
 //  ============================================================================
+
 package org.talend.dataprep.transformation.api.action.metadata.text;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -25,6 +26,7 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
@@ -32,24 +34,27 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
+import org.talend.dataprep.transformation.api.action.metadata.date.BaseDateTests;
 
 /**
  * Test class for Split action. Creates one consumer, and test it.
  *
  * @see Split
  */
-public class ComputeLengthTest {
+public class ComputeLengthTest extends BaseDateTests {
+
     /**
      * The action to test.
      */
+    @Autowired
     private ComputeLength action;
 
     private Map<String, String> parameters;
 
     @Before
     public void init() throws IOException {
-        action = new ComputeLength();
-        parameters = ActionMetadataTestUtils.parseParameters(ComputeLengthTest.class.getResourceAsStream("computeLengthAction.json"));
+        parameters = ActionMetadataTestUtils
+                .parseParameters(ComputeLengthTest.class.getResourceAsStream("computeLengthAction.json"));
     }
 
     @Test
@@ -69,7 +74,7 @@ public class ComputeLengthTest {
      */
     @Test
     public void should_compute_length() {
-        //given
+        // given
         final Map<String, String> values = new HashMap<>();
         values.put("0000", "lorem bacon");
         values.put("0001", "Bacon");
@@ -82,10 +87,10 @@ public class ComputeLengthTest {
         expectedValues.put("0003", "5");
         expectedValues.put("0002", "01/01/2015");
 
-        //when
+        // when
         ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
-        //then
+        // then
         assertEquals(expectedValues, row.values());
     }
 
@@ -94,7 +99,7 @@ public class ComputeLengthTest {
      */
     @Test
     public void should_compute_length_empty() {
-        //given
+        // given
         final Map<String, String> values = new HashMap<>();
         values.put("0000", "lorem bacon");
         values.put("0001", "");
@@ -107,10 +112,10 @@ public class ComputeLengthTest {
         expectedValues.put("0003", "0");
         expectedValues.put("0002", "01/01/2015");
 
-        //when
+        // when
         ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
-        //then
+        // then
         assertEquals(expectedValues, row.values());
     }
 
@@ -119,7 +124,7 @@ public class ComputeLengthTest {
      */
     @Test
     public void should_compute_length_twice() {
-        //given
+        // given
         final Map<String, String> values = new HashMap<>();
         values.put("0000", "lorem bacon");
         values.put("0001", "Bacon");
@@ -133,10 +138,10 @@ public class ComputeLengthTest {
         expectedValues.put("0003", "5");
         expectedValues.put("0002", "01/01/2015");
 
-        //when
+        // when
         ActionTestWorkbench.test(row, action.create(parameters).getRowAction(), action.create(parameters).getRowAction());
 
-        //then
+        // then
         assertEquals(expectedValues, row.values());
     }
 
@@ -145,7 +150,7 @@ public class ComputeLengthTest {
      */
     @Test
     public void should_update_metadata() {
-        //given
+        // given
         final List<ColumnMetadata> input = new ArrayList<>();
         input.add(createMetadata("0000", "recipe"));
         input.add(createMetadata("0001", "steps"));
@@ -158,10 +163,10 @@ public class ComputeLengthTest {
         expected.add(createMetadata("0003", "steps_length", Type.INTEGER));
         expected.add(createMetadata("0002", "last update"));
 
-        //when
+        // when
         ActionTestWorkbench.test(rowMetadata, action.create(parameters).getRowAction());
 
-        //then
+        // then
         assertEquals(expected, rowMetadata.getColumns());
     }
 
@@ -170,7 +175,7 @@ public class ComputeLengthTest {
      */
     @Test
     public void should_update_metadata_twice() {
-        //given
+        // given
         final List<ColumnMetadata> input = new ArrayList<>();
         input.add(createMetadata("0000", "recipe"));
         input.add(createMetadata("0001", "steps"));
@@ -184,10 +189,10 @@ public class ComputeLengthTest {
         expected.add(createMetadata("0003", "steps_length", Type.INTEGER));
         expected.add(createMetadata("0002", "last update"));
 
-        //when
+        // when
         ActionTestWorkbench.test(rowMetadata, action.create(parameters).getRowAction(), action.create(parameters).getRowAction());
 
-        //then
+        // then
         assertEquals(expected, rowMetadata.getColumns());
     }
 
@@ -209,8 +214,8 @@ public class ComputeLengthTest {
     }
 
     private ColumnMetadata createMetadata(String id, String name, Type type) {
-        return ColumnMetadata.Builder.column().computedId(id).name(name).type(type).headerSize(12).empty(0).invalid(2)
-                .valid(5).build();
+        return ColumnMetadata.Builder.column().computedId(id).name(name).type(type).headerSize(12).empty(0).invalid(2).valid(5)
+                .build();
     }
 
 }

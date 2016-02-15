@@ -13,8 +13,12 @@
 
 package org.talend.dataprep.transformation.api.action.metadata.fill;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
 import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
 
 import java.util.Collections;
@@ -23,29 +27,38 @@ import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
+import org.talend.dataprep.transformation.api.action.metadata.date.BaseDateTests;
+
+import javax.annotation.PostConstruct;
 
 /**
  * Unit test for the FillWithBooleanIfEmpty action.
  *
  * @see FillIfEmpty
  */
-public class FillWithBooleanIfEmptyTest {
+public class FillWithBooleanIfEmptyTest extends BaseDateTests {
 
     /** The action to test. */
+    @Autowired
     private FillIfEmpty action;
 
-    /**
-     * Default empty constructor.
-     */
-    public FillWithBooleanIfEmptyTest() {
-        action = new FillIfEmpty();
+    @PostConstruct
+    public void init() {
         action = (FillIfEmpty) action.adapt(ColumnMetadata.Builder.column().type(Type.BOOLEAN).build());
+    }
+
+    @Test
+    public void test_adapt() throws Exception {
+        assertThat(action.adapt((ColumnMetadata) null), is(action));
+        ColumnMetadata column = column().name("myColumn").id(0).type(Type.BOOLEAN).build();
+        assertThat(action.adapt(column), not(is(action)));
     }
 
     @Test
