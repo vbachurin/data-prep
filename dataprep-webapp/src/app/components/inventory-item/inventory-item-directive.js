@@ -24,7 +24,7 @@
  *      file-model="datasetListCtrl.updateDatasetFile"
  *      item="dataset"
  *      open="datasetListCtrl.uploadWorkflowService.openDataset"
- *      open-related-inv="datasetListCtrl.openPreparation"
+ *      open-related-inventory="datasetListCtrl.openPreparation"
  *      process-certification="datasetListCtrl.processCertification"
  *      remove="datasetListCtrl.remove"
  *      rename="datasetListCtrl.rename"
@@ -40,7 +40,7 @@
  * @param {array}       fileModel the file which will replace the current item
  * @param {object}      item the inventory item
  * @param {function}    open the playground
- * @param {function}    openRelatedInv callback function to open the related inventory item
+ * @param {function}    openRelatedInventory callback function to open the related inventory item
  * @param {function}    processCertification attributes certification to the inventory item
  * @param {function}    remove the inventory item
  * @param {function}    rename the inventory item

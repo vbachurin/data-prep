@@ -45,18 +45,6 @@ describe('Inventory Item controller', function () {
             expect(ctrl.openRelatedInventory).toHaveBeenCalledWith(prep);
         }));
 
-        //it('should NOT call open related inventory callback', inject(function () {
-        //    //given
-        //    var prep = {};
-        //    ctrl.openRelatedInventory = null;
-        //
-        //    //when
-        //    ctrl.openRelatedInventoryItem(prep);
-        //
-        //    //then
-        //    expect(ctrl.openRelatedInventory).not.toHaveBeenCalledWith();
-        //}));
-
         it('should process the tooltip data to compile it when related inventories do NOT exist', inject(function () {
             //given
             ctrl.relatedInventories = [];

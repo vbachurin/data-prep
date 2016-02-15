@@ -404,18 +404,6 @@ describe('InventoryItem directive', function () {
             expect(ctrl.openRelatedInventory).toHaveBeenCalledWith(scope.preparations[1]);
         });
 
-        //it('should update inventory item on update button click', inject(function ($rootScope) {
-        //    //given
-        //    createElement();
-        //    var updateBtn = element.find('talend-file-selector').eq(0);
-        //
-        //    //when
-        //    updateBtn.click();
-        //    $rootScope.$apply();
-        //
-        //    //then
-        //    expect(ctrl.update).toHaveBeenCalled();
-        //}));
         it('should copy/clone inventory item on clone button click', function () {
             //given
             createElement();
