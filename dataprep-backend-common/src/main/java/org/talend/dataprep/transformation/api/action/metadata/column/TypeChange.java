@@ -1,6 +1,8 @@
 package org.talend.dataprep.transformation.api.action.metadata.column;
 
+import java.util.EnumSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -61,7 +63,7 @@ public class TypeChange extends ActionMetadata implements ColumnAction {
         final String columnId = context.getColumnId();
         final Map<String, String> parameters = context.getParameters();
         LOGGER.debug("TypeChange for columnId {} with parameters {} ", columnId, parameters);
-        final ColumnMetadata columnMetadata = row.getRowMetadata().getById(columnId);
+        final ColumnMetadata columnMetadata = context.getRowMetadata().getById(columnId);
         final String newType = parameters.get(NEW_TYPE_PARAMETER_KEY);
         if (StringUtils.isNotEmpty(newType)) {
             columnMetadata.setType(newType);
@@ -79,5 +81,10 @@ public class TypeChange extends ActionMetadata implements ColumnAction {
     @Override
     public ActionMetadata adapt(ColumnMetadata column) {
         return this;
+    }
+
+    @Override
+    public Set<Behavior> getBehavior() {
+        return EnumSet.of(Behavior.METADATA_CHANGE_TYPE);
     }
 }

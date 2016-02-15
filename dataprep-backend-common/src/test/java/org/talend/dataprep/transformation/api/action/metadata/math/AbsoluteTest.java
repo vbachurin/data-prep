@@ -85,7 +85,7 @@ public class AbsoluteTest {
         final DataSetRow row = new DataSetRow(values);
 
         // when
-        ActionTestWorkbench.test(row, absolute.create(absFloatParameters).getRowAction());
+        ActionTestWorkbench.test(row, absolute.create(absFloatParameters));
 
         // then
         assertEquals("5.42", row.get(FLOAT_COLUMN)); //$NON-NLS-1$
@@ -99,7 +99,7 @@ public class AbsoluteTest {
         final DataSetRow row = new DataSetRow(values);
 
         // when
-        ActionTestWorkbench.test(row, absolute.create(absFloatParameters).getRowAction());
+        ActionTestWorkbench.test(row, absolute.create(absFloatParameters));
 
         // then
         assertEquals("12345678.1", row.get(FLOAT_COLUMN)); //$NON-NLS-1$
@@ -113,7 +113,7 @@ public class AbsoluteTest {
         final DataSetRow row = new DataSetRow(values);
 
         // when
-        ActionTestWorkbench.test(row, absolute.create(absFloatParameters).getRowAction());
+        ActionTestWorkbench.test(row, absolute.create(absFloatParameters));
 
         // then
         assertEquals("12345678.1", row.get(FLOAT_COLUMN)); //$NON-NLS-1$
@@ -127,7 +127,7 @@ public class AbsoluteTest {
         final DataSetRow row = new DataSetRow(values);
 
         // when
-        ActionTestWorkbench.test(row, absolute.create(absIntParameters).getRowAction());
+        ActionTestWorkbench.test(row, absolute.create(absIntParameters));
 
         // then
         assertEquals("5.42", row.get(INT_COLUMN)); //$NON-NLS-1$
@@ -141,7 +141,7 @@ public class AbsoluteTest {
         final DataSetRow row = new DataSetRow(values);
 
         // when
-        ActionTestWorkbench.test(row, absolute.create(absFloatParameters).getRowAction());
+        ActionTestWorkbench.test(row, absolute.create(absFloatParameters));
 
         // then
         assertEquals("5.42", row.get(FLOAT_COLUMN)); //$NON-NLS-1$
@@ -155,7 +155,7 @@ public class AbsoluteTest {
         final DataSetRow row = new DataSetRow(values);
 
         // when
-        ActionTestWorkbench.test(row, absolute.create(absFloatParameters).getRowAction());
+        ActionTestWorkbench.test(row, absolute.create(absFloatParameters));
 
         // then
         assertEquals("891234567898", row.get(FLOAT_COLUMN)); //$NON-NLS-1$
@@ -169,7 +169,7 @@ public class AbsoluteTest {
         final DataSetRow row = new DataSetRow(values);
 
         // when
-        ActionTestWorkbench.test(row, absolute.create(absFloatParameters).getRowAction());
+        ActionTestWorkbench.test(row, absolute.create(absFloatParameters));
 
         // then
         assertEquals("5.42", row.get(FLOAT_COLUMN)); //$NON-NLS-1$
@@ -183,7 +183,7 @@ public class AbsoluteTest {
         final DataSetRow row = new DataSetRow(values);
 
         // when
-        ActionTestWorkbench.test(row, absolute.create(absFloatParameters).getRowAction());
+        ActionTestWorkbench.test(row, absolute.create(absFloatParameters));
 
         // then
         assertEquals("1200", row.get(FLOAT_COLUMN)); //$NON-NLS-1$
@@ -197,7 +197,7 @@ public class AbsoluteTest {
         final DataSetRow row = new DataSetRow(values);
 
         // when
-        ActionTestWorkbench.test(row, absolute.create(absIntParameters).getRowAction());
+        ActionTestWorkbench.test(row, absolute.create(absIntParameters));
 
         // then
         assertEquals("5.42", row.get(INT_COLUMN)); //$NON-NLS-1$
@@ -211,7 +211,7 @@ public class AbsoluteTest {
         final DataSetRow row = new DataSetRow(values);
 
         // when
-        ActionTestWorkbench.test(row, absolute.create(absFloatParameters).getRowAction());
+        ActionTestWorkbench.test(row, absolute.create(absFloatParameters));
 
         // then
         assertEquals("42", row.get(FLOAT_COLUMN)); //$NON-NLS-1$
@@ -225,7 +225,7 @@ public class AbsoluteTest {
         final DataSetRow row = new DataSetRow(values);
 
         // when
-        ActionTestWorkbench.test(row, absolute.create(absIntParameters).getRowAction());
+        ActionTestWorkbench.test(row, absolute.create(absIntParameters));
 
         // then
         assertEquals("42", row.get(INT_COLUMN)); //$NON-NLS-1$
@@ -239,7 +239,7 @@ public class AbsoluteTest {
         final DataSetRow row = new DataSetRow(values);
 
         // when
-        ActionTestWorkbench.test(row, absolute.create(absFloatParameters).getRowAction());
+        ActionTestWorkbench.test(row, absolute.create(absFloatParameters));
 
         // then
         assertEquals("542", row.get(FLOAT_COLUMN)); //$NON-NLS-1$
@@ -253,7 +253,7 @@ public class AbsoluteTest {
         final DataSetRow row = new DataSetRow(values);
 
         // when
-        ActionTestWorkbench.test(row, absolute.create(absIntParameters).getRowAction());
+        ActionTestWorkbench.test(row, absolute.create(absIntParameters));
 
         // then
         assertEquals("542", row.get(INT_COLUMN)); //$NON-NLS-1$
@@ -267,7 +267,7 @@ public class AbsoluteTest {
         final DataSetRow row = new DataSetRow(values);
 
         // when
-        ActionTestWorkbench.test(row, absolute.create(absFloatParameters).getRowAction());
+        ActionTestWorkbench.test(row, absolute.create(absFloatParameters));
 
         // then
         assertEquals("0", row.get(FLOAT_COLUMN)); //$NON-NLS-1$
@@ -281,7 +281,7 @@ public class AbsoluteTest {
         final DataSetRow row = new DataSetRow(values);
 
         // when
-        ActionTestWorkbench.test(row, absolute.create(absIntParameters).getRowAction());
+        ActionTestWorkbench.test(row, absolute.create(absIntParameters));
 
         // then
         assertEquals("0", row.get(INT_COLUMN)); //$NON-NLS-1$
@@ -295,7 +295,7 @@ public class AbsoluteTest {
         final DataSetRow row = new DataSetRow(values);
 
         // when
-        ActionTestWorkbench.test(row, absolute.create(absFloatParameters).getRowAction());
+        ActionTestWorkbench.test(row, absolute.create(absFloatParameters));
 
         // then
         assertEquals("", row.get(FLOAT_COLUMN)); //$NON-NLS-1$
@@ -309,7 +309,7 @@ public class AbsoluteTest {
         final DataSetRow row = new DataSetRow(values);
 
         // when
-        ActionTestWorkbench.test(row, absolute.create(absIntParameters).getRowAction());
+        ActionTestWorkbench.test(row, absolute.create(absIntParameters));
 
         // then
         assertEquals("", row.get(INT_COLUMN)); //$NON-NLS-1$
@@ -323,7 +323,7 @@ public class AbsoluteTest {
         final DataSetRow row = new DataSetRow(values);
 
         // when
-        ActionTestWorkbench.test(row, absolute.create(absFloatParameters).getRowAction());
+        ActionTestWorkbench.test(row, absolute.create(absFloatParameters));
 
         // then
         assertEquals("foobar", row.get(FLOAT_COLUMN)); //$NON-NLS-1$
@@ -337,7 +337,7 @@ public class AbsoluteTest {
         final DataSetRow row = new DataSetRow(values);
 
         // when
-        ActionTestWorkbench.test(row, absolute.create(absIntParameters).getRowAction());
+        ActionTestWorkbench.test(row, absolute.create(absIntParameters));
 
         // then
         assertEquals("foobar", row.get(INT_COLUMN)); //$NON-NLS-1$
@@ -351,7 +351,7 @@ public class AbsoluteTest {
         final DataSetRow row = new DataSetRow(values);
 
         // when
-        ActionTestWorkbench.test(row, absolute.create(absFloatParameters).getRowAction());
+        ActionTestWorkbench.test(row, absolute.create(absFloatParameters));
 
         // then
         assertEquals("-12", row.get("wrong_column")); //$NON-NLS-1$ //$NON-NLS-2$
@@ -365,7 +365,7 @@ public class AbsoluteTest {
         final DataSetRow row = new DataSetRow(values);
 
         // when
-        ActionTestWorkbench.test(row, absolute.create(absFloatParameters).getRowAction());
+        ActionTestWorkbench.test(row, absolute.create(absFloatParameters));
 
         // then
         assertEquals("-13", row.get("wrong_column")); //$NON-NLS-1$ //$NON-NLS-2$

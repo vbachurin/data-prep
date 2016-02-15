@@ -1,3 +1,16 @@
+//  ============================================================================
+//
+//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+//
+//  This source code is available under agreement available at
+//  https://github.com/Talend/data-prep/blob/master/LICENSE
+//
+//  You should have received a copy of the agreement
+//  along with this program; if not, write to Talend SA
+//  9 rue Pages 92150 Suresnes, France
+//
+//  ============================================================================
+
 package org.talend.dataprep.transformation.api.action.metadata.line;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -29,25 +42,25 @@ public class MakeLineHeaderTest {
 
     @Test
     public void should_be_in_data_cleansing_category() {
-        //when
+        // when
         final String name = action.getCategory();
 
-        //then
+        // then
         assertThat(name, is(DATA_CLEANSING.getDisplayName()));
     }
 
     @Test
     public void should_return_name() {
-        //when
+        // when
         final String name = action.getName();
 
-        //then
+        // then
         assertThat(name, is("make_line_header"));
     }
 
     @Test
     public void should_delete_line_with_provided_row_id() {
-        //given
+        // given
         Long rowId = 120L;
 
         // row 1
@@ -72,9 +85,9 @@ public class MakeLineHeaderTest {
         assertThat(row2.isDeleted(), is(false));
 
         //when
-        ActionTestWorkbench.test(row2, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row2, action.create(parameters));
 
-        //then
+        // then
         assertThat(row1.isDeleted(), is(false));
         assertThat(row2.isDeleted(), is(true));
 
@@ -84,7 +97,7 @@ public class MakeLineHeaderTest {
 
     @Test
     public void should_keep_header_after_modifications() {
-        //given
+        // given
         Long rowId = 0L;
 
         // row 1
@@ -108,7 +121,7 @@ public class MakeLineHeaderTest {
         final DataSetRow row3 = new DataSetRow(rowContent);
         row3.setTdpId(rowId++);
 
-        //when
+        // when
         final Map<String, String> makeHeaderParameters = new HashMap<>();
         makeHeaderParameters.put(ImplicitParameters.SCOPE.getKey().toLowerCase(), "line");
         makeHeaderParameters.put("row_id", row2.getTdpId().toString());
@@ -117,16 +130,15 @@ public class MakeLineHeaderTest {
         upperCaseParameters.put(ImplicitParameters.SCOPE.getKey().toLowerCase(), "column");
         upperCaseParameters.put(ImplicitParameters.COLUMN_ID.getKey().toLowerCase(), "0000");
         final Action upperCase = new UpperCase().create(upperCaseParameters);
-        ActionTestWorkbench.test(Arrays.asList(row1, row2, row3), makeHeader.getRowAction(), upperCase.getRowAction());
+        ActionTestWorkbench.test(Arrays.asList(row1, row2, row3), makeHeader, upperCase);
 
-        //then
-        assertEquals("0000", row1.getRowMetadata().getById("0000").getName());
-        assertEquals("0001", row1.getRowMetadata().getById("0001").getName());
+        // then
+        assertEquals("John", row1.getRowMetadata().getById("0000").getName());
+        assertEquals("Lennon", row1.getRowMetadata().getById("0001").getName());
         assertEquals("John", row2.getRowMetadata().getById("0000").getName());
         assertEquals("Lennon", row2.getRowMetadata().getById("0001").getName());
         assertEquals("John", row3.getRowMetadata().getById("0000").getName());
         assertEquals("Lennon", row3.getRowMetadata().getById("0001").getName());
     }
-
 
 }

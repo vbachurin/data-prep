@@ -91,7 +91,7 @@ public class MatchesPatternTest extends AbstractMetadataBaseTest {
         expectedValues.put("0002", "01/01/2015");
 
         // when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         // then
         assertEquals(expectedValues, row.values());
@@ -116,7 +116,7 @@ public class MatchesPatternTest extends AbstractMetadataBaseTest {
         parameters.put(MatchesPattern.MANUAL_PATTERN_PARAMETER, generateJson("Bac", "starts_with"));
 
         // when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         // then
         assertEquals(expectedValues, row.values());
@@ -144,7 +144,7 @@ public class MatchesPatternTest extends AbstractMetadataBaseTest {
         parameters.put(MatchesPattern.MANUAL_PATTERN_PARAMETER, generateJson("(", "contains"));
 
         // when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         // then
         assertEquals(expectedValues, row.values());
@@ -169,7 +169,7 @@ public class MatchesPatternTest extends AbstractMetadataBaseTest {
         parameters.put(MatchesPattern.MANUAL_PATTERN_PARAMETER, generateJson("Bak", "starts_with"));
 
         // when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         // then
         assertEquals(expectedValues, row.values());
@@ -202,6 +202,7 @@ public class MatchesPatternTest extends AbstractMetadataBaseTest {
 
     private ActionContext buildPatternActionContext(String regex) {
         ActionContext context = new ActionContext(new TransformationContext());
+        context.setRowMetadata(new RowMetadata());
         context.setParameters(Collections.singletonMap(MatchesPattern.PATTERN_PARAMETER, regex));
         action.compile(context);
         return context;
@@ -238,7 +239,7 @@ public class MatchesPatternTest extends AbstractMetadataBaseTest {
         expectedValues.put("0002", "01/01/2015");
 
         // when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction(), action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters), action.create(parameters));
 
         // then
         assertEquals(expectedValues, row.values());
@@ -260,7 +261,7 @@ public class MatchesPatternTest extends AbstractMetadataBaseTest {
         expected.add(createMetadata("0002", "last update"));
 
         // when
-        ActionTestWorkbench.test(rowMetadata, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(rowMetadata, action.create(parameters));
 
         // then
         assertEquals(expected, rowMetadata.getColumns());
@@ -283,7 +284,7 @@ public class MatchesPatternTest extends AbstractMetadataBaseTest {
         expected.add(createMetadata("0002", "last update"));
 
         // when
-        ActionTestWorkbench.test(rowMetadata, action.create(parameters).getRowAction(), action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(rowMetadata, action.create(parameters), action.create(parameters));
 
         // then
         assertEquals(expected, rowMetadata.getColumns());

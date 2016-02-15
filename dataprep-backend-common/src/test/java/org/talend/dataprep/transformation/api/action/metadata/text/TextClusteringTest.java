@@ -38,7 +38,7 @@ public class TextClusteringTest {
         rows.add(createRow(columnId, "Tata"));
 
         // when
-        ActionTestWorkbench.test(rows, textClustering.create(parameters).getRowAction());
+        ActionTestWorkbench.test(rows, textClustering.create(parameters));
 
         // then
         rows.stream().map(row -> row.get(columnId))
@@ -76,7 +76,7 @@ public class TextClusteringTest {
         rows.add(createRow(columnId, "Tata1"));
 
         // when
-        ActionTestWorkbench.test(rows, textClustering.create(parameters).getRowAction());
+        ActionTestWorkbench.test(rows, textClustering.create(parameters));
 
         // then
         rows.stream().map((row) -> row.get(columnId))

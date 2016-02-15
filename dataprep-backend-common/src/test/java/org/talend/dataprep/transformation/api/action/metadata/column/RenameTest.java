@@ -1,15 +1,16 @@
-// ============================================================================
+//  ============================================================================
 //
-// Copyright (C) 2006-2014 Talend Inc. - www.talend.com
+//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-// This source code is available under agreement available at
-// %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
+//  This source code is available under agreement available at
+//  https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-// You should have received a copy of the agreement
-// along with this program; if not, write to Talend SA
-// 9 rue Pages 92150 Suresnes, France
+//  You should have received a copy of the agreement
+//  along with this program; if not, write to Talend SA
+//  9 rue Pages 92150 Suresnes, France
 //
-// ============================================================================
+//  ============================================================================
+
 package org.talend.dataprep.transformation.api.action.metadata.column;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -76,7 +77,7 @@ public class RenameTest {
      */
     @Test
     public void should_update_metadata() {
-        //given
+        // given
         final ColumnMetadata metadata = //
                 column() //
                 .id(1) //
@@ -104,9 +105,9 @@ public class RenameTest {
         expected.add(renamedMetadata);
 
         //when
-        ActionTestWorkbench.test(rowMetadata, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(rowMetadata, action.create(parameters));
 
-        //then
+        // then
         assertEquals(expected, rowMetadata.getColumns());
     }
 

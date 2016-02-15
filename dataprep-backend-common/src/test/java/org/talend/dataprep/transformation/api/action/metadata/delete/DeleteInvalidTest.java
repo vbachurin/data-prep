@@ -1,3 +1,16 @@
+//  ============================================================================
+//
+//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+//
+//  This source code is available under agreement available at
+//  https://github.com/Talend/data-prep/blob/master/LICENSE
+//
+//  You should have received a copy of the agreement
+//  along with this program; if not, write to Talend SA
+//  9 rue Pages 92150 Suresnes, France
+//
+//  ============================================================================
+
 package org.talend.dataprep.transformation.api.action.metadata.delete;
 
 import static com.google.common.collect.Sets.newHashSet;
@@ -53,7 +66,7 @@ public class DeleteInvalidTest {
 
     @Test
     public void should_delete_because_non_valid() {
-        //given
+        // given
         final Map<String, String> values = new HashMap<>();
         values.put("0001", "David Bowie");
         values.put("0002", "N");
@@ -69,9 +82,9 @@ public class DeleteInvalidTest {
         final DataSetRow row = new DataSetRow(rowMetadata, values);
 
         //when
-        ActionTestWorkbench.test(row, deleteInvalid.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, deleteInvalid.create(parameters));
 
-        //then
+        // then
         assertTrue(row.isDeleted());
         assertEquals("David Bowie", row.get("0001"));
     }
@@ -97,7 +110,7 @@ public class DeleteInvalidTest {
         final DataSetRow row = new DataSetRow(rowMetadata, values);
 
         // when
-        ActionTestWorkbench.test(row, deleteInvalid.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, deleteInvalid.create(parameters));
 
         // then row is deleted...
         assertTrue(row.isDeleted());
@@ -130,7 +143,7 @@ public class DeleteInvalidTest {
         final DataSetRow row = new DataSetRow(rowMetadata, values);
 
         // when
-        ActionTestWorkbench.test(row, deleteInvalid.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, deleteInvalid.create(parameters));
 
         // then row is deleted...
         assertTrue(row.isDeleted());
@@ -140,7 +153,6 @@ public class DeleteInvalidTest {
         assertEquals(1, invalidValues.size());
         assertTrue(invalidValues.contains("ZZ"));
     }
-
 
     @Test
     public void should_accept_column() {

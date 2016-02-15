@@ -1,15 +1,16 @@
-// ============================================================================
+//  ============================================================================
 //
-// Copyright (C) 2006-2014 Talend Inc. - www.talend.com
+//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-// This source code is available under agreement available at
-// %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
+//  This source code is available under agreement available at
+//  https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-// You should have received a copy of the agreement
-// along with this program; if not, write to Talend SA
-// 9 rue Pages 92150 Suresnes, France
+//  You should have received a copy of the agreement
+//  along with this program; if not, write to Talend SA
+//  9 rue Pages 92150 Suresnes, France
 //
-// ============================================================================
+//  ============================================================================
+
 package org.talend.dataprep.transformation.api.action.metadata.net;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -69,7 +70,7 @@ public class ExtractEmailDomainTest {
      */
     @Test
     public void test_values() {
-        //given
+        // given
         final Map<String, String> values = new HashMap<>();
         values.put("0000", "lorem bacon");
         values.put("0001", "david.bowie@yopmail.com");
@@ -84,15 +85,15 @@ public class ExtractEmailDomainTest {
         expectedValues.put("0002", "01/01/2015");
 
         //when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
-        //then
+        // then
         assertEquals(expectedValues, row.values());
     }
 
     @Test
     public void test_values_invalid() {
-        //given
+        // given
         final Map<String, String> values = new HashMap<>();
         values.put("0000", "lorem bacon");
         values.put("0001", "david.bowie");
@@ -107,9 +108,9 @@ public class ExtractEmailDomainTest {
         expectedValues.put("0002", "01/01/2015");
 
         //when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
-        //then
+        // then
         assertEquals(expectedValues, row.values());
     }
 
@@ -118,7 +119,7 @@ public class ExtractEmailDomainTest {
      */
     @Test
     public void test_metadata() {
-        //given
+        // given
         final List<ColumnMetadata> input = new ArrayList<>();
         input.add(createMetadata("0000", "recipe"));
         input.add(createMetadata("0001", "email"));
@@ -133,9 +134,9 @@ public class ExtractEmailDomainTest {
         expected.add(createMetadata("0002", "last update"));
 
         //when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
-        //then
+        // then
         assertEquals(expected, row.getRowMetadata().getColumns());
     }
 
@@ -144,7 +145,7 @@ public class ExtractEmailDomainTest {
      */
     @Test
     public void test_metadata_with_multiple_executions() {
-        //given
+        // given
         final List<ColumnMetadata> input = new ArrayList<>();
         input.add(createMetadata("0000", "recipe"));
         input.add(createMetadata("0001", "email"));
@@ -161,9 +162,9 @@ public class ExtractEmailDomainTest {
         expected.add(createMetadata("0002", "last update"));
 
         //when
-        ActionTestWorkbench.test(rowMetadata, action.create(parameters).getRowAction(), action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(rowMetadata, action.create(parameters), action.create(parameters));
 
-        //then
+        // then
         assertEquals(expected, rowMetadata.getColumns());
     }
 

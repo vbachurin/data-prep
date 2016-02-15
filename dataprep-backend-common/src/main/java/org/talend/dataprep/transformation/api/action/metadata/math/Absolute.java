@@ -13,6 +13,8 @@
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
 import java.math.BigDecimal;
+import java.util.EnumSet;
+import java.util.Set;
 
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -123,6 +125,11 @@ public class Absolute extends ActionMetadata implements ColumnAction {
             return this;
         }
         return new Absolute(type);
+    }
+
+    @Override
+    public Set<Behavior> getBehavior() {
+        return EnumSet.of(Behavior.VALUES_COLUMN);
     }
 
 }

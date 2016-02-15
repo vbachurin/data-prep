@@ -1,7 +1,23 @@
+//  ============================================================================
+//
+//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+//
+//  This source code is available under agreement available at
+//  https://github.com/Talend/data-prep/blob/master/LICENSE
+//
+//  You should have received a copy of the agreement
+//  along with this program; if not, write to Talend SA
+//  9 rue Pages 92150 Suresnes, France
+//
+//  ============================================================================
+
 package org.talend.dataprep.transformation.api.action.metadata.delete;
 
 import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.DATA_CLEANSING;
 import static org.talend.dataprep.transformation.api.action.metadata.category.ScopeCategory.LINE;
+
+import java.util.EnumSet;
+import java.util.Set;
 
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -78,5 +94,10 @@ public class Delete extends ActionMetadata implements RowAction {
     @Override
     public ActionMetadata adapt(ScopeCategory scope) {
         return new Delete(scope);
+    }
+
+    @Override
+    public Set<Behavior> getBehavior() {
+        return EnumSet.of(Behavior.VALUES_ALL);
     }
 }

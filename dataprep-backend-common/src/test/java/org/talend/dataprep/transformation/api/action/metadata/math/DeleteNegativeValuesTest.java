@@ -76,7 +76,7 @@ public class DeleteNegativeValuesTest {
         final DataSetRow row = new DataSetRow(values);
 
         // when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         // then
         assertTrue(row.isDeleted());
@@ -93,7 +93,7 @@ public class DeleteNegativeValuesTest {
         final DataSetRow row = new DataSetRow(values);
 
         // when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         // then
         assertTrue(row.isDeleted());
@@ -109,7 +109,7 @@ public class DeleteNegativeValuesTest {
         final DataSetRow row = new DataSetRow(values);
 
         // when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         // then
         assertTrue(row.isDeleted());
@@ -125,7 +125,7 @@ public class DeleteNegativeValuesTest {
         final DataSetRow row = new DataSetRow(values);
 
         // when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         // then
         assertTrue(row.isDeleted());
@@ -142,7 +142,7 @@ public class DeleteNegativeValuesTest {
         final DataSetRow row = new DataSetRow(values);
 
         // when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         // then
         assertTrue(row.isDeleted());
@@ -159,7 +159,7 @@ public class DeleteNegativeValuesTest {
         final DataSetRow row = new DataSetRow(values);
 
         // when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         // then
         assertTrue(row.isDeleted());
@@ -175,7 +175,7 @@ public class DeleteNegativeValuesTest {
         final DataSetRow row = new DataSetRow(values);
 
         // when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         // then
         assertFalse(row.isDeleted());
@@ -191,7 +191,7 @@ public class DeleteNegativeValuesTest {
         final DataSetRow row = new DataSetRow(values);
 
         // when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         // then
         assertFalse(row.isDeleted());
@@ -208,7 +208,7 @@ public class DeleteNegativeValuesTest {
         final DataSetRow row = new DataSetRow(values);
 
         // when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         // then
         assertFalse(row.isDeleted());
@@ -225,7 +225,7 @@ public class DeleteNegativeValuesTest {
         final DataSetRow row = new DataSetRow(values);
 
         // when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         // then
         assertTrue(row.isDeleted());

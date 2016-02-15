@@ -131,7 +131,7 @@ public class LookupTest {
         DataSetRow row = ActionMetadataTestUtils.getRow("Atlanta", "GA", "Philips Arena");
 
         // when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         // then (check values)
         DataSetRow expected = ActionMetadataTestUtils.getRow("Atlanta", "GA", "Philips Arena", "Georgia", "Atlanta");
@@ -152,7 +152,7 @@ public class LookupTest {
         DataSetRow row = ActionMetadataTestUtils.getRow("Dallas", "TX");
 
         // when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         // then (check values)
         DataSetRow expected = ActionMetadataTestUtils.getRow("Dallas", "TX", "Dallas Mavericks", "American Airlines Center",
@@ -172,7 +172,7 @@ public class LookupTest {
         DataSetRow row = ActionMetadataTestUtils.getRow("Toronto", "ON", "Air Canada Centre");
 
         // when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         // then (value)
         DataSetRow expected = ActionMetadataTestUtils.getRow("Toronto", "ON", "Air Canada Centre", "", "");
@@ -190,7 +190,7 @@ public class LookupTest {
         DataSetRow row = ActionMetadataTestUtils.getRow("Huntington", "", "");
 
         // when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         // then (value)
         DataSetRow expected = ActionMetadataTestUtils.getRow("Huntington", "", "", "", "");
@@ -212,7 +212,7 @@ public class LookupTest {
                 ActionMetadataTestUtils.getRow("Oakland", "CA", "Oracle Arena") };
 
         // when
-        ActionTestWorkbench.test(Arrays.asList(rows), action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(Arrays.asList(rows), action.create(parameters));
 
         // then (check values)
         DataSetRow[] expectedRows = new DataSetRow[] {

@@ -1,3 +1,16 @@
+//  ============================================================================
+//
+//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+//
+//  This source code is available under agreement available at
+//  https://github.com/Talend/data-prep/blob/master/LICENSE
+//
+//  You should have received a copy of the agreement
+//  along with this program; if not, write to Talend SA
+//  9 rue Pages 92150 Suresnes, France
+//
+//  ============================================================================
+
 package org.talend.dataprep.transformation.api.action.metadata.bool;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -57,7 +70,7 @@ public class NegateTest {
 
     @Test
     public void should_negate_true() {
-        //given
+        // given
         Map<String, String> values = new HashMap<>();
         values.put("name", "Vincent");
         values.put("entity", "R&D");
@@ -65,15 +78,15 @@ public class NegateTest {
         DataSetRow row = new DataSetRow(values);
 
         //when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
-        //then
+        // then
         assertThat(row.get("active"), is("False"));
     }
 
     @Test
     public void should_negate_false() {
-        //given
+        // given
         Map<String, String> values = new HashMap<>();
         values.put("name", "Vincent");
         values.put("entity", "R&D");
@@ -81,7 +94,7 @@ public class NegateTest {
         DataSetRow row = new DataSetRow(values);
 
         //when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         //then
         assertThat(row.get("active"), is("True"));

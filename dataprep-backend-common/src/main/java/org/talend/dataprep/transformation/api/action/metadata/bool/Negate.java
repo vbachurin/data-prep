@@ -1,5 +1,8 @@
 package org.talend.dataprep.transformation.api.action.metadata.bool;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 import org.apache.commons.lang.WordUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -64,5 +67,10 @@ public class Negate extends ActionMetadata implements ColumnAction {
     private boolean isBoolean(final String value) {
         return value != null &&
                 ("true".equalsIgnoreCase(value.trim()) || "false".equalsIgnoreCase(value.trim())); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    @Override
+    public Set<Behavior> getBehavior() {
+        return EnumSet.of(Behavior.VALUES_COLUMN);
     }
 }

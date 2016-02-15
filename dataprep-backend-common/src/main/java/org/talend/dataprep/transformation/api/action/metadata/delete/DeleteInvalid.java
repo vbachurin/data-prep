@@ -5,6 +5,7 @@ import static org.talend.dataprep.transformation.api.action.metadata.category.Ac
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -52,5 +53,12 @@ public class DeleteInvalid extends AbstractDelete {
         }
         // valid value
         return false;
+    }
+
+    @Override
+    public Set<Behavior> getBehavior() {
+        Set<Behavior> behaviors = super.getBehavior();
+        behaviors.add(Behavior.NEED_STATISTICS);
+        return behaviors;
     }
 }

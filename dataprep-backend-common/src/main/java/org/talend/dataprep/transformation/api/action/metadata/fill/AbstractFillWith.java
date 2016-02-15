@@ -4,10 +4,14 @@ import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.format.DateTimeFormatter;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -34,6 +38,7 @@ public abstract class AbstractFillWith extends ActionMetadata implements OtherCo
     private static final DateTimeFormatter DEFAULT_FORMATTER = DateTimeFormatter.ofPattern(DATE_PATTERN);
 
     private static final String DEFAULT_DATE_VALUE = DEFAULT_FORMATTER.format(LocalDateTime.of(1970, Month.JANUARY, 1, 10, 0));
+    public static final Logger LOGGER = LoggerFactory.getLogger(AbstractFillWith.class);
 
     /**
      * Component that parses dates.
@@ -49,7 +54,7 @@ public abstract class AbstractFillWith extends ActionMetadata implements OtherCo
     public void compile(ActionContext actionContext) {
         super.compile(actionContext);
         if (actionContext.getActionStatus() == ActionContext.ActionStatus.OK) {
-            final RowMetadata input = actionContext.getInputRowMetadata();
+            final RowMetadata input = actionContext.getRowMetadata();
             checkParameters(actionContext.getParameters(), input);
         }
     }
@@ -57,7 +62,7 @@ public abstract class AbstractFillWith extends ActionMetadata implements OtherCo
     public void applyOnColumn(DataSetRow row, ActionContext context) {
         final Map<String, String> parameters = context.getParameters();
         final String columnId = context.getColumnId();
-        final ColumnMetadata columnMetadata = row.getRowMetadata().getById(columnId);
+        final ColumnMetadata columnMetadata = context.getRowMetadata().getById(columnId);
 
         final String value = row.get(columnId);
         if (shouldBeProcessed(value, columnMetadata)) {
@@ -66,13 +71,13 @@ public abstract class AbstractFillWith extends ActionMetadata implements OtherCo
             if (parameters.get(MODE_PARAMETER).equals(CONSTANT_MODE)) {
                 newValue = parameters.get(DEFAULT_VALUE_PARAMETER);
             } else {
-                final RowMetadata rowMetadata = row.getRowMetadata();
+                final RowMetadata rowMetadata = context.getRowMetadata();
                 final ColumnMetadata selectedColumn = rowMetadata.getById(parameters.get(SELECTED_COLUMN_PARAMETER));
                 newValue = row.get(selectedColumn.getId());
             }
 
             // Second: if we're on a date column, format new value with the most frequent pattern of the column:
-            Type type = (columnMetadata == null ? Type.ANY : Type.get(columnMetadata.getType()));
+            Type type = ((columnMetadata == null) ? Type.ANY : Type.get(columnMetadata.getType()));
             if (type.equals(Type.DATE)) {
                 try {
                     final LocalDateTime date = dateParser.parse(newValue, columnMetadata);
@@ -82,6 +87,7 @@ public abstract class AbstractFillWith extends ActionMetadata implements OtherCo
                     newValue = ourNiceFormatter.format(date);
                 } catch (DateTimeException e) {
                     // Nothing to do, if we can't get a valid pattern, keep the raw value
+                    LOGGER.debug("Unable to parse date {}.", value, e);
                 }
             }
 
@@ -165,6 +171,11 @@ public abstract class AbstractFillWith extends ActionMetadata implements OtherCo
             throw new TDPException(CommonErrorCodes.BAD_ACTION_PARAMETER, ExceptionContext.build().put("paramName",
                     SELECTED_COLUMN_PARAMETER));
         }
+    }
+
+    @Override
+    public Set<Behavior> getBehavior() {
+        return EnumSet.of(Behavior.VALUES_COLUMN);
     }
 
 }

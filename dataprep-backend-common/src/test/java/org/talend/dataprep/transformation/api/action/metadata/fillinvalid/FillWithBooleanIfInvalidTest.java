@@ -58,7 +58,7 @@ public class FillWithBooleanIfInvalidTest {
         parameters.put(ImplicitParameters.COLUMN_ID.getKey().toLowerCase(), "0003");
 
         // when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         // then
         assertEquals("True", row.get("0003"));
@@ -86,7 +86,7 @@ public class FillWithBooleanIfInvalidTest {
         parameters.put(ImplicitParameters.COLUMN_ID.getKey().toLowerCase(), "0003");
 
         // when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         // then
         assertEquals("False", row.get("0003"));
@@ -118,7 +118,7 @@ public class FillWithBooleanIfInvalidTest {
         parameters.put(ImplicitParameters.COLUMN_ID.getKey().toLowerCase(), "0003");
 
         // when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         // then
         assertEquals("True", row.get("0003"));
@@ -149,7 +149,7 @@ public class FillWithBooleanIfInvalidTest {
         // when
         parameters.put(AbstractFillWith.MODE_PARAMETER, AbstractFillWith.OTHER_COLUMN_MODE);
         parameters.put(AbstractFillWith.SELECTED_COLUMN_PARAMETER, "0003");
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         // then
         Assert.assertEquals("False", row.get("0002"));

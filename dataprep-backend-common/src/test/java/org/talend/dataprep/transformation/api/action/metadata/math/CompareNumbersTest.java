@@ -1,3 +1,16 @@
+// ============================================================================
+//
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+//
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
+//
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
+//
+// ============================================================================
+
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -27,7 +40,7 @@ import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 /**
  * Unit test for the CompareNumbers action.
- * 
+ *
  * @see CompareNumbers
  */
 public class CompareNumbersTest extends AbstractMetadataBaseTest {
@@ -103,7 +116,7 @@ public class CompareNumbersTest extends AbstractMetadataBaseTest {
         DataSetRow row = getRow("5", "3", "Done !");
 
         // when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         // then
         DataSetRow expected = getRow("5", "3", "Done !", "false");
@@ -116,7 +129,7 @@ public class CompareNumbersTest extends AbstractMetadataBaseTest {
         DataSetRow row = getRow("05", "5", "Done !");
 
         // when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         // then
         DataSetRow expected = getRow("05", "5", "Done !", "true");
@@ -131,7 +144,7 @@ public class CompareNumbersTest extends AbstractMetadataBaseTest {
         parameters.put(CompareNumbers.CONSTANT_VALUE, "6");
 
         // when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         // then
         DataSetRow expected = getRow("05", "5", "Done !", "false");
@@ -147,7 +160,7 @@ public class CompareNumbersTest extends AbstractMetadataBaseTest {
         parameters.put(CompareNumbers.COMPARE_MODE, "ne");
 
         // when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         // then
         DataSetRow expected = getRow("05", "5", "Done !", "true");
@@ -162,7 +175,7 @@ public class CompareNumbersTest extends AbstractMetadataBaseTest {
         row.getRowMetadata().getById("0001").setName("selected");
 
         // when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         // then
         final ColumnMetadata expected = ColumnMetadata.Builder.column().id(3).name("source_eq_selected?").type(Type.BOOLEAN).build();
@@ -181,7 +194,7 @@ public class CompareNumbersTest extends AbstractMetadataBaseTest {
         parameters.put(CompareNumbers.CONSTANT_VALUE, "3");
 
         // when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         // then
         final ColumnMetadata expected = ColumnMetadata.Builder.column().id(3).name("source_eq_3?").type(Type.BOOLEAN).build();
@@ -196,7 +209,7 @@ public class CompareNumbersTest extends AbstractMetadataBaseTest {
 
         // when
         parameters.put(ImplicitParameters.COLUMN_ID.getKey().toLowerCase(), "0000");
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         // then
         assertEquals(row.get("0000"), "5");
@@ -213,7 +226,7 @@ public class CompareNumbersTest extends AbstractMetadataBaseTest {
         parameters.put(ImplicitParameters.COLUMN_ID.getKey().toLowerCase(), "0000");
 
         // when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         // then
         assertEquals(row.get("0000"), "5");
@@ -231,7 +244,7 @@ public class CompareNumbersTest extends AbstractMetadataBaseTest {
         parameters.put(ImplicitParameters.COLUMN_ID.getKey().toLowerCase(), "0000");
 
         // when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         // then
         assertEquals(row.get("0000"), "5");

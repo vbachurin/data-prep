@@ -7,8 +7,10 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -233,7 +235,7 @@ public class ChangeNumberFormat extends ActionMetadata implements ColumnAction {
         final String columnId = context.getColumnId();
         final DecimalFormat decimalTargetFormat = context.get(COMPILED_TARGET_FORMAT);
 
-        final ColumnMetadata columnMetadata = row.getRowMetadata().getById(columnId);
+        final ColumnMetadata columnMetadata = context.getRowMetadata().getById(columnId);
         columnMetadata.setType(Type.DOUBLE.toString());
         columnMetadata.setTypeForced(true);
         columnMetadata.setDomain("");
@@ -280,6 +282,11 @@ public class ChangeNumberFormat extends ActionMetadata implements ColumnAction {
             LOGGER.debug("Unable to parse {} value as Number", value);
             return;
         }
+    }
+
+    @Override
+    public Set<Behavior> getBehavior() {
+        return EnumSet.of(Behavior.VALUES_COLUMN);
     }
 
 }

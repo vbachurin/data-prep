@@ -111,4 +111,8 @@ public class JsonWriter implements TransformerWriter {
         generator.flush();
     }
 
+    @Override
+    public String toString() {
+        return "JsonWriter";
+    }
 }

@@ -83,7 +83,7 @@ public class CopyColumnTest {
         expectedValues.put("0002", "01/01/2015");
 
         // when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         // then
         assertEquals(expectedValues, row.values());
@@ -108,7 +108,7 @@ public class CopyColumnTest {
         expected.add(createMetadata("0002", "last update"));
 
         // when
-        ActionTestWorkbench.test(rowMetadata, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(rowMetadata, action.create(parameters));
 
         // then
         assertEquals(expected, rowMetadata.getColumns());
@@ -134,7 +134,7 @@ public class CopyColumnTest {
         expected.add(createMetadata("0003", "last update"));
 
         // when
-        ActionTestWorkbench.test(rowMetadata, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(rowMetadata, action.create(parameters));
 
         // then
         final List<ColumnMetadata> columns = rowMetadata.getColumns();
@@ -157,7 +157,7 @@ public class CopyColumnTest {
         expected.add(transformed);
 
         // when
-        ActionTestWorkbench.test(rowMetadata, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(rowMetadata, action.create(parameters));
 
         // then
         assertEquals(expected.get(1).getStatistics(), original.getStatistics());
@@ -181,7 +181,7 @@ public class CopyColumnTest {
 
         Assertions.assertThat(rowMetadata.getColumns()).isNotNull().isNotEmpty().hasSize(1);
 
-        ActionTestWorkbench.test(rowMetadata, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(rowMetadata, action.create(parameters));
 
         List<ColumnMetadata> expected = rowMetadata.getColumns();
 
@@ -217,7 +217,7 @@ public class CopyColumnTest {
 
         Assertions.assertThat(rowMetadata.getColumns()).isNotNull().isNotEmpty().hasSize(1);
 
-        ActionTestWorkbench.test(rowMetadata, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(rowMetadata, action.create(parameters));
 
         List<ColumnMetadata> expected = rowMetadata.getColumns();
 
@@ -253,7 +253,7 @@ public class CopyColumnTest {
 
         Assertions.assertThat(rowMetadata.getColumns()).isNotNull().isNotEmpty().hasSize(1);
 
-        ActionTestWorkbench.test(rowMetadata, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(rowMetadata, action.create(parameters));
 
         List<ColumnMetadata> expected = rowMetadata.getColumns();
 

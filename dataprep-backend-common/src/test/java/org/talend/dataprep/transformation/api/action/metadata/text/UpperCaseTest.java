@@ -1,15 +1,16 @@
-// ============================================================================
+//  ============================================================================
 //
-// Copyright (C) 2006-2014 Talend Inc. - www.talend.com
+//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-// This source code is available under agreement available at
-// %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
+//  This source code is available under agreement available at
+//  https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-// You should have received a copy of the agreement
-// along with this program; if not, write to Talend SA
-// 9 rue Pages 92150 Suresnes, France
+//  You should have received a copy of the agreement
+//  along with this program; if not, write to Talend SA
+//  9 rue Pages 92150 Suresnes, France
 //
-// ============================================================================
+//  ============================================================================
+
 package org.talend.dataprep.transformation.api.action.metadata.text;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -66,7 +67,7 @@ public class UpperCaseTest {
      */
     @Test
     public void should_uppercase() {
-        //given
+        // given
         final Map<String, String> values = new HashMap<>();
         values.put("city", "Vancouver");
         values.put("country", "Canada");
@@ -77,9 +78,9 @@ public class UpperCaseTest {
         expectedValues.put("country", "Canada");
 
         //when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
-        //then
+        // then
         assertEquals(expectedValues, row.values());
     }
 
@@ -88,7 +89,7 @@ public class UpperCaseTest {
      */
     @Test()
     public void should_do_nothing_since_column_does_not_exist() {
-        //given
+        // given
         final Map<String, String> values = new HashMap<>();
         values.put("country", "Canada");
         values.put("capital", "Ottawa");
@@ -99,9 +100,9 @@ public class UpperCaseTest {
         expectedValues.put("capital", "Ottawa");
 
         //when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
-        //then
+        // then
         assertEquals(expectedValues, row.values());
     }
 

@@ -60,7 +60,7 @@ public class FillWithStringIfInvalidTest {
                 .parseParameters(this.getClass().getResourceAsStream("fillInvalidStringAction.json"));
         parameters.put(ImplicitParameters.COLUMN_ID.getKey().toLowerCase(), "0003");
         // when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         // then
         assertEquals("beer", row.get("0003"));
@@ -88,7 +88,7 @@ public class FillWithStringIfInvalidTest {
                 .parseParameters(this.getClass().getResourceAsStream("fillInvalidStringAction.json"));
         parameters.put(ImplicitParameters.COLUMN_ID.getKey().toLowerCase(), "0003");
         // when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         // then
         assertEquals("wine", row.get("0003"));
@@ -115,7 +115,7 @@ public class FillWithStringIfInvalidTest {
         // when
         parameters.put(FillIfEmpty.MODE_PARAMETER, FillIfEmpty.OTHER_COLUMN_MODE);
         parameters.put(FillIfEmpty.SELECTED_COLUMN_PARAMETER, "0003");
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         // then
         Assert.assertEquals("Something", row.get("0002"));

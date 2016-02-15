@@ -63,7 +63,7 @@ public class ConcatTest {
         DataSetRow row = getRow("first", "second", "Done !");
 
         // when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         // then
         DataSetRow expected = getRow("first", "second", "Done !", "<first-second>");
@@ -78,7 +78,7 @@ public class ConcatTest {
         row.getRowMetadata().getById("0001").setName("selected");
 
         // when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         // then
         final ColumnMetadata expected = ColumnMetadata.Builder.column().id(3).name("source_selected").type(Type.STRING).build();
@@ -97,7 +97,7 @@ public class ConcatTest {
         parameters.remove(Concat.SELECTED_COLUMN_PARAMETER);
 
         // when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         // then
         final ColumnMetadata expected = ColumnMetadata.Builder.column().id(3).name("<source>").type(Type.STRING).build();
@@ -112,7 +112,7 @@ public class ConcatTest {
         parameters.remove(Concat.SEPARATOR_PARAMETER);
 
         // when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         // then
         DataSetRow expected = getRow("first", "second", "Done !", "<firstsecond>");
@@ -126,7 +126,7 @@ public class ConcatTest {
         parameters.remove(Concat.PREFIX_PARAMETER);
 
         // when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         // then
         DataSetRow expected = getRow("first", "second", "Done !", "first-second>");
@@ -140,7 +140,7 @@ public class ConcatTest {
         parameters.put(Concat.MODE_PARAMETER, Concat.CONSTANT_MODE);
 
         // when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         // then
         DataSetRow expected = getRow("first", "second", "Done !", "<first>");
@@ -154,7 +154,7 @@ public class ConcatTest {
         parameters.remove(Concat.SUFFIX_PARAMETER);
 
         // when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         // then
         DataSetRow expected = getRow("first", "second", "Done !", "<first-second");
@@ -170,7 +170,7 @@ public class ConcatTest {
         parameters.remove(Concat.SUFFIX_PARAMETER);
 
         // when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         // then
         DataSetRow expected = getRow("first", "second", "Done !", "firstsecond");
@@ -184,7 +184,7 @@ public class ConcatTest {
         parameters.remove(Concat.SELECTED_COLUMN_PARAMETER);
 
         // when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         // then
         assertEquals(row.get("0000"), "first");
@@ -199,7 +199,7 @@ public class ConcatTest {
         parameters.put(Concat.SELECTED_COLUMN_PARAMETER, "123548");
 
         // when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         // then
         assertEquals(row.get("0000"), "first");

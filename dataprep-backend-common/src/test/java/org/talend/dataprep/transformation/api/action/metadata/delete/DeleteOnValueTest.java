@@ -79,7 +79,7 @@ public class DeleteOnValueTest extends AbstractMetadataBaseTest {
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         //then
         assertTrue(row.isDeleted());
@@ -96,7 +96,7 @@ public class DeleteOnValueTest extends AbstractMetadataBaseTest {
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         //then
         assertFalse(row.isDeleted());
@@ -113,7 +113,7 @@ public class DeleteOnValueTest extends AbstractMetadataBaseTest {
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         //then
         assertFalse(row.isDeleted());
@@ -130,7 +130,7 @@ public class DeleteOnValueTest extends AbstractMetadataBaseTest {
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         //then
         assertFalse(row.isDeleted());
@@ -151,7 +151,7 @@ public class DeleteOnValueTest extends AbstractMetadataBaseTest {
         regexpParameters.put("value", generateJson(".*Berlin.*", ReplaceOnValueHelper.REGEX_MODE));
 
         // when
-        ActionTestWorkbench.test(row, action.create(regexpParameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(regexpParameters));
 
         // then
         assertTrue(row.isDeleted());
@@ -173,7 +173,7 @@ public class DeleteOnValueTest extends AbstractMetadataBaseTest {
         regexpParameters.put("value", generateJson("*", ReplaceOnValueHelper.REGEX_MODE));
 
         // when
-        ActionTestWorkbench.test(row, action.create(regexpParameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(regexpParameters));
 
         // then
         assertFalse(row.isDeleted());
@@ -195,7 +195,7 @@ public class DeleteOnValueTest extends AbstractMetadataBaseTest {
         regexpParameters.put("value", generateJson("", ReplaceOnValueHelper.REGEX_MODE));
 
         // when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         // then
         assertFalse(row.isDeleted());
@@ -211,7 +211,7 @@ public class DeleteOnValueTest extends AbstractMetadataBaseTest {
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         //then
         assertFalse(row.isDeleted());
@@ -227,7 +227,7 @@ public class DeleteOnValueTest extends AbstractMetadataBaseTest {
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         //then
         assertFalse(row.isDeleted());
@@ -244,7 +244,7 @@ public class DeleteOnValueTest extends AbstractMetadataBaseTest {
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
         //then
         assertFalse(row.isDeleted());

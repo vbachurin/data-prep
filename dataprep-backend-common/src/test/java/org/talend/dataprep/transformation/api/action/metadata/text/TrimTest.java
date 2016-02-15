@@ -1,15 +1,16 @@
-// ============================================================================
+//  ============================================================================
 //
-// Copyright (C) 2006-2014 Talend Inc. - www.talend.com
+//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-// This source code is available under agreement available at
-// %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
+//  This source code is available under agreement available at
+//  https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-// You should have received a copy of the agreement
-// along with this program; if not, write to Talend SA
-// 9 rue Pages 92150 Suresnes, France
+//  You should have received a copy of the agreement
+//  along with this program; if not, write to Talend SA
+//  9 rue Pages 92150 Suresnes, France
 //
-// ============================================================================
+//  ============================================================================
+
 package org.talend.dataprep.transformation.api.action.metadata.text;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -62,43 +63,43 @@ public class TrimTest {
 
     @Test
     public void should_trim_value() {
-        //given
+        // given
         final Map<String, String> values = new HashMap<>();
         values.put("band", " the beatles ");
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
-        //then
+        // then
         assertEquals("the beatles", row.get("band"));
     }
 
     @Test
     public void should_not_change_a_trimed_value() {
-        //given
+        // given
         final Map<String, String> values = new HashMap<>();
         values.put("band", "The  Beatles");
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
-        //then
+        // then
         assertEquals("The  Beatles", row.get("band"));
     }
 
     @Test
     public void should_not_change_other_column_values() {
-        //given
+        // given
         final Map<String, String> values = new HashMap<>();
         values.put("bando", "the beatles");
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters));
 
-        //then
+        // then
         assertEquals("the beatles", row.get("bando"));
     }
 

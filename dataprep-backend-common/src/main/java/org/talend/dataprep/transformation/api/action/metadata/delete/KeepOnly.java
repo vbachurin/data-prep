@@ -2,6 +2,9 @@ package org.talend.dataprep.transformation.api.action.metadata.delete;
 
 import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.FILTERED;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -39,5 +42,10 @@ public class KeepOnly extends ActionMetadata implements ColumnAction {
         if (!getFilter(context.getParameters()).test(row)) {
             row.setDeleted(true);
         }
+    }
+
+    @Override
+    public Set<Behavior> getBehavior() {
+        return EnumSet.of(Behavior.VALUES_ALL);
     }
 }

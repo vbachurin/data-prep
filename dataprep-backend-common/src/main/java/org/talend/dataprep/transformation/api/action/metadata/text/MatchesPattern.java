@@ -1,3 +1,16 @@
+//  ============================================================================
+//
+//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+//
+//  This source code is available under agreement available at
+//  https://github.com/Talend/data-prep/blob/master/LICENSE
+//
+//  You should have received a copy of the agreement
+//  along with this program; if not, write to Talend SA
+//  9 rue Pages 92150 Suresnes, France
+//
+//  ============================================================================
+
 package org.talend.dataprep.transformation.api.action.metadata.text;
 
 import static org.apache.commons.lang.BooleanUtils.toStringTrueFalse;
@@ -6,9 +19,10 @@ import static org.talend.dataprep.api.type.Type.BOOLEAN;
 import static org.talend.dataprep.api.type.Type.STRING;
 import static org.talend.dataprep.transformation.api.action.parameters.ParameterType.REGEX;
 
-import java.security.InvalidParameterException;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Nonnull;
 
@@ -114,13 +128,32 @@ public class MatchesPattern extends ActionMetadata implements ColumnAction {
     }
 
     @Override
-    public void compile(ActionContext actionContext) {
-        super.compile(actionContext);
-        if (actionContext.getActionStatus() == ActionContext.ActionStatus.OK) {
+    public void compile(ActionContext context) {
+        super.compile(context);
+        if (context.getActionStatus() == ActionContext.ActionStatus.OK) {
             try {
-                actionContext.get(REGEX_HELPER_KEY,(p) -> getPattern(actionContext.getParameters()));
+                context.get(REGEX_HELPER_KEY,(p) -> getPattern(context.getParameters()));
             } catch (IllegalArgumentException e) {
-                actionContext.setActionStatus(ActionContext.ActionStatus.CANCELED);
+                context.setActionStatus(ActionContext.ActionStatus.CANCELED);
+            }
+            // Create result column
+            final String columnId = context.getColumnId();
+            final RowMetadata rowMetadata = context.getRowMetadata();
+            final ColumnMetadata column = rowMetadata.getById(columnId);
+            if (column != null) {
+                context.column(column.getName() + APPENDIX, (r) -> {
+                    final ColumnMetadata c = ColumnMetadata.Builder //
+                            .column() //
+                            .name(column.getName() + APPENDIX) //
+                            .type(BOOLEAN) //
+                            .empty(column.getQuality().getEmpty()) //
+                            .invalid(column.getQuality().getInvalid()) //
+                            .valid(column.getQuality().getValid()) //
+                            .headerSize(column.getHeaderSize()) //
+                            .build();
+                    rowMetadata.insertAfter(columnId, c);
+                    return c;
+                });
             }
         }
     }
@@ -134,22 +167,9 @@ public class MatchesPattern extends ActionMetadata implements ColumnAction {
         final String columnId = context.getColumnId();
 
         // create new column and append it after current column
-        final RowMetadata rowMetadata = row.getRowMetadata();
+        final RowMetadata rowMetadata = context.getRowMetadata();
         final ColumnMetadata column = rowMetadata.getById(columnId);
-        // rowMetadata.insertAfter(columnId, newCol)
-        final String matchingColumn = context.column(column.getName() + APPENDIX, (r) -> {
-            final ColumnMetadata c = ColumnMetadata.Builder //
-                    .column() //
-                    .name(column.getName() + APPENDIX) //
-                    .type(BOOLEAN) //
-                    .empty(column.getQuality().getEmpty()) //
-                    .invalid(column.getQuality().getInvalid()) //
-                    .valid(column.getQuality().getValid()) //
-                    .headerSize(column.getHeaderSize()) //
-                    .build();
-            rowMetadata.insertAfter(columnId, c);
-            return c;
-        });
+        final String matchingColumn = context.column(column.getName() + APPENDIX);
 
         final String value = row.get(columnId);
         final String newValue = toStringTrueFalse(computeNewValue(value, context));
@@ -171,6 +191,11 @@ public class MatchesPattern extends ActionMetadata implements ColumnAction {
         final ReplaceOnValueHelper replaceOnValueParameter = actionContext.get(REGEX_HELPER_KEY);
 
         return replaceOnValueParameter.matches(value);
+    }
+
+    @Override
+    public Set<Behavior> getBehavior() {
+        return EnumSet.of(Behavior.METADATA_CREATE_COLUMNS);
     }
 
 }

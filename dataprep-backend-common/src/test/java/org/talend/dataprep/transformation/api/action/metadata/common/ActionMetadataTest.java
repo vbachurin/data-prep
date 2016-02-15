@@ -165,7 +165,7 @@ public class ActionMetadataTest {
         final Action action = cellTransformation.create(parameters);
 
         // when
-        ActionTestWorkbench.test(row, action.getRowAction());
+        ActionTestWorkbench.test(row, action);
 
         // then
         assertThat(row.get("0001"), is("TOTO"));
@@ -187,7 +187,7 @@ public class ActionMetadataTest {
         final Action action = cellTransformation.create(parameters);
 
         // when
-        ActionTestWorkbench.test(row, action.getRowAction());
+        ActionTestWorkbench.test(row, action);
 
         // then
         assertThat(row.get("0001"), is("toto"));
@@ -257,7 +257,7 @@ public class ActionMetadataTest {
         final Action action = columnTransformation.create(parameters);
 
         // when
-        ActionTestWorkbench.test(row, action.getRowAction());
+        ActionTestWorkbench.test(row, action);
 
         // then
         assertThat(row.get("0001"), is("TOTO"));
@@ -278,7 +278,7 @@ public class ActionMetadataTest {
         final Action action = tableTransformation.create(parameters);
 
         // when
-        ActionTestWorkbench.test(row, action.getRowAction());
+        ActionTestWorkbench.test(row, action);
 
         // then
         assertThat(row.get("0001"), is("TOTO"));
