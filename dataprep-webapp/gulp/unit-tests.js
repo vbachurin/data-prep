@@ -6,35 +6,12 @@ var conf = require('./conf');
 
 var karma = require('karma');
 
-var pathSrcHtml = [
-    path.join(conf.paths.src, '/**/*.html')
-];
-
-var pathSrcJs = [
-    path.join(conf.paths.tmp, '/serve/app/index.module.js')
-];
-
 function runTests(singleRun, done, karmaConfPath) {
-    var reporters = ['progress'];
-    var preprocessors = {};
-
-    pathSrcHtml.forEach(function (path) {
-        preprocessors[path] = ['ng-html2js'];
-    });
-
-    if (singleRun) {
-        pathSrcJs.forEach(function (path) {
-            preprocessors[path] = ['coverage'];
-        });
-        reporters.push('coverage')
-    }
 
     var localConfig = {
         configFile: karmaConfPath || path.join(__dirname, '/../karma.conf.js'),
         singleRun: singleRun,
-        autoWatch: !singleRun,
-        reporters: reporters,
-        preprocessors: preprocessors
+        autoWatch: !singleRun
     };
 
     var server = new karma.Server(localConfig, function (failCount) {
@@ -43,14 +20,14 @@ function runTests(singleRun, done, karmaConfPath) {
     server.start();
 }
 
-gulp.task('test', ['scripts:test'], function (done) {
+gulp.task('test', function (done) {
     runTests(true, done);
 });
 
-gulp.task('test:auto', ['scripts:test-watch'], function (done) {
+gulp.task('test:auto', function (done) {
     runTests(false, done);
 });
 
-gulp.task('test:ci', ['scripts:test'], function (done) {
+gulp.task('test:ci', function (done) {
     runTests(true, done, path.join(__dirname, '/../karma.conf.ci.js'));
 });
