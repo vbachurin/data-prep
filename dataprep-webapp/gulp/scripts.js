@@ -44,7 +44,7 @@ function webpackWrapper(watch, test, callback) {
 
     var sources = [];
     if (test) {
-        var specFiles = argv.folder ? '/app/**/' + argv.folder + '/*.spec.js' : '/app/**/*.spec.js';
+        var specFiles = argv.folder ? '/app/**/' + argv.folder + '/**/*.spec.js' : '/app/**/*.spec.js';
         sources.push(path.join(conf.paths.src, specFiles));
     }
     else {

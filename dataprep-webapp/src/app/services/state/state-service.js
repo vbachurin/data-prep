@@ -41,6 +41,7 @@ export function StateService(PlaygroundStateService, playgroundState, //
         setCurrentDataset: PlaygroundStateService.setDataset,
         setCurrentData: PlaygroundStateService.setData,
         setCurrentPreparation: PlaygroundStateService.setPreparation,
+        setPreparationName: PlaygroundStateService.setPreparationName,
         setNameEditionMode: PlaygroundStateService.setNameEditionMode,
         updateDatasetStatistics: PlaygroundStateService.updateDatasetStatistics,
 

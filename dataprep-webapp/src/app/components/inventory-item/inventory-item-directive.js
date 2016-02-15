@@ -58,20 +58,20 @@ export default function InventoryItem() {
         controllerAs: 'inventoryItemCtrl',
         controller: 'InventoryItemCtrl',
         scope: {
-            copy: '=',
-            details: '@',
-            fileModel: '=',
-            item: '=',
-            open: '=',
-            openRelatedInv: '=',
-            processCertification: '=',
-            remove: '=',
-            rename: '=',
-            relatedInventories: '=',
-            relatedInventoriesType: '@',
-            toggleFavorite: '=',
-            type: '@',
-            update: '='
+            copy : '=',
+            details : '@',
+            fileModel : '=',
+            item : '=',
+            open : '=',
+            openRelatedInventory : '=',
+            processCertification : '=',
+            remove : '=',
+            rename : '=',
+            relatedInventories : '=',
+            relatedInventoriesType : '@',
+            toggleFavorite : '=',
+            type : '@',
+            update : '='
         }
     };
 }

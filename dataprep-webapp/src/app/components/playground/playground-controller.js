@@ -106,7 +106,7 @@ export default function PlaygroundCtrl($state, $stateParams, state, StateService
      * @description show hides lookup panel and populates its grid
      */
     vm.toggleLookup = function toggleLookup() {
-        if (state.playground.lookup.visibility) {
+        if(state.playground.lookup.visibility) {
             StateService.setLookupVisibility(false);
         }
         else {
@@ -164,7 +164,7 @@ export default function PlaygroundCtrl($state, $stateParams, state, StateService
      */
     vm.confirmSaveOnClose = function confirmSaveOnClose() {
         vm.saveInProgress = true;
-        var cleanName = vm.preparationName.trim();
+        var cleanName = vm.state.playground.preparationName.trim();
         changeName(cleanName)
             .then(hideAll)
             .finally(function () {
@@ -206,25 +206,6 @@ export default function PlaygroundCtrl($state, $stateParams, state, StateService
             .finally(StateService.setIsSendingDatasetParameters.bind(null, false));
     };
 }
-
-/**
- * @ngdoc property
- * @name preparationName
- * @propertyOf data-prep.playground.controller:PlaygroundCtrl
- * @description The preparation name
- * It is bound to {@link data-prep.services.playground.service:PlaygroundService PlaygroundService} property
- */
-Object.defineProperty(PlaygroundCtrl.prototype,
-    'preparationName', {
-        enumerable: true,
-        configurable: false,
-        get: function () {
-            return this.playgroundService.preparationName;
-        },
-        set: function (value) {
-            this.playgroundService.preparationName = value;
-        }
-    });
 
 /**
  * @ngdoc property

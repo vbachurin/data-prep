@@ -26,9 +26,9 @@ export default function InventoryItemCtrl() {
      * @params relatedInventory the related inventory item
      * @description opens the inventory related to the current inventory item
      */
-    vm.openRelatedInventoryItem = function openRelatedInventoryItem(relatedInventory) {
-        if (vm.openRelatedInv) {
-            vm.openRelatedInv(relatedInventory);
+    vm.openRelatedInventoryItem = function openRelatedInventoryItem (relatedInventory) {
+        if (vm.openRelatedInventory) {
+            vm.openRelatedInventory(relatedInventory);
         }
     };
 
@@ -39,7 +39,7 @@ export default function InventoryItemCtrl() {
      * @description creates the object used to construct the tooltip
      * @returns {Object} the object to construct the tooltip with
      */
-    vm.getTooltipContent = function getTooltipContent() {
+    vm.getTooltipContent = function getTooltipContent () {
         return vm.relatedInventories && vm.relatedInventories.length ?
         {
             type: vm.relatedInventoriesType,
@@ -57,7 +57,7 @@ export default function InventoryItemCtrl() {
      * @methodOf data-prep.inventory-item:InventoryItemCtrl
      * @description given an inventory Item, it opens it
      */
-    vm.openInventoryItem = function openInventoryItem() {
+    vm.openInventoryItem = function openInventoryItem () {
         if (vm.relatedInventories && vm.relatedInventories.length) {
             vm.openRelatedInventoryItem(vm.relatedInventories[0]);
         }

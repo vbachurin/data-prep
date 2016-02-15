@@ -347,9 +347,10 @@ describe('InventoryItem directive', function () {
         it('should open inventory item on element dblclick', function () {
             //given
             createElement();
+            var inventory = element.find('.inventory-item');
 
             //when
-            element.dblclick();
+            inventory.dblclick();
 
             //then
             expect(ctrl.open).toHaveBeenCalledWith(dataset);
@@ -358,9 +359,10 @@ describe('InventoryItem directive', function () {
             //given
             scope.preparations = [{}, {}];
             createElement();
+            var inventory = element.find('.inventory-item');
 
             //when
-            element.dblclick();
+            inventory.dblclick();
 
             //then
             expect(ctrl.openRelatedInventory).toHaveBeenCalledWith(scope.preparations[0]);
