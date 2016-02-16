@@ -13,8 +13,9 @@
 
 package org.talend.dataprep.api.type;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -23,23 +24,6 @@ import org.talend.dataquality.semantic.statistics.SemanticType;
 import org.talend.dataquality.statistics.type.DataTypeEnum;
 
 public class TypeUtils {
-
-    /**
-     * keeps track of the partial order linking numbers and string.
-     */
-    private static final List<Type> numericalAxisOrder = Arrays.asList(Type.INTEGER, Type.FLOAT, Type.DOUBLE, Type.NUMERIC,
-            Type.STRING);
-
-    /**
-     * * keeps track of the partial order linking boolean type and string.
-     */
-    private static final List<Type> booleanAxisOrder = Arrays.asList(Type.BOOLEAN, Type.STRING);
-
-    /***
-     * keeps track of the partial order linking date type and string.
-     *
-     */
-    private static final List<Type> dateAxisOrder = Arrays.asList(Type.DATE, Type.STRING);
 
     private TypeUtils() {
     }
@@ -54,7 +38,7 @@ public class TypeUtils {
         DataTypeEnum[] types = new DataTypeEnum[columns.size()];
         for (int i = 0; i < columns.size(); i++) {
             final String suggestedType = columns.get(i).getQuality().getMostFrequentSubType();
-            final String type = suggestedType != null ? suggestedType: columns.get(i).getType();
+            final String type = suggestedType != null ? suggestedType : columns.get(i).getType();
             types[i] = convert(Type.get(type));
         }
         return types;
@@ -121,33 +105,45 @@ public class TypeUtils {
      * Returns the type which is the subtype of the other or the first one in case of equality. If one of the specified
      * type is null then the other is returned. It returns null if there is no relation of order between the specified
      * types.
-     * 
+     *
      * @param t1 the first specified type
      * @param t2 the second specified type
      * @return
      */
     public static Type subTypeOfOther(final Type t1, final Type t2) {
-        if (t1 == null){
+        // Null values checks
+        if (t1 == null && t2 == null) {
+            return null;
+        } else if (t1 == null) {
             return t2;
-        }
-        if (t2  == null){
+        } else if (t2 == null) {
             return t1;
         }
-        final List<Type> axis;
-        if (numericalAxisOrder.containsAll(Arrays.asList(t1, t2))) {
-            axis = numericalAxisOrder;
-        } else if (booleanAxisOrder.containsAll(Arrays.asList(t1, t2))) {
-            axis = booleanAxisOrder;
-        } else if (dateAxisOrder.containsAll(Arrays.asList(t1, t2))) {
-            axis = dateAxisOrder;
+        // Build path from "deepest" type to the top type
+        Function<Type, List<Type>> parentTypesBuilder = t -> {
+            List<Type> path = new ArrayList<>();
+            Type current = t;
+            while (current != null) {
+                path.add(current);
+                current = current.getSuperType();
+            }
+            return path;
+        };
+        final List<Type> t1Ancestors = parentTypesBuilder.apply(t1);
+        final List<Type> t2Ancestors = parentTypesBuilder.apply(t2);
+        final List<Type> ancestors;
+        if (t1Ancestors.size() > t2Ancestors.size()) {
+            ancestors = t1Ancestors;
         } else {
-            axis = null;
+            ancestors = t2Ancestors;
         }
-        if (axis != null) {
-            final int comparisonResult = Integer.compare(axis.indexOf(t1), axis.indexOf(t2));
-            return comparisonResult <= 0 ? t1 : t2;
+        // Select the "deepest" type in all known types
+        if (ancestors.indexOf(t1) < 0 || ancestors.indexOf(t2) < 0) {
+            return null; // t1 and t2 don't share same inheritance tree.
         } else {
-            return null;
+            // t1 and t2 share same inheritance tree, returns the most specific one (lowest in inheritance tree).
+            return ancestors.indexOf(t1) > ancestors.indexOf(t2) ? t2 : t1;
         }
     }
+
 }

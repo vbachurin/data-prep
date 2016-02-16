@@ -184,19 +184,19 @@ public class StatisticsAdapter {
 
             // if the value
             String invalidDetectionTypeString = column.getQuality().getMostFrequentSubType();
-            Type invalidDetectionType = invalidDetectionTypeString != null ?Type.get(invalidDetectionTypeString):null;
+            Type invalidDetectionType = invalidDetectionTypeString != null ? Type.get(invalidDetectionTypeString) : null;
 
-            if ( invalidDetectionType != null && !columnType.equals(invalidDetectionType) ) {
+            if (invalidDetectionType != null && !columnType.equals(invalidDetectionType)) {
                 if (invalidDetectionType.equals(TypeUtils.subTypeOfOther(invalidDetectionType, columnType))) {
                     // some values have been filtered then type used to compute invalids is not the good one
 
                     final Long suggestedEnumTypeFrequency = dataType.getTypeFrequencies().get(dataType.getSuggestedType());
                     final long dataTypeOccurrenceCount = suggestedEnumTypeFrequency != null ? suggestedEnumTypeFrequency : 0;
 
-                    validCount = valueQualityStatistics.getValidCount() + valueQualityStatistics.getUnknownCount() + dataTypeOccurrenceCount;
+                    validCount = valueQualityStatistics.getValidCount() + valueQualityStatistics.getUnknownCount()
+                            + dataTypeOccurrenceCount;
                     invalidValues = filterInvalids(columnType, rawInvalids);
-                }
-                else{
+                } else {
                     // fallback to string because invalidDetection type is not the subtype of the actual detectedType
                     validCount = allCount - emptyCount;
                     invalidValues = Collections.emptySet();
@@ -362,7 +362,7 @@ public class StatisticsAdapter {
     }
 
     private void injectTextLength(final ColumnMetadata column, final Analyzers.Result result) {
-        if (STRING.isAssignableFrom(column.getType()) && result.exist(TextLengthStatistics.class)) {
+        if (STRING.equals(Type.get(column.getType())) && result.exist(TextLengthStatistics.class)) {
             final TextLengthStatistics textLengthStatistics = result.get(TextLengthStatistics.class);
             final TextLengthSummary textLengthSummary = column.getStatistics().getTextLengthSummary();
             textLengthSummary.setAverageLength(textLengthStatistics.getAvgTextLength());
@@ -415,7 +415,6 @@ public class StatisticsAdapter {
         // retrieve the second choice
         if (sortedFrequencies.size() <= 1) {
             secondEnumChoice = null;
-
         } else if (!suggestedEnumType.equals(sortedFrequencies.get(0).getKey())) {
             secondEnumChoice = sortedFrequencies.get(0).getKey();
         } else {
