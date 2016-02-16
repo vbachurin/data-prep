@@ -350,11 +350,11 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
 
             logger.debug("columnMetadatas: {}", columnMetadatas);
 
-            Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize(21);
+            Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize(6);
 
-            ColumnMetadata columnMetadata = columnMetadatas.get(7);
+            ColumnMetadata columnMetadata = columnMetadatas.get(4);
             Assertions.assertThat(columnMetadata.getHeaderSize()).isEqualTo(1);
-            Assertions.assertThat(columnMetadata.getName()).isEqualTo("telephone");
+            Assertions.assertThat(columnMetadata.getName()).isEqualTo("age");
             Assertions.assertThat(columnMetadata.getType()).isEqualTo(Type.NUMERIC.getName());
             dataSetMetadata.getRowMetadata().setColumns(columnMetadatas);
         }
@@ -363,22 +363,22 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
 
         logger.trace("values: {}", values);
 
-        Assertions.assertThat(values).isNotEmpty().hasSize(239);
+        Assertions.assertThat(values).isNotEmpty().hasSize(3);
 
         Assertions.assertThat(values.get(0)) //
-                .contains(MapEntry.entry("0000", "24-Jul-2014"), //
-                        MapEntry.entry("0001", "COFACE"), //
-                        MapEntry.entry("0006", "tony_fernandes@coface.com"));
+                .contains(MapEntry.entry("0000", "301638"), //
+                        MapEntry.entry("0001", "foo@foo.com"), //
+                        MapEntry.entry("0004", "23"));
 
         Assertions.assertThat(values.get(1)) //
-                .contains(MapEntry.entry("0000", "24-Jul-2014"), //
-                        MapEntry.entry("0001", "ENABLON"), //
-                        MapEntry.entry("0004", "COCUD"));
+                .contains(MapEntry.entry("0000", "12349383"), //
+                        MapEntry.entry("0001", "beer@gof.org"), //
+                        MapEntry.entry("0004", "23"));
 
-        Assertions.assertThat(values.get(17)) //
-                .contains(MapEntry.entry("0000", "17-Jul-2014"), //
-                        MapEntry.entry("0001", "SODEBO"), //
-                        MapEntry.entry("0003", "Tanguy"));
+        Assertions.assertThat(values.get(2)) //
+                .contains(MapEntry.entry("0000", "73801093"), //
+                        MapEntry.entry("0001", "wine@go.com"), //
+                        MapEntry.entry("0003", "Jean"));
 
     }
 
