@@ -1,19 +1,29 @@
+// ============================================================================
+//
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+//
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
+//
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
+//
+// ============================================================================
+
 package org.talend.dataprep.schema.html;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
+import nu.validator.htmlparser.sax.HtmlParser;
 
-import org.apache.commons.io.IOUtils;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.Type;
@@ -21,6 +31,7 @@ import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.schema.SchemaParser;
 import org.talend.dataprep.schema.SchemaParserResult;
+import org.xml.sax.InputSource;
 
 /**
  * This class is in charge of parsing html file (note jsoup is used see http://jsoup.org/ )
@@ -31,7 +42,7 @@ public class HtmlSchemaParser implements SchemaParser {
     /** This class' logger. */
     private static final Logger LOGGER = LoggerFactory.getLogger(HtmlSchemaParser.class);
 
-    @Inject
+    @Autowired
     private HtmlFormatGuesser htmlFormatGuesser;
 
     /**
@@ -40,41 +51,31 @@ public class HtmlSchemaParser implements SchemaParser {
     @Override
     public SchemaParserResult parse(Request request) {
 
-        Map<String, String> parameters = request.getMetadata().getContent().getParameters();
-        String encoding = request.getMetadata().getEncoding();
-        String headerSelector = parameters.get(HtmlFormatGuesser.HEADER_SELECTOR_KEY);
-        // no need to parse values here
-        //String valuesSelector = parameters.get(HtmlFormatGuesser.VALUES_SELECTOR_KEY);
-
         try {
-            String str = IOUtils.toString(request.getContent(), encoding);
 
-            Document document = Jsoup.parse(str);
+            Map<String, String> parameters = request.getMetadata().getContent().getParameters();
+            final String headerSelector = parameters.get(HtmlFormatGuesser.HEADER_SELECTOR_KEY);
 
-            Elements headers = document.select(headerSelector);
+            HtmlParser htmlParser = new HtmlParser();
 
-            List<ColumnMetadata> columnMetadatas = new ArrayList<>();
+            HeadersContentHandler headersContentHandler = new HeadersContentHandler(headerSelector, false);
+            htmlParser.setContentHandler(headersContentHandler);
+            InputStream inputStream = request.getContent();
 
-            int id = 0;
+            InputSource inputSource = new InputSource(inputStream);
+            // no need to force the encoding the parser will discover it
+            htmlParser.parse(inputSource);
 
-            for (Element header : headers) {
-                LOGGER.debug("header: {}", header);
+
+            List<ColumnMetadata> columnMetadatas = new ArrayList<>(headersContentHandler.getHeaderValues().size());
+
+            for (String headerValue : headersContentHandler.getHeaderValues()) {
                 columnMetadatas.add(ColumnMetadata.Builder.column() //
-                        .type(Type.STRING) // TODO ? ATM not doing any complicated type calculation
-                        .name(header.text()) //
-                        .id(id) //
+                        .type(Type.STRING) // ATM not doing any complicated type calculation
+                        .name(headerValue) //
+                        .id(columnMetadatas.size()) //
                         .build());
-                id++;
             }
-
-            /*
-            no need to parse values here
-            Elements values = document.select(valuesSelector);
-
-            for (Element value : values) {
-                LOGGER.debug("value: {}", value);
-            }
-            */
 
             SchemaParserResult.SheetContent sheetContent = new SchemaParserResult.SheetContent();
             sheetContent.setColumnMetadatas(columnMetadatas);
@@ -90,5 +91,4 @@ public class HtmlSchemaParser implements SchemaParser {
         }
 
     }
-
 }
