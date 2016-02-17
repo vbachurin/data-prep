@@ -37,7 +37,11 @@ export default function QualityBar($timeout) {
             quality: '=',
             hasMenu: '='
         },
-        transclude: true,
+        transclude: {
+            'valid-quality-bar-menu': '?validMenuItems',
+            'empty-quality-bar-menu': '?emptyMenuItems',
+            'invalid-quality-bar-menu': '?invalidMenuItems'
+        },
         bindToController: true,
         controller: 'QualityBarCtrl',
         controllerAs: 'qualityBarCtrl',
@@ -97,18 +101,6 @@ export default function QualityBar($timeout) {
             };
 
             scope.$watch(ctrl.hashQuality, refreshBars);
-
-            if (ctrl.hasMenu) {
-                $timeout(function () {
-                    var validMenuContent = iElement.find('.valid-menu-item');
-                    var emptyMenuContent = iElement.find('.empty-menu-items');
-                    var invalidMenuContent = iElement.find('.invalid-menu-items');
-
-                    iElement.find('.valid-partition .quality-bar-menu').eq(0).append(validMenuContent);
-                    iElement.find('.empty-partition .quality-bar-menu').eq(0).append(emptyMenuContent);
-                    iElement.find('.invalid-partition .quality-bar-menu').eq(0).append(invalidMenuContent);
-                }, 300, false);
-            }
         }
     };
 }

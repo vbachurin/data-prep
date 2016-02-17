@@ -22,7 +22,7 @@
          title="{{ qualityBarCtrl.quality.valid }} {{::'VALID_RECORDS' | translate}} ({{ qualityBarCtrl.percent.valid }}%)">
             <div class="dropdown-container">
                 <div class="dropdown-action quality-bar-action"></div>
-                <ul class="dropdown-menu dropdown-menu-small-top quality-bar-menu" role="menu">
+                <ul class="dropdown-menu dropdown-menu-small-top quality-bar-menu" ng-transclude="valid-quality-bar-menu" role="menu">
                 </ul>
             </div>
     </div>
@@ -35,7 +35,7 @@
          title="{{ qualityBarCtrl.quality.empty }} {{::'EMPTY_RECORDS' | translate}} ({{ qualityBarCtrl.percent.empty }}%)">
             <div class="dropdown-container">
                 <div class="dropdown-action quality-bar-action"></div>
-                <ul class="dropdown-menu dropdown-menu-small-top quality-bar-menu" role="menu">
+                <ul class="dropdown-menu dropdown-menu-small-top quality-bar-menu" ng-transclude="empty-quality-bar-menu" role="menu">
                 </ul>
             </div>
     </div>
@@ -48,7 +48,7 @@
          title="{{ qualityBarCtrl.quality.invalid }} {{::'INVALID_RECORDS' | translate}} ({{ qualityBarCtrl.percent.invalid }}%)">
             <div class="dropdown-container">
                 <div class="dropdown-action quality-bar-action"></div>
-                <ul class="dropdown-menu dropdown-menu-small-top quality-bar-menu" role="menu">
+                <ul class="dropdown-menu dropdown-menu-small-top quality-bar-menu" ng-transclude="invalid-quality-bar-menu" role="menu">
                 </ul>
             </div>
     </div>

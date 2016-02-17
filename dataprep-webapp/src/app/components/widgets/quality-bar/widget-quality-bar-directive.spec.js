@@ -172,11 +172,13 @@ describe('Quality bar directive', function() {
             expect(element.find('.valid-partition').eq(0)[0].hasAttribute('talend-dropdown')).toBe(false);
         }));
     });
-    describe('with menu', function(){
+    describe('with valid menu', function(){
         beforeEach(inject(function($compile) {
             createElement = function () {
                 var html = '<quality-bar quality="quality" has-menu="hasMenu" enter-animation="false">' +
-                    '<div class="valid-menu-item"><li class="column-action">IDCol</li></div>' +
+                    '<valid-menu-items><li class="column-action">valid</li></valid-menu-items>' +
+                    '<empty-menu-items><li class="column-action">empty</li></empty-menu-items>' +
+                    '<invalid-menu-items><li class="column-action">invalid</li></invalid-menu-items>' +
                     '</quality-bar>';
                 element = $compile(html)(scope);
                 scope.$digest();
@@ -197,10 +199,15 @@ describe('Quality bar directive', function() {
 
             //when
             $rootScope.$digest();
-            $timeout.flush(300);
             //then
             expect(element.find('.valid-partition').eq(0)[0].hasAttribute('talend-dropdown')).toBe(true);
-            expect(element.find('.valid-partition .dropdown-container .dropdown-menu .valid-menu-item .column-action').text()).toBe('IDCol');
+            expect(element.find('.valid-partition .dropdown-container .dropdown-menu .column-action').text()).toBe('valid');
+
+            expect(element.find('.empty-partition').eq(0)[0].hasAttribute('talend-dropdown')).toBe(true);
+            expect(element.find('.empty-partition .dropdown-container .dropdown-menu .column-action').text()).toBe('empty');
+
+            expect(element.find('.invalid-partition').eq(0)[0].hasAttribute('talend-dropdown')).toBe(true);
+            expect(element.find('.invalid-partition .dropdown-container .dropdown-menu .column-action').text()).toBe('invalid');
         }));
     });
 });

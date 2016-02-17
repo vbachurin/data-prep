@@ -11,7 +11,7 @@
   "description": "Data-prep",
   "private": true,
   "dependencies": {
-    "angular": "~1.4.x",
+    "angular": "~1.5.0",
     "angular-sanitize": "~1.4.x",
     "angular-resource": "~1.4.x",
     "angular-animate": "~1.4.x",
@@ -44,7 +44,7 @@
     "angular-mocks": "~1.4.x"
   },
   "resolutions": {
-    "angular": "~1.4.7",
+    "angular": "1.5.0",
     "angular-translate": "2.7.2"
   },
   "overrides": {
