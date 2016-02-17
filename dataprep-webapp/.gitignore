@@ -26,7 +26,6 @@ npm-debug.log
 .DS_Store
 .sass-cache/
 .tmp/
-dist/
 node/
 ngdoc/
 *.mine.json
