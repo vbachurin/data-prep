@@ -76,7 +76,6 @@ describe('Dataset list controller', function () {
         spyOn(DatasetService, 'getDatasets').and.callFake(() => $q.when(datasetsValues.shift()));
         spyOn(StorageService, 'setDatasetsSort').and.returnValue();
         spyOn(StorageService, 'setDatasetsOrder').and.returnValue();
-        spyOn(StateService, 'showPlayground').and.returnValue();
         spyOn(StateService, 'setPreviousState').and.returnValue();
         spyOn(MessageService, 'error').and.returnValue();
     }));

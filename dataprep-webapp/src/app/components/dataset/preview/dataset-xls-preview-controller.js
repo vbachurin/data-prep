@@ -71,8 +71,7 @@ export default function DatasetXlsPreviewCtrl(state, $timeout, DatasetSheetPrevi
             .then(function () {
                 vm.state = false;
             })
-            .then(PlaygroundService.initPlayground.bind(null, vm.metadata))
-            .then(StateService.showPlayground);
+            .then(PlaygroundService.initPlayground.bind(null, vm.metadata));
     };
 
     $timeout(initGrid);

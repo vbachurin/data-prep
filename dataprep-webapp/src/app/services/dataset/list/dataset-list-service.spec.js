@@ -85,7 +85,6 @@ describe('Dataset List Service', () => {
         initDatasets();
         restPromise = $q.when(true);
 
-        spyOn(DatasetRestService, 'getDatasets').and.returnValue($q.when({data: datasets.slice(0)}));
         spyOn(DatasetRestService, 'create').and.returnValue(restPromise);
         spyOn(DatasetRestService, 'import').and.returnValue(restPromise);
         spyOn(DatasetRestService, 'update').and.returnValue(restPromise);
@@ -100,6 +99,11 @@ describe('Dataset List Service', () => {
     }));
 
     describe('getter/refresher', () => {
+
+        beforeEach(inject(($q, DatasetRestService) => {
+            spyOn(DatasetRestService, 'getDatasets').and.returnValue($q.when({data: datasets.slice(0)}));
+        }));
+
         it('should refresh dataset list', inject(function ($rootScope, DatasetListService, StateService) {
             //given
             stateMock.inventory.datasets = [{name: 'my dataset'}, {name: 'my second dataset'}];
@@ -156,7 +160,28 @@ describe('Dataset List Service', () => {
         }));
     });
 
+
+    describe('getter/refresher errors ', () => {
+        beforeEach(inject(($q, DatasetRestService) => {
+            spyOn(DatasetRestService, 'getDatasets').and.returnValue($q.reject());
+        }));
+
+        it('should refresh dataset list when REST request is failed', inject(function ($rootScope, DatasetListService, StateService, DatasetRestService) {
+            //when
+            DatasetListService.refreshDatasets();
+            $rootScope.$apply();
+
+            //then
+            expect(StateService.setDatasets).toHaveBeenCalledWith([]);
+        }));
+    });
+
     describe('import', () => {
+
+        beforeEach(inject(($q, DatasetRestService) => {
+            spyOn(DatasetRestService, 'getDatasets').and.returnValue($q.when({data: datasets.slice(0)}));
+        }));
+
         it('should import remote dataset', inject(($rootScope, DatasetListService, DatasetRestService) => {
             //given
             const importParameters = {
@@ -208,6 +233,11 @@ describe('Dataset List Service', () => {
     });
 
     describe('create', () => {
+
+        beforeEach(inject(($q, DatasetRestService) => {
+            spyOn(DatasetRestService, 'getDatasets').and.returnValue($q.when({data: datasets.slice(0)}));
+        }));
+
         it('should create dataset', inject(($rootScope, DatasetListService, DatasetRestService) => {
             //given
             const dataset = {name: 'my dataset'};
@@ -246,6 +276,11 @@ describe('Dataset List Service', () => {
     });
 
     describe('clone', () => {
+
+        beforeEach(inject(($q, DatasetRestService) => {
+            spyOn(DatasetRestService, 'getDatasets').and.returnValue($q.when({data: datasets.slice(0)}));
+        }));
+
         it('should call rest service clone', inject((DatasetRestService, DatasetListService) => {
             const folder = {id: 'foo'};
 
@@ -280,6 +315,11 @@ describe('Dataset List Service', () => {
     });
 
     describe('move', () => {
+
+        beforeEach(inject(($q, DatasetRestService) => {
+            spyOn(DatasetRestService, 'getDatasets').and.returnValue($q.when({data: datasets.slice(0)}));
+        }));
+
         it('should call rest service move', inject((DatasetRestService, DatasetListService) => {
             //given
             const dataset = {id: '8435618646684615'};
@@ -325,6 +365,11 @@ describe('Dataset List Service', () => {
     });
 
     describe('update', () => {
+
+        beforeEach(inject(($q, DatasetRestService) => {
+            spyOn(DatasetRestService, 'getDatasets').and.returnValue($q.when({data: datasets.slice(0)}));
+        }));
+
         it('should update dataset', inject(($rootScope, DatasetListService, DatasetRestService) => {
             //given
             const dataset = {name: 'my dataset'};
@@ -362,6 +407,11 @@ describe('Dataset List Service', () => {
     });
 
     describe('delete', () => {
+
+        beforeEach(inject(($q, DatasetRestService) => {
+            spyOn(DatasetRestService, 'getDatasets').and.returnValue($q.when({data: datasets.slice(0)}));
+        }));
+
         it('should delete dataset', inject(($rootScope, DatasetListService, DatasetRestService) => {
             //given
             stateMock.inventory.datasets = datasets.slice(0);
@@ -388,6 +438,11 @@ describe('Dataset List Service', () => {
     });
 
     describe('certification', () => {
+
+        beforeEach(inject(($q, DatasetRestService) => {
+            spyOn(DatasetRestService, 'getDatasets').and.returnValue($q.when({data: datasets.slice(0)}));
+        }));
+
         it('should process certification on dataset', inject(($rootScope, DatasetListService, DatasetRestService) => {
             //given
             const dataset = {id: '6a543545de46512bf8651c'};
@@ -414,6 +469,11 @@ describe('Dataset List Service', () => {
     });
 
     describe('toggle', () => {
+
+        beforeEach(inject(($q, DatasetRestService) => {
+            spyOn(DatasetRestService, 'getDatasets').and.returnValue($q.when({data: datasets.slice(0)}));
+        }));
+
         it('should toggle dataset', inject(($rootScope, DatasetListService, DatasetRestService) => {
             //given
             const dataset = {name: 'my dataset', favorite: true};

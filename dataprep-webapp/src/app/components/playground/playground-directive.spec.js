@@ -253,8 +253,21 @@ describe('Playground directive', function () {
 
         });
 
-        it('should toggle recipe on click on the On/Off switch', inject(function (RecipeBulletService) {
+        it('should toggle recipe on click on the On/Off switch', inject(function (RecipeBulletService, RecipeService) {
             //given
+            stateMock.playground.recipe = {visible : true};
+            var step = {
+                inactive: false,
+                transformation: {
+                    stepId: '92771a304130e9',
+                    name: 'propercase',
+                    parameters: [],
+                    items: [],
+                    dynamic: false
+                }
+            };
+            RecipeService.getRecipe().push(step);
+
             spyOn(RecipeBulletService, 'toggleRecipe').and.returnValue();
 
             createElement();

@@ -49,6 +49,10 @@ export default function PreparationListService(PreparationRestService, StateServ
                 StateService.setPreparations(response.data);
                 return response.data;
             })
+            .catch(() => {
+                StateService.setPreparations([]);
+                return [];
+            })
             .finally(() => preparationsPromise = null);
         return preparationsPromise;
     }

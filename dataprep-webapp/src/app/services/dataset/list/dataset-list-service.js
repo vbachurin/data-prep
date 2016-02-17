@@ -74,6 +74,10 @@ export default function DatasetListService($q, state, DatasetRestService, StateS
                 StateService.setDatasets(res.data);
                 return res.data;
             })
+            .catch(() => {
+                StateService.setDatasets([]);
+                return [];
+            })
             .finally(() => datasetsPromise = null);
         return datasetsPromise;
     }

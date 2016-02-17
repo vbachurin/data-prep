@@ -45,30 +45,6 @@ describe('Playground state service', () => {
         spyOn(RecipeStateService, 'reset').and.returnValue();
     }));
 
-    describe('visibility', () => {
-        it('should set playground visibility to true in state', inject((playgroundState, PlaygroundStateService) => {
-            //given
-            playgroundState.visible = false;
-
-            //when
-            PlaygroundStateService.show();
-
-            //then
-            expect(playgroundState.visible).toBe(true);
-        }));
-
-        it('should set playground visibility to false in state', inject((playgroundState, PlaygroundStateService) => {
-            //given
-            playgroundState.visible = true;
-
-            //when
-            PlaygroundStateService.hide();
-
-            //then
-            expect(playgroundState.visible).toBe(false);
-        }));
-    });
-
     describe('routing', () => {
         it('should set the previous state of playground', inject((playgroundState, PlaygroundStateService) => {
             //given

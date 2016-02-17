@@ -40,7 +40,6 @@ describe('Dataset xls preview controller', function () {
         spyOn(DatasetSheetPreviewService, 'setDatasetSheet').and.returnValue($q.when(true));
         spyOn(DatasetService, 'getContent').and.returnValue($q.when(content));
         spyOn(PlaygroundService, 'initPlayground').and.returnValue($q.when());
-        spyOn(StateService, 'showPlayground').and.returnValue();
         spyOn(FolderService, 'getContent').and.returnValue();
         spyOn(DatasetService, 'refreshDatasets').and.returnValue();
     }));
@@ -173,7 +172,6 @@ describe('Dataset xls preview controller', function () {
 
         //then
         expect(PlaygroundService.initPlayground).toHaveBeenCalledWith(DatasetSheetPreviewService.currentMetadata, undefined);
-        expect(StateService.showPlayground).toHaveBeenCalled();
     }));
 
     it('should hide modal on selected sheet set', inject(function ($timeout) {
