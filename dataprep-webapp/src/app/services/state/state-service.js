@@ -33,8 +33,6 @@ export function StateService(PlaygroundStateService, playgroundState, //
 
     return {
         //playground
-        hidePlayground: PlaygroundStateService.hide,
-        showPlayground: PlaygroundStateService.show,
         resetPlayground: PlaygroundStateService.reset,
         setCurrentDataset: PlaygroundStateService.setDataset,
         setCurrentData: PlaygroundStateService.setData,

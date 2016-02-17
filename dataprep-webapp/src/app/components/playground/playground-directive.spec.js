@@ -119,8 +119,7 @@ describe('Playground directive', function () {
         $translateProvider.preferredLanguage('en');
     }));
 
-    beforeEach(inject(function ($state, $rootScope, $compile, $q, $timeout, PreparationListService, PlaygroundService, ExportService) {
-        stateMock.playground.visible = true;
+    beforeEach(inject(function ($rootScope, $compile, $q, $timeout, PreparationListService, PlaygroundService, ExportService) {
         scope = $rootScope.$new();
 
         createElement = function () {
@@ -132,7 +131,6 @@ describe('Playground directive', function () {
             $timeout.flush();
         };
         spyOn(PlaygroundService, 'createOrUpdatePreparation').and.returnValue($q.when(true));
-        spyOn($state, 'go').and.returnValue();
         spyOn(ExportService, 'refreshTypes').and.returnValue($q.when([]));
         spyOn(ExportService, 'getParameters').and.returnValue({});
 
@@ -145,13 +143,10 @@ describe('Playground directive', function () {
             .respond(200, datasetActions);
     }));
 
-    afterEach(inject(function ($stateParams) {
+    afterEach(() => {
         scope.$destroy();
         element.remove();
-
-        $stateParams.prepid = null;
-        $stateParams.datasetid = null;
-    }));
+    });
 
     describe('header', function() {
         it('should render default playground header', function () {

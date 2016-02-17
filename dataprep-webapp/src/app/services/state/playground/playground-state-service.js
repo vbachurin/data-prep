@@ -35,8 +35,6 @@ export function PlaygroundStateService(RecipeStateService, recipeState,
 
     return {
         //playground
-        show: show,
-        hide: hide,
         reset: reset,
         setDataset: setDataset,
         setPreparation: setPreparation,
@@ -123,14 +121,6 @@ export function PlaygroundStateService(RecipeStateService, recipeState,
         playgroundState.nameEditionMode = editionMode;
     }
 
-    function show() {
-        playgroundState.visible = true;
-    }
-
-    function hide() {
-        playgroundState.visible = false;
-    }
-
     function updateDatasetStatistics(metadata) {
         _.forEach(playgroundState.data.metadata.columns, function (col) {
             var correspondingColumn = _.find(metadata.columns, {id: col.id});
@@ -194,7 +184,7 @@ export function PlaygroundStateService(RecipeStateService, recipeState,
         playgroundState.lookupData = null;
         playgroundState.exportParameters = null;
 
-        RecipeStateService.hide();
+        RecipeStateService.reset();
         FilterStateService.reset();
         GridStateService.reset();
         LookupStateService.reset();

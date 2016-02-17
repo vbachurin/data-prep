@@ -15,79 +15,10 @@ describe('Preparation list controller', function () {
     'use strict';
 
     var createController, scope;
-    var allPreparations = [
-        {
-            'id': 'ab136cbf0923a7f11bea713adb74ecf919e05cfa',
-            'dataSetId': 'ddb74c89-6d23-4528-9f37-7a9860bb468e',
-            'author': 'anonymousUser',
-            'creationDate': 1427447300300,
-            'steps': [
-                '35890aabcf9115e4309d4ce93367bf5e4e77b82a',
-                '4ff5d9a6ca2e75ebe3579740a4297fbdb9b7894f',
-                '8a1c49d1b64270482e8db8232357c6815615b7cf',
-                '599725f0e1331d5f8aae24f22cd1ec768b10348d'
-            ],
-            'actions': [
-                {
-                    'action': 'lowercase',
-                    'parameters': {
-                        'column_name': 'birth'
-                    }
-                },
-                {
-                    'action': 'uppercase',
-                    'parameters': {
-                        'column_name': 'country'
-                    }
-                },
-                {
-                    'action': 'cut',
-                    'parameters': {
-                        'pattern': '.',
-                        'column_name': 'first_item'
-                    }
-                }
-            ]
-        },
-        {
-            'id': 'fbaa18e82e913e97e5f0e9d40f04413412be1126',
-            'dataSetId': '4d0a2718-bec6-4614-ad6c-8b3b326ff6c7',
-            'author': 'anonymousUser',
-            'creationDate': 1427447330693,
-            'steps': [
-                '47e2444dd1301120b539804507fd307072294048',
-                'ae1aebf4b3fa9b983c895486612c02c766305410',
-                '24dcd68f2117b9f93662cb58cc31bf36d6e2867a',
-                '599725f0e1331d5f8aae24f22cd1ec768b10348d'
-            ],
-            'actions': [
-                {
-                    'action': 'cut',
-                    'parameters': {
-                        'pattern': '-',
-                        'column_name': 'birth'
-                    }
-                },
-                {
-                    'action': 'fillemptywithdefault',
-                    'parameters': {
-                        'default_value': 'N/A',
-                        'column_name': 'state'
-                    }
-                },
-                {
-                    'action': 'uppercase',
-                    'parameters': {
-                        'column_name': 'lastname'
-                    }
-                }
-            ]
-        }
-    ];
 
     beforeEach(angular.mock.module('data-prep.preparation-list'));
 
-    beforeEach(inject(function ($state, $q, $rootScope, $controller, PreparationService, PlaygroundService, MessageService, StateService) {
+    beforeEach(inject(function ($state, $q, $rootScope, $controller, PreparationService, MessageService, StateService) {
         scope = $rootScope.$new();
 
         createController = function () {
@@ -100,93 +31,128 @@ describe('Preparation list controller', function () {
 
         spyOn(PreparationService, 'clone').and.returnValue($q.when(true));
         spyOn(PreparationService, 'delete').and.returnValue($q.when(true));
-        spyOn(PreparationService, 'getPreparations').and.callFake(function () {
-            return $q.when(allPreparations);
-        });
         spyOn(PreparationService, 'setName').and.returnValue($q.when(true));
-        spyOn(PlaygroundService, 'load').and.returnValue($q.when(true));
         spyOn(StateService, 'setPreviousState').and.returnValue();
         spyOn(MessageService, 'success').and.returnValue(null);
         spyOn(MessageService, 'error').and.returnValue(null);
-
         spyOn($state, 'go').and.returnValue();
-
     }));
 
     afterEach(inject(function ($stateParams) {
         $stateParams.prepid = null;
     }));
 
-    it('should load preparation and show playground', inject(function ($state, PlaygroundService, StateService) {
-        //given
-        var ctrl = createController();
-        var preparation = {
-            id: 'de618c62ef97b3a95b5c171bc077ffe22e1d6f79',
-            dataSetId: 'dacd45cf-5bd0-4768-a9b7-f6c199581efc',
-            author: 'anonymousUser',
-            creationDate: 1427460984585,
-            steps: [
-                '228c16230de53de5992eb44c7aba362ac714ab1c'
-            ],
-            actions: []
-        };
-        //when
-        ctrl.load(preparation);
-        scope.$digest();
+    describe('load preparation', () => {
+        it('should set preparation list route as back page', inject(function ($state, StateService) {
+            //given
+            var ctrl = createController();
+            var preparation = {
+                id: 'de618c62ef97b3a95b5c171bc077ffe22e1d6f79',
+                dataSetId: 'dacd45cf-5bd0-4768-a9b7-f6c199581efc',
+                author: 'anonymousUser',
+                creationDate: 1427460984585,
+                steps: [
+                    '228c16230de53de5992eb44c7aba362ac714ab1c'
+                ],
+                actions: []
+            };
+            //when
+            ctrl.load(preparation);
+            scope.$digest();
 
-        //then
-        expect(StateService.setPreviousState).toHaveBeenCalledWith('nav.home.preparations');
-        expect($state.go).toHaveBeenCalledWith('playground', {prepid: preparation.id});
-    }));
+            //then
+            expect(StateService.setPreviousState).toHaveBeenCalledWith('nav.home.preparations');
+        }));
 
-    it('should remove preparation, show success message on confirm', inject(function ($q, TalendConfirmService, PreparationService, MessageService) {
-        //given
-        spyOn(TalendConfirmService, 'confirm').and.returnValue($q.when(true));
+        it('should redirect to preparation playground', inject(function ($state) {
+            //given
+            var ctrl = createController();
+            var preparation = {
+                id: 'de618c62ef97b3a95b5c171bc077ffe22e1d6f79',
+                dataSetId: 'dacd45cf-5bd0-4768-a9b7-f6c199581efc',
+                author: 'anonymousUser',
+                creationDate: 1427460984585,
+                steps: [
+                    '228c16230de53de5992eb44c7aba362ac714ab1c'
+                ],
+                actions: []
+            };
+            //when
+            ctrl.load(preparation);
+            scope.$digest();
 
-        var ctrl = createController();
-        var preparation = {
-            id: 'de618c62ef97b3a95b5c171bc077ffe22e1d6f79',
-            name: 'my preparation'
-        };
+            //then
+            expect($state.go).toHaveBeenCalledWith('playground.preparation', {prepid: preparation.id});
+        }));
+    });
 
-        //when
-        ctrl.remove(preparation);
-        scope.$digest();
+    describe('remove', () => {
+        it('should remove preparation', inject(function ($q, TalendConfirmService, PreparationService) {
+            //given
+            spyOn(TalendConfirmService, 'confirm').and.returnValue($q.when(true));
 
-        //then
-        expect(TalendConfirmService.confirm).toHaveBeenCalledWith({disableEnter: true}, ['DELETE_PERMANENTLY', 'NO_UNDONE_CONFIRM'], {
-            type: 'preparation',
-            name: preparation.name
-        });
-        expect(PreparationService.delete).toHaveBeenCalledWith(preparation);
-        expect(MessageService.success).toHaveBeenCalledWith('REMOVE_SUCCESS_TITLE', 'REMOVE_SUCCESS', {
-            type: 'preparation',
-            name: preparation.name
-        });
-    }));
+            var ctrl = createController();
+            var preparation = {
+                id: 'de618c62ef97b3a95b5c171bc077ffe22e1d6f79',
+                name: 'my preparation'
+            };
 
-    it('should do nothing on delete dismiss', inject(function ($q, TalendConfirmService, PreparationService, MessageService) {
-        //given
-        spyOn(TalendConfirmService, 'confirm').and.returnValue($q.reject(null));
+            //when
+            ctrl.remove(preparation);
+            scope.$digest();
 
-        var ctrl = createController();
-        var preparation = {
-            id: 'de618c62ef97b3a95b5c171bc077ffe22e1d6f79',
-            name: 'my preparation'
-        };
+            //then
+            expect(TalendConfirmService.confirm).toHaveBeenCalledWith({disableEnter: true}, ['DELETE_PERMANENTLY', 'NO_UNDONE_CONFIRM'], {
+                type: 'preparation',
+                name: preparation.name
+            });
+            expect(PreparationService.delete).toHaveBeenCalledWith(preparation);
+        }));
 
-        //when
-        ctrl.remove(preparation);
-        scope.$digest();
+        it('should show success message on confirm', inject(function ($q, TalendConfirmService, MessageService) {
+            //given
+            spyOn(TalendConfirmService, 'confirm').and.returnValue($q.when(true));
 
-        //then
-        expect(TalendConfirmService.confirm).toHaveBeenCalledWith({disableEnter: true}, ['DELETE_PERMANENTLY', 'NO_UNDONE_CONFIRM'], {
-            type: 'preparation',
-            name: preparation.name
-        });
-        expect(PreparationService.delete).not.toHaveBeenCalled();
-        expect(MessageService.success).not.toHaveBeenCalled();
-    }));
+            var ctrl = createController();
+            var preparation = {
+                id: 'de618c62ef97b3a95b5c171bc077ffe22e1d6f79',
+                name: 'my preparation'
+            };
+
+            //when
+            ctrl.remove(preparation);
+            scope.$digest();
+
+            //then
+            expect(MessageService.success).toHaveBeenCalledWith('REMOVE_SUCCESS_TITLE', 'REMOVE_SUCCESS', {
+                type: 'preparation',
+                name: preparation.name
+            });
+        }));
+
+        it('should do nothing on delete dismiss', inject(function ($q, TalendConfirmService, PreparationService, MessageService) {
+            //given
+            spyOn(TalendConfirmService, 'confirm').and.returnValue($q.reject(null));
+
+            var ctrl = createController();
+            var preparation = {
+                id: 'de618c62ef97b3a95b5c171bc077ffe22e1d6f79',
+                name: 'my preparation'
+            };
+
+            //when
+            ctrl.remove(preparation);
+            scope.$digest();
+
+            //then
+            expect(TalendConfirmService.confirm).toHaveBeenCalledWith({disableEnter: true}, ['DELETE_PERMANENTLY', 'NO_UNDONE_CONFIRM'], {
+                type: 'preparation',
+                name: preparation.name
+            });
+            expect(PreparationService.delete).not.toHaveBeenCalled();
+            expect(MessageService.success).not.toHaveBeenCalled();
+        }));
+    });
 
     describe('rename', function () {
 

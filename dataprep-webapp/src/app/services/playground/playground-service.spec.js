@@ -18,7 +18,6 @@ describe('Playground Service', function () {
         },
         records: [{}]
     };
-
     var preparationMetadataWithoutStatistics = {
         metadata : {
             columns: [{id: '0001', statistics: {frequencyTable: []}}]
@@ -41,7 +40,7 @@ describe('Playground Service', function () {
         $translateProvider.preferredLanguage('en');
     }));
 
-    beforeEach(inject(function ($injector, $q, StateService, DatasetService, RecipeService, DatagridService,
+    beforeEach(inject(function ($injector, $q, $state, StateService, DatasetService, RecipeService, DatagridService,
                                 PreparationService, TransformationCacheService, SuggestionService,
                                 HistoryService, PreviewService, ExportService) {
         stateMock.playground = {
@@ -52,6 +51,7 @@ describe('Playground Service', function () {
             name: 'created preparation name'
         };
 
+        spyOn($state, 'go').and.returnValue();
         spyOn(DatagridService, 'updateData').and.returnValue();
         spyOn(DatasetService, 'getContent').and.returnValue($q.when(datasetColumns));
         spyOn(DatasetService, 'updateParameters').and.returnValue($q.when());
@@ -62,13 +62,14 @@ describe('Playground Service', function () {
         spyOn(PreviewService, 'reset').and.returnValue();
         spyOn(RecipeService, 'disableStepsAfter').and.returnValue();
         spyOn(RecipeService, 'refresh').and.returnValue($q.when(true));
-        spyOn(StateService, 'removeAllGridFilters').and.returnValue();
         spyOn(StateService, 'resetPlayground').and.returnValue();
         spyOn(StateService, 'setCurrentData').and.returnValue();
         spyOn(StateService, 'setCurrentDataset').and.returnValue();
         spyOn(StateService, 'setCurrentPreparation').and.returnValue();
         spyOn(StateService, 'setPreparationName').and.returnValue();
         spyOn(StateService, 'setNameEditionMode').and.returnValue();
+        spyOn(StateService, 'showRecipe').and.returnValue();
+        spyOn(StateService, 'hideRecipe').and.returnValue();
         spyOn(TransformationCacheService, 'invalidateCache').and.returnValue();
         spyOn(ExportService, 'reset').and.returnValue();
     }));
@@ -92,7 +93,7 @@ describe('Playground Service', function () {
         expect(StateService.setPreparationName).toHaveBeenCalledWith(createdPreparation.name);
     }));
 
-    describe('init new preparation', function () {
+    describe('load dataset', function () {
         var dataset = {
             id: 'e85afAa78556d5425bc2',
             name: 'dataset name'
@@ -109,7 +110,6 @@ describe('Playground Service', function () {
                 expect(StateService.resetPlayground).toHaveBeenCalled();
                 expect(StateService.setCurrentDataset).toHaveBeenCalledWith(dataset);
                 expect(StateService.setCurrentData).toHaveBeenCalledWith(datasetColumns);
-                expect(StateService.removeAllGridFilters).toHaveBeenCalled();
                 expect(RecipeService.refresh).toHaveBeenCalled();
                 expect(TransformationCacheService.invalidateCache).toHaveBeenCalled();
                 expect(HistoryService.clear).toHaveBeenCalled();
@@ -186,9 +186,22 @@ describe('Playground Service', function () {
             expect(OnboardingService.shouldStartTour).toHaveBeenCalledWith('playground');
             expect(OnboardingService.startTour).not.toHaveBeenCalled();
         }));
+
+        it('should hide recipe', inject(function ($rootScope, PlaygroundService, StateService) {
+            //given
+            var dataset = {id: '1'};
+            expect(StateService.hideRecipe).not.toHaveBeenCalled();
+
+            //when
+            PlaygroundService.initPlayground(dataset);
+            $rootScope.$digest();
+
+            //then
+            expect(StateService.hideRecipe).toHaveBeenCalled();
+        }));
     });
 
-    describe('load existing preparation', function () {
+    describe('load preparation', function () {
         var data = {
             columns: [{id: '0001'}],
             records: [{id: '0', firstname: 'toto'}, {id: '1', firstname: 'tata'}, {id: '2', firstname: 'titi'}]
@@ -203,7 +216,6 @@ describe('Playground Service', function () {
                 expect(StateService.resetPlayground).toHaveBeenCalled();
                 expect(StateService.setCurrentDataset).toHaveBeenCalledWith(metadata);
                 expect(StateService.setCurrentData).toHaveBeenCalledWith(data);
-                expect(StateService.removeAllGridFilters).toHaveBeenCalled();
                 expect(RecipeService.refresh).toHaveBeenCalled();
                 expect(TransformationCacheService.invalidateCache).toHaveBeenCalled();
                 expect(HistoryService.clear).toHaveBeenCalled();
@@ -213,7 +225,6 @@ describe('Playground Service', function () {
                 expect(StateService.resetPlayground).not.toHaveBeenCalled();
                 expect(StateService.setCurrentDataset).not.toHaveBeenCalled();
                 expect(StateService.setCurrentData).not.toHaveBeenCalled();
-                expect(StateService.removeAllGridFilters).not.toHaveBeenCalled();
                 expect(RecipeService.refresh).not.toHaveBeenCalled();
                 expect(TransformationCacheService.invalidateCache).not.toHaveBeenCalled();
                 expect(HistoryService.clear).not.toHaveBeenCalled();
@@ -309,23 +320,38 @@ describe('Playground Service', function () {
             //then
             expect(StateService.resetPlayground).not.toHaveBeenCalled();
             expect(StateService.setCurrentDataset).not.toHaveBeenCalled();
-            expect(StateService.removeAllGridFilters).not.toHaveBeenCalled();
             expect(RecipeService.refresh).not.toHaveBeenCalled();
             expect(RecipeService.disableStepsAfter).toHaveBeenCalledWith(step);
             expect(PreviewService.reset).toHaveBeenCalledWith(false);
             expect(DatagridService.updateData).toHaveBeenCalledWith(data);
             expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.stop');
         }));
+
+        it('should show recipe', inject(function ($rootScope, PlaygroundService, StateService) {
+            //given
+            expect(StateService.showRecipe).not.toHaveBeenCalled();
+            var preparation = {
+                id: '6845521254541',
+                dataset: {id: '1'}
+            };
+
+            //when
+            PlaygroundService.load(preparation);
+            $rootScope.$digest();
+
+            //then
+            expect(StateService.showRecipe).toHaveBeenCalled();
+        }));
     });
 
-    describe('update dataset statistics', function () {
+    describe('fetch dataset statistics', function () {
         beforeEach(inject(function (StateService, StatisticsService) {
             spyOn(StatisticsService, 'updateStatistics').and.returnValue();
             spyOn(StateService, 'updateDatasetStatistics').and.returnValue();
             spyOn(StateService, 'updateDatasetRecord').and.returnValue();
         }));
 
-        it('should get dataset metadata and set metadata statistics in state', inject(function ($rootScope, $q, PlaygroundService, DatasetService, StateService) {
+        it('should get metadata and set its statistics in state', inject(function ($rootScope, $q, PlaygroundService, DatasetService, StateService) {
             //given
             spyOn(DatasetService, 'getMetadata').and.returnValue($q.when(datasetMetadata));
             stateMock.playground.dataset = {id: '1324d56456b84ef154', records: 15};
@@ -376,7 +402,7 @@ describe('Playground Service', function () {
         }));
     });
 
-    describe('update preparation statistics', function () {
+    describe('fetch preparation statistics', function () {
         beforeEach(inject(function (StateService, StatisticsService) {
             spyOn(StatisticsService, 'updateStatistics').and.returnValue();
             spyOn(StateService, 'updateDatasetStatistics').and.returnValue();
@@ -386,7 +412,7 @@ describe('Playground Service', function () {
             stateMock.playground.dataset = {id: '1324d56456b84ef154', records: 15};
         }));
 
-        it('should get dataset metadata and set metadata statistics in state', inject(function ($rootScope, $q, PlaygroundService, PreparationService, StateService) {
+        it('should get metadata and set its statistics in state', inject(function ($rootScope, $q, PlaygroundService, PreparationService, StateService) {
             //given
             spyOn(PreparationService, 'getContent').and.returnValue($q.when(preparationMetadata));
 
@@ -1050,158 +1076,6 @@ describe('Playground Service', function () {
         });
     });
 
-    describe('recipe panel display management', function () {
-
-        beforeEach(inject(function ($q, PreparationService, RecipeService, StateService) {
-            spyOn(PreparationService, 'getContent').and.returnValue($q.when({columns: [{}]}));
-            spyOn(PreparationService, 'appendStep').and.callFake(function () {
-                RecipeService.getRecipe().push({});
-                return $q.when(true);
-            });
-            spyOn(RecipeService, 'getLastStep').and.returnValue({
-                transformation: {stepId: 'a151e543456413ef51'}
-            });
-            spyOn(RecipeService, 'getPreviousStep').and.returnValue({
-                transformation: {stepId: '84f654a8e64fc5'}
-            });
-            spyOn(StateService, 'showRecipe').and.returnValue();
-            spyOn(StateService, 'hideRecipe').and.returnValue();
-        }));
-
-        it('should hide recipe on dataset playground init', inject(function ($rootScope, PlaygroundService, StateService) {
-            //given
-            var dataset = {id: '1'};
-            expect(StateService.hideRecipe).not.toHaveBeenCalled();
-
-            //when
-            PlaygroundService.initPlayground(dataset);
-            $rootScope.$digest();
-
-            //then
-            expect(StateService.hideRecipe).toHaveBeenCalled();
-        }));
-
-        it('should show recipe on preparation playground init', inject(function ($rootScope, PlaygroundService, StateService) {
-            //given
-            expect(StateService.showRecipe).not.toHaveBeenCalled();
-            var preparation = {
-                id: '6845521254541',
-                dataset: {id: '1'}
-            };
-
-            //when
-            PlaygroundService.load(preparation);
-            $rootScope.$digest();
-
-            //then
-            expect(StateService.showRecipe).toHaveBeenCalled();
-        }));
-
-        it('should show recipe on first step append', inject(function ($rootScope, PlaygroundService, StateService) {
-            //given
-            expect(StateService.showRecipe).not.toHaveBeenCalled();
-            stateMock.playground.dataset = {id: '123456'};
-
-            var action = 'uppercase';
-            var column = {id: 'firstname'};
-            var parameters = {param1: 'param1Value', param2: 4};
-
-            //when
-            PlaygroundService.appendStep(action, column, parameters);
-            stateMock.playground.preparation = createdPreparation;
-            $rootScope.$digest();
-
-            //then
-            expect(StateService.showRecipe).toHaveBeenCalled();
-        }));
-
-        it('should NOT force recipe display on second step append', inject(function ($rootScope, PlaygroundService, RecipeService, StateService) {
-            //given
-            stateMock.playground.preparation = {id: '123456'};
-            expect(StateService.showRecipe).not.toHaveBeenCalled();
-            RecipeService.getRecipe().push({});
-
-            var action = 'uppercase';
-            var column = {id: 'firstname'};
-            var parameters = {param1: 'param1Value', param2: 4};
-
-            //when
-            PlaygroundService.appendStep(action, column, parameters);
-            $rootScope.$digest();
-
-            //then
-            expect(StateService.showRecipe).not.toHaveBeenCalled();
-        }));
-
-        it('should show recipe and display onboarding on third step append if the tour has not been completed yet', inject(function ($rootScope, $timeout, PlaygroundService, StateService, OnboardingService) {
-            //given
-            stateMock.playground.dataset = {id: '123456'};
-            spyOn(OnboardingService, 'startTour').and.returnValue();
-            spyOn(OnboardingService, 'shouldStartTour').and.returnValue(true); //not completed
-
-            var action = 'uppercase';
-            var column = {id: 'firstname'};
-            var parameters = {param1: 'param1Value', param2: 4};
-
-            //given : first action call
-            PlaygroundService.appendStep(action, column, parameters);
-            stateMock.playground.preparation = createdPreparation;
-            $rootScope.$digest();
-            $timeout.flush(300);
-
-            //given : second action call
-            PlaygroundService.appendStep(action, column, parameters);
-            $timeout.flush(300);
-            $rootScope.$digest();
-
-            expect(StateService.showRecipe.calls.count()).toBe(1); //called on 1st action
-            expect(OnboardingService.startTour).not.toHaveBeenCalled();
-
-            //when
-            PlaygroundService.appendStep(action, column, parameters);
-            $rootScope.$digest();
-            $timeout.flush(300);
-
-            //then
-            expect(StateService.showRecipe.calls.count()).toBe(2);
-            expect(OnboardingService.startTour).toHaveBeenCalled();
-        }));
-
-        it('should NOT show recipe and display onboarding on third step append if the tour has already been completed', inject(function ($rootScope, $timeout, PlaygroundService, StateService, OnboardingService) {
-            //given
-            stateMock.playground.dataset = {id: '123456'};
-            spyOn(OnboardingService, 'startTour').and.returnValue();
-            spyOn(OnboardingService, 'shouldStartTour').and.returnValue(false); //already completed
-
-            var action = 'uppercase';
-            var column = {id: 'firstname'};
-            var parameters = {param1: 'param1Value', param2: 4};
-
-            //given : first action call
-            PlaygroundService.appendStep(action, column, parameters);
-            stateMock.playground.preparation = createdPreparation;
-            $rootScope.$digest();
-            $timeout.flush(300);
-
-            //given : second action call
-            PlaygroundService.appendStep(action, column, parameters);
-            $timeout.flush(300);
-            $rootScope.$digest();
-
-            expect(StateService.showRecipe.calls.count()).toBe(1); //called on 1st action
-            expect(OnboardingService.startTour).not.toHaveBeenCalled();
-
-            //when
-            PlaygroundService.appendStep(action, column, parameters);
-            $rootScope.$digest();
-            $timeout.flush(300);
-
-            //then
-            expect(StateService.showRecipe.calls.count()).toBe(1);
-            expect(OnboardingService.startTour).not.toHaveBeenCalled();
-        }));
-    });
-
     describe('preparation name edition mode', function () {
 
         beforeEach(inject(function ($q, PreparationService, RecipeService) {
@@ -1333,7 +1207,6 @@ describe('Playground Service', function () {
                 expect(StateService.resetPlayground).toHaveBeenCalled();
                 expect(StateService.setCurrentDataset).toHaveBeenCalledWith(dataset);
                 expect(StateService.setCurrentData).toHaveBeenCalledWith(datasetColumns);
-                expect(StateService.removeAllGridFilters).toHaveBeenCalled();
                 expect(RecipeService.refresh).toHaveBeenCalled();
                 expect(TransformationCacheService.invalidateCache).toHaveBeenCalled();
                 expect(HistoryService.clear).toHaveBeenCalled();
@@ -1410,4 +1283,146 @@ describe('Playground Service', function () {
             assertPreparationStepIsLoadedWith(dataset, data, step);
         }));
     });
+
+    describe('on step append', () => {
+        beforeEach(inject(function ($q, PreparationService, RecipeService, StateService) {
+            spyOn(PreparationService, 'getContent').and.returnValue($q.when({columns: [{}]}));
+            spyOn(PreparationService, 'appendStep').and.callFake(function () {
+                RecipeService.getRecipe().push({});
+                return $q.when(true);
+            });
+            spyOn(RecipeService, 'getLastStep').and.returnValue({
+                transformation: {stepId: 'a151e543456413ef51'}
+            });
+            spyOn(RecipeService, 'getPreviousStep').and.returnValue({
+                transformation: {stepId: '84f654a8e64fc5'}
+            });
+        }));
+
+        describe('route change', () => {
+            it('should change route to preparation route on first step', inject(($rootScope, $state, PlaygroundService) => {
+                //given
+                expect($state.go).not.toHaveBeenCalled();
+                stateMock.playground.dataset = {id: '123456'};
+
+                const action = 'uppercase';
+                const column = {id: 'firstname'};
+                const parameters = {param1: 'param1Value', param2: 4};
+
+                //when
+                PlaygroundService.appendStep(action, column, parameters);
+                stateMock.playground.preparation = createdPreparation;
+                $rootScope.$digest();
+
+                //then
+                expect($state.go).toHaveBeenCalledWith('playground.preparation', {prepid: createdPreparation.id});
+            }));
+        });
+
+        describe('recipe display', () => {
+            it('should show recipe on first step', inject(function ($rootScope, PlaygroundService, StateService) {
+                //given
+                expect(StateService.showRecipe).not.toHaveBeenCalled();
+                stateMock.playground.dataset = {id: '123456'};
+
+                var action = 'uppercase';
+                var column = {id: 'firstname'};
+                var parameters = {param1: 'param1Value', param2: 4};
+
+                //when
+                PlaygroundService.appendStep(action, column, parameters);
+                stateMock.playground.preparation = createdPreparation;
+                $rootScope.$digest();
+
+                //then
+                expect(StateService.showRecipe).toHaveBeenCalled();
+            }));
+
+            it('should NOT force recipe display on second step', inject(function ($rootScope, PlaygroundService, RecipeService, StateService) {
+                //given
+                stateMock.playground.preparation = {id: '123456'};
+                expect(StateService.showRecipe).not.toHaveBeenCalled();
+                RecipeService.getRecipe().push({});
+
+                var action = 'uppercase';
+                var column = {id: 'firstname'};
+                var parameters = {param1: 'param1Value', param2: 4};
+
+                //when
+                PlaygroundService.appendStep(action, column, parameters);
+                $rootScope.$digest();
+
+                //then
+                expect(StateService.showRecipe).not.toHaveBeenCalled();
+            }));
+
+            it('should show recipe and display onboarding on third step if the tour has not been completed yet', inject(function ($rootScope, $timeout, PlaygroundService, StateService, OnboardingService) {
+                //given
+                stateMock.playground.dataset = {id: '123456'};
+                spyOn(OnboardingService, 'startTour').and.returnValue();
+                spyOn(OnboardingService, 'shouldStartTour').and.returnValue(true); //not completed
+
+                var action = 'uppercase';
+                var column = {id: 'firstname'};
+                var parameters = {param1: 'param1Value', param2: 4};
+
+                //given : first action call
+                PlaygroundService.appendStep(action, column, parameters);
+                stateMock.playground.preparation = createdPreparation;
+                $rootScope.$digest();
+                $timeout.flush(300);
+
+                //given : second action call
+                PlaygroundService.appendStep(action, column, parameters);
+                $timeout.flush(300);
+                $rootScope.$digest();
+
+                expect(StateService.showRecipe.calls.count()).toBe(1); //called on 1st action
+                expect(OnboardingService.startTour).not.toHaveBeenCalled();
+
+                //when
+                PlaygroundService.appendStep(action, column, parameters);
+                $rootScope.$digest();
+                $timeout.flush(300);
+
+                //then
+                expect(StateService.showRecipe.calls.count()).toBe(2);
+                expect(OnboardingService.startTour).toHaveBeenCalled();
+            }));
+
+            it('should NOT show recipe and display onboarding on third step if the tour has already been completed', inject(function ($rootScope, $timeout, PlaygroundService, StateService, OnboardingService) {
+                //given
+                stateMock.playground.dataset = {id: '123456'};
+                spyOn(OnboardingService, 'startTour').and.returnValue();
+                spyOn(OnboardingService, 'shouldStartTour').and.returnValue(false); //already completed
+
+                var action = 'uppercase';
+                var column = {id: 'firstname'};
+                var parameters = {param1: 'param1Value', param2: 4};
+
+                //given : first action call
+                PlaygroundService.appendStep(action, column, parameters);
+                stateMock.playground.preparation = createdPreparation;
+                $rootScope.$digest();
+                $timeout.flush(300);
+
+                //given : second action call
+                PlaygroundService.appendStep(action, column, parameters);
+                $timeout.flush(300);
+                $rootScope.$digest();
+
+                expect(StateService.showRecipe.calls.count()).toBe(1); //called on 1st action
+                expect(OnboardingService.startTour).not.toHaveBeenCalled();
+
+                //when
+                PlaygroundService.appendStep(action, column, parameters);
+                $rootScope.$digest();
+                $timeout.flush(300);
+
+                //then
+                expect(StateService.showRecipe.calls.count()).toBe(1);
+                expect(OnboardingService.startTour).not.toHaveBeenCalled();
+            }));
+        })
+    })
 });

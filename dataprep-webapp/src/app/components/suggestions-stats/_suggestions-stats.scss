@@ -15,7 +15,7 @@
 
   position: relative;
   border-left: 2px solid #f1f1f1;
-  height: calc(100vh - 59px);
+  height: calc(100vh - 56px);
 
   .title {
     font-size: 1.2em;
@@ -27,7 +27,7 @@
   .split-panes .split-handler {
     height: 12px;
     background-color: #f1f1f1 !important;
-    background: url("/assets/images/dataprep-panel-splitter.png")  no-repeat center;
+    background: url("/assets/images/dataprep-panel-splitter.png") no-repeat center;
     z-index: 10;
   }
 

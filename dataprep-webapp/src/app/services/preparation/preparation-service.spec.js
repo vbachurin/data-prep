@@ -1,19 +1,18 @@
 describe('Preparation Service', function () {
     'use strict';
 
-    var preparationConsolidation, datasetConsolidation, stateMock;
-    var datasets = [{name: 'my dataset'}, {name: 'my second dataset'}, {name: 'my second dataset (1)'}, {name: 'my second dataset (2)'}];
-    var preparations = [
+    let stateMock;
+    const preparations = [
         {id: '4385fa764bce39593a405d91bc88', dataSetId: '3214a5454ef8642c13'},
         {id: '58444bce39593a405d9456'},
         {id: '2545764bce39593a405d91bc8673'}
     ];
-    var newPreparationId = '6cd546546548a745';
+    const newPreparationId = '6cd546546548a745';
 
-    var updatedDatasetId = '99ac8561e62f34131';
-    var updatedPreparationId = '5ea51464f515125e3';
+    const updatedDatasetId = '99ac8561e62f34131';
+    const updatedPreparationId = '5ea51464f515125e3';
 
-    beforeEach(angular.mock.module('data-prep.services.preparation', function ($provide) {
+    beforeEach(angular.mock.module('data-prep.services.preparation', ($provide) => {
         stateMock = {
             inventory: {
                 preparations: null
@@ -22,10 +21,7 @@ describe('Preparation Service', function () {
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(inject(function ($q, PreparationListService, PreparationRestService, StorageService) {
-        preparationConsolidation = $q.when(true);
-        datasetConsolidation = $q.when(datasets);
-
+    beforeEach(inject(($q, PreparationListService, PreparationRestService, StorageService) => {
         spyOn(PreparationListService, 'refreshPreparations').and.returnValue($q.when(preparations));
         spyOn(PreparationListService, 'create').and.returnValue($q.when({id: newPreparationId}));
         spyOn(PreparationListService, 'update').and.returnValue($q.when({
@@ -47,90 +43,66 @@ describe('Preparation Service', function () {
         spyOn(StorageService, 'moveAggregations').and.returnValue();
     }));
 
-    describe('getter/refresher', function () {
-
-        it('should return a promise resolving existing preparations if they are already fetched', inject(function ($q, $rootScope, PreparationService, PreparationListService) {
+    describe('getter/refresher', () => {
+        it('should return the pending refresh promise when it is defined', inject(($q, $rootScope, PreparationService, PreparationListService) => {
             //given
-            spyOn(PreparationListService, 'getPreparationsPromise').and.returnValue($q.when(preparations));
-            spyOn(PreparationListService, 'hasPreparationsPromise').and.returnValue($q.when(preparations));
+            const fetchPromise = $q.when(preparations);
+            spyOn(PreparationListService, 'getPreparationsPromise').and.returnValue(fetchPromise);
+            spyOn(PreparationListService, 'hasPreparationsPromise').and.returnValue(true);
+            expect(PreparationListService.refreshPreparations).not.toHaveBeenCalled();
 
-            var result = null;
+            let result = null;
 
             //when
-            PreparationService.getPreparations()
-                .then(function (promiseResult) {
-                    result = promiseResult;
-                });
+            PreparationService.getPreparations().then((promiseResult) => result = promiseResult);
             $rootScope.$digest();
 
             //then
             expect(result).toBe(preparations);
-        }));
-
-        it('should return preparations which has been fetched', inject(function (state, $rootScope, PreparationService, PreparationListService) {
-            //given
-            spyOn(PreparationListService, 'hasPreparationsPromise').and.returnValue(null);
-            stateMock.inventory.preparations = preparations;
-
-            //when
-            PreparationService.getPreparations();
-            $rootScope.$digest();
-
-            //then
             expect(PreparationListService.refreshPreparations).not.toHaveBeenCalled();
         }));
 
-        it('should fetch preparations if they are not already fetched', inject(function ($rootScope, PreparationService, PreparationListService) {
+        it('should return preparations from state when there are already fetched', inject((state, $rootScope, PreparationService, PreparationListService) => {
             //given
-            spyOn(PreparationListService, 'hasPreparationsPromise').and.returnValue(null);
-            stateMock.inventory.preparations = null;
-            var result = null;
+            stateMock.inventory.preparations = preparations;
+            spyOn(PreparationListService, 'hasPreparationsPromise').and.returnValue(false);
+            expect(PreparationListService.refreshPreparations).not.toHaveBeenCalled();
+
+            let result = null;
 
             //when
-            PreparationService.getPreparations()
-                .then(function (promiseResult) {
-                    result = promiseResult;
-                });
+            PreparationService.getPreparations().then((promiseResult) => result = promiseResult);
             $rootScope.$digest();
 
             //then
             expect(result).toBe(preparations);
+            expect(PreparationListService.refreshPreparations).not.toHaveBeenCalled();
         }));
-    });
 
-    describe('details/content', function () {
-        it('should get current preparation content from ListService', inject(function ($rootScope, PreparationService, PreparationRestService) {
+        it('should fetch preparations when they are not already fetched', inject(($rootScope, PreparationService, PreparationListService) => {
             //given
-            var version = 'head';
-            var preparationId = '4385fa764bce39593a405d91bc88';
+            spyOn(PreparationListService, 'hasPreparationsPromise').and.returnValue(null);
+            stateMock.inventory.preparations = null;
+            expect(PreparationListService.refreshPreparations).not.toHaveBeenCalled();
+            let result = null;
 
             //when
-            PreparationService.getContent(preparationId, version);
+            PreparationService.getPreparations().then((promiseResult) => result = promiseResult);
             $rootScope.$digest();
 
             //then
-            expect(PreparationRestService.getContent).toHaveBeenCalledWith(preparationId, version);
-        }));
-
-        it('should get current preparation details from ListService', inject(function ($rootScope, PreparationService, PreparationRestService) {
-            //given
-            var preparationId = '4385fa764bce39593a405d91bc88';
-
-            //when
-            PreparationService.getDetails(preparationId);
-            $rootScope.$digest();
-
-            //then
-            expect(PreparationRestService.getDetails).toHaveBeenCalledWith(preparationId);
+            expect(result).toBe(preparations);
+            expect(PreparationListService.refreshPreparations).toHaveBeenCalled();
         }));
     });
 
-    describe('lifecycle', function () {
-        describe('create', function () {
-            it('should create a new preparation', inject(function ($rootScope, PreparationService, PreparationListService) {
+    describe('lifecycle', () => {
+        describe('create', () => {
+            it('should create a new preparation', inject(($rootScope, PreparationService, PreparationListService) => {
                 //given
-                var datasetId = '2430e5df845ab6034c85';
-                var name = 'my preparation';
+                const datasetId = '2430e5df845ab6034c85';
+                const name = 'my preparation';
+                expect(PreparationListService.create).not.toHaveBeenCalled();
 
                 //when
                 PreparationService.create(datasetId, name);
@@ -140,9 +112,10 @@ describe('Preparation Service', function () {
                 expect(PreparationListService.create).toHaveBeenCalledWith(datasetId, name);
             }));
 
-            it('should save aggregations for preparation from dataset aggregations', inject(function ($rootScope, PreparationService, StorageService) {
+            it('should save aggregations for preparation from dataset aggregations', inject(($rootScope, PreparationService, StorageService) => {
                 //given
-                var datasetId = '2430e5df845ab6034c85';
+                const datasetId = '2430e5df845ab6034c85';
+                expect(StorageService.savePreparationAggregationsFromDataset).not.toHaveBeenCalled();
 
                 //when
                 PreparationService.create(datasetId, 'my preparation');
@@ -153,11 +126,12 @@ describe('Preparation Service', function () {
             }));
         });
 
-        describe('update', function () {
-            it('should update current preparation name', inject(function ($rootScope, PreparationService, PreparationListService) {
+        describe('update', () => {
+            it('should update current preparation name', inject(($rootScope, PreparationService, PreparationListService) => {
                 //given
-                var preparationId = '6cd546546548a745';
-                var name = 'my preparation';
+                const preparationId = '6cd546546548a745';
+                const name = 'my preparation';
+                expect(PreparationListService.update).not.toHaveBeenCalled();
 
                 //when
                 PreparationService.setName(preparationId, name);
@@ -167,10 +141,11 @@ describe('Preparation Service', function () {
                 expect(PreparationListService.update).toHaveBeenCalledWith(preparationId, name);
             }));
 
-            it('should move aggregations to the new preparation id key in localStorage', inject(function ($rootScope, PreparationService, StorageService) {
+            it('should move aggregations to the new preparation id key in localStorage', inject(($rootScope, PreparationService, StorageService) => {
                 //given
-                var preparationId = '6cd546546548a745';
-                var name = 'my preparation';
+                const preparationId = '6cd546546548a745';
+                const name = 'my preparation';
+                expect(StorageService.moveAggregations).not.toHaveBeenCalled();
 
                 //when
                 PreparationService.setName(preparationId, name);
@@ -181,8 +156,11 @@ describe('Preparation Service', function () {
             }));
         });
 
-        describe('delete', function () {
-            it('should delete a preparation', inject(function ($rootScope, PreparationService, PreparationListService) {
+        describe('delete', () => {
+            it('should delete a preparation', inject(($rootScope, PreparationService, PreparationListService) => {
+                //given
+                expect(PreparationListService.delete).not.toHaveBeenCalled();
+
                 //when
                 PreparationService.delete(preparations[0]);
                 $rootScope.$digest();
@@ -191,9 +169,10 @@ describe('Preparation Service', function () {
                 expect(PreparationListService.delete).toHaveBeenCalledWith(preparations[0]);
             }));
 
-            it('should remove aggregations from storage', inject(function ($rootScope, PreparationService, PreparationListService, StorageService) {
+            it('should remove aggregations from storage', inject(($rootScope, PreparationService, PreparationListService, StorageService) => {
                 //given
                 stateMock.inventory.preparations = preparations;
+                expect(StorageService.removeAllAggregations).not.toHaveBeenCalled();
 
                 //when
                 PreparationService.delete(preparations[0]);
@@ -205,197 +184,108 @@ describe('Preparation Service', function () {
         });
     });
 
-    describe('steps', function () {
-        it('should copy implicit parameters when they are in original params', inject(function (PreparationService) {
-            //given
-            var newParams = {value: 'tata'};
-            var oldParams = {value: 'toto', scope: 'cell', column_id: '0001', row_id: '256', column_name: 'state'};
+    describe('steps', () => {
+        describe('copyImplicitParameters', () => {
+            it('should copy implicit parameters when they are in original params', inject((PreparationService) => {
+                //given
+                const newParams = {value: 'tata'};
+                const oldParams = {value: 'toto', scope: 'cell', column_id: '0001', row_id: '256', column_name: 'state'};
 
-            //when
-            PreparationService.copyImplicitParameters(newParams, oldParams);
+                //when
+                PreparationService.copyImplicitParameters(newParams, oldParams);
 
-            //then
-            expect(newParams).toEqual({
-                value: 'tata',
-                scope: 'cell',
-                column_id: '0001',
-                row_id: '256',
-                column_name: 'state'
-            });
-        }));
+                //then
+                expect(newParams).toEqual({
+                    value: 'tata',
+                    scope: 'cell',
+                    column_id: '0001',
+                    row_id: '256',
+                    column_name: 'state'
+                });
+            }));
 
-        it('should NOT copy implicit parameters when they are NOT in original params', inject(function (PreparationService) {
-            //given
-            var newParams = {value: 'tata'};
-            var oldParams = {value: 'toto', scope: 'cell'};
+            it('should NOT copy implicit parameters when they are NOT in original params', inject((PreparationService) => {
+                //given
+                const newParams = {value: 'tata'};
+                const oldParams = {value: 'toto', scope: 'cell'};
 
-            //when
-            PreparationService.copyImplicitParameters(newParams, oldParams);
+                //when
+                PreparationService.copyImplicitParameters(newParams, oldParams);
 
-            //then
-            expect(newParams).toEqual({value: 'tata', scope: 'cell'});
-        }));
+                //then
+                expect(newParams).toEqual({value: 'tata', scope: 'cell'});
+            }));
+        });
 
-        it('should return true if the parameters are different', inject(function (PreparationService) {
-            //given
-            var step = {
-                column: {
-                    id: '1',
-                    name: 'firstname'
-                },
-                actionParameters: {
-                    parameters: {value: '--', column_name: 'firstname', column_id: '1'}
-                }
-            };
-            var newParams = {value: '.'};
+        describe('paramsHasChanged', () => {
+            it('should return true if the parameters are different', inject((PreparationService) => {
+                //given
+                const step = {
+                    column: {
+                        id: '1',
+                        name: 'firstname'
+                    },
+                    actionParameters: {
+                        parameters: {value: '--', column_name: 'firstname', column_id: '1'}
+                    }
+                };
+                const newParams = {value: '.'};
 
-            //when
-            var result = PreparationService.paramsHasChanged(step, newParams);
+                //when
+                const result = PreparationService.paramsHasChanged(step, newParams);
 
-            //then
-            expect(result).toBe(true);
-        }));
+                //then
+                expect(result).toBe(true);
+            }));
 
-        it('should return false if the parameters are the same', inject(function (PreparationService) {
-            //given
-            var step = {
-                column: {
-                    id: '1',
-                    name: 'firstname'
-                },
-                actionParameters: {
-                    parameters: {value: '--', column_id: '1', column_name: 'firstname'}
-                }
-            };
-            var newParams = {value: '--', column_id: '1', column_name: 'firstname'};
+            it('should return false if the parameters are the same', inject((PreparationService) => {
+                //given
+                const step = {
+                    column: {
+                        id: '1',
+                        name: 'firstname'
+                    },
+                    actionParameters: {
+                        parameters: {value: '--', column_id: '1', column_name: 'firstname'}
+                    }
+                };
+                const newParams = {value: '--', column_id: '1', column_name: 'firstname'};
 
-            //when
-            var result = PreparationService.paramsHasChanged(step, newParams);
+                //when
+                const result = PreparationService.paramsHasChanged(step, newParams);
 
-            //then
-            expect(result).toBe(false);
-        }));
+                //then
+                expect(result).toBe(false);
+            }));
+        });
 
-        it('should update a preparation step with provided parameters', inject(function ($rootScope, PreparationService, PreparationRestService) {
-            //given
-            var preparationId = '6cd546546548a745';
-            var step = {
-                transformation: {
-                    stepId: '867654ab15edf576844c4',
-                    name: 'deletematch'
-                },
-                column: {id: '1', name: 'firstname'}
-            };
-            var parameters = {value: 'Toto', column_name: 'firstname', column_id: '1', scope: 'column'};
+        describe('update', () => {
+            it('should update a preparation step with provided parameters', inject(($rootScope, PreparationService, PreparationRestService) => {
+                //given
+                const preparationId = '6cd546546548a745';
+                const step = {
+                    transformation: {
+                        stepId: '867654ab15edf576844c4',
+                        name: 'deletematch'
+                    },
+                    column: {id: '1', name: 'firstname'}
+                };
+                const parameters = {value: 'Toto', column_name: 'firstname', column_id: '1', scope: 'column'};
 
-            //when
-            PreparationService.updateStep(preparationId, step, parameters);
-            $rootScope.$digest();
+                //when
+                PreparationService.updateStep(preparationId, step, parameters);
+                $rootScope.$digest();
 
-            //then
-            expect(PreparationRestService.updateStep).toHaveBeenCalledWith(
-                '6cd546546548a745', //prep id
-                '867654ab15edf576844c4',  //step id
-                {
-                    action: 'deletematch', //step name
-                    parameters: {value: 'Toto', column_name: 'firstname', column_id: '1', scope: 'column'} //params
-                }
-            );
-        }));
+                //then
+                expect(PreparationRestService.updateStep).toHaveBeenCalledWith(
+                    '6cd546546548a745', //prep id
+                    '867654ab15edf576844c4',  //step id
+                    {
+                        action: 'deletematch', //step name
+                        parameters: {value: 'Toto', column_name: 'firstname', column_id: '1', scope: 'column'} //params
+                    }
+                );
+            }));
+        });
     });
-
-    describe('preview', function () {
-        it('should get diff preview', inject(function ($q, PreparationService, PreparationRestService) {
-            //given
-            var preparationId = '6cd546546548a745';
-            var currentStep = {transformation: {stepId: '86574251524'}};
-            var previewStep = {transformation: {stepId: '65487874887'}};
-            var recordsTdpId = [1, 2, 3];
-            var canceler = $q.defer();
-
-            var params = {
-                preparationId: preparationId,
-                currentStepId: currentStep.transformation.stepId,
-                previewStepId: previewStep.transformation.stepId,
-                tdpIds: recordsTdpId
-            };
-
-            //when
-            PreparationService.getPreviewDiff(params, canceler);
-
-            //then
-            expect(PreparationRestService.getPreviewDiff).toHaveBeenCalledWith(params, canceler);
-        }));
-
-        it('should get diff preview', inject(function ($q, PreparationService, PreparationRestService) {
-            //given
-            var preparationId = '6cd546546548a745';
-            var currentStep = {transformation: {stepId: '86574251524'}};
-            var updateStep = {
-                transformation: {stepId: '65487874887'},
-                actionParameters: {action: 'fillEmptyWithValue'}
-            };
-            var newParams = {value: 'toto'};
-            var recordsTdpId = [1, 2, 3];
-            var canceler = $q.defer();
-
-            var params = {
-                preparationId: preparationId,
-                tdpIds: recordsTdpId,
-                currentStepId: currentStep.transformation.stepId,
-                updateStepId: updateStep.transformation.stepId,
-                action: {
-                    action: updateStep.actionParameters.action,
-                    parameters: newParams
-                }
-            };
-
-            //when
-            PreparationService.getPreviewUpdate(params, canceler);
-
-            //then
-            expect(PreparationRestService.getPreviewUpdate).toHaveBeenCalledWith(params, canceler);
-        }));
-
-        it('should get add preview', inject(function ($q, PreparationService, PreparationRestService) {
-            //given
-            var preparationId = '6cd546546548a745';
-            var datasetId = '754a54654fd694e6464';
-            var action = 'cut';
-            var actionParams = {value: 'toto'};
-            var recordsTdpId = [1, 2, 3];
-            var canceler = $q.defer();
-
-            var params = {
-                action: {
-                    action: action,
-                    parameters: actionParams
-                },
-                tdpIds: recordsTdpId,
-                datasetId: datasetId,
-                preparationId: preparationId
-            };
-
-            //when
-            PreparationService.getPreviewAdd(params, canceler);
-
-            //then
-            expect(PreparationRestService.getPreviewAdd).toHaveBeenCalledWith(params, canceler);
-        }));
-    });
-
-    describe('clone', function () {
-        it('should call service to clone a preparation', inject(function ($rootScope, PreparationService, PreparationListService) {
-            //given
-            stateMock.inventory.preparations = preparations;
-
-            //when
-            PreparationService.clone(preparations[0].id);
-            $rootScope.$digest();
-
-            //then
-            expect(PreparationListService.clone).toHaveBeenCalledWith(preparations[0].id);
-        }));
-    });
-
 });

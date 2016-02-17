@@ -17,10 +17,10 @@
  * @description UploadWorkflowService service. This service exposes functions to open the different types of dataset
  * @requires data-prep.services.state.service:StateService
  * @requires data-prep.services.dataset.service:DatasetSheetPreviewService
- * @requires data-prep.services.dataset.service:DatasetListService
+ * @requires data-prep.services.dataset.service:DatasetService
  * @requires data-prep.services.utils.service:MessageService
  */
-export default function UploadWorkflowService($state, StateService, DatasetSheetPreviewService, DatasetListService, MessageService) {
+export default function UploadWorkflowService($state, StateService, DatasetSheetPreviewService, DatasetService, MessageService) {
     'ngInject';
 
     var self = this;
@@ -46,7 +46,7 @@ export default function UploadWorkflowService($state, StateService, DatasetSheet
             MessageService.error('PREVIEW_NOT_IMPLEMENTED_FOR_TYPE_TITLE', 'PREVIEW_NOT_IMPLEMENTED_FOR_TYPE_TITLE');
         }
         else {
-            DatasetListService.refreshDatasets();
+            DatasetService.refreshDatasets();
             MessageService.error('FILE_FORMAT_ANALYSIS_NOT_READY_TITLE', 'FILE_FORMAT_ANALYSIS_NOT_READY_CONTENT');
         }
     };
@@ -64,7 +64,7 @@ export default function UploadWorkflowService($state, StateService, DatasetSheet
         }
         else {
             StateService.setPreviousState('nav.home.datasets');
-            $state.go('playground', {datasetid: dataset.id});
+            $state.go('playground.dataset', {datasetid: dataset.id});
         }
     };
 }

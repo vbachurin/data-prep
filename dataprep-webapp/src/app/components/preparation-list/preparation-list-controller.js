@@ -39,7 +39,7 @@ export default function PreparationListCtrl($rootScope, $state, state, StateServ
      */
     vm.load = function load(preparation) {
         StateService.setPreviousState('nav.home.preparations');
-        $state.go('playground', {prepid: preparation.id});
+        $state.go('playground.preparation', {prepid: preparation.id});
     };
 
     /**

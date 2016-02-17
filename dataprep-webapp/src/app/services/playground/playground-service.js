@@ -75,7 +75,6 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
         StateService.setCurrentDataset(dataset);
         StateService.setCurrentData(data);
         StateService.setCurrentPreparation(preparation);
-        StateService.removeAllGridFilters(); //TODO JSO remove this
 
         RecipeService.refresh();
         TransformationCacheService.invalidateCache();
@@ -315,7 +314,6 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
             //hide loading screen
             .finally(function () {
                 $rootScope.$emit('talend.loading.stop');
-                $state.go('playground', {prepid: state.playground.preparation.id});
             });
     }
 
@@ -507,6 +505,7 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
             .then(function () {
                 if (RecipeService.getRecipe().length === 1) { //first step append
                     StateService.showRecipe();
+                    $state.go('playground.preparation', {prepid: state.playground.preparation.id});
                 }
                 else if (OnboardingService.shouldStartTour('recipe') && RecipeService.getRecipe().length === 3) { //third step append : show onboarding
                     StateService.showRecipe();

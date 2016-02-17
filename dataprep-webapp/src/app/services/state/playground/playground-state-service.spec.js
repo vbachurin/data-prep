@@ -11,10 +11,10 @@
 
   ============================================================================*/
 
-describe('Playground state service', function () {
+describe('Playground state service', () => {
     'use strict';
 
-    var recipeStateMock, gridStateMock, filterStateMock, parametersStateMock;
+    let recipeStateMock, gridStateMock, filterStateMock, parametersStateMock;
 
     beforeEach(angular.mock.module('data-prep.services.state', function ($provide) {
         recipeStateMock = {};
@@ -27,7 +27,7 @@ describe('Playground state service', function () {
         $provide.constant('parametersState', parametersStateMock);
     }));
 
-    beforeEach(inject(function (GridStateService, FilterStateService, LookupStateService, SuggestionsStateService, ParametersStateService) {
+    beforeEach(inject(function (GridStateService, RecipeStateService, FilterStateService, LookupStateService, SuggestionsStateService, ParametersStateService) {
         spyOn(GridStateService, 'setData').and.returnValue();
         spyOn(GridStateService, 'setFilter').and.returnValue();
         spyOn(GridStateService, 'reset').and.returnValue();
@@ -42,105 +42,11 @@ describe('Playground state service', function () {
         spyOn(ParametersStateService, 'show').and.returnValue();
         spyOn(ParametersStateService, 'update').and.returnValue();
         spyOn(ParametersStateService, 'reset').and.returnValue();
+        spyOn(RecipeStateService, 'reset').and.returnValue();
     }));
 
-    describe('playground state', function () {
-        it('should set dataset metadata in state', inject(function (playgroundState, PlaygroundStateService) {
-            //given
-            var dataset = {
-                id: '958cb63f235e4565'
-            };
-            expect(playgroundState.dataset).not.toBe(dataset);
-
-            //when
-            PlaygroundStateService.setDataset(dataset);
-
-            //then
-            expect(playgroundState.dataset).toBe(dataset);
-        }));
-
-        it('should set data in state', inject(function (playgroundState, PlaygroundStateService) {
-            //given
-            expect(playgroundState.data).toBeFalsy();
-            var data = {
-                records: []
-            };
-
-            //when
-            PlaygroundStateService.setData(data);
-
-            //then
-            expect(playgroundState.data).toBe(data);
-        }));
-
-        it('should set data in grid', inject(function (playgroundState, PlaygroundStateService, GridStateService) {
-            //given
-            expect(GridStateService.setData).not.toHaveBeenCalled();
-            var data = {
-                records: []
-            };
-
-            //when
-            PlaygroundStateService.setData(data);
-
-            //then
-            expect(GridStateService.setData).toHaveBeenCalledWith(data);
-        }));
-
-        it('should set filters again on data change in grid to refresh statefull filters (ex: invalid filters)', inject(function (playgroundState, PlaygroundStateService, GridStateService) {
-            //given
-            expect(GridStateService.setData).not.toHaveBeenCalled();
-            var data = {
-                records: []
-            };
-            var filters = [{}, {}];
-            filterStateMock.gridFilters = filters;
-
-            //when
-            PlaygroundStateService.setData(data);
-
-            //then
-            expect(GridStateService.setFilter).toHaveBeenCalledWith(filters, data);
-        }));
-
-        it('should set preparation in state', inject(function (playgroundState, PlaygroundStateService) {
-            //given
-            expect(playgroundState.preparation).toBeFalsy();
-            var preparation = {
-                id: '3d245846bc46f51'
-            };
-
-            //when
-            PlaygroundStateService.setPreparation(preparation);
-
-            //then
-            expect(playgroundState.preparation).toBe(preparation);
-        }));
-
-        it('should set preparation name in state', inject(function (playgroundState, PlaygroundStateService) {
-            //given
-            expect(playgroundState.preparationName).toBeFalsy();
-            var preparationName = 'the preparation name';
-
-            //when
-            PlaygroundStateService.setPreparationName(preparationName);
-
-            //then
-            expect(playgroundState.preparationName).toBe(preparationName);
-        }));
-
-        it('should set name edition flag in state', inject(function (playgroundState, PlaygroundStateService) {
-            //given
-            expect(playgroundState.nameEditionMode).toBeFalsy();
-
-            //when
-            PlaygroundStateService.setNameEditionMode(true);
-
-            //then
-            expect(playgroundState.nameEditionMode).toBe(true);
-        }));
-
-        it('should set playground visibility to true in state', inject(function (playgroundState, PlaygroundStateService) {
+    describe('visibility', () => {
+        it('should set playground visibility to true in state', inject((playgroundState, PlaygroundStateService) => {
             //given
             playgroundState.visible = false;
 
@@ -151,7 +57,7 @@ describe('Playground state service', function () {
             expect(playgroundState.visible).toBe(true);
         }));
 
-        it('should set playground visibility to false in state', inject(function (playgroundState, PlaygroundStateService) {
+        it('should set playground visibility to false in state', inject((playgroundState, PlaygroundStateService) => {
             //given
             playgroundState.visible = true;
 
@@ -161,8 +67,10 @@ describe('Playground state service', function () {
             //then
             expect(playgroundState.visible).toBe(false);
         }));
+    });
 
-        it('should set the previous state of playground', inject(function (playgroundState, PlaygroundStateService) {
+    describe('routing', () => {
+        it('should set the previous state of playground', inject((playgroundState, PlaygroundStateService) => {
             //given
             playgroundState.previousState  = '';
 
@@ -172,8 +80,109 @@ describe('Playground state service', function () {
             //then
             expect(playgroundState.previousState).toBe('home');
         }));
+    });
 
-        it('should update columns statistics', inject(function (playgroundState, PlaygroundStateService) {
+    describe('dataset', () => {
+        it('should set dataset metadata in state', inject((playgroundState, PlaygroundStateService) => {
+            //given
+            const dataset = {
+                id: '958cb63f235e4565'
+            };
+            expect(playgroundState.dataset).not.toBe(dataset);
+
+            //when
+            PlaygroundStateService.setDataset(dataset);
+
+            //then
+            expect(playgroundState.dataset).toBe(dataset);
+        }));
+    });
+
+    describe('preparation', () => {
+        it('should set preparation in state', inject((playgroundState, PlaygroundStateService) => {
+            //given
+            expect(playgroundState.preparation).toBeFalsy();
+            const preparation = {
+                id: '3d245846bc46f51'
+            };
+
+            //when
+            PlaygroundStateService.setPreparation(preparation);
+
+            //then
+            expect(playgroundState.preparation).toBe(preparation);
+        }));
+
+        it('should set preparation name in state', inject((playgroundState, PlaygroundStateService) => {
+            //given
+            expect(playgroundState.preparationName).toBeFalsy();
+            const preparationName = 'the preparation name';
+
+            //when
+            PlaygroundStateService.setPreparationName(preparationName);
+
+            //then
+            expect(playgroundState.preparationName).toBe(preparationName);
+        }));
+
+        it('should set name edition flag in state', inject((playgroundState, PlaygroundStateService) => {
+            //given
+            expect(playgroundState.nameEditionMode).toBeFalsy();
+
+            //when
+            PlaygroundStateService.setNameEditionMode(true);
+
+            //then
+            expect(playgroundState.nameEditionMode).toBe(true);
+        }));
+    });
+
+    describe('data', () => {
+        it('should set data in state', inject((playgroundState, PlaygroundStateService) => {
+            //given
+            expect(playgroundState.data).toBeFalsy();
+            const data = {
+                records: []
+            };
+
+            //when
+            PlaygroundStateService.setData(data);
+
+            //then
+            expect(playgroundState.data).toBe(data);
+        }));
+
+        it('should set data in grid', inject((playgroundState, PlaygroundStateService, GridStateService) => {
+            //given
+            expect(GridStateService.setData).not.toHaveBeenCalled();
+            const data = {
+                records: []
+            };
+
+            //when
+            PlaygroundStateService.setData(data);
+
+            //then
+            expect(GridStateService.setData).toHaveBeenCalledWith(data);
+        }));
+
+        it('should set filters again on data change in grid to refresh statefull filters (ex: invalid filters)', inject((playgroundState, PlaygroundStateService, GridStateService) => {
+            //given
+            expect(GridStateService.setData).not.toHaveBeenCalled();
+            const data = {records: []};
+            const filters = [{}, {}];
+            filterStateMock.gridFilters = filters;
+
+            //when
+            PlaygroundStateService.setData(data);
+
+            //then
+            expect(GridStateService.setFilter).toHaveBeenCalledWith(filters, data);
+        }));
+    });
+
+    describe('column statistics', () => {
+        it('should update columns statistics', inject((playgroundState, PlaygroundStateService) => {
             //given
             playgroundState.data = {
                 metadata: {
@@ -184,8 +193,7 @@ describe('Playground state service', function () {
                     ]
                 }
             };
-
-            var newMetadata = {
+            const newMetadata = {
                 columns: [
                     {id: '0000', statistics: {frequencyTable: [{data: '5.0', occurrences: 98}]}},
                     {id: '0001', statistics: {frequencyTable: [{data: 'Toto', occurrences: 5}]}},
@@ -203,8 +211,7 @@ describe('Playground state service', function () {
             expect(playgroundState.data.metadata.columns[2].statistics).toBe(newMetadata.columns[2].statistics);
         }));
 
-
-        it('should update Dataset Records', inject(function (playgroundState, PlaygroundStateService) {
+        it('should update dataset records number', inject((playgroundState, PlaygroundStateService) => {
             //given
              playgroundState.dataset = {
                 id: '958cb63f235e4565',
@@ -220,8 +227,8 @@ describe('Playground state service', function () {
         }));
     });
 
-    describe('parameters', function() {
-        it('should hide parameters when they are visible', inject(function(PlaygroundStateService, ParametersStateService) {
+    describe('parameters', () => {
+        it('should hide parameters when they are visible', inject((PlaygroundStateService, ParametersStateService) => {
             //given
             parametersStateMock.visible = true;
 
@@ -232,7 +239,7 @@ describe('Playground state service', function () {
             expect(ParametersStateService.hide).toHaveBeenCalled();
         }));
 
-        it('should show parameters when they are not visible', inject(function(PlaygroundStateService, ParametersStateService) {
+        it('should show parameters when they are not visible', inject((PlaygroundStateService, ParametersStateService) => {
             //given
             parametersStateMock.visible = false;
 
@@ -243,9 +250,9 @@ describe('Playground state service', function () {
             expect(ParametersStateService.show).toHaveBeenCalled();
         }));
 
-        it('should update parameters when they are not visible', inject(function(playgroundState, PlaygroundStateService, ParametersStateService) {
+        it('should update parameters when they are not visible', inject((playgroundState, PlaygroundStateService, ParametersStateService) => {
             //given
-            var dataset = {id: '56a74a6425432cf57b87'};
+            const dataset = {id: '56a74a6425432cf57b87'};
             playgroundState.dataset = dataset;
             parametersStateMock.visible = false;
 
@@ -257,11 +264,11 @@ describe('Playground state service', function () {
         }));
     });
 
-    describe('filters', function () {
-        describe('add', function () {
-            it('should add filter in filter list', inject(function (PlaygroundStateService, FilterStateService) {
+    describe('filters', () => {
+        describe('add', () => {
+            it('should add filter in filter list', inject((PlaygroundStateService, FilterStateService) => {
                 //given
-                var filter = {column: '0001'};
+                const filter = {column: '0001'};
 
                 //when
                 PlaygroundStateService.addGridFilter(filter);
@@ -270,11 +277,11 @@ describe('Playground state service', function () {
                 expect(FilterStateService.addGridFilter).toHaveBeenCalledWith(filter);
             }));
 
-            it('should apply filters in grid', inject(function (playgroundState, PlaygroundStateService, GridStateService) {
+            it('should apply filters in grid', inject((playgroundState, PlaygroundStateService, GridStateService) => {
                 //given
-                var filter = {column: '0001'};
-                var filters = [{}, {}];
-                var data = {records: []};
+                const filter = {column: '0001'};
+                const filters = [{}, {}];
+                const data = {records: []};
                 filterStateMock.gridFilters = filters;
                 playgroundState.data = data;
 
@@ -286,11 +293,11 @@ describe('Playground state service', function () {
             }));
         });
 
-        describe('update', function () {
-            it('should update filter in filter list', inject(function (PlaygroundStateService, FilterStateService) {
+        describe('update', () => {
+            it('should update filter in filter list', inject((PlaygroundStateService, FilterStateService) => {
                 //given
-                var oldFilter = {column: '0001'};
-                var newFilter = {column: '0002'};
+                const oldFilter = {column: '0001'};
+                const newFilter = {column: '0002'};
 
                 //when
                 PlaygroundStateService.updateGridFilter(oldFilter, newFilter);
@@ -299,12 +306,12 @@ describe('Playground state service', function () {
                 expect(FilterStateService.updateGridFilter).toHaveBeenCalledWith(oldFilter, newFilter);
             }));
 
-            it('should apply filters in grid', inject(function (playgroundState, PlaygroundStateService, GridStateService) {
+            it('should apply filters in grid', inject((playgroundState, PlaygroundStateService, GridStateService) => {
                 //given
-                var oldFilter = {column: '0001'};
-                var newFilter = {column: '0002'};
-                var filters = [{}, {}];
-                var data = {records: []};
+                const oldFilter = {column: '0001'};
+                const newFilter = {column: '0002'};
+                const filters = [{}, {}];
+                const data = {records: []};
                 filterStateMock.gridFilters = filters;
                 playgroundState.data = data;
 
@@ -316,10 +323,10 @@ describe('Playground state service', function () {
             }));
         });
 
-        describe('remove', function () {
-            it('should add filter in filter list', inject(function (PlaygroundStateService, FilterStateService) {
+        describe('remove', () => {
+            it('should add remove from filter list', inject((PlaygroundStateService, FilterStateService) => {
                 //given
-                var filter = {column: '0001'};
+                const filter = {column: '0001'};
 
                 //when
                 PlaygroundStateService.removeGridFilter(filter);
@@ -328,11 +335,11 @@ describe('Playground state service', function () {
                 expect(FilterStateService.removeGridFilter).toHaveBeenCalledWith(filter);
             }));
 
-            it('should apply filters in grid on single remove', inject(function (playgroundState, PlaygroundStateService, GridStateService) {
+            it('should apply filters in grid on single remove', inject((playgroundState, PlaygroundStateService, GridStateService) => {
                 //given
-                var filter = {column: '0001'};
-                var filters = [{}, {}];
-                var data = {records: []};
+                const filter = {column: '0001'};
+                const filters = [{}, {}];
+                const data = {records: []};
                 filterStateMock.gridFilters = filters;
                 playgroundState.data = data;
 
@@ -343,7 +350,7 @@ describe('Playground state service', function () {
                 expect(GridStateService.setFilter).toHaveBeenCalledWith(filters, data);
             }));
 
-            it('should add filter in filter list', inject(function (PlaygroundStateService, FilterStateService) {
+            it('should remove all filters from filter list', inject((PlaygroundStateService, FilterStateService) => {
                 //when
                 PlaygroundStateService.removeAllGridFilters();
 
@@ -351,10 +358,10 @@ describe('Playground state service', function () {
                 expect(FilterStateService.removeAllGridFilters).toHaveBeenCalled();
             }));
 
-            it('should apply filters in grid on remove all', inject(function (playgroundState, PlaygroundStateService, GridStateService) {
+            it('should apply filters in grid on remove all', inject((playgroundState, PlaygroundStateService, GridStateService) => {
                 //given
-                var filters = [{}, {}];
-                var data = {records: []};
+                const filters = [{}, {}];
+                const data = {records: []};
                 filterStateMock.gridFilters = filters;
                 playgroundState.data = data;
 
@@ -367,8 +374,8 @@ describe('Playground state service', function () {
         });
     });
 
-    describe('reset', function () {
-        it('should reset playground and sub-states', inject(function (playgroundState, PlaygroundStateService, GridStateService, FilterStateService, LookupStateService, SuggestionsStateService, ParametersStateService) {
+    describe('reset', () => {
+        it('should reset playground and sub-states', inject((playgroundState, PlaygroundStateService, RecipeStateService, GridStateService, FilterStateService, LookupStateService, SuggestionsStateService, ParametersStateService) => {
             //given
             playgroundState.data = {};
             playgroundState.dataset = {};
@@ -386,6 +393,7 @@ describe('Playground state service', function () {
             expect(playgroundState.lookupData).toBe(null);
             expect(playgroundState.preparation).toBe(null);
 
+            expect(RecipeStateService.reset).toHaveBeenCalled();
             expect(GridStateService.reset).toHaveBeenCalled();
             expect(FilterStateService.reset).toHaveBeenCalled();
             expect(LookupStateService.reset).toHaveBeenCalled();

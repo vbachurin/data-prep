@@ -1,21 +1,21 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
 
-describe('Preparation list service', function () {
+describe('Preparation list service', () => {
     'use strict';
 
-    var preparations, stateMock;
-    var createdPreparationId = '54d85af494e1518bec54546';
+    let preparations, stateMock;
+    const createdPreparationId = '54d85af494e1518bec54546';
 
     function initPreparations() {
         preparations = [
@@ -125,7 +125,7 @@ describe('Preparation list service', function () {
         ];
     }
 
-    beforeEach(angular.mock.module('data-prep.services.preparation', function ($provide) {
+    beforeEach(angular.mock.module('data-prep.services.preparation', ($provide) => {
         stateMock = {
             inventory: {
                 preparations: null
@@ -134,7 +134,7 @@ describe('Preparation list service', function () {
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(inject(function ($q, PreparationRestService, StateService) {
+    beforeEach(inject(($q, PreparationRestService, StateService) => {
         initPreparations();
 
         spyOn(PreparationRestService, 'getPreparations').and.returnValue($q.when({data: preparations}));
@@ -149,139 +149,161 @@ describe('Preparation list service', function () {
         spyOn(StateService, 'removePreparation').and.returnValue();
     }));
 
+    describe('getter/refresher', () => {
+        it('should refresh preparations', inject(($rootScope, PreparationListService, StateService) => {
+            //given
+            expect(StateService.setPreparations).not.toHaveBeenCalled();
 
-    it('should refresh preparations', inject(function ($rootScope, PreparationListService, StateService) {
-        //given
-        expect(StateService.setPreparations).not.toHaveBeenCalled();
+            //when
+            PreparationListService.refreshPreparations();
+            $rootScope.$digest();
 
-        //when
-        PreparationListService.refreshPreparations();
-        $rootScope.$digest();
+            //then
+            expect(StateService.setPreparations).toHaveBeenCalledWith(preparations);
+        }));
 
-        //then
-        expect(StateService.setPreparations).toHaveBeenCalledWith(preparations);
-    }));
+        it('should return a promise resolving the preparation list if it is already fetched', inject(($q, $rootScope, PreparationListService, PreparationRestService) => {
+            //given
+            PreparationListService.refreshPreparations();
 
-    it('should return a promise resolving the preparation list if it is already fetched', inject(function ($q, $rootScope, PreparationListService, PreparationRestService) {
-        //given
-        PreparationListService.refreshPreparations();
+            //when
+            PreparationListService.getPreparationsPromise();
 
-        //when
-        PreparationListService.getPreparationsPromise();
+            //then
+            expect(PreparationRestService.getPreparations.calls.count()).toBe(1);
+        }));
 
-        //then
-        expect(PreparationRestService.getPreparations.calls.count()).toBe(1);
-    }));
+        it('should refresh preparation list when it is not already fetched', inject(($rootScope, PreparationListService, PreparationRestService) => {
+            //given
+            expect(PreparationRestService.getPreparations).not.toHaveBeenCalled();
 
-    it('should refresh preparation list when it is not already fetched', inject(function ($rootScope, PreparationListService, PreparationRestService) {
-        //when
-        PreparationListService.getPreparationsPromise();
+            //when
+            PreparationListService.getPreparationsPromise();
 
-        //then
-        expect(PreparationRestService.getPreparations).toHaveBeenCalled();
-    }));
+            //then
+            expect(PreparationRestService.getPreparations).toHaveBeenCalled();
+        }));
 
-    it('should create a new preparation', inject(function (PreparationListService, PreparationRestService) {
-        //given
-        stateMock.inventory.preparations = preparations;
+        it('should save fetch promise and remove it on promise resolution', inject(($rootScope, PreparationListService) => {
+            //given
+            expect(PreparationListService.hasPreparationsPromise()).toBeFalsy();
 
-        //when
-        PreparationListService.create('84ab54cd867f4645a', 'my preparation');
+            //when
+            PreparationListService.refreshPreparations();
+            expect(PreparationListService.hasPreparationsPromise()).toBeTruthy();
+            $rootScope.$digest();
 
-        //then
-        expect(PreparationRestService.create).toHaveBeenCalledWith('84ab54cd867f4645a', 'my preparation');
-    }));
+            //then
+            expect(PreparationListService.hasPreparationsPromise()).toBeFalsy();
+        }));
+    });
 
-    it('should return created preparation id', inject(function ($rootScope, PreparationListService) {
-        //given
-        var result = null;
-        var datasetId = '84ab54cd867f4645a';
-        var createdPreparation = {id: createdPreparationId};
+    describe('create', () => {
+        it('should create a new preparation', inject((PreparationListService, PreparationRestService) => {
+            //given
+            stateMock.inventory.preparations = preparations;
 
-        stateMock.inventory.preparations = preparations;
+            //when
+            PreparationListService.create('84ab54cd867f4645a', 'my preparation');
 
-        //when
-        PreparationListService.create(datasetId, 'my preparation')
-            .then(function (prep) {
-                result = prep;
-            });
-        stateMock.inventory.preparations.push(createdPreparation); //simulate the preparation refresh after creation
-        $rootScope.$digest();
+            //then
+            expect(PreparationRestService.create).toHaveBeenCalledWith('84ab54cd867f4645a', 'my preparation');
+        }));
 
-        //then
-        expect(result).toBe(createdPreparation);
-    }));
+        it('should return created preparation id', inject(($rootScope, PreparationListService) => {
+            //given
+            let result = null;
+            const datasetId = '84ab54cd867f4645a';
+            const createdPreparation = {id: createdPreparationId};
 
-    it('should refresh preparations list on creation', inject(function ($rootScope, PreparationListService, PreparationRestService) {
-        //given
-        stateMock.inventory.preparations = preparations;
+            stateMock.inventory.preparations = preparations;
 
-        //when
-        PreparationListService.create('84ab54cd867f4645a', 'my preparation');
-        $rootScope.$digest();
+            //when
+            PreparationListService.create(datasetId, 'my preparation')
+                .then((prep) => result = prep);
+            stateMock.inventory.preparations.push(createdPreparation); //simulate the preparation refresh after creation
+            $rootScope.$digest();
 
-        //then
-        expect(PreparationRestService.getPreparations).toHaveBeenCalled();
-    }));
+            //then
+            expect(result).toBe(createdPreparation);
+        }));
 
-    it('should update a preparation name', inject(function (PreparationListService, PreparationRestService) {
-        //given
-        stateMock.inventory.preparations = preparations;
+        it('should refresh preparations list on creation', inject(($rootScope, PreparationListService, PreparationRestService) => {
+            //given
+            stateMock.inventory.preparations = preparations;
 
-        //when
-        PreparationListService.update('84ab54cd867f4645a', 'my preparation');
+            //when
+            PreparationListService.create('84ab54cd867f4645a', 'my preparation');
+            $rootScope.$digest();
 
-        //then
-        expect(PreparationRestService.update).toHaveBeenCalledWith('84ab54cd867f4645a', 'my preparation');
-    }));
+            //then
+            expect(PreparationRestService.getPreparations).toHaveBeenCalled();
+        }));
+    });
 
-    it('should refresh preparations list on creation', inject(function ($rootScope, PreparationListService, PreparationRestService) {
-        //given
-        stateMock.inventory.preparations = preparations;
+    describe('clone', () => {
+        it('should clone a preparation', inject(($q, $rootScope, PreparationListService, PreparationRestService) => {
+            //given
+            stateMock.inventory.preparations = preparations.slice(0);
 
-        //when
-        PreparationListService.update('84ab54cd867f4645a', 'my preparation');
-        $rootScope.$digest();
+            //when
+            PreparationListService.clone(preparations[0].id);
+            $rootScope.$digest();
 
-        //then
-        expect(PreparationRestService.getPreparations).toHaveBeenCalled();
-    }));
+            //then
+            expect(PreparationRestService.clone).toHaveBeenCalledWith(preparations[0].id);
+        }));
 
-    it('should delete a preparation', inject(function ($rootScope, PreparationListService, PreparationRestService, StateService) {
-        //given
-        stateMock.inventory.preparations = preparations.slice(0);
+        it('should refresh preparations list on clone', inject(($rootScope, PreparationListService, PreparationRestService) => {
+            //given
+            stateMock.inventory.preparations = preparations.slice(0);
 
-        //when
-        PreparationListService.delete(preparations[0]);
-        $rootScope.$digest();
+            //when
+            PreparationListService.clone(preparations[0].id);
+            $rootScope.$digest();
 
-        //then
-        expect(PreparationRestService.delete).toHaveBeenCalledWith(preparations[0].id);
-        expect(StateService.removePreparation).toHaveBeenCalledWith(preparations[0]);
-    }));
+            //then
+            expect(PreparationRestService.getPreparations).toHaveBeenCalled();
+        }));
+    });
 
+    describe('update', () => {
+        it('should update a preparation name', inject((PreparationListService, PreparationRestService) => {
+            //given
+            stateMock.inventory.preparations = preparations;
 
-    it('should clone a preparation', inject(function ($q, $rootScope, PreparationListService, PreparationRestService) {
-        //given
-        stateMock.inventory.preparations = preparations.slice(0);
+            //when
+            PreparationListService.update('84ab54cd867f4645a', 'my preparation');
 
-        //when
-        PreparationListService.clone(preparations[0].id);
-        $rootScope.$digest();
+            //then
+            expect(PreparationRestService.update).toHaveBeenCalledWith('84ab54cd867f4645a', 'my preparation');
+        }));
 
-        //then
-        expect(PreparationRestService.clone).toHaveBeenCalledWith(preparations[0].id);
-    }));
+        it('should refresh preparations list on creation', inject(($rootScope, PreparationListService, PreparationRestService) => {
+            //given
+            stateMock.inventory.preparations = preparations;
 
-    it('should refresh preparations list on clone', inject(function ($rootScope, PreparationListService, PreparationRestService) {
-        //given
-        stateMock.inventory.preparations = preparations.slice(0);
+            //when
+            PreparationListService.update('84ab54cd867f4645a', 'my preparation');
+            $rootScope.$digest();
 
-        //when
-        PreparationListService.clone(preparations[0].id);
-        $rootScope.$digest();
+            //then
+            expect(PreparationRestService.getPreparations).toHaveBeenCalled();
+        }));
+    });
 
-        //then
-        expect(PreparationRestService.getPreparations).toHaveBeenCalled();
-    }));
+    describe('delete', () => {
+        it('should delete a preparation', inject(($rootScope, PreparationListService, PreparationRestService, StateService) => {
+            //given
+            stateMock.inventory.preparations = preparations.slice(0);
+
+            //when
+            PreparationListService.delete(preparations[0]);
+            $rootScope.$digest();
+
+            //then
+            expect(PreparationRestService.delete).toHaveBeenCalledWith(preparations[0].id);
+            expect(StateService.removePreparation).toHaveBeenCalledWith(preparations[0]);
+        }));
+    });
 });

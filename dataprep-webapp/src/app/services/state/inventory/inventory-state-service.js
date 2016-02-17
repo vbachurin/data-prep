@@ -42,60 +42,77 @@ export function InventoryStateService() {
     return {
         setPreparations: setPreparations,
         removePreparation: removePreparation,
+
         setDatasets: setDatasets,
         removeDataset: removeDataset,
-        setSort: setSort,
-        setOrder: setOrder,
 
         setCurrentFolder: setCurrentFolder,
         setCurrentFolderContent: setCurrentFolderContent,
         setFoldersStack: setFoldersStack,
-        setMenuChildren: setMenuChildren
+        setMenuChildren: setMenuChildren,
+
+        setSort: setSort,
+        setOrder: setOrder
     };
 
-    function consolidateDatasetsPreparations() {
-
-        if (inventoryState.datasets && inventoryState.preparations) {
-
-            //Consolidate Preparations
-            _.forEach(inventoryState.preparations, function (prep) {
-                prep.dataset = _.find(inventoryState.datasets, function (dataset) {
-                    return dataset.id === prep.dataSetId;
-                });
-            });
-
-            //Consolidate Datasets
-            // group preparation per dataset
-            var datasetPreps = _.groupBy(inventoryState.preparations, function (preparation) {
-                return preparation.dataSetId;
-            });
-
-            // reset default preparation for all datasets
-            _.forEach(inventoryState.datasets, function (dataset) {
-                var preparations = datasetPreps[dataset.id];
-                dataset.preparations = preparations || [];
-                dataset.preparations = _.sortByOrder(dataset.preparations, 'lastModificationDate', false);
-            });
-
-            // reset default preparation for all datasets of the current folder
-            _.forEach(inventoryState.currentFolderContent.datasets, function (dataset) {
-                var preparations = datasetPreps[dataset.id];
-                dataset.preparations = preparations || [];
-                dataset.preparations = _.sortByOrder(dataset.preparations, 'lastModificationDate', false);
-            });
+    /**
+     * @ngdoc method
+     * @name consolidateDatasets
+     * @methodOf data-prep.services.state.service:InventoryStateService
+     * @param {array} datasets The datasets list to consolidate
+     * @description Set the preparations list in each dataset to consolidate
+     */
+    function consolidateDatasets(datasets) {
+        if(!datasets || !inventoryState.preparations) {
+            return;
         }
+
+        var preparationsByDataset = _.groupBy(inventoryState.preparations, 'dataSetId');
+        _.forEach(datasets, function (dataset) {
+            var preparations = preparationsByDataset[dataset.id] || [];
+            dataset.preparations = _.sortByOrder(preparations, 'lastModificationDate', false);
+        });
+    }
+
+    /**
+     * @ngdoc method
+     * @name consolidatePreparations
+     * @methodOf data-prep.services.state.service:InventoryStateService
+     * @param {array} preparations The preparations list to consolidate
+     * @description Set the dataset in each preparation to consolidate
+     */
+    function consolidatePreparations(preparations) {
+        if(!preparations || !inventoryState.datasets) {
+            return;
+        }
+
+        _.forEach(preparations, function (prep) {
+            prep.dataset = _.find(inventoryState.datasets, {id: prep.dataSetId});
+        });
+    }
+
+    /**
+     * @ngdoc method
+     * @name consolidate
+     * @methodOf data-prep.services.state.service:InventoryStateService
+     * @description Consolidate preparations, datasets and the current folder datasets
+     */
+    function consolidate() {
+        consolidatePreparations(inventoryState.preparations);
+        consolidateDatasets(inventoryState.datasets);
+        consolidateDatasets(inventoryState.currentFolderContent.datasets);
     }
 
     /**
      * @ngdoc method
      * @name setPreparations
      * @methodOf data-prep.services.state.service:InventoryStateService
-     * @param {object} preparations The preparations list
+     * @param {array} preparations The preparations list
      * @description Set preparations in Inventory
      */
     function setPreparations(preparations) {
         inventoryState.preparations = preparations;
-        consolidateDatasetsPreparations();
+        consolidate();
     }
 
     /**
@@ -113,12 +130,12 @@ export function InventoryStateService() {
      * @ngdoc method
      * @name setDatasets
      * @methodOf data-prep.services.state.service:InventoryStateService
-     * @param {object} datasets The datasets list
+     * @param {array} datasets The datasets list
      * @description Set datasets in Inventory
      */
     function setDatasets(datasets) {
         inventoryState.datasets = datasets;
-        consolidateDatasetsPreparations();
+        consolidate();
     }
 
     /**
@@ -130,6 +147,48 @@ export function InventoryStateService() {
      */
     function removeDataset(dataset) {
         inventoryState.datasets = _.reject(inventoryState.datasets, {id: dataset.id});
+    }
+
+    /**
+     * @ngdoc method
+     * @name setCurrentFolder
+     * @methodOf data-prep.services.state.service:InventoryStateService
+     * @param {object} folder The current folder
+     * @description Update the current folder
+     */
+    function setCurrentFolder(folder) {
+        inventoryState.currentFolder = folder;
+    }
+
+    /**
+     * @ngdoc method
+     * @name setCurrentFolderContent
+     * @methodOf data-prep.services.state.service:InventoryStateService
+     * @param {object} content The content of the current folder
+     */
+    function setCurrentFolderContent(content) {
+        inventoryState.currentFolderContent = content;
+        consolidateDatasets(inventoryState.currentFolderContent.datasets);
+    }
+
+    /**
+     * @ngdoc method
+     * @name setFoldersStack
+     * @methodOf data-prep.services.state.service:InventoryStateService
+     * @param {object} stack The current folders stack
+     */
+    function setFoldersStack(stack) {
+        inventoryState.foldersStack = stack;
+    }
+
+    /**
+     * @ngdoc method
+     * @name setMenuChildren
+     * @methodOf data-prep.services.state.service:InventoryStateService
+     * @param {array} children The current children of the current menu entry
+     */
+    function setMenuChildren(children) {
+        inventoryState.menuChildren = children;
     }
 
     /**
@@ -152,60 +211,5 @@ export function InventoryStateService() {
      */
     function setOrder(order) {
         inventoryState.order = order;
-    }
-
-    /**
-     * @ngdoc method
-     * @name setCurrentFolder
-     * @methodOf data-prep.services.state.service:InventoryStateService
-     * @param {object} folder The current folder
-     * @description Update the current folder
-     */
-    function setCurrentFolder(folder) {
-        inventoryState.currentFolder = folder;
-    }
-
-    /**
-     * @ngdoc method
-     * @name setCurrentFolderContent
-     * @methodOf data-prep.services.state.service:InventoryStateService
-     * @param {object} children The content of the current folder
-     */
-    function setCurrentFolderContent(children) {
-        inventoryState.currentFolderContent = children;
-
-        if (inventoryState.preparations) {
-            // group preparation per dataset
-            var datasetPreps = _.groupBy(inventoryState.preparations, function (preparation) {
-                return preparation.dataSetId;
-            });
-
-            // reset default preparation for all datasets of the current folder
-            _.forEach(inventoryState.currentFolderContent.datasets, function (dataset) {
-                var preparations = datasetPreps[dataset.id];
-                dataset.preparations = preparations || [];
-                dataset.preparations = _.sortByOrder(dataset.preparations, 'lastModificationDate', false);
-            });
-        }
-    }
-
-    /**
-     * @ngdoc method
-     * @name setFoldersStack
-     * @methodOf data-prep.services.state.service:InventoryStateService
-     * @param {object} stack The current folders stack
-     */
-    function setFoldersStack(stack) {
-        inventoryState.foldersStack = stack;
-    }
-
-    /**
-     * @ngdoc method
-     * @name setMenuChildren
-     * @methodOf data-prep.services.state.service:InventoryStateService
-     * @param {array} children The current children of the current menu entry
-     */
-    function setMenuChildren(children) {
-        inventoryState.menuChildren = children;
     }
 }

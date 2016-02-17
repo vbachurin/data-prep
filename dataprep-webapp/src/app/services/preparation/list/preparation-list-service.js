@@ -36,7 +36,6 @@ export default function PreparationListService(PreparationRestService, StateServ
         delete: deletePreparation
     };
 
-
     /**
      * @ngdoc method
      * @name refreshPreparations
@@ -46,11 +45,11 @@ export default function PreparationListService(PreparationRestService, StateServ
      */
     function refreshPreparations() {
         preparationsPromise = PreparationRestService.getPreparations()
-            .then(function (response) {
-                preparationsPromise = null;
+            .then((response) => {
                 StateService.setPreparations(response.data);
                 return response.data;
-            });
+            })
+            .finally(() => preparationsPromise = null);
         return preparationsPromise;
     }
 
@@ -69,8 +68,8 @@ export default function PreparationListService(PreparationRestService, StateServ
      * @ngdoc method
      * @name hasPreparationsPromise
      * @methodOf data-prep.services.preparation.service:PreparationService
-     * @description Check if preparationsPromise is true or not
-     * @returns {promise} preparationsPromise
+     * @description Check if there is a fetch in progress
+     * @returns {promise} Truthy when a fetch is in progress
      */
     function hasPreparationsPromise() {
         return preparationsPromise;
@@ -88,13 +87,9 @@ export default function PreparationListService(PreparationRestService, StateServ
     function create(datasetId, name) {
         var createdPreparationId;
         return PreparationRestService.create(datasetId, name)
-            .then(function (response) {
-                createdPreparationId = response.data;
-                return refreshPreparations();
-            })
-            .then(function (preparations) {
-                return _.find(preparations, {id: createdPreparationId});
-            });
+            .then((response) => createdPreparationId = response.data)
+            .then(refreshPreparations)
+            .then((preparations) => _.find(preparations, {id: createdPreparationId}));
     }
 
     /**
@@ -107,9 +102,7 @@ export default function PreparationListService(PreparationRestService, StateServ
      */
     function clone(preparationId) {
         return PreparationRestService.clone(preparationId)
-            .then(function () {
-                return refreshPreparations();
-            });
+            .then(refreshPreparations);
     }
 
     /**
@@ -124,13 +117,9 @@ export default function PreparationListService(PreparationRestService, StateServ
     function update(preparationId, name) {
         var updatedPreparationId;
         return PreparationRestService.update(preparationId, name)
-            .then(function (result) {
-                updatedPreparationId = result.data;
-                return refreshPreparations();
-            })
-            .then(function (preparations) {
-                return _.find(preparations, {id: updatedPreparationId});
-            });
+            .then((result) => updatedPreparationId = result.data)
+            .then(refreshPreparations)
+            .then((preparations) => _.find(preparations, {id: updatedPreparationId}));
     }
 
     /**
@@ -143,8 +132,6 @@ export default function PreparationListService(PreparationRestService, StateServ
      */
     function deletePreparation(preparation) {
         return PreparationRestService.delete(preparation.id)
-            .then(function () {
-                StateService.removePreparation(preparation);
-            });
+            .then(() => StateService.removePreparation(preparation));
     }
 }

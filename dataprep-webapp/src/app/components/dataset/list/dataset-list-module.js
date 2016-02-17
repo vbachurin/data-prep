@@ -22,10 +22,9 @@ import DatasetList from './dataset-list-directive';
      * @name data-prep.dataset-list
      * @description This module contains the controller and directives to manage the dataset list
      * @requires talend.widget
-     * @requires ddata-prep.dataset-xls-preview
+     * @requires data-prep.dataset-xls-preview
      * @requires data-prep.inventory-item
      * @requires data-prep.services.dataset
-     * @requires data-prep.services.playground
      * @requires data-prep.services.datasetWorkflowService
      * @requires data-prep.services.utils
      * @requires data-prep.services.state
@@ -39,7 +38,6 @@ import DatasetList from './dataset-list-directive';
             'data-prep.dataset-xls-preview',
             'data-prep.inventory-item',
             'data-prep.services.dataset',
-            'data-prep.services.playground',
             'data-prep.services.datasetWorkflowService',
             'data-prep.services.utils',
             'data-prep.services.state',

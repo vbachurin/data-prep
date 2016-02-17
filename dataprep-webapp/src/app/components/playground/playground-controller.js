@@ -32,11 +32,14 @@ export default function PlaygroundCtrl($state, $stateParams, state, StateService
     'ngInject';
 
     var vm = this;
-    vm.playgroundService = PlaygroundService;
-    vm.previewService = PreviewService;
-    vm.recipeService = RecipeService;
-    vm.onboardingService = OnboardingService;
     vm.state = state;
+    vm.recipeService = RecipeService;
+
+    vm.toggleRecipe = RecipeBulletService.toggleRecipe;
+    vm.openFeedbackForm = StateService.showFeedback;
+    vm.toggleParameters = StateService.toggleDatasetParameters;
+    vm.previewInProgress = PreviewService.previewInProgress;
+    vm.startOnBoarding = OnboardingService.startTour;
 
     /**
      * @ngdoc property
@@ -47,20 +50,8 @@ export default function PlaygroundCtrl($state, $stateParams, state, StateService
     vm.showNameValidation = false;
 
     //--------------------------------------------------------------------------------------------------------------
-    //------------------------------------------------------RECIPE--------------------------------------------------
-    //--------------------------------------------------------------------------------------------------------------
-    /**
-     * @ngdoc method
-     * @name toggleRecipe
-     * @methodOf data-prep.playground.controller:PlaygroundCtrl
-     * @description Toggle all the steps of the recipe
-     */
-    vm.toggleRecipe = RecipeBulletService.toggleRecipe;
-
-    //--------------------------------------------------------------------------------------------------------------
     //--------------------------------------------------RECIPE HEADER-----------------------------------------------
     //--------------------------------------------------------------------------------------------------------------
-
     /**
      * @ngdoc method
      * @name confirmPrepNameEdition
@@ -71,12 +62,7 @@ export default function PlaygroundCtrl($state, $stateParams, state, StateService
         var cleanName = name.trim();
         if (!vm.changeNameInProgress && cleanName) {
             changeName(cleanName)
-                .then(function () {
-                    return $state.go(state.playground.previousState, {}, {
-                        location: 'replace',
-                        inherit: false
-                    });
-                });
+                .then((preparation) => $state.go('playground.preparation', {prepid: preparation.id}));
         }
     };
 
@@ -91,9 +77,7 @@ export default function PlaygroundCtrl($state, $stateParams, state, StateService
     function changeName(name) {
         vm.changeNameInProgress = true;
         return PlaygroundService.createOrUpdatePreparation(name)
-            .finally(function () {
-                vm.changeNameInProgress = false;
-            });
+            .finally(() => vm.changeNameInProgress = false);
     }
 
     //--------------------------------------------------------------------------------------------------------------
@@ -120,17 +104,6 @@ export default function PlaygroundCtrl($state, $stateParams, state, StateService
     //--------------------------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
-     * @name hideAll
-     * @methodOf data-prep.playground.controller:PlaygroundCtrl
-     * @description [PRIVATE] Hide all the modals (playground and save/discard)
-     */
-    function hideAll() {
-        vm.showNameValidation = false;
-        vm.close();
-    }
-
-    /**
-     * @ngdoc method
      * @name beforeClose
      * @methodOf data-prep.playground.controller:PlaygroundCtrl
      * @description When the preparation is an implicit preparation, we show the save/discard modal and block the playground close.
@@ -142,7 +115,7 @@ export default function PlaygroundCtrl($state, $stateParams, state, StateService
             vm.showNameValidation = true;
         }
         else {
-            vm.close();
+            close();
         }
     };
 
@@ -153,8 +126,7 @@ export default function PlaygroundCtrl($state, $stateParams, state, StateService
      * @description Discard implicit preparation save. This trigger a preparation delete.
      */
     vm.discardSaveOnClose = function discardSaveOnClose() {
-        PreparationService.delete(state.playground.preparation)
-            .then(hideAll);
+        PreparationService.delete(state.playground.preparation).then(close);
     };
 
     /**
@@ -166,34 +138,30 @@ export default function PlaygroundCtrl($state, $stateParams, state, StateService
     vm.confirmSaveOnClose = function confirmSaveOnClose() {
         vm.saveInProgress = true;
         var cleanName = vm.state.playground.preparationName.trim();
-        changeName(cleanName)
-            .then(hideAll)
-            .finally(function () {
-                vm.saveInProgress = false;
-            });
+        changeName(cleanName).then(close);
     };
 
     /**
      * @ngdoc method
      * @name close
      * @methodOf data-prep.playground.controller:PlaygroundCtrl
-     * @description Playground close callback. It change the location and refresh the preparations if needed
+     * @description Playground close callback. It reset the playground and redirect to the previous page
      */
-    vm.close = function () {
+    function close () {
         StateService.resetPlayground();
         $state.go(state.playground.previousState);
-    };
-
-    //--------------------------------------------------------------------------------------------------------------
-    //---------------------------------------------FEEDBACK---------------------------------------------------------
-    //--------------------------------------------------------------------------------------------------------------
-    vm.openFeedbackForm = StateService.showFeedback;
+    }
 
     //--------------------------------------------------------------------------------------------------------------
     //------------------------------------------DATASET PARAMS------------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------
-    vm.toggleParameters = StateService.toggleDatasetParameters;
-
+    /**
+     * @ngdoc method
+     * @name changeDatasetParameters
+     * @methodOf data-prep.playground.controller:PlaygroundCtrl
+     * @description Change the dataset parameters
+     * @param {object} parameters The new dataset parameters
+     */
     vm.changeDatasetParameters = function changeDatasetParameters(parameters) {
         StateService.setIsSendingDatasetParameters(true);
         PlaygroundService.changeDatasetParameters(parameters)
@@ -204,60 +172,30 @@ export default function PlaygroundCtrl($state, $stateParams, state, StateService
     //--------------------------------------------------------------------------------------------------------------
     //------------------------------------------------INIT----------------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------
+    function errorGoBack(errorOptions) {
+        MessageService.error('PLAYGROUND_FILE_NOT_FOUND_TITLE', 'PLAYGROUND_FILE_NOT_FOUND', errorOptions);
+        $state.go(state.playground.previousState);
+    }
+
     if ($stateParams.prepid) {
         var preparation = _.find(state.inventory.preparations, {id: $stateParams.prepid});
-        if (preparation) {
-            PlaygroundService.load(preparation);
+        if (!preparation) {
+            errorGoBack({type: 'preparation'});
         }
         else {
-            MessageService.error('PLAYGROUND_FILE_NOT_FOUND_TITLE', 'PLAYGROUND_FILE_NOT_FOUND', {type: 'preparation'});
-            $state.go(state.playground.previousState);
+            PlaygroundService.load(preparation).catch(errorGoBack);
         }
     }
     else if ($stateParams.datasetid) {
         var dataset = _.find(state.inventory.datasets, {id: $stateParams.datasetid});
-        if (dataset) {
-            PlaygroundService.initPlayground(dataset);
+        if (!dataset) {
+            errorGoBack({type: 'dataset'});
         }
         else {
-            MessageService.error('PLAYGROUND_FILE_NOT_FOUND_TITLE', 'PLAYGROUND_FILE_NOT_FOUND', {type: 'dataset'});
-            $state.go(state.playground.previousState);
+            PlaygroundService.initPlayground(dataset).catch(errorGoBack);
         }
     }
 }
-
-/**
- * @ngdoc property
- * @name previewInProgress
- * @propertyOf data-prep.playground.controller:PlaygroundCtrl
- * @description Flag that defines if a preview is in progress
- * It is bound to {@link data-prep.services.dataset.service:PreviewService PreviewService} property
- */
-Object.defineProperty(PlaygroundCtrl.prototype,
-    'previewInProgress', {
-        enumerable: true,
-        configurable: false,
-        get: function () {
-            return this.previewService.previewInProgress();
-        }
-    });
-
-/**
- * @ngdoc property
- * @name hasRecipe
- * @propertyOf data-prep.playground.controller:PlaygroundCtrl
- * @description Checks if there are steps in the preparation
- * It is bound to {@link data-prep.services.recipe.service:RecipeService RecipeService}.getRecipe() length
- * @type boolean
- */
-Object.defineProperty(PlaygroundCtrl.prototype,
-    'hasRecipe', {
-        enumerable: true,
-        configurable: false,
-        get: function () {
-            return this.recipeService.getRecipe().length;
-        }
-    });
 
 /**
  * @ngdoc property
@@ -275,7 +213,6 @@ Object.defineProperty(PlaygroundCtrl.prototype,
             var firstStep = this.recipeService.getRecipe()[0];
             return firstStep && !firstStep.inactive;
         },
-        set: function () {
-        }
+        set: () => {}
     });
 

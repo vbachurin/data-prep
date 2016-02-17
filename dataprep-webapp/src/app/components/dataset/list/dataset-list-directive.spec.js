@@ -83,7 +83,7 @@ describe('DatasetList directive', function () {
         $translateProvider.preferredLanguage('en');
     }));
 
-    beforeEach(inject(function ($rootScope, $compile, $q, DatasetService) {
+    beforeEach(inject(function ($rootScope, $compile) {
         scope = $rootScope.$new();
         createElement = function () {
             element = angular.element('<dataset-list></dataset-list>');
@@ -91,12 +91,6 @@ describe('DatasetList directive', function () {
             scope.$digest();
             return element;
         };
-
-        //datasetListCtrl.datasets is bound to DatasetListService.datasets
-        //DatasetListService.datasets = datasets;
-        spyOn(DatasetService, 'getDatasets').and.callFake(function () {
-            return $q.when(datasets);
-        });
     }));
 
     afterEach(function () {

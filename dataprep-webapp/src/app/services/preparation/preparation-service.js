@@ -86,7 +86,7 @@ export default function PreparationService($q, state, StorageService, Preparatio
      */
     function create(datasetId, name) {
         return PreparationListService.create(datasetId, name)
-            .then(function (preparation) {
+            .then((preparation) => {
                 //get all dataset aggregations per columns from localStorage and save them for the new preparation
                 StorageService.savePreparationAggregationsFromDataset(datasetId, preparation.id);
                 return preparation;
@@ -103,7 +103,7 @@ export default function PreparationService($q, state, StorageService, Preparatio
      */
     function deletePreparation(preparation) {
         return PreparationListService.delete(preparation)
-            .then(function (response) {
+            .then((response) => {
                 //get remove all preparation aggregations per columns in localStorage
                 StorageService.removeAllAggregations(preparation.dataSetId, preparation.id);
                 return response;
@@ -125,7 +125,7 @@ export default function PreparationService($q, state, StorageService, Preparatio
      */
     function setName(preparationId, name) {
         return PreparationListService.update(preparationId, name)
-            .then(function (preparation) {
+            .then((preparation) => {
                 StorageService.moveAggregations(preparation.dataSetId, preparationId, preparation.id);
                 return preparation;
             });

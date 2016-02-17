@@ -23,7 +23,7 @@ describe('Dataset xls preview controller', function () {
     }));
 
 
-    beforeEach(inject(function ($rootScope, $controller, $q, DatasetSheetPreviewService, DatasetService, DatasetRestService, PlaygroundService, StateService, FolderService, DatasetListService) {
+    beforeEach(inject(function ($rootScope, $controller, $q, DatasetSheetPreviewService, DatasetService, PlaygroundService, StateService, FolderService) {
         scope = $rootScope.$new();
 
         createController = function () {
@@ -42,7 +42,7 @@ describe('Dataset xls preview controller', function () {
         spyOn(PlaygroundService, 'initPlayground').and.returnValue($q.when());
         spyOn(StateService, 'showPlayground').and.returnValue();
         spyOn(FolderService, 'getContent').and.returnValue();
-        spyOn(DatasetListService, 'refreshDatasets').and.returnValue();
+        spyOn(DatasetService, 'refreshDatasets').and.returnValue();
     }));
 
     afterEach(function() {

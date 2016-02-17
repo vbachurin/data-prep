@@ -61,7 +61,7 @@ describe('Dataset list controller', function () {
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(inject(function ($rootScope, $controller, $q, $state, DatasetService, PlaygroundService, MessageService, StorageService, StateService) {
+    beforeEach(inject(function ($rootScope, $controller, $q, $state, DatasetService, MessageService, StorageService, StateService) {
         var datasetsValues = [datasets, refreshedDatasets];
         scope = $rootScope.$new();
 
@@ -71,24 +71,14 @@ describe('Dataset list controller', function () {
             });
         };
 
+        spyOn($state, 'go').and.returnValue();
         spyOn(DatasetService, 'processCertification').and.returnValue($q.when());
-        spyOn(DatasetService, 'getDatasets').and.callFake(function () {
-            return $q.when(datasetsValues.shift());
-        });
-
+        spyOn(DatasetService, 'getDatasets').and.callFake(() => $q.when(datasetsValues.shift()));
         spyOn(StorageService, 'setDatasetsSort').and.returnValue();
         spyOn(StorageService, 'setDatasetsOrder').and.returnValue();
-
-        spyOn(PlaygroundService, 'initPlayground').and.returnValue($q.when(true));
-        spyOn(PlaygroundService, 'load').and.returnValue($q.when(true));
         spyOn(StateService, 'showPlayground').and.returnValue();
-        spyOn(MessageService, 'error').and.returnValue();
-        spyOn($state, 'go').and.returnValue();
         spyOn(StateService, 'setPreviousState').and.returnValue();
-    }));
-
-    afterEach(inject(function ($stateParams) {
-        $stateParams.datasetid = null;
+        spyOn(MessageService, 'error').and.returnValue();
     }));
 
     describe('sort parameters', function () {
@@ -917,7 +907,7 @@ describe('Dataset list controller', function () {
 
             //then
             expect(StateService.setPreviousState).toHaveBeenCalledWith('nav.home.datasets');
-            expect($state.go).toHaveBeenCalledWith('playground', {prepid: preparation.id});
+            expect($state.go).toHaveBeenCalledWith('playground.preparation', {prepid: preparation.id});
         }));
     });
 });

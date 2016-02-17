@@ -117,7 +117,7 @@ export default function DatasetListCtrl($timeout, $state, $translate, state, Sta
      */
     vm.openPreparation = function openPreparation(preparation) {
         StateService.setPreviousState('nav.home.datasets');
-        $state.go('playground', {prepid: preparation.id});
+        $state.go('playground.preparation', {prepid: preparation.id});
     };
 
     /**

@@ -11,12 +11,15 @@
 
   ============================================================================*/
 
-export const recipeState = {};
+export const recipeState = {
+    visible: false
+};
 
 export function RecipeStateService() {
     return {
         show: show,
-        hide: hide
+        hide: hide,
+        reset: reset
     };
 
     function show() {
@@ -24,6 +27,10 @@ export function RecipeStateService() {
     }
 
     function hide() {
+        recipeState.visible = false;
+    }
+
+    function reset() {
         recipeState.visible = false;
     }
 }

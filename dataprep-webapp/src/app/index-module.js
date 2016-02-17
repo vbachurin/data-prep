@@ -1,28 +1,28 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
 
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
 
 /*eslint-disable angular/window-service */
 
@@ -61,6 +61,7 @@
 
         //Router config
         .config(function ($stateProvider, $urlRouterProvider) {
+            'ngInject';
             $stateProvider
                 .state('nav', {
                     abstract: true,
@@ -70,17 +71,15 @@
                     abstract: true,
                     url: '/home',
                     template: '<home></home>',
-                    resolve:{
-                        promiseInventory: function ($q, DatasetService, PreparationService) {
-                            return $q.all(
-                                [
-                                    DatasetService.refreshDatasets(),
-                                    PreparationService.refreshPreparations()
-                                ]
-                            );
+                    resolve: {
+                        inventory: function ($q, DatasetService, PreparationService) {
+                            'ngInject';
+                            return $q.all([
+                                DatasetService.refreshDatasets(),
+                                PreparationService.refreshPreparations()
+                            ]);
                         }
                     }
-
                 })
                 .state('nav.home.datasets', {
                     url: '/datasets',
@@ -91,20 +90,6 @@
                     },
                     folder: 'dataset'
                 })
-                .state('playground', {
-                    url: '/playground?datasetid&prepid',
-                    template: '<playground></playground>',
-                    resolve:{
-                        promisePlayground: function ($q, DatasetService, PreparationService) {
-                            return $q.all(
-                                [
-                                    DatasetService.getDatasets(),
-                                    PreparationService.getPreparations()
-                                ]
-                            );
-                        }
-                    }
-                })
                 .state('nav.home.preparations', {
                     url: '/preparations',
                     views: {
@@ -112,6 +97,27 @@
                             template: '<preparation-list></preparation-list>'
                         }
                     }
+                })
+
+                .state('playground', {
+                    url: '/playground',
+                    template: '<playground></playground>',
+                    abstract: true,
+                    resolve: {
+                        inventory: function ($q, DatasetService, PreparationService) {
+                            'ngInject';
+                            return $q.all([
+                                DatasetService.getDatasets(),
+                                PreparationService.getPreparations()
+                            ]);
+                        }
+                    }
+                })
+                .state('playground.preparation', {
+                    url: '/preparation?prepid'
+                })
+                .state('playground.dataset', {
+                    url: '/dataset?datasetid'
                 });
             $urlRouterProvider.otherwise('/home/datasets');
         })
@@ -129,7 +135,7 @@
         return $http.get('/assets/config/config.json')
             .then(function (config) {
                 app
-                    //Debug config
+                //Debug config
                     .config(function ($compileProvider) {
                         'ngInject';
                         $compileProvider.debugInfoEnabled(config.data.enableDebug);
@@ -140,7 +146,8 @@
                         RestURLs.setServerUrl(config.data.serverUrl);
                     })
                     //Fetch dynamic configuration (export types, supported encodings, ...)
-                    .run(function(ExportService, DatasetService) {
+                    .run(function (ExportService, DatasetService) {
+                        'ngInject';
                         ExportService.refreshTypes();
                         DatasetService.refreshSupportedEncodings();
                     });
