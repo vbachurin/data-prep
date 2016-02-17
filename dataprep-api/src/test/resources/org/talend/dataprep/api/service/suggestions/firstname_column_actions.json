@@ -143,7 +143,6 @@
     "name": "clear_matching",
     "label": "Clear on matching value",
     "description": "Clear cells that match the value",
-    "docUrl": "",
     "dynamic": false,
     "parameters": [
       {
