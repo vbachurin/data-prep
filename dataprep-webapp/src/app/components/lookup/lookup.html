@@ -99,19 +99,17 @@
             </div>
 
             <div class="inventory-list">
-                <div>
-                    <div class="inventory-item-row"
-                         ng-repeat="dataset in lookupCtrl.state.playground.lookup.datasets track by $index">
-                        <input class="add-dataset-input" type="checkbox" ng-model="dataset.addedToLookup"
-                               ng-disabled="!dataset.enableToAddToLookup"/>
-                        <inventory-item
-                                ng-click="lookupCtrl.toogleSelect(dataset)"
-                                type="dataset"
-                                item="dataset"
-                                details="INVENTORY_DETAILS"
-                                toggle-favorite="angular.noop">
-                        </inventory-item>
-                    </div>
+                <div class="inventory-item-row"
+                     ng-repeat="dataset in lookupCtrl.state.playground.lookup.datasets track by $index">
+                    <input class="add-dataset-input" type="checkbox" ng-model="dataset.addedToLookup"
+                           ng-disabled="!dataset.enableToAddToLookup"/>
+                    <inventory-item
+                            ng-click="lookupCtrl.toogleSelect(dataset)"
+                            type="dataset"
+                            item="dataset"
+                            details="INVENTORY_DETAILS"
+                            toggle-favorite="angular.noop">
+                    </inventory-item>
                 </div>
             </div>
         </div>

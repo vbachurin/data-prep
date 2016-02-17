@@ -119,6 +119,9 @@
       @include display(flex);
       @include flex-direction(row);
       @include align-items(center);
+      @include flex-basis(72px);
+      @include flex-grow(0);
+      @include flex-shrink(0);
 
       .add-dataset-input {
         @include flex-basis(30px);
@@ -132,6 +135,9 @@
         @include flex-grow(1);
         @include flex-shrink(1);
 
+        .inventory-icon {
+          padding: 0 3px;
+        }
         .btn-icon:hover {
           background-color: transparent;
         }
