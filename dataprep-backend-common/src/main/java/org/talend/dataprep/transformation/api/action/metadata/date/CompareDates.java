@@ -97,7 +97,7 @@ public class CompareDates extends AbstractCompareAction implements ColumnAction,
     }
 
     /**
-     * see constants 
+     * see constants
      * @return
      */
     protected SelectParameter getCompareModeSelectParameter(){

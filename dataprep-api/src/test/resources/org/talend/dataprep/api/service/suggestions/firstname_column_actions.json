@@ -3276,8 +3276,8 @@
         "implicit": true,
         "canBeBlank": true,
         "default": "",
-        "label": "Column",
-        "description": "The column to which you want to apply this action"
+        "description": "The column to which you want to apply this action",
+        "label": "Column"
       },
       {
         "name": "row_id",
@@ -3285,8 +3285,8 @@
         "implicit": true,
         "canBeBlank": true,
         "default": "",
-        "label": "Row",
-        "description": "The row to which you want to apply this action"
+        "description": "The row to which you want to apply this action",
+        "label": "Row"
       },
       {
         "name": "scope",
@@ -3294,8 +3294,8 @@
         "implicit": true,
         "canBeBlank": true,
         "default": "",
-        "label": "Scope",
-        "description": "The transformation scope (CELL | LINE | COLUMN | DATASET)"
+        "description": "The transformation scope (CELL | LINE | COLUMN | DATASET)",
+        "label": "Scope"
       },
       {
         "name": "filter",
@@ -3303,8 +3303,8 @@
         "implicit": true,
         "canBeBlank": true,
         "default": "",
-        "label": "Filter",
-        "description": "An optional filter to apply action on matching values only."
+        "description": "An optional filter to apply action on matching values only.",
+        "label": "Filter"
       },
       {
         "name": "compare_mode",
@@ -3314,35 +3314,35 @@
         "configuration": {
           "values": [
             {
-              "value": "eq",
+              "value": "date.eq",
               "label": "equals"
             },
             {
-              "value": "ne",
+              "value": "date.ne",
               "label": "not equals"
             },
             {
-              "value": "gt",
-              "label": "greater than"
+              "value": "date.gt",
+              "label": "after than"
             },
             {
-              "value": "ge",
-              "label": "greater or equals than"
+              "value": "date.ge",
+              "label": "after or equals than"
             },
             {
-              "value": "lt",
-              "label": "lower than"
+              "value": "date.lt",
+              "label": "before than"
             },
             {
-              "value": "le",
-              "label": "lower or equals than"
+              "value": "date.le",
+              "label": "before or equals than"
             }
           ],
           "multiple": false
         },
-        "default": "eq",
-        "label": "Compare mode",
-        "description": "Choose your compare mode in this list"
+        "default": "date.eq",
+        "description": "Choose your compare mode in this list",
+        "label": "Compare mode"
       },
       {
         "name": "mode",
@@ -3361,8 +3361,8 @@
                   "implicit": false,
                   "canBeBlank": true,
                   "default": "",
-                  "label": "Constant",
-                  "description": "Value to compare with"
+                  "description": "Value to compare with",
+                  "label": "Constant"
                 }
               ]
             },
@@ -3376,8 +3376,8 @@
                   "implicit": false,
                   "canBeBlank": false,
                   "default": "",
-                  "label": "Column",
-                  "description": "Combine the current column with this one"
+                  "description": "Combine the current column with this one",
+                  "label": "Column"
                 }
               ]
             }
@@ -3385,14 +3385,14 @@
           "multiple": false
         },
         "default": "constant_mode",
-        "label": "Use with",
-        "description": "Select if you want to use a constant value or another column"
+        "description": "Select if you want to use a constant value or another column",
+        "label": "Use with"
       }
     ],
+    "description": "Compare this column to another column or a constant",
     "label": "Compare Dates",
     "docUrl": "",
     "actionScope": [],
-    "description": "Compare this column to another column or a constant",
     "dynamic": false
   }
 ]
