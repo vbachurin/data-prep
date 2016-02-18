@@ -175,7 +175,7 @@ public class ExtractEmailDomainTest extends BaseDateTests {
      * @param name name of the column metadata to create.
      * @return a new column metadata
      */
-    private ColumnMetadata createMetadata(String id, String name) {
+    protected ColumnMetadata createMetadata(String id, String name) {
         return ColumnMetadata.Builder.column().computedId(id).name(name).type(Type.STRING).headerSize(12).empty(0).invalid(2)
                 .valid(5).build();
     }

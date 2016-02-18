@@ -209,11 +209,11 @@ public class ComputeLengthTest extends BaseDateTests {
         assertFalse(action.acceptColumn(getColumn(Type.BOOLEAN)));
     }
 
-    private ColumnMetadata createMetadata(String id, String name) {
+    protected ColumnMetadata createMetadata(String id, String name) {
         return createMetadata(id, name, Type.STRING);
     }
 
-    private ColumnMetadata createMetadata(String id, String name, Type type) {
+    protected ColumnMetadata createMetadata(String id, String name, Type type) {
         return ColumnMetadata.Builder.column().computedId(id).name(name).type(type).headerSize(12).empty(0).invalid(2).valid(5)
                 .build();
     }
