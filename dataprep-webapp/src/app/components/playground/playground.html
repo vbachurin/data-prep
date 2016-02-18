@@ -13,9 +13,8 @@
   ~ ============================================================================
   -->
 
-<div class="playground-container fullscreen">
-    <label class="talend-modal-close modal-header-close" ng-click="playgroundCtrl.beforeClose()"></label>
-    <div class="modal-header playground-header">
+<div class="playground-container">
+    <div class="playground-header">
         <ul class="left-header" insertion-playground-left-header>
             <li id="dataset-header-details"
                 ng-switch="!!playgroundCtrl.state.playground.dataset.limit">
@@ -69,10 +68,13 @@
             <li id="help-history">
                 <history-control></history-control>
             </li>
+            <li class="playground-close-container">
+                <label class="playground-close" ng-click="playgroundCtrl.beforeClose()"></label>
+            </li>
         </ul>
     </div>
 
-    <div class="modal-body playground">
+    <div class="playground">
         <talend-slidable class="playground-recipe slide-hide"
                          visible="playgroundCtrl.state.playground.recipe.visible"
                          side="left">

@@ -26,7 +26,7 @@
  * @requires data-prep.services.lookup.service:LookupService
  * @requires data-prep.services.utils.service:MessageService
  */
-export default function PlaygroundCtrl($state, $stateParams, state, StateService, PlaygroundService, PreparationService,
+export default function PlaygroundCtrl($timeout, $state, $stateParams, state, StateService, PlaygroundService, PreparationService,
                                        PreviewService, RecipeService, RecipeBulletService, OnboardingService,
                                        LookupService, MessageService) {
     'ngInject';
@@ -148,7 +148,7 @@ export default function PlaygroundCtrl($state, $stateParams, state, StateService
      * @description Playground close callback. It reset the playground and redirect to the previous page
      */
     function close () {
-        StateService.resetPlayground();
+        $timeout(StateService.resetPlayground, 500, false);
         $state.go(state.playground.previousState);
     }
 

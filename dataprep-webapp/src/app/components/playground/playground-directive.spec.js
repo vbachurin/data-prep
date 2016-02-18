@@ -161,11 +161,11 @@ describe('Playground directive', function () {
             var playgroundModal = playground.parent();
 
             //check header is present and contains description
-            expect(playgroundModal.find('.modal-header').length).toBe(1);
-            expect(playgroundModal.find('.modal-header').eq(0).find('.left-header > li').length).toBe(1);
-            expect(playgroundModal.find('.modal-header').eq(0).find('li').eq(0).find('span').eq(0).text().trim()).toBe('File: US States');
-            expect(playgroundModal.find('.modal-header').eq(0).find('li').eq(0).find('span').eq(1).text().trim()).toBe('-');
-            expect(playgroundModal.find('.modal-header').eq(0).find('li').eq(0).find('span').eq(2).text().trim()).toBe('3 lines');
+            expect(playgroundModal.find('.playground-header').length).toBe(1);
+            expect(playgroundModal.find('.playground-header').eq(0).find('.left-header > li').length).toBe(1);
+            expect(playgroundModal.find('.playground-header').eq(0).find('li').eq(0).find('span').eq(0).text().trim()).toBe('File: US States');
+            expect(playgroundModal.find('.playground-header').eq(0).find('li').eq(0).find('span').eq(1).text().trim()).toBe('-');
+            expect(playgroundModal.find('.playground-header').eq(0).find('li').eq(0).find('span').eq(2).text().trim()).toBe('3 lines');
         });
 
         it('should render playground header when dataset is truncated', function () {
@@ -181,11 +181,11 @@ describe('Playground directive', function () {
             var playgroundModal = playground.parent();
 
             //check header is present and contains description
-            expect(playgroundModal.find('.modal-header').length).toBe(1);
-            expect(playgroundModal.find('.modal-header').eq(0).find('.left-header > li').length).toBe(1);
-            expect(playgroundModal.find('.modal-header').eq(0).find('li').eq(0).find('span').eq(0).text().trim()).toBe('File: US States');
-            expect(playgroundModal.find('.modal-header').eq(0).find('li').eq(0).find('span').eq(1).text().trim()).toBe('-');
-            expect(playgroundModal.find('.modal-header').eq(0).find('li').eq(0).find('span').eq(2).text().trim()).toBe('cut at 50 lines');
+            expect(playgroundModal.find('.playground-header').length).toBe(1);
+            expect(playgroundModal.find('.playground-header').eq(0).find('.left-header > li').length).toBe(1);
+            expect(playgroundModal.find('.playground-header').eq(0).find('li').eq(0).find('span').eq(0).text().trim()).toBe('File: US States');
+            expect(playgroundModal.find('.playground-header').eq(0).find('li').eq(0).find('span').eq(1).text().trim()).toBe('-');
+            expect(playgroundModal.find('.playground-header').eq(0).find('li').eq(0).find('span').eq(2).text().trim()).toBe('cut at 50 lines');
         });
 
         it('should render insertion playground left header', function () {
@@ -198,7 +198,7 @@ describe('Playground directive', function () {
             //then
             var playground = angular.element('body').find('.playground').eq(0);
             var playgroundModal = playground.parent();
-            expect(playgroundModal.find('.modal-header').eq(0).find('.left-header').eq(0)[0].hasAttribute('insertion-playground-left-header')).toBe(true);
+            expect(playgroundModal.find('.playground-header').eq(0).find('.left-header').eq(0)[0].hasAttribute('insertion-playground-left-header')).toBe(true);
         });
     });
 

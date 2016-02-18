@@ -201,14 +201,14 @@ describe('Playground controller', function () {
         }));
 
         describe('before close', () => {
-            it('should reset and redirect with NOT implicit preparation', inject(($state, StateService) => {
+            it('should reset and redirect with NOT implicit preparation', inject(($timeout, $state, StateService) => {
                 //given
                 preparation.draft = false;
                 expect(StateService.resetPlayground).not.toHaveBeenCalled();
 
                 //when
                 ctrl.beforeClose();
-
+                $timeout.flush();
                 //then
                 expect(StateService.resetPlayground).toHaveBeenCalled();
                 expect($state.go).toHaveBeenCalledWith('nav.home.preparations');
@@ -235,10 +235,11 @@ describe('Playground controller', function () {
                 expect(PreparationService.delete).toHaveBeenCalledWith(preparation);
             }));
 
-            it('should reset and redirect to previous route', inject(function ($state, StateService) {
+            it('should reset and redirect to previous route', inject(function ($timeout, $state, StateService) {
                 //when
                 ctrl.discardSaveOnClose();
                 scope.$digest();
+                $timeout.flush();
 
                 //then
                 expect(StateService.resetPlayground).toHaveBeenCalled();
@@ -258,10 +259,11 @@ describe('Playground controller', function () {
                 expect(PlaygroundService.createOrUpdatePreparation).toHaveBeenCalledWith('my preparation');
             }));
 
-            it('should reset and redirect to previous route', inject(function ($state, StateService) {
+            it('should reset and redirect to previous route', inject(function ($timeout, $state, StateService) {
                 //when
                 ctrl.confirmSaveOnClose();
                 scope.$digest();
+                $timeout.flush();
 
                 //then
                 expect(StateService.resetPlayground).toHaveBeenCalled();
