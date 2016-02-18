@@ -40,6 +40,8 @@ public class CompareDates extends AbstractCompareAction implements ColumnAction,
     @Autowired
     protected DateParser dateParser;
 
+    public static final int ERROR_COMPARE_RESULT = 0;
+
     /**
      * @see ActionMetadata#getName()
      */
@@ -88,14 +90,18 @@ public class CompareDates extends AbstractCompareAction implements ColumnAction,
             return -1;
         }
 
-        final LocalDateTime temporalAccessor1 = dateParser.parse(comparisonRequest.value1, comparisonRequest.colMetadata1);
+        try {
+            final LocalDateTime temporalAccessor1 = dateParser.parse(comparisonRequest.value1, comparisonRequest.colMetadata1);
 
-        // we compare with the format of the first column when the comparison is with a CONSTANT
-        final LocalDateTime temporalAccessor2 = dateParser.parse(comparisonRequest.value2,
-                comparisonRequest.mode.equals(CONSTANT_MODE) ? //
-                        comparisonRequest.colMetadata2 : comparisonRequest.colMetadata1);
+            // we compare with the format of the first column when the comparison is with a CONSTANT
+            final LocalDateTime temporalAccessor2 = dateParser.parse(comparisonRequest.value2,
+                    comparisonRequest.mode.equals(CONSTANT_MODE) ? //
+                            comparisonRequest.colMetadata2 : comparisonRequest.colMetadata1);
 
-        return temporalAccessor1.compareTo(temporalAccessor2);
+            return temporalAccessor1.compareTo(temporalAccessor2);
+        } catch (Exception e) {
+            return ERROR_COMPARE_RESULT;
+        }
     }
 
 }

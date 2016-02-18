@@ -19,7 +19,9 @@ import static org.talend.dataprep.transformation.api.action.metadata.ActionMetad
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.assertj.core.api.Assertions;
@@ -242,6 +244,52 @@ public class CompareDatesTest extends BaseDateTests {
                 .containsExactly(MapEntry.entry("0000", "02/01/2012"), //
                         MapEntry.entry("0001", "02/02/2012"), //
                         MapEntry.entry("0002", "false"));
+
+    }
+
+    @Test
+    public void simple_greater_result_with_constant_with_invalid_dates_row() throws Exception {
+
+        // given
+        final Map<String, String> firstRowvalues = new HashMap<>();
+        firstRowvalues.put("0000", "02/01/2012");
+
+        RowMetadata rowMetadata = new RowMetadata();
+        rowMetadata.addColumn(createMetadata("0000", "last update", Type.DATE, "statistics_MM_dd_yyyy.json"));
+        parameters.put(CompareDates.CONSTANT_VALUE, "02/21/2008");
+
+        parameters.put(CompareDates.MODE_PARAMETER, OtherColumnParameters.CONSTANT_MODE);
+        parameters.put(CompareDates.COMPARE_MODE, CompareDates.GT);
+
+
+        final Map<String, String> secondRowvalues = new HashMap<>();
+        secondRowvalues.put("0000", "Beer");
+
+        final Map<String, String> thirdRowvalues = new HashMap<>();
+        thirdRowvalues.put("0000", "02/01/2001");
+
+        List<DataSetRow> rows = Arrays.asList(new DataSetRow(rowMetadata, firstRowvalues), //
+                new DataSetRow(rowMetadata, secondRowvalues), //
+                new DataSetRow(rowMetadata, thirdRowvalues));
+
+        // when
+        ActionTestWorkbench.test( rows, action.create( parameters).getRowAction());
+
+        // then
+        Assertions.assertThat(rows.get( 0 ).values()) //
+            .hasSize(2) //
+            .containsExactly(MapEntry.entry("0000", "02/01/2012"), //
+                             MapEntry.entry("0001", "true"));
+
+        Assertions.assertThat(rows.get( 1 ).values()) //
+            .hasSize(2) //
+            .containsExactly(MapEntry.entry("0000", "Beer"), //
+                             MapEntry.entry("0001", "false"));
+
+        Assertions.assertThat(rows.get( 2 ).values()) //
+            .hasSize(2) //
+            .containsExactly(MapEntry.entry("0000", "02/01/2001"), //
+                             MapEntry.entry("0001", "false"));
 
     }
 
