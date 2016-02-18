@@ -86,10 +86,9 @@ public class CompareDates extends AbstractCompareAction implements ColumnAction,
     }
 
     @Override
-    protected String getCompareMode( Map<String, String> parameters )
-    {
+    protected String getCompareMode(Map<String, String> parameters) {
         String dateCompareMode = parameters.get(COMPARE_MODE);
-        return StringUtils.substringAfter( dateCompareMode, "date." );
+        return StringUtils.substringAfter(dateCompareMode, "date.");
     }
 
     protected Parameter getDefaultConstantValue() {
@@ -97,6 +96,10 @@ public class CompareDates extends AbstractCompareAction implements ColumnAction,
         return new Parameter(CONSTANT_VALUE, ParameterType.DATE, StringUtils.EMPTY);
     }
 
+    /**
+     * see constants 
+     * @return
+     */
     protected SelectParameter getCompareModeSelectParameter(){
 
         //@formatter:off
