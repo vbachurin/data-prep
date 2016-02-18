@@ -110,25 +110,14 @@ describe('Playground directive', function () {
         $provide.constant('state', stateMock);
     }));
     beforeEach(angular.mock.module('htmlTemplates'));
-    beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
-        $translateProvider.translations('en', {
-            'FILE_DETAILS_NAME': 'File: {{name}}',
-            'FILE_DETAILS_LINES': '{{records}} lines',
-            'FILE_DETAILS_LIMIT': 'cut at {{records}} lines'
-        });
-        $translateProvider.preferredLanguage('en');
-    }));
 
     beforeEach(inject(function ($rootScope, $compile, $q, $timeout, PreparationListService, PlaygroundService, ExportService) {
         scope = $rootScope.$new();
 
         createElement = function () {
             element = angular.element('<playground></playground>');
-            angular.element('body').append(element);
-
             $compile(element)(scope);
             scope.$digest();
-            $timeout.flush();
         };
         spyOn(PlaygroundService, 'createOrUpdatePreparation').and.returnValue($q.when(true));
         spyOn(ExportService, 'refreshTypes').and.returnValue($q.when([]));
@@ -148,60 +137,6 @@ describe('Playground directive', function () {
         element.remove();
     });
 
-    describe('header', function() {
-        it('should render default playground header', function () {
-            //given
-            stateMock.playground.dataset = metadata;
-
-            //when
-            createElement();
-
-            //then
-            var playground = angular.element('body').find('.playground').eq(0);
-            var playgroundModal = playground.parent();
-
-            //check header is present and contains description
-            expect(playgroundModal.find('.playground-header').length).toBe(1);
-            expect(playgroundModal.find('.playground-header').eq(0).find('.left-header > li').length).toBe(1);
-            expect(playgroundModal.find('.playground-header').eq(0).find('li').eq(0).find('span').eq(0).text().trim()).toBe('File: US States');
-            expect(playgroundModal.find('.playground-header').eq(0).find('li').eq(0).find('span').eq(1).text().trim()).toBe('-');
-            expect(playgroundModal.find('.playground-header').eq(0).find('li').eq(0).find('span').eq(2).text().trim()).toBe('3 lines');
-        });
-
-        it('should render playground header when dataset is truncated', function () {
-            //given
-            stateMock.playground.dataset = metadata;
-            stateMock.playground.dataset.limit = 50;
-
-            //when
-            createElement();
-
-            //then
-            var playground = angular.element('body').find('.playground').eq(0);
-            var playgroundModal = playground.parent();
-
-            //check header is present and contains description
-            expect(playgroundModal.find('.playground-header').length).toBe(1);
-            expect(playgroundModal.find('.playground-header').eq(0).find('.left-header > li').length).toBe(1);
-            expect(playgroundModal.find('.playground-header').eq(0).find('li').eq(0).find('span').eq(0).text().trim()).toBe('File: US States');
-            expect(playgroundModal.find('.playground-header').eq(0).find('li').eq(0).find('span').eq(1).text().trim()).toBe('-');
-            expect(playgroundModal.find('.playground-header').eq(0).find('li').eq(0).find('span').eq(2).text().trim()).toBe('cut at 50 lines');
-        });
-
-        it('should render insertion playground left header', function () {
-            //given
-            stateMock.playground.dataset = metadata;
-
-            //when
-            createElement();
-
-            //then
-            var playground = angular.element('body').find('.playground').eq(0);
-            var playgroundModal = playground.parent();
-            expect(playgroundModal.find('.playground-header').eq(0).find('.left-header').eq(0)[0].hasAttribute('insertion-playground-left-header')).toBe(true);
-        });
-    });
-
     describe('suggestions', function() {
         it('should render right slidable panel', function () {
             //given
@@ -211,9 +146,8 @@ describe('Playground directive', function () {
             createElement();
 
             //then: check right slidable is displayed transformations with right slide action
-            var playground = angular.element('body').find('.playground').eq(0);
-            expect(playground.eq(0).find('.playground-suggestions').eq(0).hasClass('slide-hide')).toBe(false);
-            expect(playground.eq(0).find('.playground-suggestions').eq(0).find('.action').eq(0).hasClass('right')).toBe(true);
+            expect(element.find('.playground-suggestions').eq(0).hasClass('slide-hide')).toBe(false);
+            expect(element.find('.playground-suggestions').eq(0).find('.action').eq(0).hasClass('right')).toBe(true);
         });
     });
 
@@ -233,9 +167,8 @@ describe('Playground directive', function () {
             createElement();
 
             //then : check left slidable is hidden recipe with left slide action
-            var playground = angular.element('body').find('.playground').eq(0);
-            expect(playground.eq(0).find('.playground-recipe').eq(0).hasClass('slide-hide')).toBe(true);
-            expect(playground.eq(0).find('.playground-recipe').eq(0).find('.action').eq(0).hasClass('right')).toBe(false);
+            expect(element.find('.playground-recipe').eq(0).hasClass('slide-hide')).toBe(true);
+            expect(element.find('.playground-recipe').eq(0).find('.action').eq(0).hasClass('right')).toBe(false);
         });
 
         it('should render editable text on preparation title', function () {
@@ -247,8 +180,7 @@ describe('Playground directive', function () {
             createElement();
 
             //then
-            var stepsHeader = angular.element('body .playground-container').find('.steps-header').eq(0);
-            var title = stepsHeader.find('talend-editable-text');
+            var title = element.find('.steps-header').eq(0).find('talend-editable-text');
             expect(title.length).toBe(1);
 
         });
@@ -271,7 +203,7 @@ describe('Playground directive', function () {
             spyOn(RecipeBulletService, 'toggleRecipe').and.returnValue();
 
             createElement();
-            var chkboxOnOff = angular.element('body').find('.label-switch > input[type="checkbox"]');
+            var chkboxOnOff = element.find('.label-switch > input[type="checkbox"]');
 
             //when
             chkboxOnOff.trigger('click');
@@ -296,7 +228,7 @@ describe('Playground directive', function () {
             RecipeService.getRecipe().push(step);
             createElement();
 
-            var chkboxOnOff = angular.element('body').find('.label-switch > input[type="checkbox"]');
+            var chkboxOnOff = element.find('.label-switch > input[type="checkbox"]');
             expect(chkboxOnOff.prop('checked')).toBe(true);
 
             //when
@@ -323,7 +255,7 @@ describe('Playground directive', function () {
             RecipeService.getRecipe().push(step);
             createElement();
 
-            var chkboxOnOff = angular.element('body').find('.label-switch > input[type="checkbox"]');
+            var chkboxOnOff = element.find('.label-switch > input[type="checkbox"]');
             expect(chkboxOnOff.prop('checked')).toBe(false);
 
             //when
@@ -344,7 +276,7 @@ describe('Playground directive', function () {
             createElement();
 
             //then : check dataset parameters is present
-            var playground = angular.element('body').find('.playground').eq(0);
+            var playground = element.find('.playground').eq(0);
             expect(playground.find('.dataset-parameters').length).toBe(1);
         });
     });
@@ -358,7 +290,7 @@ describe('Playground directive', function () {
             createElement();
 
             //then : check datagrid and filters are present
-            var playground = angular.element('body').find('.playground').eq(0);
+            var playground = element.find('.playground').eq(0);
             expect(playground.eq(0).find('filter-bar').length).toBe(1);
             expect(playground.eq(0).find('filter-bar').find('#filter-search').length).toBe(1);
             expect(playground.eq(0).find('datagrid').length).toBe(1);

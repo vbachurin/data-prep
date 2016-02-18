@@ -5,14 +5,6 @@ $dark-gray: #333 !default;
 $light-gray: #DDD !default;
 $base-font-color: $dark-gray !default;
 
-$navigation-background-top: rgba(85, 89, 100, 0.8);
-$navigation-background-bottom: rgb(85, 89, 100);
-$navigation-border: #333;
-$navigation-border-height: 1px;
-$navigation-color: white;
-$navigation-height: 50px;
-$navigation-item-space: 10px;
-
 $action-color: #b6be00 !important;
 $switch-width: 42px;
 $switch-padding: 2px;
@@ -25,8 +17,6 @@ $switch-background: $base-background-color;
 $switch-border-background: darken($base-background-color, 9%);
 $switch-shadow: 0 2px 5px transparentize(black, 0.6);
 $slide-action-background: $base-background-color;
-
-$slide-action-background: $white;
 
 @mixin slidable-action-bar {
   .action {
@@ -88,19 +78,6 @@ $slide-action-background: $white;
     }
 
     .label-switch {
-      $action-color: #b6be00 !important;
-      $base-background-color: white !default;
-      $switch-width: 42px;
-      $switch-padding: 2px;
-      $switch-height: 22px;
-      $switch-radius: $switch-height;
-      $knob-size: $switch-height - ($switch-padding * 2);
-      $knob-radius: $switch-height - ($switch-padding * 2);
-      $knob-width: $knob-size;
-      $switch-background: $base-background-color;
-      $switch-border-background: darken($base-background-color, 9%);
-      $switch-shadow: 0 2px 5px transparentize(black, 0.6);
-
       border-radius: $switch-radius;
       cursor: pointer;
       display: inline-block;
@@ -172,150 +149,6 @@ $slide-action-background: $white;
   .playground-suggestions {
     @include slidable-action-bar();
     box-shadow: $box-shadow-to-left;
-  }
-}
-
-//-----------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------HEADER------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------
-.playground-header {
-  display: table;
-  height: $navigation-height;
-  min-height: $navigation-height;
-  width: 100%;
-
-  @include background(linear-gradient($navigation-background-top, $navigation-background-bottom) left repeat);
-  border-bottom: 1px solid darken($navigation-border, 10);
-
-  color: $navigation-color;
-
-  > ul {
-    > * {
-      display: table-cell;
-      line-height: $navigation-height - $navigation-border-height;
-      padding-left: $navigation-item-space;
-      padding-right: $navigation-item-space;
-      vertical-align: middle;
-      border-right: 1px solid grey;
-
-      .title {
-        font-weight: bold;
-      }
-
-      input[type=search] {
-        @include box-sizing(border-box);
-        border-radius: $base-border-radius;
-        border: $dark-gray;
-        color: $black;
-        font-size: 0.9em;
-        font-style: italic;
-        margin: 0;
-        padding: 0.5em 0.8em;
-        width: 100%;
-      }
-
-      input {
-        display: inline-block;
-        margin: 0;
-        width: auto;
-      }
-    }
-  }
-
-  .icon {
-    color: darken($white, 10%);
-    padding-left: 10px;
-    padding-right: 10px;
-    @include filter(drop-shadow(0px 1px 1px #1f2024));
-
-    &:hover {
-      color: $white;
-    }
-  }
-
-  .left-header {
-    float: left;
-
-    .file-lines-count {
-      color: $dark-green;
-      @include ellipsis(300px);
-      vertical-align: top;
-    }
-
-    .playground-dataset-name {
-      @include ellipsis(500px);
-      vertical-align: top;
-    }
-
-    #playground-gear-icon {
-      font-size: 0.6em;
-      vertical-align: top;
-    }
-  }
-
-  .right-header {
-    float: right;
-
-    .preview {
-
-      .previewBadge {
-        line-height: 36px;
-        height: 36px;
-        padding: 0 5px;
-        border-radius: 5px;
-        background: rgba(255, 255, 255, 0.5);
-
-        .previewBadgeElement {
-          padding: 0 5px;
-          vertical-align: middle;
-        }
-      }
-    }
-
-    #playground-lookup-icon {
-      padding: 8px;
-
-      > img {
-        vertical-align: middle;
-      }
-
-      &.pressed {
-        @include background(linear-gradient(#4D4D50, #6E6D71) left repeat);
-      }
-    }
-
-    .playground-close-container {
-      padding: 0;
-
-      .playground-close {
-        width: $navigation-height;
-        height: $navigation-height;
-        line-height: $navigation-height - 1px;
-        cursor: pointer;
-        position: relative;
-        padding: 0;
-        margin: 0;
-
-        &:after,
-        &:before {
-          @include position(absolute, $navigation-height/4 0 0 $navigation-height/2-2px);
-          @include transform(rotate(45deg));
-          @include size(0.15em 1.5em);
-          background: $light-gray;
-          content: '';
-          display: block;
-        }
-
-        &:hover:after,
-        &:hover:before {
-          background: darken($light-gray, 10%);
-        }
-
-        &:before {
-          @include transform(rotate(-45deg));
-        }
-      }
-    }
   }
 }
 

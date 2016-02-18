@@ -14,65 +14,14 @@
   -->
 
 <div class="playground-container">
-    <div class="playground-header">
-        <ul class="left-header" insertion-playground-left-header>
-            <li id="dataset-header-details"
-                ng-switch="!!playgroundCtrl.state.playground.dataset.limit">
-
-                <span class="playground-dataset-name" translate="FILE_DETAILS_NAME"
-                      title="{{playgroundCtrl.state.playground.dataset.name}}"
-                      translate-value-name="{{playgroundCtrl.state.playground.dataset.name}}"></span>
-                <span class="playground-dataset-name">-</span>
-                <span class="file-lines-count" ng-switch-when="false" translate="FILE_DETAILS_LINES"
-                      translate-value-records="{{playgroundCtrl.state.playground.dataset.records}}"></span>
-                <span class="file-lines-count" ng-switch-when="true" translate="FILE_DETAILS_LIMIT"
-                      translate-value-records="{{playgroundCtrl.state.playground.dataset.limit}}"></span>
-
-                <a id="playground-gear-icon"
-                   class="icon"
-                   data-icon="L"
-                   ng-click="playgroundCtrl.toggleParameters()"
-                   translate-once-title="DATAGRID_PARAMETERS_GEAR"></a>
-            </li>
-        </ul>
-
-        <ul class="right-header">
-            <li class="preview" ng-if="playgroundCtrl.previewInProgress()">
-                <div class="previewBadge">
-                    <img src="assets/images/eye.svg" alt="Blue Square" height="24px" class="previewBadgeElement"/>
-                    <span class="previewBadgeElement">Preview</span>
-                </div>
-            </li>
-            <li>
-                <a id="playground-lookup-icon"
-                   ng-click="playgroundCtrl.toggleLookup()"
-                   ng-class="{pressed: playgroundCtrl.state.playground.lookup.visibility}">
-                    <img src="assets/images/lookup/lookup-button.png">
-                </a>
-            </li>
-            <li>
-                <export></export>
-            </li>
-            <li class="nav-link" translate-once-title="ONBOARDING">
-                <a id="playground-onboarding-icon"
-                   class="icon"
-                   data-icon="y"
-                   ng-click="playgroundCtrl.startOnBoarding('playground')"></a>
-            </li>
-            <li class="nav-link" translate-once-title="FEEDBACK_TOOLTIP">
-                <a id="playground-feedback-icon"
-                   class="icon"
-                   data-icon="H"
-                   ng-click="playgroundCtrl.openFeedbackForm()"></a>
-            </li>
-            <li id="help-history">
-                <history-control></history-control>
-            </li>
-            <li class="playground-close-container">
-                <label class="playground-close" ng-click="playgroundCtrl.beforeClose()"></label>
-            </li>
-        </ul>
-    </div>
+    <playground-header dataset="playgroundCtrl.state.playground.dataset"
+                       preview="playgroundCtrl.previewInProgress()"
+                       lookup="playgroundCtrl.state.playground.lookup.visibility"
+                       on-parameters="playgroundCtrl.toggleParameters()"
+                       on-lookup="playgroundCtrl.toggleLookup()"
+                       on-onboarding="playgroundCtrl.startOnBoarding('playground')"
+                       on-feedback="playgroundCtrl.openFeedbackForm()"
+                       on-close="playgroundCtrl.beforeClose()"></playground-header>
 
     <div class="playground">
         <talend-slidable class="playground-recipe slide-hide"
