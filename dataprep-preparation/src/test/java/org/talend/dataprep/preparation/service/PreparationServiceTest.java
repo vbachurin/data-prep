@@ -278,6 +278,7 @@ public class PreparationServiceTest {
         Preparation preparation = repository.listAll(Preparation.class).iterator().next();
         assertThat(preparation.id(), is(preparationId));
         assertThat(preparation.getName(), is("test_name"));
+        assertThat(preparation.getAuthor(), is(System.getProperty("user.name")));
         assertThat(preparation.getAppVersion(), is(versionService.version().getVersionId()));
     }
 
