@@ -19,10 +19,9 @@ function webpackWrapper(watch, callback) {
             preLoaders: [{test: /\.js$/, exclude: /node_modules/, loader: 'eslint-loader'}],
             loaders: [{test: /\.js$/, exclude: /node_modules/, loaders: ['ng-annotate', 'babel-loader']}]
         },
-        output: {filename: 'index.module.js'}
+        output: {filename: 'index.module.js'},
+        devtool : 'source-map'
     };
-
-    webpackOptions.devtool = 'source-map';
 
     var webpackChangeHandler = function (err, stats) {
         if (err) {
