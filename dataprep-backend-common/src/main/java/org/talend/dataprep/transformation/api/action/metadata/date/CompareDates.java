@@ -14,6 +14,7 @@
 package org.talend.dataprep.transformation.api.action.metadata.date;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,7 @@ import org.talend.dataprep.transformation.api.action.metadata.common.CompareActi
 import org.talend.dataprep.transformation.api.action.metadata.common.OtherColumnParameters;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 import org.talend.dataprep.transformation.api.action.parameters.ParameterType;
+import org.talend.dataprep.transformation.api.action.parameters.SelectParameter;
 
 @Component(CompareDates.ACTION_BEAN_PREFIX + CompareDates.ACTION_NAME)
 public class CompareDates extends AbstractCompareAction implements ColumnAction, OtherColumnParameters, CompareAction {
@@ -36,6 +38,22 @@ public class CompareDates extends AbstractCompareAction implements ColumnAction,
      * The action name.
      */
     public static final String ACTION_NAME = "compare_dates"; //$NON-NLS-1$
+
+    //-----------------------------------------
+    // Overriding the default as we need
+    // different labels for dates
+    //-----------------------------------------
+    public static final String EQ = "date.eq";
+
+    public static final String NE = "date.ne";
+
+    public static final String GT = "date.gt";
+
+    public static final String GE = "date.ge";
+
+    public static final String LT = "date.lt";
+
+    public static final String LE = "date.le";
 
     @Autowired
     protected DateParser dateParser;
@@ -67,9 +85,33 @@ public class CompareDates extends AbstractCompareAction implements ColumnAction,
         return Type.DATE.isAssignableFrom(columnType);
     }
 
+    @Override
+    protected String getCompareMode( Map<String, String> parameters )
+    {
+        String dateCompareMode = parameters.get(COMPARE_MODE);
+        return StringUtils.substringAfter( dateCompareMode, "date." );
+    }
+
     protected Parameter getDefaultConstantValue() {
         // olamy the javascript will tranform to now if empty
         return new Parameter(CONSTANT_VALUE, ParameterType.DATE, StringUtils.EMPTY);
+    }
+
+    protected SelectParameter getCompareModeSelectParameter(){
+
+        //@formatter:off
+        return SelectParameter.Builder.builder() //
+            .name(COMPARE_MODE) //
+            .item(EQ) //
+            .item(NE) //
+            .item(GT) //
+            .item(GE) //
+            .item(LT) //
+            .item(LE) //
+            .defaultValue(EQ) //
+            .build();
+        //@formatter:on
+
     }
 
     @Override

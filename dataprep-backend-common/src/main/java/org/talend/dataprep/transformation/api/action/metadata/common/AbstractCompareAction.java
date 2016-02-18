@@ -41,19 +41,7 @@ public abstract class AbstractCompareAction extends ActionMetadata implements Co
     public List<Parameter> getParameters() {
         final List<Parameter> parameters = super.getParameters();
 
-        //@formatter:off
-        parameters.add(SelectParameter.Builder.builder()
-                        .name(COMPARE_MODE)
-                        .item(EQ)
-                        .item(NE)
-                        .item(GT)
-                        .item(GE)
-                        .item(LT)
-                        .item(LE)
-                        .defaultValue(EQ)
-                        .build()
-        );
-        //@formatter:on
+        parameters.add(getCompareModeSelectParameter());
 
         //@formatter:off
         parameters.add(SelectParameter.Builder.builder() //
@@ -68,6 +56,31 @@ public abstract class AbstractCompareAction extends ActionMetadata implements Co
         return parameters;
     }
 
+    /**
+     * can be overriden as keys can be different (date have different keys/labels)
+     * @return {@link SelectParameter}
+     */
+    protected SelectParameter getCompareModeSelectParameter(){
+
+        //@formatter:off
+        return SelectParameter.Builder.builder() //
+                           .name(COMPARE_MODE) //
+                           .item(EQ) //
+                           .item(NE) //
+                           .item(GT) //
+                           .item(GE) //
+                           .item(LT) //
+                           .item(LE) //
+                           .defaultValue(EQ) //
+                           .build();
+        //@formatter:on
+
+    }
+
+    /**
+     *
+     * @return {@link Parameter} the default value (can be a different type/value)
+     */
     protected Parameter getDefaultConstantValue(){
         // olamy no idea why this 2 but was here before so just keep backward compat :-)
         return new Parameter(CONSTANT_VALUE, ParameterType.STRING, "2");
@@ -82,7 +95,7 @@ public abstract class AbstractCompareAction extends ActionMetadata implements Co
         final RowMetadata rowMetadata = row.getRowMetadata();
         final Map<String, String> parameters = context.getParameters();
 
-        String compareMode = parameters.get(COMPARE_MODE);
+        String compareMode = getCompareMode( parameters );
 
         String compareToLabel;
         if (parameters.get(MODE_PARAMETER).equals(CONSTANT_MODE)) {
@@ -112,6 +125,15 @@ public abstract class AbstractCompareAction extends ActionMetadata implements Co
                 .setColumnMetadata2(getColumnMetadataToCompareWith(parameters, row)) //
                 .setValue2(getValueToCompareWith(parameters, row));
         row.set(newColumnId, toStringTrueFalse(compare(comparisonRequest)));
+    }
+
+    /**
+     * can be overriden as keys can be different (date have different keys/labels)
+     * @param parameters
+     * @return
+     */
+    protected String getCompareMode(Map<String, String> parameters) {
+        return parameters.get(COMPARE_MODE);
     }
 
     private String getValueToCompareWith(Map<String, String> parameters, DataSetRow row) {
