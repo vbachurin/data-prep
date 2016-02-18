@@ -22,9 +22,7 @@ function webpackWrapper(watch, callback) {
         output: {filename: 'index.module.js'}
     };
 
-    if (watch) {
-        webpackOptions.devtool = 'inline-source-map';
-    }
+    webpackOptions.devtool = 'source-map';
 
     var webpackChangeHandler = function (err, stats) {
         if (err) {
