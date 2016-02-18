@@ -548,11 +548,11 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
 
         Assertions.assertThat(values.get(0)) //
             .contains(MapEntry.entry("0000", "Zoo"), //
-                      MapEntry.entry("0001", "Could not resolve external workbook name 'Workbook1.xlsx'. Workbook environment has not been set up., formula: [1]Leads!$D$2"));
+                      MapEntry.entry("0001", ""));
 
         Assertions.assertThat(values.get(1)) //
             .contains(MapEntry.entry("0000", "Boo"), //
-                      MapEntry.entry("0001", "Could not resolve external workbook name 'Workbook1.xlsx'. Workbook environment has not been set up., formula: [1]Leads!$D$3"));
+                      MapEntry.entry("0001", ""));
     }
 
 }

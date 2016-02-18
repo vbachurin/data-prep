@@ -21,12 +21,7 @@ import java.util.Locale;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFDataFormatter;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellValue;
-import org.apache.poi.ss.usermodel.DataFormatter;
-import org.apache.poi.ss.usermodel.FormulaEvaluator;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.ss.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
@@ -66,8 +61,10 @@ public class XlsUtils {
             try {
                 return getCellValueAsString(cell, formulaEvaluator.evaluate(cell));
             } catch (Exception e) {
-                // we return the error message and the formula
-                return e.getMessage() + ", formula: " + cell.getCellFormula();
+                // log error message and the formula
+                LOGGER.warn("Unable to evaluate cell (line: {}, col: {}) with formula '{}': {}", cell.getRowIndex(),
+                        cell.getColumnIndex(), cell.getCellFormula(), e.getMessage());
+                return StringUtils.EMPTY;
             }
         case Cell.CELL_TYPE_NUMERIC:
             return getNumericValue(cell, null, false);
