@@ -77,7 +77,7 @@ public class ErrorMessageTest {
 
         // then
         String errorExpected = "{\"code\":\"" + errorCode.getProduct() + '_' + errorCode.getGroup() + '_' + errorCode.getCode()
-                + "\",\"message\":\"" + "Service unavailable" + "\",\"message_title\":Server error,\"context\":{}}";
+                + "\",\"message\":\"" + "Service unavailable" + "\",\"message_title\":An error has occurred,\"context\":{}}";
         StringWriter stringWriter = new StringWriter();
         exception.writeTo(stringWriter);
 
@@ -119,7 +119,7 @@ public class ErrorMessageTest {
 
         // then
         String errorExpected = "{\"code\":\"" + errorCode.getProduct() + '_' + errorCode.getGroup() + '_' + errorCode.getCode()
-                + "\",\"message\":\"" + "An error occurred" + "\",\"message_title\":Server error,\"context\":{}}";
+                + "\",\"message\":\"" + "Sorry an unexpected error occurred and we could not complete your last operation, but you can keep using Data Preparation" + "\",\"message_title\":An error has occurred,\"context\":{}}";
         StringWriter stringWriter = new StringWriter();
         exception.writeTo(stringWriter);
 
@@ -244,7 +244,7 @@ public class ErrorMessageTest {
 
         // then
         String errorExpected = "{\"code\":\"" + errorCode.getProduct() + '_' + errorCode.getGroup() + '_' + errorCode.getCode()
-                + "\",\"message\":\"" + "An error occurred" + "\",\"message_title\":Server error,\"context\":{}}";
+                + "\",\"message\":\"" + "Sorry an unexpected error occurred and we could not complete your last operation, but you can keep using Data Preparation" + "\",\"message_title\":An error has occurred,\"context\":{}}";
         StringWriter stringWriter = new StringWriter();
         exception.writeTo(stringWriter);
 
