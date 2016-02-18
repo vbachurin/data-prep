@@ -14,16 +14,9 @@
 describe('Suggestions stats directive', function() {
     'use strict';
 
-    var scope, createElement, element, stateMock;
+    var scope, createElement, element;
 
-    beforeEach(angular.mock.module('data-prep.suggestions-stats', function ($provide) {
-        stateMock = {playground: {
-            suggestions: {
-                isLoading: false
-            }
-        }};
-        $provide.constant('state', stateMock);
-    }));
+    beforeEach(angular.mock.module('data-prep.suggestions-stats'));
     beforeEach(angular.mock.module('htmlTemplates'));
 
     beforeEach(inject(function($rootScope, $compile, $timeout) {
@@ -42,15 +35,12 @@ describe('Suggestions stats directive', function() {
     });
 
     it('should render suggestions/stats splitter', inject(function() {
-        //given
-        stateMock.playground.suggestions.isLoading = false;
-
         //when
         createElement();
 
         //then
-        expect(element.find('.suggestions-loading-div').length).toBe(0);
-        expect(element.find('bg-splitter').length).toBe(1);
-        expect(element.find('bg-splitter.ng-hide').length).toBe(0);
+        expect(element.find('talend-splitter').length).toBe(1);
+        expect(element.find('talend-splitter split-first-pane actions-suggestions').length).toBe(1);
+        expect(element.find('talend-splitter split-second-pane stats-details').length).toBe(1);
     }));
 });

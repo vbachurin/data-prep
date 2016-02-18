@@ -24,5 +24,5 @@ import SuggestionsStats from './suggestions-stats-directive';
             'data-prep.stats-details',
             'data-prep.column-profile'
         ])
-        .directive('suggestionsStats', SuggestionsStats);
+        .component('suggestionsStats', SuggestionsStats);
 })();

@@ -30,7 +30,7 @@ describe('Dataprep app', function() {
             $rootScope.$digest();
 
             //then
-            expect($translate.use).toHaveBeenCalledWith($window.navigator.language === 'fr' ? 'fr' : 'en');
+            expect($translate.use).toHaveBeenCalledWith('en');
         }));
     });
 

@@ -32,13 +32,13 @@ const playgroundTour = [
         position: 'right'
     },
     {
-        element: '#help-suggestions > .actions-suggestions',
+        element: '#help-suggestions',
         title: '',
         content: 'Click one of the available functions to perform it on the column you selected.</br>Don\'t worry, you will be able to undo or change it whenever you want.',
         position: 'left'
     },
     {
-        element: '#help-stats > .actions-suggestions',
+        element: '#help-stats',
         title: '',
         content: 'In this panel, you will find some basic analysis of your data to help you have a better idea of its content.',
         position: 'left'

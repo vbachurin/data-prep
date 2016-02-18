@@ -26,6 +26,10 @@
 
       .title{
         @include ellipsis(320px);
+        font-size: 1.2em;
+        font-weight: 600;
+        padding: 25px 10px 5px 10px;
+        text-transform: uppercase;
       }
     }
 

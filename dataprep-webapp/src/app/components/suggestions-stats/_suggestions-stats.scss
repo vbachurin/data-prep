@@ -11,30 +11,10 @@
 
   ============================================================================*/
 
-.suggestions-stats-details {
-
+#suggestions-stats-details {
   position: relative;
-  border-left: 2px solid #f1f1f1;
-  height: calc(100vh - 56px);
-
-  .title {
-    font-size: 1.2em;
-    font-weight: 600;
-    padding: 25px 10px 5px 10px;
-    text-transform: uppercase;
-  }
-
-  .split-panes .split-handler {
-    height: 12px;
-    background-color: #f1f1f1 !important;
-    background: url("/assets/images/dataprep-panel-splitter.png") no-repeat center;
-    z-index: 10;
-  }
-
-  .pane-container {
-    height: 100%;
-    overflow-y: hidden;
-  }
+  border-left: 2px solid $super-light-gray;
+  height: calc(100vh - 51px);
 
   .loading-container {
     position: relative;
@@ -59,7 +39,3 @@
     }
   }
 }
-
-@import "actions-list/actions-list";
-@import "actions-suggestions/action-suggestions";
-@import "stats-details/stats-details";
