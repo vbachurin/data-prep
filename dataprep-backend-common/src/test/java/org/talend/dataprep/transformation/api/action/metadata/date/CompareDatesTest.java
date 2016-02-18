@@ -284,7 +284,7 @@ public class CompareDatesTest extends BaseDateTests {
         Assertions.assertThat(rows.get( 1 ).values()) //
             .hasSize(2) //
             .containsExactly(MapEntry.entry("0000", "Beer"), //
-                             MapEntry.entry("0001", "false"));
+                             MapEntry.entry("0001", "N/A"));
 
         Assertions.assertThat(rows.get( 2 ).values()) //
             .hasSize(2) //

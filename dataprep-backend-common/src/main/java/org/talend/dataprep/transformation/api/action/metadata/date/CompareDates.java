@@ -58,8 +58,6 @@ public class CompareDates extends AbstractCompareAction implements ColumnAction,
     @Autowired
     protected DateParser dateParser;
 
-    public static final int ERROR_COMPARE_RESULT = 0;
-
     /**
      * @see ActionMetadata#getName()
      */

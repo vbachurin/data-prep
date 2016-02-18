@@ -20,6 +20,7 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +36,10 @@ import org.talend.dataprep.transformation.api.action.parameters.SelectParameter;
 public abstract class AbstractCompareAction extends ActionMetadata implements ColumnAction, OtherColumnParameters, CompareAction {
 
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
+    
+    public static final int ERROR_COMPARE_RESULT = Integer.MIN_VALUE;
+
+    public static final String ERROR_COMPARE_RESULT_LABEL = "N/A";
 
     @Override
     @Nonnull
@@ -124,7 +129,7 @@ public abstract class AbstractCompareAction extends ActionMetadata implements Co
                 // this can be null when comparing with a constant
                 .setColumnMetadata2(getColumnMetadataToCompareWith(parameters, row)) //
                 .setValue2(getValueToCompareWith(parameters, row));
-        row.set(newColumnId, toStringTrueFalse(compare(comparisonRequest)));
+        row.set(newColumnId, toStringCompareResult( comparisonRequest ) );
     }
 
     /**
@@ -159,7 +164,7 @@ public abstract class AbstractCompareAction extends ActionMetadata implements Co
      * do the real comparison
      * 
      * @param comparisonRequest
-     * @return same result as {@link Comparable#compareTo(Object)}
+     * @return same result as {@link Comparable#compareTo(Object)} if any type issue or any problem use #ERROR_COMPARE_RESULT
      */
     protected abstract int doCompare(ComparisonRequest comparisonRequest);
 
@@ -199,38 +204,59 @@ public abstract class AbstractCompareAction extends ActionMetadata implements Co
             return this;
         }
 
-
-
         @Override
         public String toString() {
-            return "ComparisonRequest{" + "colMetadata1=" + colMetadata1 + ", value1='" + value1 + '\'' + ", value2='" + value2
-                    + '\'' + ", colMetadata2=" + colMetadata2 + ", mode='" + mode + '\'' + '}';
+            return "ComparisonRequest{" + "colMetadata1=" + colMetadata1 //
+                    + ", value1='" + value1 + '\'' //
+                    + ", value2='" + value2 + '\'' //
+                    + ", colMetadata2=" + colMetadata2 //
+                    + ", mode='" + mode + '\'' + '}';
         }
     }
 
-    public boolean compare(ComparisonRequest comparisonRequest) {
+    /**
+     *
+     * @param comparisonRequest
+     * @return transforming boolean to <code>true</code> or <code>false</code> as String in case of #doCompare returning #ERROR_COMPARE_RESULT
+     *          the label #ERROR_COMPARE_RESULT_LABEL is returned
+     */
+    public String toStringCompareResult(ComparisonRequest comparisonRequest ) {
+        boolean booleanResult;
         try {
+
             final int result = doCompare(comparisonRequest);
 
-            switch (comparisonRequest.mode) {
-            case EQ:
-                return result == 0;
-            case NE:
-                return result != 0;
-            case GT:
-                return result > 0;
-            case GE:
-                return result >= 0;
-            case LT:
-                return result < 0;
-            case LE:
-                return result <= 0;
-            default:
-                return false;
+            if (result == ERROR_COMPARE_RESULT) {
+                return ERROR_COMPARE_RESULT_LABEL;
             }
+
+            booleanResult = compareResultToBoolean( result, comparisonRequest.mode );
+
         } catch (NumberFormatException e) {
             LOGGER.debug("Unable to compare values '{}' ", comparisonRequest, e);
+            return ERROR_COMPARE_RESULT_LABEL;
+        }        
+
+        return BooleanUtils.toString( booleanResult, Boolean.TRUE.toString(), Boolean.FALSE.toString());
+    }
+
+    protected boolean compareResultToBoolean(final int result, String mode) {
+        switch (mode) {
+        case EQ:
+            return result == 0;
+        case NE:
+            return result != 0;
+        case GT:
+            return result > 0;
+        case GE:
+            return result >= 0;
+        case LT:
+            return result < 0;
+        case LE:
+            return result <= 0;
+        default:
             return false;
         }
     }
+
 }
