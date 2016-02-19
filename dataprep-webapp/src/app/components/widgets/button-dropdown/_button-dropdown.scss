@@ -91,8 +91,6 @@
   }
 
   .dropdown-menu {
-    @include flex-row-center();
-
     color: $dropdown-menu-color;
     box-shadow: 3px 3px 18px 3px transparentize(black, 0.8);
     width: 140px;
