@@ -76,8 +76,8 @@ public class StatisticsUtilsTest {
 
         //then
         assertEquals(10, stringColumn.getStatistics().getEmpty());
-        assertEquals(20, stringColumn.getStatistics().getInvalid());
-        assertEquals(30, stringColumn.getStatistics().getValid());
+        assertEquals(0, stringColumn.getStatistics().getInvalid()); // String columns can't have invalid values
+        assertEquals(50, stringColumn.getStatistics().getValid());
     }
 
     @Test

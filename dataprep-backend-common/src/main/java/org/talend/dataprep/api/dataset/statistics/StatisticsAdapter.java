@@ -203,8 +203,14 @@ public class StatisticsAdapter {
                     column.setType(Type.STRING.getName());
                 }
             } else {
-                validCount = valueQualityStatistics.getValidCount() + valueQualityStatistics.getUnknownCount();
-                invalidValues = rawInvalids;
+                if (Type.get(column.getType()) == STRING && StringUtils.isEmpty(column.getDomain())) {
+                    // String column can not have invalid values, make sure of this
+                    validCount = allCount - emptyCount;
+                    invalidValues = Collections.emptySet();
+                } else {
+                    validCount = valueQualityStatistics.getValidCount() + valueQualityStatistics.getUnknownCount();
+                    invalidValues = rawInvalids;
+                }
             }
             invalidCount = allCount - emptyCount - validCount;
 
@@ -215,8 +221,8 @@ public class StatisticsAdapter {
             quality.setInvalidValues(invalidValues);
             // ... and statistics
             statistics.setCount(allCount);
-            statistics.setEmpty(valueQualityStatistics.getEmptyCount());
-            statistics.setInvalid(valueQualityStatistics.getInvalidCount());
+            statistics.setEmpty((int) emptyCount);
+            statistics.setInvalid((int) invalidCount);
             statistics.setValid(validCount);
         }
     }
