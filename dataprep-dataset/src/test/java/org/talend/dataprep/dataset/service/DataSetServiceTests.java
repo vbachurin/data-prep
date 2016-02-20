@@ -501,10 +501,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
     @Test
     public void preview_multi_sheet_with_a_sheet_name() throws Exception {
 
-        String dataSetId = given()
-                .body(IOUtils
-.toByteArray(this.getClass().getResourceAsStream("../Talend_Desk-Tableau_de_Bord-011214.xls")))
-                .when().post("/datasets").asString();
+        String dataSetId = createXlsDataSet(this.getClass().getResourceAsStream("../Talend_Desk-Tableau_de_Bord-011214.xls"));
 
         String json = given().contentType(JSON).get("/datasets/{id}/preview?sheetName=Leads", dataSetId).asString();
         DataSet dataSet = builder.build().readerFor(DataSet.class).readValue(json);
@@ -1206,6 +1203,12 @@ public class DataSetServiceTests extends DataSetBaseTest {
     private String createCSVDataSet(InputStream content) throws Exception {
         String dataSetId = given().body(IOUtils.toString(content)).queryParam("Content-Type", "text/csv").when().post("/datasets")
                 .asString();
+        assertQueueMessages(dataSetId);
+        return dataSetId;
+    }
+
+    private String createXlsDataSet(InputStream content) throws Exception {
+        String dataSetId = given().body(IOUtils.toByteArray(content)).when().post("/datasets").asString();
         assertQueueMessages(dataSetId);
         return dataSetId;
     }

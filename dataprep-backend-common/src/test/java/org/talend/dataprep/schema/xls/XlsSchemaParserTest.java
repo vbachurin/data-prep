@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,8 +43,7 @@ public class XlsSchemaParserTest extends AbstractSchemaTestUtils {
 
     @Test
     public void should_parse_xls() throws IOException {
-        final List<String> expected = Arrays.asList("Film", "Producer");
-        checkColumnsName("simple.xls", expected);
+        checkColumnsName("simple.xls", "Film", "Producer");
     }
 
     /**
@@ -51,8 +51,7 @@ public class XlsSchemaParserTest extends AbstractSchemaTestUtils {
      */
     @Test
     public void shouldParseFileWithHeader() throws Exception {
-        final List<String> expected = Arrays.asList("col0", "col1", "col2", "col3", "col4");
-        checkColumnsName("file_with_header.xlsx", expected);
+        checkColumnsName("file_with_header.xlsx", "col_0", "col_1", "col_2", "col_3", "col_4");
     }
 
     /**
@@ -60,10 +59,9 @@ public class XlsSchemaParserTest extends AbstractSchemaTestUtils {
      */
     @Test
     public void shouldParseFileWithEmptyColumn() throws Exception {
-        final List<String> expected = Arrays.asList("First Name", "Last Name", "Company", "Email Address", "col_5",
-                "Current Product",
-                "Product to send");
-        checkColumnsName("empty_column.xlsx", expected);
+        checkColumnsName("empty_column.xlsx", "First Name", "Last Name", "Company", "Email Address", "col_5", //
+                         "Current Product", //
+                         "Product to send"); //
     }
 
     /**
@@ -73,7 +71,7 @@ public class XlsSchemaParserTest extends AbstractSchemaTestUtils {
      * @param expectedColsName the expected columns name.
      * @throws IOException if an error occurs while reading the excel file.
      */
-    private void checkColumnsName(String sourceFileName, List<String> expectedColsName) throws IOException {
+    private void checkColumnsName(String sourceFileName, String... expectedColsName) throws IOException {
         try (InputStream inputStream = this.getClass().getResourceAsStream(sourceFileName)) {
 
             DataSetMetadata datasetMetadata = ioTestUtils.getSimpleDataSetMetadata();
@@ -82,7 +80,8 @@ public class XlsSchemaParserTest extends AbstractSchemaTestUtils {
             List<ColumnMetadata> columns = result.getSheetContents().get(0).getColumnMetadatas();
             final List<String> actual = columns.stream().map(ColumnMetadata::getName).collect(Collectors.toList());
 
-            Assert.assertEquals(expectedColsName, actual);
+            Assertions.assertThat( actual ).containsExactly( expectedColsName );
+
         }
     }
 }

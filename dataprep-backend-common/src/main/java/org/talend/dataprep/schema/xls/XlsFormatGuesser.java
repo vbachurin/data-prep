@@ -13,10 +13,14 @@
 
 package org.talend.dataprep.schema.xls;
 
-import java.io.IOException;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.PushbackInputStream;
 import java.util.Collections;
 
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.POIXMLDocument;
+import org.apache.poi.poifs.filesystem.NPOIFSFileSystem;
+import org.apache.poi.util.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,15 +46,30 @@ public class XlsFormatGuesser implements FormatGuesser {
         if (request == null || request.getContent() == null) {
             throw new IllegalArgumentException("Content cannot be null.");
         }
+        boolean xlsFormat = false;
+        InputStream inputStream = request.getContent();
         try {
-            Workbook workbook = XlsUtils.getWorkbook(request);
-            // if poi can read it we assume it's correct excel file && at least one sheet
-            if (workbook != null && workbook.getNumberOfSheets() > 0) {
-                return new FormatGuesser.Result(xlsFormatGuess, encoding, Collections.emptyMap());
+
+            // wraps the input stream to support mark/reset if needed
+            if (!inputStream.markSupported()) {
+                inputStream = new PushbackInputStream(inputStream, 8);
             }
-        } catch (IOException e) {
-            LOGGER.debug("fail to read content: " + e.getMessage(), e);
+
+            // peek the first 8 bytes (leave the input stream untouched)
+            byte[] header8 = IOUtils.peekFirst8Bytes(inputStream);
+
+            if (NPOIFSFileSystem.hasPOIFSHeader(header8)) {
+                xlsFormat = true;
+            }
+            if (!xlsFormat && POIXMLDocument.hasOOXMLHeader(new ByteArrayInputStream(header8))) {
+                xlsFormat = true;
+            }
+
+        } catch (Exception e) {
+            LOGGER.debug("fail to read content, {} does not seem to be an xls file", request.getMetadata().getId(), e);
         }
-        return new FormatGuesser.Result(fallbackGuess, "UTF-8", Collections.emptyMap());
+
+        return xlsFormat ? new FormatGuesser.Result(xlsFormatGuess, encoding, Collections.emptyMap()) //
+                : new FormatGuesser.Result(fallbackGuess, "UTF-8", Collections.emptyMap());
     }
 }

@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.DataSet;
@@ -67,7 +68,7 @@ public class XlsWriterTest extends BaseFormatTest {
         }
         DataSetMetadata metadata = metadataBuilder.metadata().id("123").build();
         SchemaParser.Request request = new SchemaParser.Request(Files.newInputStream(path), metadata);
-        Workbook workbook = XlsUtils.getWorkbook(request);
+        Workbook workbook = WorkbookFactory.create( request.getContent() );
         assertThat(workbook).isNotNull();
         assertThat(workbook.getNumberOfSheets()).isEqualTo(1);
 

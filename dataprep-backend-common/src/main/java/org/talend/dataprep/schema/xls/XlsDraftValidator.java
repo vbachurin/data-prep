@@ -24,7 +24,7 @@ public class XlsDraftValidator implements DraftValidator {
     @Override
     public Result validate(DataSetMetadata dataSetMetadata) {
         if (StringUtils.isEmpty(dataSetMetadata.getSheetName())) {
-            return new DraftValidator.Result(false);
+            return new DraftValidator.Result(true);
         }
         return new DraftValidator.Result(false);
     }
