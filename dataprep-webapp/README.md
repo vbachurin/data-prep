@@ -161,6 +161,10 @@ For more information about how to write ngDoc :
 To generate the documentation into a ngDoc/ forlder, type the command
 `gulp ngdoc`
 
+### Build a standalone lib distrib (not minified)
+run
+`gulp build:lib`
+
 ### Build a standalone prod distrib
 run
 `gulp build`
