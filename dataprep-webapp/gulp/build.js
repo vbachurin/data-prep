@@ -9,24 +9,7 @@ var $ = require('gulp-load-plugins')({
     pattern: ['gulp-*', 'main-bower-files', 'uglify-save-license', 'del']
 });
 
-gulp.task('partials', function () {
-    return gulp.src([
-            path.join(conf.paths.src, '/app/**/*.html'),
-            path.join(conf.paths.tmp, '/serve/app/**/*.html')
-        ])
-        .pipe($.minifyHtml({
-            empty: true,
-            spare: true,
-            quotes: true
-        }))
-        .pipe($.angularTemplatecache('templateCacheHtml.js', {
-            module: 'data-prep',
-            root: 'app'
-        }))
-        .pipe(gulp.dest(conf.paths.tmp + '/partials/'));
-});
-
-gulp.task('html', ['inject', 'partials'], function () {
+function build(uglify) {
     var partialsInjectFile = gulp.src(path.join(conf.paths.tmp, '/partials/templateCacheHtml.js'), {read: false});
     var partialsInjectOptions = {
         starttag: '<!-- inject:partials -->',
@@ -42,25 +25,37 @@ gulp.task('html', ['inject', 'partials'], function () {
     var cssAppFilter = $.filter('**/app-*.css', {restore: true});
     var assets;
 
-    return gulp.src(path.join(conf.paths.tmp, '/serve/*.html'))
+    var process = gulp.src(path.join(conf.paths.tmp, '/serve/*.html'))
         .pipe($.inject(partialsInjectFile, partialsInjectOptions))
         .pipe(assets = $.useref.assets())
         .pipe($.rev())
         .pipe(jsFilter)
-        .pipe($.sourcemaps.init())
-        .pipe($.uglify({
-            mangle: {
-                //workerFn[0-9] are preserved words that won't be mangled during uglification
-                //those can be used to pass external functions to the web worker
-                except: ['workerFn0', 'workerFn1', 'workerFn2', 'workerFn3', 'workerFn4', 'workerFn5', 'workerFn6', 'workerFn7', 'workerFn8', 'workerFn9']
-            },
-            preserveComments: function(node, comment) {
-                return $.uglifySaveLicense(node, comment) && comment.value.indexOf('Talend Inc') < 0;
-            }
-        })).on('error', conf.errorHandler('Uglify'))
-        .pipe(jsAppFilter)
-        .pipe($.header(licences.js, {year: new Date().getFullYear()}))
-        .pipe(jsAppFilter.restore)
+        .pipe($.sourcemaps.init());
+
+    if(uglify) {
+        process = process
+            .pipe($.uglify({
+                mangle: {
+                    //workerFn[0-9] are preserved words that won't be mangled during uglification
+                    //those can be used to pass external functions to the web worker
+                    except: ['workerFn0', 'workerFn1', 'workerFn2', 'workerFn3', 'workerFn4', 'workerFn5', 'workerFn6', 'workerFn7', 'workerFn8', 'workerFn9']
+                },
+                preserveComments: function(node, comment) {
+                    return $.uglifySaveLicense(node, comment) && comment.value.indexOf('Talend Inc') < 0;
+                }
+            })).on('error', conf.errorHandler('Uglify'))
+            .pipe(jsAppFilter)
+            .pipe($.header(licences.js, {year: new Date().getFullYear()}))
+            .pipe(jsAppFilter.restore);
+    }
+    else {
+        process = process.pipe(jsAppFilter)
+            .pipe($.stripComments())
+            .pipe($.header(licences.js, {year: new Date().getFullYear()}))
+            .pipe(jsAppFilter.restore);
+    }
+
+    return process
         .pipe($.sourcemaps.write('maps'))
         .pipe(jsFilter.restore)
         .pipe(cssFilter)
@@ -87,6 +82,31 @@ gulp.task('html', ['inject', 'partials'], function () {
         .pipe(htmlIndexFilter.restore)
         .pipe(gulp.dest(path.join(conf.paths.dist, '/')))
         .pipe($.size({title: path.join(conf.paths.dist, '/'), showFiles: true}));
+}
+
+gulp.task('partials', function () {
+    return gulp.src([
+            path.join(conf.paths.src, '/app/**/*.html'),
+            path.join(conf.paths.tmp, '/serve/app/**/*.html')
+        ])
+        .pipe($.minifyHtml({
+            empty: true,
+            spare: true,
+            quotes: true
+        }))
+        .pipe($.angularTemplatecache('templateCacheHtml.js', {
+            module: 'data-prep',
+            root: 'app'
+        }))
+        .pipe(gulp.dest(conf.paths.tmp + '/partials/'));
+});
+
+gulp.task('html', ['inject', 'partials'], function () {
+    return build(true/*uglify*/);
+});
+
+gulp.task('html:lib', ['inject', 'partials'], function () {
+    return build(false/*uglify*/);
 });
 
 // Only applies for fonts from bower dependencies
@@ -131,3 +151,5 @@ gulp.task('worker-libs:dev', function () {
 });
 
 gulp.task('build', ['html', 'fonts', 'other', 'worker-libs']);
+
+gulp.task('build:lib', ['html:lib', 'fonts', 'other', 'worker-libs']);
