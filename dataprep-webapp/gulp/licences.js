@@ -14,7 +14,7 @@ var licence = '/* ==============================================================
 var htmlLicence = '<!--\n' +
 	'~ ============================================================================\n' +
 	'~\n' +
-	'~  Copyright (C) 2006-2016 Talend Inc. - www.talend.com\n' +
+	'~  Copyright (C) 2006-<%= year %> Talend Inc. - www.talend.com\n' +
 	'~\n' +
 	'~  This source code is available under agreement available at\n' +
 	'~  https://github.com/Talend/data-prep/blob/master/LICENSE\n' +
