@@ -44,7 +44,7 @@ describe('UploadWorkflow Service', () => {
             UploadWorkflowService.openDataset(dataset);
 
             //then
-            expect(StateService.setPreviousState).toHaveBeenCalledWith('nav.home.datasets');
+            expect(StateService.setPreviousState).toHaveBeenCalledWith('nav.index.datasets');
         }));
 
         it('should open sheet preview when dataset is a draft', inject(($rootScope, UploadWorkflowService, DatasetSheetPreviewService) => {

@@ -61,7 +61,7 @@ describe('Preparation list controller', function () {
             scope.$digest();
 
             //then
-            expect(StateService.setPreviousState).toHaveBeenCalledWith('nav.home.preparations');
+            expect(StateService.setPreviousState).toHaveBeenCalledWith('nav.index.preparations');
         }));
 
         it('should redirect to preparation playground', inject(function ($state) {

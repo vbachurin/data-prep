@@ -63,7 +63,7 @@ export default function UploadWorkflowService($state, StateService, DatasetSheet
             self.openDraft(dataset);
         }
         else {
-            StateService.setPreviousState('nav.home.datasets');
+            StateService.setPreviousState('nav.index.datasets');
             $state.go('playground.dataset', {datasetid: dataset.id});
         }
     };

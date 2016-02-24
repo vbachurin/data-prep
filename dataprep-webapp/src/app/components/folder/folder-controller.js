@@ -20,7 +20,7 @@
  * @requires data-prep.services.folder.service:FolderService
  * @requires data-prep.services.utils.service:StorageService
  */
-export default function FolderCtrl(state, StateService, FolderService, StorageService) {
+export default function FolderCtrl($state, $stateParams, state, StateService, FolderService, StorageService) {
     'ngInject';
 
     var vm = this;
@@ -59,7 +59,11 @@ export default function FolderCtrl(state, StateService, FolderService, StorageSe
      * @param {object} folder - the folder to go
      */
     vm.goToFolder = function goToFolder(folder) {
-        FolderService.getContent(folder);
+        if(folder.path === '/'){
+            $state.go('nav.index.datasets', {folderPath : ''});
+        } else {
+            $state.go('nav.index.datasets', {folderPath : folder.path});
+        }
     };
 
     /**
@@ -80,5 +84,5 @@ export default function FolderCtrl(state, StateService, FolderService, StorageSe
     refreshDatasetsSort();
     refreshDatasetsOrder();
 
-    FolderService.getContent();
+    //FolderService.getContent($stateParams.folderPath);
 }

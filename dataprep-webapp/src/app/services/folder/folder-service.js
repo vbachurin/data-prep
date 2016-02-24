@@ -19,7 +19,7 @@
  * @requires data-prep.services.state.service:StateService
  * @requires data-prep.services.folder.service:FolderRestService
  */
-export default function FolderService($translate, state, StateService, FolderRestService) {
+export default function FolderService($stateParams, $state, $translate, state, StateService, FolderRestService) {
     'ngInject';
 
     var ROOT_FOLDER = {
@@ -109,6 +109,10 @@ export default function FolderService($translate, state, StateService, FolderRes
             StateService.setCurrentFolder(currentFolder);
             StateService.setCurrentFolderContent(content);
             StateService.setFoldersStack(foldersStack);
+        })
+        .catch(function(){
+            $stateParams.folderPath = '';
+            $state.go('nav.index.datasets');
         });
         return promise;
     }

@@ -15,7 +15,6 @@
 
 (() => {
     'use strict';
-
     var app = angular.module('data-prep',
         [
             'ngSanitize',
@@ -47,16 +46,33 @@
         })
 
         //Router config
-        .config(function ($stateProvider, $urlRouterProvider) {
+        .config(function ($stateProvider, $urlRouterProvider, $urlMatcherFactoryProvider) {
             'ngInject';
+
+            (function () {
+                function valFromString(val) {
+                    return val !== null ? val.toString() : val;
+                }
+                function regexpMatches(val) {
+                    return this.pattern.test(val);
+                }
+
+                $urlMatcherFactoryProvider.type('string', {
+                    encode: valFromString,
+                    decode: valFromString,
+                    is: regexpMatches,
+                    pattern: /[^/]*/
+                });
+            })();
+
             $stateProvider
                 .state('nav', {
                     abstract: true,
                     template: '<navbar></navbar>'
                 })
-                .state('nav.home', {
+                .state('nav.index', {
                     abstract: true,
-                    url: '/home',
+                    url: '/index',
                     template: '<home></home>',
                     resolve: {
                         inventory: function ($q, DatasetService, PreparationService) {
@@ -68,16 +84,19 @@
                         }
                     }
                 })
-                .state('nav.home.datasets', {
-                    url: '/datasets',
+                .state('nav.index.datasets', {
+                    url: "/datasets/{folderPath:.*}",
                     views: {
                         'home-content': {
                             template: '<dataset-list></dataset-list>'
                         }
                     },
-                    folder: 'dataset'
+                    folder: 'dataset',
+                    params: {
+                        folderPath: ''
+                    }
                 })
-                .state('nav.home.preparations', {
+                .state('nav.index.preparations', {
                     url: '/preparations',
                     views: {
                         'home-content': {
@@ -106,7 +125,7 @@
                 .state('playground.dataset', {
                     url: '/dataset?datasetid'
                 });
-            $urlRouterProvider.otherwise('/home/datasets');
+            $urlRouterProvider.otherwise('/index/datasets/');
         })
 
         //Language from browser

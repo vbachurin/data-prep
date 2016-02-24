@@ -909,7 +909,7 @@ describe('Dataset list controller', function () {
             $timeout.flush();
 
             //then
-            expect(StateService.setPreviousState).toHaveBeenCalledWith('nav.home.datasets');
+            expect(StateService.setPreviousState).toHaveBeenCalledWith('nav.index.datasets');
             expect($state.go).toHaveBeenCalledWith('playground.preparation', {prepid: preparation.id});
         }));
     });

@@ -13,7 +13,7 @@
 
 export const playgroundState = {
     preparationName: '',
-    previousState: 'nav.home.datasets'
+    previousState: 'nav.index.datasets'
 };
 
 export function PlaygroundStateService(RecipeStateService, recipeState,

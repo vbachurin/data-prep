@@ -28,7 +28,7 @@
  * @requires data-prep.services.utils.service:StorageService
  * @requires data-prep.services.folder.service:FolderService
  */
-export default function DatasetListCtrl($timeout, $state, $translate, state, StateService, DatasetService,
+export default function DatasetListCtrl($stateParams, $timeout, $state, $translate, state, StateService, DatasetService,
                                         UploadWorkflowService, UpdateWorkflowService,
                                         TalendConfirmService, MessageService, FolderService, StorageService) {
     'ngInject';
@@ -116,7 +116,7 @@ export default function DatasetListCtrl($timeout, $state, $translate, state, Sta
      * @param {object} preparation The preparation to open
      */
     vm.openPreparation = function openPreparation(preparation) {
-        StateService.setPreviousState('nav.home.datasets');
+        StateService.setPreviousState('nav.index.datasets');
         $state.go('playground.preparation', {prepid: preparation.id});
     };
 
@@ -268,7 +268,13 @@ export default function DatasetListCtrl($timeout, $state, $translate, state, Sta
     // Folder
     //-------------------------------
 
-    vm.goToFolder = FolderService.getContent;
+    vm.goToFolder = function goToFolder(folder) {
+        if(folder.path === '/'){
+            $state.go('nav.index.datasets', {folderPath : ''});
+        } else {
+            $state.go('nav.index.datasets', {folderPath : folder.path});
+        }
+    };
 
     /**
      * @ngdoc method
@@ -463,8 +469,7 @@ export default function DatasetListCtrl($timeout, $state, $translate, state, Sta
                         vm.foldersFound.push(rootFolder);
                         vm.foldersFound = vm.foldersFound.concat(response.data);
                     } else {
-                        vm.foldersFound = response.data;
-                    }
+                        vm.foldersFound = response.data;                    }
                     if (vm.foldersFound.length > 0) {
                         vm.chooseFolder(vm.foldersFound[0]); //Select by default first folder
                     }
@@ -474,4 +479,20 @@ export default function DatasetListCtrl($timeout, $state, $translate, state, Sta
             vm.chooseFolder(vm.folders[0]);  //Select by default first folder
         }
     };
+
+
+    function getFolderName(folderPath) {
+        var folderPathChunks = folderPath.split('/');
+        if(folderPathChunks.length > 1) {
+            return folderPathChunks[folderPathChunks.length - 1]? folderPathChunks[folderPathChunks.length - 1] : folderPathChunks[folderPathChunks.length - 2];
+        }
+        return folderPathChunks[folderPathChunks.length - 1];
+    }
+
+    if($stateParams.folderPath){
+        FolderService.getContent({path: $stateParams.folderPath, name: getFolderName($stateParams.folderPath)});
+    } else {
+        FolderService.getContent();
+    }
+
 }

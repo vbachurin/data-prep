@@ -41,7 +41,7 @@ describe('Navbar controller', function () {
         it('should start tour on dataset page', inject(function ($timeout, DatasetService, OnboardingService) {
             //given
             $stateMock.params = {};
-            $stateMock.current = {name: 'nav.home.datasets'};
+            $stateMock.current = {name: 'nav.index.datasets'};
 
             //when
             createController();
@@ -61,7 +61,7 @@ describe('Navbar controller', function () {
         it('should not start tour on dataset playground page', inject(function ($timeout, DatasetService, OnboardingService) {
             //given
             $stateMock.params = {datasetid: '154645'};
-            $stateMock.current = {name: 'nav.home.datasets'};
+            $stateMock.current = {name: 'nav.index.datasets'};
 
             //when
             createController();
@@ -76,7 +76,7 @@ describe('Navbar controller', function () {
         it('should not start tour on other than dataset page', inject(function ($timeout, DatasetService, OnboardingService) {
             //given
             $stateMock.params = {};
-            $stateMock.current = {name: 'nav.home.other'};
+            $stateMock.current = {name: 'nav.index.other'};
 
             //when
             createController();
@@ -97,7 +97,7 @@ describe('Navbar controller', function () {
         it('should not start tour on dataset page', inject(function ($timeout, DatasetService, OnboardingService) {
             //given
             $stateMock.params = {};
-            $stateMock.current = {name: 'nav.home.datasets'};
+            $stateMock.current = {name: 'nav.index.datasets'};
 
             //when
             createController();
@@ -118,7 +118,7 @@ describe('Navbar controller', function () {
         it('should open feedback modal', inject(function (StateService) {
             //given
             $stateMock.params = {};
-            $stateMock.current = {name: 'nav.home.datasets'};
+            $stateMock.current = {name: 'nav.index.datasets'};
             var ctrl = createController();
 
             //given
@@ -139,7 +139,7 @@ describe('Navbar controller', function () {
         it('should call the easter eggs service', inject(function (EasterEggsService) {
             //given
             $stateMock.params = {};
-            $stateMock.current = {name: 'nav.home.datasets'};
+            $stateMock.current = {name: 'nav.index.datasets'};
             var ctrl = createController();
 
             //when

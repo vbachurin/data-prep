@@ -62,7 +62,7 @@ describe('Playground controller', function () {
                 lookup: {
                     actions: []
                 },
-                previousState: 'nav.home.preparations',
+                previousState: 'nav.index.preparations',
                 preparationName: ''
             }
         };
@@ -192,7 +192,7 @@ describe('Playground controller', function () {
         beforeEach(inject(($q, PreparationService, StateService) => {
             preparation = {id: '9af874865e42b546', draft: true};
             stateMock.playground.preparation = preparation;
-            stateMock.playground.previousState = 'nav.home.preparations';
+            stateMock.playground.previousState = 'nav.index.preparations';
 
             spyOn(PreparationService, 'delete').and.returnValue($q.when(true));
             spyOn(StateService, 'resetPlayground').and.returnValue();
@@ -211,7 +211,7 @@ describe('Playground controller', function () {
                 $timeout.flush();
                 //then
                 expect(StateService.resetPlayground).toHaveBeenCalled();
-                expect($state.go).toHaveBeenCalledWith('nav.home.preparations');
+                expect($state.go).toHaveBeenCalledWith('nav.index.preparations');
             }));
 
             it('should show preparation save/discard modal with implicit preparation', function () {
@@ -243,7 +243,7 @@ describe('Playground controller', function () {
 
                 //then
                 expect(StateService.resetPlayground).toHaveBeenCalled();
-                expect($state.go).toHaveBeenCalledWith('nav.home.preparations');
+                expect($state.go).toHaveBeenCalledWith('nav.index.preparations');
             }));
         });
 
@@ -267,7 +267,7 @@ describe('Playground controller', function () {
 
                 //then
                 expect(StateService.resetPlayground).toHaveBeenCalled();
-                expect($state.go).toHaveBeenCalledWith('nav.home.preparations');
+                expect($state.go).toHaveBeenCalledWith('nav.index.preparations');
             }));
         });
     });
@@ -380,7 +380,7 @@ describe('Playground controller', function () {
 
             //then
             expect(MessageService.error).toHaveBeenCalledWith('PLAYGROUND_FILE_NOT_FOUND_TITLE', 'PLAYGROUND_FILE_NOT_FOUND', {type: 'preparation'});
-            expect($state.go).toHaveBeenCalledWith('nav.home.preparations');
+            expect($state.go).toHaveBeenCalledWith('nav.index.preparations');
         }));
 
         it('should go back to previous state when preparation content GET return an error', inject(($q, $state, $stateParams, MessageService, PlaygroundService) => {
@@ -394,7 +394,7 @@ describe('Playground controller', function () {
 
             //then
             expect(MessageService.error).toHaveBeenCalledWith('PLAYGROUND_FILE_NOT_FOUND_TITLE', 'PLAYGROUND_FILE_NOT_FOUND', {type: 'preparation'});
-            expect($state.go).toHaveBeenCalledWith('nav.home.preparations');
+            expect($state.go).toHaveBeenCalledWith('nav.index.preparations');
         }));
 
         it('should load dataset', inject(($q, $stateParams, PlaygroundService) => {
@@ -420,7 +420,7 @@ describe('Playground controller', function () {
 
             //then
             expect(MessageService.error).toHaveBeenCalledWith('PLAYGROUND_FILE_NOT_FOUND_TITLE', 'PLAYGROUND_FILE_NOT_FOUND', {type: 'dataset'});
-            expect($state.go).toHaveBeenCalledWith('nav.home.preparations');
+            expect($state.go).toHaveBeenCalledWith('nav.index.preparations');
         }));
 
         it('should go back to previous state when dataset content GET return an error', inject(($q, $state, $stateParams, MessageService, PlaygroundService) => {
@@ -434,7 +434,7 @@ describe('Playground controller', function () {
 
             //then
             expect(MessageService.error).toHaveBeenCalledWith('PLAYGROUND_FILE_NOT_FOUND_TITLE', 'PLAYGROUND_FILE_NOT_FOUND', {type: 'dataset'});
-            expect($state.go).toHaveBeenCalledWith('nav.home.preparations');
+            expect($state.go).toHaveBeenCalledWith('nav.index.preparations');
         }));
     });
 });
