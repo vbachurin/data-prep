@@ -42,7 +42,7 @@
     </div>
 
     <div class="inventory-list" id="datasets-list">
-        <div class="inventory-entry" ng-repeat="folder in datasetListCtrl.state.inventory.currentFolderContent.folders track by folder.id">
+        <div class="inventory-entry" ng-repeat="folder in datasetListCtrl.state.inventory.currentFolderContent.folders track by folder.path">
             <div class="inventory-icon inventory-folder" ng-click="datasetListCtrl.goToFolder(folder)">
                 <img src="assets/images/folder/folder-icon.png"/>
             </div>
