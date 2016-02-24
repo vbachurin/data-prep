@@ -6,6 +6,7 @@ target/
 *.ipr
 *.iml
 *.iws
+.sonar/
 out/
 
 
