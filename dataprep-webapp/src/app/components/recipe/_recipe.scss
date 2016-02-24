@@ -18,6 +18,8 @@
   background: $background;
   color: $color;
   font-size: 0.95em;
+  display: block;
+  border-top: 1px solid $shadow-gray;
 
   .recipe-step {
     &.preview > * {
@@ -30,24 +32,35 @@
       text-decoration: line-through;
     }
 
-    .content {
-      background-color: transparent;
+    &:hover .remove-icon {
+      animation: fadeInLeft 0.25s;
+      display: block;
+      float: left;
+    }
+
+    .remove-icon {
+      display: none;
+      margin-right: 5px;
+      color: $medium-gray;
+      font-size: 0.6em;
+
+      &:hover {
+        color: $color-error;
+      }
     }
   }
 
-  ul{
-    border-top: 1px solid $shadow-gray;
-    padding-top: 5px;
-  }
-
   /*************************************Step text*************************************/
-  li {
-    padding: 5px 5px 5px 10px;
+  .sc-accordion {
+    padding-right: 30px;
     position: relative;
+
+    &:hover{
+      background-color: $light-gray;
+    }
 
     .step-description {
       font-size: .85em;
-      padding-right: 30px;
 
       .filter-icon {
         color: $dark-gray;
@@ -61,8 +74,8 @@
       }
     }
 
-    &:hover{
-      background-color: $light-gray;
+    .content-container > content {
+      padding: 10px;
     }
   }
 
@@ -101,31 +114,10 @@
     }
   }
 
-  .step-parameters-list {
-    background-color: $shadow-gray;
-    margin-top: 10px;
-  }
   /***********************************Panel hide/show*******************************/
   .action {
     &:hover {
       background: darken($background, 10%);
     }
-  }
-
-  .remove-icon {
-    display: none;
-    margin-right: 5px;
-    color: $medium-gray;
-    font-size: 0.6em;
-
-    &:hover {
-      color: $color-error;
-    }
-  }
-
-  .step-description:hover .remove-icon {
-    animation: fadeInLeft 0.25s;
-    display: block;
-    float: left;
   }
 }

@@ -32,6 +32,7 @@ import Recipe from './recipe-directive';
     angular.module('data-prep.recipe',
         [
             'pascalprecht.translate',
+            'talend.sunchoke',
             'talend.widget',
             'data-prep.services.playground',
             'data-prep.services.recipe',

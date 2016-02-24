@@ -103,11 +103,11 @@ describe('Suggestions stats directive', function() {
 
             //then
             expect(element.find('.actions-group .trigger').length).toBe(5);
-            expect(element.find('.actions-group .trigger').eq(0).text()).toBe('action 1');
-            expect(element.find('.actions-group .trigger').eq(1).text()).toBe('action 2');
-            expect(element.find('.actions-group .trigger').eq(2).text()).toBe('action 3');
-            expect(element.find('.actions-group .trigger').eq(3).text()).toBe('action 4');
-            expect(element.find('.actions-group .trigger').eq(4).text()).toBe('action 5');
+            expect(element.find('.actions-group .trigger').eq(0).text().trim()).toBe('action 1');
+            expect(element.find('.actions-group .trigger').eq(1).text().trim()).toBe('action 2');
+            expect(element.find('.actions-group .trigger').eq(2).text().trim()).toBe('action 3');
+            expect(element.find('.actions-group .trigger').eq(3).text().trim()).toBe('action 4');
+            expect(element.find('.actions-group .trigger').eq(4).text().trim()).toBe('action 5');
         }));
     });
 
@@ -143,12 +143,12 @@ describe('Suggestions stats directive', function() {
 
             //then
             expect(element.find('.actions-category').length).toBe(1);
-            expect(element.find('.actions-category').eq(0).text()).toBe('Category 2');
+            expect(element.find('.actions-category').eq(0).text().trim()).toBe('Category 2');
             expect(element.find('.actions-group').length).toBe(1);
             expect(element.find('.actions-group .trigger').length).toBe(3);
-            expect(element.find('.actions-group .trigger').eq(0).text()).toBe('action 3');
-            expect(element.find('.actions-group .trigger').eq(1).text()).toBe('action 4');
-            expect(element.find('.actions-group .trigger').eq(2).text()).toBe('action 5');
+            expect(element.find('.actions-group .trigger').eq(0).text().trim()).toBe('action 3');
+            expect(element.find('.actions-group .trigger').eq(1).text().trim()).toBe('action 4');
+            expect(element.find('.actions-group .trigger').eq(2).text().trim()).toBe('action 5');
         }));
 
         it('actions', inject(function() {
@@ -182,14 +182,14 @@ describe('Suggestions stats directive', function() {
 
             //then
             expect(element.find('.actions-category').length).toBe(2);
-            expect(element.find('.actions-category').eq(0).text()).toBe('Category 1');
-            expect(element.find('.actions-category').eq(1).text()).toBe('Category 2');
+            expect(element.find('.actions-category').eq(0).text().trim()).toBe('Category 1');
+            expect(element.find('.actions-category').eq(1).text().trim()).toBe('Category 2');
             expect(element.find('.actions-group').length).toBe(1);
             expect(element.find('.actions-group .trigger').length).toBe(4);
-            expect(element.find('.actions-group .trigger').eq(0).text()).toBe('action 1');
-            expect(element.find('.actions-group .trigger').eq(1).text()).toBe('action 3');
-            expect(element.find('.actions-group .trigger').eq(2).text()).toBe('action 4');
-            expect(element.find('.actions-group .trigger').eq(3).text()).toBe('action 5');
+            expect(element.find('.actions-group .trigger').eq(0).text().trim()).toBe('action 1');
+            expect(element.find('.actions-group .trigger').eq(1).text().trim()).toBe('action 3');
+            expect(element.find('.actions-group .trigger').eq(2).text().trim()).toBe('action 4');
+            expect(element.find('.actions-group .trigger').eq(3).text().trim()).toBe('action 5');
         }));
     });
 });

@@ -95,7 +95,7 @@ describe('Single recipeBullet directive ', function () {
 
             //then
             var positions = getCircleYPosition();
-            expect(positions[0]).toBe('21');
+            expect(positions[0]).toBe('18');
         });
 
         it('should init top cable dimensions', function () {
@@ -105,7 +105,7 @@ describe('Single recipeBullet directive ', function () {
 
             //then
             var dimensions = getTopCablesDimensions();
-            expect(dimensions[0]).toBe('M 15 0 L 15 11 Z');
+            expect(dimensions[0]).toBe('M 15 0 L 15 10 Z');
         });
 
         it('should init bottom cable dimensions', function () {
@@ -113,7 +113,7 @@ describe('Single recipeBullet directive ', function () {
             createElement();
             //then
             var dimensions = getBottomCablesDimensions();
-            expect(dimensions[0]).toBe('M 15 31 L 15 105 Z');
+            expect(dimensions[0]).toBe('M 15 29 L 15 105 Z');
         });
 
     });

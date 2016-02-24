@@ -147,9 +147,9 @@ export default function RecipeBullet($timeout) {
             var updateSVGSizes = function () {
                 ctrl.height = iElement.height() + 5; // 5 : marge/padding
                 //circle Size = 20;
-                var topPath = 'M 15 0 L 15 11 Z';
-                var circleCenterY = 21;
-                var bottomPath = 'M 15 31 L 15 ' + ctrl.height + ' Z';
+                var topPath = 'M 15 0 L 15 10 Z';
+                var circleCenterY = 18;
+                var bottomPath = 'M 15 29 L 15 ' + ctrl.height + ' Z';
 
                 bulletTopCable.setAttribute('d', topPath);
                 bulletCircleElement.setAttribute('cy', circleCenterY);

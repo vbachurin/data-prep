@@ -34,8 +34,8 @@ export default function ActionsSuggestions($timeout) {
                 $timeout(function () {
                     var splitHandler = angular.element('.split-handler').eq(0);
                     var tabContainer = iElement.find('.action-suggestion-tab-items').eq(0);
-                    var elementToDisplay = tabContainer.find('talend-accordions-item.open').eq(0);
-                    var etdContainer = elementToDisplay.find('>.accordion >.content-container >.content').eq(0);
+                    var elementToDisplay = tabContainer.find('sc-accordion-item > .sc-accordion.open').eq(0);
+                    var etdContainer = elementToDisplay.find('>.content-container').eq(0);
                     if (!etdContainer.length) {
                         return;
                     }
@@ -56,13 +56,13 @@ export default function ActionsSuggestions($timeout) {
                         }
                     }
                     else {
-                        var accordionTriggerHeight = elementToDisplay.find('>.accordion >.trigger-container').height();
+                        var accordionTriggerHeight = elementToDisplay.find('>.trigger-container').height();
                         scrollDistance = tabContainer[0].scrollTop + availableTopSpace - accordionTriggerHeight;
                         tabContainer.animate({
                             scrollTop: scrollDistance
                         }, 500);
                     }
-                }, 200, false);
+                }, 300, false);
             };
         }
     };

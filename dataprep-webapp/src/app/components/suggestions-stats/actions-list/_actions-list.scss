@@ -26,17 +26,20 @@
   .actions-group {
     color: $action-color;
 
-    .accordion {
+    .sc-accordion {
       border-bottom: 1px solid $border-color;
       font-size: .95em;
       font-weight: 400;
-      padding: 7px 2px 7px 0;
 
       &:hover{
         background-color: $action-background;
       }
 
-      a.trigger {
+      &.open {
+        background-color: $action-background;
+      }
+
+      .trigger > a {
         font-size: .85em;
         cursor: pointer;
         color: inherit;
@@ -45,11 +48,12 @@
         width:100%;
       }
 
-      &.open {
-        background-color: $action-background;
-        #trigger::before {
-          content: "\25BE";
-        }
+      .trigger-container {
+        padding: 7px;
+      }
+
+      .content-container > content {
+        padding: 10px;
       }
     }
   }

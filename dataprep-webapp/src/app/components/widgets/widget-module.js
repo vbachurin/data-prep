@@ -11,9 +11,6 @@
 
   ============================================================================*/
 
-import talendAccordionsItem from './accordions/widget-accordions-item-directive';
-import TalendAccordionsCtrl from './accordions/widget-accordions-controller';
-import TalendAccordions from './accordions/widget-accordions-directive';
 import TalendBadgeCtrl from './badge/widget-badge-controller';
 import TalendBadge from './badge/widget-badge-directive';
 import TalendButtonDropdown from './button-dropdown/widget-button-dropdown-directive';
@@ -59,9 +56,6 @@ import TalendTooltip from './tooltip/widget-tooltip-directive';
      * @description This module contains all the reusable widgets
      */
     angular.module('talend.widget', ['pascalprecht.translate', 'ngAnimate'])
-        .controller('TalendAccordionsCtrl', TalendAccordionsCtrl)
-        .directive('talendAccordions', TalendAccordions)
-        .directive('talendAccordionsItem', talendAccordionsItem)
 
         .controller('BadgeCtrl', TalendBadgeCtrl)
         .directive('talendBadge', TalendBadge)

@@ -13,14 +13,15 @@
   ~ ============================================================================
   -->
 
-<talend-accordions class="recipe">
-    <talend-accordions-item ng-repeat="step in recipeCtrl.recipe track by step.transformation.stepId"
-                            id="step-{{step.transformation.stepId}}"
-                            on-open="recipeCtrl.resetParams(step)"
-                            default="$index === (recipeCtrl.recipe.length - 1)"
-                            class="recipe-step"
-                            ng-class="::{'preview': step.preview}">
-        <div class="trigger step-description"
+<sc-accordion class="recipe">
+    <sc-accordion-item ng-repeat="step in recipeCtrl.recipe track by step.transformation.stepId"
+                       id="step-{{step.transformation.stepId}}"
+                       class="recipe-step"
+                       ng-class="::{'preview': step.preview}"
+                       on-open="recipeCtrl.resetParams(step)"
+                       default="$index === (recipeCtrl.recipe.length - 1)">
+
+        <trigger class="step-description"
              ng-click="recipeCtrl.select(step)"
              ng-switch="step.actionParameters.parameters.scope">
 
@@ -77,9 +78,9 @@
             </span>
 
             <recipe-bullet class="step-trigger" step="step" ></recipe-bullet>
-        </div>
+        </trigger>
 
-        <div class="content" ng-if="recipeCtrl.hasParameters(step) || step.filters.length">
+        <content ng-if="recipeCtrl.hasParameters(step) || step.filters.length">
             <div class="step-filters-list" ng-if="step.filters.length">
                 <filter-list class="list"
                              filters="step.filters"
@@ -104,6 +105,6 @@
                                     on-submit="recipeCtrl.stepUpdateClosure(step)(params)"></transform-form>
                 </talend-modal>
             </div>
-        </div>
-    </talend-accordions-item>
-</talend-accordions>
+        </content>
+    </sc-accordion-item>
+</sc-accordion>

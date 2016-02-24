@@ -14,41 +14,42 @@
   -->
 
 <div class="actions-list">
-    <talend-accordions class="actions-group">
+    <sc-accordion class="actions-group">
         <div ng-repeat="categoryTransformations in actionsListCtrl.actions track by $index"
              ng-if="actionsListCtrl.shouldRenderCategory(categoryTransformations)">
             <div class="actions-category" ng-bind-html="categoryTransformations.categoryHtml"></div>
-            <talend-accordions-item
+            <sc-accordion-item
                     ng-repeat="transfo in categoryTransformations.transformations track by transfo.name"
                     ng-if="actionsListCtrl.shouldRenderAction(transfo)"
                     on-open="actionsListCtrl.scrollToBottom()"
                     ng-switch="!!transfo.parameters">
-                <!--with dynamic parameters-->
-                <a class="trigger"
-                   ng-switch-when="false"
-                   ng-if="transfo.dynamic"
-                   ng-click="actionsListCtrl.select(transfo)" ng-bind-html="transfo.labelHtml"></a>
+                <trigger class="trigger">
+                    <!--with dynamic parameters-->
+                    <a ng-switch-when="false"
+                       ng-if="transfo.dynamic"
+                       ng-click="actionsListCtrl.select(transfo)" ng-bind-html="transfo.labelHtml"></a>
 
-                <!--no parameters-->
-                <a class="trigger"
-                   ng-switch-when="false"
-                   ng-if="!transfo.dynamic"
-                   ng-click="actionsListCtrl.select(transfo)"
-                   ng-mouseenter="actionsListCtrl.earlyPreview(transfo)({})"
-                   ng-mouseleave="actionsListCtrl.cancelEarlyPreview()"
-                   ng-bind-html="transfo.labelHtml"></a>
+                    <!--no parameters-->
+                    <a ng-switch-when="false"
+                       ng-if="!transfo.dynamic"
+                       ng-click="actionsListCtrl.select(transfo)"
+                       ng-mouseenter="actionsListCtrl.earlyPreview(transfo)({})"
+                       ng-mouseleave="actionsListCtrl.cancelEarlyPreview()"
+                       ng-bind-html="transfo.labelHtml"></a>
 
-                <!--with static parameters-->
-                <a class="trigger" ng-switch-when="true" ng-bind-html="transfo.labelHtml"></a>
-                <ul class="content" ng-switch-when="true">
+                    <!--with static parameters-->
+                    <a ng-switch-when="true" ng-bind-html="transfo.labelHtml"></a>
+                </trigger>
+
+                <content ng-switch-when="true">
                     <transform-form transformation="transfo"
                                     on-submit="actionsListCtrl.transform(transfo)(params)"
                                     on-submit-hover-on="actionsListCtrl.earlyPreview(transfo)(params)"
                                     on-submit-hover-off="actionsListCtrl.cancelEarlyPreview()"></transform-form>
-                </ul>
-            </talend-accordions-item>
+                </content>
+            </sc-accordion-item>
         </div>
-    </talend-accordions>
+    </sc-accordion>
 
 
     <!-- Dynamic params  -->

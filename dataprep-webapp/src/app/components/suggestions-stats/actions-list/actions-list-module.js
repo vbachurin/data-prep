@@ -27,6 +27,7 @@ import ActionsList from './actions-list-directive';
      */
     angular.module('data-prep.actions-list',
         [
+            'talend.sunchoke',
             'talend.widget',
             'data-prep.services.transformation',
             'data-prep.services.state'

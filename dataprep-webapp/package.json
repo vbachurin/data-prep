@@ -9,7 +9,8 @@
   "scripts": {
     "test": "karma start",
     "test:auto": "karma start --auto",
-    "test:ci": "karma start karma.conf.ci.js"
+    "test:ci": "karma start karma.conf.ci.js",
+    "lint": "eslint --config .eslintrc src/**/*.js"
   },
   "devDependencies": {
     "babel-core": "^6.5.2",
