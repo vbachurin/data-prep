@@ -13,17 +13,17 @@
 
 package org.talend.dataprep.dataset.service.locator;
 
-import java.io.IOException;
-import java.io.InputStream;
-
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.dataset.DataSetLocation;
-
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
+import org.talend.dataprep.api.dataset.DataSetLocation;
+import org.talend.dataprep.api.dataset.location.HttpLocation;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Dataset locator for remote http datasets.
@@ -36,7 +36,8 @@ public class HttpDataSetLocator implements DataSetLocator {
 
     /** Jackson builder. */
     @Autowired
-    private Jackson2ObjectMapperBuilder builder;
+    @Lazy
+    private ObjectMapper objectMapper;
 
     /**
      * @see DataSetLocator#accept(String)
@@ -51,9 +52,17 @@ public class HttpDataSetLocator implements DataSetLocator {
      */
     @Override
     public DataSetLocation getLocation(InputStream connectionParameters) throws IOException {
-        ObjectMapper mapper = builder.build();
-        JsonParser parser = mapper.getFactory().createParser(connectionParameters);
-        return mapper.readerFor(DataSetLocation.class).readValue(parser);
+        JsonParser parser = objectMapper.getFactory().createParser(connectionParameters);
+        return objectMapper.readerFor(DataSetLocation.class).readValue(parser);
     }
 
+    @Override
+    public String getLocationType() {
+        return HttpLocation.NAME;
+    }
+
+    @Override
+    public Class<? extends DataSetLocation> getLocationClass() {
+        return HttpLocation.class;
+    }
 }

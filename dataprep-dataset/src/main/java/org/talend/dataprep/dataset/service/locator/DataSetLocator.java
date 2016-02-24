@@ -17,11 +17,12 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.talend.dataprep.api.dataset.DataSetLocation;
+import org.talend.dataprep.api.dataset.json.DataSetLocationMapping;
 
 /**
  * Interface for dataset locators.
  */
-public interface DataSetLocator {
+public interface DataSetLocator extends DataSetLocationMapping {
 
     /**
      * @param contentType the content type to analyse.
