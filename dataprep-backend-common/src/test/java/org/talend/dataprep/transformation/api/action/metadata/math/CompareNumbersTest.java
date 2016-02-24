@@ -258,7 +258,7 @@ public class CompareNumbersTest extends AbstractMetadataBaseTest {
         ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
-        DataSetRow expected = getRow("5", "Beer", "Done !", "N/A");
+        DataSetRow expected = getRow("5", "Beer", "Done !", "");
         assertEquals(expected, row);
     }
 

@@ -232,18 +232,9 @@ public class ExtractUrlTokensTest extends BaseDateTests {
         assertEquals(expected, row.getRowMetadata().getColumns());
     }
 
-    /**
-     * @param name name of the column metadata to create.
-     * @return a new column metadata
-     */
-    protected ColumnMetadata createMetadata(String id, String name) {
-        return ColumnMetadata.Builder.column().computedId(id).name(name).type(Type.STRING).headerSize(12).empty(0).invalid(2)
-                .valid(5).build();
-    }
-
-    protected ColumnMetadata createMetadata(String id, String name, Type type) {
-        return ColumnMetadata.Builder.column().computedId(id).name(name).type(type).headerSize(12).empty(0).invalid(2).valid(5)
-                .build();
+    @Override
+    protected ColumnMetadata.Builder columnBaseBuilder() {
+        return super.columnBaseBuilder().headerSize(12).valid(5).invalid(2).empty(0);
     }
 
     @Test

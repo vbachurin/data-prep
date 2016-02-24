@@ -1,15 +1,15 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.transformation.api.action.metadata.date;
 
@@ -40,20 +40,17 @@ import java.util.Map;
 @ComponentScan(basePackages = "org.talend.dataprep")
 public abstract class BaseDateTests {
 
-
-
     /**
      * @param statisticsFileName the statistics file name to use.
      * @return a row with default settings for the tests.
      */
-    protected DataSetRow getDefaultRow( String statisticsFileName) throws IOException
-    {
+    protected DataSetRow getDefaultRow(String statisticsFileName) throws IOException {
 
-        List<ColumnMetadata> columns = new ArrayList<>( 3);
-        columns.add(ColumnMetadata.Builder.column().name("recipe").type( Type.STRING).build());
+        List<ColumnMetadata> columns = new ArrayList<>(3);
+        columns.add(ColumnMetadata.Builder.column().name("recipe").type(Type.STRING).build());
         ObjectMapper mapper = new ObjectMapper();
-        final Statistics statistics = mapper.readerFor( Statistics.class)
-            .readValue(CompareDatesTest.class.getResourceAsStream(statisticsFileName));
+        final Statistics statistics = mapper.readerFor(Statistics.class)
+                .readValue(CompareDatesTest.class.getResourceAsStream(statisticsFileName));
         columns.add(ColumnMetadata.Builder.column().name("last update").type(Type.DATE).statistics(statistics).build());
         columns.add(ColumnMetadata.Builder.column().name("steps").type(Type.STRING).build());
 
@@ -72,7 +69,7 @@ public abstract class BaseDateTests {
         ColumnMetadata column = createMetadata(id, name, type);
         ObjectMapper mapper = new ObjectMapper();
         final Statistics statistics = mapper.readerFor(Statistics.class)
-            .readValue(CompareDatesTest.class.getResourceAsStream(statisticsFileName));
+                .readValue(CompareDatesTest.class.getResourceAsStream(statisticsFileName));
         column.setStatistics(statistics);
         return column;
     }
@@ -82,7 +79,11 @@ public abstract class BaseDateTests {
     }
 
     protected ColumnMetadata createMetadata(String id, String name, Type type) {
-        return ColumnMetadata.Builder.column().computedId(id).name(name).type(type).build();
+        return columnBaseBuilder().computedId(id).name(name).type(type).build();
+    }
+
+    protected ColumnMetadata.Builder columnBaseBuilder() {
+        return ColumnMetadata.Builder.column();
     }
 
 }

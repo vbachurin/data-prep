@@ -1,15 +1,15 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata.column;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -278,13 +278,8 @@ public class CopyColumnTest extends BaseDateTests {
         assertTrue(action.acceptColumn(getColumn(Type.ANY)));
     }
 
-    /**
-     * @param name name of the column metadata to create.
-     * @return a new column metadata
-     */
-    protected ColumnMetadata createMetadata(String id, String name) {
-        return ColumnMetadata.Builder.column().computedId(id).name(name).type(Type.STRING).headerSize(12).empty(0).invalid(2)
-                .valid(5).build();
+    @Override
+    protected ColumnMetadata.Builder columnBaseBuilder() {
+        return super.columnBaseBuilder().headerSize(12).valid(5).invalid(2);
     }
-
 }

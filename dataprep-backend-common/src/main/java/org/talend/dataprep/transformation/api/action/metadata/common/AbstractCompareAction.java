@@ -39,7 +39,7 @@ public abstract class AbstractCompareAction extends ActionMetadata implements Co
     
     public static final int ERROR_COMPARE_RESULT = Integer.MIN_VALUE;
 
-    public static final String ERROR_COMPARE_RESULT_LABEL = "N/A";
+    public static final String ERROR_COMPARE_RESULT_LABEL = StringUtils.EMPTY;
 
     @Override
     @Nonnull

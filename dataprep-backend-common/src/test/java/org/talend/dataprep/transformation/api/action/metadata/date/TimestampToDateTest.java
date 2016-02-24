@@ -227,9 +227,9 @@ public class TimestampToDateTest extends BaseDateTests {
         assertFalse(action.acceptColumn(getColumn(Type.BOOLEAN)));
     }
 
-    protected ColumnMetadata createMetadata(String id, String name, Type type) {
-        return ColumnMetadata.Builder.column().computedId(id).name(name).type(type).headerSize(12).empty(0).invalid(2).valid(5)
-                .build();
+    @Override
+    protected ColumnMetadata.Builder columnBaseBuilder() {
+        return super.columnBaseBuilder().headerSize(12).valid(5).invalid(2).empty(0);
     }
 
     @Test

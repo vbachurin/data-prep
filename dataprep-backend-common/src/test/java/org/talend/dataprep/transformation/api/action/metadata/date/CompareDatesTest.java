@@ -284,13 +284,94 @@ public class CompareDatesTest extends BaseDateTests {
         Assertions.assertThat(rows.get( 1 ).values()) //
             .hasSize(2) //
             .containsExactly(MapEntry.entry("0000", "Beer"), //
-                             MapEntry.entry("0001", "N/A"));
+                             MapEntry.entry("0001", ""));
 
         Assertions.assertThat(rows.get( 2 ).values()) //
             .hasSize(2) //
             .containsExactly(MapEntry.entry("0000", "02/01/2001"), //
                              MapEntry.entry("0001", "false"));
 
+    }
+
+    @Test
+    public void compare_date_with_empty_should_have_empty_result() throws Exception{
+        // given
+        final Map<String, String> values = new HashMap<>();
+        values.put("0000", "02/01/2012");
+        values.put("0001", "");
+
+        RowMetadata rowMetadata = new RowMetadata();
+        rowMetadata.addColumn(createMetadata("0000", "last update", Type.DATE, "statistics_MM_dd_yyyy.json"));
+        rowMetadata.addColumn(createMetadata("0001", "first update", Type.DATE, "statistics_MM_dd_yyyy.json"));
+        final DataSetRow row = new DataSetRow(rowMetadata, values);
+
+        parameters.put(CompareDates.MODE_PARAMETER, OtherColumnParameters.OTHER_COLUMN_MODE);
+        parameters.put(OtherColumnParameters.SELECTED_COLUMN_PARAMETER, "0001");
+        parameters.put(CompareDates.COMPARE_MODE, CompareDates.EQ);
+
+        // when
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+
+        // then
+        Assertions.assertThat(row.values()) //
+                .hasSize(3) //
+                .containsExactly(MapEntry.entry("0000", "02/01/2012"), //
+                        MapEntry.entry("0001", ""), //
+                        MapEntry.entry("0002", ""));
+    }
+
+    @Test
+    public void compare_empty_with_date_should_have_empty_result() throws Exception{
+        // given
+        final Map<String, String> values = new HashMap<>();
+        values.put("0000", "");
+        values.put("0001", "02/01/2012");
+
+        RowMetadata rowMetadata = new RowMetadata();
+        rowMetadata.addColumn(createMetadata("0000", "last update", Type.DATE, "statistics_MM_dd_yyyy.json"));
+        rowMetadata.addColumn(createMetadata("0001", "first update", Type.DATE, "statistics_MM_dd_yyyy.json"));
+        final DataSetRow row = new DataSetRow(rowMetadata, values);
+
+        parameters.put(CompareDates.MODE_PARAMETER, OtherColumnParameters.OTHER_COLUMN_MODE);
+        parameters.put(OtherColumnParameters.SELECTED_COLUMN_PARAMETER, "0001");
+        parameters.put(CompareDates.COMPARE_MODE, CompareDates.EQ);
+
+        // when
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+
+        // then
+        Assertions.assertThat(row.values()) //
+                .hasSize(3) //
+                .containsExactly(MapEntry.entry("0000", ""), //
+                        MapEntry.entry("0001", "02/01/2012"), //
+                        MapEntry.entry("0002", ""));
+    }
+
+    @Test
+    public void compare_empty_with_empty_should_have_empty_result() throws Exception{
+        // given
+        final Map<String, String> values = new HashMap<>();
+        values.put("0000", "");
+        values.put("0001", "");
+
+        RowMetadata rowMetadata = new RowMetadata();
+        rowMetadata.addColumn(createMetadata("0000", "last update", Type.DATE, "statistics_MM_dd_yyyy.json"));
+        rowMetadata.addColumn(createMetadata("0001", "first update", Type.DATE, "statistics_MM_dd_yyyy.json"));
+        final DataSetRow row = new DataSetRow(rowMetadata, values);
+
+        parameters.put(CompareDates.MODE_PARAMETER, OtherColumnParameters.OTHER_COLUMN_MODE);
+        parameters.put(OtherColumnParameters.SELECTED_COLUMN_PARAMETER, "0001");
+        parameters.put(CompareDates.COMPARE_MODE, CompareDates.EQ);
+
+        // when
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+
+        // then
+        Assertions.assertThat(row.values()) //
+                .hasSize(3) //
+                .containsExactly(MapEntry.entry("0000", ""), //
+                        MapEntry.entry("0001", ""), //
+                        MapEntry.entry("0002", ""));
     }
 
 }

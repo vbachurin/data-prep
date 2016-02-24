@@ -119,18 +119,8 @@ public class CompareDates extends AbstractCompareAction implements ColumnAction,
     protected int doCompare(ComparisonRequest comparisonRequest) {
 
         if (StringUtils.isEmpty(comparisonRequest.value1) //
-                && StringUtils.isEmpty(comparisonRequest.value2)) {
-            return 0;
-        }
-
-        if (StringUtils.isNotEmpty(comparisonRequest.value1) //
-                && StringUtils.isEmpty(comparisonRequest.value2)) {
-            return 1;
-        }
-
-        if (StringUtils.isNotEmpty(comparisonRequest.value2) //
-                && StringUtils.isEmpty(comparisonRequest.value1)) {
-            return -1;
+                || StringUtils.isEmpty(comparisonRequest.value2)) {
+            return ERROR_COMPARE_RESULT;
         }
 
         try {
