@@ -26,7 +26,8 @@ import FolderRestService from './rest/folder-rest-service';
         [
             'data-prep.services.dataset',
             'data-prep.services.state',
-            'data-prep.services.utils'
+            'data-prep.services.utils',
+            'ui.router'
         ])
         .service('FolderRestService', FolderRestService)
         .service('FolderService', FolderService);

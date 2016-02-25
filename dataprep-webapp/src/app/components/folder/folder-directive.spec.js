@@ -55,10 +55,10 @@ describe('folder directive', function() {
 		$translateProvider.preferredLanguage('en');
 	}));
 
-	beforeEach(inject(function($rootScope, $compile, FolderService) {
+	beforeEach(inject(function($rootScope, $compile, $state, FolderService) {
 		scope = $rootScope.$new();
 		spyOn(FolderService, 'getContent').and.returnValue();
-
+		spyOn($state, 'go');
 		createElement = function() {
 			element = angular.element('<folder></folder>');
 			$compile(element)(scope);
@@ -82,25 +82,16 @@ describe('folder directive', function() {
 		expect(element.find('.dropdown-menu').length).toBe(3);
 	});
 
-	it('should get folder content on element creation', inject(function(FolderService) {
-		//when
-		createElement();
-
-		//then
-		expect(FolderService.getContent).toHaveBeenCalled();
-	}));
-
-	it('should change current folder on different folder click', inject(function(FolderService) {
+	it('should change current folder on different folder click', inject(function($state) {
 		//given
 		createElement();
-		expect(FolderService.getContent.calls.count()).toBe(1);
 
 		//when
 		element.find('#folder_1 .dropdown-container > a').eq(0).click();
 		scope.$digest();
 
 		//then
-		expect(FolderService.getContent.calls.count()).toBe(2);
+		expect($state.go).toHaveBeenCalledWith('nav.index.datasets', { folderPath: stateMock.inventory.foldersStack[1].path });
 	}));
 
 	describe('folder children', function(){
@@ -134,7 +125,7 @@ describe('folder directive', function() {
 			expect(element.find('#folder_1 .dropdown-menu > li').eq(1).text().trim()).toBe('lookups');
 		});
 
-		it('should go to subfolder menu children', inject(function(FolderService){
+		it('should go to subfolder menu children', inject(function($state){
 			//given
 			createElement();
 
@@ -146,7 +137,7 @@ describe('folder directive', function() {
 			scope.$digest();
 
 			//then
-			expect(FolderService.getContent).toHaveBeenCalledWith(stateMock.inventory.menuChildren[0]);
+			expect($state.go).toHaveBeenCalledWith('nav.index.datasets', { folderPath: stateMock.inventory.menuChildren[0].path });
 		}));
 	});
 });

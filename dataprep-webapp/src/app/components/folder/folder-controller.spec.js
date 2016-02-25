@@ -41,7 +41,7 @@ describe('Folder controller', function () {
 
     beforeEach(angular.mock.module('data-prep.folder'));
 
-    beforeEach(inject(function($rootScope, $controller, $q, FolderService, StateService) {
+    beforeEach(inject(function($rootScope, $controller, $q, $state, FolderService, StateService) {
         scope = $rootScope.$new();
 
         createController = function () {
@@ -49,19 +49,19 @@ describe('Folder controller', function () {
                 $scope: scope
             });
         };
-        spyOn(FolderService, 'getContent').and.returnValue($q.when(true));
+        spyOn($state, 'go');
         spyOn(FolderService, 'populateMenuChildren').and.returnValue($q.when(true));
         spyOn(StateService, 'setMenuChildren').and.returnValue();
     }));
 
-    it('should call goToFolder service', inject(function (FolderService) {
+    it('should call goToFolder service', inject(function ($state) {
         //when
         var ctrl = createController();
-        ctrl.goToFolder();
+        ctrl.goToFolder({path: '', name: 'HOME'});
         scope.$digest();
 
         //then
-        expect(FolderService.getContent).toHaveBeenCalled();
+        expect($state.go).toHaveBeenCalledWith('nav.index.datasets',{ folderPath: '' });
     }));
 
     it('should call populateMenuChildren service', inject(function (FolderService, StateService) {
@@ -75,21 +75,4 @@ describe('Folder controller', function () {
         expect(FolderService.populateMenuChildren).toHaveBeenCalled();
         expect(StateService.setMenuChildren).toHaveBeenCalledWith([]);
     }));
-
-    it('should refresh sort parameters', inject(function ($timeout, StorageService, StateService) {
-        //given
-        spyOn(StorageService, 'getDatasetsSort').and.returnValue('date');
-        spyOn(StorageService, 'getDatasetsOrder').and.returnValue('desc');
-        spyOn(StateService, 'setDatasetsOrder');
-        spyOn(StateService, 'setDatasetsSort');
-
-
-        //when
-        createController();
-
-        //then
-        expect(StateService.setDatasetsSort).toHaveBeenCalledWith({id: 'date', name: 'DATE_SORT', property: 'created'});
-        expect(StateService.setDatasetsOrder).toHaveBeenCalledWith({id: 'desc', name: 'DESC_ORDER'});
-    }));
-
 });

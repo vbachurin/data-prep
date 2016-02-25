@@ -254,7 +254,7 @@ describe('Folder services', function () {
             expect(StateService.setCurrentFolder).toHaveBeenCalledWith({path: 'titi/toto', name: 'toto'});
             expect(StateService.setCurrentFolderContent).toHaveBeenCalledWith(content.data);
             expect(StateService.setFoldersStack).toHaveBeenCalledWith([
-                {path: '/', name: 'Home'},
+                {path: '', name: 'Home'},
                 {path: 'titi', name: 'titi'},
                 {path: 'titi/toto', name: 'toto'}
             ]);

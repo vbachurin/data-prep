@@ -80,6 +80,25 @@ describe('Dataset list controller', function () {
         spyOn(MessageService, 'error').and.returnValue();
     }));
 
+    describe('initialization', function () {
+
+        it('should refresh sort parameters', inject(function ($timeout, StorageService, StateService) {
+            //given
+            spyOn(StorageService, 'getDatasetsSort').and.returnValue('date');
+            spyOn(StorageService, 'getDatasetsOrder').and.returnValue('desc');
+            spyOn(StateService, 'setDatasetsOrder');
+            spyOn(StateService, 'setDatasetsSort');
+
+            //when
+            createController();
+
+            //then
+            expect(StateService.setDatasetsSort).toHaveBeenCalledWith({id: 'date', name: 'DATE_SORT', property: 'created'});
+            expect(StateService.setDatasetsOrder).toHaveBeenCalledWith({id: 'desc', name: 'DESC_ORDER'});
+        }));
+    });
+
+
     describe('sort parameters', function () {
 
         describe('with dataset refresh success', function () {
@@ -122,7 +141,7 @@ describe('Dataset list controller', function () {
                 ctrl.updateSortBy(newSort);
 
                 //then
-                expect(FolderService.getContent.calls.count()).toBe(1);
+                expect(FolderService.getContent.calls.count()).toBe(2);
             }));
 
             it('should not refresh dataset when requested order is already the selected one', inject(function (FolderService) {
@@ -136,7 +155,7 @@ describe('Dataset list controller', function () {
                 ctrl.updateSortOrder(newSortOrder);
 
                 //then
-                expect(FolderService.getContent.calls.count()).toBe(1);
+                expect(FolderService.getContent.calls.count()).toBe(2);
             }));
 
             it('should update sort parameter', inject(function (DatasetService, StorageService) {
@@ -279,13 +298,15 @@ describe('Dataset list controller', function () {
 
         it('should add folder with current folder path', inject(function ($q, FolderService) {
             //given
+            spyOn(FolderService, 'create').and.returnValue($q.when(true));
+            spyOn(FolderService, 'getContent').and.returnValue($q.when(true));
+
             var ctrl = createController();
             ctrl.folderName = '1';
             ctrl.folderNameForm = {};
             ctrl.folderNameForm.$commitViewValue = function () {
             };
-            spyOn(FolderService, 'create').and.returnValue($q.when(true));
-            spyOn(FolderService, 'getContent').and.returnValue($q.when(true));
+
             spyOn(ctrl.folderNameForm, '$commitViewValue').and.returnValue();
 
             //when
@@ -303,13 +324,15 @@ describe('Dataset list controller', function () {
             //given
             stateMock.inventory.currentFolder = {path: '', name: 'Home'};
 
+            spyOn(FolderService, 'create').and.returnValue($q.when(true));
+            spyOn(FolderService, 'getContent').and.returnValue($q.when(true));
+
             var ctrl = createController();
             ctrl.folderName = '1';
             ctrl.folderNameForm = {};
             ctrl.folderNameForm.$commitViewValue = function () {
             };
-            spyOn(FolderService, 'create').and.returnValue($q.when(true));
-            spyOn(FolderService, 'getContent').and.returnValue($q.when(true));
+
             spyOn(ctrl.folderNameForm, '$commitViewValue').and.returnValue();
 
             //when
@@ -324,8 +347,8 @@ describe('Dataset list controller', function () {
 
         it('should process certification', inject(function ($q, FolderService, DatasetService) {
             //given
-            var ctrl = createController();
             spyOn(FolderService, 'getContent').and.returnValue($q.when(true));
+            var ctrl = createController();
 
             //when
             ctrl.processCertification(datasets[0]);
@@ -338,9 +361,10 @@ describe('Dataset list controller', function () {
 
     describe('rename', function () {
 
-        it('should do nothing when dataset is currently being renamed', inject(function ($q, DatasetService) {
+        it('should do nothing when dataset is currently being renamed', inject(function ($q, DatasetService, FolderService) {
             //given
             spyOn(DatasetService, 'update').and.returnValue($q.when(true));
+            spyOn(FolderService, 'getContent').and.returnValue($q.when(true));
 
             var ctrl = createController();
             var dataset = {renaming: true};
@@ -353,9 +377,10 @@ describe('Dataset list controller', function () {
             expect(DatasetService.update).not.toHaveBeenCalled();
         }));
 
-        it('should change name on the current dataset and call service to rename it', inject(function ($q, DatasetService) {
+        it('should change name on the current dataset and call service to rename it', inject(function ($q, DatasetService, FolderService) {
             //given
             spyOn(DatasetService, 'update').and.returnValue($q.when(true));
+            spyOn(FolderService, 'getContent').and.returnValue($q.when(true));
 
             var ctrl = createController();
             var dataset = {name: 'my old name'};
@@ -369,10 +394,11 @@ describe('Dataset list controller', function () {
             expect(DatasetService.update).toHaveBeenCalledWith(dataset);
         }));
 
-        it('should show confirmation message', inject(function ($q, DatasetService, MessageService) {
+        it('should show confirmation message', inject(function ($q, DatasetService, MessageService, FolderService) {
             //given
             spyOn(DatasetService, 'update').and.returnValue($q.when(true));
             spyOn(MessageService, 'success').and.returnValue();
+            spyOn(FolderService, 'getContent').and.returnValue($q.when(true));
 
             var ctrl = createController();
             var dataset = {name: 'my old name'};
@@ -386,9 +412,10 @@ describe('Dataset list controller', function () {
             expect(MessageService.success).toHaveBeenCalledWith('DATASET_RENAME_SUCCESS_TITLE', 'DATASET_RENAME_SUCCESS');
         }));
 
-        it('should set back the old name when the real rename is rejected', inject(function ($q, DatasetService) {
+        it('should set back the old name when the real rename is rejected', inject(function ($q, DatasetService, FolderService) {
             //given
             spyOn(DatasetService, 'update').and.returnValue($q.reject(false));
+            spyOn(FolderService, 'getContent').and.returnValue($q.when(true));
 
             var ctrl = createController();
             var oldName = 'my old name';
@@ -404,11 +431,11 @@ describe('Dataset list controller', function () {
             expect(dataset.name).toBe(oldName);
         }));
 
-        it('should manage "renaming" flag', inject(function ($q, DatasetService, MessageService) {
+        it('should manage "renaming" flag', inject(function ($q, DatasetService, MessageService, FolderService) {
             //given
             spyOn(DatasetService, 'update').and.returnValue($q.when(true));
             spyOn(MessageService, 'success').and.returnValue();
-
+            spyOn(FolderService, 'getContent').and.returnValue($q.when(true));
             var ctrl = createController();
             var dataset = {name: 'my old name'};
             var name = 'new dataset name';
@@ -424,9 +451,10 @@ describe('Dataset list controller', function () {
             expect(dataset.renaming).toBeFalsy();
         }));
 
-        it('should not call service to rename dataset with null name', inject(function ($q, DatasetService) {
+        it('should not call service to rename dataset with null name', inject(function ($q, DatasetService, FolderService) {
             //given
             spyOn(DatasetService, 'update').and.returnValue($q.when(true));
+            spyOn(FolderService, 'getContent').and.returnValue($q.when(true));
             var ctrl = createController();
             var name = 'dataset name';
             var dataset = {name: name};
@@ -442,9 +470,10 @@ describe('Dataset list controller', function () {
             expect(DatasetService.update).not.toHaveBeenCalledWith(dataset);
         }));
 
-        it('should not call service to rename dataset with empty name', inject(function ($q, DatasetService) {
+        it('should not call service to rename dataset with empty name', inject(function ($q, DatasetService, FolderService) {
             //given
             spyOn(DatasetService, 'update').and.returnValue($q.when(true));
+            spyOn(FolderService, 'getContent').and.returnValue($q.when(true));
             var ctrl = createController();
             var name = 'dataset name';
             var dataset = {name: name};
@@ -460,10 +489,11 @@ describe('Dataset list controller', function () {
             expect(DatasetService.update).not.toHaveBeenCalledWith(dataset);
         }));
 
-        it('should not call service to rename dataset with an already existing name', inject(function ($q, DatasetService, MessageService) {
+        it('should not call service to rename dataset with an already existing name', inject(function ($q, DatasetService, MessageService, FolderService) {
             //given
             spyOn(DatasetService, 'update').and.returnValue($q.when(true));
             spyOn(DatasetService, 'getDatasetByName').and.returnValue({id: 'ab45f893d8e923', name: 'Us states'});
+            spyOn(FolderService, 'getContent').and.returnValue($q.when(true));
             var ctrl = createController();
             var name = 'foo';
             var dataset = {name: name};
@@ -672,8 +702,9 @@ describe('Dataset list controller', function () {
 
         }));
 
-        it('should call children service and open modal', inject(function (FolderService) {
+        it('should call children service and open modal', inject(function ($q, FolderService) {
             // given
+            spyOn(FolderService, 'getContent').and.returnValue($q.when(true));
             var ctrl = createController();
             stateMock.inventory.currentFolder = {path: 'folder-1', name: 'folder-1'};
             scope.$digest();
@@ -704,7 +735,7 @@ describe('Dataset list controller', function () {
         }));
 
 
-        it('should call search folders service', inject(function (FolderService) {
+        it('should call search folders service', inject(function ($q, FolderService) {
             //given
             var foldersFromSearch = [
                 {path: 'folder-1', name: 'folder-1'},
@@ -712,6 +743,7 @@ describe('Dataset list controller', function () {
                 {path: 'folder-1/sub-2/folder-1-beer', name: 'folder-1-beer'}
             ];
 
+            spyOn(FolderService, 'getContent').and.returnValue($q.when(true));
             var ctrl = createController();
             ctrl.searchFolderQuery = 'beer';
             spyOn(ctrl, 'chooseFolder').and.returnValue();
@@ -726,7 +758,7 @@ describe('Dataset list controller', function () {
             expect(ctrl.chooseFolder).toHaveBeenCalledWith(foldersFromSearch[0]);
         }));
 
-        it('should call filter root folder and search folders service', inject(function (FolderService) {
+        it('should call filter root folder and search folders service', inject(function ($q, FolderService) {
             //given
             var foldersFromSearch = [
                 {path: '', name: 'Home'},
@@ -735,6 +767,7 @@ describe('Dataset list controller', function () {
                 {path: 'folder-1/sub-2/folder-1-beer', name: 'folder-1-beer'}
             ];
 
+            spyOn(FolderService, 'getContent').and.returnValue($q.when(true));
             var ctrl = createController();
             ctrl.searchFolderQuery = 'H';
             spyOn(ctrl, 'chooseFolder').and.returnValue();
@@ -750,9 +783,9 @@ describe('Dataset list controller', function () {
             expect(ctrl.chooseFolder).toHaveBeenCalledWith(rootFolder);
         }));
 
-        it('should not call search folders service if searchFolderQuery is empty', inject(function (FolderService) {
+        it('should not call search folders service if searchFolderQuery is empty', inject(function ($q, FolderService) {
             //given
-
+            spyOn(FolderService, 'getContent').and.returnValue($q.when(true));
             var ctrl = createController();
             ctrl.searchFolderQuery = '';
             spyOn(ctrl, 'chooseFolder').and.returnValue();
@@ -770,8 +803,10 @@ describe('Dataset list controller', function () {
             expect(ctrl.chooseFolder).toHaveBeenCalledWith({path: 'folder-1', name: 'folder-1'});
         }));
 
-        it('choose folder should marker folder as selected', function () {
+        it('choose folder should marker folder as selected', inject(function ($q, FolderService) {
             //given
+            spyOn(FolderService, 'getContent').and.returnValue($q.when(true));
+
             var folder = {path: '/foo/beer'};
             var ctrl = createController();
 
@@ -782,10 +817,12 @@ describe('Dataset list controller', function () {
             //then
             expect(folder.selected).toBe(true);
             expect(ctrl.folderDestination).toBe(folder);
-        });
+        }));
 
-        it('toggle should call children service', inject(function (FolderService) {
+        it('toggle should call children service', inject(function ($q, FolderService) {
             //given
+            spyOn(FolderService, 'getContent').and.returnValue($q.when(true));
+
             var folder = {path: 'folder-1', collapsed: true};
             var ctrl = createController();
             spyOn(ctrl, 'chooseFolder').and.returnValue();
@@ -798,8 +835,10 @@ describe('Dataset list controller', function () {
             expect(FolderService.children).toHaveBeenCalledWith(folder.path);
         }));
 
-        it('toggle should not call children service because already children', inject(function (FolderService) {
+        it('toggle should not call children service because already children', inject(function ($q, FolderService) {
             //given
+            spyOn(FolderService, 'getContent').and.returnValue($q.when(true));
+
             var folder = {path: '/foo/beer', collapsed: true, nodes: [{id: 'wine'}]};
             var ctrl = createController();
 
@@ -811,8 +850,10 @@ describe('Dataset list controller', function () {
             expect(FolderService.children).not.toHaveBeenCalled();
         }));
 
-        it('toggle should not call children service because not collapsed', inject(function (FolderService) {
+        it('toggle should not call children service because not collapsed', inject(function ($q, FolderService) {
             //given
+            spyOn(FolderService, 'getContent').and.returnValue($q.when(true));
+
             var folder = {path: '/foo/beer', collapsed: false};
             var ctrl = createController();
 
@@ -824,8 +865,10 @@ describe('Dataset list controller', function () {
             expect(FolderService.children).not.toHaveBeenCalled();
         }));
 
-        it('collapseNodes should mark children as collapsed', function () {
+        it('collapseNodes should mark children as collapsed', inject(function ($q, FolderService) {
             //given
+            spyOn(FolderService, 'getContent').and.returnValue($q.when(true));
+
             var folder = {path: '/foo/beer', collapsed: true, nodes: [{id: 'wine'}, {id: 'cheese'}]};
             var ctrl = createController();
 
@@ -837,7 +880,7 @@ describe('Dataset list controller', function () {
             expect(folder.nodes[0].collapsed).toBe(true);
             expect(folder.nodes[1].collapsed).toBe(true);
             expect(folder.collapsed).toBe(false);
-        });
+        }));
 
         it('should rename folder', inject(function ($q, FolderService) {
             //given
@@ -877,8 +920,10 @@ describe('Dataset list controller', function () {
             spyOn(UpdateWorkflowService, 'updateDataset').and.returnValue();
         }));
 
-        it('should update the existing dataset with the new file', inject(function (UpdateWorkflowService) {
+        it('should update the existing dataset with the new file', inject(function ($q, UpdateWorkflowService, FolderService) {
             //given
+            spyOn(FolderService, 'getContent').and.returnValue($q.when(true));
+
             var ctrl = createController();
             var existingDataset = {};
             var newDataSet = {};
@@ -894,8 +939,9 @@ describe('Dataset list controller', function () {
 
     describe('related preparations', function () {
 
-        it('should load preparation and show playground', inject(function ($state, $timeout, StateService) {
+        it('should load preparation and show playground', inject(function ($q, $state, $timeout, StateService, FolderService) {
             //given
+            spyOn(FolderService, 'getContent').and.returnValue($q.when(true));
             var ctrl = createController();
             var preparation = {
                 id: 'de618c62ef97b3a95b5c171bc077ffe22e1d6f79',
