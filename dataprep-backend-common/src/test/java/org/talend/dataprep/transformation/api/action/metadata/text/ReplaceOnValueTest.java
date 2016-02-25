@@ -347,6 +347,54 @@ public class ReplaceOnValueTest extends AbstractMetadataBaseTest {
     }
 
     @Test
+    public void test_TDP_1405_match() {
+        // given
+        final String from = "Reference\nGI";
+        final String regexp = "GI";
+        final String to = "Joe";
+        final String expected = "Reference\nJoe";
+
+        // when
+        final String result = action.computeNewValue(
+                buildPatternActionContext(generateJson(regexp, ReplaceOnValueHelper.REGEX_MODE), to, false), from);
+
+        // then
+        assertThat(result, is(expected));
+    }
+
+    @Test
+    public void test_TDP_1405_replace() {
+        // given
+        final String from = "Reference\nGI";
+        final String regexp = "\n";
+        final String to = " ";
+        final String expected = "Reference GI";
+
+        // when
+        final String result = action.computeNewValue(
+                buildPatternActionContext(generateJson(regexp, ReplaceOnValueHelper.REGEX_MODE), to, false), from);
+
+        // then
+        assertThat(result, is(expected));
+    }
+
+    @Test
+    public void test_TDP_1405_replace_full() {
+        // given
+        final String from = "Reference\nGI";
+        final String regexp = "\nGI";
+        final String to = " Joe";
+        final String expected = "Reference Joe";
+
+        // when
+        final String result = action.computeNewValue(
+                buildPatternActionContext(generateJson(regexp, ReplaceOnValueHelper.REGEX_MODE), to, false), from);
+
+        // then
+        assertThat(result, is(expected));
+    }
+
+    @Test
     public void should_replace_many_values_that_match_on_the_specified_cell() {
         // given
         final String columnId = "firstname";
