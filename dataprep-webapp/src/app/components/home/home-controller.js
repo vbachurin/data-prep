@@ -34,7 +34,7 @@ export default function HomeCtrl($window, $document, $state,
     var vm = this;
     var DATA_INVENTORY_PANEL_KEY = 'org.talend.dataprep.data_inventory_panel_display';
     vm.$state = $state;
-
+    vm.state = state;
     /**
      * @ngdoc property
      * @name importType

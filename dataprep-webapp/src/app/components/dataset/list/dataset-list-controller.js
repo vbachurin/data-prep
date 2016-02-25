@@ -269,11 +269,7 @@ export default function DatasetListCtrl($stateParams, $timeout, $state, $transla
     //-------------------------------
 
     vm.goToFolder = function goToFolder(folder) {
-        if(folder.path === '/'){
-            $state.go('nav.index.datasets', {folderPath : ''});
-        } else {
-            $state.go('nav.index.datasets', {folderPath : folder.path});
-        }
+        $state.go('nav.index.datasets', {folderPath : folder.path});
     };
 
     /**
@@ -481,6 +477,12 @@ export default function DatasetListCtrl($stateParams, $timeout, $state, $transla
     };
 
 
+    /**
+     * @ngdoc method
+     * @name getFolderName
+     * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
+     * @description get folder name from folder path
+     */
     function getFolderName(folderPath) {
         var folderPathChunks = folderPath.split('/');
         if(folderPathChunks.length > 1) {
@@ -488,6 +490,13 @@ export default function DatasetListCtrl($stateParams, $timeout, $state, $transla
         }
         return folderPathChunks[folderPathChunks.length - 1];
     }
+
+
+    /**
+     * Load folders constent on start
+     */
+    FolderService.refreshDatasetsSort();
+    FolderService.refreshDatasetsOrder();
 
     if($stateParams.folderPath){
         FolderService.getContent({path: $stateParams.folderPath, name: getFolderName($stateParams.folderPath)});

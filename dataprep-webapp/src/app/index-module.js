@@ -57,6 +57,7 @@
                     return this.pattern.test(val);
                 }
 
+                // override the built-in string type (which is performing the slash encoding) by registering "string" type
                 $urlMatcherFactoryProvider.type('string', {
                     encode: valFromString,
                     decode: valFromString,
@@ -91,7 +92,6 @@
                             template: '<dataset-list></dataset-list>'
                         }
                     },
-                    folder: 'dataset',
                     params: {
                         folderPath: ''
                     }

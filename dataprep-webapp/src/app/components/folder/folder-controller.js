@@ -18,39 +18,12 @@
  * @requires data-prep.services.state.constant:state
  * @requires data-prep.services.state.service:StateService
  * @requires data-prep.services.folder.service:FolderService
- * @requires data-prep.services.utils.service:StorageService
  */
-export default function FolderCtrl($state, $stateParams, state, StateService, FolderService, StorageService) {
+export default function FolderCtrl($state, $stateParams, state, StateService, FolderService) {
     'ngInject';
 
     var vm = this;
     vm.state = state;
-
-    /**
-     * @ngdoc method
-     * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
-     * @name refreshDatasetsSort
-     * @description refresh the actual sort parameter
-     * */
-    function refreshDatasetsSort() {
-        var savedSort = StorageService.getDatasetsSort();
-        if (savedSort) {
-            StateService.setDatasetsSort(_.find(state.inventory.sortList, {id: savedSort}));
-        }
-    }
-
-    /**
-     * @ngdoc method
-     * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
-     * @name refreshDatasetsOrder
-     * @description refresh the actual order parameter
-     */
-    function refreshDatasetsOrder() {
-        var savedSortOrder = StorageService.getDatasetsOrder();
-        if (savedSortOrder) {
-            StateService.setDatasetsOrder(_.find(state.inventory.orderList, {id: savedSortOrder}));
-        }
-    }
 
     /**
      * @ngdoc method
@@ -59,11 +32,7 @@ export default function FolderCtrl($state, $stateParams, state, StateService, Fo
      * @param {object} folder - the folder to go
      */
     vm.goToFolder = function goToFolder(folder) {
-        if(folder.path === '/'){
-            $state.go('nav.index.datasets', {folderPath : ''});
-        } else {
-            $state.go('nav.index.datasets', {folderPath : folder.path});
-        }
+        $state.go('nav.index.datasets', {folderPath : folder.path});
     };
 
     /**
@@ -77,12 +46,4 @@ export default function FolderCtrl($state, $stateParams, state, StateService, Fo
         StateService.setMenuChildren([]);
         FolderService.populateMenuChildren(folder);
     };
-
-    /**
-     * Load folders on start
-     */
-    refreshDatasetsSort();
-    refreshDatasetsOrder();
-
-    //FolderService.getContent($stateParams.folderPath);
 }

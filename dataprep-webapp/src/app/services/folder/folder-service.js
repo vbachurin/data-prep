@@ -18,12 +18,13 @@
  * @requires data-prep.services.state.constant:state
  * @requires data-prep.services.state.service:StateService
  * @requires data-prep.services.folder.service:FolderRestService
+ * @requires data-prep.services.utils.service:StorageService
  */
-export default function FolderService($stateParams, $state, $translate, state, StateService, FolderRestService) {
+export default function FolderService($state, $translate, state, StateService, FolderRestService, StorageService) {
     'ngInject';
 
     var ROOT_FOLDER = {
-        path: '/',
+        path: '',
         name: '/'
     };
     $translate('HOME_FOLDER').then(function (homeName) {
@@ -40,7 +41,10 @@ export default function FolderService($stateParams, $state, $translate, state, S
         getContent: getContent,
 
         // shared folder ui mngt
-        populateMenuChildren: populateMenuChildren
+        populateMenuChildren: populateMenuChildren,
+
+        refreshDatasetsSort: refreshDatasetsSort,
+        refreshDatasetsOrder: refreshDatasetsOrder
     };
 
     /**
@@ -111,9 +115,35 @@ export default function FolderService($stateParams, $state, $translate, state, S
             StateService.setFoldersStack(foldersStack);
         })
         .catch(function(){
-            $stateParams.folderPath = '';
-            $state.go('nav.index.datasets');
+            $state.go(state.playground.previousState, {folderPath : ''});
         });
         return promise;
     }
+
+    /**
+     * @ngdoc method
+     * @methodOf data-prep.folder.controller:FolderCtrl
+     * @name refreshDatasetsSort
+     * @description refresh the actual sort parameter
+     * */
+    function refreshDatasetsSort() {
+        var savedSort = StorageService.getDatasetsSort();
+        if (savedSort) {
+            StateService.setDatasetsSort(_.find(state.inventory.sortList, {id: savedSort}));
+        }
+    }
+
+    /**
+     * @ngdoc method
+     * @methodOf data-prep.folder.controller:FolderCtrl
+     * @name refreshDatasetsOrder
+     * @description refresh the actual order parameter
+     */
+    function refreshDatasetsOrder() {
+        var savedSortOrder = StorageService.getDatasetsOrder();
+        if (savedSortOrder) {
+            StateService.setDatasetsOrder(_.find(state.inventory.orderList, {id: savedSortOrder}));
+        }
+    }
+
 }
