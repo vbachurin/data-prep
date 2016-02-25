@@ -64,6 +64,11 @@ describe('Playground controller', function () {
                 },
                 previousState: 'nav.index.preparations',
                 preparationName: ''
+            },
+            inventory :{
+                currentFolder : {
+                    path : 'test'
+                }
             }
         };
         $provide.constant('state', stateMock);
@@ -212,6 +217,18 @@ describe('Playground controller', function () {
                 //then
                 expect(StateService.resetPlayground).toHaveBeenCalled();
                 expect($state.go).toHaveBeenCalledWith('nav.index.preparations');
+            }));
+
+            it('should reset and redirect with params', inject(function ($state) {
+                //given
+                preparation.draft = false;
+                stateMock.playground.previousState = 'nav.index.datasets';
+
+                //when
+                ctrl.beforeClose();
+
+                //then
+                expect($state.go).toHaveBeenCalledWith('nav.index.datasets', {folderPath : 'test'});
             }));
 
             it('should show preparation save/discard modal with implicit preparation', function () {

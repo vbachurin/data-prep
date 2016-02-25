@@ -259,6 +259,65 @@ describe('Folder services', function () {
                 {path: 'titi/toto', name: 'toto'}
             ]);
         }));
+
+        it('should refresh sort parameters', inject(function ($timeout, StorageService, StateService, FolderService) {
+            //given
+            spyOn(StorageService, 'getDatasetsSort').and.returnValue('date');
+            spyOn(StateService, 'setDatasetsSort');
+
+            //when
+            FolderService.refreshDatasetsSort();
+
+            //then
+            expect(StateService.setDatasetsSort).toHaveBeenCalledWith({id: 'date', name: 'DATE_SORT', property: 'created'});
+        }));
+
+        it('should refresh sort order parameters', inject(function ($timeout, StorageService, StateService, FolderService) {
+            //given
+            spyOn(StorageService, 'getDatasetsOrder').and.returnValue('desc');
+            spyOn(StateService, 'setDatasetsOrder');
+
+            //when
+            FolderService.refreshDatasetsOrder();
+
+            //then
+            expect(StateService.setDatasetsOrder).toHaveBeenCalledWith({id: 'desc', name: 'DESC_ORDER'});
+        }));
+
+
+    });
+
+
+    describe('content when failed request', function () {
+        var content;
+        beforeEach(inject(function ($q, StateService, FolderRestService) {
+            content = {
+                data: {
+                    folders: [{path: 'toto', name: 'toto'}],
+                    datasets: [
+                        {
+                            'id': 'de3cc32a-b624-484e-b8e7-dab9061a009c',
+                            'name': 'customers_jso_light',
+                            'author': 'anonymousUser',
+                            'records': 15,
+                            'nbLinesHeader': 1,
+                            'nbLinesFooter': 0,
+                            'created': '03-30-2015 08:06'
+                        }]
+                }
+            };
+            spyOn(FolderRestService, 'getContent').and.returnValue($q.reject());
+        }));
+
+        it('should get folder content', inject(function ($rootScope, $state, FolderService) {
+            //when
+            spyOn($state, 'go');
+            FolderService.getContent({path: 'toto', name: 'toto'});
+            $rootScope.$digest();
+
+            //then
+            expect($state.go).toHaveBeenCalledWith('nav.index.datasets');
+        }));
     });
 
     describe('populate menu children', function () {

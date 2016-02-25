@@ -80,21 +80,73 @@ describe('Dataset list controller', function () {
         spyOn(MessageService, 'error').and.returnValue();
     }));
 
-    describe('initialization', function () {
+    describe('folder', function () {
 
-        it('should refresh sort parameters', inject(function ($timeout, StorageService, StateService) {
+        it('should refresh sort parameters', inject(function (FolderService) {
             //given
-            spyOn(StorageService, 'getDatasetsSort').and.returnValue('date');
-            spyOn(StorageService, 'getDatasetsOrder').and.returnValue('desc');
-            spyOn(StateService, 'setDatasetsOrder');
-            spyOn(StateService, 'setDatasetsSort');
+            spyOn(FolderService, 'refreshDatasetsSort');
+            spyOn(FolderService, 'refreshDatasetsOrder');
+
 
             //when
             createController();
 
             //then
-            expect(StateService.setDatasetsSort).toHaveBeenCalledWith({id: 'date', name: 'DATE_SORT', property: 'created'});
-            expect(StateService.setDatasetsOrder).toHaveBeenCalledWith({id: 'desc', name: 'DESC_ORDER'});
+            expect(FolderService.refreshDatasetsSort).toHaveBeenCalled();
+            expect(FolderService.refreshDatasetsOrder).toHaveBeenCalled();
+
+        }));
+
+        it('should get content of root folder', inject(function ($stateParams, FolderService) {
+            //given
+            $stateParams.folderPath = '';
+            spyOn(FolderService, 'getContent');
+
+            //when
+            createController();
+
+            //then
+            expect(FolderService.getContent).toHaveBeenCalled();
+
+        }));
+
+        it('should get content of other folder ', inject(function ($stateParams, FolderService) {
+            //given
+            $stateParams.folderPath = 'test';
+            spyOn(FolderService, 'getContent');
+
+            //when
+            createController();
+
+            //then
+            expect(FolderService.getContent).toHaveBeenCalledWith({path: 'test', name: 'test'});
+
+        }));
+
+        it('should get content of other folder whose name ends with /', inject(function ($stateParams, FolderService) {
+            //given
+            $stateParams.folderPath = 'test/test1/';
+            spyOn(FolderService, 'getContent');
+
+            //when
+            createController();
+
+            //then
+            expect(FolderService.getContent).toHaveBeenCalledWith({path: 'test/test1/', name: 'test1'});
+
+        }));
+
+        it('should go to folder', inject(function ($state, FolderService) {
+            //given
+            spyOn(FolderService, 'getContent');
+            var ctrl = createController();
+
+            //when
+            ctrl.goToFolder({path: '1/2', name: '2'});
+
+            //then
+            expect($state.go).toHaveBeenCalledWith('nav.index.datasets', {folderPath : '1/2'});
+
         }));
     });
 
