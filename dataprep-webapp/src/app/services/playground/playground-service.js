@@ -217,19 +217,48 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
      * @name createOrUpdatePreparation
      * @methodOf data-prep.services.playground.service:PlaygroundService
      * @param {string} name The preparation name to create or update
-     * @description Create a new preparation or change its name if it already exists
+     * @description Create a new preparation or change its name if it already exists. It adds a new entry in history
      * @returns {Promise} The process promise
      */
     function createOrUpdatePreparation(name) {
-        var promise = state.playground.preparation ?
+        const oldPreparation = state.playground.preparation;
+        let promise = performCreateOrUpdatePreparation(name);
+
+        if (oldPreparation) {
+            const oldName = oldPreparation.name;
+            promise = promise.then((preparation) => {
+                var undo = performCreateOrUpdatePreparation.bind(service, oldName);
+                var redo = performCreateOrUpdatePreparation.bind(service, name);
+                HistoryService.addAction(undo, redo);
+                return preparation;
+            })
+        }
+        return promise;
+    }
+
+    /**
+     * @ngdoc method
+     * @name performCreateOrUpdatePreparation
+     * @methodOf data-prep.services.playground.service:PlaygroundService
+     * @param {string} name The preparation name to create or update
+     * @description Create a new preparation or change its name if it already exists.
+     * @returns {Promise} The process promise
+     */
+    function performCreateOrUpdatePreparation(name) {
+        const promise = state.playground.preparation ?
             PreparationService.setName(state.playground.preparation.id, name) :
             PreparationService.create(state.playground.dataset.id, name);
 
-        return promise.then(function (preparation) {
-            StateService.setCurrentPreparation(preparation);
-            StateService.setPreparationName(preparation.name);
-            return preparation;
-        });
+        return promise
+            .then((preparation) => {
+                StateService.setCurrentPreparation(preparation);
+                StateService.setPreparationName(preparation.name);
+                return preparation;
+            })
+            .then((preparation) => {
+                $state.go('playground.preparation', {prepid: state.playground.preparation.id});
+                return preparation;
+            });
     }
 
     /**

@@ -27,18 +27,23 @@ export default function HistoryControl($document, HistoryService) {
             this.service = HistoryService;
         },
         controllerAs: 'historyCtrl',
-        link: function () {
-            //attach Ctrl+Z and Ctrl+Y event
-            $document.on('keydown', function (evtobj) {
+        link: function (scope) {
 
+            function historyListener(event) {
                 //CTRL+Z
-                if (evtobj.keyCode === 90 && evtobj.ctrlKey) {
+                if (event.keyCode === 90 && event.ctrlKey) {
                     HistoryService.undo();
                 }
                 //Ctrl+Y
-                else if (evtobj.keyCode === 89 && evtobj.ctrlKey) {
+                else if (event.keyCode === 89 && event.ctrlKey) {
                     HistoryService.redo();
                 }
+            }
+
+            $document.on('keydown', historyListener);
+
+            scope.$on('$destroy', function () {
+                $document.off('keydown', historyListener)
             });
         }
     };
