@@ -57,7 +57,7 @@ public class FolderAPI extends APIService {
             HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
             IOUtils.copyLarge(foldersList.execute(), output);
             output.flush();
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new TDPException(APIErrorCodes.UNABLE_TO_LIST_FOLDERS, e);
         }
     }
@@ -230,11 +230,7 @@ public class FolderAPI extends APIService {
         HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
         HttpClient client = getClient();
         HystrixCommand<FolderContent> listCommand = getCommand(FolderDataSetList.class, client, sort, order, folder);
-        try {
-            return listCommand.execute();
-        } catch (Exception e) {
-            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
-        }
+        return listCommand.execute();
     }
 
 }

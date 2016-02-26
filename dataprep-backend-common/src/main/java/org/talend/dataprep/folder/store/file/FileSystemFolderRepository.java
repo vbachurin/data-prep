@@ -14,6 +14,8 @@
 package org.talend.dataprep.folder.store.file;
 
 import static java.util.Collections.emptyList;
+import static org.talend.daikon.exception.ExceptionContext.build;
+import static org.talend.dataprep.exception.error.DataSetErrorCodes.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,6 +37,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.folder.Folder;
 import org.talend.dataprep.api.folder.FolderEntry;
+import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.error.DataSetErrorCodes;
 import org.talend.dataprep.folder.store.FolderRepository;
 import org.talend.dataprep.folder.store.FolderRepositoryAdapter;
 import org.talend.dataprep.folder.store.NotEmptyFolderException;
@@ -75,6 +79,17 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
         return Paths.get(foldersLocation);
     }
 
+
+    /**
+     * @see FolderRepository#exists(String)
+     */
+    @Override
+    public boolean exists(String path) {
+        final Path folderPath = Paths.get(getRootFolder().toString(), StringUtils.split(cleanPath(path), PATH_SEPARATOR));
+        return Files.exists(folderPath);
+    }
+
+
     @Override
     public Iterable<Folder> children(String parentPath) {
         try {
@@ -100,14 +115,14 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
                             child.setCreationDate(attr.creationTime().to(TimeUnit.MILLISECONDS));
                             children.add(child);
                         } catch (IOException e) {
-                            throw new RuntimeException(e.getMessage(), e);
+                            throw new TDPException(UNABLE_TO_LIST_FOLDER_CHILDREN, e, build().put("path", parentPath));
                         }
                     }
                 });
                 return children;
             }
         } catch (IOException e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new TDPException(UNABLE_TO_LIST_FOLDER_CHILDREN, e, build().put("path", parentPath));
         }
     }
 
@@ -144,7 +159,7 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
             return new Folder(path, extractName(path));
 
         } catch (IOException e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new TDPException(UNABLE_TO_ADD_FOLDER, e, build().put("path", givenPath));
         }
     }
 
@@ -172,7 +187,7 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
         try {
             FileUtils.moveDirectory(folderPath.toFile(), newFolderPath.toFile());
         } catch (IOException e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new TDPException(UNABLE_TO_RENAME_FOLDER, e, build().put("path", path));
         }
 
     }
@@ -208,7 +223,7 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
 
             return folderEntry;
         } catch (IOException e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new TDPException(UNABLE_TO_ADD_FOLDER_ENTRY, e, build().put("path", entryPath));
         }
     }
 
@@ -232,12 +247,12 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
                                     Files.delete(pathFile);
                                 }
                             } catch (IOException e) {
-                                throw new RuntimeException(e.getMessage(), e);
+                                throw new TDPException(UNABLE_TO_REMOVE_FOLDER_ENTRY, e, build().put("path", path));
                             }
                         });
             }
         } catch (IOException e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new TDPException(UNABLE_TO_REMOVE_FOLDER_ENTRY, e, build().put("path", folderPath));
         }
     }
 
@@ -276,7 +291,7 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
                             folderEntries.add(folderEntry);
                         }
                     } catch (IOException e) {
-                        throw new RuntimeException(e.getMessage(), e);
+                        throw new TDPException(UNABLE_TO_READ_FOLDER_ENTRY, e, build().put("path", path).put("type", "unkown"));
                     }
                 }
             }
@@ -291,7 +306,7 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
         try {
             FileUtils.deleteDirectory(path.toFile());
         } catch (IOException e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new TDPException(UNABLE_TO_DELETE_FOLDER, e, build().put("path", path));
         }
     }
 
@@ -321,14 +336,14 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
                                     folderEntries.add(folderEntry);
                                 }
                             } catch (IOException e) {
-                                throw new RuntimeException(e.getMessage(), e);
+                                throw new TDPException(UNABLE_TO_READ_FOLDER_ENTRY, e, build().put("path", path).put("type", contentType));
                             }
                         });
 
                 return folderEntries;
             }
         } catch (IOException e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new TDPException(UNABLE_TO_LIST_FOLDER_ENTRIES, e, build().put("path", path).put("type", contentType));
         }
     }
 
@@ -386,6 +401,7 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
     public void clear() {
         try {
             FileUtils.deleteDirectory(getRootFolder().toFile());
+            init();
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
@@ -523,11 +539,10 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
         }
 
         try {
-            //TODO Vincent should the folder id be updated ?
             Path destinationFile = Paths.get(path.toString(), buildFileName(folderEntry));
             Files.move(originFile, destinationFile);
         } catch (IOException e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new TDPException(DataSetErrorCodes.UNABLE_TO_MOVE_FOLDER_ENTRY, e);
         }
     }
 

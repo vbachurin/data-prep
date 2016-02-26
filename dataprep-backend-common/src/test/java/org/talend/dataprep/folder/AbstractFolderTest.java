@@ -13,7 +13,9 @@
 
 package org.talend.dataprep.folder;
 
+import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -466,6 +468,34 @@ public abstract class AbstractFolderTest {
 
         assertOnSearch("tIti", 4);
 
+    }
+
+    @Test
+    public void shouldFindFolder() throws Exception {
+        // given
+        getFolderRepository().addFolder("foo");
+        getFolderRepository().addFolder("foo/bar");
+
+        // then
+        assertTrue(getFolderRepository().exists("foo"));
+        assertTrue(getFolderRepository().exists("foo/bar"));
+    }
+
+    @Test
+    public void rooFolderShouldAlwaysBeAvailable() throws Exception {
+        // then
+        assertTrue(getFolderRepository().exists("/"));
+    }
+
+    @Test
+    public void shouldNotFindFolder() throws Exception {
+        // given
+        getFolderRepository().addFolder("foo");
+        getFolderRepository().addFolder("foo/bar");
+
+        // then
+        assertFalse(getFolderRepository().exists("totototo"));
+        assertFalse(getFolderRepository().exists("titititi/totototo"));
     }
 
     protected void assertChildrenSize(String folder, int childrenNumber) {

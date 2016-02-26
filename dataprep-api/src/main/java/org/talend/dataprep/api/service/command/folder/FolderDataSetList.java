@@ -37,7 +37,6 @@ import org.talend.dataprep.api.service.PreparationAPI;
 import org.talend.dataprep.api.service.command.ReleasableInputStream;
 import org.talend.dataprep.api.service.command.common.GenericCommand;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.exception.error.APIErrorCodes;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.exception.error.DataSetErrorCodes;
 
@@ -52,7 +51,6 @@ public class FolderDataSetList extends GenericCommand<FolderContent> {
     public FolderDataSetList(HttpClient client, String sort, String order, String folder) {
         super(PreparationAPI.TRANSFORM_GROUP, client);
         execute(() -> onExecute(sort, order, folder));
-        onError(e -> new TDPException(APIErrorCodes.UNABLE_TO_LIST_DATASETS, e));
         on(HttpStatus.NO_CONTENT, HttpStatus.ACCEPTED).then(emptyFolderContent());
         on(HttpStatus.OK).then(buildContent(folder, order, sort));
     }

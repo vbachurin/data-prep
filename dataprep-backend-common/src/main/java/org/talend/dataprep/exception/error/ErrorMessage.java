@@ -25,33 +25,35 @@ public class ErrorMessage {
     /**
      * The suffix of messages specified in the properties file.
      */
-    public static String MESSAGE_SUFFIX = ".MESSAGE";
+    public static final String MESSAGE_SUFFIX = ".MESSAGE";
 
     /**
      * The suffix of title messages specified in the properties file.
      */
-    public static String TITLE_SUFFIX = ".TITLE";
+    public static final String TITLE_SUFFIX = ".TITLE";
 
     /**
      * Returns the desired message to send to the frontend according to the specified error code.
      * 
      * @param errorCode the specified error code
+     * @param values used to specify the message title
      * @return the desired message to send to the frontend according to the specified error code
      */
-    public static String getMessage(ErrorCode errorCode) {
+    public static String getMessage(ErrorCode errorCode, String... values) {
         String title = getMessagePrefix(errorCode) + MESSAGE_SUFFIX;
-        return MessagesBundle.getString(title);
+        return MessagesBundle.getString(title, values);
     }
 
     /**
      * Returns the desired message title to send to the frontend according to the specified error code.
      * 
      * @param errorCode the specified error code
+     * @param values used to specify the message title
      * @return the desired message title to send to the frontend according to the specified error code
      */
-    public static String getMessageTitle(ErrorCode errorCode) {
+    public static String getMessageTitle(ErrorCode errorCode, String... values) {
         String title = getMessagePrefix(errorCode) + TITLE_SUFFIX;
-        return MessagesBundle.getString(title);
+        return MessagesBundle.getString(title, values);
     }
 
     /**

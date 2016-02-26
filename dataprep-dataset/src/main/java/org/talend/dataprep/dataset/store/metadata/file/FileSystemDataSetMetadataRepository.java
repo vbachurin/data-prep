@@ -65,7 +65,11 @@ public class FileSystemDataSetMetadataRepository extends DataSetMetadataReposito
 
     @PostConstruct
     private void init() {
-        getRootFolder().mkdirs();
+        try {
+            java.nio.file.Files.createDirectories(getRootFolder().toPath());
+        } catch (IOException e) {
+            throw new RuntimeException("unable to create dataset metadata store folder", e);
+        }
     }
 
     /**

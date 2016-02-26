@@ -18,10 +18,8 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,7 +41,7 @@ public class FolderAPITest extends ApiServiceTestBase {
 
     @Before
     public void cleanupFolder() throws Exception {
-        FileUtils.deleteDirectory(Paths.get("target/test/store/folders").toFile());
+        folderRepository.clear();
     }
 
     @Test

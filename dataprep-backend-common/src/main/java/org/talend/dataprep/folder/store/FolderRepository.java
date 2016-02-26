@@ -15,10 +15,19 @@ package org.talend.dataprep.folder.store;
 
 import org.talend.dataprep.api.folder.Folder;
 import org.talend.dataprep.api.folder.FolderEntry;
-import org.talend.dataprep.lock.DistributedLock;
 
 
+/**
+ * Folder repository that manage folders and folder entries.
+ */
 public interface FolderRepository {
+
+    /**
+     * Return true if the given folder exists.
+     * @param path the wanted folder path.
+     * @return true if the given folder exists.
+     */
+    boolean exists(String path);
 
     /**
      * @return A {@link java.lang.Iterable iterable} of children {@link Folder folder}. Returned folders are expected to be
@@ -123,7 +132,5 @@ public interface FolderRepository {
      * @return A {@link Iterable} of {@link Folder} with the query string in the name
      */
     Iterable<Folder> searchFolders(String queryString);
-
-    DistributedLock createFolderLock(String id);
 
 }

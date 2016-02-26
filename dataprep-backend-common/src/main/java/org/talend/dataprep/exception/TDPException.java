@@ -15,6 +15,8 @@ package org.talend.dataprep.exception;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -118,8 +120,9 @@ public class TDPException extends TalendRuntimeException {
             {
                 generator.writeStringField("code",
                         getCode().getProduct() + '_' + getCode().getGroup() + '_' + getCode().getCode());
-                String message = ErrorMessage.getMessage(getCode());
-                String messageTitle = ErrorMessage.getMessageTitle(getCode());
+                List<String> values = getContextValues();
+                String message = ErrorMessage.getMessage(getCode(), values.toArray(new String[values.size()]));
+                String messageTitle = ErrorMessage.getMessageTitle(getCode(), values.toArray(new String[values.size()]));
                 generator.writeStringField("message", message);
                 generator.writeStringField("message_title", messageTitle);
                 if (getCause() != null) {
@@ -142,4 +145,13 @@ public class TDPException extends TalendRuntimeException {
 
     }
 
+    /**
+     * Method needed as long as the context does not expose a values() method.
+     * @return the context values.
+     */
+    private List<String> getContextValues() {
+        List<String> values = new ArrayList<>();
+        getContext().entries().forEach(e -> values.add(e.getValue().toString()));
+        return values;
+    }
 }

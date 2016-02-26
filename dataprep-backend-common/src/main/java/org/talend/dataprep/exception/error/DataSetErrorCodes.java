@@ -76,8 +76,8 @@ public enum DataSetErrorCodes implements ErrorCode {
      */
     ILLEGAL_SORT_FOR_LIST(BAD_REQUEST.value(), "sort"),
     /**
-    * Error returned when the dataset metadata could not be saved.
-    */
+     * Error returned when the dataset metadata could not be saved.
+     */
     UNABLE_TO_STORE_DATASET_METADATA(INTERNAL_SERVER_ERROR.value(), "id"),
     /**
      * Error returned when the dataset metadata could not be read.
@@ -100,21 +100,65 @@ public enum DataSetErrorCodes implements ErrorCode {
      * Error return when the uploaded content is mal formatted .
      */
     MALFORMATTED_CONTENT(BAD_REQUEST.value()),
-                                                    /**
-                                                     * Error returned when there's an error fetching the list of
-                                                     * supported encodings.
-                                                     */
-    UNABLE_TO_LIST_SUPPORTED_ENCODINGS(INTERNAL_SERVER_ERROR.value());
+    /**
+     * Error returned when there's an error fetching the list of
+     * supported encodings.
+     */
+    UNABLE_TO_LIST_SUPPORTED_ENCODINGS(INTERNAL_SERVER_ERROR.value()),
+    /**
+     * Error thrown when a folder is... not... found !
+     */
+    FOLDER_NOT_FOUND(NOT_FOUND.value(), "path"),
+    /**
+     * Error thrown when a problem occurred while listing folder children.
+     */
+    UNABLE_TO_LIST_FOLDER_CHILDREN(INTERNAL_SERVER_ERROR.value(), "path"),
+    /**
+     * Error thrown when a folder could not be added.
+     */
+    UNABLE_TO_ADD_FOLDER(INTERNAL_SERVER_ERROR.value(), "path"),
+    /**
+     * Error thrown when a folder could not be added.
+     */
+    UNABLE_TO_RENAME_FOLDER(INTERNAL_SERVER_ERROR.value(), "path"),
+    /**
+     * Error thrown when a folder entry could not be added.
+     */
+    UNABLE_TO_ADD_FOLDER_ENTRY(INTERNAL_SERVER_ERROR.value(), "path"),
+    /**
+     * Error thrown when a folder entry could not be removed.
+     */
+    UNABLE_TO_REMOVE_FOLDER_ENTRY(INTERNAL_SERVER_ERROR.value(), "path"),
+    /**
+     * Error thrown when a folder could not be removed.
+     */
+    UNABLE_TO_DELETE_FOLDER(INTERNAL_SERVER_ERROR.value(), "path"),
+    /**
+     * Error thrown when a folder entry could not be moved.
+     */
+    UNABLE_TO_MOVE_FOLDER_ENTRY(INTERNAL_SERVER_ERROR.value()),
+    /**
+     * Error thrown when folder entries could not be listed.
+     */
+    UNABLE_TO_LIST_FOLDER_ENTRIES(INTERNAL_SERVER_ERROR.value(), "path", "type"),
+    /**
+     * Error thrown when a folder entry could not be read.
+     */
+    UNABLE_TO_READ_FOLDER_ENTRY(INTERNAL_SERVER_ERROR.value(), "path", "type");
 
-    /** The http status to use. */
+    /**
+     * The http status to use.
+     */
     private int httpStatus;
 
-    /** Expected entries to be in the context. */
+    /**
+     * Expected entries to be in the context.
+     */
     private List<String> expectedContextEntries;
 
     /**
      * default constructor.
-     * 
+     *
      * @param httpStatus the http status to use.
      */
     DataSetErrorCodes(int httpStatus) {
@@ -125,7 +169,7 @@ public enum DataSetErrorCodes implements ErrorCode {
     /**
      * default constructor.
      *
-     * @param httpStatus the http status to use.
+     * @param httpStatus     the http status to use.
      * @param contextEntries expected context entries.
      */
     DataSetErrorCodes(int httpStatus, String... contextEntries) {

@@ -42,6 +42,21 @@ public class InMemoryFolderRepository extends FolderRepositoryAdapter implements
      */
     private Map<String, List<FolderEntry>> folderEntriesMap = new ConcurrentSkipListMap<>();
 
+
+    /**
+     * Return true if the given folder exists.
+     *
+     * @param givenPath the wanted folder path.
+     * @return true if the given folder exists.
+     */
+    @Override
+    public boolean exists(String givenPath) {
+        String path = cleanPath(givenPath);
+        // special case of the root folder. This test seems a better solution than adding the root folder to the
+        // map because it does not "pollute" the folders map
+        return StringUtils.equals(path, String.valueOf(PATH_SEPARATOR)) || foldersMap.containsKey(path);
+    }
+
     @Override
     public Folder addFolder(String givenPath) {
         String path = cleanPath(givenPath);
@@ -56,7 +71,8 @@ public class InMemoryFolderRepository extends FolderRepositoryAdapter implements
     }
 
     @Override
-    public Iterable<Folder> children(String path) {
+    public Iterable<Folder> children(String givenPath) {
+        String path = givenPath;
         if (StringUtils.equals(path, "/")) {
             path = "";
         }
@@ -109,7 +125,6 @@ public class InMemoryFolderRepository extends FolderRepositoryAdapter implements
 
     @Override
     public void renameFolder(String path, String newPath) {
-        // TODO we should have a lock here around those operations
         String cleanPath = cleanPath(path);
         String cleanNewPath = cleanPath(newPath);
 
@@ -165,8 +180,8 @@ public class InMemoryFolderRepository extends FolderRepositoryAdapter implements
     }
 
     @Override
-    public void moveFolderEntry(FolderEntry folderEntry, String sourcePath, String destinationPath) {
-        destinationPath = cleanPath(destinationPath);
+    public void moveFolderEntry(FolderEntry folderEntry, String sourcePath, String givenPath) {
+        String destinationPath = cleanPath(givenPath);
         List<FolderEntry> entries = folderEntriesMap.get(cleanPath(folderEntry.getFolderId()));
         if (entries != null) {
             entries.remove(folderEntry);
@@ -195,8 +210,8 @@ public class InMemoryFolderRepository extends FolderRepositoryAdapter implements
     }
 
     @Override
-    public void removeFolder(String path) throws NotEmptyFolderException {
-        path = cleanPath(path);
+    public void removeFolder(String givenPath) throws NotEmptyFolderException {
+        String path = cleanPath(givenPath);
 
         // check if any content in the tree
         // remove folder entries as well
@@ -227,8 +242,8 @@ public class InMemoryFolderRepository extends FolderRepositoryAdapter implements
     }
 
     @Override
-    public void removeFolderEntry(String folderPath, String contentId, String contentType) {
-        folderPath = cleanPath(folderPath);
+    public void removeFolderEntry(String givenPath, String contentId, String contentType) {
+        String folderPath = cleanPath(givenPath);
         List<FolderEntry> entries = folderEntriesMap.get(folderPath);
         final FolderEntry entry = new FolderEntry(contentType, contentId);
         entry.setFolderId(folderPath);

@@ -52,7 +52,7 @@ import org.talend.dataprep.security.Security;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.jayway.restassured.response.Response;
 
-public class DataSetServiceTests extends DataSetBaseTest {
+public class DataSetServiceTest extends DataSetBaseTest {
 
     private static final String T_SHIRT_100_CSV_EXPECTED_JSON = "../t-shirt_100.csv.expected.json";
 

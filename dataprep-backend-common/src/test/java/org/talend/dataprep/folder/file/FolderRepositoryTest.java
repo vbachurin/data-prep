@@ -11,15 +11,13 @@
 //
 //  ============================================================================
 
-package org.talend.dataprep.folder.inmemory;
-
-import java.io.IOException;
+package org.talend.dataprep.folder.file;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.junit.Before;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.TestPropertySource;
@@ -28,19 +26,19 @@ import org.talend.dataprep.folder.AbstractFolderTest;
 import org.talend.dataprep.folder.store.FolderRepository;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = InMemoryFolderStoreTest.class)
+@SpringApplicationConfiguration(classes = FolderRepositoryTest.class)
 @ComponentScan(basePackages = "org.talend.dataprep")
-@TestPropertySource(inheritLocations = false, inheritProperties = false, properties = { "folder.store=in-memory" })
-public class InMemoryFolderStoreTest extends AbstractFolderTest {
+@TestPropertySource(inheritLocations = false, inheritProperties = false, properties = { "folder.store=file",
+        "folder.store.file.location=target/test/store/folders" })
+public class FolderRepositoryTest extends AbstractFolderTest {
 
     @Inject
-    @Named("folderRepository#in-memory")
+    @Named("folderRepository#file")
     private FolderRepository folderRepository;
 
-    @Before
-    public void init() throws IOException {
-
-    }
+    /** Where to store the folders */
+    @Value("${folder.store.file.location}")
+    private String foldersLocation;
 
     @Override
     protected FolderRepository getFolderRepository() {

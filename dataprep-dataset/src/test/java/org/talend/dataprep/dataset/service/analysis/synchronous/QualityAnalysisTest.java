@@ -15,11 +15,9 @@ package org.talend.dataprep.dataset.service.analysis.synchronous;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import java.io.InputStream;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
@@ -31,7 +29,7 @@ import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.Quality;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.dataset.DataSetBaseTest;
-import org.talend.dataprep.dataset.service.DataSetServiceTests;
+import org.talend.dataprep.dataset.service.DataSetServiceTest;
 
 public class QualityAnalysisTest extends DataSetBaseTest {
 
@@ -60,7 +58,7 @@ public class QualityAnalysisTest extends DataSetBaseTest {
     public void testAnalysis() throws Exception {
         final DataSetMetadata metadata = metadataBuilder.metadata().id("1234").build();
         dataSetMetadataRepository.add(metadata);
-        contentStore.storeAsRaw(metadata, DataSetServiceTests.class.getResourceAsStream("../avengers.csv"));
+        contentStore.storeAsRaw(metadata, DataSetServiceTest.class.getResourceAsStream("../avengers.csv"));
         formatAnalysis.analyze("1234");
         contentAnalysis.analyze("1234");
         schemaAnalysis.analyze("1234");
@@ -82,7 +80,7 @@ public class QualityAnalysisTest extends DataSetBaseTest {
         String dsId = "4321";
         final DataSetMetadata metadata = metadataBuilder.metadata().id(dsId).build();
         dataSetMetadataRepository.add(metadata);
-        contentStore.storeAsRaw(metadata, DataSetServiceTests.class.getResourceAsStream("../dataset_with_invalid_records.csv"));
+        contentStore.storeAsRaw(metadata, DataSetServiceTest.class.getResourceAsStream("../dataset_with_invalid_records.csv"));
         formatAnalysis.analyze(dsId);
         contentAnalysis.analyze(dsId);
         schemaAnalysis.analyze(dsId);
@@ -114,7 +112,7 @@ public class QualityAnalysisTest extends DataSetBaseTest {
     @Test
     public void TDP_1150_full() throws Exception {
         final DataSetMetadata actual = initializeDataSetMetadata(
-                DataSetServiceTests.class.getResourceAsStream("../invalids_and_type_detection.csv"));
+                DataSetServiceTest.class.getResourceAsStream("../invalids_and_type_detection.csv"));
         assertThat(actual.getLifecycle().schemaAnalyzed(), is(true));
         String[] expectedNames = { "string_boolean", "double_integer", "string_integer", "string_double", "string_date",
                 "type_mix", "boolean", "integer", "double", "date", "string", "empty" };
@@ -138,7 +136,7 @@ public class QualityAnalysisTest extends DataSetBaseTest {
     @Test
     public void TDP_1150_integer_must_be_detected_as_so_even_if_sampling_detects_text() throws Exception {
         final DataSetMetadata actual = initializeDataSetMetadata(
-                DataSetServiceTests.class.getResourceAsStream("../valid_must_be_integer.csv"));
+                DataSetServiceTest.class.getResourceAsStream("../valid_must_be_integer.csv"));
         assertThat(actual.getLifecycle().schemaAnalyzed(), is(true));
         String expectedName =  "user_id" ;
         Type expectedType = Type.INTEGER ;
@@ -159,7 +157,7 @@ public class QualityAnalysisTest extends DataSetBaseTest {
     @Test
     public void TDP_1150_string_must_be_detected_as_so_if_even_if_subtype_is_integer() throws Exception {
         final DataSetMetadata actual = initializeDataSetMetadata(
-                DataSetServiceTests.class.getResourceAsStream("../valid_must_be_text1.csv"));
+                DataSetServiceTest.class.getResourceAsStream("../valid_must_be_text1.csv"));
         assertThat(actual.getLifecycle().schemaAnalyzed(), is(true));
         String expectedName =  "user_id" ;
         Type expectedType = Type.STRING ;
@@ -181,7 +179,7 @@ public class QualityAnalysisTest extends DataSetBaseTest {
     @Test
     public void TDP_1150_text_must_be_detected_if_even_if_integer_is_more_frequent() throws Exception {
         final DataSetMetadata actual = initializeDataSetMetadata(
-                DataSetServiceTests.class.getResourceAsStream("../valid_must_be_text_2.csv"));
+                DataSetServiceTest.class.getResourceAsStream("../valid_must_be_text_2.csv"));
         assertThat(actual.getLifecycle().schemaAnalyzed(), is(true));
         String expectedName =  "user_id" ;
         Type expectedType = Type.INTEGER ;

@@ -11,20 +11,12 @@
 //
 //  ============================================================================
 
-package org.talend.dataprep.folder.file;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+package org.talend.dataprep.folder.inmemory;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.commons.io.FileUtils;
-import org.junit.Before;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.TestPropertySource;
@@ -33,27 +25,14 @@ import org.talend.dataprep.folder.AbstractFolderTest;
 import org.talend.dataprep.folder.store.FolderRepository;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = FileFolderStoreTest.class)
+@SpringApplicationConfiguration(classes = InMemoryFolderRepositoryTest.class)
 @ComponentScan(basePackages = "org.talend.dataprep")
-@TestPropertySource(inheritLocations = false, inheritProperties = false, properties = { "folder.store=file",
-        "folder.store.file.location=target/test/store/folders" })
-public class FileFolderStoreTest extends AbstractFolderTest {
+@TestPropertySource(inheritLocations = false, inheritProperties = false, properties = { "folder.store=in-memory" })
+public class InMemoryFolderRepositoryTest extends AbstractFolderTest {
 
     @Inject
-    @Named("folderRepository#file")
+    @Named("folderRepository#in-memory")
     private FolderRepository folderRepository;
-
-    /** Where to store the folders */
-    @Value("${folder.store.file.location}")
-    private String foldersLocation;
-
-    @Before
-    public void init() throws IOException {
-        Path path = Paths.get(foldersLocation);
-        if (Files.exists(path)) {
-            FileUtils.deleteDirectory(path.toFile());
-        }
-    }
 
     @Override
     protected FolderRepository getFolderRepository() {
