@@ -40,8 +40,6 @@ import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitPar
 import org.talend.dataprep.transformation.api.action.metadata.common.ReplaceOnValueHelper;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 /**
  * Test class for Replace value action
  */
@@ -347,7 +345,7 @@ public class ReplaceOnValueTest extends AbstractMetadataBaseTest {
     }
 
     @Test
-    public void test_TDP_1405_match() {
+    public void test_TDP_1502_match() {
         // given
         final String from = "Reference\nGI";
         final String regexp = "GI";
@@ -363,7 +361,7 @@ public class ReplaceOnValueTest extends AbstractMetadataBaseTest {
     }
 
     @Test
-    public void test_TDP_1405_replace() {
+    public void test_TDP_1502_replace() {
         // given
         final String from = "Reference\nGI";
         final String regexp = "\n";
@@ -379,7 +377,7 @@ public class ReplaceOnValueTest extends AbstractMetadataBaseTest {
     }
 
     @Test
-    public void test_TDP_1405_replace_full() {
+    public void test_TDP_1502_replace_full() {
         // given
         final String from = "Reference\nGI";
         final String regexp = "\nGI";
