@@ -57,7 +57,7 @@ $navigation-item-space: 10px;
     }
 
     .playground-dataset-name {
-      @include ellipsis(500px);
+      @include ellipsis(350px);
       vertical-align: top;
     }
 
