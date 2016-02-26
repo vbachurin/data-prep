@@ -40,8 +40,6 @@ import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitPar
 import org.talend.dataprep.transformation.api.action.metadata.common.ReplaceOnValueHelper;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 /**
  * Test class for Replace value action
  */
@@ -344,6 +342,54 @@ public class ReplaceOnValueTest extends AbstractMetadataBaseTest {
 
         //then
         assertThat(result, is(to));
+    }
+
+    @Test
+    public void test_TDP_1502_match() {
+        // given
+        final String from = "Reference\nGI";
+        final String regexp = "GI";
+        final String to = "Joe";
+        final String expected = "Reference\nJoe";
+
+        // when
+        final String result = action.computeNewValue(
+                buildPatternActionContext(generateJson(regexp, ReplaceOnValueHelper.REGEX_MODE), to, false), from);
+
+        // then
+        assertThat(result, is(expected));
+    }
+
+    @Test
+    public void test_TDP_1502_replace() {
+        // given
+        final String from = "Reference\nGI";
+        final String regexp = "\n";
+        final String to = " ";
+        final String expected = "Reference GI";
+
+        // when
+        final String result = action.computeNewValue(
+                buildPatternActionContext(generateJson(regexp, ReplaceOnValueHelper.REGEX_MODE), to, false), from);
+
+        // then
+        assertThat(result, is(expected));
+    }
+
+    @Test
+    public void test_TDP_1502_replace_full() {
+        // given
+        final String from = "Reference\nGI";
+        final String regexp = "\nGI";
+        final String to = " Joe";
+        final String expected = "Reference Joe";
+
+        // when
+        final String result = action.computeNewValue(
+                buildPatternActionContext(generateJson(regexp, ReplaceOnValueHelper.REGEX_MODE), to, false), from);
+
+        // then
+        assertThat(result, is(expected));
     }
 
     @Test

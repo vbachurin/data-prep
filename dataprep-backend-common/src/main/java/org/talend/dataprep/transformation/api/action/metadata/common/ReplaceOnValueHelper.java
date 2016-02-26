@@ -157,7 +157,7 @@ public class ReplaceOnValueHelper {
         if (regexMode && pattern == null) {
             String actualPattern = (strict ? this.token : ".*" + this.token + ".*");
             try {
-                pattern = Pattern.compile(actualPattern);
+                pattern = Pattern.compile(actualPattern, Pattern.DOTALL);
             } catch (Exception e) {
                 return false;
             }
