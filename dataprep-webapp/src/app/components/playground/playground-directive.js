@@ -28,14 +28,12 @@ export default function Playground($timeout) {
             var container = iElement.find('.playground-container').eq(0);
 
             container.bind('keydown', function (e) {
-                // hide modal on 'ESC' keydown
                 if (e.keyCode === 27) {
                     $timeout(ctrl.beforeClose);
                 }
             });
 
             container.children().bind('keydown', function (e) {
-                // hide modal on 'ESC' keydown
                 if (e.keyCode === 27) {
                     e.stopImmediatePropagation();
                     container.focus();
