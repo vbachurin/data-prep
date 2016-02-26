@@ -115,7 +115,7 @@ export default function FolderService($state, $translate, state, StateService, F
             StateService.setFoldersStack(foldersStack);
         })
         .catch(function(){
-            $state.go('nav.index.datasets');
+            $state.go('nav.index.datasets', {folderPath : ''})
         });
         return promise;
     }

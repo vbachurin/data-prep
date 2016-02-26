@@ -287,7 +287,6 @@ describe('Folder services', function () {
 
     });
 
-
     describe('content when failed request', function () {
         var content;
         beforeEach(inject(function ($q, StateService, FolderRestService) {
@@ -309,14 +308,14 @@ describe('Folder services', function () {
             spyOn(FolderRestService, 'getContent').and.returnValue($q.reject());
         }));
 
-        it('should get folder content', inject(function ($rootScope, $state, FolderService) {
+        it('should go back to root folder', inject(function ($rootScope, $state, FolderService) {
             //when
             spyOn($state, 'go');
             FolderService.getContent({path: 'toto', name: 'toto'});
             $rootScope.$digest();
 
             //then
-            expect($state.go).toHaveBeenCalledWith('nav.index.datasets');
+            expect($state.go).toHaveBeenCalledWith('nav.index.datasets', {folderPath : ''});
         }));
     });
 
