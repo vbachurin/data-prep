@@ -17,12 +17,36 @@
  * @description This directive create the playground.
  * @restrict E
  */
-export default function Playground() {
+export default function Playground($timeout) {
     return {
         restrict: 'E',
         templateUrl: 'app/components/playground/playground.html',
         bindToController: true,
         controllerAs: 'playgroundCtrl',
-        controller: 'PlaygroundCtrl'
+        controller: 'PlaygroundCtrl',
+        link: function (scope, iElement, iAttrs, ctrl) {
+            var container = iElement.find('.playground-container').eq(0);
+
+            container.bind('keydown', function (e) {
+                // hide modal on 'ESC' keydown
+                if (e.keyCode === 27) {
+                    $timeout(ctrl.beforeClose);
+                }
+            });
+
+            container.children().bind('keydown', function (e) {
+                // hide modal on 'ESC' keydown
+                if (e.keyCode === 27) {
+                    e.stopImmediatePropagation();
+                    container.focus();
+                }
+            });
+
+            scope.$on('$destroy', function () {
+                iElement.remove();
+            });
+
+            container.focus();
+        }
     };
 }

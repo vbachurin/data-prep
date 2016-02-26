@@ -14,7 +14,7 @@
 describe('Playground directive', function () {
     'use strict';
 
-    var scope, createElement, element;
+    var scope, createElement, element, ctrl;
     var stateMock;
 
     var metadata = {
@@ -118,11 +118,13 @@ describe('Playground directive', function () {
             element = angular.element('<playground></playground>');
             $compile(element)(scope);
             scope.$digest();
+
+            ctrl = element.controller('playground');
+            spyOn(ctrl, 'beforeClose').and.returnValue();
         };
         spyOn(PlaygroundService, 'createOrUpdatePreparation').and.returnValue($q.when(true));
         spyOn(ExportService, 'refreshTypes').and.returnValue($q.when([]));
         spyOn(ExportService, 'getParameters').and.returnValue({});
-
     }));
 
     beforeEach(inject(function ($injector, RestURLs) {
@@ -294,6 +296,50 @@ describe('Playground directive', function () {
             expect(playground.eq(0).find('filter-bar').length).toBe(1);
             expect(playground.eq(0).find('filter-bar').find('#filter-search').length).toBe(1);
             expect(playground.eq(0).find('datagrid').length).toBe(1);
+        });
+    });
+
+    describe('events management', function() {
+        it('should close playground on escape key', inject(function ($timeout) {
+            //given
+            createElement();
+
+            var event = angular.element.Event('keydown');
+            event.keyCode = 27;
+
+            //when
+            element.find('.playground-container').eq(0).trigger(event);
+            $timeout.flush();
+
+            //then
+            expect(ctrl.beforeClose).toHaveBeenCalled();
+        }));
+
+        it('should not close playground on escape key on playground children', inject(function ($timeout) {
+            //given
+            createElement();
+
+            var event = angular.element.Event('keydown');
+            event.keyCode = 27;
+
+            //when
+            element.find('.playground-container >').eq(0).trigger(event);
+            $timeout.flush();
+
+            //then
+            expect(ctrl.beforeClose).not.toHaveBeenCalled();
+        }));
+
+        it('should remove element on scope destroy', function () {
+            //given
+            createElement();
+
+            //when
+            scope.$destroy();
+            scope.$digest();
+
+            //then
+            expect(angular.element('body').find('playground').length).toBe(0);
         });
     });
 });
