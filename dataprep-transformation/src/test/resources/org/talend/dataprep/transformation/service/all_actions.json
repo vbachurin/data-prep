@@ -3328,19 +3328,19 @@
             },
             {
               "value": "date.gt",
-              "label": "after than"
+              "label": "after"
             },
             {
               "value": "date.ge",
-              "label": "after or equals than"
+              "label": "after or equals"
             },
             {
               "value": "date.lt",
-              "label": "before than"
+              "label": "before"
             },
             {
               "value": "date.le",
-              "label": "before or equals than"
+              "label": "before or equals"
             }
           ],
           "multiple": false
