@@ -1,9 +1,23 @@
+//  ============================================================================
+//
+//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+//
+//  This source code is available under agreement available at
+//  https://github.com/Talend/data-prep/blob/master/LICENSE
+//
+//  You should have received a copy of the agreement
+//  along with this program; if not, write to Talend SA
+//  9 rue Pages 92150 Suresnes, France
+//
+//  ============================================================================
+
 package org.talend.dataprep.dataset.store.metadata.file;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -27,7 +41,7 @@ import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepositoryAdapt
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.DataSetErrorCodes;
 import org.talend.dataprep.lock.DistributedLock;
-import org.talend.dataprep.util.Files;
+import org.talend.dataprep.util.FilesHelper;
 import org.talend.dataprep.util.ReentrantReadWriteLockGroup;
 
 /**
@@ -52,7 +66,11 @@ public class FileSystemDataSetMetadataRepository extends DataSetMetadataReposito
 
     @PostConstruct
     private void init() {
-        getRootFolder().mkdirs();
+        try {
+            Files.createDirectories(getRootFolder().toPath());
+        } catch (IOException e) {
+            throw new RuntimeException("unable to create dataset metadata store folder", e);
+        }
     }
 
     /**
@@ -117,7 +135,7 @@ public class FileSystemDataSetMetadataRepository extends DataSetMetadataReposito
     @Override
     public void remove(String id) {
         final File file = getFile(id);
-        Files.deleteQuietly(file);
+        FilesHelper.deleteQuietly(file);
         LOG.debug("metadata {} successfully deleted", id);
     }
 

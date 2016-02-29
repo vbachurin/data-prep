@@ -30,7 +30,7 @@ import org.talend.dataprep.api.preparation.Step;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.preparation.store.PreparationRepository;
-import org.talend.dataprep.util.Files;
+import org.talend.dataprep.util.FilesHelper;
 
 
 /**
@@ -169,7 +169,7 @@ public class FileSystemPreparationRepository implements PreparationRepository {
         // clear all files
         final File[] preparations = getRootFolder().listFiles();
         for (File file : preparations) {
-            Files.deleteQuietly(file);
+            FilesHelper.deleteQuietly(file);
         }
 
         // add the default files
@@ -188,7 +188,7 @@ public class FileSystemPreparationRepository implements PreparationRepository {
             return;
         }
         final File file = getIdentifiableFile(object);
-        Files.deleteQuietly(file);
+        FilesHelper.deleteQuietly(file);
         LOG.debug("preparation #{} removed", object.id());
     }
 

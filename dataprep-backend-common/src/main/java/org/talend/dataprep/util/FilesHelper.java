@@ -8,11 +8,11 @@ import java.nio.file.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Files {
+public class FilesHelper {
 
-    public static final Logger LOGGER = LoggerFactory.getLogger(Files.class);
+    public static final Logger LOGGER = LoggerFactory.getLogger(FilesHelper.class);
 
-    private Files() {
+    private FilesHelper() {
     }
 
     /**
