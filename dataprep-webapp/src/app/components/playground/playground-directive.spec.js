@@ -14,7 +14,7 @@
 describe('Playground directive', function () {
     'use strict';
 
-    var scope, createElement, element;
+    var scope, createElement, element, ctrl;
     var stateMock;
 
     var metadata = {
@@ -85,7 +85,7 @@ describe('Playground directive', function () {
         {id: 'desc', name: 'DESC_ORDER'}
     ];
 
-    beforeEach(angular.mock.module('data-prep.playground', function($provide) {
+    beforeEach(angular.mock.module('data-prep.playground', ($provide) => {
         stateMock = {
             playground: {
                 visible: true,
@@ -111,21 +111,23 @@ describe('Playground directive', function () {
     }));
     beforeEach(angular.mock.module('htmlTemplates'));
 
-    beforeEach(inject(function ($rootScope, $compile, $q, $timeout, PreparationListService, PlaygroundService, ExportService) {
+    beforeEach(inject(($rootScope, $compile, $q, $timeout, PreparationListService, PlaygroundService, ExportService) => {
         scope = $rootScope.$new();
 
         createElement = function () {
             element = angular.element('<playground></playground>');
             $compile(element)(scope);
             scope.$digest();
+
+            ctrl = element.controller('playground');
+            spyOn(ctrl, 'beforeClose').and.returnValue();
         };
         spyOn(PlaygroundService, 'createOrUpdatePreparation').and.returnValue($q.when(true));
         spyOn(ExportService, 'refreshTypes').and.returnValue($q.when([]));
         spyOn(ExportService, 'getParameters').and.returnValue({});
-
     }));
 
-    beforeEach(inject(function ($injector, RestURLs) {
+    beforeEach(inject(($injector, RestURLs) => {
         $httpBackend = $injector.get('$httpBackend');
         $httpBackend
             .expectGET(RestURLs.datasetActionsUrl+ '/' + metadata.id +'/actions')
@@ -137,7 +139,7 @@ describe('Playground directive', function () {
         element.remove();
     });
 
-    describe('suggestions', function() {
+    describe('suggestions', () => {
         it('should render right slidable panel', function () {
             //given
             stateMock.playground.dataset = metadata;
@@ -151,7 +153,7 @@ describe('Playground directive', function () {
         });
     });
 
-    describe('recipe header', function () {
+    describe('recipe header',  () => {
         beforeEach(inject(function(StateService) {
             stateMock.playground.nameEditionMode = true;
             spyOn(StateService, 'setNameEditionMode').and.callFake(function(value) {
@@ -267,7 +269,7 @@ describe('Playground directive', function () {
         }));
     });
 
-    describe('dataset parameters', function() {
+    describe('dataset parameters', () => {
         it('should render dataset parameters', function () {
             //given
             stateMock.playground.dataset = metadata;
@@ -281,7 +283,7 @@ describe('Playground directive', function () {
         });
     });
 
-    describe('datagrid', function() {
+    describe('datagrid', () => {
         it('should render datagrid with filters', function () {
             //given
             stateMock.playground.dataset = metadata;
@@ -295,5 +297,55 @@ describe('Playground directive', function () {
             expect(playground.eq(0).find('filter-bar').find('#filter-search').length).toBe(1);
             expect(playground.eq(0).find('datagrid').length).toBe(1);
         });
+    });
+
+    describe('ESC management', () => {
+        it('should close playground on escape key', inject(($timeout) => {
+            //given
+            createElement();
+
+            var event = angular.element.Event('keydown');
+            event.keyCode = 27;
+
+            //when
+            element.find('.playground-container').eq(0).trigger(event);
+            $timeout.flush();
+
+            //then
+            expect(ctrl.beforeClose).toHaveBeenCalled();
+        }));
+
+        it('should not close playground when event target is on input element', inject(($timeout) => {
+            //given
+            createElement();
+
+            var event = angular.element.Event('keydown');
+            event.keyCode = 27;
+
+            //when
+            element.find('.playground-container input').eq(0).trigger(event);
+            $timeout.flush();
+
+            //then
+            expect(ctrl.beforeClose).not.toHaveBeenCalled();
+        }));
+
+        it('should focus on playground container when event target is on input element', inject(($timeout) => {
+            //given
+            createElement();
+            angular.element('body').append(element);
+            const container = element.find('.playground-container').eq(0)[0];
+            expect(document.activeElement).not.toBe(container);
+
+            var event = angular.element.Event('keydown');
+            event.keyCode = 27;
+
+            //when
+            element.find('.playground-container input').eq(0).trigger(event);
+            $timeout.flush();
+
+            //then
+            expect(document.activeElement).toBe(container);
+        }));
     });
 });

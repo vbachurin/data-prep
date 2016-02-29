@@ -59,7 +59,6 @@ export default function TalendEditableText($timeout) {
 
                 inputElement.keydown(function (e) {
                     if (e.keyCode === 27) {
-                        e.stopPropagation();
                         ctrl.cancel();
                         scope.$digest();
                     }

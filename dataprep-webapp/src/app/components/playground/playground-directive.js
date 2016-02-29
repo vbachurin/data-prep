@@ -17,12 +17,28 @@
  * @description This directive create the playground.
  * @restrict E
  */
-export default function Playground() {
+export default function Playground($timeout) {
+    'ngInject';
+
     return {
         restrict: 'E',
         templateUrl: 'app/components/playground/playground.html',
         bindToController: true,
         controllerAs: 'playgroundCtrl',
-        controller: 'PlaygroundCtrl'
+        controller: 'PlaygroundCtrl',
+        link: function (scope, iElement, iAttrs, ctrl) {
+            var container = iElement.find('.playground-container').eq(0);
+
+            container.bind('keydown', function (e) {
+                if (e.keyCode === 27 && e.target.nodeName === 'INPUT') {
+                    container.focus();
+                }
+                else {
+                    $timeout(ctrl.beforeClose);
+                }
+            });
+
+            container.focus();
+        }
     };
 }
