@@ -34,16 +34,14 @@ import org.talend.dataprep.schema.SchemaParserResult;
 import org.xml.sax.InputSource;
 
 /**
- * This class is in charge of parsing html file (note jsoup is used see http://jsoup.org/ )
+ * This class is in charge of parsing html file to discover schema.
+ * 
  */
 @Service("parser#html")
 public class HtmlSchemaParser implements SchemaParser {
 
     /** This class' logger. */
     private static final Logger LOGGER = LoggerFactory.getLogger(HtmlSchemaParser.class);
-
-    @Autowired
-    private HtmlFormatGuesser htmlFormatGuesser;
 
     /**
      * @see SchemaParser#parse(Request)
