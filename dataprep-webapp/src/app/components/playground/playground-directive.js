@@ -28,20 +28,12 @@ export default function Playground($timeout) {
             var container = iElement.find('.playground-container').eq(0);
 
             container.bind('keydown', function (e) {
-                if (e.keyCode === 27) {
-                    $timeout(ctrl.beforeClose);
-                }
-            });
-
-            container.children().bind('keydown', function (e) {
-                if (e.keyCode === 27) {
-                    e.stopImmediatePropagation();
+                if (e.keyCode === 27 && e.target.nodeName === 'INPUT') {
                     container.focus();
                 }
-            });
-
-            scope.$on('$destroy', function () {
-                iElement.remove();
+                else {
+                    $timeout(ctrl.beforeClose);
+                }
             });
 
             container.focus();
