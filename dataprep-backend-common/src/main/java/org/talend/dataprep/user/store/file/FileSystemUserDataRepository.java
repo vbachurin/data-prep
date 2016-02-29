@@ -34,7 +34,7 @@ import org.talend.dataprep.api.user.UserData;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.user.store.UserDataRepository;
-import org.talend.dataprep.util.Files;
+import org.talend.dataprep.util.FilesHelper;
 
 /**
  * User data repository implementation backed on the file system.
@@ -112,7 +112,7 @@ public class FileSystemUserDataRepository implements UserDataRepository {
     @Override
     public void remove(String userId) {
         final File userDataFile = getFile(userId);
-        Files.deleteQuietly(userDataFile);
+        FilesHelper.deleteQuietly(userDataFile);
         LOG.debug("user data {} successfully deleted", userId);
     }
 
@@ -125,7 +125,7 @@ public class FileSystemUserDataRepository implements UserDataRepository {
         final File[] files = rootFolder.listFiles();
         if (files != null) {
             for (File file : files) {
-                Files.deleteQuietly(file);
+                FilesHelper.deleteQuietly(file);
             }
         }
         LOG.debug("user data repository cleared");

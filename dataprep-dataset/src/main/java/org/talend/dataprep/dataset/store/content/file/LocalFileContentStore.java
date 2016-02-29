@@ -33,6 +33,7 @@ import org.talend.dataprep.dataset.store.content.DataSetContentStore;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.DataSetErrorCodes;
 import org.talend.dataprep.log.Markers;
+import org.talend.dataprep.util.FilesHelper;
 
 /**
  * Local dataset content that stores content in files.
@@ -94,7 +95,7 @@ public class LocalFileContentStore extends DataSetContentStore {
     @Override
     public void delete(DataSetMetadata dataSetMetadata) {
         try {
-            org.talend.dataprep.util.Files.delete(getFile(dataSetMetadata));
+            FilesHelper.delete(getFile(dataSetMetadata));
         } catch (IOException e) {
             throw new TDPException(DataSetErrorCodes.UNABLE_TO_DELETE_DATASET, ExceptionContext.build().put("dataSetId",
                     dataSetMetadata.getId()));

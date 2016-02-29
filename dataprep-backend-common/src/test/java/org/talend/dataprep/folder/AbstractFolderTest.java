@@ -482,7 +482,7 @@ public abstract class AbstractFolderTest {
     }
 
     @Test
-    public void rooFolderShouldAlwaysBeAvailable() throws Exception {
+    public void rootFolderShouldAlwaysBeAvailable() throws Exception {
         // then
         assertTrue(getFolderRepository().exists("/"));
     }

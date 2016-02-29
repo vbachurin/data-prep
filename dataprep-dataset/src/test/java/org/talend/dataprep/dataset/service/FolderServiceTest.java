@@ -43,13 +43,14 @@ public class FolderServiceTest extends DataSetBaseTest {
         createFolder("foo/bar");
         createFolder("foo/toto");
 
-        // then
+        // when
         final String json = given().queryParam("path", "foo") //
                 .expect().statusCode(200).log().ifError()//
                 .when() //
                 .get("/folders").asString();
 
-        List<Folder> folders = mapper.readValue(json, new TypeReference<List<Folder>>(){});
+        //then
+        final List<Folder> folders = mapper.readValue(json, new TypeReference<List<Folder>>(){});
         assertThat(folders.size(), is(2));
         assertThat(folders.get(0).getName(), is("bar"));
         assertThat(folders.get(1).getName(), is("toto"));
@@ -57,13 +58,13 @@ public class FolderServiceTest extends DataSetBaseTest {
 
     @Test
     public void shouldNotFindFolder() throws Exception {
-
         // when
         final Response response = given().queryParam("path", "should/not/be/found") //
                 .expect().statusCode(404).log().ifError()//
                 .when() //
                 .get("/folders");
 
+        // then
         assertThat(response.getStatusCode(), is(404));
     }
 

@@ -46,6 +46,11 @@ describe('Playground state service', () => {
     }));
 
     describe('routing', () => {
+        it('should init previous state to datasets list', inject((playgroundState) => {
+            //then
+            expect(playgroundState.previousState).toBe('nav.index.datasets');
+        }));
+
         it('should set the previous state of playground', inject((playgroundState, PlaygroundStateService) => {
             //given
             playgroundState.previousState  = '';

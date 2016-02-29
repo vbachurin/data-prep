@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -40,7 +41,7 @@ import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepositoryAdapt
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.DataSetErrorCodes;
 import org.talend.dataprep.lock.DistributedLock;
-import org.talend.dataprep.util.Files;
+import org.talend.dataprep.util.FilesHelper;
 import org.talend.dataprep.util.ReentrantReadWriteLockGroup;
 
 /**
@@ -66,7 +67,7 @@ public class FileSystemDataSetMetadataRepository extends DataSetMetadataReposito
     @PostConstruct
     private void init() {
         try {
-            java.nio.file.Files.createDirectories(getRootFolder().toPath());
+            Files.createDirectories(getRootFolder().toPath());
         } catch (IOException e) {
             throw new RuntimeException("unable to create dataset metadata store folder", e);
         }
@@ -134,7 +135,7 @@ public class FileSystemDataSetMetadataRepository extends DataSetMetadataReposito
     @Override
     public void remove(String id) {
         final File file = getFile(id);
-        Files.deleteQuietly(file);
+        FilesHelper.deleteQuietly(file);
         LOG.debug("metadata {} successfully deleted", id);
     }
 

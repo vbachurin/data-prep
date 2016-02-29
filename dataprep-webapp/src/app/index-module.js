@@ -49,23 +49,15 @@
         .config(function ($stateProvider, $urlRouterProvider, $urlMatcherFactoryProvider) {
             'ngInject';
 
-            (function () {
-                function valFromString(val) {
-                    return val !== null ? val.toString() : val;
-                }
-                function regexpMatches(val) {
-                    return this.pattern.test(val);
-                }
+            // override the built-in string type (which is performing the slash encoding) by registering "string" type
+            const originalStringMatcher = $urlMatcherFactoryProvider.type('string');
+            const overriddenStringMatcher = _.extend({}, originalStringMatcher, {
+                encode: (val) => val !== null ? val.toString() : val,
+                decode: (val) => val !== null ? val.toString() : val
+            });
+            $urlMatcherFactoryProvider.type('string', overriddenStringMatcher);
 
-                // override the built-in string type (which is performing the slash encoding) by registering "string" type
-                $urlMatcherFactoryProvider.type('string', {
-                    encode: valFromString,
-                    decode: valFromString,
-                    is: regexpMatches,
-                    pattern: /[^/]*/
-                });
-            })();
-
+            // route definitions
             $stateProvider
                 .state('nav', {
                     abstract: true,
