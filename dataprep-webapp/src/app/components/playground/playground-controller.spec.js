@@ -216,13 +216,14 @@ describe('Playground controller', function () {
                 $timeout.flush();
                 //then
                 expect(StateService.resetPlayground).toHaveBeenCalled();
-                expect($state.go).toHaveBeenCalledWith('nav.index.preparations');
+                expect($state.go).toHaveBeenCalledWith('nav.index.preparations', undefined);
             }));
 
             it('should reset and redirect with params', inject(function ($state) {
                 //given
                 preparation.draft = false;
                 stateMock.playground.previousState = 'nav.index.datasets';
+                stateMock.playground.previousStateOptions = {folderPath : 'test'};
 
                 //when
                 ctrl.beforeClose();
@@ -260,7 +261,7 @@ describe('Playground controller', function () {
 
                 //then
                 expect(StateService.resetPlayground).toHaveBeenCalled();
-                expect($state.go).toHaveBeenCalledWith('nav.index.preparations');
+                expect($state.go).toHaveBeenCalledWith('nav.index.preparations', undefined);
             }));
         });
 
@@ -284,7 +285,7 @@ describe('Playground controller', function () {
 
                 //then
                 expect(StateService.resetPlayground).toHaveBeenCalled();
-                expect($state.go).toHaveBeenCalledWith('nav.index.preparations');
+                expect($state.go).toHaveBeenCalledWith('nav.index.preparations', undefined);
             }));
         });
     });

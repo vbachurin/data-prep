@@ -13,7 +13,8 @@
 
 export const playgroundState = {
     preparationName: '',
-    previousState: 'nav.index.datasets'
+    previousState: 'nav.index.datasets',
+    previousStateOptions: {folderPath: ''}
 };
 
 export function PlaygroundStateService(RecipeStateService, recipeState,
@@ -42,6 +43,7 @@ export function PlaygroundStateService(RecipeStateService, recipeState,
         setNameEditionMode: setNameEditionMode,
         setData: setData,
         setPreviousState: setPreviousState,
+        setPreviousStateOptions: setPreviousStateOptions,
         updateDatasetRecord: updateDatasetRecord,
         updateDatasetStatistics: updateDatasetStatistics,
 
@@ -134,6 +136,10 @@ export function PlaygroundStateService(RecipeStateService, recipeState,
 
     function setPreviousState(previousState) {
         playgroundState.previousState = previousState;
+    }
+
+    function setPreviousStateOptions(previousStateOptions) {
+        playgroundState.previousStateOptions = previousStateOptions;
     }
 
     //--------------------------------------------------------------------------------------------------------------

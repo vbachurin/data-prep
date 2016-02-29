@@ -97,10 +97,10 @@ describe('Dataset list controller', function () {
 
         }));
 
-        it('should get content of root folder', inject(function ($stateParams, FolderService) {
+        it('should get content of root folder', inject(function ($q, $stateParams, FolderService) {
             //given
             $stateParams.folderPath = '';
-            spyOn(FolderService, 'getContent');
+            spyOn(FolderService, 'getContent').and.returnValue($q.when(true));
 
             //when
             createController();
@@ -110,10 +110,10 @@ describe('Dataset list controller', function () {
 
         }));
 
-        it('should get content of other folder ', inject(function ($stateParams, FolderService) {
+        it('should get content of other folder ', inject(function ($q, $stateParams, FolderService) {
             //given
             $stateParams.folderPath = 'test';
-            spyOn(FolderService, 'getContent');
+            spyOn(FolderService, 'getContent').and.returnValue($q.when(true));
 
             //when
             createController();
@@ -123,10 +123,10 @@ describe('Dataset list controller', function () {
 
         }));
 
-        it('should get content of other folder whose name ends with /', inject(function ($stateParams, FolderService) {
+        it('should get content of other folder whose name ends with /', inject(function ($q, $stateParams, FolderService) {
             //given
             $stateParams.folderPath = 'test/test1/';
-            spyOn(FolderService, 'getContent');
+            spyOn(FolderService, 'getContent').and.returnValue($q.when(true));
 
             //when
             createController();
@@ -136,9 +136,9 @@ describe('Dataset list controller', function () {
 
         }));
 
-        it('should go to folder', inject(function ($state, FolderService) {
+        it('should go to folder', inject(function ($q, $state, FolderService) {
             //given
-            spyOn(FolderService, 'getContent');
+            spyOn(FolderService, 'getContent').and.returnValue($q.when(true));
             var ctrl = createController();
 
             //when

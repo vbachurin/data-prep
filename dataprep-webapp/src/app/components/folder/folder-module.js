@@ -20,7 +20,8 @@ import Folder from './folder-directive';
     angular.module('data-prep.folder',
         [
             'data-prep.services.state',
-            'data-prep.services.folder'
+            'data-prep.services.folder',
+            'ui.router'
         ])
         .controller('FolderCtrl', FolderCtrl)
         .directive('folder', Folder);

@@ -287,38 +287,6 @@ describe('Folder services', function () {
 
     });
 
-    describe('content when failed request', function () {
-        var content;
-        beforeEach(inject(function ($q, StateService, FolderRestService) {
-            content = {
-                data: {
-                    folders: [{path: 'toto', name: 'toto'}],
-                    datasets: [
-                        {
-                            'id': 'de3cc32a-b624-484e-b8e7-dab9061a009c',
-                            'name': 'customers_jso_light',
-                            'author': 'anonymousUser',
-                            'records': 15,
-                            'nbLinesHeader': 1,
-                            'nbLinesFooter': 0,
-                            'created': '03-30-2015 08:06'
-                        }]
-                }
-            };
-            spyOn(FolderRestService, 'getContent').and.returnValue($q.reject());
-        }));
-
-        it('should go back to root folder', inject(function ($rootScope, $state, FolderService) {
-            //when
-            spyOn($state, 'go');
-            FolderService.getContent({path: 'toto', name: 'toto'});
-            $rootScope.$digest();
-
-            //then
-            expect($state.go).toHaveBeenCalledWith('nav.index.datasets', {folderPath : ''});
-        }));
-    });
-
     describe('populate menu children', function () {
         beforeEach(inject(function ($q, StateService, FolderRestService) {
             var content = {

@@ -117,6 +117,7 @@ export default function DatasetListCtrl($stateParams, $timeout, $state, $transla
      */
     vm.openPreparation = function openPreparation(preparation) {
         StateService.setPreviousState('nav.index.datasets');
+        StateService.setPreviousStateOptions({folderPath: $stateParams.folderPath});
         $state.go('playground.preparation', {prepid: preparation.id});
     };
 
@@ -269,7 +270,7 @@ export default function DatasetListCtrl($stateParams, $timeout, $state, $transla
     //-------------------------------
 
     vm.goToFolder = function goToFolder(folder) {
-        $state.go('nav.index.datasets', {folderPath : folder.path});
+        $state.go('nav.index.datasets', {folderPath: folder.path});
     };
 
     /**
@@ -465,7 +466,8 @@ export default function DatasetListCtrl($stateParams, $timeout, $state, $transla
                         vm.foldersFound.push(rootFolder);
                         vm.foldersFound = vm.foldersFound.concat(response.data);
                     } else {
-                        vm.foldersFound = response.data;                    }
+                        vm.foldersFound = response.data;
+                    }
                     if (vm.foldersFound.length > 0) {
                         vm.chooseFolder(vm.foldersFound[0]); //Select by default first folder
                     }
@@ -476,32 +478,26 @@ export default function DatasetListCtrl($stateParams, $timeout, $state, $transla
         }
     };
 
-
-    /**
-     * @ngdoc method
-     * @name getFolderName
-     * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
-     * @description get folder name from folder path
-     */
-    function getFolderName(folderPath) {
-        var folderPathChunks = folderPath.split('/');
-        if(folderPathChunks.length > 1) {
-            return folderPathChunks[folderPathChunks.length - 1]? folderPathChunks[folderPathChunks.length - 1] : folderPathChunks[folderPathChunks.length - 2];
-        }
-        return folderPathChunks[folderPathChunks.length - 1];
-    }
-
-
     /**
      * Load folders constent on start
      */
     FolderService.refreshDatasetsSort();
     FolderService.refreshDatasetsOrder();
 
-    if($stateParams.folderPath){
-        FolderService.getContent({path: $stateParams.folderPath, name: getFolderName($stateParams.folderPath)});
-    } else {
+    if ($stateParams.folderPath) {
+        const folderDefinition = {
+            path: $stateParams.folderPath,
+            name: _.chain($stateParams.folderPath)
+                .split('/')
+                .filter((part) => part)
+                .last()
+                .value()
+        };
+        FolderService
+            .getContent(folderDefinition)
+            .catch(() => $state.go('nav.index.datasets', {folderPath: ''}));
+    }
+    else {
         FolderService.getContent();
     }
-
 }

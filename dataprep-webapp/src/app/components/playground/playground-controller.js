@@ -149,12 +149,7 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
      */
     function close () {
         $timeout(StateService.resetPlayground, 500, false);
-
-        if(state.playground.previousState === 'nav.index.datasets' ){
-            $state.go(state.playground.previousState, {folderPath : state.inventory.currentFolder.path});
-        } else {
-            $state.go(state.playground.previousState);
-        }
+        $state.go(state.playground.previousState, state.playground.previousStateOptions);
     }
 
     //--------------------------------------------------------------------------------------------------------------
