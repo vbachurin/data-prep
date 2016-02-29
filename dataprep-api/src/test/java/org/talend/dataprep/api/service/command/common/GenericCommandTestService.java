@@ -15,6 +15,8 @@ package org.talend.dataprep.api.service.command.common;
 
 import java.io.IOException;
 
+import com.netflix.hystrix.HystrixInvokable;
+import com.netflix.hystrix.exception.HystrixRuntimeException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -59,6 +61,48 @@ public class GenericCommandTestService {
     @RequestMapping(value = "/command/test/unexpected", method = RequestMethod.GET, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
     public void fail_with_unexpected() {
         throw new IndexOutOfBoundsException();
+    }
+
+    @ApiOperation("Execute an operation")
+    @RequestMapping(value = "/command/test/fail_bad_request_exception", method = RequestMethod.GET, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    public void fail_with_bad_request_exception() {
+        throw new HystrixRuntimeException(HystrixRuntimeException.FailureType.BAD_REQUEST_EXCEPTION, null, "Bad request", null, null);
+    }
+
+    @ApiOperation("Execute an operation")
+    @RequestMapping(value = "/command/test/fail_command_exception", method = RequestMethod.GET, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    public void fail_with_command_exception() {
+        throw new HystrixRuntimeException(HystrixRuntimeException.FailureType.COMMAND_EXCEPTION, null, "Command Exception", null, null);
+    }
+
+    @ApiOperation("Execute an operation")
+    @RequestMapping(value = "/command/test/fail_rejected_semaphore_execution", method = RequestMethod.GET, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    public void fail_with_rejected_semaphore_execution() {
+        throw new HystrixRuntimeException(HystrixRuntimeException.FailureType.REJECTED_SEMAPHORE_EXECUTION, null, "Rejected Semaphore execution", null, null);
+    }
+
+    @ApiOperation("Execute an operation")
+    @RequestMapping(value = "/command/test/fail_rejected_execution", method = RequestMethod.GET, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    public void fail_with_rejected_thread_execution() {
+        throw new HystrixRuntimeException(HystrixRuntimeException.FailureType.REJECTED_THREAD_EXECUTION, null, "Rejected thread execution", null, null);
+    }
+
+    @ApiOperation("Execute an operation")
+    @RequestMapping(value = "/command/test/fail_rejected_semaphore_fallback", method = RequestMethod.GET, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    public void fail_with_rejected_semaphore_fallback() {
+        throw new HystrixRuntimeException(HystrixRuntimeException.FailureType.REJECTED_SEMAPHORE_FALLBACK, null, "Rejected semaphore fallback", null, null);
+    }
+
+    @ApiOperation("Execute an operation")
+    @RequestMapping(value = "/command/test/fail_short_circuit", method = RequestMethod.GET, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    public void fail_with_short_circuit() {
+        throw new HystrixRuntimeException(HystrixRuntimeException.FailureType.SHORTCIRCUIT, null, "Short circuit", null, null);
+    }
+
+    @ApiOperation("Execute an operation")
+    @RequestMapping(value = "/command/test/fail_timeout", method = RequestMethod.GET, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    public void fail_with_timeout() {
+        throw new HystrixRuntimeException(HystrixRuntimeException.FailureType.TIMEOUT, null, "Timeout", null, null);
     }
 
 }
