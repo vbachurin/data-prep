@@ -40,6 +40,8 @@ import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitPar
 import org.talend.dataprep.transformation.api.action.metadata.common.ReplaceOnValueHelper;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 /**
  * Test class for Replace value action
  */

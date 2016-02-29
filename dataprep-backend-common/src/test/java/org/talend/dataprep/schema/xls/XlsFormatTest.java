@@ -354,8 +354,8 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
 
             ColumnMetadata columnMetadata = columnMetadatas.get(7);
             Assertions.assertThat(columnMetadata.getHeaderSize()).isEqualTo(1);
-            Assertions.assertThat(columnMetadata.getName()).isEqualTo("age");
-            Assertions.assertThat(columnMetadata.getType()).isEqualTo(Type.STRING.getName());
+            Assertions.assertThat(columnMetadata.getName()).isEqualTo("telephone");
+            Assertions.assertThat(columnMetadata.getType()).isEqualTo(Type.NUMERIC.getName());
             dataSetMetadata.getRowMetadata().setColumns(columnMetadatas);
         }
 
