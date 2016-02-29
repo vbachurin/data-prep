@@ -18,6 +18,8 @@
  * @restrict E
  */
 export default function Playground($timeout) {
+    'ngInject';
+
     return {
         restrict: 'E',
         templateUrl: 'app/components/playground/playground.html',
