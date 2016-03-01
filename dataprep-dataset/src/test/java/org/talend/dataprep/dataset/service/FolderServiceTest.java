@@ -14,10 +14,13 @@
 package org.talend.dataprep.dataset.service;
 
 import static com.jayway.restassured.RestAssured.given;
+import static java.util.stream.Collectors.toList;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,9 +54,9 @@ public class FolderServiceTest extends DataSetBaseTest {
 
         //then
         final List<Folder> folders = mapper.readValue(json, new TypeReference<List<Folder>>(){});
-        assertThat(folders.size(), is(2));
-        assertThat(folders.get(0).getName(), is("bar"));
-        assertThat(folders.get(1).getName(), is("toto"));
+        final List<String> foldersNames = folders.stream().map(Folder::getName).collect(toList());
+        assertThat(foldersNames.size(), is(2));
+        assertThat(foldersNames, containsInAnyOrder("bar", "toto"));
     }
 
     @Test
