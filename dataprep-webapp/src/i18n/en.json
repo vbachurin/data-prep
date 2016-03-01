@@ -40,7 +40,10 @@
   "SELECT_DATASET_DESCRIPTION": "Select a dataset or a folder to access its details",
 
   "_comment": "Inventory",
-  "INVENTORY_DETAILS": "owned by {{author}}, created {{created | TDPMoment}}, contains {{records}} lines",
+  "DATASET_DETAILS": "owned by {{author}}, created {{created | TDPMoment}}, contains {{records}} line(s)",
+  "PREPARATION_DETAILS": "owned by {{author}}, created {{creationDate | TDPMoment}}, contains {{steps.length -1}} step(s)",
+  "FOLDER_DETAILS": "owned by {{author}}, created {{creationDate | TDPMoment}}, contains {{datasets.length}} dataset(s)",
+  "FOUND_FOLDER_DETAILS": "path: Home/{{path}}, owned by {{author}}, created {{creationDate | TDPMoment}}, contains {{datasets.length}} dataset(s)",
   "NAME_SORT": "Name",
   "DATE_SORT": "Date",
   "SORTED_BY": "Sorted by",

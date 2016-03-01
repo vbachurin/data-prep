@@ -47,6 +47,23 @@ describe('DatasetList directive', function () {
         }
     ];
 
+    var folders = [
+        {
+            'path':'folder 1',
+            'name': 'folder 1',
+            'author': 'anonymousUser',
+            'creationDate': '1437020219741',
+            'datasets': [{name:'US States prepa'}, {name:'US States prepa 2'}]
+        },
+        {
+            'path':'folder 2',
+            'name': 'folder 2',
+            'author': 'anonymousUser',
+            'creationDate': '143702021974',
+            'datasets': [{name:'Customers prepa'}]
+        }
+    ];
+
     var sortList = [
         {id: 'name', name: 'NAME_SORT', property: 'name'},
         {id: 'date', name: 'DATE_SORT', property: 'created'}
@@ -80,7 +97,8 @@ describe('DatasetList directive', function () {
     beforeEach(angular.mock.module('htmlTemplates'));
     beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
-            'INVENTORY_DETAILS': 'owned by {{author}}, created {{created | TDPMoment}}, contains {{records}} lines'
+            'DATASET_DETAILS': 'owned by {{author}}, created {{created | TDPMoment}}, contains {{records}} line(s)',
+            "FOLDER_DETAILS": "owned by {{author}}, created {{creationDate | TDPMoment}}, contains {{datasets.length}} dataset(s)"
         });
         $translateProvider.preferredLanguage('en');
     }));
@@ -112,28 +130,56 @@ describe('DatasetList directive', function () {
         expect(element.find('.inventory-item').length).toBe(3);
 
         var icon = element.find('.inventory-icon').eq(0);
-        var iconSrc = icon.find('> img')[0].src;
+        var iconSrc = icon.find('img')[0].src;
         var certificationIcon = icon.find('.pin');
         expect(strEndsWith(iconSrc, '/assets/images/inventory/csv_file.png')).toBe(true);
         expect(certificationIcon.length).toBe(0);
         expect(element.find('.inventory-title').eq(0).text().indexOf('US States')).toBe(0);
-        expect(element.find('.inventory-description').eq(0).text()).toBe('owned by anonymousUser, created ' + momentize('1437020219741') + ', contains  lines');
+        expect(element.find('.inventory-description').eq(0).text()).toBe('owned by anonymousUser, created ' + momentize('1437020219741') + ', contains  line(s)');
 
         icon = element.find('.inventory-icon').eq(1);
-        iconSrc = icon.find('> img')[0].src;
+        iconSrc = icon.find('img')[0].src;
         certificationIcon = icon.find('.pin')[0].src;
         expect(strEndsWith(iconSrc, '/assets/images/inventory/xls_file.png')).toBe(true);
         expect(strEndsWith(certificationIcon, '/assets/images/certification-pending.png')).toBe(true);
         expect(element.find('.inventory-title').eq(1).text().indexOf('Customers')).toBe(0);
-        expect(element.find('.inventory-description').eq(1).text()).toBe('owned by anonymousUser, created ' + momentize('143702021974') + ', contains  lines');
+        expect(element.find('.inventory-description').eq(1).text()).toBe('owned by anonymousUser, created ' + momentize('143702021974') + ', contains  line(s)');
 
         icon = element.find('.inventory-icon').eq(2);
-        iconSrc = icon.find('> img')[0].src;
+        iconSrc = icon.find('img')[0].src;
         certificationIcon = icon.find('.pin')[0].src;
         expect(strEndsWith(iconSrc, '/assets/images/inventory/generic_file.png')).toBe(true);
         expect(strEndsWith(certificationIcon, '/assets/images/certification-certified.png')).toBe(true);
         expect(element.find('.inventory-title').eq(2).text().indexOf('Customers 2')).toBe(0);
-        expect(element.find('.inventory-description').eq(2).text()).toBe('owned by anonymousUser, created ' + momentize('14370202197') + ', contains  lines');
+        expect(element.find('.inventory-description').eq(2).text()).toBe('owned by anonymousUser, created ' + momentize('14370202197') + ', contains  line(s)');
+    }));
+
+
+    it('should render folder list', inject(function ($filter) {
+        //given
+        stateMock.inventory.currentFolderContent.folders = folders;
+        stateMock.inventory.currentFolderContent.datasets = [];
+
+        var momentize = $filter('TDPMoment');
+
+        //when
+        createElement();
+
+        //then
+        expect(element.find('.inventory-item').length).toBe(2);
+
+        var icon = element.find('.inventory-icon').eq(0);
+        var iconSrc = icon.find('img')[0].src;
+        expect(strEndsWith(iconSrc, 'assets/images/folder/folder-icon.png')).toBe(true);
+        expect(element.find('.inventory-title').eq(0).text().indexOf('folder 1')).toBe(0);
+        expect(element.find('.inventory-description').eq(0).text()).toBe('owned by anonymousUser, created ' + momentize('1437020219741') + ', contains 2 dataset(s)');
+
+        icon = element.find('.inventory-icon').eq(1);
+        iconSrc = icon.find('img')[0].src;
+        expect(strEndsWith(iconSrc, 'assets/images/folder/folder-icon.png')).toBe(true);
+        expect(element.find('.inventory-title').eq(1).text().indexOf('folder 2')).toBe(0);
+        expect(element.find('.inventory-description').eq(1).text()).toBe('owned by anonymousUser, created ' + momentize('143702021974') + ', contains 1 dataset(s)');
+
     }));
 
     it('should create related preparations list', inject(function(){

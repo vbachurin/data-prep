@@ -12,6 +12,18 @@
   ============================================================================*/
 
 .inventory-item {
+
+  .inventory-icon{
+    div > img {
+      width: 50px;
+      height : 47px;
+    }
+
+    .preparation-icon-div {
+      font-size: 1.7em;
+      color: $dark-blue;
+    }
+  }
   .inventory-title {
     padding: 3px 0;
     @include ellipsis(430px);

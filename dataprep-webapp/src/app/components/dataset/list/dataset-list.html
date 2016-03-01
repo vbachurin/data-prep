@@ -42,31 +42,21 @@
     </div>
 
     <div class="inventory-list" id="datasets-list">
-        <div class="inventory-entry" ng-repeat="folder in datasetListCtrl.state.inventory.currentFolderContent.folders track by folder.path">
-            <div class="inventory-icon inventory-folder" ng-click="datasetListCtrl.goToFolder(folder)">
-                <img src="assets/images/folder/folder-icon.png"/>
-            </div>
-            <div class="inventory-text inventory-folder">
-                <talend-editable-text text="folder.name"
-                                      text-class="inventory-title"
-                                      on-text-click="datasetListCtrl.goToFolder(folder)"
-                                      on-validate="datasetListCtrl.renameFolder(folder, text)"
-                                      text-title="{{folder.name}}"
-                                      validate-only-on-change></talend-editable-text>
-            </div>
-            <div class="inventory-actions">
-                <a data-icon="e"
-                   class="btn-icon btn-transparent"
-                   translate-once-title="DELETE_ACTION"
-                   translate-values="{type: 'folder', name: folder.name}"
-                   ng-click="datasetListCtrl.removeFolder(folder)"></a>
-            </div>
+        <div ng-repeat="folder in datasetListCtrl.state.inventory.currentFolderContent.folders track by folder.path">
+            <inventory-item
+                    item="folder"
+                    open="datasetListCtrl.goToFolder"
+                    remove="datasetListCtrl.removeFolder"
+                    rename="datasetListCtrl.renameFolder"
+                    type="folder"
+                    details="FOLDER_DETAILS">
+            </inventory-item>
         </div>
 
         <div ng-repeat="dataset in datasetListCtrl.state.inventory.currentFolderContent.datasets track by dataset.id" id="dataset_{{$index}}">
             <inventory-item
                 copy="datasetListCtrl.openFolderSelection"
-                details="INVENTORY_DETAILS"
+                details="DATASET_DETAILS"
                 file-model="datasetListCtrl.updateDatasetFile"
                 item="dataset"
                 open="datasetListCtrl.uploadWorkflowService.openDataset"
