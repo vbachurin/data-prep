@@ -105,6 +105,7 @@
   "_comment": "Common",
   "LOADING": "Loading...",
   "PROCESSING": "Processing",
+  "UPLOAD_PROCESSING": "Profiling data, please wait...",
   "COMING_SOON": "Coming soon...",
   "PROCESSING_REMOTE_DATASET": "Processing remote dataset...",
   "NO_FUNCTION": "No function for the current selection",

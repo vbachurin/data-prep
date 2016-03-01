@@ -27,7 +27,7 @@
 
                     <div class="progress-bar" ng-switch-when="file">
                         <span class="meter" style="width: {{ dataset.progress }}%" ng-switch="dataset.progress">
-                            <p ng-switch-when="100"><span translate-once="PROCESSING"></span>...</p>
+                            <p ng-switch-when="100"><span translate-once="UPLOAD_PROCESSING"></span></p>
                             <p ng-switch-default="">{{ dataset.progress }} %</p>
                         </span>
                     </div>

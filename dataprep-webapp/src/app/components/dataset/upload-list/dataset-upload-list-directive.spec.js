@@ -11,13 +11,18 @@
 
   ============================================================================*/
 
-'use strict';
-
 describe('Dataset upload list directive', function() {
     var scope, createElement;
 
     beforeEach(angular.mock.module('data-prep.dataset-upload-list'));
     beforeEach(angular.mock.module('htmlTemplates'));
+
+    beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
+        $translateProvider.translations('en', {
+            'UPLOAD_PROCESSING':'Profiling data, please wait...'
+        });
+        $translateProvider.preferredLanguage('en');
+    }));
 
     beforeEach(inject(function($rootScope, $compile) {
         scope = $rootScope.$new();
@@ -45,6 +50,20 @@ describe('Dataset upload list directive', function() {
         expect(names.eq(0).text()).toBe('Customers (50 lines)');
         expect(progress.eq(0).text().trim()).toBe('10 %');
         expect(progress.eq(0).hasClass('error')).toBe(false);
+    });
+
+    it('should show profiling data message once the upload reaches the 100%', function() {
+        //given
+        scope.datasets = [
+            {name: 'Customers (50 lines)', progress: 100, error: false, type: 'file'}
+        ];
+
+        //when
+        var element = createElement(scope);
+        var progress = element.find('.inventory-progress');
+
+        //then
+        expect(progress.eq(0).text().trim()).toBe('Profiling data, please wait...');
     });
 
     it('should render progressing remote dataset import', function() {
