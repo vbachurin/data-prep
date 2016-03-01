@@ -77,6 +77,7 @@ describe('Dataset list controller', function () {
         spyOn(StorageService, 'setDatasetsSort').and.returnValue();
         spyOn(StorageService, 'setDatasetsOrder').and.returnValue();
         spyOn(StateService, 'setPreviousState').and.returnValue();
+        spyOn(StateService, 'setPreviousStateOptions').and.returnValue();
         spyOn(MessageService, 'error').and.returnValue();
     }));
 
@@ -148,8 +149,22 @@ describe('Dataset list controller', function () {
             expect($state.go).toHaveBeenCalledWith('nav.index.datasets', {folderPath : '1/2'});
 
         }));
-    });
 
+        it('should go back to root folder when request is failed', inject(function ($stateParams, $q, $state, FolderService) {
+            //given
+            spyOn(FolderService, 'getContent').and.returnValue($q.reject(false));
+
+            $stateParams.folderPath = 'test/';
+
+            createController();
+            scope.$digest();
+
+            //then
+            expect($state.go).toHaveBeenCalledWith('nav.index.datasets', {folderPath: ''});
+
+        }));
+
+    });
 
     describe('sort parameters', function () {
 
@@ -991,7 +1006,7 @@ describe('Dataset list controller', function () {
 
     describe('related preparations', function () {
 
-        it('should load preparation and show playground', inject(function ($q, $state, $timeout, StateService, FolderService) {
+        it('should load preparation and show playground', inject(function ($stateParams, $q, $state, $timeout, StateService, FolderService) {
             //given
             spyOn(FolderService, 'getContent').and.returnValue($q.when(true));
             var ctrl = createController();
@@ -1001,6 +1016,8 @@ describe('Dataset list controller', function () {
                 author: 'anonymousUser'
             };
 
+            $stateParams.folderPath = 'test/';
+
             //when
             ctrl.openPreparation(preparation);
             scope.$digest();
@@ -1008,6 +1025,7 @@ describe('Dataset list controller', function () {
 
             //then
             expect(StateService.setPreviousState).toHaveBeenCalledWith('nav.index.datasets');
+            expect(StateService.setPreviousStateOptions).toHaveBeenCalledWith({folderPath: 'test/'});
             expect($state.go).toHaveBeenCalledWith('playground.preparation', {prepid: preparation.id});
         }));
     });

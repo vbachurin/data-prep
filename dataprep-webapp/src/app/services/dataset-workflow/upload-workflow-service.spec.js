@@ -18,6 +18,7 @@ describe('UploadWorkflow Service', () => {
     beforeEach(inject(($state, $q, StateService, DatasetSheetPreviewService, MessageService, DatasetService) => {
         spyOn($state, 'go').and.returnValue();
         spyOn(StateService, 'setPreviousState').and.returnValue();
+        spyOn(StateService, 'setPreviousStateOptions').and.returnValue();
         spyOn(DatasetSheetPreviewService, 'loadPreview').and.returnValue($q.when(true));
         spyOn(DatasetSheetPreviewService, 'display').and.returnValue();
         spyOn(MessageService, 'error').and.returnValue();
@@ -36,15 +37,16 @@ describe('UploadWorkflow Service', () => {
             expect($state.go).toHaveBeenCalledWith('playground.dataset', {datasetid: dataset.id});
         }));
 
-        it('should set back route before redirection when dataset is not a draft', inject((UploadWorkflowService, StateService) => {
+        it('should set back route before redirection when dataset is not a draft', inject(($stateParams, UploadWorkflowService, StateService) => {
             //given
             const dataset = {name: 'Customers (50 lines)', id: 'aA2bc348e933bc2'};
-
+            $stateParams.folderPath = 'test/';
             //when
             UploadWorkflowService.openDataset(dataset);
 
             //then
             expect(StateService.setPreviousState).toHaveBeenCalledWith('nav.index.datasets');
+            expect(StateService.setPreviousStateOptions).toHaveBeenCalledWith({folderPath: 'test/'});
         }));
 
         it('should open sheet preview when dataset is a draft', inject(($rootScope, UploadWorkflowService, DatasetSheetPreviewService) => {

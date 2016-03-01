@@ -61,6 +61,17 @@ describe('Playground state service', () => {
             //then
             expect(playgroundState.previousState).toBe('home');
         }));
+
+        it('should set the previous state options of playground', inject((playgroundState, PlaygroundStateService) => {
+            //given
+            playgroundState.previousStateOptions  = {folderPath: ''};
+
+            //when
+            PlaygroundStateService.setPreviousStateOptions({folderPath: 'test/'});
+
+            //then
+            expect(playgroundState.previousStateOptions).toEqual({folderPath: 'test/'});
+        }));
     });
 
     describe('dataset', () => {
