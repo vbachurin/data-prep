@@ -3263,12 +3263,12 @@
         "implicit": false,
         "canBeBlank": false,
         "default": "1",
-        "label": "Sensitivity"
+        "label": "Fuzziness"
       }
     ],
     "category": "strings",
     "docUrl": "",
-    "label": "Fuzzy matching",
+    "label": "Match similar text",
     "dynamic": false
   },
   {
