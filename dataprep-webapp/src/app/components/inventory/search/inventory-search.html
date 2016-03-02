@@ -1,8 +1,52 @@
-<div class="navigation-tools">
-    <div class="search-bar">
-        <form role="search" ng-submit="$ctrl.search()">
-            <input type="search" ng-model="$ctrl.searchInput" translate-once-placeholder="SEARCH"
-                   title="{{'COMING_SOON' | translate}}"/>
-        </form>
+<!--
+  ~ ============================================================================
+  ~
+  ~  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+  ~
+  ~  This source code is available under agreement available at
+  ~  https://github.com/Talend/data-prep/blob/master/LICENSE
+  ~
+  ~  You should have received a copy of the agreement
+  ~  along with this program; if not, write to Talend SA
+  ~  9 rue Pages 92150 Suresnes, France
+  ~
+  ~ ============================================================================
+  -->
+
+<typeahead search-string="$ctrl.searchInput"
+           on-change="$ctrl.search"
+           force-side="left"
+           close-on-select="true">
+    <div class="inventory" id="search-inventory-list">
+        <div class="inventory-list">
+            <div ng-repeat="preparation in $ctrl.state.inventory.preparations track by preparation.id">
+                <inventory-item
+                        item="preparation"
+                        type="preparation"
+                        details="PREPARATION_DETAILS"
+                        ng-click="$ctrl.openPreparation(preparation)">
+                </inventory-item>
+            </div>
+
+            <div ng-repeat="folder in $ctrl.state.inventory.currentFolderContent.folders track by folder.path">
+                <inventory-item
+                        item="folder"
+                        type="folder"
+                        details="FOLDER_DETAILS"
+                        ng-click="$ctrl.goToFolder(folder)">
+                </inventory-item>
+            </div>
+
+            <div ng-repeat="dataset in $ctrl.state.inventory.currentFolderContent.datasets track by dataset.id"
+                 id="found_dataset_{{$index}}">
+                <inventory-item
+                        details="DATASET_DETAILS"
+                        item="dataset"
+                        type="dataset"
+                        ng-click="$ctrl.uploadWorkflowService.openDataset(dataset)"
+                        toggle-favorite="angular.noop">
+                </inventory-item>
+            </div>
+        </div>
     </div>
-</div>
+</typeahead>

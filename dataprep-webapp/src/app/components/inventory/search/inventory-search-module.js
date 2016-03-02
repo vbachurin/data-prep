@@ -26,7 +26,10 @@ import InventorySearchCtrl from './inventory-search-controller';
     angular.module('data-prep.inventory-search',
         [
             'data-prep.services.utils',
-            'data-prep.services.easter-eggs'
+            'data-prep.services.easter-eggs',
+            'talend.widget',
+            'data-prep.services.datasetWorkflowService',
+            'data-prep.services.state'
         ])
         .component('inventorySearch', {
             templateUrl: 'app/components/inventory/search/inventory-search.html',

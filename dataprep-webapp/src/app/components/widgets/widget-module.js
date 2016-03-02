@@ -41,6 +41,8 @@ import TalendSearchInput from './search/widget-search-input-directive';
 import TalendSlidable from './slidable/widget-slidable-directive';
 import TalendTooltipCtrl from './tooltip/widget-tooltip-controller';
 import TalendTooltip from './tooltip/widget-tooltip-directive';
+import Typeahead from './typeahead/typeahead-directive';
+
 
 (() => {
     'use strict';
@@ -100,5 +102,6 @@ import TalendTooltip from './tooltip/widget-tooltip-directive';
         .directive('talendSlidable', TalendSlidable)
 
         .controller('TalendTooltipCtrl', TalendTooltipCtrl)
-        .directive('talendTooltip', TalendTooltip);
+        .directive('talendTooltip', TalendTooltip)
+        .directive('typeahead', Typeahead);
 })();
