@@ -20,6 +20,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
@@ -30,6 +32,9 @@ import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitPar
  * Context for an action within a transformation. Hence, several instance of the same action can have their own context.
  */
 public class ActionContext {
+
+    /** This class' logger. */
+    public static final Logger LOGGER = LoggerFactory.getLogger(ActionContext.class);
 
     public enum ActionStatus {
         /**
@@ -152,6 +157,7 @@ public class ActionContext {
 
         final T value = supplier.apply(parameters);
         context.put(key, value);
+        LOGGER.debug("adding {}->{} in this context {}", key, value, this);
         return value;
     }
 
@@ -340,5 +346,18 @@ public class ActionContext {
         public RowMetadata getInputRowMetadata() {
             return delegate.getInputRowMetadata();
         }
+    }
+
+    /**
+     * @see Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "ActionContext{" +
+                "parent=#" + parent +
+                ", context=" + context +
+                ", parameters=" + parameters +
+                ", actionStatus=" + actionStatus +
+                '}';
     }
 }

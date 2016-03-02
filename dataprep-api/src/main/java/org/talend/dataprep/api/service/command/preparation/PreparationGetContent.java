@@ -83,6 +83,7 @@ public class PreparationGetContent extends PreparationCommand<InputStream> {
         } catch (IOException e) {
             throw new TDPException( //
                     PreparationErrorCodes.PREPARATION_DOES_NOT_EXIST, //
+                    e, //
                     ExceptionContext.build().put("id", id));
         }
         String datasetId = preparation.getDataSetId();

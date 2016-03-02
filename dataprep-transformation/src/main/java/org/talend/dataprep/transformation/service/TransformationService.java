@@ -615,6 +615,9 @@ public class TransformationService extends BaseTransformationService {
         } catch (IOException e) {
             throw new TDPException(PreparationErrorCodes.UNABLE_TO_READ_PREPARATION, e);
         }
+        finally {
+            httpRequest.releaseConnection();
+        }
     }
 
 }
