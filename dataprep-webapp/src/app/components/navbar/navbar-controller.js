@@ -22,7 +22,7 @@
  * @requires data-prep.services.easter-eggs.service::EasterEggsService
  */
 
-export default function NavbarCtrl($timeout, $state, version, copyRights, OnboardingService, DatasetService, StateService, EasterEggsService) {
+export default function NavbarCtrl($timeout, $state, version, copyRights, OnboardingService, DatasetService, StateService) {
     'ngInject';
 
     var vm = this;
@@ -46,16 +46,4 @@ export default function NavbarCtrl($timeout, $state, version, copyRights, Onboar
     //---------------------------------------------FEEDBACK---------------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------
     vm.openFeedbackForm = StateService.showFeedback;
-
-
-    //--------------------------------------------------------------------------------------------------------------
-    //----------------------------------------------SEARCH----------------------------------------------------------
-    //--------------------------------------------------------------------------------------------------------------
-
-    vm.searchInput = '';
-    vm.search = function () {
-        // just in case something funny happens...
-        EasterEggsService.enableEasterEgg(vm.searchInput);
-    };
-
 }

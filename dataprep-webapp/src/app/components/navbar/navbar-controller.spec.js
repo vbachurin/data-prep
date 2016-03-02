@@ -129,26 +129,4 @@ describe('Navbar controller', function () {
         }));
 
     });
-
-
-    describe('search ', function() {
-        beforeEach(inject(function (EasterEggsService) {
-            spyOn(EasterEggsService, 'enableEasterEgg').and.returnValue();
-        }));
-
-        it('should call the easter eggs service', inject(function (EasterEggsService) {
-            //given
-            $stateMock.params = {};
-            $stateMock.current = {name: 'nav.index.datasets'};
-            var ctrl = createController();
-
-            //when
-            ctrl.searchInput = 'barcelona';
-            ctrl.search();
-
-            //then
-            expect(EasterEggsService.enableEasterEgg).toHaveBeenCalledWith('barcelona');
-        }));
-
-    });
 });

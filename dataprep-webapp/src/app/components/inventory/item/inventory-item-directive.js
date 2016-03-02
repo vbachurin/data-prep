@@ -53,7 +53,7 @@
 export default function InventoryItem() {
     return {
         restrict: 'E',
-        templateUrl: 'app/components/inventory-item/inventory-item.html',
+        templateUrl: 'app/components/inventory/item/inventory-item.html',
         bindToController: true,
         controllerAs: 'inventoryItemCtrl',
         controller: 'InventoryItemCtrl',
