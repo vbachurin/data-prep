@@ -214,7 +214,7 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
 
             // use java Properties to save the files
             Properties properties = new Properties();
-            properties.setProperty("contentType", folderEntry.getContentType());
+            properties.setProperty("contentType", folderEntry.getContentType().toString());
             properties.setProperty("contentId", folderEntry.getContentId());
             properties.setProperty("folderId", folderEntry.getFolderId());
             try (OutputStream outputStream = Files.newOutputStream(path)) {
@@ -228,7 +228,11 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
     }
 
     @Override
-    public void removeFolderEntry(String folderPath, String contentId, String contentType) {
+    public void removeFolderEntry(String folderPath, String contentId, FolderEntry.ContentType contentType) {
+
+        if (contentType == null){
+            throw new IllegalArgumentException("The content type of the folder entry to be removed cannot be null.");
+        }
 
         try {
             List<String> pathParts = Lists.newArrayList(StringUtils.split(folderPath, PATH_SEPARATOR));
@@ -240,8 +244,7 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
                             try (InputStream inputStream = Files.newInputStream(pathFile)) {
                                 Properties properties = new Properties();
                                 properties.load(inputStream);
-                                if (StringUtils.equalsIgnoreCase(properties.getProperty("contentType"), //
-                                        contentType) && //
+                                if (contentType.equals(FolderEntry.ContentType.get(properties.getProperty("contentType"))) && //
                                         StringUtils.equalsIgnoreCase(properties.getProperty("contentId"), //
                                                 contentId)) {
                                     Files.delete(pathFile);
@@ -286,7 +289,7 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
 
                             FolderEntry folderEntry = new FolderEntry();
                             folderEntry.setFolderId(path.getParent().toString());
-                            folderEntry.setContentType("contentType");
+                            folderEntry.setContentType(FolderEntry.ContentType.get(properties.getProperty("contentType")));
                             folderEntry.setContentId(properties.getProperty("contentId"));
                             folderEntries.add(folderEntry);
                         }
@@ -311,7 +314,7 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
     }
 
     @Override
-    public Iterable<FolderEntry> entries(String folder, String contentType) {
+    public Iterable<FolderEntry> entries(String folder, FolderEntry.ContentType contentType) {
 
         Path path = Paths.get(getRootFolder().toString(), StringUtils.split(folder, PATH_SEPARATOR));
 
@@ -327,7 +330,7 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
                             try (InputStream inputStream = Files.newInputStream(pathFile)) {
                                 Properties properties = new Properties();
                                 properties.load(inputStream);
-                                if (StringUtils.equalsIgnoreCase(properties.getProperty("contentType"), contentType)) {
+                                if (contentType.equals(FolderEntry.ContentType.get(properties.getProperty("contentType"))) ){
 
                                     FolderEntry folderEntry = new FolderEntry();
                                     folderEntry.setFolderId(properties.getProperty("folderId"));
@@ -348,7 +351,7 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
     }
 
     @Override
-    public Iterable<FolderEntry> findFolderEntries(String contentId, String contentType) {
+    public Iterable<FolderEntry> findFolderEntries(String contentId, FolderEntry.ContentType contentType) {
         Set<FolderEntry> folderEntries = new HashSet<>();
 
         try {
@@ -371,7 +374,7 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
                         Properties properties = new Properties();
                         properties.load(inputStream);
                         if (StringUtils.equals(properties.getProperty("contentId"), contentId) && //
-                                StringUtils.equals(properties.getProperty("contentType"), contentType)) {
+                                contentType.equals(FolderEntry.ContentType.get(properties.getProperty("contentType")))) {
                             final FolderEntry entry = new FolderEntry(contentType, contentId);
                             entry.setFolderId(getRootFolder().relativize(file.getParent()).toString());
                             folderEntries.add(entry);
@@ -512,7 +515,7 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
     }
 
     protected String buildFileName(FolderEntry folderEntry) {
-        return folderEntry.getContentType() + '@' + folderEntry.getContentId();
+        return folderEntry.getContentType().toString() + '@' + folderEntry.getContentId();
     }
 
     @Override

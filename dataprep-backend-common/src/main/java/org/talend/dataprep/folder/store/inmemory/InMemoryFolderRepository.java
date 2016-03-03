@@ -191,17 +191,17 @@ public class InMemoryFolderRepository extends FolderRepositoryAdapter implements
     }
 
     @Override
-    public Iterable<FolderEntry> entries(String path, String contentType) {
+    public Iterable<FolderEntry> entries(String path, FolderEntry.ContentType contentType) {
         return folderEntriesMap.get(cleanPath(path));
     }
 
     @Override
-    public Iterable<FolderEntry> findFolderEntries(String contentId, String contentType) {
+    public Iterable<FolderEntry> findFolderEntries(String contentId, FolderEntry.ContentType contentType) {
         List<FolderEntry> entries = new ArrayList<>();
 
         this.folderEntriesMap.values().stream().forEach(folderEntries -> folderEntries.stream().forEach(folderEntry -> {
             if (StringUtils.equalsIgnoreCase(contentId, folderEntry.getContentId()) //
-                    && StringUtils.equalsIgnoreCase(contentType, folderEntry.getContentType())) {
+                    && contentType.equals(folderEntry.getContentType())) {
                 entries.add(folderEntry);
             }
         }));
@@ -242,7 +242,7 @@ public class InMemoryFolderRepository extends FolderRepositoryAdapter implements
     }
 
     @Override
-    public void removeFolderEntry(String givenPath, String contentId, String contentType) {
+    public void removeFolderEntry(String givenPath, String contentId, FolderEntry.ContentType contentType) {
         String folderPath = cleanPath(givenPath);
         List<FolderEntry> entries = folderEntriesMap.get(folderPath);
         final FolderEntry entry = new FolderEntry(contentType, contentId);

@@ -72,7 +72,7 @@ public interface FolderRepository {
      * @param contentId the id
      * @param contentType  the type dataset, preparation
      */
-    void removeFolderEntry(String folderPath, String contentId, String contentType);
+    void removeFolderEntry(String folderPath, String contentId, FolderEntry.ContentType contentType);
 
     /**
      * List the {@link FolderEntry} of the wanted type within the given path.
@@ -80,7 +80,7 @@ public interface FolderRepository {
      * @param contentType the contentClass to filter folder entries
      * @return A {@link java.lang.Iterable iterable} of {@link FolderEntry} content filtered for the given type
      */
-    Iterable<FolderEntry> entries(String path, String contentType);
+    Iterable<FolderEntry> entries(String path, FolderEntry.ContentType contentType);
 
     /**
      * Look for all the {@link FolderEntry} that points to an existing content.
@@ -91,7 +91,7 @@ public interface FolderRepository {
      * @param contentType  the type dataset, preparation
      * @return A {@link Iterable} of the {@link FolderEntry} containing the folderEntry as described by contentType and contentId.
      */
-    Iterable<FolderEntry> findFolderEntries(String contentId, String contentType);
+    Iterable<FolderEntry> findFolderEntries(String contentId, FolderEntry.ContentType contentType);
 
     /**
      * <b>if the destination or entry doesn't exist a {@link IllegalArgumentException} will be thrown</b>

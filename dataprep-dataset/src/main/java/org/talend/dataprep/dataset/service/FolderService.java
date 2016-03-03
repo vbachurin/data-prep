@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.talend.dataprep.api.folder.Folder;
 import org.talend.dataprep.api.folder.FolderEntry;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.exception.error.DataSetErrorCodes;
 import org.talend.dataprep.folder.store.FolderRepository;
 import org.talend.dataprep.folder.store.NotEmptyFolderException;
@@ -138,7 +139,14 @@ public class FolderService {
     @Timed
     public void deleteFolderEntry(@RequestParam String path, @PathVariable(value = "id") String contentId, //
                                   @PathVariable(value = "contentType") String contentType){
-        folderRepository.removeFolderEntry(path, contentId, contentType );
+        try {
+            FolderEntry.ContentType checkedContentType = FolderEntry.ContentType.get(contentType);
+            folderRepository.removeFolderEntry(path, contentId, checkedContentType);
+        }
+        catch(IllegalArgumentException exc){
+            throw new TDPException(DataSetErrorCodes.UNABLE_TO_REMOVE_FOLDER_ENTRY, exc);
+        }
+
     }
 
     /**
@@ -151,7 +159,14 @@ public class FolderService {
     @ApiOperation(value = "List folder entries", produces = APPLICATION_JSON_VALUE, notes = "List all folder entries of the given content type")
     @Timed
     public Iterable<FolderEntry> entries(@RequestParam String path, @RequestParam String contentType){
-        return folderRepository.entries(path, contentType );
+        try {
+            FolderEntry.ContentType checkedContentType = FolderEntry.ContentType.get(contentType);
+            return folderRepository.entries(path, checkedContentType);
+        }
+        catch(IllegalArgumentException exc){
+            throw new TDPException(DataSetErrorCodes.UNABLE_TO_LIST_FOLDER_ENTRIES, exc);
+        }
+
     }
 
 

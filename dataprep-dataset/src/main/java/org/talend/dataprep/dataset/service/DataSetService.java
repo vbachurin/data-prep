@@ -203,7 +203,7 @@ public class DataSetService {
         Spliterator<DataSetMetadata> iterator;
         if (StringUtils.isNotEmpty( folder )) {
             // TODO dataset must be a constant somewhere!!
-            Iterable<FolderEntry> entries = folderRepository.entries( folder, "dataset" );
+            Iterable<FolderEntry> entries = folderRepository.entries( folder, FolderEntry.ContentType.DATASET );
             final List<DataSetMetadata> metadatas = new ArrayList<>( );
             entries.forEach( folderEntry ->
                              {
@@ -312,8 +312,9 @@ public class DataSetService {
         queueEvents(id);
 
         // create associated folderEntry
-        FolderEntry folderEntry = new FolderEntry( "dataset", id);
+        FolderEntry folderEntry = new FolderEntry(FolderEntry.ContentType.DATASET, id);
         folderRepository.addFolderEntry(folderEntry, folderPath);
+
 
         LOG.debug(marker, "Created!");
 
@@ -482,9 +483,9 @@ public class DataSetService {
             // Create the new data set
             dataSetMetadataRepository.add(target);
 
-            // create associated folderEntry
-            FolderEntry folderEntry = new FolderEntry("dataset", newId);
-            folderRepository.addFolderEntry(folderEntry, folderPath);
+        // create associated folderEntry
+        FolderEntry folderEntry = new FolderEntry(FolderEntry.ContentType.DATASET, newId);
+        folderRepository.addFolderEntry(folderEntry, folderPath);
 
             LOG.debug(marker, "Cloned!");
             return newId;
@@ -521,7 +522,7 @@ public class DataSetService {
             return;
         }
         // first check if the name is already used in the target folder
-        final Iterable<FolderEntry> entries = folderRepository.entries(newFolderPath, "dataset");
+        final Iterable<FolderEntry> entries = folderRepository.entries(newFolderPath, FolderEntry.ContentType.DATASET);
 
         entries.forEach(folderEntry -> {
             DataSetMetadata dataSetEntry = dataSetMetadataRepository.get(folderEntry.getContentId());
@@ -545,7 +546,7 @@ public class DataSetService {
                 datasetLock.unlock();
             }
         }
-        FolderEntry folderEntry = new FolderEntry("dataset", dataSetId);
+        FolderEntry folderEntry = new FolderEntry(FolderEntry.ContentType.DATASET, dataSetId);
 
         folderRepository.moveFolderEntry(folderEntry, folderPath, newFolderPath);
     }
@@ -575,7 +576,7 @@ public class DataSetService {
 
         // delete the associated folder entries
         // TODO make this async?
-        for( FolderEntry folderEntry : folderRepository.findFolderEntries( dataSetId, "dataset" )){
+        for( FolderEntry folderEntry : folderRepository.findFolderEntries( dataSetId, FolderEntry.ContentType.DATASET )){
             folderRepository.removeFolderEntry( folderEntry.getFolderId(), //
                                                 folderEntry.getContentId(), //
                                                 folderEntry.getContentType() );
