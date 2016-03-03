@@ -1,15 +1,15 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
 
 describe('Datagrid directive', function () {
     'use strict';
@@ -29,7 +29,7 @@ describe('Datagrid directive', function () {
         stateMock = {
             playground: {
                 filter: {gridFilters: []},
-                grid: {dataView: dataViewMock, selectedColumn : {id: '0001'}, selectedLine : {'0001': '1'}},
+                grid: {dataView: dataViewMock, selectedColumn: {id: '0001'}, selectedLine: {'0001': '1'}},
                 lookup: {visibility: false}
             }
         };
@@ -54,8 +54,9 @@ describe('Datagrid directive', function () {
         DatagridGridService.initGrid = function (parentId) {
             grid = realInitGrid(parentId);
             spyOn(grid, 'invalidate').and.returnValue();
-            spyOn(grid, 'scrollRowToTop').and.returnValue();
             spyOn(grid, 'resizeCanvas').and.returnValue();
+            spyOn(grid, 'scrollRowToTop').and.returnValue();
+            spyOn(grid, 'setActiveCell').and.returnValue();
 
             return grid;
         };
@@ -147,7 +148,7 @@ describe('Datagrid directive', function () {
 
                 expect(DatagridColumnService.createColumns.calls.count()).toBe(1);
 
-                stateMock.playground.data = {metadata:{}};
+                stateMock.playground.data = {metadata: {}};
                 scope.$digest();
                 $timeout.flush(300);
 
@@ -155,7 +156,7 @@ describe('Datagrid directive', function () {
                 expect(DatagridColumnService.createColumns.calls.count()).toBe(2);
             }));
 
-            it('should focus on wanted column (not necessarily the selected column) in async mode with a 300ms delay', inject(function($timeout, DatagridGridService) {
+            it('should focus on wanted column (not necessarily the selected column) in async mode with a 300ms delay', inject(function ($timeout, DatagridGridService) {
                 //given
                 createElement();
 
@@ -237,11 +238,11 @@ describe('Datagrid directive', function () {
         });
     });
 
-    describe('on grid selection change', function() {
+    describe('on grid selection change', function () {
         var data = {metadata: {columns: [{id: '0000'}, {id: '0001'}]}, preview: false};
         var previewData = {metadata: {columns: [{id: '0000'}, {id: '0001'}]}, preview: true};
 
-        it('should reset grid styles when there is no selected line', inject(function($timeout, DatagridStyleService) {
+        it('should reset grid styles when there is no selected line', inject(function ($timeout, DatagridStyleService) {
             //given
             createElement();
             stateMock.playground.data = data;
@@ -258,7 +259,7 @@ describe('Datagrid directive', function () {
             expect(DatagridStyleService.resetStyles).toHaveBeenCalledWith('0001');
         }));
 
-        it('should only update columns styles (not the entire grid style) when there is a selected line', inject(function($timeout, DatagridStyleService) {
+        it('should only update columns styles (not the entire grid style) when there is a selected line', inject(function ($timeout, DatagridStyleService) {
             //given
             createElement();
             stateMock.playground.data = data;
@@ -275,7 +276,7 @@ describe('Datagrid directive', function () {
             expect(DatagridStyleService.updateColumnClass).toHaveBeenCalledWith('0001');
         }));
 
-        it('should update suggestions panel in async mode', inject(function($timeout, DatagridExternalService) {
+        it('should update suggestions panel in async mode', inject(function ($timeout, DatagridExternalService) {
             //given
             createElement();
             stateMock.playground.data = data;
@@ -306,7 +307,7 @@ describe('Datagrid directive', function () {
             expect(DatagridExternalService.updateSuggestionPanel).not.toHaveBeenCalled();
         }));
 
-        it('should highlight cells containing the same value as selected cell in async mode with a 500ms delay when there is a selected line', inject(function($timeout, DatagridStyleService) {
+        it('should highlight cells containing the same value as selected cell in async mode with a 500ms delay when there is a selected line', inject(function ($timeout, DatagridStyleService) {
             //given
             createElement();
             stateMock.playground.data = data;
@@ -323,7 +324,7 @@ describe('Datagrid directive', function () {
             expect(DatagridStyleService.highlightCellsContaining).toHaveBeenCalledWith('0001', 'tata');
         }));
 
-        it('should NOT highlight cells when in preview mode', inject(function($timeout, DatagridStyleService) {
+        it('should NOT highlight cells when in preview mode', inject(function ($timeout, DatagridStyleService) {
             //given
             createElement();
             stateMock.playground.data = previewData;
@@ -339,7 +340,7 @@ describe('Datagrid directive', function () {
             expect(DatagridStyleService.highlightCellsContaining).not.toHaveBeenCalled();
         }));
 
-        it('should NOT highlight cells when there is no selected line', inject(function($timeout, DatagridStyleService) {
+        it('should NOT highlight cells when there is no selected line', inject(function ($timeout, DatagridStyleService) {
             //given
             createElement();
             stateMock.playground.data = data;
@@ -353,6 +354,22 @@ describe('Datagrid directive', function () {
 
             //then
             expect(DatagridStyleService.highlightCellsContaining).not.toHaveBeenCalled();
+        }));
+
+        it('should set active cell in grid', inject(() => {
+            //given
+            createElement();
+            stateMock.playground.data = data;
+            scope.$digest();
+            expect(grid.setActiveCell).not.toHaveBeenCalled();
+
+            //when
+            stateMock.playground.grid.selectedLine = {'0000': 'toto', '0001': 'tata'};
+            stateMock.playground.grid.selectedColumn = {id: '0001'};
+            scope.$digest();
+
+            //then
+            expect(grid.setActiveCell).toHaveBeenCalled();
         }));
     });
 });

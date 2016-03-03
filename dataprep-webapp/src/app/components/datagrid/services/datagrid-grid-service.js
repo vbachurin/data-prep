@@ -1,15 +1,15 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
 
 /**
  * @ngdoc service
@@ -24,7 +24,7 @@
  * @requires data-prep.datagrid.service:DatagridTooltipService
  */
 export default function DatagridGridService($timeout, StateService, state, DatagridService, DatagridStyleService, DatagridColumnService,
-                             DatagridSizeService, DatagridExternalService, DatagridTooltipService) {
+                                            DatagridSizeService, DatagridExternalService, DatagridTooltipService) {
     'ngInject';
 
     var grid = null;
@@ -40,19 +40,6 @@ export default function DatagridGridService($timeout, StateService, state, Datag
         initGrid: initGrid,
         navigateToFocusedColumn: navigateToFocusedColumn
     };
-
-    //--------------------------------------------------------------------------------------------------------------
-    /**
-     * @ngdoc method
-     * @name attachLongTableListeners
-     * @methodOf data-prep.datagrid.service:DatagridGridService
-     * @description Update the grid selection in app state and trigger a digest
-     * @param {object} col The column metadata
-     * @param {object} line The line record
-     */
-    function updateGridSelection(col, line) {
-        $timeout(StateService.setGridSelection.bind(null, col, line));
-    }
 
     /**
      * @ngdoc method
@@ -79,20 +66,23 @@ export default function DatagridGridService($timeout, StateService, state, Datag
      */
     function attachGridStateListeners() {
         grid.onActiveCellChanged.subscribe(function (e, args) {
-            if (angular.isDefined(args.cell)) {
-                var column = grid.getColumns()[args.cell];
-                updateGridSelection(column.tdpColMetadata, args.row);
-            } else {
-                updateGridSelection(state.playground.grid.selectedColumn, null);
-            }
+            $timeout(() => {
+                if (angular.isDefined(args.cell)) {
+                    var column = grid.getColumns()[args.cell];
+                    StateService.setGridSelection(column.tdpColMetadata, args.row);
+
+                } else {
+                    StateService.setGridSelection(state.playground.grid.selectedColumn, null);
+                }
+            });
         });
 
         grid.onHeaderContextMenu.subscribe(function (e, args) {
-            updateGridSelection(args.column.tdpColMetadata, null);
+            $timeout(StateService.setGridSelection.bind(null, args.column.tdpColMetadata, null));
         });
 
         grid.onHeaderClick.subscribe(function (e, args) {
-            updateGridSelection(args.column.tdpColMetadata, null);
+            $timeout(StateService.setGridSelection.bind(null, args.column.tdpColMetadata, null));
         });
     }
 

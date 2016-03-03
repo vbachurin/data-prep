@@ -1,15 +1,15 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
 
 /**
  * @ngdoc directive
@@ -33,7 +33,7 @@
  * @restrict E
  */
 export default function Datagrid($timeout, state, DatagridGridService, DatagridColumnService, DatagridStyleService, DatagridSizeService,
-                  DatagridTooltipService, DatagridExternalService) {
+                                 DatagridTooltipService, DatagridExternalService) {
     'ngInject';
 
     return {
@@ -41,7 +41,7 @@ export default function Datagrid($timeout, state, DatagridGridService, DatagridC
         templateUrl: 'app/components/datagrid/datagrid.html',
         bindToController: true,
         controllerAs: 'datagridCtrl',
-        controller: function() {
+        controller: function () {
             this.state = state;
             this.datagridTooltipService = DatagridTooltipService;
         },
@@ -179,10 +179,10 @@ export default function Datagrid($timeout, state, DatagridGridService, DatagridC
                 if (grid) {
                     //Update column style
                     $timeout.cancel(columnStyleTimeout);
-                    columnStyleTimeout = $timeout(function() {
+                    columnStyleTimeout = $timeout(function () {
                         var selectedColumnId = getSelectedColumn() && getSelectedColumn().id;
 
-                        if(getSelectedLine()) {
+                        if (getSelectedLine()) {
                             DatagridStyleService.updateColumnClass(selectedColumnId);
                         }
                         else {
@@ -207,13 +207,25 @@ export default function Datagrid($timeout, state, DatagridGridService, DatagridC
              */
             var onSelectionChange = function onSelectionChange() {
                 if (grid) {
+                    const stateSelectedLine = getSelectedLine();
+                    const stateSelectedColumn = getSelectedColumn();
+                    const stateGridData = getData();
+
                     $timeout.cancel(cellHighlightTimeout);
-                    var stateSelectedLine = getSelectedLine();
-                    if (getData() && !getData().preview && stateSelectedLine) {
-                        cellHighlightTimeout = $timeout(function() {
-                            var colId = getSelectedColumn() && getSelectedColumn().id;
-                            DatagridStyleService.highlightCellsContaining(colId, stateSelectedLine[colId]);
-                        }, 500, false);
+                    if (stateSelectedLine && stateSelectedColumn) {
+                        const lineIndex = state.playground.grid.dataView.getIdxById(stateSelectedLine.tdpId);
+                        const columnIndex = grid.getColumnIndex(stateSelectedColumn.id);
+                        grid.setActiveCell(lineIndex, columnIndex);
+                    }
+
+                    if (stateSelectedLine && stateGridData && !stateGridData.preview) {
+                        const colId = stateSelectedColumn && stateSelectedColumn.id;
+                        const content = stateSelectedLine[colId];
+                        cellHighlightTimeout = $timeout(
+                            DatagridStyleService.highlightCellsContaining.bind(null, colId, content),
+                            500,
+                            false
+                        );
                     }
                 }
             };
