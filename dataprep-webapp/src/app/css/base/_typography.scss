@@ -22,13 +22,9 @@ body {
   font-weight: normal;
 }
 
-h1, h5 {
-  margin-top: 0px;
+h1 {
+  margin-top: 0;
   font-weight: 200;
-}
-
-h5 {
-  color: $secondary-title;
 }
 
 button {
