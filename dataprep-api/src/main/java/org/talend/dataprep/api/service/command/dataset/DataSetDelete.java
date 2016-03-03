@@ -91,11 +91,12 @@ public class DataSetDelete extends GenericCommand<Void> {
     private List<Preparation> getPreparationsForDataSet() throws IOException {
         // execute preparation api
         PreparationListForDataSet preparationsForDataSet = context.getBean(PreparationListForDataSet.class, client, dataSetId);
-        InputStream jsonInput = preparationsForDataSet.execute();
-        // parse and return the response
-        ObjectMapper mapper = builder.build();
-        return mapper.readValue(jsonInput, new TypeReference<List<Preparation>>() {
-        });
+        try (InputStream jsonInput = preparationsForDataSet.execute()) {
+            // parse and return the response
+            ObjectMapper mapper = builder.build();
+            return mapper.readValue(jsonInput, new TypeReference<List<Preparation>>() {
+            });
+        }
     }
 
 }

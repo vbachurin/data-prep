@@ -49,6 +49,9 @@ public class DataSetGetMetadata extends GenericCommand<DataSetMetadata> {
             } catch (IOException e) {
                 throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
             }
+            finally {
+                req.releaseConnection();
+            }
         });
     }
 

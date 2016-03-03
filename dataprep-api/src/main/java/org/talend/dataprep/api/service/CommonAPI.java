@@ -76,17 +76,23 @@ public class CommonAPI extends APIService {
         // get dataset api errors
         HttpClient client = getClient();
         HystrixCommand<InputStream> datasetErrors = getCommand(ErrorList.class, client, PreparationAPI.DATASET_GROUP, DATASET);
-        writeErrorsFromApi(generator, datasetErrors.execute());
+        try (InputStream errorsInput = datasetErrors.execute()) {
+            writeErrorsFromApi(generator, errorsInput);
+        }
 
         // get preparation api errors
         HystrixCommand<InputStream> preparationErrors = getCommand(ErrorList.class, client, PreparationAPI.PREPARATION_GROUP,
                 PREPARATION);
-        writeErrorsFromApi(generator, preparationErrors.execute());
+        try (InputStream errorsInput = preparationErrors.execute()) {
+            writeErrorsFromApi(generator, errorsInput);
+        }
 
         // get transformation api errors
         HystrixCommand<InputStream> transformationErrors = getCommand(ErrorList.class, client, PreparationAPI.TRANSFORM_GROUP,
                 TRANSFORMATION);
-        writeErrorsFromApi(generator, transformationErrors.execute());
+        try (InputStream errorsInput = transformationErrors.execute()) {
+            writeErrorsFromApi(generator, errorsInput);
+        }
 
         // close the errors array
         generator.writeEndArray();

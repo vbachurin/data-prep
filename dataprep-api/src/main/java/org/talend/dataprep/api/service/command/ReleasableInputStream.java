@@ -108,7 +108,6 @@ public class ReleasableInputStream extends InputStream {
     private void safeClose() {
         try {
             LOG.debug("Safe close on stream using {}", onClose);
-
             onClose.run();
         } catch (Exception e) {
             LOG.error("Unable to invoke onClose closure.", e);

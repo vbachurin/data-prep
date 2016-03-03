@@ -56,6 +56,10 @@ public class HttpClient {
     @Value("${http.defaultKeepAlive:60}") // default is 60 seconds
     private int defaultKeepAlive;
 
+    /** Timeout in seconds used when requesting a connection from the connection manager. */
+    @Value("${http.pool.connectionRequestTimeout:30}") // default is 30 seconds
+    private int connectionRequestTimeout;
+
     /**
      * @return the http connection manager.
      */
@@ -90,6 +94,7 @@ public class HttpClient {
     private RequestConfig getRequestConfig() {
         return RequestConfig.custom() //
                 .setContentCompressionEnabled(true)
+                .setConnectionRequestTimeout(connectionRequestTimeout)
                 .build();
     }
 

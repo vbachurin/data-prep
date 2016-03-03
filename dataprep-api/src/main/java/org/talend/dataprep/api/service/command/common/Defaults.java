@@ -48,7 +48,10 @@ public class Defaults {
      * @return <code>null</code> whatever request or response contains.
      */
     public static <T> BiFunction<HttpRequestBase, HttpResponse, T> asNull() {
-        return (request, response) -> null;
+        return (request, response) -> {
+            request.releaseConnection();
+            return null;
+        };
     }
 
     /**

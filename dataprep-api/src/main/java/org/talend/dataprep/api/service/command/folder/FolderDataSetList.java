@@ -89,10 +89,11 @@ public class FolderDataSetList extends GenericCommand<FolderContent> {
                 // now get folders
                 final HystrixCommand<InputStream> foldersList = context.getBean(FoldersList.class, client, searchFolder);
 
-                List<Folder> folders = mapper.readValue(
-                        new ReleasableInputStream(foldersList.execute(), request::releaseConnection), //
-                        new TypeReference<List<Folder>>() {
-                });
+                List<Folder> folders;
+                try (ReleasableInputStream folderListInput = new ReleasableInputStream(foldersList.execute(), request::releaseConnection)) {
+                     folders = mapper.readValue(folderListInput, new TypeReference<List<Folder>>() {
+                    });
+                }
 
                 final Comparator<String> comparisonOrder;
                 switch (order.toUpperCase()) {
@@ -124,6 +125,9 @@ public class FolderDataSetList extends GenericCommand<FolderContent> {
                 return new FolderContent(datasets, folders);
             } catch (IOException e) {
                 throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
+            }
+            finally {
+                request.releaseConnection();
             }
         };
     }

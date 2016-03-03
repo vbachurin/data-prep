@@ -62,8 +62,6 @@ public class CreateOrUpdateDataSet extends GenericCommand<String> {
         });
         onError(e -> new TDPException(APIErrorCodes.UNABLE_TO_CREATE_OR_UPDATE_DATASET, e));
         on(HttpStatus.NO_CONTENT, HttpStatus.ACCEPTED).then(emptyString());
-        on(HttpStatus.OK).then((req, res) -> {
-            return asString().apply(req, res); // Return response as String
-        });
+        on(HttpStatus.OK).then(asString());
     }
 }

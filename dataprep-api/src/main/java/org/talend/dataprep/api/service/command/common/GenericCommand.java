@@ -1,15 +1,15 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.api.service.command.common;
 
@@ -99,14 +99,14 @@ public class GenericCommand<T> extends HystrixCommand<T> {
         commandResponseHeaders = response.getAllHeaders();
 
         final HttpStatus status = HttpStatus.valueOf(response.getStatusLine().getStatusCode());
-        
+
         // do we have a behavior for this status code (even an error) ?
         // if yes use it
         BiFunction<HttpRequestBase, HttpResponse, T> function = behavior.get(status);
         if (function != null) {
             return function.apply(request, response);
         }
-        
+
         // handle response's HTTP status
         if (status.is4xxClientError() || status.is5xxServerError()) {
             // Http status >= 400 so apply onError behavior
