@@ -20,7 +20,7 @@
            class="inventory-search">
     <div class="inventory" id="search-inventory-list">
         <div class="inventory-list">
-            <div ng-repeat="preparation in $ctrl.state.inventory.preparations track by preparation.id">
+            <div ng-repeat="preparation in $ctrl.results.preparations track by preparation.id">
                 <inventory-item
                         item="preparation"
                         type="preparation"
@@ -29,7 +29,7 @@
                 </inventory-item>
             </div>
 
-            <div ng-repeat="folder in $ctrl.state.inventory.currentFolderContent.folders track by folder.path">
+            <div ng-repeat="folder in $ctrl.results.folders track by folder.path">
                 <inventory-item
                         item="folder"
                         type="folder"
@@ -38,7 +38,7 @@
                 </inventory-item>
             </div>
 
-            <div ng-repeat="dataset in $ctrl.state.inventory.currentFolderContent.datasets track by dataset.id"
+            <div ng-repeat="dataset in $ctrl.results.datasets track by dataset.id"
                  id="found_dataset_{{$index}}">
                 <inventory-item
                         details="DATASET_DETAILS"

@@ -16,7 +16,7 @@
  * @name data-prep.inventory-search.controller:InventorySearchCtrl
  * @description InventorySearchCtrl controller.
  */
-export default function InventorySearchCtrl($state, $stateParams, state, EasterEggsService, UploadWorkflowService, StateService) {
+export default function InventorySearchCtrl($state, $stateParams, state, EasterEggsService, UploadWorkflowService, StateService, InventoryService) {
     'ngInject';
     var vm = this;
     vm.state = state;
@@ -28,8 +28,8 @@ export default function InventorySearchCtrl($state, $stateParams, state, EasterE
 
     vm.searchInput = '';
     vm.search = function () {
-        // just in case something funny happens...
-        //EasterEggsService.enableEasterEgg(vm.searchInput);
+        InventoryService.search(vm.searchInput)
+        .then((response)=> vm.results = response);
     };
 
     vm.goToFolder = function goToFolder(folder) {

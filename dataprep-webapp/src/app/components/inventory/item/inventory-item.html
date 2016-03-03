@@ -47,7 +47,7 @@
         </talend-editable-text>
         <span ng-if="!inventoryItemCtrl.open || !inventoryItemCtrl.rename"
               class="inventory-title"
-              ng-bind="inventoryItemCtrl.item.name"></span>
+              ng-bind-html="inventoryItemCtrl.item.name"></span>
         <div class="inventory-description">{{inventoryItemCtrl.details | translate:inventoryItemCtrl.item}}</div>
     </div>
 

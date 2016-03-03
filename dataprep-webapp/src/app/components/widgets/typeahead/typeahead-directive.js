@@ -175,20 +175,17 @@ export default function Typeahead($window) {
                     windowElement.off('scroll', positionMenu);
                 });
 
-                scope.$watch(
-                    function () {
-                        return ctrl.searchString;
-                    },
-                    function (value) {
-                        if (value) {
-                            var isVisible = menu.hasClass('show-menu');
-                            if (!isVisible) {
-                                showMenu();
-                            }
-                        } else {
-                            hideMenu();
+                scope.$watch('ctrl.searchString', function (newValue) {
+                    if (newValue) {
+                        var isVisible = menu.hasClass('show-menu');
+                        if (!isVisible) {
+                            showMenu();
                         }
-                    });
+                        ctrl.onChange(newValue)
+                    } else {
+                        hideMenu();
+                    }
+                });
             }
         }
     };

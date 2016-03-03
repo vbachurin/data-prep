@@ -12,6 +12,10 @@
   ============================================================================*/
 
 .inventory-search {
+
+  .highlighted{
+    font-weight: 900;
+  }
   .inventory{
     .inventory-entry {
       @include flex-basis(50px);
@@ -48,7 +52,7 @@
 
         .inventory-title {
           font-size: 1.0em;
-          font-weight: 700;
+          font-weight: normal;
           text-transform: uppercase;
           overflow: hidden;
           cursor: pointer;

@@ -29,7 +29,8 @@ import InventorySearchCtrl from './inventory-search-controller';
             'data-prep.services.easter-eggs',
             'talend.widget',
             'data-prep.services.datasetWorkflowService',
-            'data-prep.services.state'
+            'data-prep.services.state',
+            'data-prep.services.inventory'
         ])
         .component('inventorySearch', {
             templateUrl: 'app/components/inventory/search/inventory-search.html',
