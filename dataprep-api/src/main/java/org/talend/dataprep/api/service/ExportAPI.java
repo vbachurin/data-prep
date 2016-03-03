@@ -65,15 +65,18 @@ public class ExportAPI extends APIService {
             }
             input.setArguments(arguments);
             final GenericCommand<InputStream> command = getCommand(Export.class, getClient(), input);
-            final InputStream commandInputStream = command.execute();
 
             // copy all headers from the command response so that the mime-type is correctly forwarded for instance
-            final Header[] commandResponseHeaders = command.getCommandResponseHeaders();
-            for (Header header : commandResponseHeaders) {
-                HttpResponseContext.header(header.getName(), header.getValue());
+            try (InputStream commandInputStream = command.execute()) {
+
+                final Header[] commandResponseHeaders = command.getCommandResponseHeaders();
+                for (Header header : commandResponseHeaders) {
+                    HttpResponseContext.header(header.getName(), header.getValue());
+                }
+
+                IOUtils.copyLarge(commandInputStream, output);
+                output.flush();
             }
-            IOUtils.copyLarge(commandInputStream, output);
-            output.flush();
         } catch (Exception e) {
             throw new TDPException(APIErrorCodes.UNABLE_TO_EXPORT_CONTENT, e);
         }
@@ -86,9 +89,9 @@ public class ExportAPI extends APIService {
     @ApiOperation(value = "Get the available format types")
     @Timed
     public void exportTypes(final OutputStream output) {
-        try {
-            final HystrixCommand<InputStream> command = getCommand(ExportTypes.class, getClient());
-            IOUtils.copyLarge(command.execute(), output);
+        final HystrixCommand<InputStream> command = getCommand(ExportTypes.class, getClient());
+        try (InputStream commandResult = command.execute()) {
+            IOUtils.copyLarge(commandResult, output);
             output.flush();
         } catch (Exception e) {
             throw new TDPException(APIErrorCodes.UNABLE_TO_EXPORT_CONTENT, e);

@@ -149,7 +149,7 @@ public class LookupRowMatcher implements DisposableBean {
             // update the cache no matter what so that the next joinValue may be already cached !
             if (!cache.containsKey(nextRowJoinValue)) {
                 cache.put(nextRowJoinValue, nextRow.clone());
-                LOGGER.debug("row found and cached for {} -> {}", nextRowJoinValue, nextRow.values());
+                LOGGER.trace("row found and cached for {} -> {}", nextRowJoinValue, nextRow.values());
             }
 
             // if matching row is found, let's stop here
@@ -160,7 +160,7 @@ public class LookupRowMatcher implements DisposableBean {
 
         // the join value was not found and the cache is fully updated, so let's cache an empty row and return it
         cache.put(joinValue, this.emptyRow);
-        LOGGER.debug("no row found for {}, returning an empty row", joinValue);
+        LOGGER.trace("no row found for {}, returning an empty row", joinValue);
         return this.emptyRow;
     }
 
@@ -199,4 +199,8 @@ public class LookupRowMatcher implements DisposableBean {
         }
     }
 
+    @Override
+    public String toString() {
+        return "LookupRowMatcher{url='" + url + '}';
+    }
 }

@@ -70,10 +70,10 @@ public class TransformAPI extends APIService {
         // Asks transformation service for all actions for column type and domain
         HystrixCommand<InputStream> getSuggestedActions = getCommand(ColumnActions.class, client, body);
         // Returns actions
-        try {
+        try (InputStream commandResult = getSuggestedActions.execute()) {
             // olamy: this is weird to have to configure that manually whereas there is an annotation for the method!!
             HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
-            IOUtils.copyLarge(getSuggestedActions.execute(), output);
+            IOUtils.copyLarge(commandResult, output);
             output.flush();
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
@@ -99,10 +99,10 @@ public class TransformAPI extends APIService {
         // Asks transformation service for suggested actions for column type and domain
         HystrixCommand<InputStream> getSuggestedActions = getCommand(SuggestColumnActions.class, client, body);
         // Returns actions
-        try {
+        try (InputStream commandResult = getSuggestedActions.execute()) {
             // olamy: this is weird to have to configure that manually whereas there is an annotation for the method!!
             HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
-            IOUtils.copyLarge(getSuggestedActions.execute(), output);
+            IOUtils.copyLarge(commandResult, output);
             output.flush();
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
@@ -118,8 +118,8 @@ public class TransformAPI extends APIService {
     public void lineActions(OutputStream output) {
         final HttpClient client = getClient();
         final HystrixCommand<InputStream> getSuggestedActions = getCommand(LineActions.class, client);
-        try {
-            IOUtils.copyLarge(getSuggestedActions.execute(), output);
+        try (InputStream commandResult = getSuggestedActions.execute()) {
+            IOUtils.copyLarge(commandResult, output);
             output.flush();
         } catch (final IOException e) {
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
@@ -155,8 +155,10 @@ public class TransformAPI extends APIService {
 
             HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
             // trigger calls and return last execute content
-            IOUtils.copyLarge(getActionDynamicParams.execute(), output);
-            output.flush();
+            try (InputStream commandResult = getActionDynamicParams.execute()) {
+                IOUtils.copyLarge(commandResult, output);
+                output.flush();
+            }
         } catch (IOException e) {
             throw new TDPException(APIErrorCodes.UNABLE_TO_GET_DYNAMIC_ACTION_PARAMS, e);
         }

@@ -40,8 +40,7 @@ import org.talend.dataprep.exception.error.CommonErrorCodes;
  */
 @Component
 @Scope("request")
-public class MoveDataSet
-    extends GenericCommand<HttpResponse> {
+public class MoveDataSet extends GenericCommand<HttpResponse> {
 
     /**
      * Constructor.

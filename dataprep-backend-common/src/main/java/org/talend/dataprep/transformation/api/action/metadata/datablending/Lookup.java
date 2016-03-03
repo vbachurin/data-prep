@@ -1,15 +1,15 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.transformation.api.action.metadata.datablending;
 
@@ -66,11 +66,11 @@ public class Lookup extends ActionMetadata implements DataSetAction {
 
     /** Lookup parameters */
     public enum Parameters {
-                               LOOKUP_DS_NAME,
-                               LOOKUP_DS_ID,
-                               LOOKUP_JOIN_ON,
-                               LOOKUP_JOIN_ON_NAME, // needed to display human friendly parameters
-                               LOOKUP_SELECTED_COLS;
+                            LOOKUP_DS_NAME,
+                            LOOKUP_DS_ID,
+                            LOOKUP_JOIN_ON,
+                            LOOKUP_JOIN_ON_NAME, // needed to display human friendly parameters
+                            LOOKUP_SELECTED_COLS;
 
         /** Return a human readable key. */
         public String getKey() {
@@ -92,7 +92,6 @@ public class Lookup extends ActionMetadata implements DataSetAction {
 
     /** Adapted value of the dataset_id parameter. */
     private String adaptedDatasetIdValue = EMPTY;
-
 
     /**
      * @return A unique name used to identify action.
@@ -171,8 +170,7 @@ public class Lookup extends ActionMetadata implements DataSetAction {
         String joinOn = parameters.get(LOOKUP_JOIN_ON.getKey());
 
         // get the rowMatcher from context
-        LookupRowMatcher rowMatcher = context.get("rowMatcher",
- (p) -> {
+        LookupRowMatcher rowMatcher = context.get("rowMatcher", (p) -> {
             String dsUrl = getDataSetUrl(p.get(LOOKUP_DS_ID.getKey()));
             return applicationContext.getBean(LookupRowMatcher.class, dsUrl);
         });
@@ -187,8 +185,7 @@ public class Lookup extends ActionMetadata implements DataSetAction {
         colsToAdd.forEach(toAdd -> {
 
             // create the new column
-            String newColId = context.column(matchingRow.getRowMetadata().getById(toAdd.getId()).getName(),
-                    (r) -> {
+            String newColId = context.column(matchingRow.getRowMetadata().getById(toAdd.getId()).getName(), (r) -> {
                 final ColumnMetadata colMetadata = ColumnMetadata.Builder //
                         .column() //
                         .copy(matchingRow.getRowMetadata().getById(toAdd.getId())) //

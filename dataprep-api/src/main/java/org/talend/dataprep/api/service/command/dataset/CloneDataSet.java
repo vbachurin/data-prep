@@ -61,15 +61,13 @@ public class CloneDataSet extends GenericCommand<HttpResponse> {
                 if (StringUtils.isNotEmpty(cloneName)) {
                     uriBuilder.addParameter("cloneName", cloneName);
                 }
-                HttpPut httpPut = new HttpPut(uriBuilder.build());
-
-                return httpPut;
+                return new HttpPut(uriBuilder.build());
             } catch (URISyntaxException e) {
                 throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
             }
         });
 
-        onError((e) -> new TDPException(APIErrorCodes.UNABLE_TO_COPY_DATASET_CONTENT, e,
+        onError(e -> new TDPException(APIErrorCodes.UNABLE_TO_COPY_DATASET_CONTENT, e,
                 ExceptionContext.build().put("id", dataSetId)));
 
         on(HttpStatus.OK, HttpStatus.BAD_REQUEST).then((httpRequestBase, httpResponse) -> {

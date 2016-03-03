@@ -58,9 +58,9 @@ public class PreparationAPI extends APIService {
         PreparationList.Format listFormat = PreparationList.Format.valueOf(format.toUpperCase());
         HttpClient client = getClient();
         HystrixCommand<InputStream> command = getCommand(PreparationList.class, client, listFormat);
-        try {
+        try (InputStream commandResult = command.execute()){
             HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
-            IOUtils.copyLarge(command.execute(), output);
+            IOUtils.copyLarge(commandResult, output);
             output.flush();
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Listed preparations (pool: {} )...", getConnectionStats());
@@ -150,11 +150,11 @@ public class PreparationAPI extends APIService {
         }
         HttpClient client = getClient();
         HystrixCommand<InputStream> command = getCommand(PreparationGet.class, client, preparationId);
-        try {
+        try (InputStream commandResult = command.execute()) {
             // You cannot use Preparation object mapper here: to serialize steps & actions, you'd need a version
             // repository not available at API level. Code below copies command result direct to response.
             HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
-            IOUtils.copyLarge(command.execute(), output);
+            IOUtils.copyLarge(commandResult, output);
             output.flush();
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Retrieved preparation details (pool: {} )...", getConnectionStats());
@@ -289,9 +289,9 @@ public class PreparationAPI extends APIService {
     @Timed
     public void previewDiff(@RequestBody
     final PreviewDiffInput input, final OutputStream output) {
-        try {
-            final HystrixCommand<InputStream> transformation = getCommand(PreviewDiff.class, getClient(), input);
-            IOUtils.copyLarge(transformation.execute(), output);
+        final HystrixCommand<InputStream> transformation = getCommand(PreviewDiff.class, getClient(), input);
+        try (InputStream commandResult = transformation.execute()){
+            IOUtils.copyLarge(commandResult, output);
             output.flush();
         } catch (Exception e) {
             throw new TDPException(APIErrorCodes.UNABLE_TO_TRANSFORM_DATASET, e);
@@ -302,9 +302,9 @@ public class PreparationAPI extends APIService {
     @ApiOperation(value = "Get a preview diff between the same step of the same preparation but with one step update.")
     public void previewUpdate(@RequestBody
     final PreviewUpdateInput input, final OutputStream output) {
-        try {
-            final HystrixCommand<InputStream> transformation = getCommand(PreviewUpdate.class, getClient(), input);
-            IOUtils.copyLarge(transformation.execute(), output);
+        final HystrixCommand<InputStream> transformation = getCommand(PreviewUpdate.class, getClient(), input);
+        try (InputStream commandResult = transformation.execute()){
+            IOUtils.copyLarge(commandResult, output);
             output.flush();
         } catch (Exception e) {
             throw new TDPException(APIErrorCodes.UNABLE_TO_TRANSFORM_DATASET, e);
@@ -316,9 +316,9 @@ public class PreparationAPI extends APIService {
     public void previewAdd(@RequestBody
     @Valid
     final PreviewAddInput input, final OutputStream output) {
-        try {
-            final HystrixCommand<InputStream> transformation = getCommand(PreviewAdd.class, getClient(), input);
-            IOUtils.copyLarge(transformation.execute(), output);
+        final HystrixCommand<InputStream> transformation = getCommand(PreviewAdd.class, getClient(), input);
+        try (InputStream commandResult = transformation.execute()){
+            IOUtils.copyLarge(commandResult, output);
             output.flush();
         } catch (Exception e) {
             throw new TDPException(APIErrorCodes.UNABLE_TO_TRANSFORM_DATASET, e);

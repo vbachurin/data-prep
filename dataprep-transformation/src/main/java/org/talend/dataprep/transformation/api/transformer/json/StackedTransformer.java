@@ -177,7 +177,7 @@ public class StackedTransformer implements Transformer {
             final List<DataSetRowAction> allActions = parsedActions.getRowTransformers();
             final TransformerWriter writer = writersService.getWriter(configuration.formatId(), configuration.output(), configuration.getArguments());
 
-            TransformationContext context = new TransformationContext();
+            TransformationContext context = configuration.getTransformationContext();
             ExtendedStream<DataSetRow> records = BaseTransformer.baseTransform(input.getRecords(), allActions, context);
             // Write records
             Deque<DataSetRow> processingRows = new ArrayDeque<>();

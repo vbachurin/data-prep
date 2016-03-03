@@ -36,9 +36,7 @@ import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetad
  */
 public final class TransformationContext {
 
-    /**
-     * This class' logger.
-     */
+    /** This class' logger. */
     private static final Logger LOGGER = LoggerFactory.getLogger(TransformationContext.class);
 
     /** Map of action context for each action instance within a transformation. */
@@ -64,6 +62,7 @@ public final class TransformationContext {
      */
     public void put(String key, Object value) {
         context.put(key, value);
+        LOGGER.debug("adding {}->{} to the context", key, value);
     }
 
     /**
@@ -84,6 +83,7 @@ public final class TransformationContext {
     }
 
     public void freezeActionContexts() {
+        LOGGER.debug("freezing action contexts");
         contexts.replaceAll((action, actionContext) -> actionContext.asImmutable());
     }
 
@@ -101,10 +101,13 @@ public final class TransformationContext {
      * Cleanup transformation context.
      */
     public void cleanup() {
-        for (ActionContext context : getAllActionsContexts()) {
-            context.getContextEntries().stream().filter(contextEntry -> contextEntry instanceof DisposableBean)
+        final Collection<ActionContext> allActionsContexts = getAllActionsContexts();
+        LOGGER.debug("cleaning up {} action context(s) ", allActionsContexts.size());
+        for (ActionContext currentContext : allActionsContexts) {
+            currentContext.getContextEntries().stream().filter(contextEntry -> contextEntry instanceof DisposableBean)
                     .forEach(contextEntry -> {
                         try {
+                            LOGGER.debug("destroy {}", contextEntry);
                             ((DisposableBean) contextEntry).destroy();
                         } catch (Exception error) {
                             LOGGER.warn("error cleaning action context {}", contextEntry, error);
@@ -117,7 +120,7 @@ public final class TransformationContext {
      * Returns a transformation context specific to the current action. Use this to create columns (see
      * {@link ActionContext#column(String, Function)} for more details.
      *
-     * @param action
+     * @param action The action to create the context for.
      */
     public ActionContext create(DataSetRowAction action) {
         if (contexts.containsKey(action)) {
@@ -125,6 +128,7 @@ public final class TransformationContext {
         } else {
             ActionContext actionContext = new ActionContext(this);
             contexts.put(action, actionContext);
+            LOGGER.debug("adding new ActionContext for {}", action);
             return actionContext;
         }
     }
@@ -133,7 +137,7 @@ public final class TransformationContext {
      * Returns a transformation context specific to the current action. Use this to create columns (see
      * {@link ActionContext#column(String, Function)} for more details.
      *
-     * @param action
+     * @param action the action to get the context from.
      */
     public ActionContext in(DataSetRowAction action) {
         if (contexts.containsKey(action)) {
@@ -150,4 +154,5 @@ public final class TransformationContext {
     public DataSetRow getPreviousRow() {
         return previousRow;
     }
+
 }
