@@ -81,6 +81,7 @@ export default function Typeahead($window) {
                 }
 
                 function positionMenu() {
+                    menu.css('width', input[0].getBoundingClientRect().width + 'px');
                     positionHorizontalMenu();
                     positionVerticalMenu();
                 }

@@ -16,7 +16,8 @@
 <typeahead search-string="$ctrl.searchInput"
            on-change="$ctrl.search"
            force-side="left"
-           close-on-select="true">
+           close-on-select="true"
+           class="inventory-search">
     <div class="inventory" id="search-inventory-list">
         <div class="inventory-list">
             <div ng-repeat="preparation in $ctrl.state.inventory.preparations track by preparation.id">

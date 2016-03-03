@@ -25,7 +25,7 @@
             <img src="/assets/images/inventory/generic_file.png" ng-switch-default/>
             <img ng-src="/assets/images/certification-{{inventoryItemCtrl.item.certificationStep | lowercase}}.png"
                  class="pin"
-                 ng-if="inventoryItemCtrl.item.certificationStep!='NONE'"/>
+                 ng-if="inventoryItemCtrl.item.certificationStep!='NONE' && inventoryItemCtrl.open"/>
         </div>
 
         <div class="preparation-icon-div" ng-switch-when="preparation" data-icon="c">
@@ -124,7 +124,7 @@
            translate-once-title="CERTIFY_ACTION"
            translate-values="{type: inventoryItemCtrl.type, name: inventoryItemCtrl.item.name}"
            ng-click="inventoryItemCtrl.processCertification(inventoryItemCtrl.item)"></a>
-        <a data-icon="f" ng-if="inventoryItemCtrl.type !== 'folder'"
+        <a data-icon="f" ng-if="inventoryItemCtrl.open && inventoryItemCtrl.type !== 'folder'"
            class="btn-icon btn-transparent favorite"
            translate-once-title="FAVORITE_ACTION"
            translate-values="{type: inventoryItemCtrl.type, name: inventoryItemCtrl.item.name}"
