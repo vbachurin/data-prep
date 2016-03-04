@@ -24,6 +24,7 @@ export default function TransformationApplicationService(state, PlaygroundServic
 
     return {
         append: append,
+        editCell: editCell,
         appendClosure: appendClosure
     };
 
@@ -36,6 +37,30 @@ export default function TransformationApplicationService(state, PlaygroundServic
      */
     function append(action, scope, params) {
         return appendClosure(action, scope)(params);
+    }
+
+    /**
+     * @ngdoc method
+     * @name editCell
+     * @methodOf data-prep.services.transformation.service:TransformationApplicationService
+     * @param {Object} rowItem The row
+     * @param {object} column The column where to execute the transformation
+     * @param {string} newValue The new value to put on th target
+     * @param {boolean} updateAllCellWithValue Indicates the scope (cell or column) of the transformaton
+     * @description Perform a cell or a column edition
+     */
+    function editCell(rowItem, column, newValue, updateAllCellWithValue) {
+        const action = {name: 'replace_on_value'};
+        const scope = updateAllCellWithValue ? 'column' : 'cell';
+        const params = {
+            cell_value: {
+                token: rowItem[column.id],
+                operator: 'equals'
+            },
+            replace_value: newValue
+        };
+
+        return append(action, scope, params);
     }
 
     /**

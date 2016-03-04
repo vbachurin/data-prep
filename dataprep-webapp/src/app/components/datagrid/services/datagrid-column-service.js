@@ -23,9 +23,9 @@
  * @requires data-prep.datagrid.service:DatagridStyleService
  * @requires data-prep.services.playground.service:DatagridService
  * @requires data-prep.services.utils.service:ConverterService
- * @requires data-prep.services.playground.service:PlaygroundService
+ * @requires data-prep.services.transformation.service:TransformationApplicationService
  */
-export default function DatagridColumnService($rootScope, $compile, DatagridStyleService, ConverterService, PlaygroundService, $translate) {
+export default function DatagridColumnService($rootScope, $compile, $translate, DatagridStyleService, ConverterService, TransformationApplicationService) {
     'ngInject';
 
     var grid;
@@ -79,7 +79,7 @@ export default function DatagridColumnService($rootScope, $compile, DatagridStyl
             name: template,
             formatter: DatagridStyleService.columnFormatter(col),
             tdpColMetadata: col,
-            editor: preview ? null : Slick.Editors.TalendEditor(PlaygroundService.editCell, translatedMsg),
+            editor: preview ? null : Slick.Editors.TalendEditor(TransformationApplicationService.editCell, translatedMsg),
             preview: preview
         };
     }

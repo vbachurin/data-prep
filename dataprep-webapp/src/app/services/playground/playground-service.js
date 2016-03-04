@@ -58,7 +58,6 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
         appendStep: appendStep,
         updateStep: updateStep,
         removeStep: removeStep,
-        editCell: editCell,
 
         //Preview
         updatePreview: updatePreview,
@@ -395,40 +394,6 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
             .finally(function () {
                 $rootScope.$emit('talend.loading.stop');
             });
-    }
-
-    /**
-     * @ngdoc method
-     * @name editCell
-     * @methodOf data-prep.services.playground.service:PlaygroundService
-     * @param {Object} rowItem The row
-     * @param {object} column The column where to execute the transformation
-     * @param {string} newValue The new value to put on th target
-     * @param {boolean} updateAllCellWithValue Indicates the scope (cell or column) of the transformaton
-     * @description Perform a cell or a column edition
-     */
-    function editCell(rowItem, column, newValue, updateAllCellWithValue) {
-        /*jshint camelcase: false */
-        var params = {
-            scope: updateAllCellWithValue ? 'column' : 'cell',
-            column_id: column.id,
-            column_name: column.name,
-            row_id: rowItem.tdpId,
-            cell_value: {
-                token: rowItem[column.id],
-                operator: 'equals'
-            },
-            replace_value: newValue
-        };
-
-        if (state.playground.filter.applyTransformationOnFilters) {
-            var stepFilters = FilterAdapterService.toTree(state.playground.filter.gridFilters);
-            _.extend(params, stepFilters);
-        }
-
-        var action = 'replace_on_value';
-
-        return appendStep(action, params);
     }
 
     //------------------------------------------------------------------------------------------------------
