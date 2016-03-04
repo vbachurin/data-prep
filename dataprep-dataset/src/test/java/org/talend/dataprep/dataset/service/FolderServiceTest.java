@@ -19,12 +19,15 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.folder.Folder;
+import org.talend.dataprep.api.folder.FolderContent;
 import org.talend.dataprep.dataset.DataSetBaseTest;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -76,5 +79,37 @@ public class FolderServiceTest extends DataSetBaseTest {
                 .expect().statusCode(200).log().ifError()//
                 .when() //
                 .put("/folders").then().assertThat().statusCode(200);
+    }
+
+    private String  createFolderEntry(String path, String name) throws IOException {
+
+        return given().body(IOUtils.toString(this.getClass().getResourceAsStream("")))
+                .queryParam("Content-Type", "text/csv")
+                .queryParam("folderPath", path)
+                .queryParam("name", name).when().post("/datasets").asString();
+
+    }
+
+    @Test
+    public void shouldSearchInventory() throws Exception {
+        // given
+        createFolder("foo");
+        createFolder("foo/bar");
+        createFolder("foo/toto");
+        createFolderEntry("foo/toto", "bar");
+
+
+        // when
+        final String json = given().queryParam("path", "foo").queryParam("name","bar") //
+                .expect().statusCode(200).log().ifError()//
+                .when() //
+                .get("/inventory/search").asString();
+
+        //then
+        FolderContent folderContent = mapper.readValue(json, new TypeReference<FolderContent>(){});
+        assertThat(folderContent.getFolders().size(), is(1));
+        assertThat(folderContent.getDatasets().size(), is(1));
+        assertThat(folderContent.getFolders().get(0).getPath(), is("foo/bar"));
+        assertThat(folderContent.getDatasets().get(0).getName(), is("bar"));
     }
 }

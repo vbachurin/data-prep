@@ -232,4 +232,33 @@ public class FolderAPI extends APIService {
         return listCommand.execute();
     }
 
+    /**
+     * no javadoc here so see description in @ApiOperation notes.
+     *
+     * @param folderPath
+     * @param name
+     * @return
+     */
+    @RequestMapping(value = "/api/inventory/search", method = GET, consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "List the inventory of elements contained in a folder matching the given name", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Timed
+    public void inventorySearch(
+            @ApiParam(value = "Folder path") @RequestParam(defaultValue = "/", required = false) String folderPath,
+            @ApiParam(value = "Name") @RequestParam(defaultValue = "", required = false) String name, final OutputStream output
+            ) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Listing datasets (pool: {})...", getConnectionStats());
+        }
+        HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
+        HttpClient client = getClient();
+        HystrixCommand<InputStream> matchingName = getCommand(FolderInventorySearch.class, client, folderPath, name);
+        try(InputStream ios = matchingName.execute()){
+
+            IOUtils.copyLarge(ios, output);
+            output.flush();
+        }catch(IOException exc){
+            throw new TDPException(APIErrorCodes.UNABLE_TO_LIST_FOLDER_INVENTORY, exc);
+        }
+    }
+
 }
