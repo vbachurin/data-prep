@@ -37,7 +37,7 @@
         <span ng-if="!inventoryItemCtrl.open || !inventoryItemCtrl.rename"
               class="inventory-title"
               ng-bind="inventoryItemCtrl.item.name"></span>
-        <div class="inventory-description" translate="{{inventoryItemCtrl.details}}" translate-values="inventoryItemCtrl.item"></div>
+        <div class="inventory-description">{{inventoryItemCtrl.details | translate:inventoryItemCtrl.item}}</div>
     </div>
 
     <!-- Draft actions icons -->

@@ -27,6 +27,7 @@ import ActionsSuggestions from './actions-suggestions-directive';
      */
     angular.module('data-prep.actions-suggestions',
         [
+            'ui.router',
             'talend.widget',
             'data-prep.services.transformation',
             'data-prep.services.state'
