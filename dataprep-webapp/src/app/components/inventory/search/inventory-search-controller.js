@@ -15,8 +15,13 @@
  * @ngdoc controller
  * @name data-prep.inventory-search.controller:InventorySearchCtrl
  * @description InventorySearchCtrl controller.
+ * @requires data-prep.services.state.constant:state
+ * @requires data-prep.services.state.service:StateService
+ * @requires data-prep.services.inventory.service:InventoryService
+ * @requires data-prep.services.datasetWorkflowService:UploadWorkflowService
+ *
  */
-export default function InventorySearchCtrl($state, $stateParams, state, EasterEggsService, UploadWorkflowService, StateService, InventoryService) {
+export default function InventorySearchCtrl($state, $stateParams, state, UploadWorkflowService, StateService, InventoryService) {
     'ngInject';
     var vm = this;
     vm.state = state;
