@@ -39,7 +39,15 @@ function DataViewMock() {
 	};
 
 	//Must call setItems before to populate the data
+	//gets the index of the ID from the entire set of data
 	this.getIdxById = function (tdpId) {
+		var record = _.find(data, {tdpId: tdpId});
+		return record ? data.indexOf(record) : null;
+	};
+
+	//Must call setItems before to populate the data
+	//gets the index of a filtered grid
+	this.getRowById = function (tdpId) {
 		var record = _.find(data, {tdpId: tdpId});
 		return record ? data.indexOf(record) : null;
 	};

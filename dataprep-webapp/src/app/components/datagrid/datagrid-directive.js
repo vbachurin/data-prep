@@ -213,7 +213,7 @@ export default function Datagrid($timeout, state, DatagridGridService, DatagridC
 
                     $timeout.cancel(cellHighlightTimeout);
                     if (stateSelectedLine && stateSelectedColumn) {
-                        const lineIndex = state.playground.grid.dataView.getIdxById(stateSelectedLine.tdpId);
+                        const lineIndex = state.playground.grid.dataView.getRowById(stateSelectedLine.tdpId);
                         const columnIndex = grid.getColumnIndex(stateSelectedColumn.id);
                         grid.setActiveCell(lineIndex, columnIndex);
                     }
