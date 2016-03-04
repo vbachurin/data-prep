@@ -21,7 +21,7 @@
  * @requires data-prep.services.state.service:StateService
  * @requires data-prep.services.folder.service:FolderService
  */
-export default function DatasetXlsPreviewCtrl(state, $timeout, DatasetSheetPreviewService, DatasetService, PlaygroundService, StateService, FolderService) {
+export default function DatasetXlsPreviewCtrl($timeout, $state, $stateParams, state, DatasetSheetPreviewService, DatasetService, PlaygroundService, StateService) {
     'ngInject';
 
     var vm = this;
@@ -64,14 +64,14 @@ export default function DatasetXlsPreviewCtrl(state, $timeout, DatasetSheetPrevi
      */
     vm.setDatasetSheet = function () {
         DatasetSheetPreviewService.setDatasetSheet(vm.selectedSheetName)
-            .then(function () {
-                DatasetService.refreshDatasets();
-                FolderService.getContent(state.inventory.currentFolder);
+            .then(() => {
+                vm.visible = false;
             })
-            .then(function () {
-                vm.state = false;
-            })
-            .then(PlaygroundService.initPlayground.bind(null, vm.metadata));
+            .then(() => {
+                StateService.setPreviousState('nav.index.datasets');
+                StateService.setPreviousStateOptions({folderPath: $stateParams.folderPath});
+                $state.go('playground.dataset', {datasetid: vm.metadata.id});
+            });
     };
 
     $timeout(initGrid);
@@ -85,7 +85,7 @@ export default function DatasetXlsPreviewCtrl(state, $timeout, DatasetSheetPrevi
  * This list is bound to {@link data-prep.services.dataset.service:DatasetSheetPreviewService DatasetSheetPreviewService}.showModal
  */
 Object.defineProperty(DatasetXlsPreviewCtrl.prototype,
-    'state', {
+    'visible', {
         enumerable: true,
         configurable: false,
         get: function () {
