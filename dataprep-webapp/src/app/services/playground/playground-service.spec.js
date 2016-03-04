@@ -1022,10 +1022,24 @@ describe('Playground Service', function () {
         });
 
         describe('edit cell', function () {
-            it('should append cell edition step', inject(function ($rootScope, PlaygroundService, PreparationService) {
+            it('should append cell edition step', inject(function ($rootScope, PlaygroundService, PreparationService, FilterAdapterService) {
                 //given
                 var preparationId = '64f3543cd466f545';
                 stateMock.playground.preparation = {id: preparationId};
+
+                var type = 'inside_range';
+                var colId = '0001';
+                var args = {
+                    interval: [1000, 2000],
+                    type: 'integer',
+                    label: '[1,000 .. 2,000['
+                };
+                var filter = FilterAdapterService.createFilter(type, colId, null, null, args, null, null);
+
+                stateMock.playground.filter = {
+                    applyTransformationOnFilters : true,
+                    gridFilters : [filter]
+                };
 
                 var rowItem = {tdpId: 58, '0000': 'McDonald', '0001': 'Ronald'};
                 var column = {id: '0001', name: 'firstname'};
@@ -1046,7 +1060,16 @@ describe('Playground Service', function () {
                         token: 'Ronald',
                         operator: 'equals'
                     },
-                    replace_value: 'Donald'
+                    replace_value: 'Donald',
+                    filter:{
+                        range:{
+                            field:'0001',
+                            start:1000,
+                            end:2000,
+                            type:'integer',
+                            label:'[1,000 .. 2,000['
+                        }
+                    }
                 };
                 expect(PreparationService.appendStep).toHaveBeenCalledWith(
                     preparationId,
@@ -1055,10 +1078,24 @@ describe('Playground Service', function () {
             }));
 
             describe('append history', function () {
-                it('should add undo/redo actions after append transformation', inject(function ($rootScope, PlaygroundService, HistoryService) {
+                it('should add undo/redo actions after append transformation', inject(function ($rootScope, PlaygroundService, HistoryService, FilterAdapterService) {
                     //given
                     var preparationId = '64f3543cd466f545';
                     stateMock.playground.preparation = {id: preparationId};
+
+                    var type = 'inside_range';
+                    var colId = '0001';
+                    var args = {
+                        interval: [1000, 2000],
+                        type: 'integer',
+                        label: '[1,000 .. 2,000['
+                    };
+                    var filter = FilterAdapterService.createFilter(type, colId, null, null, args, null, null);
+
+                    stateMock.playground.filter = {
+                        applyTransformationOnFilters : true,
+                        gridFilters : [filter]
+                    };
 
                     var rowItem = {tdpId: 58, '0000': 'McDonald', '0001': 'Ronald'};
                     var column = {id: '0001', name: 'firstname'};

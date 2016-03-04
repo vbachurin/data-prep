@@ -29,13 +29,14 @@
  * @requires data-prep.services.onboarding.service:OnboardingService
  * @requires data-prep.services.utils.service:MessageService
  * @requires data-prep.services.export.service:ExportService
+ * @requires data-prep.services.filter.service:FilterAdapterService
  */
 export default function PlaygroundService($state, $rootScope, $q, $translate, $timeout,
                                           state, StateService,
                                           DatasetService, DatagridService, PreviewService,
                                           PreparationService, PreparationListService,
                                           RecipeService, TransformationCacheService,
-                                          StatisticsService, HistoryService,
+                                          StatisticsService, HistoryService, FilterAdapterService,
                                           OnboardingService, MessageService, ExportService) {
     'ngInject';
 
@@ -419,6 +420,12 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
             },
             replace_value: newValue
         };
+
+        if (state.playground.filter.applyTransformationOnFilters) {
+            var stepFilters = FilterAdapterService.toTree(state.playground.filter.gridFilters);
+            _.extend(params, stepFilters);
+        }
+
         var action = 'replace_on_value';
 
         return appendStep(action, params);
