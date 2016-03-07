@@ -17,11 +17,11 @@ import static org.talend.dataprep.transformation.api.action.metadata.category.Ac
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataUtils;
 
@@ -59,9 +59,10 @@ public class DeleteInvalid extends AbstractDelete {
     }
 
     @Override
-    public boolean toDelete(ColumnMetadata colMetadata, Map<String, String> parsedParameters, String value) {
+    public boolean toDelete(ActionContext context, String value) {
         // update invalid values of column metadata to prevent unnecessary future analysis
-        if (ActionMetadataUtils.checkInvalidValue(colMetadata, value)) {
+        final ColumnMetadata column = context.getRowMetadata().getById(context.getColumnId());
+        if (ActionMetadataUtils.checkInvalidValue(column, value)) {
             return true;
         }
         // valid value

@@ -16,10 +16,8 @@ package org.talend.dataprep.transformation.api.action.metadata.delete;
 import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.DATA_CLEANSING;
 
 import java.util.EnumSet;
-import java.util.Map;
 import java.util.Set;
 
-import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
@@ -41,12 +39,12 @@ public abstract class AbstractDelete extends ActionMetadata implements ColumnAct
     /**
      * Return true if the given value should be deleted.
      *
-     * @param colMetadata      the column metadata.
-     * @param parsedParameters the delete action parameters.
+     *
+     * @param context
      * @param value            the value to delete.
      * @return true if the given value should be deleted.
      */
-    public abstract boolean toDelete(final ColumnMetadata colMetadata, final Map<String, String> parsedParameters, final String value);
+    public abstract boolean toDelete(ActionContext context, final String value);
 
     /**
      * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext)
@@ -55,8 +53,7 @@ public abstract class AbstractDelete extends ActionMetadata implements ColumnAct
     public void applyOnColumn(DataSetRow row, ActionContext context) {
         final String columnId = context.getColumnId();
         final String value = row.get(columnId);
-        final ColumnMetadata colMetadata = context.getRowMetadata().getById(columnId);
-        if (toDelete(colMetadata, context.getParameters(), value)) {
+        if (toDelete(context, value)) {
             row.setDeleted(true);
         }
     }

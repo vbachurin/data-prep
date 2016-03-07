@@ -17,7 +17,6 @@ import static org.talend.dataprep.transformation.api.action.metadata.category.Ac
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -67,10 +66,10 @@ public class DeleteEmpty extends AbstractDelete implements ColumnAction {
     }
 
     /**
-     * @see AbstractDelete#toDelete(ColumnMetadata, Map, String)
+     * @see AbstractDelete#toDelete(ActionContext, String)
      */
     @Override
-    public boolean toDelete(final ColumnMetadata colMetadata, final Map<String, String> parsedParameters, final String value) {
+    public boolean toDelete(ActionContext context, final String value) {
         return value == null || value.trim().length() == 0;
     }
 }

@@ -2,10 +2,12 @@ package org.talend.dataprep.transformation.pipeline.model;
 
 import java.io.IOException;
 import java.util.ArrayDeque;
+import java.util.Collections;
 import java.util.Deque;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
@@ -109,6 +111,12 @@ public class DiffWriterNode implements Node, Monitored {
                     final RowMetadata initialMetadata = metadataStack.pop();
                     while (!metadataStack.isEmpty()) {
                         initialMetadata.diff(metadataStack.pop());
+                    }
+                    // Preview don't need statistics, so wipe them out
+                    for (ColumnMetadata column : initialMetadata.getColumns()) {
+                        column.getStatistics().setInvalid(0);
+                        column.getQuality().setInvalidValues(Collections.emptySet());
+                        column.getQuality().setInvalid(0);
                     }
                     writer.write(initialMetadata);
                 }

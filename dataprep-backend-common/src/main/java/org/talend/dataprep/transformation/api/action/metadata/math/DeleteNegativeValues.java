@@ -16,12 +16,12 @@ package org.talend.dataprep.transformation.api.action.metadata.math;
 import static org.talend.dataprep.api.type.Type.NUMERIC;
 
 import java.math.BigDecimal;
-import java.util.Map;
 
 import org.springframework.stereotype.Component;
 import org.talend.daikon.number.BigDecimalParser;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.delete.AbstractDelete;
 
@@ -53,10 +53,10 @@ public class DeleteNegativeValues extends AbstractDelete {
     }
 
     /**
-     * @see AbstractDelete#toDelete(ColumnMetadata, Map, String)
+     * @see AbstractDelete#toDelete(ActionContext, String)
      */
     @Override
-    public boolean toDelete(ColumnMetadata colMetadata, Map<String, String> parsedParameters, String value) {
+    public boolean toDelete(ActionContext context, String value) {
         if (value == null) {
             return false;
         }
