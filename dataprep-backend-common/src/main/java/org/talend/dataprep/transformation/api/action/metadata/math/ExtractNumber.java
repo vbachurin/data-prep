@@ -15,8 +15,6 @@ package org.talend.dataprep.transformation.api.action.metadata.math;
 import java.math.BigDecimal;
 import java.text.CharacterIterator;
 import java.text.DecimalFormat;
-import java.text.MessageFormat;
-import java.text.NumberFormat;
 import java.text.StringCharacterIterator;
 import java.util.HashMap;
 import java.util.List;
@@ -47,7 +45,7 @@ public class ExtractNumber extends ActionMetadata implements ColumnAction {
 
     public static final String EXTRACT_NUMBER_ACTION_NAME = "extract_number"; //$NON-NLS-1$
 
-    public static String DECIMAL_SEPARATOR = "compare_mode"; //$NON-NLS-1$
+    public static String DECIMAL_SEPARATOR = "decimal_separator"; //$NON-NLS-1$
 
     public static String DOT = ".";
 
