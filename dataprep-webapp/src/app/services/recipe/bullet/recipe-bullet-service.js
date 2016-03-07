@@ -109,7 +109,7 @@ export default function RecipeBulletService($timeout, state, RecipeService, Prev
      */
     function stepHoverEnd(step) {
         cancelPendingPreview();
-        previewTimeout = $timeout(PreviewService.cancelPreview.bind(null, false, step.column.id), 100, false);
+        previewTimeout = $timeout(PreviewService.cancelPreview.bind(null, false, step.column.id), 100);
     }
 
     //---------------------------------------------------------------------------------------------
