@@ -17,6 +17,10 @@
     font-weight: 900;
   }
   .inventory{
+    .no-results {
+      font-weight: 900;
+      padding-left: 10px;
+    }
     .inventory-entry {
       @include flex-basis(50px);
       @include flex-grow(0);
@@ -52,7 +56,7 @@
 
         .inventory-title {
           font-size: 1.0em;
-          font-weight: normal;
+          font-weight: 600;
           text-transform: uppercase;
           overflow: hidden;
           cursor: pointer;

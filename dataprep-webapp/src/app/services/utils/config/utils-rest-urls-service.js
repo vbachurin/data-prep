@@ -40,5 +40,6 @@ export default function RestURLs() {
         service.typesUrl = serverUrl + '/api/types';
         service.folderUrl = serverUrl + '/api/folders';
         service.mailUrl = serverUrl + '/api/mail';
+        service.inventoryUrl = serverUrl + '/api/inventory';
     }
 }

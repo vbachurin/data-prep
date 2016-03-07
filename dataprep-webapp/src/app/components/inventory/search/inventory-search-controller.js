@@ -34,7 +34,9 @@ export default function InventorySearchCtrl($state, $stateParams, state, UploadW
     vm.searchInput = '';
     vm.search = function () {
         InventoryService.search(vm.searchInput)
-        .then((response)=> vm.results = response);
+        .then((response)=> {
+                vm.results = response;
+        });
     };
 
     vm.goToFolder = function goToFolder(folder) {

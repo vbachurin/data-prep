@@ -51,16 +51,25 @@ export default function InventoryService($q, InventoryRestService, TextFormatSer
 
         searchPromise = InventoryRestService.search(searchValue, deferredCancel)
             .then((response) => {
-                _.chain(response.datasets)
-                    .map(highlightDisplayedLabels(searchValue))
-                    .value();
-                _.chain(response.preparations)
-                    .map(highlightDisplayedLabels(searchValue))
-                    .value();
-                _.chain(response.folders)
-                    .map(highlightDisplayedLabels(searchValue))
-                    .value();
-                return response;
+                if(response.data.datasets) {
+                    _.chain(response.data.datasets)
+                        .map(highlightDisplayedLabels(searchValue))
+                        .value();
+                }
+
+                if(response.data.preparations) {
+                    _.chain(response.data.preparations)
+                        .map(highlightDisplayedLabels(searchValue))
+                        .value();
+                }
+
+                if(response.data.folders) {
+                    _.chain(response.data.folders)
+                        .map(highlightDisplayedLabels(searchValue))
+                        .value();
+                }
+
+                return response.data;
             })
             .finally(() => searchPromise = null);
 

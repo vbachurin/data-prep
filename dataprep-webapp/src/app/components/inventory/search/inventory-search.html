@@ -19,7 +19,7 @@
            close-on-select="true"
            class="inventory-search">
     <div class="inventory" id="search-inventory-list">
-        <div class="inventory-list">
+        <div class="inventory-list" ng-if ="$ctrl.results.preparations.length || $ctrl.results.folders.length || $ctrl.results.datasets.length">
             <div ng-repeat="preparation in $ctrl.results.preparations track by preparation.id">
                 <inventory-item
                         item="preparation"
@@ -48,6 +48,9 @@
                         toggle-favorite="angular.noop">
                 </inventory-item>
             </div>
+        </div>
+        <div ng-if="$ctrl.results.preparations.length === 0 && $ctrl.results.folders.length === 0 && $ctrl.results.datasets.length === 0">
+            <span class="no-results" translate-once="NO_RESULTS"></span>
         </div>
     </div>
 </typeahead>

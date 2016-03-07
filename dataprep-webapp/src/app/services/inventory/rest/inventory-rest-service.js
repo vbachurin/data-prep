@@ -16,7 +16,7 @@
  * @name data-prep.services.inventory.service:InventoryRestService
  * @description Inventory service.
  */
-export default function InventoryRestService(state, $q, $http) {
+export default function InventoryRestService(state, $q, $http, RestURLs) {
     'ngInject';
 
     return {
@@ -31,16 +31,10 @@ export default function InventoryRestService(state, $q, $http) {
      * @param {Promise} deferredAbort abort request when resolved
      */
     function search(searchString, deferredAbort) {
-        return $q.when({
-            datasets: _.cloneDeep(state.inventory.currentFolderContent.datasets),
-            folders: _.cloneDeep(state.inventory.currentFolderContent.folders),
-            preparations: _.cloneDeep(state.inventory.preparations)
+        return $http({
+            url: RestURLs.inventoryUrl + '/search' + '?name=' + encodeURIComponent(searchString),
+            method: 'GET',
+            timeout: deferredAbort.promise
         });
-        //return $http({
-        //    url: RestURLs.datasetUrl,
-        //    method: 'POST',
-        //    timeout: deferredAbort.promise,
-        //    data: searchString
-        //});
     }
 }
