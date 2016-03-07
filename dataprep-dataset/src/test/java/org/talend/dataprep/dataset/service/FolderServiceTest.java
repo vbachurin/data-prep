@@ -20,12 +20,16 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.talend.dataprep.api.folder.Folder;
 import org.talend.dataprep.api.folder.FolderContent;
 import org.talend.dataprep.dataset.DataSetBaseTest;
@@ -33,12 +37,22 @@ import org.talend.dataprep.dataset.DataSetBaseTest;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.restassured.response.Response;
+import org.talend.dataprep.folder.store.FolderRepository;
 import org.talend.dataprep.inventory.Inventory;
 
 /**
  * Unit/integration tests for the FolderService
  */
 public class FolderServiceTest extends DataSetBaseTest {
+
+    @Autowired
+    private FolderRepository folderRepository;
+
+
+    @After
+    public void clear(){
+        folderRepository.clear();
+    }
 
     @Autowired
     private ObjectMapper mapper;
@@ -82,6 +96,18 @@ public class FolderServiceTest extends DataSetBaseTest {
                 .put("/folders").then().assertThat().statusCode(200);
     }
 
+    private void removeThenCreateFolder(String path) {
+
+        given().queryParam("path", path) //
+                .when() //
+                .delete("/folders");
+
+        given().queryParam("path", path) //
+                .expect().statusCode(200).log().ifError()//
+                .when() //
+                .put("/folders").then().assertThat().statusCode(200);
+    }
+
     private String  createFolderEntry(String path, String name) throws IOException {
 
         return given().body(IOUtils.toString(this.getClass().getResourceAsStream("")))
@@ -97,6 +123,7 @@ public class FolderServiceTest extends DataSetBaseTest {
         createFolder("foo");
         createFolder("foo/bar");
         createFolder("foo/toto");
+        createFolder("yoyo/bar/bari");
         createFolderEntry("foo/toto", "bar");
 
 

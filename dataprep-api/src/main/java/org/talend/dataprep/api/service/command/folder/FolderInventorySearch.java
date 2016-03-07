@@ -48,7 +48,7 @@ public class FolderInventorySearch extends GenericCommand<InputStream> {
         try {
 
             URIBuilder uriBuilder = new URIBuilder(datasetServiceUrl + "/inventory/search");
-            uriBuilder.addParameter("pathName", pathName);
+            uriBuilder.addParameter("path", pathName);
             uriBuilder.addParameter("name", name);
             return new HttpGet(uriBuilder.build());
 

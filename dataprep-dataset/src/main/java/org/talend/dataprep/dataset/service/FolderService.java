@@ -205,7 +205,7 @@ public class FolderService {
 
         Set<String> contentIds = new HashSet<>();
 
-        // retrieve elements contained in sub folders of path
+        // retrieve datasets contained in folders having path as prefix
         for (Folder folder : folders) {
             Set<String> entries = StreamSupport
                     .stream(folderRepository.entries(folder.getPath(), FolderEntry.ContentType.DATASET).spliterator(), false)
@@ -213,7 +213,7 @@ public class FolderService {
             contentIds.addAll(entries);
         }
 
-        // retrieve data sets contained in pathSet<String> entries = StreamSupport
+        // retrieve data sets contained the root of path
         Set<String> entries = StreamSupport
                 .stream(folderRepository.entries(path, FolderEntry.ContentType.DATASET).spliterator(), false)
                 .map(f -> f.getContentId()).collect(Collectors.toSet());
@@ -230,6 +230,7 @@ public class FolderService {
                     return new FolderInfo(f, nbDatasets, 0); // 0 because so far folder does not contain preparation
                 })
                 .collect(Collectors.toList());
+
         result.setFolders(folderList);
         result.setDatasets(datasets);
         result.setPreparations(Collections.emptyList());

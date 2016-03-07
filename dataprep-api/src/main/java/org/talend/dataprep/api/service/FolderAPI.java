@@ -243,7 +243,7 @@ public class FolderAPI extends APIService {
     @ApiOperation(value = "List the inventory of elements contained in a folder matching the given name", produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
     public void inventorySearch(
-            @ApiParam(value = "Folder path") @RequestParam(defaultValue = "/", required = false) String folderPath,
+            @ApiParam(value = "Folder path") @RequestParam(defaultValue = "", required = false) String folderPath,
             @ApiParam(value = "Name") @RequestParam(defaultValue = "", required = false) String name, final OutputStream output
             ) {
         if (LOG.isDebugEnabled()) {
