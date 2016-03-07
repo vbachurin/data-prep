@@ -39,8 +39,8 @@ describe('Suggestions stats directive', function() {
         createElement();
 
         //then
-        expect(element.find('talend-splitter').length).toBe(1);
-        expect(element.find('talend-splitter split-first-pane actions-suggestions').length).toBe(1);
-        expect(element.find('talend-splitter split-second-pane stats-details').length).toBe(1);
+        expect(element.find('sc-splitter').length).toBe(1);
+        expect(element.find('sc-splitter sc-split-first-pane actions-suggestions').length).toBe(1);
+        expect(element.find('sc-splitter sc-split-second-pane stats-details').length).toBe(1);
     }));
 });

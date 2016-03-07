@@ -40,7 +40,6 @@ import QualityBarCtrl from './quality-bar/widget-quality-bar-controller';
 import QualityBar from './quality-bar/widget-quality-bar-directive';
 import TalendSearchInput from './search/widget-search-input-directive';
 import TalendSlidable from './slidable/widget-slidable-directive';
-import TalendSplitter from './splitter/widget-splitter-component';
 import TalendTabsCtrl from './tabs/widget-tabs-controller';
 import TalendTabs from './tabs/widget-tabs-directive';
 import tabs from './tabs/widget-tabs-item-directive';
@@ -104,8 +103,6 @@ import TalendTooltip from './tooltip/widget-tooltip-directive';
         .directive('talendSearchInput', TalendSearchInput)
 
         .directive('talendSlidable', TalendSlidable)
-
-        .component('talendSplitter', TalendSplitter)
 
         .controller('TalendTabsCtrl', TalendTabsCtrl)
         .directive('talendTabs', TalendTabs)

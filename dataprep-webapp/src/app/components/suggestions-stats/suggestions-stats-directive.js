@@ -14,14 +14,14 @@
 const SuggestionsStats = {
     template: `
     <div id="suggestions-stats-details">
-        <talend-splitter orientation="vertical">
-            <split-first-pane id="help-suggestions">
+        <sc-splitter orientation="vertical">
+            <sc-split-first-pane id="help-suggestions">
                 <actions-suggestions class="suggestions-part"></actions-suggestions>
-            </split-first-pane>
-            <split-second-pane id="help-stats">
+            </sc-split-first-pane>
+            <sc-split-second-pane id="help-stats">
                 <stats-details class="stats-part"></stats-details>
-            </split-second-pane>
-        </talend-splitter>
+            </sc-split-second-pane>
+        </sc-splitter>
     </div>`
 };
 
