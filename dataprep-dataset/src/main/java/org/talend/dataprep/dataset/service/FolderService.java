@@ -18,6 +18,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 import static org.talend.daikon.exception.ExceptionContext.build;
 import static org.talend.dataprep.exception.error.DataSetErrorCodes.FOLDER_NOT_EMPTY;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -39,6 +40,8 @@ import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.DataSetErrorCodes;
 import org.talend.dataprep.folder.store.FolderRepository;
 import org.talend.dataprep.folder.store.NotEmptyFolderException;
+import org.talend.dataprep.inventory.FolderInfo;
+import org.talend.dataprep.inventory.Inventory;
 import org.talend.dataprep.metrics.Timed;
 
 import io.swagger.annotations.Api;
@@ -191,10 +194,10 @@ public class FolderService {
     @RequestMapping(value = "/inventory/search", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List the inventory of elements contained in a folder matching the given name", produces = APPLICATION_JSON_VALUE, notes = "List the inventory of elements contained in a folder matching the given name")
     @Timed
-    public FolderContent inventorySearch(@RequestParam(defaultValue = "", required = false) String path,
-            @RequestParam(defaultValue = "", required = true) String name) {
+    public Inventory inventorySearch(@RequestParam(defaultValue = "", required = false) String path,
+                                     @RequestParam(defaultValue = "", required = true) String name) {
 
-        FolderContent result = new FolderContent();
+        Inventory result = new Inventory();
         Iterable<Folder> folderIterable = folderRepository.allFolder();
 
         List<Folder> folders = StreamSupport.stream(folderIterable.spliterator(), false)
@@ -221,10 +224,15 @@ public class FolderService {
                 .filter(d -> d != null && d.getName() != null && d.getName().contains(name)).collect(Collectors.toList());
 
         // filter folders by name
-        List<Folder> folderList = StreamSupport.stream(folders.spliterator(), false).filter(f -> f.getName().contains(name))
+        List<FolderInfo> folderList = StreamSupport.stream(folders.spliterator(), false).filter(f -> f.getName().contains(name))
+                .map(f -> {
+                    int nbDatasets = (int) StreamSupport.stream(folderRepository.entries(f.getPath(), FolderEntry.ContentType.DATASET).spliterator(), false).count();
+                    return new FolderInfo(f, nbDatasets, 0); // 0 because so far folder does not contain preparation
+                })
                 .collect(Collectors.toList());
         result.setFolders(folderList);
         result.setDatasets(datasets);
+        result.setPreparations(Collections.emptyList());
         return result;
     }
 

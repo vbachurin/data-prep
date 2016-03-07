@@ -33,6 +33,7 @@ import org.talend.dataprep.dataset.DataSetBaseTest;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.restassured.response.Response;
+import org.talend.dataprep.inventory.Inventory;
 
 /**
  * Unit/integration tests for the FolderService
@@ -106,10 +107,11 @@ public class FolderServiceTest extends DataSetBaseTest {
                 .get("/inventory/search").asString();
 
         //then
-        FolderContent folderContent = mapper.readValue(json, new TypeReference<FolderContent>(){});
-        assertThat(folderContent.getFolders().size(), is(1));
-        assertThat(folderContent.getDatasets().size(), is(1));
-        assertThat(folderContent.getFolders().get(0).getPath(), is("foo/bar"));
-        assertThat(folderContent.getDatasets().get(0).getName(), is("bar"));
+        Inventory inventory = mapper.readValue(json, new TypeReference<Inventory>(){});
+        assertThat(inventory.getFolders().size(), is(1));
+        assertThat(inventory.getDatasets().size(), is(1));
+        assertThat(inventory.getPreparations().size(), is(0));
+        assertThat(inventory.getFolders().get(0).getPath(), is("foo/bar"));
+        assertThat(inventory.getDatasets().get(0).getName(), is("bar"));
     }
 }
