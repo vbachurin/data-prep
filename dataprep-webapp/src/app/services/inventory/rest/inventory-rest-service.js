@@ -16,7 +16,7 @@
  * @name data-prep.services.inventory.service:InventoryRestService
  * @description Inventory service.
  */
-export default function InventoryRestService(state, $q, $http, RestURLs) {
+export default function InventoryRestService($http, RestURLs) {
     'ngInject';
 
     return {
@@ -32,7 +32,7 @@ export default function InventoryRestService(state, $q, $http, RestURLs) {
      */
     function search(searchString, deferredAbort) {
         return $http({
-            url: RestURLs.inventoryUrl + '/search' + '?name=' + encodeURIComponent(searchString),
+            url: RestURLs.inventoryUrl + '/search?name=' + encodeURIComponent(searchString),
             method: 'GET',
             timeout: deferredAbort.promise
         });

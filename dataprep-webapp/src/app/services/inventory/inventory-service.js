@@ -56,19 +56,16 @@ export default function InventoryService($q, InventoryRestService, TextFormatSer
                         .map(highlightDisplayedLabels(searchValue))
                         .value();
                 }
-
                 if(response.data.preparations) {
                     _.chain(response.data.preparations)
                         .map(highlightDisplayedLabels(searchValue))
                         .value();
                 }
-
                 if(response.data.folders) {
                     _.chain(response.data.folders)
                         .map(highlightDisplayedLabels(searchValue))
                         .value();
                 }
-
                 return response.data;
             })
             .finally(() => searchPromise = null);
