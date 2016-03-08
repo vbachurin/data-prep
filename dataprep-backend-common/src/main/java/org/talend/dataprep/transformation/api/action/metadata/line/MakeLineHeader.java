@@ -71,17 +71,6 @@ public class MakeLineHeader extends ActionMetadata implements RowAction {
             }
             context.setRowMetadata(context.getRowMetadata().clone());
             row.setDeleted(true);
-        } else {
-            boolean hasChanged = false;
-            for (ColumnMetadata column : context.getRowMetadata().getColumns()) {
-                if (context.has(column.getId())) {
-                    column.setName(context.get(column.getId()));
-                    hasChanged = true;
-                } // else don't change (new column names are not yet known.
-            }
-            if (hasChanged) {
-                context.setRowMetadata(context.getRowMetadata().clone());
-            }
         }
     }
 

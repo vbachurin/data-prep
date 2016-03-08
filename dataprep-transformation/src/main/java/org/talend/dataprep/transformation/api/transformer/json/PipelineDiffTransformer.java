@@ -96,9 +96,6 @@ class PipelineDiffTransformer implements Transformer {
         final Long minIndex = isIndexLimited ? indexes.stream().mapToLong(Long::longValue).min().getAsLong() : 0L;
         final Long maxIndex = isIndexLimited ? indexes.stream().mapToLong(Long::longValue).max().getAsLong() : Long.MAX_VALUE;
         Predicate<DataSetRow> filter = isWithinWantedIndexes(minIndex, maxIndex);
-        if (isIndexLimited) {
-            filter = filter.and(r -> indexes.contains(r.getTdpId()));
-        }
         final Stream<DataSetRow> source = input.getRecords().filter(filter);
         // Run diff
         source.forEach(r -> mergePipelineNode.receive(r, rowMetadata));
