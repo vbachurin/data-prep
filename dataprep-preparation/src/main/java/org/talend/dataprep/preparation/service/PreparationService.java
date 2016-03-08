@@ -65,7 +65,7 @@ public class PreparationService {
     private static final Logger LOGGER = LoggerFactory.getLogger(PreparationService.class);
 
     @Autowired
-    private PreparationRepository preparationRepository = null;
+    private PreparationRepository preparationRepository;
 
     @Autowired
     private ActionMetadataValidation validator;
