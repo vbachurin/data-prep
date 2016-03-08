@@ -13,6 +13,7 @@
 
 package org.talend.dataprep.schema.xls;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
@@ -33,6 +34,12 @@ public class XlsFormatGuesserTest extends AbstractSchemaTestUtils {
     /** The format guesser to test. */
     @Autowired
     XlsFormatGuesser guesser;
+
+    @Test
+    public void format_guesser_accept() throws Exception {
+        assertTrue(guesser.accept("UTF-8"));
+        assertFalse(guesser.accept("UTF-16"));
+    }
 
     @Test
     public void shouldNotGuessBecauseEmptyFile() throws IOException {

@@ -21,6 +21,19 @@ import java.util.Map;
 public interface FormatGuesser {
 
     /**
+     * Implement this method in case the FormatGuesser implementation:
+     * <ul>
+     *     <li>Only support a fixed set of encodings</li>
+     *     <li>Auto detect encoding (in that case, accept only one encoding, e.g. UTF-8).</li>
+     * </ul>
+     *
+     * @param encoding A encoding as returned by {@link java.nio.charset.Charset#forName(String)}.
+     * @return <code>true</code> if <code>encoding</code> can be used in {@link #guess(SchemaParser.Request, String)}
+     * @see #guess(SchemaParser.Request, String)
+     */
+    boolean accept(String encoding);
+
+    /**
      * Guess the content type of the provided stream.
      *
      * @param request The Schema parser request. Content cannot be <code>null</code>.

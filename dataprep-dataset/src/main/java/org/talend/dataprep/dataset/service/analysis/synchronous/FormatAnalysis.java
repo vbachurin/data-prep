@@ -190,6 +190,11 @@ public class FormatAnalysis implements SynchronousDataSetAnalyzer {
             // Try to read content given certified encodings
             final Collection<Charset> availableCharsets = encodings.getSupportedCharsets();
             for (Charset charset : availableCharsets) {
+                if (!guesser.accept(charset.name())) {
+                    // Guesser does not support charset, skip it
+                    LOG.debug("Skip encoding {} for guesser {}.", charset.name(), guesser.getClass().getSimpleName());
+                    continue;
+                }
                 try (InputStream content = store.getAsRaw(metadata)) {
                     LOG.debug(marker, "try reading with {} encoded in {}", guesser.getClass().getSimpleName(), charset.name());
                     FormatGuesser.Result mediaType = guesser.guess(new SchemaParser.Request(content, metadata), charset.name());

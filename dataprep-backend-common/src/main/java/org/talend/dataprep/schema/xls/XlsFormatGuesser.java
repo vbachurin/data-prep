@@ -16,8 +16,10 @@ package org.talend.dataprep.schema.xls;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
+import java.nio.charset.Charset;
 import java.util.Collections;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.poi.POIXMLDocument;
 import org.apache.poi.poifs.filesystem.NPOIFSFileSystem;
 import org.apache.poi.util.IOUtils;
@@ -40,6 +42,11 @@ public class XlsFormatGuesser implements FormatGuesser {
     /** The fallback guess if the input is not Excel compliant. */
     @Autowired
     private UnsupportedFormatGuess fallbackGuess;
+
+    @Override
+    public boolean accept(String encoding) {
+        return ObjectUtils.equals(encoding, Charset.forName("UTF-8").name());
+    }
 
     @Override
     public FormatGuesser.Result guess(SchemaParser.Request request, String encoding) {

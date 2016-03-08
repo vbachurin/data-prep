@@ -19,6 +19,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,6 +41,13 @@ public class CSVFormatGuesserTest extends AbstractSchemaTestUtils {
     /** The format guesser to test. */
     @Autowired
     CSVFormatGuesser guesser;
+
+    @Test
+    public void format_guesser_accept() throws Exception {
+        for (Charset charset : Charset.availableCharsets().values()) {
+            assertTrue(guesser.accept(charset.name()));
+        }
+    }
 
     /**
      * Text file
