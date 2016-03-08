@@ -40,9 +40,9 @@ public class HtmlFormatTest extends AbstractSchemaTestUtils {
 
     private final static Logger logger = LoggerFactory.getLogger(HtmlFormatTest.class);
 
-    private static final String HEADER_SELECTOR = "html body table tbody tr th";
+    private static final String HEADER_SELECTOR = "html body table tr th";
 
-    private static final String VALUES_SELECTOR = "html body table tbody tr td";
+    private static final String VALUES_SELECTOR = "html body table tr td";
 
     @Autowired
     private HtmlSchemaParser parser;
@@ -115,7 +115,7 @@ public class HtmlFormatTest extends AbstractSchemaTestUtils {
 
         DataSetMetadata datasetMetadata = ioTestUtils.getSimpleDataSetMetadata();
 
-        datasetMetadata.setEncoding("UTF-8");
+        datasetMetadata.setEncoding("UTF-16");
 
         Map<String, String> parameters = new HashMap<>(2);
         parameters.put(HtmlFormatGuesser.HEADER_SELECTOR_KEY, HEADER_SELECTOR);

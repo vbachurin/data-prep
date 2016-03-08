@@ -113,9 +113,11 @@ public class HeadersContentHandler extends DefaultHandler {
      * @see DefaultHandler#characters(char[], int, int)
      */
     @Override
-    public void characters(char[] ch, int start, int length) throws SAXException {
+    public void characters(char[] chars, int start, int length) throws SAXException {
         if (readingHeaders) {
-            String headerValue = new String(ch);
+            char[] thechars = new char[length];
+            System.arraycopy( chars, start, thechars, 0, length );
+            String headerValue = new String(thechars);
             if (!valueFound) {
                 headerValues.add(headerValue);
             } else {

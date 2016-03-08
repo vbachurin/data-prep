@@ -90,9 +90,11 @@ public class ValuesContentHandler extends DefaultHandler {
     }
 
     @Override
-    public void characters(char[] ch, int start, int length) throws SAXException {
+    public void characters(char[] chars, int start, int length) throws SAXException {
         if (matchingValuePattern) {
-            String value = new String(ch);
+            char[] thechars = new char[length];
+            System.arraycopy( chars, start, thechars, 0, length );
+            String value = new String(thechars);
             LOGGER.debug("value: {}", value);
             if (values.isEmpty()) {
                 values.add(new ArrayList<>());

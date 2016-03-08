@@ -19,11 +19,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import nu.validator.htmlparser.sax.HtmlParser;
-
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.parser.ParseContext;
+import org.apache.tika.parser.html.HtmlParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.Type;
@@ -31,7 +31,6 @@ import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.schema.SchemaParser;
 import org.talend.dataprep.schema.SchemaParserResult;
-import org.xml.sax.InputSource;
 
 /**
  * This class is in charge of parsing html file to discover schema.
@@ -54,15 +53,14 @@ public class HtmlSchemaParser implements SchemaParser {
             Map<String, String> parameters = request.getMetadata().getContent().getParameters();
             final String headerSelector = parameters.get(HtmlFormatGuesser.HEADER_SELECTOR_KEY);
 
+            HeadersContentHandler headersContentHandler = new HeadersContentHandler(headerSelector, false);
+
+            InputStream inputStream = request.getContent();
             HtmlParser htmlParser = new HtmlParser();
 
-            HeadersContentHandler headersContentHandler = new HeadersContentHandler(headerSelector, false);
-            htmlParser.setContentHandler(headersContentHandler);
-            InputStream inputStream = request.getContent();
+            Metadata metadata = new Metadata();
 
-            InputSource inputSource = new InputSource(inputStream);
-            // no need to force the encoding the parser will discover it
-            htmlParser.parse(inputSource);
+            htmlParser.parse( inputStream, headersContentHandler, metadata, new ParseContext() );
 
 
             List<ColumnMetadata> columnMetadatas = new ArrayList<>(headersContentHandler.getHeaderValues().size());

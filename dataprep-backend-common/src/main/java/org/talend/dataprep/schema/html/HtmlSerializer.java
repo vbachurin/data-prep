@@ -13,14 +13,19 @@
 
 package org.talend.dataprep.schema.html;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 
-import nu.validator.htmlparser.sax.HtmlParser;
-
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.parser.ParseContext;
+import org.apache.tika.parser.html.HtmlParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.task.TaskExecutor;
@@ -30,7 +35,6 @@ import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.schema.Serializer;
-import org.xml.sax.InputSource;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -58,22 +62,23 @@ public class HtmlSerializer implements Serializer {
         }
     }
 
-    public Runnable doSerialize(InputStream rawContent, DataSetMetadata metadata, OutputStream jsonOutput) {
+    public Runnable doSerialize(InputStream rawContent, DataSetMetadata dataSetMetadata, OutputStream jsonOutput) {
 
         return () -> {
             try {
 
-                Map<String, String> parameters = metadata.getContent().getParameters();
+                Map<String, String> parameters = dataSetMetadata.getContent().getParameters();
                 String valuesSelector = parameters.get(HtmlFormatGuesser.VALUES_SELECTOR_KEY);
                 ValuesContentHandler valuesContentHandler = new ValuesContentHandler(valuesSelector);
-                HtmlParser htmlParser = new HtmlParser();
-                htmlParser.setContentHandler(valuesContentHandler);
-                htmlParser.parse(new InputSource(rawContent));
 
+                HtmlParser htmlParser = new HtmlParser();
+                Metadata metadata = new Metadata();
+
+                htmlParser.parse( rawContent, valuesContentHandler, metadata, new ParseContext() );
 
                 JsonGenerator generator = new JsonFactory().createGenerator(jsonOutput);
                 generator.writeStartArray(); // start the record
-                List<ColumnMetadata> columns = metadata.getRowMetadata().getColumns();
+                List<ColumnMetadata> columns = dataSetMetadata.getRowMetadata().getColumns();
 
                 for (List<String> values : valuesContentHandler.getValues()) {
 
@@ -106,7 +111,7 @@ public class HtmlSerializer implements Serializer {
                 // Consumer may very well interrupt consumption of stream (in case of limit(n) use for sampling).
                 // This is not an issue as consumer is allowed to partially consumes results, it's up to the
                 // consumer to ensure data it consumed is consistent.
-                LOGGER.debug("Unable to continue serialization for {}. Skipping remaining content.", metadata.getId(), e);
+                LOGGER.debug("Unable to continue serialization for {}. Skipping remaining content.", dataSetMetadata.getId(), e);
             } finally {
                 try {
                     jsonOutput.close();
