@@ -29,6 +29,11 @@ describe('Editable select directive', function() {
         };
     }));
 
+    afterEach(function () {
+        scope.$destroy();
+        element.remove();
+    });
+
     it('should render input and combobox', function() {
         //given
         scope.selectValues = ['val1', 'val2', 'val3'];

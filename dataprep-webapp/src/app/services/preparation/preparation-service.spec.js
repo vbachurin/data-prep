@@ -182,6 +182,36 @@ describe('Preparation Service', function () {
                 expect(StorageService.removeAllAggregations).toHaveBeenCalledWith(preparations[0].dataSetId, preparations[0].id);
             }));
         });
+
+
+        describe('open', () => {
+            it('should open a preparation', inject(($stateParams, $rootScope, $state, $timeout, StateService, PreparationService) => {
+                //given
+                spyOn($state, 'go').and.returnValue();
+                spyOn(StateService, 'setPreviousState').and.returnValue();
+                spyOn(StateService, 'setPreviousStateOptions').and.returnValue();
+
+                var preparation = {
+                    id: 'de618c62ef97b3a95b5c171bc077ffe22e1d6f79',
+                    dataSetId: 'dacd45cf-5bd0-4768-a9b7-f6c199581efc',
+                    author: 'anonymousUser'
+                };
+
+                $stateParams.folderPath = 'test/';
+
+                //when
+                PreparationService.open(preparation);
+                $rootScope.$digest();
+                $timeout.flush();
+
+                //then
+                expect(StateService.setPreviousState).toHaveBeenCalledWith('nav.index.datasets');
+                expect(StateService.setPreviousStateOptions).toHaveBeenCalledWith({folderPath: 'test/'});
+                expect($state.go).toHaveBeenCalledWith('playground.preparation', {prepid: preparation.id});
+            }));
+        });
+
+
     });
 
     describe('steps', () => {

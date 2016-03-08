@@ -24,7 +24,8 @@ import Navbar from './navbar-directive';
             'data-prep.services.feedback',
             'data-prep.services.onboarding',
             'data-prep.services.utils',
-            'data-prep.inventory-search'
+            'data-prep.inventory-search',
+            'data-prep.services.preparation'
         ])
         .controller('NavbarCtrl', NavbarCtrl)
         .directive('navbar', Navbar);

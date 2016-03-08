@@ -27,15 +27,17 @@
  * @requires data-prep.services.utils.service:MessageService
  * @requires data-prep.services.utils.service:StorageService
  * @requires data-prep.services.folder.service:FolderService
+ * @requires data-prep.services.preparation.service:PreparationService
  */
 export default function DatasetListCtrl($stateParams, $timeout, $state, $translate, state, StateService, DatasetService,
-                                        UploadWorkflowService, UpdateWorkflowService,
+                                        UploadWorkflowService, UpdateWorkflowService, PreparationService,
                                         TalendConfirmService, MessageService, FolderService, StorageService) {
     'ngInject';
     var vm = this;
 
     vm.datasetService = DatasetService;
     vm.uploadWorkflowService = UploadWorkflowService;
+    vm.preparationService = PreparationService;
     vm.state = state;
     vm.stateService = StateService;
     vm.messageService = MessageService;
@@ -101,19 +103,6 @@ export default function DatasetListCtrl($stateParams, $timeout, $state, $transla
                 StateService.setDatasetsOrder(oldOrder);
                 StorageService.setDatasetsOrder(oldOrder.id);
             });
-    };
-
-    /**
-     * @ngdoc method
-     * @name openPreparation
-     * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
-     * @description opens a preparation
-     * @param {object} preparation The preparation to open
-     */
-    vm.openPreparation = function openPreparation(preparation) {
-        StateService.setPreviousState('nav.index.datasets');
-        StateService.setPreviousStateOptions({folderPath: $stateParams.folderPath});
-        $state.go('playground.preparation', {prepid: preparation.id});
     };
 
     /**

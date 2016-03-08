@@ -23,17 +23,8 @@ export default function FolderCtrl($state, $stateParams, state, StateService, Fo
     'ngInject';
 
     var vm = this;
+    vm.folderService = FolderService;
     vm.state = state;
-
-    /**
-     * @ngdoc method
-     * @name goToFolder
-     * @methodOf data-prep.folder.controller:FolderCtrl
-     * @param {object} folder - the folder to go
-     */
-    vm.goToFolder = function goToFolder(folder) {
-        $state.go('nav.index.datasets', {folderPath : folder.path});
-    };
 
     /**
      * @ngdoc method

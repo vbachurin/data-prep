@@ -49,19 +49,8 @@ describe('Folder controller', function () {
                 $scope: scope
             });
         };
-        spyOn($state, 'go');
         spyOn(FolderService, 'populateMenuChildren').and.returnValue($q.when(true));
         spyOn(StateService, 'setMenuChildren').and.returnValue();
-    }));
-
-    it('should call goToFolder service', inject(function ($state) {
-        //when
-        var ctrl = createController();
-        ctrl.goToFolder({path: '', name: 'HOME'});
-        scope.$digest();
-
-        //then
-        expect($state.go).toHaveBeenCalledWith('nav.index.datasets',{ folderPath: '' });
     }));
 
     it('should call populateMenuChildren service', inject(function (FolderService, StateService) {

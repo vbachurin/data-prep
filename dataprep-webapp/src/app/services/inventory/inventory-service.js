@@ -28,7 +28,6 @@ export default function InventoryService($q, InventoryRestService, TextFormatSer
     /**
      * @ngdoc method
      * @name cancelPendingGetRequest
-     * @methodOf data-prep.services.lookup.service:InventoryService
      * @description Cancel the pending search GET request
      */
     function cancelPendingGetRequest() {
@@ -43,6 +42,7 @@ export default function InventoryService($q, InventoryRestService, TextFormatSer
      * @name search
      * @methodOf data-prep.services.lookup.service:InventoryService
      * @param {String} searchValue string
+     * @description Search inventory items
      */
     function search(searchValue) {
         cancelPendingGetRequest();
@@ -51,29 +51,45 @@ export default function InventoryService($q, InventoryRestService, TextFormatSer
 
         searchPromise = InventoryRestService.search(searchValue, deferredCancel)
             .then((response) => {
-                if(response.data.datasets) {
-                    _.chain(response.data.datasets)
-                        .map(highlightDisplayedLabels(searchValue))
-                        .value();
-                }
-                if(response.data.preparations) {
-                    _.chain(response.data.preparations)
-                        .map(highlightDisplayedLabels(searchValue))
-                        .value();
-                }
-                if(response.data.folders) {
-                    _.chain(response.data.folders)
-                        .map(highlightDisplayedLabels(searchValue))
-                        .value();
-                }
-                return response.data;
+                return addHtmlLabels(searchValue, response.data);
             })
             .finally(() => searchPromise = null);
 
         return searchPromise;
     }
 
+    /**
+     * @ngdoc method
+     * @name addHtmlLabels
+     * @param {String} searchValue string
+     * @param {Object} data data to process
+     * @description add html label to data based on searchValue
+     */
+    function addHtmlLabels(searchValue, data) {
+        if(data.datasets) {
+            _.chain(data.datasets)
+                .map(highlightDisplayedLabels(searchValue))
+                .value();
+        }
+        if(data.preparations) {
+            _.chain(data.preparations)
+                .map(highlightDisplayedLabels(searchValue))
+                .value();
+        }
+        if(data.folders) {
+            _.chain(data.folders)
+                .map(highlightDisplayedLabels(searchValue))
+                .value();
+        }
+        return data;
+    }
 
+    /**
+     * @ngdoc method
+     * @name highlightDisplayedLabels
+     * @param {String} searchValue string
+     * @description define property to highlight
+     */
     function highlightDisplayedLabels(searchValue) {
         return function (item) {
             highlight(item, 'name', searchValue);
@@ -81,6 +97,14 @@ export default function InventoryService($q, InventoryRestService, TextFormatSer
         };
     }
 
+    /**
+     * @ngdoc method
+     * @name highlight
+     * @param {Object} object
+     * @param {Integer} key
+     * @param {String} highlightText text to highlight
+     * @description highlight an item of the object
+     */
     function highlight(object, key, highlightText) {
         var originalValue = object[key];
         if (originalValue.toLowerCase().indexOf(highlightText) !== -1) {

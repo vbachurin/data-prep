@@ -133,17 +133,20 @@ describe('Typeahead directive', function () {
         });
 
         it('should stop mousedown propagation on dropdown-menu mousedown', function () {
-            //given
+            //Given
             var bodyMouseDown = false;
-            angular.element('body').mousedown(function () {
+            var  mouseDownCallBack = function () {
                 bodyMouseDown = true;
-            });
+            };
+            angular.element('body').mousedown(mouseDownCallBack);
 
             //when
             element.find('.dropdown-menu').mousedown();
 
             //then
             expect(bodyMouseDown).toBe(false);
+
+            angular.element('body').off('mousedown', mouseDownCallBack);
         });
 
         it('should hide dropdown menu on ESC', function () {

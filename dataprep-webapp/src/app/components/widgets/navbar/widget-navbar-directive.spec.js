@@ -40,6 +40,11 @@ describe('Navbar directive', function() {
         $compile(element)(scope);
         scope.$digest();
     }));
+
+    afterEach(function () {
+        scope.$destroy();
+        element.remove();
+    });
     
     it('should remove navigation-menu "show" class', function() {
         //then

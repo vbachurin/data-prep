@@ -18,12 +18,12 @@
     <li ng-repeat="folder in folderCtrl.state.inventory.foldersStack track by $index" id="folder_{{$index}}">
       <talend-dropdown>
         <div class="dropdown-container">
-          <a ng-click="folderCtrl.goToFolder(folder)" title="{{folder.name}}">{{folder.name}}</a>
+          <a ng-click="folderCtrl.folderService.goToFolder('nav.index.datasets', {folderPath : folder.path})" title="{{folder.name}}">{{folder.name}}</a>
           <span class="dropdown-action">
             <a class="dropdown-button" ng-click="folderCtrl.initMenuChildren(folder)"></a>
           </span>
           <ul class="dropdown-menu" ng-show="folderCtrl.state.inventory.menuChildren.length">
-            <li ng-repeat="child in folderCtrl.state.inventory.menuChildren" ng-click="folderCtrl.goToFolder(child)" title="{{child.name}}">
+            <li ng-repeat="child in folderCtrl.state.inventory.menuChildren" ng-click="folderCtrl.folderService.goToFolder('nav.index.datasets', {folderPath : child.path})" title="{{child.name}}">
               {{child.name}}
             </li>
           </ul>

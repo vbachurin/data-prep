@@ -19,33 +19,30 @@
  * @requires data-prep.services.state.service:StateService
  * @requires data-prep.services.inventory.service:InventoryService
  * @requires data-prep.services.datasetWorkflowService:UploadWorkflowService
+ * @requires data-prep.services.folder.service:FolderService
+ * @requires data-prep.services.preparation.service:PreparationService
  *
  */
-export default function InventorySearchCtrl($state, $stateParams, state, UploadWorkflowService, StateService, InventoryService) {
+export default function InventorySearchCtrl($state, $stateParams, state, UploadWorkflowService, StateService, InventoryService, FolderService, PreparationService) {
     'ngInject';
     var vm = this;
     vm.state = state;
     vm.uploadWorkflowService = UploadWorkflowService;
-
-    //--------------------------------------------------------------------------------------------------------------
-    //----------------------------------------------SEARCH----------------------------------------------------------
-    //--------------------------------------------------------------------------------------------------------------
+    vm.folderService = FolderService;
+    vm.preparationService = PreparationService;
 
     vm.searchInput = '';
+
+    /**
+     * @ngdoc method
+     * @name search
+     * @methodOf data-prep.inventory-search.controller:InventorySearchCtrl
+     * @description Search based on searchInput
+     */
     vm.search = function () {
         InventoryService.search(vm.searchInput)
         .then((response)=> {
                 vm.results = response;
         });
-    };
-
-    vm.goToFolder = function goToFolder(folder) {
-        $state.go('nav.index.datasets', {folderPath: folder.path});
-    };
-
-    vm.openPreparation = function openPreparation(preparation) {
-        StateService.setPreviousState('nav.index.datasets');
-        StateService.setPreviousStateOptions({folderPath: $stateParams.folderPath});
-        $state.go('playground.preparation', {prepid: preparation.id});
     };
 }

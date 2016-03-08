@@ -20,7 +20,7 @@
  * @requires data-prep.services.folder.service:FolderRestService
  * @requires data-prep.services.utils.service:StorageService
  */
-export default function FolderService($translate, state, StateService, FolderRestService, StorageService) {
+export default function FolderService($state, $translate, state, StateService, FolderRestService, StorageService) {
     'ngInject';
 
     var ROOT_FOLDER = {
@@ -39,6 +39,7 @@ export default function FolderService($translate, state, StateService, FolderRes
         remove: FolderRestService.remove,
         search: FolderRestService.search,
         getContent: getContent,
+        goToFolder: goToFolder,
 
         // shared folder ui mngt
         populateMenuChildren: populateMenuChildren,
@@ -141,6 +142,16 @@ export default function FolderService($translate, state, StateService, FolderRes
         if (savedSortOrder) {
             StateService.setDatasetsOrder(_.find(state.inventory.orderList, {id: savedSortOrder}));
         }
+    }
+
+    /**
+     * @ngdoc method
+     * @methodOf data-prep.folder.controller:FolderCtrl
+     * @name goToFolder
+     * @description go into a folder
+     */
+    function goToFolder(stateString, options) {
+        $state.go(stateString, options);
     }
 
 }

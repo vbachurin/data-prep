@@ -18,8 +18,10 @@
  * @requires data-prep.services.utils.service:StorageService
  * @requires data-prep.services.preparation.service:PreparationListService
  * @requires data-prep.services.preparation.service:PreparationRestService
+ * @requires data-prep.services.folder.service:FolderService
+ * @requires data-prep.services.state.service:StateService
  */
-export default function PreparationService($q, state, StorageService, PreparationListService, PreparationRestService) {
+export default function PreparationService($stateParams, $q, state, StateService, StorageService, PreparationListService, PreparationRestService, FolderService) {
     'ngInject';
 
     return {
@@ -36,6 +38,7 @@ export default function PreparationService($q, state, StorageService, Preparatio
         clone: PreparationListService.clone,
         delete: deletePreparation,
         setName: setName,
+        open: open,
 
         //preparation steps lifecycle
         copyImplicitParameters: copyImplicitParameters,
@@ -185,4 +188,20 @@ export default function PreparationService($q, state, StorageService, Preparatio
     function paramsHasChanged(step, newParams) {
         return JSON.stringify(newParams) !== JSON.stringify(step.actionParameters.parameters);
     }
+
+
+    /**
+     * @ngdoc method
+     * @name open
+     * @methodOf data-prep.services.preparation.service:PreparationService
+     * @param {object} preparation
+     * @description open a preparation
+     */
+    function open(preparation) {
+        StateService.setPreviousState('nav.index.datasets');
+        StateService.setPreviousStateOptions({folderPath: $stateParams.folderPath});
+        FolderService.goToFolder('playground.preparation', {prepid: preparation.id});
+    }
+
+
 }

@@ -36,6 +36,11 @@ describe('Upload File directive', function() {
         };
     }));
 
+    afterEach(function () {
+        scope.$destroy();
+        element.remove();
+    });
+
     it('should trigger click on input', function() {
         //given
         createElement();

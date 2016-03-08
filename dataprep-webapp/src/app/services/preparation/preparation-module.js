@@ -29,7 +29,10 @@ import PreparationService from './preparation-service';
         [
             'data-prep.services.preparation',
             'data-prep.services.state',
-            'data-prep.services.utils'
+            'data-prep.services.utils',
+            'ui.router',
+            'data-prep.services.folder'
+
         ])
         .service('PreparationRestService', PreparationRestService)
         .service('PreparationListService', PreparationListService)

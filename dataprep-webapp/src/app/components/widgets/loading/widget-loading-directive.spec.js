@@ -27,6 +27,11 @@ describe('Loading directive', function () {
         scope.$digest();
     }));
 
+    afterEach(function () {
+        scope.$destroy();
+        element.remove();
+    });
+
     it('should immediatly add "is-loading" class when "talend.loading.start" is emitted', inject(function ($rootScope) {
         //given
         expect(element.hasClass('is-loading')).toBe(false);

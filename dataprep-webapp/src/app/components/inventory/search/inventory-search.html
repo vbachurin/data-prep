@@ -25,7 +25,7 @@
                         item="preparation"
                         type="preparation"
                         details="PREPARATION_DETAILS"
-                        ng-click="$ctrl.openPreparation(preparation)">
+                        ng-click="$ctrl.preparationService.open(preparation)">
                 </inventory-item>
             </div>
 
@@ -33,15 +33,15 @@
                 <inventory-item
                         item="folder"
                         type="folder"
-                        details="FOUND_FOLDER_DETAILS"
-                        ng-click="$ctrl.goToFolder(folder)">
+                        details="SEARCH_FOLDER_DETAILS"
+                        ng-click="$ctrl.folderService.goToFolder('nav.index.datasets', {folderPath: folder.path})">
                 </inventory-item>
             </div>
 
             <div ng-repeat="dataset in $ctrl.results.datasets track by dataset.id"
                  id="found_dataset_{{$index}}">
                 <inventory-item
-                        details="DATASET_DETAILS"
+                        details="SEARCH_DATASET_DETAILS"
                         item="dataset"
                         type="dataset"
                         ng-click="$ctrl.uploadWorkflowService.openDataset(dataset)"

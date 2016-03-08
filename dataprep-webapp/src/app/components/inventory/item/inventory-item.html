@@ -15,7 +15,7 @@
 
 <div class="inventory-entry inventory-item" ng-dblclick="inventoryItemCtrl.openInventoryItem()">
     <div class="inventory-icon"
-         title="{{'OPEN_ACTION' | translate: inventoryItemCtrl.getTooltipContent()}}"
+         title="{{inventoryItemCtrl.open ? ('OPEN_ACTION' | translate: inventoryItemCtrl.getTooltipContent()) : ''}}"
          ng-switch="inventoryItemCtrl.type"
          ng-click="inventoryItemCtrl.openInventoryItem()">
 
