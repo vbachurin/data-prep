@@ -76,6 +76,11 @@ public class CSVFormatGuesser implements FormatGuesser {
         }
     };
 
+    @Override
+    public boolean accept(String encoding) {
+        return true; // Accept all encodings
+    }
+
     /**
      * @see FormatGuesser#guess(SchemaParser.Request, String)
      */

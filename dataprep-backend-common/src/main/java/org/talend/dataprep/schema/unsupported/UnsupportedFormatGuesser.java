@@ -14,6 +14,11 @@ public class UnsupportedFormatGuesser implements FormatGuesser {
     private UnsupportedFormatGuess noOpFormatGuess;
 
     @Override
+    public boolean accept(String encoding) {
+        return true; // Accept all encodings
+    }
+
+    @Override
     public FormatGuesser.Result guess(SchemaParser.Request request, String encoding) {
         return new FormatGuesser.Result(noOpFormatGuess, "UTF-8", Collections.emptyMap());
     }

@@ -14,11 +14,13 @@
 package org.talend.dataprep.schema.html;
 
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.*;
 
 import nu.validator.htmlparser.common.XmlViolationPolicy;
 import nu.validator.htmlparser.sax.HtmlParser;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,14 +33,12 @@ import org.xml.sax.InputSource;
 @Component("formatGuesser#html")
 public class HtmlFormatGuesser implements FormatGuesser {
 
-    /** This class' logger. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(HtmlFormatGuesser.class);
-
     /** HTML header selector parameter key. */
     public static final String HEADER_SELECTOR_KEY = "html.HEADER_SELECTOR_KEY";
     /** HTML value selector parameter key. */
     public static final String VALUES_SELECTOR_KEY = "html.VALUES_SELECTOR_KEY";
-
+    /** This class' logger. */
+    private static final Logger LOGGER = LoggerFactory.getLogger(HtmlFormatGuesser.class);
     /** List of patterns to use to parse datasets out of html. */
     private List<Pattern> patterns;
 
@@ -57,21 +57,24 @@ public class HtmlFormatGuesser implements FormatGuesser {
         patterns.add(new Pattern("html body table tbody tr th", "html body table tbody tr td"));
     }
 
+    @Override
+    public boolean accept(String encoding) {
+        return ObjectUtils.equals(encoding, Charset.forName("UTF-8").name());
+    }
+
     /**
      * @see FormatGuesser#guess(SchemaParser.Request, String)
      */
     @Override
     public Result guess(SchemaParser.Request request, String encoding) {
-
         if (request == null || request.getContent() == null) {
             throw new IllegalArgumentException("Content cannot be null.");
         }
 
         try {
+            HtmlParser htmlParser = new HtmlParser();
             for (Pattern pattern : patterns) {
-
-                HtmlParser htmlParser = new HtmlParser();
-                htmlParser.setStreamabilityViolationPolicy( XmlViolationPolicy.FATAL );
+                htmlParser.setStreamabilityViolationPolicy(XmlViolationPolicy.FATAL);
                 HeadersContentHandler headersContentHandler = new HeadersContentHandler(pattern.getHeaderSelector(), true);
                 htmlParser.setContentHandler(headersContentHandler);
 
@@ -80,7 +83,8 @@ public class HtmlFormatGuesser implements FormatGuesser {
                 try {
                     // no need to force the encoding the parser will discover it
                     htmlParser.parse(inputSource);
-                } catch (HeadersContentHandler.HeadersContentFoundException e) { //NOSONAR exception is here to stop the SAX processing
+                } catch (HeadersContentHandler.HeadersContentFoundException e) { // NOSONAR exception is here to stop
+                                                                                 // the SAX processing
                     LOGGER.debug("headers for {} found -> {}", request.getMetadata().getId(), headersContentHandler);
                     // save patterns found for the schema parser
                     Map<String, String> parameters = new HashMap<>(2);
@@ -117,6 +121,7 @@ public class HtmlFormatGuesser implements FormatGuesser {
 
         /**
          * Constructor.
+         * 
          * @param headerSelector selector to get the header out of the html.
          * @param valuesSelector selector to get the values out of the html.
          */
@@ -139,16 +144,12 @@ public class HtmlFormatGuesser implements FormatGuesser {
             return valuesSelector;
         }
 
-
         /**
          * @see Object#toString()
          */
         @Override
         public String toString() {
-            return "Pattern{" +
-                    "headerSelector='" + headerSelector + '\'' +
-                    ", valuesSelector='" + valuesSelector + '\'' +
-                    '}';
+            return "Pattern{" + "headerSelector='" + headerSelector + '\'' + ", valuesSelector='" + valuesSelector + '\'' + '}';
         }
     }
 }

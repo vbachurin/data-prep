@@ -19,6 +19,7 @@ import java.util.*;
 import org.apache.commons.io.IOUtils;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.data.MapEntry;
+import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,6 +58,12 @@ public class HtmlFormatTest extends AbstractSchemaTestUtils {
 
     @Autowired
     private UnsupportedFormatGuess unsupportedFormatGuess;
+
+    @Test
+    public void format_guesser_accept() throws Exception {
+        Assert.assertTrue(htmlFormatGuesser.accept("UTF-8"));
+        Assert.assertFalse(htmlFormatGuesser.accept("UTF-16"));
+    }
 
     @Test
     public void guess_html_format_success() throws Exception {
