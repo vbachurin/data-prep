@@ -48,6 +48,12 @@ const datasetTour = [
         title: '',
         content: 'Click here to get help.',
         position: 'bottom'
+    },
+    {
+        element: '#online-help-icon',
+        title: '',
+        content: 'Click here to get online help.',
+        position: 'bottom'
     }
 ];
 
