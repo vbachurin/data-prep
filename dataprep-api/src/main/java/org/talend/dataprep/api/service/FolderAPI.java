@@ -1,15 +1,15 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.api.service;
 
@@ -20,19 +20,30 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.HttpClient;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.talend.dataprep.api.folder.FolderContent;
+import org.talend.dataprep.inventory.Inventory;
+import org.talend.dataprep.api.preparation.Preparation;
+import org.talend.dataprep.api.preparation.PreparationDetails;
 import org.talend.dataprep.api.service.command.common.HttpResponse;
 import org.talend.dataprep.api.service.command.folder.*;
+import org.talend.dataprep.api.service.command.preparation.PreparationList;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.APIErrorCodes;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
@@ -47,6 +58,9 @@ import io.swagger.annotations.ApiParam;
 
 @RestController
 public class FolderAPI extends APIService {
+
+    @Autowired
+    private Jackson2ObjectMapperBuilder builder;
 
     @RequestMapping(value = "/api/folders", method = GET)
     @ApiOperation(value = "List children folders of the parameter if null list root children.", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -125,7 +139,7 @@ public class FolderAPI extends APIService {
             final HystrixCommand<HttpResponse> removeFolder = getCommand(RemoveFolder.class, getClient(), path);
             HttpResponse result = removeFolder.execute();
             try {
-                HttpResponseContext.status( HttpStatus.valueOf( result.getStatusCode()));
+                HttpResponseContext.status(HttpStatus.valueOf(result.getStatusCode()));
                 HttpResponseContext.header("Content-Type", result.getContentType());
                 IOUtils.write(result.getHttpContent(), output);
                 output.flush();
@@ -219,17 +233,22 @@ public class FolderAPI extends APIService {
     @RequestMapping(value = "/api/folders/datasets", method = GET, consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List all datasets within the folder and sorted by key/date", produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
-    public FolderContent datasets(
+    public void datasets(
             @ApiParam(value = "Folder id to search datasets") @RequestParam(defaultValue = "", required = false) String folder,
             @ApiParam(value = "Sort key (by name or date), defaults to 'date'.") @RequestParam(defaultValue = "DATE", required = false) String sort,
-            @ApiParam(value = "Order for sort key (desc or asc), defaults to 'desc'.") @RequestParam(defaultValue = "DESC", required = false) String order) {
+            @ApiParam(value = "Order for sort key (desc or asc), defaults to 'desc'.") @RequestParam(defaultValue = "DESC", required = false) String order,
+            final OutputStream output) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Listing datasets (pool: {})...", getConnectionStats());
         }
         HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
         HttpClient client = getClient();
-        HystrixCommand<FolderContent> listCommand = getCommand(FolderDataSetList.class, client, sort, order, folder);
-        return listCommand.execute();
+        HystrixCommand<InputStream> listCommand = getCommand(FolderDataSetList.class, client, sort, order, folder);
+        try (InputStream ios = listCommand.execute()) {
+            IOUtils.copyLarge(ios, output);
+        } catch (IOException e) {
+            throw new TDPException(APIErrorCodes.UNABLE_TO_LIST_FOLDER_INVENTORY, e);
+        }
     }
 
     /**
@@ -244,21 +263,47 @@ public class FolderAPI extends APIService {
     @Timed
     public void inventorySearch(
             @ApiParam(value = "Folder path") @RequestParam(defaultValue = "", required = false) String folderPath,
-            @ApiParam(value = "Name") @RequestParam(defaultValue = "", required = false) String name, final OutputStream output
-            ) {
+            @ApiParam(value = "Name") @RequestParam(defaultValue = "", required = false) String name, final OutputStream output) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Listing datasets (pool: {})...", getConnectionStats());
         }
         HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
         HttpClient client = getClient();
+        Inventory inventory;
+        ObjectMapper mapper = builder.build();
         HystrixCommand<InputStream> matchingName = getCommand(FolderInventorySearch.class, client, folderPath, name);
-        try(InputStream ios = matchingName.execute()){
+        try (InputStream ios = matchingName.execute()) {
 
-            IOUtils.copyLarge(ios, output);
-            output.flush();
-        }catch(IOException exc){
-            throw new TDPException(APIErrorCodes.UNABLE_TO_LIST_FOLDER_INVENTORY, exc);
+            String jsonMap = IOUtils.toString(ios);
+            inventory = mapper.readValue(jsonMap, new TypeReference<Inventory>() {
+            });
+        } catch (IOException e) {
+            throw new TDPException(APIErrorCodes.UNABLE_TO_LIST_FOLDER_INVENTORY, e);
         }
+
+        if (StringUtils.isEmpty(folderPath)) { // preparations are considered to be in the root folder (empty)
+            HystrixCommand<InputStream> command = getCommand(PreparationList.class, client, PreparationList.Format.LONG);
+            try (InputStream ios = command.execute()) {
+                String jsonMap = IOUtils.toString(ios);
+                List<Preparation> preparations = mapper.readValue(jsonMap, new TypeReference<ArrayList<Preparation>>() {
+                });
+                List<PreparationDetails> filteredPreparations = preparations.stream()
+                        .filter(p -> p.getName() != null && p.getName().contains(name)).map( p-> new PreparationDetails(p)).collect(Collectors.toList());
+                inventory.setPreparations(filteredPreparations);
+
+            } catch (IOException e) {
+                throw new TDPException(APIErrorCodes.UNABLE_TO_LIST_FOLDER_INVENTORY, e);
+            }
+        }
+        try {
+            mapper.writeValue(output, inventory);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Listed preparations (pool: {} )...", getConnectionStats());
+            }
+        } catch (IOException e) {
+            throw new TDPException(APIErrorCodes.UNABLE_TO_LIST_FOLDER_INVENTORY, e);
+        }
+
     }
 
 }

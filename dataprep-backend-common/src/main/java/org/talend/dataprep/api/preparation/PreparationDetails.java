@@ -23,8 +23,11 @@ public class PreparationDetails {
     /** The wrapped Preparation. */
     private Preparation preparation;
 
+    public PreparationDetails(){
+
+    }
+
     /**
-     * Default constructor.
      *
      * @param source the source preparation.
      */

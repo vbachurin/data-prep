@@ -1,27 +1,24 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.api.service.command.folder;
 
-import java.io.IOException;
+import static org.talend.dataprep.api.service.command.common.Defaults.pipeStream;
+
 import java.io.InputStream;
 import java.net.URISyntaxException;
-import java.util.Comparator;
-import java.util.List;
-import java.util.function.BiFunction;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -29,35 +26,25 @@ import org.apache.http.client.utils.URIBuilder;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.talend.daikon.exception.ExceptionContext;
-import org.talend.dataprep.api.dataset.DataSetMetadata;
-import org.talend.dataprep.api.folder.Folder;
-import org.talend.dataprep.api.folder.FolderContent;
 import org.talend.dataprep.api.service.PreparationAPI;
-import org.talend.dataprep.api.service.command.ReleasableInputStream;
 import org.talend.dataprep.api.service.command.common.GenericCommand;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
-import org.talend.dataprep.exception.error.DataSetErrorCodes;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.netflix.hystrix.HystrixCommand;
 
 @Component
 @Scope("request")
-public class FolderDataSetList extends GenericCommand<FolderContent> {
+public class FolderDataSetList extends GenericCommand<InputStream> {
 
     public FolderDataSetList(HttpClient client, String sort, String order, String folder) {
         super(PreparationAPI.TRANSFORM_GROUP, client);
         execute(() -> onExecute(sort, order, folder));
-        on(HttpStatus.NO_CONTENT, HttpStatus.ACCEPTED).then(emptyFolderContent());
-        on(HttpStatus.OK).then(buildContent(folder, order, sort));
+        // on(HttpStatus.NO_CONTENT, HttpStatus.ACCEPTED).then(emptyFolderContent());
+        on(HttpStatus.OK).then(pipeStream());
     }
 
     private HttpRequestBase onExecute(String sort, String order, String folder) {
         try {
-            URIBuilder uriBuilder = new URIBuilder(datasetServiceUrl + "/datasets");
+            URIBuilder uriBuilder = new URIBuilder(datasetServiceUrl + "/folders/datasets");
             uriBuilder.addParameter("sort", sort);
             uriBuilder.addParameter("order", order);
             if (StringUtils.isNotEmpty(folder)) {
@@ -67,69 +54,6 @@ public class FolderDataSetList extends GenericCommand<FolderContent> {
         } catch (URISyntaxException e) {
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
-    }
-
-    public BiFunction<HttpRequestBase, HttpResponse, FolderContent> emptyFolderContent() {
-        return (request, response) -> {
-            request.releaseConnection();
-            return new FolderContent();
-        };
-    }
-
-    public BiFunction<HttpRequestBase, HttpResponse, FolderContent> buildContent(final String searchFolder, final String order,
-            final String sort) {
-        return (request, response) -> {
-            try {
-                ObjectMapper mapper = builder.build();
-                List<DataSetMetadata> datasets = mapper.readValue(
-                        new ReleasableInputStream(response.getEntity().getContent(), request::releaseConnection), //
-                        new TypeReference<List<DataSetMetadata>>() {
-                });
-
-                // now get folders
-                final HystrixCommand<InputStream> foldersList = context.getBean(FoldersList.class, client, searchFolder);
-
-                List<Folder> folders;
-                try (ReleasableInputStream folderListInput = new ReleasableInputStream(foldersList.execute(), request::releaseConnection)) {
-                     folders = mapper.readValue(folderListInput, new TypeReference<List<Folder>>() {
-                    });
-                }
-
-                final Comparator<String> comparisonOrder;
-                switch (order.toUpperCase()) {
-                case "ASC":
-                    comparisonOrder = Comparator.naturalOrder();
-                    break;
-                case "DESC":
-                    comparisonOrder = Comparator.reverseOrder();
-                    break;
-                default:
-                    throw new TDPException(DataSetErrorCodes.ILLEGAL_ORDER_FOR_LIST,
-                            ExceptionContext.build().put("order", order));
-                }
-                // Select comparator for sort (either by name or date)
-                final Comparator<Folder> comparator;
-                switch (sort.toUpperCase()) {
-                case "NAME":
-                    comparator = Comparator.comparing(folder -> folder.getName().toUpperCase(), comparisonOrder);
-                    break;
-                case "DATE":
-                    comparator = Comparator.comparing(folder -> String.valueOf(folder.getCreationDate()), comparisonOrder);
-                    break;
-                default:
-                    throw new TDPException(DataSetErrorCodes.ILLEGAL_SORT_FOR_LIST, ExceptionContext.build().put("sort", order));
-                }
-
-                folders.sort(comparator);
-
-                return new FolderContent(datasets, folders);
-            } catch (IOException e) {
-                throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
-            }
-            finally {
-                request.releaseConnection();
-            }
-        };
     }
 
 }

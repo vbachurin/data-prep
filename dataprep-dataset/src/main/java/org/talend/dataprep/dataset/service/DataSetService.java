@@ -1,15 +1,15 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.dataset.service;
 
@@ -41,6 +41,7 @@ import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.api.dataset.*;
 import org.talend.dataprep.api.dataset.DataSetGovernance.Certification;
 import org.talend.dataprep.api.dataset.location.SemanticDomain;
+import org.talend.dataprep.api.folder.Folder;
 import org.talend.dataprep.api.folder.FolderEntry;
 import org.talend.dataprep.api.service.info.VersionService;
 import org.talend.dataprep.api.user.UserData;
@@ -59,6 +60,7 @@ import org.talend.dataprep.exception.error.DataSetErrorCodes;
 import org.talend.dataprep.exception.json.JsonErrorCodeDescription;
 import org.talend.dataprep.folder.store.FolderRepository;
 import org.talend.dataprep.http.HttpResponseContext;
+import org.talend.dataprep.inventory.Inventory;
 import org.talend.dataprep.lock.DistributedLock;
 import org.talend.dataprep.log.Markers;
 import org.talend.dataprep.metrics.Timed;
@@ -150,6 +152,9 @@ public class DataSetService {
     @Autowired
     private VersionService versionService;
 
+    @Autowired
+    InventoryUtils inventoryUtils;
+
     /**
      * Sort the synchronous analyzers.
      */
@@ -206,17 +211,17 @@ public class DataSetService {
             Iterable<FolderEntry> entries = folderRepository.entries( folder, FolderEntry.ContentType.DATASET );
             final List<DataSetMetadata> metadatas = new ArrayList<>( );
             entries.forEach( folderEntry ->
-                             {
-                                 DataSetMetadata dataSetMetadata =
-                                     dataSetMetadataRepository.get( folderEntry.getContentId() );
-                                 if (dataSetMetadata != null){
-                                     metadatas.add( dataSetMetadataRepository.get( folderEntry.getContentId() ) );
-                                 } else {
-                                    folderRepository.removeFolderEntry( folderEntry.getFolderId(), //
-                                                                        folderEntry.getContentId(), //
-                                                                        folderEntry.getContentType() );
-                                 }
-                             } );
+            {
+                DataSetMetadata dataSetMetadata =
+                        dataSetMetadataRepository.get( folderEntry.getContentId() );
+                if (dataSetMetadata != null){
+                    metadatas.add( dataSetMetadataRepository.get( folderEntry.getContentId() ) );
+                } else {
+                    folderRepository.removeFolderEntry( folderEntry.getFolderId(), //
+                            folderEntry.getContentId(), //
+                            folderEntry.getContentType() );
+                }
+            } );
             iterator = metadatas.spliterator();
         } else {
             iterator = dataSetMetadataRepository.list().spliterator();
@@ -226,27 +231,27 @@ public class DataSetService {
         // Select order (asc or desc)
         final Comparator<String> comparisonOrder;
         switch (order.toUpperCase()) {
-        case "ASC":
-            comparisonOrder = Comparator.naturalOrder();
-            break;
-        case "DESC":
-            comparisonOrder = Comparator.reverseOrder();
-            break;
-        default:
-            throw new TDPException(DataSetErrorCodes.ILLEGAL_ORDER_FOR_LIST, ExceptionContext.build().put("order", order));
+            case "ASC":
+                comparisonOrder = Comparator.naturalOrder();
+                break;
+            case "DESC":
+                comparisonOrder = Comparator.reverseOrder();
+                break;
+            default:
+                throw new TDPException(DataSetErrorCodes.ILLEGAL_ORDER_FOR_LIST, ExceptionContext.build().put("order", order));
         }
         // Select comparator for sort (either by name or date)
         final Comparator<DataSetMetadata> comparator;
         switch (sort.toUpperCase()) {
-        case "NAME":
-            comparator = Comparator.comparing(dataSetMetadata -> dataSetMetadata.getName().toUpperCase(), comparisonOrder);
-            break;
-        case "DATE":
-            comparator = Comparator.comparing(dataSetMetadata -> String.valueOf(dataSetMetadata.getCreationDate()),
-                    comparisonOrder);
-            break;
-        default:
-            throw new TDPException(DataSetErrorCodes.ILLEGAL_SORT_FOR_LIST, ExceptionContext.build().put("sort", order));
+            case "NAME":
+                comparator = Comparator.comparing(dataSetMetadata -> dataSetMetadata.getName().toUpperCase(), comparisonOrder);
+                break;
+            case "DATE":
+                comparator = Comparator.comparing(dataSetMetadata -> String.valueOf(dataSetMetadata.getCreationDate()),
+                        comparisonOrder);
+                break;
+            default:
+                throw new TDPException(DataSetErrorCodes.ILLEGAL_SORT_FOR_LIST, ExceptionContext.build().put("sort", order));
         }
         // Return sorted results
         return stream.filter(metadata -> !metadata.getLifecycle().importing()) //
@@ -275,7 +280,8 @@ public class DataSetService {
     public String create(
             @ApiParam(value = "User readable name of the data set (e.g. 'Finance Report 2015', 'Test Data Set').") @RequestParam(defaultValue = "", required = false) String name,
             @RequestHeader("Content-Type") String contentType, @ApiParam(value = "content") InputStream content,
-            @ApiParam(value = "The folder path to create the entry.") @RequestParam(defaultValue = "/", required = false) String folderPath) throws IOException {
+            @ApiParam(value = "The folder path to create the entry.") @RequestParam(defaultValue = "/", required = false) String folderPath)
+                    throws IOException {
         HttpResponseContext.header("Content-Type", MediaType.TEXT_PLAIN_VALUE);
         final String id = UUID.randomUUID().toString();
         final Marker marker = Markers.dataset(id);
@@ -314,7 +320,6 @@ public class DataSetService {
         // create associated folderEntry
         FolderEntry folderEntry = new FolderEntry(FolderEntry.ContentType.DATASET, id);
         folderRepository.addFolderEntry(folderEntry, folderPath);
-
 
         LOG.debug(marker, "Created!");
 
@@ -385,7 +390,6 @@ public class DataSetService {
         }
     }
 
-
     /**
      * Returns the data set {@link DataSetMetadata metadata} for given <code>dataSetId</code>.
      *
@@ -420,6 +424,7 @@ public class DataSetService {
 
     /**
      * Clone to a new data set and returns the new data set id as text in the response.
+     *
      * @param cloneName the name of the cloned dataset
      * @param folderPath the folder path to clone the dataset
      * @return The new data id.
@@ -503,8 +508,7 @@ public class DataSetService {
     @RequestMapping(value = "/datasets/move/{id}", method = PUT, produces = MediaType.TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Move a data set", produces = MediaType.TEXT_PLAIN_VALUE, notes = "Move a data set to an other folder.")
     @Timed
-    public void move(
-            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to move") String dataSetId,
+    public void move(@PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to move") String dataSetId,
             @ApiParam(value = "The original folder path of the dataset.") @RequestParam(defaultValue = "", required = false) String folderPath,
             @ApiParam(value = "The new folder path of the dataset.") @RequestParam(defaultValue = "", required = false) String newFolderPath,
             @ApiParam(value = "The new name of the moved dataset.") @RequestParam(defaultValue = "", required = false) String newName)
@@ -534,7 +538,7 @@ public class DataSetService {
                 throw new TDPException(DataSetErrorCodes.DATASET_NAME_ALREADY_USED, context, true);
             }
         });
-        
+
         // rename the dataset only if we received a new name
         if (StringUtils.isNotEmpty(newName) && !StringUtils.equals(newName, dataSet.getMetadata().getName())) {
             DistributedLock datasetLock = dataSetMetadataRepository.createDatasetMetadataLock(dataSetId);
@@ -550,7 +554,6 @@ public class DataSetService {
 
         folderRepository.moveFolderEntry(folderEntry, folderPath, newFolderPath);
     }
-
 
     /**
      * Deletes a data set with provided id.
@@ -576,10 +579,10 @@ public class DataSetService {
 
         // delete the associated folder entries
         // TODO make this async?
-        for( FolderEntry folderEntry : folderRepository.findFolderEntries( dataSetId, FolderEntry.ContentType.DATASET )){
-            folderRepository.removeFolderEntry( folderEntry.getFolderId(), //
-                                                folderEntry.getContentId(), //
-                                                folderEntry.getContentType() );
+        for (FolderEntry folderEntry : folderRepository.findFolderEntries(dataSetId, FolderEntry.ContentType.DATASET)) {
+            folderRepository.removeFolderEntry(folderEntry.getFolderId(), //
+                    folderEntry.getContentId(), //
+                    folderEntry.getContentType());
         }
 
     }
@@ -634,7 +637,7 @@ public class DataSetService {
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to update") String dataSetId, //
             @RequestParam(value = "name", required = false) @ApiParam(name = "name", value = "New value for the data set name") String name, //
             @ApiParam(value = "content") InputStream dataSetContent) {
-        final DistributedLock lock = dataSetMetadataRepository.createDatasetMetadataLock( dataSetId );
+        final DistributedLock lock = dataSetMetadataRepository.createDatasetMetadataLock(dataSetId);
         try {
             lock.lock();
             DataSetMetadataBuilder datasetBuilder = metadataBuilder.metadata().id(dataSetId);

@@ -16,14 +16,13 @@ package org.talend.dataprep.inventory;
 import java.io.Serializable;
 import java.util.List;
 
-import org.talend.dataprep.api.dataset.DataSetMetadata;
-import org.talend.dataprep.api.preparation.Preparation;
+import org.talend.dataprep.api.preparation.PreparationDetails;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * This class groups all the contains of a folder. I contains all the datasets, the preparations and the sub-folders
- * recursively contained TODO: This class duplicates in some sense FolderContent. We must find a way to only use folder
+ * recursively contained
  * inventory.
  */
 public class Inventory implements Serializable {
@@ -38,26 +37,39 @@ public class Inventory implements Serializable {
     private List<FolderInfo> folders;
 
     @JsonProperty("datasets")
-    private List<DataSetMetadata> datasets;
+    private List<DatasetMetadataInfo> datasets;
 
     @JsonProperty("preparations")
-    private List<Preparation> preparations;
+    private List<PreparationDetails> preparations;
 
     public Inventory() {
         // no op
     }
 
-    public Inventory(List<DataSetMetadata> datasets, List<FolderInfo> folders, List<Preparation> preparations) {
+    public Inventory(List<DatasetMetadataInfo> datasets, List<FolderInfo> folders, List<PreparationDetails> preparations) {
         this.datasets = datasets;
         this.folders = folders;
         this.preparations = preparations;
     }
 
-    public List<DataSetMetadata> getDatasets() {
+    /**
+     * Creates a inventory
+     * 
+     * @param datasets
+     * @param folders
+     */
+    public Inventory(List<DatasetMetadataInfo> datasets, List<FolderInfo> folders) {
+
+        this.datasets = datasets;
+        this.folders = folders;
+        this.preparations = preparations;
+    }
+
+    public List<DatasetMetadataInfo> getDatasets() {
         return datasets;
     }
 
-    public void setDatasets(List<DataSetMetadata> datasets) {
+    public void setDatasets(List<DatasetMetadataInfo> datasets) {
         this.datasets = datasets;
     }
 
@@ -69,11 +81,11 @@ public class Inventory implements Serializable {
         this.folders = folders;
     }
 
-    public List<Preparation> getPreparations() {
+    public List<PreparationDetails> getPreparations() {
         return preparations;
     }
 
-    public void setPreparations(List<Preparation> preparations) {
+    public void setPreparations(List<PreparationDetails> preparations) {
         this.preparations = preparations;
     }
 

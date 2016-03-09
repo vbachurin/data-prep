@@ -19,7 +19,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 /**
- * This class is used as a wrapper for a folder with more information: the number of data sets and preparations.
+ * This class decorates (it is not a decorator) the folder with more information: the number of data sets and
+ * preparations.
  *
  */
 public class FolderInfo {
@@ -39,9 +40,7 @@ public class FolderInfo {
     @JsonProperty
     private int nbPreparations;
 
-    // default constructor
     public FolderInfo() {
-
     }
 
     public FolderInfo(Folder folder, int nbDatasets, int nbPreparation) {

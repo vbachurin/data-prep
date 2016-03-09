@@ -20,25 +20,20 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.talend.dataprep.api.folder.Folder;
-import org.talend.dataprep.api.folder.FolderContent;
 import org.talend.dataprep.dataset.DataSetBaseTest;
+import org.talend.dataprep.folder.store.FolderRepository;
+import org.talend.dataprep.inventory.Inventory;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.restassured.response.Response;
-import org.talend.dataprep.folder.store.FolderRepository;
-import org.talend.dataprep.inventory.Inventory;
 
 /**
  * Unit/integration tests for the FolderService
@@ -48,9 +43,8 @@ public class FolderServiceTest extends DataSetBaseTest {
     @Autowired
     private FolderRepository folderRepository;
 
-
     @After
-    public void clear(){
+    public void clear() {
         folderRepository.clear();
     }
 
@@ -70,8 +64,9 @@ public class FolderServiceTest extends DataSetBaseTest {
                 .when() //
                 .get("/folders").asString();
 
-        //then
-        final List<Folder> folders = mapper.readValue(json, new TypeReference<List<Folder>>(){});
+        // then
+        final List<Folder> folders = mapper.readValue(json, new TypeReference<List<Folder>>() {
+        });
         final List<String> foldersNames = folders.stream().map(Folder::getName).collect(toList());
         assertThat(foldersNames.size(), is(2));
         assertThat(foldersNames, containsInAnyOrder("bar", "toto"));
@@ -108,12 +103,10 @@ public class FolderServiceTest extends DataSetBaseTest {
                 .put("/folders").then().assertThat().statusCode(200);
     }
 
-    private String  createFolderEntry(String path, String name) throws IOException {
+    private String createFolderEntry(String path, String name) throws IOException {
 
-        return given().body(IOUtils.toString(this.getClass().getResourceAsStream("")))
-                .queryParam("Content-Type", "text/csv")
-                .queryParam("folderPath", path)
-                .queryParam("name", name).when().post("/datasets").asString();
+        return given().body(IOUtils.toString(this.getClass().getResourceAsStream(""))).queryParam("Content-Type", "text/csv")
+                .queryParam("folderPath", path).queryParam("name", name).when().post("/datasets").asString();
 
     }
 
@@ -126,19 +119,20 @@ public class FolderServiceTest extends DataSetBaseTest {
         createFolder("yoyo/bar/bari");
         createFolderEntry("foo/toto", "bar");
 
-
         // when
-        final String json = given().queryParam("path", "foo").queryParam("name","bar") //
+        final String json = given().queryParam("path", "foo").queryParam("name", "bar") //
                 .expect().statusCode(200).log().ifError()//
                 .when() //
                 .get("/inventory/search").asString();
 
-        //then
-        Inventory inventory = mapper.readValue(json, new TypeReference<Inventory>(){});
+        // then
+        Inventory inventory = mapper.readValue(json, new TypeReference<Inventory>() {
+        });
         assertThat(inventory.getFolders().size(), is(1));
         assertThat(inventory.getDatasets().size(), is(1));
         assertThat(inventory.getPreparations().size(), is(0));
         assertThat(inventory.getFolders().get(0).getPath(), is("foo/bar"));
-        assertThat(inventory.getDatasets().get(0).getName(), is("bar"));
+        assertThat(inventory.getDatasets().get(0).getMetadata().getName(), is("bar"));
     }
+
 }

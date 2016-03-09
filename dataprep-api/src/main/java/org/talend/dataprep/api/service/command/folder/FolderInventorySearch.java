@@ -16,6 +16,7 @@ package org.talend.dataprep.api.service.command.folder;
 import static org.talend.dataprep.api.service.command.common.Defaults.pipeStream;
 import static org.talend.dataprep.exception.error.APIErrorCodes.UNABLE_TO_LIST_FOLDERS;
 import static org.talend.dataprep.exception.error.APIErrorCodes.UNABLE_TO_LIST_FOLDER_ENTRIES;
+import static org.talend.dataprep.exception.error.APIErrorCodes.UNABLE_TO_LIST_FOLDER_INVENTORY;
 
 import java.io.InputStream;
 import java.net.URISyntaxException;
@@ -40,7 +41,7 @@ public class FolderInventorySearch extends GenericCommand<InputStream> {
     private FolderInventorySearch(HttpClient client, String pathName, String name) {
         super(APIService.DATASET_GROUP, client);
         execute(() -> onExecute(pathName, name));
-        onError(e -> new TDPException(UNABLE_TO_LIST_FOLDER_ENTRIES, e, ExceptionContext.build()));
+        onError(e -> new TDPException(UNABLE_TO_LIST_FOLDER_INVENTORY, e, ExceptionContext.build()));
         on(HttpStatus.OK).then(pipeStream());
     }
 

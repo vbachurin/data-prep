@@ -1,15 +1,15 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.folder.store.file;
 
@@ -79,7 +79,6 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
         return Paths.get(foldersLocation);
     }
 
-
     /**
      * @see FolderRepository#exists(String)
      */
@@ -88,7 +87,6 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
         final Path folderPath = Paths.get(getRootFolder().toString(), StringUtils.split(cleanPath(path), PATH_SEPARATOR));
         return Files.exists(folderPath);
     }
-
 
     @Override
     public Iterable<Folder> children(String parentPath) {
@@ -156,7 +154,10 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
             if (!Files.exists(pathToCreate)) {
                 Files.createDirectories(pathToCreate);
             }
-            return new Folder(path, extractName(path));
+            FileInfo fileInfo = FileInfo.create(pathToCreate);
+            return fileInfo != null
+                    ? new Folder(path, extractName(path), fileInfo.getCreationDate(), fileInfo.getLastModificationDate())
+                    : new Folder(path, extractName(path));
 
         } catch (IOException e) {
             throw new TDPException(UNABLE_TO_ADD_FOLDER, e, build().put("path", givenPath));
@@ -230,7 +231,7 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
     @Override
     public void removeFolderEntry(String folderPath, String contentId, FolderEntry.ContentType contentType) {
 
-        if (contentType == null){
+        if (contentType == null) {
             throw new IllegalArgumentException("The content type of the folder entry to be removed cannot be null.");
         }
 
@@ -330,7 +331,7 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
                             try (InputStream inputStream = Files.newInputStream(pathFile)) {
                                 Properties properties = new Properties();
                                 properties.load(inputStream);
-                                if (contentType.equals(FolderEntry.ContentType.get(properties.getProperty("contentType"))) ){
+                                if (contentType.equals(FolderEntry.ContentType.get(properties.getProperty("contentType")))) {
 
                                     FolderEntry folderEntry = new FolderEntry();
                                     folderEntry.setFolderId(properties.getProperty("folderId"));
@@ -339,7 +340,8 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
                                     folderEntries.add(folderEntry);
                                 }
                             } catch (IOException e) {
-                                throw new TDPException(UNABLE_TO_READ_FOLDER_ENTRY, e, build().put("path", path).put("type", contentType));
+                                throw new TDPException(UNABLE_TO_READ_FOLDER_ENTRY, e,
+                                        build().put("path", path).put("type", contentType));
                             }
                         });
 
@@ -430,8 +432,12 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
             @Override
             public void accept(Path path) {
                 if (Files.isDirectory(path)) {
+                    FileInfo fileInfo = FileInfo.create(path);
                     String pathStr = pathAsString(path);
-                    folders.add(new Folder(pathStr, extractName(pathStr)));
+                    Folder folder =  fileInfo != null
+                            ? new Folder(pathStr, extractName(pathStr), fileInfo.getCreationDate(), fileInfo.getLastModificationDate())
+                            : new Folder(pathStr, extractName(pathStr));
+                    folders.add(folder);
                 }
             }
         };
@@ -463,7 +469,11 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
                     String pathStr = pathAsString(path);
                     String pathName = extractName(pathStr);
                     if (StringUtils.containsIgnoreCase(pathName, queryString)) {
-                        folders.add(new Folder(pathStr, extractName(pathStr)));
+                        FileInfo fileInfo = FileInfo.create(path);
+                        Folder folder =  fileInfo != null
+                                ? new Folder(pathStr, pathName, fileInfo.getCreationDate(), fileInfo.getLastModificationDate())
+                                : new Folder(pathStr, pathName);
+                        folders.add(folder);
                     }
                 }
             }
@@ -580,6 +590,43 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
+    }
+
+    private static class FileInfo {
+
+        private final long lastModificationDate;
+
+        private final long creationDate;
+
+        public FileInfo(long lastModificationDate, long creationDate) {
+            this.lastModificationDate = lastModificationDate;
+            this.creationDate = creationDate;
+        }
+
+        public long getLastModificationDate() {
+            return lastModificationDate;
+        }
+
+        public long getCreationDate() {
+            return creationDate;
+        }
+
+        public static FileInfo create(Path path) {
+            FileInfo result = null;
+            BasicFileAttributes attributes = null;
+            try {
+                attributes = Files.readAttributes(path, BasicFileAttributes.class);
+            } catch (IOException exception) {
+
+            }
+            if (attributes != null) {
+                result = new FileInfo(attributes.creationTime().to(TimeUnit.MILLISECONDS),
+                        attributes.lastModifiedTime().to(TimeUnit.MILLISECONDS));
+            }
+
+            return result;
+        }
+
     }
 
 }

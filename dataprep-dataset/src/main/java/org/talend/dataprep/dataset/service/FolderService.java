@@ -18,34 +18,37 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 import static org.talend.daikon.exception.ExceptionContext.build;
 import static org.talend.dataprep.exception.error.DataSetErrorCodes.FOLDER_NOT_EMPTY;
 
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
+import java.util.Spliterator;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import javax.inject.Inject;
 
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
+import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.folder.Folder;
-import org.talend.dataprep.api.folder.FolderContent;
 import org.talend.dataprep.api.folder.FolderEntry;
+import org.talend.dataprep.api.user.UserData;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.DataSetErrorCodes;
 import org.talend.dataprep.folder.store.FolderRepository;
 import org.talend.dataprep.folder.store.NotEmptyFolderException;
-import org.talend.dataprep.inventory.FolderInfo;
 import org.talend.dataprep.inventory.Inventory;
 import org.talend.dataprep.metrics.Timed;
+import org.talend.dataprep.security.Security;
+import org.talend.dataprep.user.store.UserDataRepository;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
 @RestController
 @Api(value = "folders", basePath = "/folders", description = "Operations on folders")
@@ -53,11 +56,24 @@ public class FolderService {
 
     private FolderRepository folderRepository;
 
+    private InventoryUtils inventoryUtils;
+
+    /** User repository. */
+    private UserDataRepository userDataRepository;
+
+    /** Dataset metadata repository. */
     private DataSetMetadataRepository dataSetMetadataRepository;
 
+    /** DataPrep abstraction to the underlying security (whether it's enabled or not). */
+    private Security security;
+
     @Inject
-    public FolderService(FolderRepository folderRepository, DataSetMetadataRepository dataSetMetadataRepository) {
+    public FolderService(FolderRepository folderRepository, InventoryUtils inventoryUtils, Security security,
+            UserDataRepository userDataRepository, DataSetMetadataRepository dataSetMetadataRepository) {
         this.folderRepository = folderRepository;
+        this.inventoryUtils = inventoryUtils;
+        this.security = security;
+        this.userDataRepository = userDataRepository;
         this.dataSetMetadataRepository = dataSetMetadataRepository;
     }
 
@@ -164,6 +180,20 @@ public class FolderService {
     }
 
     /**
+     * This gets the current user data related to the dataSetMetadata and updates the dataSetMetadata accordingly. First
+     * check for favorites dataset
+     *
+     * @param dataSetMetadata, the metadata to be updated
+     */
+    void completeWithUserData(DataSetMetadata dataSetMetadata) {
+        String userId = security.getUserId();
+        UserData userData = userDataRepository.get(userId);
+        if (userData != null) {
+            dataSetMetadata.setFavorite(userData.getFavoritesDatasets().contains(dataSetMetadata.getId()));
+        } // no user data related to the current user to do nothing
+    }
+
+    /**
      * Return the list of folder entries out of the given path.
      *
      * @param path the path where to look for entries.
@@ -183,58 +213,105 @@ public class FolderService {
 
     }
 
+    @RequestMapping(value = "/folders/datasets", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "List all data sets", notes = "Returns the list of data sets the current user is allowed to see. Creation date is a Epoch time value (in UTC time zone).")
+    @Timed
+    public Inventory folderContents(
+            @ApiParam(value = "Sort key (by name or date).") @RequestParam(defaultValue = "DATE", required = false) String sort,
+            @ApiParam(value = "Order for sort key (desc or asc).") @RequestParam(defaultValue = "DESC", required = false) String order,
+            @ApiParam(value = "Folder id to search datasets") @RequestParam(defaultValue = "", required = false) String folder) {
+
+        Spliterator<DataSetMetadata> iterator;
+        if (StringUtils.isNotEmpty(folder)) {
+            Iterable<FolderEntry> entries = folderRepository.entries(folder, FolderEntry.ContentType.DATASET);
+            final List<DataSetMetadata> metadatas = new ArrayList<>();
+            entries.forEach(folderEntry -> {
+                DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(folderEntry.getContentId());
+                if (dataSetMetadata != null) {
+                    metadatas.add(dataSetMetadata);
+                } else {
+                    folderRepository.removeFolderEntry(folderEntry.getFolderId(), //
+                            folderEntry.getContentId(), //
+                            folderEntry.getContentType());
+                }
+            });
+            iterator = metadatas.spliterator();
+        } else {
+            iterator = dataSetMetadataRepository.list().spliterator();
+        }
+
+        Stream<DataSetMetadata> stream = StreamSupport.stream(iterator, false);
+        // Select order (asc or desc)
+        final Comparator<String> comparisonOrder;
+        switch (order.toUpperCase()) {
+        case "ASC":
+            comparisonOrder = Comparator.naturalOrder();
+            break;
+        case "DESC":
+            comparisonOrder = Comparator.reverseOrder();
+            break;
+        default:
+            throw new TDPException(DataSetErrorCodes.ILLEGAL_ORDER_FOR_LIST, ExceptionContext.build().put("order", order));
+        }
+        // Select comparator for sort (either by name or date)
+        final Comparator<DataSetMetadata> comparator;
+        switch (sort.toUpperCase()) {
+        case "NAME":
+            comparator = Comparator.comparing(dataSetMetadata -> dataSetMetadata.getName().toUpperCase(), comparisonOrder);
+            break;
+        case "DATE":
+            comparator = Comparator.comparing(dataSetMetadata -> String.valueOf(dataSetMetadata.getCreationDate()),
+                    comparisonOrder);
+            break;
+        default:
+            throw new TDPException(DataSetErrorCodes.ILLEGAL_SORT_FOR_LIST, ExceptionContext.build().put("sort", order));
+        }
+
+        // Select comparator for sort (either by name or date)
+        final Comparator<Folder> comparator2;
+        switch (sort.toUpperCase()) {
+        case "NAME":
+            comparator2 = Comparator.comparing(folder2 -> folder2.getName().toUpperCase(), comparisonOrder);
+            break;
+        case "DATE":
+            comparator2 = Comparator.comparing(folder2 -> String.valueOf(folder2.getCreationDate()), comparisonOrder);
+            break;
+        default:
+            throw new TDPException(DataSetErrorCodes.ILLEGAL_SORT_FOR_LIST, ExceptionContext.build().put("sort", order));
+        }
+        // Return sorted results
+        List<DataSetMetadata> datasets = stream.filter(metadata -> !metadata.getLifecycle().importing()) //
+                .map(metadata -> {
+                    completeWithUserData(metadata);
+                    return metadata;
+                }) //
+                .sorted(comparator) //
+
+        .collect(Collectors.toList());
+        if (!folderRepository.exists(folder)) {
+            throw new TDPException(DataSetErrorCodes.FOLDER_NOT_FOUND, ExceptionContext.build().put("path", folder));
+        }
+        List<Folder> folders = StreamSupport.stream(folderRepository.children(folder).spliterator(), false).sorted(comparator2)
+                .collect(Collectors.toList());
+
+        return inventoryUtils.inventory(datasets, folders);
+    }
+
     /**
      * Return the inventory of elements contained in a folder (which can be data sets, preparation and folders) out of
      * the given path.
      *
      * @param path the path where to look for folder elements.
      * @param name the string that must be included in the name of the folder element
-     * @return the inventory of elements contained if the folder corresponding to the given path matching the given name.
+     * @return the inventory of elements contained if the folder corresponding to the given path matching the given
+     * name.
      */
     @RequestMapping(value = "/inventory/search", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List the inventory of elements contained in a folder matching the given name", produces = APPLICATION_JSON_VALUE, notes = "List the inventory of elements contained in a folder matching the given name")
     @Timed
     public Inventory inventorySearch(@RequestParam(defaultValue = "", required = false) String path,
-                                     @RequestParam(defaultValue = "", required = true) String name) {
-
-        Inventory result = new Inventory();
-        Iterable<Folder> folderIterable = folderRepository.allFolder();
-
-        List<Folder> folders = StreamSupport.stream(folderIterable.spliterator(), false)
-                .filter(f -> f.getPath().startsWith(path)).collect(Collectors.toList());
-
-        Set<String> contentIds = new HashSet<>();
-
-        // retrieve datasets contained in folders having path as prefix
-        for (Folder folder : folders) {
-            Set<String> entries = StreamSupport
-                    .stream(folderRepository.entries(folder.getPath(), FolderEntry.ContentType.DATASET).spliterator(), false)
-                    .map(f -> f.getContentId()).collect(Collectors.toSet());
-            contentIds.addAll(entries);
-        }
-
-        // retrieve data sets contained the root of path
-        Set<String> entries = StreamSupport
-                .stream(folderRepository.entries(path, FolderEntry.ContentType.DATASET).spliterator(), false)
-                .map(f -> f.getContentId()).collect(Collectors.toSet());
-        contentIds.addAll(entries);
-
-        // retrieve the data sets metadata from their ids and filter on matching name
-        List<DataSetMetadata> datasets = contentIds.stream().map(s -> dataSetMetadataRepository.get(s))
-                .filter(d -> d != null && d.getName() != null && d.getName().contains(name)).collect(Collectors.toList());
-
-        // filter folders by name
-        List<FolderInfo> folderList = StreamSupport.stream(folders.spliterator(), false).filter(f -> f.getName().contains(name))
-                .map(f -> {
-                    int nbDatasets = (int) StreamSupport.stream(folderRepository.entries(f.getPath(), FolderEntry.ContentType.DATASET).spliterator(), false).count();
-                    return new FolderInfo(f, nbDatasets, 0); // 0 because so far folder does not contain preparation
-                })
-                .collect(Collectors.toList());
-
-        result.setFolders(folderList);
-        result.setDatasets(datasets);
-        result.setPreparations(Collections.emptyList());
-        return result;
+            @RequestParam(defaultValue = "", required = true) String name) {
+        return inventoryUtils.inventory(path, name);
     }
 
 }

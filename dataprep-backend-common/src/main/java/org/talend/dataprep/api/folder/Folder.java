@@ -1,15 +1,15 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.api.folder;
 
@@ -51,6 +51,7 @@ public class Folder implements Serializable {
 
     /**
      * Constructor with path and name.
+     * 
      * @param path the folder path.
      * @param name the folder name.
      */
@@ -58,6 +59,19 @@ public class Folder implements Serializable {
         this();
         this.path = path;
         this.name = name;
+    }
+
+    /**
+     * Constructor with path and name.
+     * 
+     * @param path the folder path.
+     * @param name the folder name.
+     */
+    public Folder(String path, String name, long creationDate, long lastModificationDate) {
+        this.path = path;
+        this.name = name;
+        this.creationDate = creationDate;
+        this.lastModificationDate = lastModificationDate;
     }
 
     public String getPath() {
@@ -68,31 +82,27 @@ public class Folder implements Serializable {
         this.path = path;
     }
 
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
-    public void setName( String name ) {
+    public void setName(String name) {
         this.name = name;
     }
 
-    public long getCreationDate()
-    {
+    public long getCreationDate() {
         return creationDate;
     }
 
-    public void setCreationDate( long creationDate )
-    {
+    public void setCreationDate(long creationDate) {
         this.creationDate = creationDate;
     }
 
-    public long getLastModificationDate()
-    {
+    public long getLastModificationDate() {
         return lastModificationDate;
     }
 
-    public void setLastModificationDate( long lastModificationDate ) {
+    public void setLastModificationDate(long lastModificationDate) {
         this.lastModificationDate = lastModificationDate;
     }
 
@@ -114,14 +124,9 @@ public class Folder implements Serializable {
     }
 
     @Override
-    public String toString()
-    {
-        return "Folder{" +
-            "name='" + name + '\'' +
-            ", path='" + path + '\'' +
-            ", creationDate='" + creationDate + '\'' +
-            ", lastModificationDate='" + lastModificationDate + '\'' +
-            '}';
+    public String toString() {
+        return "Folder{" + "name='" + name + '\'' + ", path='" + path + '\'' + ", creationDate='" + creationDate + '\''
+                + ", lastModificationDate='" + lastModificationDate + '\'' + '}';
     }
 
 }

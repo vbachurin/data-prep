@@ -56,6 +56,7 @@ import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.path.json.JsonPath;
 import com.jayway.restassured.response.Response;
+import org.talend.dataprep.inventory.Inventory;
 
 
 /**
@@ -348,9 +349,9 @@ public class DataSetAPITest extends ApiServiceTestBase {
         // then
 
         //  home has one dataset
-        FolderContent folderContent = mapper.readValue( list, FolderContent.class);
+        Inventory inventory = mapper.readValue( list, Inventory.class);
 
-        Assertions.assertThat( folderContent.getDatasets() ).isNotEmpty().hasSize( 1 );
+        Assertions.assertThat( inventory.getDatasets() ).isNotEmpty().hasSize( 1 );
 
 
         //  wine has no dataset
@@ -358,9 +359,9 @@ public class DataSetAPITest extends ApiServiceTestBase {
             .get("/api/folders/datasets?folder={folder}", "wine") //
             .asString();
 
-        folderContent = mapper.readValue( list, FolderContent.class);
+        inventory = mapper.readValue( list, Inventory.class);
 
-        Assertions.assertThat( folderContent.getDatasets() ).isEmpty();
+        Assertions.assertThat( inventory.getDatasets() ).isEmpty();
 
 
         given() //
@@ -376,19 +377,19 @@ public class DataSetAPITest extends ApiServiceTestBase {
             .asString();
 
 
-         folderContent = mapper.readValue( list, FolderContent.class);
+         inventory = mapper.readValue( list, Inventory.class);
 
         //  home has one dataset
-        Assertions.assertThat( folderContent.getDatasets() ).isNotEmpty().hasSize( 1 );
+        Assertions.assertThat( inventory.getDatasets() ).isNotEmpty().hasSize( 1 );
 
         list = when() //
                 .get("/api/folders/datasets?folder={folder}", "/") ///
                 .asString();
 
-        folderContent = mapper.readValue( list, FolderContent.class);
+        inventory = mapper.readValue( list, Inventory.class);
 
         //  home has no dataset
-        Assertions.assertThat( folderContent.getDatasets() ).isEmpty();
+        Assertions.assertThat( inventory.getDatasets() ).isEmpty();
 
     }
 
