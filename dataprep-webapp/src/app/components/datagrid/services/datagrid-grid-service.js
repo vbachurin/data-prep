@@ -23,8 +23,8 @@
  * @requires data-prep.datagrid.service:DatagridExternalService
  * @requires data-prep.datagrid.service:DatagridTooltipService
  */
-export default function DatagridGridService($timeout, StateService, state, DatagridService, DatagridStyleService, DatagridColumnService,
-                                            DatagridSizeService, DatagridExternalService, DatagridTooltipService) {
+export default function DatagridGridService($q, $timeout, StateService, state, DatagridService, DatagridStyleService, DatagridColumnService,
+                                            DatagridSizeService, DatagridExternalService, DatagridTooltipService, DatagridModelService) {
     'ngInject';
 
     var grid = null;
@@ -113,6 +113,42 @@ export default function DatagridGridService($timeout, StateService, state, Datag
         });
     }
 
+    function attachRemoteModelFetch(remoteModel) {
+        remoteModel.setFetchRecords((from, to) => {
+            console.log('From: ' + from + ' - To: ' + to);
+            const result = [];
+            for(let i = 0; i <= (to - from); ++i) {
+                result[i] = {
+                    tdpId: (from + i),
+                    '0000': ''+ Math.random(),
+                    '0001': ''+ Math.random(),
+                    '0002': ''+ Math.random(),
+                    '0003': ''+ Math.random(),
+                    '0004': ''+ Math.random(),
+                    '0005': ''+ Math.random(),
+                    '0006': ''+ Math.random(),
+                    '0007': ''+ Math.random()
+                };
+            }
+            return $q.resolve(result);
+        });
+
+        grid.onViewportChanged.subscribe(() => {
+            const vp = grid.getViewport();
+            remoteModel.ensureData(vp.top, vp.bottom);
+        });
+
+        remoteModel.onDataLoaded.subscribe((e, args) => {
+            for (let i = args.from; i <= args.to; i++) {
+                grid.invalidateRow(i);
+            }
+            grid.updateRowCount();
+            grid.render();
+        });
+
+        grid.onViewportChanged.notify();
+    }
+
     /**
      * @ngdoc method
      * @name initGrid
@@ -134,11 +170,14 @@ export default function DatagridGridService($timeout, StateService, state, Datag
             asyncEditorLoading: true,
             asyncEditorLoadDelay: 150
         };
-        grid = new Slick.Grid(elementId, state.playground.grid.dataView, [{id: 'tdpId'}], options);
+
+        const remoteModel = DatagridModelService.createRemoteModel(1000);
+        grid = new Slick.Grid(elementId, remoteModel.data, [{id: 'tdpId'}], options);
 
         //listeners
         attachLongTableListeners();
         attachGridStateListeners();
+        attachRemoteModelFetch(remoteModel);
 
         //init other services
         initGridServices();

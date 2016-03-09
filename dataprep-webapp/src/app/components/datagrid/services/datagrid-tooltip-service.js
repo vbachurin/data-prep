@@ -68,10 +68,10 @@ export default function DatagridTooltipService($timeout, state, TextFormatServic
             }
 
             var row = cell.row;
-            var item = state.playground.grid.dataView.getItem(row);
+            var item = grid.getDataItem(row);
 
             var column = grid.getColumns()[cell.cell];
-            var value = item[column.id] + '';
+            var value = item[column.id];
 
             if (shouldShowTooltip(value, cell)) {
                 tooltipShowPromise = $timeout(function () {
