@@ -37,6 +37,12 @@
             title: '',
             content: 'Click here to link two datasets. It will help you to dynamically use the data from the second dataset to complement the main one.</br>For example, you can use it to add all US State abbreviations alongside the full name of the State.',
             position: 'bottom'
+        },
+        {
+            element: '#playground-online-help-icon',
+            title: '',
+            content: 'Click here to access the <a href="https://help.talend.com/pages/viewpage.action?pageId=266307043&utm_medium=dpdesktop&utm_source=on_boarding" target="_blank">online help</a>.',
+            position: 'left'
         }
     ];
 
