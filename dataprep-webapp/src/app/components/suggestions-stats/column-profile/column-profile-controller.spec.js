@@ -1,26 +1,24 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
 
-describe('ColumnProfile controller', function () {
+describe('ColumnProfile controller', () => {
     'use strict';
 
-    var createController, scope;
+    let createController, scope;
+    let stateMock;
+    const removeFilterFn = () => {};
 
-    var stateMock;
-    var removeFilterFn = function () {
-    };
-
-    beforeEach(angular.mock.module('data-prep.column-profile', function ($provide) {
+    beforeEach(angular.mock.module('data-prep.column-profile', ($provide) => {
         stateMock = {
             playground: {
                 grid: {},
@@ -30,27 +28,26 @@ describe('ColumnProfile controller', function () {
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(inject(function ($rootScope, $controller) {
+    beforeEach(inject(($rootScope, $controller) => {
         scope = $rootScope.$new();
 
-        createController = function () {
+        createController = () => {
             return $controller('ColumnProfileCtrl', {
                 $scope: scope
             });
         };
     }));
 
-    describe('filter', function () {
-        beforeEach(inject(function ($q, FilterService, StatisticsService, PlaygroundService) {
+    describe('filter', () => {
+        beforeEach(inject(($q, FilterService, StatisticsService) => {
             spyOn(FilterService, 'addFilterAndDigest').and.returnValue();
             spyOn(StatisticsService, 'getRangeFilterRemoveFn').and.returnValue(removeFilterFn);
-            spyOn(PlaygroundService, 'updateStatistics').and.returnValue($q.when());
         }));
 
-        it('should add a "exact" filter', inject(function (FilterService) {
+        it('should add a "exact" filter', inject((FilterService) => {
             //given
-            var ctrl = createController();
-            var obj = {'data': 'Ulysse', 'occurrences': 5};
+            const ctrl = createController();
+            const obj = {'data': 'Ulysse', 'occurrences': 5};
 
             stateMock.playground.grid.selectedColumn = {
                 id: '0001',
@@ -67,10 +64,10 @@ describe('ColumnProfile controller', function () {
             });
         }));
 
-        it('should add a number "range" filter', inject(function (StatisticsService, FilterService) {
+        it('should add a number "range" filter', inject((StatisticsService, FilterService) => {
             //given
-            var ctrl = createController();
-            var interval = {
+            const ctrl = createController();
+            const interval = {
                 min: 5,
                 max: 15
             };
@@ -94,10 +91,10 @@ describe('ColumnProfile controller', function () {
                 removeFilterFn);
         }));
 
-        it('should add a date "range" filter', inject(function (StatisticsService, FilterService) {
+        it('should add a date "range" filter', inject((StatisticsService, FilterService) => {
             //given
-            var ctrl = createController();
-            var interval = {
+            const ctrl = createController();
+            const interval = {
                 min: '01-06-2015',
                 max: '30-06-2015',
                 label: 'Jun 2015'
@@ -122,10 +119,10 @@ describe('ColumnProfile controller', function () {
                 removeFilterFn);
         }));
 
-        it('should add a "empty_records" filter from exact_filter on barchart click callback', inject(function (StatisticsService, FilterService) {
+        it('should add a "empty_records" filter from exact_filter on barchart click callback', inject((StatisticsService, FilterService) => {
             //given
-            var ctrl = createController();
-            var obj = {'data': '', 'occurrences': 5};
+            const ctrl = createController();
+            const obj = {'data': '', 'occurrences': 5};
 
             stateMock.playground.grid.selectedColumn = {
                 id: '0001',
@@ -140,16 +137,12 @@ describe('ColumnProfile controller', function () {
         }));
     });
 
-    describe('external bindings', function () {
-        beforeEach(inject(function ($q, PlaygroundService) {
-            spyOn(PlaygroundService, 'updateStatistics').and.returnValue($q.when());
-        }));
-
-        it('should bind aggregationColumns getter to StatisticsService.getAggregationColumns()', inject(function (StatisticsService) {
+    describe('external bindings', () => {
+        it('should bind aggregationColumns getter to StatisticsService.getAggregationColumns()', inject((StatisticsService) => {
             //given
-            var ctrl = createController();
+            const ctrl = createController();
 
-            var numericColumns = [{id: '0001'}, {id: '0002'}];
+            const numericColumns = [{id: '0001'}, {id: '0002'}];
             spyOn(StatisticsService, 'getAggregationColumns').and.returnValue(numericColumns);
 
             //then
@@ -157,56 +150,53 @@ describe('ColumnProfile controller', function () {
         }));
     });
 
-    describe('aggregation', function () {
-        beforeEach(inject(function ($q, PlaygroundService) {
-            spyOn(PlaygroundService, 'updateStatistics').and.returnValue($q.when());
-        }));
+    describe('aggregation', () => {
 
-        it('should get the current aggregation name', function () {
+        it('should get the current aggregation name', () => {
             //given
-            var ctrl = createController();
+            const ctrl = createController();
             stateMock.playground.statistics.histogram = {
                 aggregation: 'MAX'
             };
 
             //when
-            var aggregation = ctrl.getCurrentAggregation();
+            const aggregation = ctrl.getCurrentAggregation();
 
             //then
             expect(aggregation).toBe('MAX');
         });
 
-        it('should get the default aggregation name when there is no histogram', function () {
+        it('should get the default aggregation name when there is no histogram', () => {
             //given
-            var ctrl = createController();
+            const ctrl = createController();
             stateMock.playground.statistics.histogram = null;
 
             //when
-            var aggregation = ctrl.getCurrentAggregation();
+            const aggregation = ctrl.getCurrentAggregation();
 
             //then
             expect(aggregation).toBe('LINE_COUNT');
         });
 
-        it('should get the default aggregation name when histogram is not an aggregation', function () {
+        it('should get the default aggregation name when histogram is not an aggregation', () => {
             //given
-            var ctrl = createController();
+            const ctrl = createController();
             stateMock.playground.statistics.histogram = {data: []};
 
             //when
-            var aggregation = ctrl.getCurrentAggregation();
+            const aggregation = ctrl.getCurrentAggregation();
 
             //then
             expect(aggregation).toBe('LINE_COUNT');
         });
 
-        it('should change aggregation chart', inject(function (StatisticsService) {
+        it('should change aggregation chart', inject((StatisticsService) => {
             //given
             spyOn(StatisticsService, 'processAggregation').and.returnValue();
-            var ctrl = createController();
+            const ctrl = createController();
 
-            var column = {id: '0001'};
-            var aggregation = {name: 'MAX'};
+            const column = {id: '0001'};
+            const aggregation = {name: 'MAX'};
 
             //when
             ctrl.changeAggregation(column, aggregation);
@@ -215,12 +205,12 @@ describe('ColumnProfile controller', function () {
             expect(StatisticsService.processAggregation).toHaveBeenCalledWith(column, aggregation);
         }));
 
-        it('should switch to classical chart', inject(function (StatisticsService) {
+        it('should switch to classical chart', inject((StatisticsService) => {
             //given
             spyOn(StatisticsService, 'processAggregation').and.returnValue();
             spyOn(StatisticsService, 'processClassicChart').and.returnValue();
-            var ctrl = createController();
-            var column = {id: '0001'};
+            const ctrl = createController();
+            const column = {id: '0001'};
 
             //when
             ctrl.changeAggregation(column);
@@ -230,10 +220,10 @@ describe('ColumnProfile controller', function () {
             expect(StatisticsService.processClassicChart).toHaveBeenCalled();
         }));
 
-        it('should do nothing if the current histogram is already the wanted aggregation', inject(function (StatisticsService) {
+        it('should do nothing if the current histogram is already the wanted aggregation', inject((StatisticsService) => {
             //given
-            var column = {id: '0001'};
-            var aggregation = {name: 'MAX'};
+            const column = {id: '0001'};
+            const aggregation = {name: 'MAX'};
 
             spyOn(StatisticsService, 'processAggregation').and.returnValue();
             stateMock.playground.statistics.histogram = {
@@ -242,63 +232,13 @@ describe('ColumnProfile controller', function () {
                 data: [{field: 'toto', value: 2}]
             };
 
-            var ctrl = createController();
+            const ctrl = createController();
 
             //when
             ctrl.changeAggregation(column, aggregation);
 
             //then
             expect(StatisticsService.processAggregation).not.toHaveBeenCalled();
-        }));
-    });
-
-    describe('statistics', function () {
-        it('should not update columns statistics when there are statistics charts to display', inject(function ($q, PlaygroundService) {
-            //given
-            spyOn(PlaygroundService, 'updateStatistics').and.returnValue($q.when());
-            stateMock.playground.statistics.histogram = {data: [{field: 'toto', value: 2}]};
-
-            //when
-            createController();
-
-            //then
-            expect(PlaygroundService.updateStatistics).not.toHaveBeenCalled();
-        }));
-
-        it('should update statistics when there are no histogram yet', inject(function ($q, PlaygroundService) {
-            //given
-            spyOn(PlaygroundService, 'updateStatistics').and.returnValue($q.when());
-            stateMock.playground.statistics.histogram = null;
-
-            //when
-            createController();
-
-            //then
-            expect(PlaygroundService.updateStatistics).toHaveBeenCalled();
-        }));
-
-        it('should retry statistics update when previous fetch has been rejected (stats not computed yet) with a delay of 1500ms', inject(function ($q, $timeout, PlaygroundService) {
-            //given
-            var retry = 0;
-            spyOn(PlaygroundService, 'updateStatistics').and.callFake(function () {
-                if (retry === 0) {
-                    retry++;
-                    return $q.reject();
-                }
-                else {
-                    return $q.when();
-                }
-            });
-            stateMock.playground.statistics.histogram = null;
-
-            //when
-            createController();
-            scope.$digest();
-            expect(PlaygroundService.updateStatistics.calls.count()).toBe(1);
-            $timeout.flush(1500);
-
-            //then
-            expect(PlaygroundService.updateStatistics.calls.count()).toBe(2);
         }));
     });
 });

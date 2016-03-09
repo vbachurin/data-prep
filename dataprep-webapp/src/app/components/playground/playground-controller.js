@@ -31,7 +31,7 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
                                        LookupService, MessageService) {
     'ngInject';
 
-    var vm = this;
+    const vm = this;
     vm.state = state;
     vm.recipeService = RecipeService;
 
@@ -59,7 +59,7 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
      * @description Change the preparation name
      */
     vm.confirmPrepNameEdition = function confirmPrepNameEdition(name) {
-        var cleanName = name.trim();
+        const cleanName = name.trim();
         if (!vm.changeNameInProgress && cleanName) {
             changeName(cleanName)
                 .then((preparation) => $state.go('playground.preparation', {prepid: preparation.id}));
@@ -110,7 +110,7 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
      * @returns {boolean} True if the playground can be closed (no implicit preparation), False otherwise
      */
     vm.beforeClose = function beforeClose() {
-        var isDraft = state.playground.preparation && state.playground.preparation.draft;
+        const isDraft = state.playground.preparation && state.playground.preparation.draft;
         if (isDraft) {
             vm.showNameValidation = true;
         }
@@ -137,7 +137,7 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
      */
     vm.confirmSaveOnClose = function confirmSaveOnClose() {
         vm.saveInProgress = true;
-        var cleanName = vm.state.playground.preparationName.trim();
+        const cleanName = vm.state.playground.preparationName.trim();
         changeName(cleanName).then(close);
     };
 
@@ -147,7 +147,7 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
      * @methodOf data-prep.playground.controller:PlaygroundCtrl
      * @description Playground close callback. It reset the playground and redirect to the previous page
      */
-    function close () {
+    function close() {
         $timeout(StateService.resetPlayground, 500, false);
         $state.go(state.playground.previousState, state.playground.previousStateOptions);
     }
@@ -169,6 +169,35 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
             .finally(StateService.setIsSendingDatasetParameters.bind(null, false));
     };
 
+    //------------------------------------------------------------------------------------------------------
+    //----------------------------------------------STATS REFRESH-------------------------------------------
+    //------------------------------------------------------------------------------------------------------
+    /**
+     * @ngdoc method
+     * @name shouldFetchStatistics
+     * @methodOf data-prep.actions-suggestions-stats.controller:ColumnProfileCtrl
+     * @description Check if we have the statistics or we have to fetch them
+     */
+    function shouldFetchStatistics() {
+        const columns = state.playground.data.metadata.columns;
+
+        return !columns || !columns.length ||                   // no columns
+            !columns[0].statistics.frequencyTable.length;   // no frequency table implies no async stats computed
+    }
+
+    /**
+     * @ngdoc method
+     * @name fetchStatistics
+     * @methodOf data-prep.actions-suggestions-stats.controller:ColumnProfileCtrl
+     * @description Fetch the statistics. If the update fails (no statistics yet) a retry is triggered after 1s
+     */
+    function fetchStatistics() {
+        StateService.setIsFetchingStats(true);
+        PlaygroundService.updateStatistics()
+            .then(() => StateService.setIsFetchingStats(false))
+            .catch(() => $timeout(fetchStatistics, 1500, false));
+    }
+
     //--------------------------------------------------------------------------------------------------------------
     //------------------------------------------------INIT----------------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------
@@ -177,8 +206,8 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
         $state.go(state.playground.previousState);
     }
 
-    if ($stateParams.prepid) {
-        var preparation = _.find(state.inventory.preparations, {id: $stateParams.prepid});
+    function loadPreparation(prepid) {
+        const preparation = _.find(state.inventory.preparations, {id: prepid});
         if (!preparation) {
             errorGoBack({type: 'preparation'});
         }
@@ -187,15 +216,28 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
                 .catch(() => errorGoBack({type: 'preparation'}));
         }
     }
-    else if ($stateParams.datasetid) {
-        var dataset = _.find(state.inventory.datasets, {id: $stateParams.datasetid});
+
+    function loadDataset(datasetid) {
+        const dataset = _.find(state.inventory.datasets, {id: datasetid});
         if (!dataset) {
             errorGoBack({type: 'dataset'});
         }
         else {
             PlaygroundService.initPlayground(dataset)
+                .then(() => {
+                    if (shouldFetchStatistics()) {
+                        fetchStatistics();
+                    }
+                })
                 .catch(() => errorGoBack({type: 'dataset'}));
         }
+    }
+
+    if ($stateParams.prepid) {
+        loadPreparation($stateParams.prepid);
+    }
+    else if ($stateParams.datasetid) {
+        loadDataset($stateParams.datasetid);
     }
 }
 
@@ -212,7 +254,7 @@ Object.defineProperty(PlaygroundCtrl.prototype,
         enumerable: true,
         configurable: false,
         get: function () {
-            var firstStep = this.recipeService.getRecipe()[0];
+            const firstStep = this.recipeService.getRecipe()[0];
             return firstStep && !firstStep.inactive;
         },
         set: () => {}

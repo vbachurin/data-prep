@@ -19,9 +19,8 @@
  * @requires data-prep.statistics.service:StatisticsService
  * @requires data-prep.statistics.service:StatisticsTooltipService
  * @requires data-prep.services.filter.service:FilterService
- * @requires data-prep.services.playground.service:PlaygroundService
  */
-export default function ColumnProfileCtrl($timeout, state, StatisticsService, StatisticsTooltipService, FilterService, PlaygroundService) {
+export default function ColumnProfileCtrl($timeout, state, StatisticsService, StatisticsTooltipService, FilterService) {
     'ngInject';
 
     var vm = this;
@@ -129,37 +128,6 @@ export default function ColumnProfileCtrl($timeout, state, StatisticsService, St
             StatisticsService.processClassicChart();
         }
     };
-
-    //------------------------------------------------------------------------------------------------------
-    //----------------------------------------------CHART REFRESH-------------------------------------------
-    //------------------------------------------------------------------------------------------------------
-    /**
-     * @ngdoc method
-     * @name shouldFetchStatistics
-     * @methodOf data-prep.actions-suggestions-stats.controller:ColumnProfileCtrl
-     * @description Check if we have the statistics or we have to fetch them
-     */
-    function shouldFetchStatistics() {
-        return !state.playground.statistics.histogram &&// no histogram means no statistics yet whereas empty histogram means no data to display
-            !vm.stateDistribution; // and not a state distribution chart
-    }
-
-    /**
-     * @ngdoc method
-     * @name fetchStatistics
-     * @methodOf data-prep.actions-suggestions-stats.controller:ColumnProfileCtrl
-     * @description Fetch the statistics. If the update fails (no statistics yet) a retry is triggered after 1s
-     */
-    function fetchStatistics() {
-        PlaygroundService.updateStatistics()
-            .catch(function () {
-                $timeout(fetchStatistics, 1500, false);
-            });
-    }
-
-    if (shouldFetchStatistics()) {
-        fetchStatistics();
-    }
 }
 
 /**

@@ -38,6 +38,7 @@ export function PlaygroundStateService(RecipeStateService, recipeState,
         //playground
         reset: reset,
         setDataset: setDataset,
+        setIsFetchingStats: setIsFetchingStats,
         setPreparation: setPreparation,
         setPreparationName: setPreparationName,
         setNameEditionMode: setNameEditionMode,
@@ -142,6 +143,10 @@ export function PlaygroundStateService(RecipeStateService, recipeState,
         playgroundState.previousStateOptions = previousStateOptions;
     }
 
+    function setIsFetchingStats(value) {
+        playgroundState.isFetchingStats = value;
+    }
+
     //--------------------------------------------------------------------------------------------------------------
     //-------------------------------------------------PARAMETERS---------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------
@@ -189,6 +194,7 @@ export function PlaygroundStateService(RecipeStateService, recipeState,
         playgroundState.nameEditionMode = false;
         playgroundState.lookupData = null;
         playgroundState.exportParameters = null;
+        playgroundState.isFetchingStats = false;
 
         RecipeStateService.reset();
         FilterStateService.reset();

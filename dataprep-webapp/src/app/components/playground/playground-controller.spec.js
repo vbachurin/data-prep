@@ -11,11 +11,11 @@
 
  ============================================================================*/
 
-describe('Playground controller', function () {
+describe('Playground controller', () => {
     'use strict';
 
-    var createController, scope, stateMock;
-    var datasets = [
+    let createController, scope, stateMock;
+    const datasets = [
         {
             'id': 'de3cc32a-b624-484e-b8e7-dab9061a009c',
             'name': 'customers_jso_light',
@@ -36,7 +36,7 @@ describe('Playground controller', function () {
         }
     ];
 
-    var preparations = [
+    const preparations = [
         {
             'id': 'ab136cbf0923a7f11bea713adb74ecf919e05cfa',
             'dataSetId': 'de3cc32a-b624-484e-b8e7-dab9061a009c',
@@ -65,9 +65,9 @@ describe('Playground controller', function () {
                 previousState: 'nav.index.preparations',
                 preparationName: ''
             },
-            inventory :{
-                currentFolder : {
-                    path : 'test'
+            inventory: {
+                currentFolder: {
+                    path: 'test'
                 }
             }
         };
@@ -77,7 +77,7 @@ describe('Playground controller', function () {
     beforeEach(inject(($rootScope, $q, $controller, $state, PlaygroundService) => {
         scope = $rootScope.$new();
 
-        createController = function () {
+        createController = () => {
             return $controller('PlaygroundCtrl', {
                 $scope: scope
             });
@@ -93,9 +93,9 @@ describe('Playground controller', function () {
     }));
 
     describe('bindings', () => {
-        it('should bind hasActiveStep getter', inject(function (RecipeService) {
+        it('should bind hasActiveStep getter', inject((RecipeService) => {
             //given
-            var ctrl = createController();
+            const ctrl = createController();
             expect(ctrl.hasActiveStep).toBeFalsy();
 
             //when
@@ -107,9 +107,9 @@ describe('Playground controller', function () {
     });
 
     describe('recipe header', () => {
-        it('should create/update preparation with clean name on name edition confirmation', inject(function (PlaygroundService) {
+        it('should create/update preparation with clean name on name edition confirmation', inject((PlaygroundService) => {
             //given
-            var ctrl = createController();
+            const ctrl = createController();
             stateMock.playground.preparationName = '  my new name  ';
 
             //when
@@ -119,9 +119,9 @@ describe('Playground controller', function () {
             expect(PlaygroundService.createOrUpdatePreparation).toHaveBeenCalledWith('my new name');
         }));
 
-        it('should change route to preparation route on name edition confirmation', inject(function ($rootScope, $state) {
+        it('should change route to preparation route on name edition confirmation', inject(($rootScope, $state) => {
             //given
-            var ctrl = createController();
+            const ctrl = createController();
             stateMock.playground.preparationName = '  my new name  ';
             stateMock.playground.preparation = {id: 'fe6843da512545e'};
 
@@ -133,9 +133,9 @@ describe('Playground controller', function () {
             expect($state.go).toHaveBeenCalledWith('playground.preparation', {prepid: createPreparation.id});
         }));
 
-        it('should not call service create/updateName service if name is blank on name edition confirmation', inject(function (PlaygroundService) {
+        it('should not call service create/updateName service if name is blank on name edition confirmation', inject((PlaygroundService) => {
             //given
-            var ctrl = createController();
+            const ctrl = createController();
 
             //when
             ctrl.confirmPrepNameEdition(' ');
@@ -146,15 +146,15 @@ describe('Playground controller', function () {
     });
 
     describe('lookup', () => {
-        beforeEach(inject(function ($q, LookupService, StateService) {
+        beforeEach(inject(($q, LookupService, StateService) => {
             spyOn(LookupService, 'initLookups').and.returnValue($q.when());
             spyOn(StateService, 'setLookupVisibility').and.returnValue();
         }));
 
-        it('should load lookup panel when it is hidden', inject(function (LookupService) {
+        it('should load lookup panel when it is hidden', inject((LookupService) => {
             //given
             stateMock.playground.lookup.visibility = false;
-            var ctrl = createController();
+            const ctrl = createController();
 
             //when
             ctrl.toggleLookup();
@@ -163,10 +163,10 @@ describe('Playground controller', function () {
             expect(LookupService.initLookups).toHaveBeenCalled();
         }));
 
-        it('should display lookup panel when it is hidden', inject(function (StateService) {
+        it('should display lookup panel when it is hidden', inject((StateService) => {
             //given
             stateMock.playground.lookup.visibility = false;
-            var ctrl = createController();
+            const ctrl = createController();
 
             //when
             ctrl.toggleLookup();
@@ -176,10 +176,10 @@ describe('Playground controller', function () {
             expect(StateService.setLookupVisibility).toHaveBeenCalledWith(true, undefined);
         }));
 
-        it('should hide lookup panel when it is visible', inject(function (LookupService, StateService) {
+        it('should hide lookup panel when it is visible', inject((LookupService, StateService) => {
             //given
             stateMock.playground.lookup.visibility = true;
-            var ctrl = createController();
+            const ctrl = createController();
 
             //when
             ctrl.toggleLookup();
@@ -191,8 +191,8 @@ describe('Playground controller', function () {
     });
 
     describe('close', () => {
-        var ctrl;
-        var preparation;
+        let ctrl;
+        let preparation;
 
         beforeEach(inject(($q, PreparationService, StateService) => {
             preparation = {id: '9af874865e42b546', draft: true};
@@ -219,20 +219,20 @@ describe('Playground controller', function () {
                 expect($state.go).toHaveBeenCalledWith('nav.index.preparations', undefined);
             }));
 
-            it('should reset and redirect with params', inject(function ($state) {
+            it('should reset and redirect with params', inject(($state) => {
                 //given
                 preparation.draft = false;
                 stateMock.playground.previousState = 'nav.index.datasets';
-                stateMock.playground.previousStateOptions = {folderPath : 'test'};
+                stateMock.playground.previousStateOptions = {folderPath: 'test'};
 
                 //when
                 ctrl.beforeClose();
 
                 //then
-                expect($state.go).toHaveBeenCalledWith('nav.index.datasets', {folderPath : 'test'});
+                expect($state.go).toHaveBeenCalledWith('nav.index.datasets', {folderPath: 'test'});
             }));
 
-            it('should show preparation save/discard modal with implicit preparation', function () {
+            it('should show preparation save/discard modal with implicit preparation', () => {
                 //given
                 expect(ctrl.showNameValidation).toBeFalsy();
 
@@ -245,7 +245,7 @@ describe('Playground controller', function () {
         });
 
         describe('discard preparation', () => {
-            it('should delete current preparation', inject(function (PreparationService) {
+            it('should delete current preparation', inject((PreparationService) => {
                 //when
                 ctrl.discardSaveOnClose();
 
@@ -253,7 +253,7 @@ describe('Playground controller', function () {
                 expect(PreparationService.delete).toHaveBeenCalledWith(preparation);
             }));
 
-            it('should reset and redirect to previous route', inject(function ($timeout, $state, StateService) {
+            it('should reset and redirect to previous route', inject(($timeout, $state, StateService) => {
                 //when
                 ctrl.discardSaveOnClose();
                 scope.$digest();
@@ -266,7 +266,7 @@ describe('Playground controller', function () {
         });
 
         describe('save preparation', () => {
-            it('should change preparation name on save confirm', inject(function (PlaygroundService) {
+            it('should change preparation name on save confirm', inject((PlaygroundService) => {
                 //given
                 stateMock.playground.preparationName = '  my preparation ';
 
@@ -277,7 +277,7 @@ describe('Playground controller', function () {
                 expect(PlaygroundService.createOrUpdatePreparation).toHaveBeenCalledWith('my preparation');
             }));
 
-            it('should reset and redirect to previous route', inject(function ($timeout, $state, StateService) {
+            it('should reset and redirect to previous route', inject(($timeout, $state, StateService) => {
                 //when
                 ctrl.confirmSaveOnClose();
                 scope.$digest();
@@ -291,10 +291,10 @@ describe('Playground controller', function () {
     });
 
     describe('feedback', () => {
-        it('should open feedback modal', inject(function (StateService) {
+        it('should open feedback modal', inject((StateService) => {
             //given
             spyOn(StateService, 'showFeedback').and.returnValue();
-            var ctrl = createController();
+            const ctrl = createController();
 
             //when
             ctrl.openFeedbackForm();
@@ -305,16 +305,16 @@ describe('Playground controller', function () {
     });
 
     describe('dataset parameters', () => {
-        beforeEach(inject(function ($q, StateService, PlaygroundService) {
+        beforeEach(inject(($q, StateService, PlaygroundService) => {
             spyOn(StateService, 'hideDatasetParameters').and.returnValue();
             spyOn(StateService, 'toggleDatasetParameters').and.returnValue();
             spyOn(StateService, 'setIsSendingDatasetParameters').and.returnValue();
             spyOn(PlaygroundService, 'changeDatasetParameters').and.returnValue($q.when());
         }));
 
-        it('should open dataset parameters', inject(function (StateService) {
+        it('should open dataset parameters', inject((StateService) => {
             //given
-            var ctrl = createController();
+            const ctrl = createController();
             expect(StateService.toggleDatasetParameters).not.toHaveBeenCalled();
 
             //when
@@ -324,10 +324,10 @@ describe('Playground controller', function () {
             expect(StateService.toggleDatasetParameters).toHaveBeenCalled();
         }));
 
-        it('should manage progress flag', inject(function (StateService) {
+        it('should manage progress flag', inject((StateService) => {
             //given
-            var ctrl = createController();
-            var parameters = {separator: ';', encoding: 'UTF-8'};
+            const ctrl = createController();
+            const parameters = {separator: ';', encoding: 'UTF-8'};
 
             expect(StateService.setIsSendingDatasetParameters).not.toHaveBeenCalled();
 
@@ -340,10 +340,10 @@ describe('Playground controller', function () {
             expect(StateService.setIsSendingDatasetParameters).toHaveBeenCalledWith(false);
         }));
 
-        it('should call parameter change function', inject(function (PlaygroundService) {
+        it('should call parameter change function', inject((PlaygroundService) => {
             //given
-            var ctrl = createController();
-            var parameters = {separator: ';', encoding: 'UTF-8'};
+            const ctrl = createController();
+            const parameters = {separator: ';', encoding: 'UTF-8'};
 
             expect(PlaygroundService.changeDatasetParameters).not.toHaveBeenCalled();
 
@@ -354,10 +354,10 @@ describe('Playground controller', function () {
             expect(PlaygroundService.changeDatasetParameters).toHaveBeenCalled();
         }));
 
-        it('should hide dataset parameters', inject(function (StateService) {
+        it('should hide dataset parameters', inject((StateService) => {
             //given
-            var ctrl = createController();
-            var parameters = {separator: ';', encoding: 'UTF-8'};
+            const ctrl = createController();
+            const parameters = {separator: ';', encoding: 'UTF-8'};
 
             expect(StateService.hideDatasetParameters).not.toHaveBeenCalled();
 
@@ -371,88 +371,188 @@ describe('Playground controller', function () {
     });
 
     describe('initialization', () => {
-        beforeEach(inject(($q, MessageService) => {
+        beforeEach(inject((MessageService, StateService) => {
+            spyOn(StateService, 'setIsFetchingStats').and.returnValue();
             spyOn(MessageService, 'error').and.returnValue();
             stateMock.inventory = {preparations: preparations, datasets: datasets};
         }));
 
-        it('should load playground', inject(($q, $stateParams, PlaygroundService) => {
-            //given
-            $stateParams.prepid = preparations[0].id;
-            spyOn(PlaygroundService, 'load').and.returnValue($q.when());
+        describe('preparation', () => {
+            it('should load playground', inject(($q, $stateParams, PlaygroundService) => {
+                //given
+                $stateParams.prepid = preparations[0].id;
+                spyOn(PlaygroundService, 'load').and.returnValue($q.when());
 
-            //when
-            createController();
+                //when
+                createController();
 
-            //then
-            expect(PlaygroundService.load).toHaveBeenCalledWith(preparations[0]);
-        }));
+                //then
+                expect(PlaygroundService.load).toHaveBeenCalledWith(preparations[0]);
+            }));
 
-        it('should go back to previous state when preparation does NOT exist', inject(($state, $stateParams, MessageService) => {
-            //given
-            $stateParams.prepid = 'non existing prep';
-            $stateParams.datasetid = null;
+            it('should go back to previous state when preparation does NOT exist', inject(($state, $stateParams, MessageService) => {
+                //given
+                $stateParams.prepid = 'non existing prep';
+                $stateParams.datasetid = null;
 
-            //when
-            createController();
+                //when
+                createController();
 
-            //then
-            expect(MessageService.error).toHaveBeenCalledWith('PLAYGROUND_FILE_NOT_FOUND_TITLE', 'PLAYGROUND_FILE_NOT_FOUND', {type: 'preparation'});
-            expect($state.go).toHaveBeenCalledWith('nav.index.preparations');
-        }));
+                //then
+                expect(MessageService.error).toHaveBeenCalledWith('PLAYGROUND_FILE_NOT_FOUND_TITLE', 'PLAYGROUND_FILE_NOT_FOUND', {type: 'preparation'});
+                expect($state.go).toHaveBeenCalledWith('nav.index.preparations');
+            }));
 
-        it('should go back to previous state when preparation content GET return an error', inject(($q, $state, $stateParams, MessageService, PlaygroundService) => {
-            //given
-            $stateParams.prepid = 'non existing prep';
-            $stateParams.datasetid = null;
-            spyOn(PlaygroundService, 'load').and.returnValue($q.reject());
+            it('should go back to previous state when preparation content GET return an error', inject(($q, $state, $stateParams, MessageService, PlaygroundService) => {
+                //given
+                $stateParams.prepid = 'non existing prep';
+                $stateParams.datasetid = null;
+                spyOn(PlaygroundService, 'load').and.returnValue($q.reject());
 
-            //when
-            createController();
+                //when
+                createController();
 
-            //then
-            expect(MessageService.error).toHaveBeenCalledWith('PLAYGROUND_FILE_NOT_FOUND_TITLE', 'PLAYGROUND_FILE_NOT_FOUND', {type: 'preparation'});
-            expect($state.go).toHaveBeenCalledWith('nav.index.preparations');
-        }));
+                //then
+                expect(MessageService.error).toHaveBeenCalledWith('PLAYGROUND_FILE_NOT_FOUND_TITLE', 'PLAYGROUND_FILE_NOT_FOUND', {type: 'preparation'});
+                expect($state.go).toHaveBeenCalledWith('nav.index.preparations');
+            }));
+        });
 
-        it('should load dataset', inject(($q, $stateParams, PlaygroundService) => {
-            //given
-            $stateParams.prepid = null;
-            $stateParams.datasetid = 'de3cc32a-b624-484e-b8e7-dab9061a009c';
-            spyOn(PlaygroundService, 'initPlayground').and.returnValue($q.when());
+        describe('preparation', () => {
+            it('should load dataset', inject(($q, $stateParams, PlaygroundService) => {
+                //given
+                $stateParams.prepid = null;
+                $stateParams.datasetid = 'de3cc32a-b624-484e-b8e7-dab9061a009c';
+                spyOn(PlaygroundService, 'initPlayground').and.returnValue($q.when());
 
-            //when
-            createController();
+                //when
+                createController();
 
-            //then
-            expect(PlaygroundService.initPlayground).toHaveBeenCalledWith(datasets[0]);
-        }));
+                //then
+                expect(PlaygroundService.initPlayground).toHaveBeenCalledWith(datasets[0]);
+            }));
 
-        it('should go back to previous state when dataset does NOT exist', inject(($state, $stateParams, MessageService) => {
-            //given
-            $stateParams.prepid = null;
-            $stateParams.datasetid = 'non existing dataset';
+            it('should fetch statistics when they are not computed yet', inject(($q, $stateParams, PlaygroundService, StateService) => {
+                //given
+                $stateParams.prepid = null;
+                $stateParams.datasetid = 'de3cc32a-b624-484e-b8e7-dab9061a009c';
+                spyOn(PlaygroundService, 'initPlayground').and.returnValue($q.when());
+                spyOn(PlaygroundService, 'updateStatistics').and.returnValue($q.when());
 
-            //when
-            createController();
+                //when
+                createController();
+                expect(StateService.setIsFetchingStats).not.toHaveBeenCalled();
+                expect(PlaygroundService.updateStatistics).not.toHaveBeenCalled();
 
-            //then
-            expect(MessageService.error).toHaveBeenCalledWith('PLAYGROUND_FILE_NOT_FOUND_TITLE', 'PLAYGROUND_FILE_NOT_FOUND', {type: 'dataset'});
-            expect($state.go).toHaveBeenCalledWith('nav.index.preparations');
-        }));
+                stateMock.playground.data = {metadata: {statistics: {frequencyTable: []}}}; // stats not computed
+                scope.$digest();
 
-        it('should go back to previous state when dataset content GET return an error', inject(($q, $state, $stateParams, MessageService, PlaygroundService) => {
-            //given
-            $stateParams.prepid = null;
-            $stateParams.datasetid = 'non existing dataset';
-            spyOn(PlaygroundService, 'initPlayground').and.returnValue($q.reject());
+                //then
+                expect(StateService.setIsFetchingStats).toHaveBeenCalledWith(true);
+                expect(PlaygroundService.updateStatistics).toHaveBeenCalled();
+                expect(StateService.setIsFetchingStats).toHaveBeenCalledWith(false);
+            }));
 
-            //when
-            createController();
+            it('should retry statistics fetch when the previous fetch has been rejected (stats not computed yet) with a delay of 1500ms', inject(($q, $timeout, $stateParams, PlaygroundService, StateService) => {
+                //given
+                let retry = 0;
+                $stateParams.prepid = null;
+                $stateParams.datasetid = 'de3cc32a-b624-484e-b8e7-dab9061a009c';
+                spyOn(PlaygroundService, 'initPlayground').and.returnValue($q.when());
+                spyOn(PlaygroundService, 'updateStatistics').and.callFake(() => {
+                    if (retry === 0) {
+                        retry++;
+                        return $q.reject();
+                    }
+                    else {
+                        return $q.when();
+                    }
+                });
 
-            //then
-            expect(MessageService.error).toHaveBeenCalledWith('PLAYGROUND_FILE_NOT_FOUND_TITLE', 'PLAYGROUND_FILE_NOT_FOUND', {type: 'dataset'});
-            expect($state.go).toHaveBeenCalledWith('nav.index.preparations');
-        }));
+                //when
+                createController();
+                expect(StateService.setIsFetchingStats).not.toHaveBeenCalled();
+                expect(PlaygroundService.updateStatistics).not.toHaveBeenCalled();
+
+                stateMock.playground.data = {
+                    metadata: {
+                        columns: [{
+                            statistics: {
+                                frequencyTable: []       // stats not computed
+                            }
+                        }]
+                    }
+                };
+                scope.$digest();
+
+                expect(StateService.setIsFetchingStats.calls.count()).toBe(1);
+                expect(StateService.setIsFetchingStats).toHaveBeenCalledWith(true);
+                expect(PlaygroundService.updateStatistics.calls.count()).toBe(1); //first call: rejected
+                $timeout.flush(1500);
+
+                //then
+                expect(PlaygroundService.updateStatistics.calls.count()).toBe(2);
+                expect(StateService.setIsFetchingStats).toHaveBeenCalledWith(false);
+            }));
+
+            it('should NOT fetch statistics when they are already computed', inject(($q, $stateParams, PlaygroundService, StateService) => {
+                //given
+                $stateParams.prepid = null;
+                $stateParams.datasetid = 'de3cc32a-b624-484e-b8e7-dab9061a009c';
+                spyOn(PlaygroundService, 'initPlayground').and.returnValue($q.when());
+                spyOn(PlaygroundService, 'updateStatistics').and.returnValue($q.when());
+
+                //when
+                expect(StateService.setIsFetchingStats).not.toHaveBeenCalled();
+                createController();
+                expect(StateService.setIsFetchingStats).not.toHaveBeenCalled();
+                expect(PlaygroundService.updateStatistics).not.toHaveBeenCalled();
+
+                stateMock.playground.data = {
+                    metadata: {
+                        columns: [{
+                            statistics: {
+                                frequencyTable: [{      // stats already computed
+                                    value: 'toto',
+                                    frequency: 10
+                                }]
+                            }
+                        }]
+                    }
+                };
+                scope.$digest();
+
+                //then
+                expect(StateService.setIsFetchingStats).not.toHaveBeenCalled();
+                expect(PlaygroundService.updateStatistics).not.toHaveBeenCalled();
+            }));
+
+            it('should go back to previous state when dataset does NOT exist', inject(($state, $stateParams, MessageService) => {
+                //given
+                $stateParams.prepid = null;
+                $stateParams.datasetid = 'non existing dataset';
+
+                //when
+                createController();
+
+                //then
+                expect(MessageService.error).toHaveBeenCalledWith('PLAYGROUND_FILE_NOT_FOUND_TITLE', 'PLAYGROUND_FILE_NOT_FOUND', {type: 'dataset'});
+                expect($state.go).toHaveBeenCalledWith('nav.index.preparations');
+            }));
+
+            it('should go back to previous state when dataset content GET return an error', inject(($q, $state, $stateParams, MessageService, PlaygroundService) => {
+                //given
+                $stateParams.prepid = null;
+                $stateParams.datasetid = 'non existing dataset';
+                spyOn(PlaygroundService, 'initPlayground').and.returnValue($q.reject());
+
+                //when
+                createController();
+
+                //then
+                expect(MessageService.error).toHaveBeenCalledWith('PLAYGROUND_FILE_NOT_FOUND_TITLE', 'PLAYGROUND_FILE_NOT_FOUND', {type: 'dataset'});
+                expect($state.go).toHaveBeenCalledWith('nav.index.preparations');
+            }));
+        });
     });
 });

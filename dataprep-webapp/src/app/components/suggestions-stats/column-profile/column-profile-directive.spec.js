@@ -45,10 +45,9 @@ describe('Suggestions Profile directive', function () {
         element.remove();
     });
 
-    it('should render chart ghost when fetching statistics', inject(function ($q, PlaygroundService) {
+    it('should render chart ghost when fetching statistics', inject(function ($q) {
         //given
-        spyOn(PlaygroundService, 'updateStatistics').and.returnValue($q.when());
-        stateMock.playground.statistics.histogram = null;
+        stateMock.playground.isFetchingStats = true;
 
         //when
         createElement();

@@ -11,13 +11,13 @@
 
   ============================================================================*/
 
-describe('Playground directive', function () {
+describe('Playground directive', () => {
     'use strict';
 
-    var scope, createElement, element, ctrl;
-    var stateMock;
+    let scope, createElement, element, ctrl;
+    let stateMock;
 
-    var metadata = {
+    const metadata = {
         'id': '12ce6c32-bf80-41c8-92e5-66d70f22ec1f',
         'name': 'US States',
         'author': 'anonymousUser',
@@ -25,8 +25,8 @@ describe('Playground directive', function () {
         'records': '3'
     };
 
-    var $httpBackend;
-    var datasetActions = [
+    let $httpBackend;
+    const datasetActions = [
         {
             'category': 'data_blending',
             'name': 'lookup',
@@ -75,12 +75,12 @@ describe('Playground directive', function () {
         }
     ];
 
-    var sortList = [
+    const sortList = [
         {id: 'name', name: 'NAME_SORT', property: 'name'},
         {id: 'date', name: 'DATE_SORT', property: 'created'}
     ];
 
-    var orderList = [
+    const orderList = [
         {id: 'asc', name: 'ASC_ORDER'},
         {id: 'desc', name: 'DESC_ORDER'}
     ];
@@ -114,7 +114,7 @@ describe('Playground directive', function () {
     beforeEach(inject(($rootScope, $compile, $q, $timeout, PreparationListService, PlaygroundService, ExportService) => {
         scope = $rootScope.$new();
 
-        createElement = function () {
+        createElement = () => {
             element = angular.element('<playground></playground>');
             $compile(element)(scope);
             scope.$digest();
@@ -140,7 +140,7 @@ describe('Playground directive', function () {
     });
 
     describe('suggestions', () => {
-        it('should render right slidable panel', function () {
+        it('should render right slidable panel', () => {
             //given
             stateMock.playground.dataset = metadata;
 
@@ -154,14 +154,14 @@ describe('Playground directive', function () {
     });
 
     describe('recipe header',  () => {
-        beforeEach(inject(function(StateService) {
+        beforeEach(inject((StateService) => {
             stateMock.playground.nameEditionMode = true;
-            spyOn(StateService, 'setNameEditionMode').and.callFake(function(value) {
+            spyOn(StateService, 'setNameEditionMode').and.callFake((value) => {
                 stateMock.playground.nameEditionMode = value;
             });
         }));
 
-        it('should render left slidable panel', function () {
+        it('should render left slidable panel', () => {
             //given
             stateMock.playground.dataset = metadata;
 
@@ -173,7 +173,7 @@ describe('Playground directive', function () {
             expect(element.find('.playground-recipe').eq(0).find('.action').eq(0).hasClass('right')).toBe(false);
         });
 
-        it('should render editable text on preparation title', function () {
+        it('should render editable text on preparation title', () => {
             //given
             stateMock.playground.preparation = {id: '3e41168465e15d4'};
             stateMock.playground.dataset = metadata;
@@ -182,15 +182,15 @@ describe('Playground directive', function () {
             createElement();
 
             //then
-            var title = element.find('.steps-header').eq(0).find('talend-editable-text');
+            const title = element.find('.steps-header').eq(0).find('talend-editable-text');
             expect(title.length).toBe(1);
 
         });
 
-        it('should toggle recipe on click on the On/Off switch', inject(function (RecipeBulletService, RecipeService) {
+        it('should toggle recipe on click on the On/Off switch', inject((RecipeBulletService, RecipeService) => {
             //given
             stateMock.playground.recipe = {visible : true};
-            var step = {
+            const step = {
                 inactive: false,
                 transformation: {
                     stepId: '92771a304130e9',
@@ -205,7 +205,7 @@ describe('Playground directive', function () {
             spyOn(RecipeBulletService, 'toggleRecipe').and.returnValue();
 
             createElement();
-            var chkboxOnOff = element.find('.label-switch > input[type="checkbox"]');
+            const chkboxOnOff = element.find('.label-switch > input[type="checkbox"]');
 
             //when
             chkboxOnOff.trigger('click');
@@ -214,10 +214,10 @@ describe('Playground directive', function () {
             expect(RecipeBulletService.toggleRecipe).toHaveBeenCalled();
         }));
 
-        it('should switch OFF the On/Off switch when the 1st step is INACTIVE', inject(function (RecipeService) {
+        it('should switch OFF the On/Off switch when the 1st step is INACTIVE', inject((RecipeService) => {
             //given
             stateMock.playground.dataset = metadata;
-            var step = {
+            const step = {
                 inactive: false,
                 transformation: {
                     stepId: '92771a304130e9',
@@ -230,7 +230,7 @@ describe('Playground directive', function () {
             RecipeService.getRecipe().push(step);
             createElement();
 
-            var chkboxOnOff = element.find('.label-switch > input[type="checkbox"]');
+            const chkboxOnOff = element.find('.label-switch > input[type="checkbox"]');
             expect(chkboxOnOff.prop('checked')).toBe(true);
 
             //when
@@ -241,10 +241,10 @@ describe('Playground directive', function () {
             expect(chkboxOnOff.prop('checked')).toBe(false);
         }));
 
-        it('should switch ON the On/Off switch when the 1st step is ACTIVE', inject(function (RecipeService) {
+        it('should switch ON the On/Off switch when the 1st step is ACTIVE', inject((RecipeService) => {
             //given
             stateMock.playground.dataset = metadata;
-            var step = {
+            const step = {
                 inactive: true,
                 transformation: {
                     stepId: '92771a304130e9',
@@ -257,7 +257,7 @@ describe('Playground directive', function () {
             RecipeService.getRecipe().push(step);
             createElement();
 
-            var chkboxOnOff = element.find('.label-switch > input[type="checkbox"]');
+            const chkboxOnOff = element.find('.label-switch > input[type="checkbox"]');
             expect(chkboxOnOff.prop('checked')).toBe(false);
 
             //when
@@ -270,7 +270,7 @@ describe('Playground directive', function () {
     });
 
     describe('dataset parameters', () => {
-        it('should render dataset parameters', function () {
+        it('should render dataset parameters', () => {
             //given
             stateMock.playground.dataset = metadata;
 
@@ -278,13 +278,13 @@ describe('Playground directive', function () {
             createElement();
 
             //then : check dataset parameters is present
-            var playground = element.find('.playground').eq(0);
+            const playground = element.find('.playground').eq(0);
             expect(playground.find('.dataset-parameters').length).toBe(1);
         });
     });
 
     describe('datagrid', () => {
-        it('should render datagrid with filters', function () {
+        it('should render datagrid with filters', () => {
             //given
             stateMock.playground.dataset = metadata;
 
@@ -292,7 +292,7 @@ describe('Playground directive', function () {
             createElement();
 
             //then : check datagrid and filters are present
-            var playground = element.find('.playground').eq(0);
+            const playground = element.find('.playground').eq(0);
             expect(playground.eq(0).find('filter-bar').length).toBe(1);
             expect(playground.eq(0).find('filter-bar').find('#filter-search').length).toBe(1);
             expect(playground.eq(0).find('datagrid').length).toBe(1);
@@ -304,7 +304,7 @@ describe('Playground directive', function () {
             //given
             createElement();
 
-            var event = angular.element.Event('keydown');
+            const event = angular.element.Event('keydown');
             event.keyCode = 27;
 
             //when
@@ -315,11 +315,26 @@ describe('Playground directive', function () {
             expect(ctrl.beforeClose).toHaveBeenCalled();
         }));
 
-        it('should not close playground when event target is on input element', inject(($timeout) => {
+        it('should NOT close playground on non escape key', inject(($timeout) => {
             //given
             createElement();
 
-            var event = angular.element.Event('keydown');
+            const event = angular.element.Event('keydown');
+            event.keyCode = 14;
+
+            //when
+            element.find('.playground-container').eq(0).trigger(event);
+            $timeout.flush();
+
+            //then
+            expect(ctrl.beforeClose).not.toHaveBeenCalled();
+        }));
+
+        it('should NOT close playground when event target is on input element', inject(($timeout) => {
+            //given
+            createElement();
+
+            const event = angular.element.Event('keydown');
             event.keyCode = 27;
 
             //when
@@ -337,7 +352,7 @@ describe('Playground directive', function () {
             const container = element.find('.playground-container').eq(0)[0];
             expect(document.activeElement).not.toBe(container);
 
-            var event = angular.element.Event('keydown');
+            const event = angular.element.Event('keydown');
             event.keyCode = 27;
 
             //when

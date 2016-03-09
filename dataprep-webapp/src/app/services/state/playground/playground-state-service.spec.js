@@ -174,6 +174,17 @@ describe('Playground state service', () => {
     });
 
     describe('column statistics', () => {
+        it('should set fetch in progress flag in state', inject((playgroundState, PlaygroundStateService) => {
+            //given
+            expect(playgroundState.isFetchingStats).toBeFalsy();
+
+            //when
+            PlaygroundStateService.setIsFetchingStats(true);
+
+            //then
+            expect(playgroundState.isFetchingStats).toBe(true);
+        }));
+
         it('should update columns statistics', inject((playgroundState, PlaygroundStateService) => {
             //given
             playgroundState.data = {
@@ -374,6 +385,8 @@ describe('Playground state service', () => {
             playgroundState.lookupData = {};
             playgroundState.nameEditionMode = true;
             playgroundState.preparation = {};
+            playgroundState.isFetchingStats = true;
+
 
             //when
             PlaygroundStateService.reset();
@@ -384,6 +397,7 @@ describe('Playground state service', () => {
             expect(playgroundState.nameEditionMode).toBe(false);
             expect(playgroundState.lookupData).toBe(null);
             expect(playgroundState.preparation).toBe(null);
+            expect(playgroundState.isFetchingStats).toBe(false);
 
             expect(RecipeStateService.reset).toHaveBeenCalled();
             expect(GridStateService.reset).toHaveBeenCalled();
