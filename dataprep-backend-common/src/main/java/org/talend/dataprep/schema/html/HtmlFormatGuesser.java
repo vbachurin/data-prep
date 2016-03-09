@@ -13,15 +13,9 @@
 
 package org.talend.dataprep.schema.html;
 
-import org.springframework.stereotype.Component;
-
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.tika.metadata.Metadata;
@@ -30,6 +24,7 @@ import org.apache.tika.parser.html.HtmlParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.talend.dataprep.schema.FormatGuesser;
 import org.talend.dataprep.schema.SchemaParser;
 import org.talend.dataprep.schema.unsupported.UnsupportedFormatGuess;
@@ -37,13 +32,14 @@ import org.talend.dataprep.schema.unsupported.UnsupportedFormatGuess;
 @Component("formatGuesser#html")
 public class HtmlFormatGuesser implements FormatGuesser {
 
-    /** This class' logger. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(HtmlFormatGuesser.class);
-
     /** HTML header selector parameter key. */
     public static final String HEADER_SELECTOR_KEY = "html.HEADER_SELECTOR_KEY";
+
     /** HTML value selector parameter key. */
     public static final String VALUES_SELECTOR_KEY = "html.VALUES_SELECTOR_KEY";
+
+    /** This class' logger. */
+    private static final Logger LOGGER = LoggerFactory.getLogger(HtmlFormatGuesser.class);
 
     /** List of patterns to use to parse datasets out of html. */
     private List<Pattern> patterns;
@@ -91,8 +87,9 @@ public class HtmlFormatGuesser implements FormatGuesser {
 
                 try {
                     // with Tika no need to force the encoding the parser will discover it
-                    htmlParser.parse( inputStream, headersContentHandler, metadata, new ParseContext() );
-                } catch (HeadersContentHandler.HeadersContentFoundException e) { //NOSONAR exception is here to stop the SAX processing
+                    htmlParser.parse(inputStream, headersContentHandler, metadata, new ParseContext());
+                } catch (HeadersContentHandler.HeadersContentFoundException e) { // NOSONAR
+                    // exception is here to stop the SAX processing
                     LOGGER.debug("headers for {} found -> {}", request.getMetadata().getId(), headersContentHandler);
                     // save patterns found for the schema parser
                     Map<String, String> parameters = new HashMap<>(2);

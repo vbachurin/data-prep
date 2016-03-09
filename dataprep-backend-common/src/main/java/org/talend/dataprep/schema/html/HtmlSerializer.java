@@ -13,11 +13,7 @@
 
 package org.talend.dataprep.schema.html;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
+import java.io.*;
 import java.util.List;
 import java.util.Map;
 
@@ -46,7 +42,7 @@ public class HtmlSerializer implements Serializer {
     private static final Logger LOGGER = LoggerFactory.getLogger(HtmlSerializer.class);
 
     @Resource(name = "serializer#html#executor")
-    TaskExecutor executor;
+    private TaskExecutor executor;
 
     @Override
     public InputStream serialize(InputStream rawContent, DataSetMetadata metadata) {
@@ -62,7 +58,7 @@ public class HtmlSerializer implements Serializer {
         }
     }
 
-    public Runnable doSerialize(InputStream rawContent, DataSetMetadata dataSetMetadata, OutputStream jsonOutput) {
+    private Runnable doSerialize(InputStream rawContent, DataSetMetadata dataSetMetadata, OutputStream jsonOutput) {
 
         return () -> {
             try {
@@ -74,7 +70,7 @@ public class HtmlSerializer implements Serializer {
                 HtmlParser htmlParser = new HtmlParser();
                 Metadata metadata = new Metadata();
 
-                htmlParser.parse( rawContent, valuesContentHandler, metadata, new ParseContext() );
+                htmlParser.parse(rawContent, valuesContentHandler, metadata, new ParseContext());
 
                 JsonGenerator generator = new JsonFactory().createGenerator(jsonOutput);
                 generator.writeStartArray(); // start the record
@@ -94,9 +90,8 @@ public class HtmlSerializer implements Serializer {
                     for (String value : values) {
                         ColumnMetadata columnMetadata = columns.get(idx);
                         generator.writeFieldName(columnMetadata.getId());
-                        String cellValue = value;
-                        if (cellValue != null) {
-                            generator.writeString(cellValue);
+                        if (value != null) {
+                            generator.writeString(value);
                         } else {
                             generator.writeNull();
                         }

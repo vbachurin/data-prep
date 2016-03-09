@@ -74,10 +74,6 @@ public class HtmlFormatTest extends AbstractSchemaTestUtils {
 
         datasetMetadata.setEncoding("UTF-16");
 
-        Map<String, String> parameters = new HashMap<>(2);
-        parameters.put(HtmlFormatGuesser.HEADER_SELECTOR_KEY, HEADER_SELECTOR);
-        parameters.put(HtmlFormatGuesser.VALUES_SELECTOR_KEY, VALUES_SELECTOR);
-
         SchemaParser.Request request = new SchemaParser.Request(this.getClass().getResourceAsStream(fileName), datasetMetadata);
 
         FormatGuesser.Result result = htmlFormatGuesser.guess(request, "UTF-16");
@@ -96,10 +92,6 @@ public class HtmlFormatTest extends AbstractSchemaTestUtils {
         DataSetMetadata datasetMetadata = ioTestUtils.getSimpleDataSetMetadata();
 
         datasetMetadata.setEncoding("UTF-16");
-
-        Map<String, String> parameters = new HashMap<>(2);
-        parameters.put(HtmlFormatGuesser.HEADER_SELECTOR_KEY, HEADER_SELECTOR);
-        parameters.put(HtmlFormatGuesser.VALUES_SELECTOR_KEY, VALUES_SELECTOR);
 
         SchemaParser.Request request = new SchemaParser.Request(this.getClass().getResourceAsStream(fileName), datasetMetadata);
 

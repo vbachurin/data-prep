@@ -397,6 +397,22 @@
                 <artifactId>smtp</artifactId>
                 <version>1.4.5</version>
             </dependency>
+            <dependency>
+                <groupId>org.codehaus.woodstox</groupId>
+                <artifactId>woodstox-core-asl</artifactId>
+                <version>4.4.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.tika</groupId>
+                <artifactId>tika-parsers</artifactId>
+                <version>1.12</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging-api</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
             <!-- SWAGGER DEPENDENCIES -->
             <dependency>
                 <groupId>io.springfox</groupId>
