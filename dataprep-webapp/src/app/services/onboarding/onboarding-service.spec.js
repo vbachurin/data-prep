@@ -87,7 +87,7 @@ describe('Onboarding service', function() {
         expect(options.steps[0]).toEqual({
             element: '.no-js',
             position: 'right',
-            intro: '<div class="introjs-tooltiptitle"><center>Welcome to</br>Talend Data Preparation</center></div><div class="introjs-tooltipcontent">To quickly learn how to use it, click <b>Next</b>.</div>'
+            intro: '<div class="introjs-tooltiptitle"><center>Welcome to</br>Talend Data Preparation</center></div><div class="introjs-tooltipcontent">To quickly learn how to use it, click <b>Next</b>.</br>To access the online documentation, click <a href="https://help.talend.com/pages/viewpage.action?pageId=266307043&utm_medium=dpdesktop&utm_source=on_boarding" target="_blank">here</a>.</div>'
         });
     }));
 
