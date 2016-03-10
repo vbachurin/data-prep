@@ -378,7 +378,9 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
                         if (StringUtils.equals(properties.getProperty("contentId"), contentId) && //
                                 contentType.equals(FolderEntry.ContentType.get(properties.getProperty("contentType")))) {
                             final FolderEntry entry = new FolderEntry(contentType, contentId);
-                            entry.setFolderId(getRootFolder().relativize(file.getParent()).toString());
+                            Path parent = file.getParent();
+                            String folderId = parent.equals(getRootFolder()) ? "" : pathAsString(parent);
+                            entry.setFolderId(folderId);
                             folderEntries.add(entry);
                         }
                     }
@@ -434,9 +436,8 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
                 if (Files.isDirectory(path)) {
                     FileInfo fileInfo = FileInfo.create(path);
                     String pathStr = pathAsString(path);
-                    Folder folder =  fileInfo != null
-                            ? new Folder(pathStr, extractName(pathStr), fileInfo.getCreationDate(), fileInfo.getLastModificationDate())
-                            : new Folder(pathStr, extractName(pathStr));
+                    Folder folder = fileInfo != null ? new Folder(pathStr, extractName(pathStr), fileInfo.getCreationDate(),
+                            fileInfo.getLastModificationDate()) : new Folder(pathStr, extractName(pathStr));
                     folders.add(folder);
                 }
             }
@@ -470,7 +471,7 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
                     String pathName = extractName(pathStr);
                     if (StringUtils.containsIgnoreCase(pathName, queryString)) {
                         FileInfo fileInfo = FileInfo.create(path);
-                        Folder folder =  fileInfo != null
+                        Folder folder = fileInfo != null
                                 ? new Folder(pathStr, pathName, fileInfo.getCreationDate(), fileInfo.getLastModificationDate())
                                 : new Folder(pathStr, pathName);
                         folders.add(folder);
