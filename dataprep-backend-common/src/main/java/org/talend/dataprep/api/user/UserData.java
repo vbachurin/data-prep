@@ -41,7 +41,7 @@ public class UserData implements Serializable {
     @Id
     private String userId;
 
-    /** Application version used for versionning. */
+    /** Application version used for versioning. */
     @JsonProperty("app-version")
     private String appVersion;
 
