@@ -28,6 +28,7 @@ export default function RecipeCtrl(state, RecipeService, PlaygroundService, Prev
     var vm = this;
     vm.recipeService = RecipeService;
     vm.showModal = {};
+    vm.state = state;
 
 
     /**

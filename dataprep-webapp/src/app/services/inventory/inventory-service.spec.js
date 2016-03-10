@@ -16,9 +16,9 @@ describe('Inventory Service', function () {
 
     var results = {
         data: {
-            folders: [{name : 'folder test'}],
-            preparations: [{name : 'prep test'}],
-            datasets: [{name : 'dataset test'}]
+            folders: [{name : 'folder test', lastModificationDate: 1}],
+            preparations: [{name : 'prep test', lastModificationDate: 2}],
+            datasets: [{name : 'dataset test', lastModificationDate: 3}]
 
         }
     };
@@ -32,12 +32,11 @@ describe('Inventory Service', function () {
     it('should call inventory search rest service and process data', inject(function ($rootScope, InventoryService) {
         //given
         var result= null;
-        var expectedResult = {
-            folders: [{name : 'folder <span class="highlighted">test</span>'}],
-            preparations: [{name : 'prep <span class="highlighted">test</span>'}],
-            datasets: [{name : 'dataset <span class="highlighted">test</span>'}]
-
-        };
+        var expectedResult = [
+            {name : 'dataset <span class="highlighted">test</span>', lastModificationDate: 3, inventoryType: 'dataset'},
+            {name : 'prep <span class="highlighted">test</span>', lastModificationDate: 2, inventoryType: 'preparation'},
+            {name : 'folder <span class="highlighted">test</span>', lastModificationDate: 1, inventoryType: 'folder'}
+        ];
         //when
         InventoryService.search('test').then(function (response) {
             result = response;

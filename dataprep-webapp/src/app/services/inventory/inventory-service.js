@@ -51,7 +51,7 @@ export default function InventoryService($q, InventoryRestService, TextFormatSer
 
         searchPromise = InventoryRestService.search(searchValue, deferredCancel)
             .then((response) => {
-                return addHtmlLabels(searchValue, response.data);
+                return addHtmlLabelsAndSort(searchValue, response.data);
             })
             .finally(() => searchPromise = null);
 
@@ -60,28 +60,38 @@ export default function InventoryService($q, InventoryRestService, TextFormatSer
 
     /**
      * @ngdoc method
-     * @name addHtmlLabels
+     * @name addHtmlLabelsAndSort
      * @param {String} searchValue string
      * @param {Object} data data to process
-     * @description add html label to data based on searchValue
+     * @description add html label to data based on searchValue and sort the results
      */
-    function addHtmlLabels(searchValue, data) {
-        if(data.datasets) {
-            _.chain(data.datasets)
-                .map(highlightDisplayedLabels(searchValue))
-                .value();
+    function addHtmlLabelsAndSort(searchValue, data) {
+        var inventory_items = [];
+
+        if(data.datasets && data.datasets.length) {
+            _.each(data.datasets, function (item) {
+                item.inventoryType = 'dataset';
+            });
+            inventory_items =  inventory_items.concat(data.datasets);
         }
-        if(data.preparations) {
-            _.chain(data.preparations)
-                .map(highlightDisplayedLabels(searchValue))
-                .value();
+        if(data.preparations && data.preparations.length) {
+            _.each(data.preparations, function (item) {
+                item.inventoryType = 'preparation';
+            });
+            inventory_items =  inventory_items.concat(data.preparations);
         }
-        if(data.folders) {
-            _.chain(data.folders)
-                .map(highlightDisplayedLabels(searchValue))
-                .value();
+        if(data.folders && data.folders.length) {
+            _.each(data.folders, function (item) {
+                item.inventoryType = 'folder';
+            });
+            inventory_items =  inventory_items.concat(data.folders);
         }
-        return data;
+
+        return _.chain(inventory_items)
+            .map(highlightDisplayedLabels(searchValue))
+            .sortBy('lastModificationDate')
+            .reverse()
+            .value();
     }
 
     /**
