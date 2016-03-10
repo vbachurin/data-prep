@@ -287,8 +287,8 @@ public class FolderAPI extends APIService {
                 String jsonMap = IOUtils.toString(ios);
                 List<Preparation> preparations = mapper.readValue(jsonMap, new TypeReference<ArrayList<Preparation>>() {
                 });
-                List<PreparationDetails> filteredPreparations = preparations.stream()
-                        .filter(p -> p.getName() != null && p.getName().contains(name)).map( p-> new PreparationDetails(p)).collect(Collectors.toList());
+                List<Preparation> filteredPreparations = preparations.stream()
+                        .filter(p -> p.getName() != null && p.getName().contains(name)).collect(Collectors.toList());
                 inventory.setPreparations(filteredPreparations);
 
             } catch (IOException e) {

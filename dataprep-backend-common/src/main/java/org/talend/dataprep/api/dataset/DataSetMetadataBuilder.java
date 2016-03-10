@@ -64,6 +64,11 @@ public class DataSetMetadataBuilder {
     private long createdDate = System.currentTimeMillis();
 
     /**
+     * @see org.talend.dataprep.api.dataset.DataSetMetadata#lastModificationDate
+     */
+    private long lastModificationDate = System.currentTimeMillis();;
+
+    /**
      * @see org.talend.dataprep.api.dataset.DataSetMetadata#sheetName
      */
     private String sheetName;
@@ -197,6 +202,11 @@ public class DataSetMetadataBuilder {
 
     public DataSetMetadataBuilder created(long createdDate) {
         this.createdDate = createdDate;
+        return this;
+    }
+
+    public DataSetMetadataBuilder modified(long lastModificationDate) {
+        this.lastModificationDate = lastModificationDate;
         return this;
     }
 
@@ -361,7 +371,7 @@ public class DataSetMetadataBuilder {
             columns = Collections.emptyList();
         }
         RowMetadata row = new RowMetadata(columns);
-        DataSetMetadata metadata = new DataSetMetadata(id, name, author, createdDate, row, appVersion);
+        DataSetMetadata metadata = new DataSetMetadata(id, name, author, createdDate, lastModificationDate, row, appVersion);
         metadata.setSheetName(this.sheetName);
         metadata.setDraft(this.draft);
         metadata.setFavorite(this.isFavorite);

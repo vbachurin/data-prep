@@ -16,6 +16,7 @@ package org.talend.dataprep.inventory;
 import java.io.Serializable;
 import java.util.List;
 
+import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.preparation.PreparationDetails;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -40,13 +41,13 @@ public class Inventory implements Serializable {
     private List<DatasetMetadataInfo> datasets;
 
     @JsonProperty("preparations")
-    private List<PreparationDetails> preparations;
+    private List<Preparation> preparations;
 
     public Inventory() {
         // no op
     }
 
-    public Inventory(List<DatasetMetadataInfo> datasets, List<FolderInfo> folders, List<PreparationDetails> preparations) {
+    public Inventory(List<DatasetMetadataInfo> datasets, List<FolderInfo> folders, List<Preparation> preparations) {
         this.datasets = datasets;
         this.folders = folders;
         this.preparations = preparations;
@@ -81,11 +82,11 @@ public class Inventory implements Serializable {
         this.folders = folders;
     }
 
-    public List<PreparationDetails> getPreparations() {
+    public List<Preparation> getPreparations() {
         return preparations;
     }
 
-    public void setPreparations(List<PreparationDetails> preparations) {
+    public void setPreparations(List<Preparation> preparations) {
         this.preparations = preparations;
     }
 

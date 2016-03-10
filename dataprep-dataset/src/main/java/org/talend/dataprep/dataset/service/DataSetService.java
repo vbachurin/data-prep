@@ -641,6 +641,10 @@ public class DataSetService {
         try {
             lock.lock();
             DataSetMetadataBuilder datasetBuilder = metadataBuilder.metadata().id(dataSetId);
+            DataSetMetadata metadataForUpdate = dataSetMetadataRepository.get(dataSetId);
+            if (metadataForUpdate != null){
+                datasetBuilder.created(metadataForUpdate.getCreationDate());
+            }
             if (name != null) {
                 datasetBuilder = datasetBuilder.name(name);
             }

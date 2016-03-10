@@ -77,6 +77,9 @@ public class DataSetMetadata implements Serializable {
     @JsonProperty("created")
     private long creationDate;
 
+    @JsonProperty("lastModificationDate")
+    private long lastModificationDate;
+
     /** Sheet number in case of excel source. */
     @JsonProperty("sheetName")
     private String sheetName;
@@ -130,12 +133,13 @@ public class DataSetMetadata implements Serializable {
      * @param rowMetadata row metadata.
      * @param appVersion the application version.
      */
-    protected DataSetMetadata(String id, String name, String author, long creationDate, RowMetadata rowMetadata,
+    protected DataSetMetadata(String id, String name, String author, long creationDate, long lastModificationDate, RowMetadata rowMetadata,
             String appVersion) {
         this.id = id;
         this.name = name;
         this.author = author;
         this.creationDate = creationDate;
+        this.lastModificationDate = lastModificationDate;
         this.rowMetadata = rowMetadata;
         this.appVersion = appVersion;
     }
@@ -237,6 +241,20 @@ public class DataSetMetadata implements Serializable {
      */
     public long getCreationDate() {
         return creationDate;
+    }
+
+    /**
+     * @return the dataset last modification date.
+     */
+    public long getLastModificationDate() {
+        return lastModificationDate;
+    }
+
+    /**
+     * @param lastModificationDate the dataset last modification date.
+     */
+    public void setLastModificationDate(long lastModificationDate) {
+        this.lastModificationDate = lastModificationDate;
     }
 
     /**
