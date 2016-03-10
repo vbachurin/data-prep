@@ -175,7 +175,7 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
     /**
      * @ngdoc method
      * @name shouldFetchStatistics
-     * @methodOf data-prep.actions-suggestions-stats.controller:ColumnProfileCtrl
+     * @methodOf data-prep.playground.controller:PlaygroundCtrl
      * @description Check if we have the statistics or we have to fetch them
      */
     function shouldFetchStatistics() {
@@ -188,7 +188,7 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
     /**
      * @ngdoc method
      * @name fetchStatistics
-     * @methodOf data-prep.actions-suggestions-stats.controller:ColumnProfileCtrl
+     * @methodOf data-prep.playground.controller:PlaygroundCtrl
      * @description Fetch the statistics. If the update fails (no statistics yet) a retry is triggered after 1s
      */
     function fetchStatistics() {
@@ -201,11 +201,22 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
     //--------------------------------------------------------------------------------------------------------------
     //------------------------------------------------INIT----------------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------
+    /**
+     * @ngdoc method
+     * @name errorGoBack
+     * @description go back to homePage when errors occur
+     */
     function errorGoBack(errorOptions) {
         MessageService.error('PLAYGROUND_FILE_NOT_FOUND_TITLE', 'PLAYGROUND_FILE_NOT_FOUND', errorOptions);
         $state.go(state.playground.previousState);
     }
 
+    /**
+     * @ngdoc method
+     * @name loadPreparation
+     * @description open a preparation
+     * @param {string} prepid The preparation id
+     */
     function loadPreparation(prepid) {
         const preparation = _.find(state.inventory.preparations, {id: prepid});
         if (!preparation) {
@@ -217,6 +228,12 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
         }
     }
 
+    /**
+     * @ngdoc method
+     * @name loadDataset
+     * @description open a dataset
+     * @param {string} prepid The dataset id
+     */
     function loadDataset(datasetid) {
         const dataset = _.find(state.inventory.datasets, {id: datasetid});
         if (!dataset) {
