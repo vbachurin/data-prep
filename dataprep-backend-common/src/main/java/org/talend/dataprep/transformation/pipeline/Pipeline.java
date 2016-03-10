@@ -115,12 +115,15 @@ public class Pipeline implements Node {
             while (compileIterator.hasNext()) {
                 final Action action = compileIterator.next();
                 // Check if action needs for up-to-date statistics
+                // TODO To enable needs further testing (see TDP-1543).
+                /*
                 if (hasBehavior(action, ActionMetadata.Behavior.NEED_STATISTICS)) {
                     Node newNode = new InlineAnalysisNode(inlineAnalyzer, filter, adapter);
                     Link link = new BasicLink(newNode);
                     lastNode.setLink(link);
                     lastNode = newNode;
                 }
+                */
                 // Adds new action
                 Node newNode = nodeFunction.apply(action);
                 Link link = new BasicLink(newNode);
