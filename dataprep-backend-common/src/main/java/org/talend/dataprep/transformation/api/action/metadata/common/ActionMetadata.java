@@ -17,7 +17,12 @@ import static org.talend.dataprep.api.preparation.Action.Builder.builder;
 import static org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters.ROW_ID;
 import static org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters.SCOPE;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import org.apache.commons.lang.ObjectUtils;
@@ -40,6 +45,7 @@ import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 import org.talend.dataprep.transformation.api.action.validation.ActionMetadataValidation;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.talend.dataprep.util.MessagesBundleThreadLocal;
 
 /**
  * Model an action to perform on a dataset.
@@ -60,6 +66,9 @@ public abstract class ActionMetadata {
 
     @Autowired
     private FilterService filterService;
+
+    @Autowired
+    private MessagesBundle messagesBundle;
 
     public enum Behavior {
         VALUES_ALL,
@@ -133,7 +142,7 @@ public abstract class ActionMetadata {
      * @see MessagesBundle
      */
     public String getLabel() {
-        return MessagesBundle.getString("action." + getName() + ".label");
+        return getMessagesBundle().getString("action." + getName() + ".label");
     }
 
     /**
@@ -141,7 +150,7 @@ public abstract class ActionMetadata {
      * @see MessagesBundle
      */
     public String getDescription() {
-        return MessagesBundle.getString("action." + getName() + ".desc");
+        return getMessagesBundle().getString("action." + getName() + ".desc");
     }
 
     /**
@@ -149,7 +158,7 @@ public abstract class ActionMetadata {
      * @see MessagesBundle
      */
     public String getDocUrl() {
-        return MessagesBundle.getString("action." + getName() + ".url", StringUtils.EMPTY);
+        return getMessagesBundle().getString("action." + getName() + ".url", StringUtils.EMPTY);
     }
 
     /**
@@ -344,5 +353,13 @@ public abstract class ActionMetadata {
         // Safe strategy: use all behaviors to disable all optimizations. Each implementation of action must explicitly
         // declare its behavior(s).
         return EnumSet.allOf(Behavior.class);
+    }
+    
+    @JsonIgnore
+    protected MessagesBundle getMessagesBundle() {
+        if (this.messagesBundle == null){
+            this.messagesBundle = MessagesBundleThreadLocal.get();
+        }
+        return this.messagesBundle;
     }
 }

@@ -104,7 +104,7 @@ public class ClearMatching extends AbstractClear implements ColumnAction {
              */
         } else {
             parameters.add(new Parameter(VALUE_PARAMETER, ParameterType.REGEX, //
-                    StringUtils.EMPTY, false, false));
+                    StringUtils.EMPTY, false, false, getMessagesBundle()));
         }
 
         return parameters;
