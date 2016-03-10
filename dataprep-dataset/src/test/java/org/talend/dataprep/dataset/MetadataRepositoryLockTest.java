@@ -38,12 +38,16 @@ public class MetadataRepositoryLockTest extends DataSetBaseTest {
                 .id("1") //
                 .name("one") //
                 .author("jim") //
-                .created(12).build();
+                .created(12)
+                .modified(12)
+                .build();
         DataSetMetadata dsm2 = metadataBuilder.metadata() //
                 .id("1") //
                 .name("theone") //
                 .author("jimmy") //
-                .created(12).build();
+                .created(12)
+                .modified(12)
+                .build();
         final AtomicLong threadCount = new AtomicLong(2);
         new Thread(() -> {
             try {

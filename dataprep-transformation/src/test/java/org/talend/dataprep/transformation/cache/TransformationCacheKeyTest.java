@@ -67,6 +67,7 @@ public class TransformationCacheKeyTest extends TransformationBaseTest {
     private DataSetMetadata getDataSetMetadataSample(String name) {
         return metadataBuilder.metadata() //
                 .id("123456789") //
+                .modified(now)
                 .created(now) //
                 .name(name).mediaType("String").encoding("ISO-8859-1")
                 .row(ColumnMetadata.Builder.column().name("col1").type(Type.STRING))

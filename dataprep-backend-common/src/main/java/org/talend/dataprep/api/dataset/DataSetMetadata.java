@@ -338,6 +338,7 @@ public class DataSetMetadata implements Serializable {
                 ", name='" + name + '\'' + //
                 ", author='" + author + '\'' + //
                 ", creationDate=" + creationDate + //
+                ", lastModificationDate=" + lastModificationDate + //
                 ", sheetName='" + sheetName + '\'' + //
                 ", draft=" + draft + //
                 ", schemaParserResult=" + schemaParserResult + //
@@ -354,6 +355,7 @@ public class DataSetMetadata implements Serializable {
         }
         DataSetMetadata that = (DataSetMetadata) o;
         return Objects.equals(creationDate, that.creationDate) && //
+                Objects.equals(lastModificationDate, that.lastModificationDate) && //
                 Objects.equals(draft, that.draft) && //
                 Objects.equals(id, that.id) && //
                 Objects.equals(rowMetadata, that.rowMetadata) && //
@@ -370,7 +372,7 @@ public class DataSetMetadata implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, rowMetadata, lifecycle, content, governance, location, name, author, creationDate, sheetName,
+        return Objects.hash(id, rowMetadata, lifecycle, content, governance, location, name, author, creationDate,lastModificationDate, sheetName,
                 draft, schemaParserResult, favorite, appVersion);
     }
 

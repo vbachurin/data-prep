@@ -316,6 +316,7 @@ public class DataSetMetadataBuilder {
         this.author = original.getAuthor();
         this.name = original.getName();
         this.createdDate = original.getCreationDate();
+        this.lastModificationDate = original.getLastModificationDate();
         this.sheetName = original.getSheetName();
         this.draft = original.isDraft();
         this.isFavorite = original.isFavorite();
