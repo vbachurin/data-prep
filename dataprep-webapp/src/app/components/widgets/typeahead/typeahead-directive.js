@@ -13,35 +13,12 @@
 
 /**
  * @ngdoc directive
- * @name talend.widget.directive:TalendDropdown
- * @description This directive create a dropdown element.<br/>
- * Key action :
- * <ul>
- *     <li>ESC : close the dropdown</li>
- * </ul>
- * @restrict EA
- * @usage
-     <talend-dropdown close-on-select="false" on-open="onOpen()">
- <div class="dropdown-container">
- <div class="dropdown-action">
- <div class="dropdown-button">{{ column.id }}</div>
- <div>{{ column.type }}</div>
- </div>
- <ul class="dropdown-menu">
- <li><a href="#">Hide Column {{ column.id | uppercase }}</a></li>
- <li class="divider"></li>
- <li<a href="#">Split first Space</a></li>
- <li><a href="#">Uppercase</a></li>
- </ul>
- </talend-dropdown>
+ * @name talend.widget.directive:Typeahead
+ * @description This directive create an input with a dropdown element.<br/>
  * @param {boolean} closeOnSelect Default `true`. If set to false, dropdown will not close on inner item click
- * @param {function} onOpen The callback to execute on dropdown open
  * @param {string} forceSide Force display on the specified side (left | right)
- *
- * @param {class} dropdown-action Action zone that trigger menu toggle
- * @param {class} dropdown-button Add a caret at the end off element
- * @param {class} dropdown-menu The menu to open
- * @param {class} divider `dropdown-menu > li.divider` : menu items divider
+ * @param {string} searchString input model
+ * @param {function} onChange function called when input changes
  */
 export default function Typeahead($window) {
     'ngInject';
