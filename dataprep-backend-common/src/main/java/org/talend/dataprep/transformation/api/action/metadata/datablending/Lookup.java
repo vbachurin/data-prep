@@ -29,7 +29,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
@@ -43,6 +42,7 @@ import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitPar
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Lookup action used to blend a (or a part of a) dataset into another one.
@@ -82,7 +82,7 @@ public class Lookup extends ActionMetadata implements DataSetAction {
     /** The dataprep ready jackson builder. */
     @Autowired
     @Lazy // needed to prevent a circular dependency
-    private Jackson2ObjectMapperBuilder builder;
+    private ObjectMapper mapper;
 
     /** Adapted value of the name parameter. */
     private String adaptedNameValue = EMPTY;
@@ -152,9 +152,10 @@ public class Lookup extends ActionMetadata implements DataSetAction {
                 context.setActionStatus(ActionContext.ActionStatus.CANCELED);
             }
             //
-            LookupRowMatcher rowMatcher = context.get("rowMatcher", (p) -> {
-                String dsUrl = getDataSetUrl(p.get(LOOKUP_DS_ID.getKey()));
-                return applicationContext.getBean(LookupRowMatcher.class, dsUrl);
+            LookupRowMatcher rowMatcher = context.get("rowMatcher", //
+                    (p) -> {
+                       String dataSetId = p.get(LOOKUP_DS_ID.getKey());
+                       return applicationContext.getBean(LookupRowMatcher.class, dataSetId);
             });
             // Create lookup result columns
             final Map<String, String> parameters = context.getParameters();
@@ -207,14 +208,6 @@ public class Lookup extends ActionMetadata implements DataSetAction {
     }
 
     /**
-     * @param datasetId the wanted dataset id.
-     * @return the url to get the dataset.
-     */
-    private String getDataSetUrl(String datasetId) {
-        return datasetServiceUrl + "/datasets/" + datasetId + "/content";
-    }
-
-    /**
      * Return the list of columns to merge in the result from the parameters.
      *
      * @param parameters the action parameters.
@@ -223,7 +216,7 @@ public class Lookup extends ActionMetadata implements DataSetAction {
     private List<LookupSelectedColumnParameter> getColsToAdd(Map<String, String> parameters) {
         try {
             final String cols = parameters.get(LOOKUP_SELECTED_COLS.getKey());
-            return builder.build().readValue(cols, new TypeReference<List<LookupSelectedColumnParameter>>() {
+            return mapper.readValue(cols, new TypeReference<List<LookupSelectedColumnParameter>>() {
             });
         } catch (IOException e) {
             LOGGER.debug("Unable to parse parameter.", e);

@@ -41,7 +41,7 @@ public class ErrorMessage {
      */
     public static String getMessage(ErrorCode errorCode, String... values) {
         String title = getMessagePrefix(errorCode) + MESSAGE_SUFFIX;
-        return MessagesBundleContext.get().getString( title, values);
+        return MessagesBundleContext.get().getString(title, values);
     }
 
     /**

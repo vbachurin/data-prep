@@ -23,7 +23,6 @@ import java.io.OutputStream;
 import javax.validation.Valid;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.http.client.HttpClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -56,8 +55,7 @@ public class AggregationAPI extends APIService {
         LOG.debug("Aggregation computation requested (pool: {} )...", getConnectionStats());
 
         // get the command and execute it
-        HttpClient client = getClient();
-        HystrixCommand<InputStream> command = getCommand(Aggregate.class, client, input);
+        HystrixCommand<InputStream> command = getCommand(Aggregate.class, input);
 
         // copy the content to the http response
         try (InputStream result = command.execute()) {

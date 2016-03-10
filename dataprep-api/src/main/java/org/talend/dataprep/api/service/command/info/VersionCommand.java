@@ -13,18 +13,17 @@
 
 package org.talend.dataprep.api.service.command.info;
 
-import static org.talend.dataprep.api.service.command.common.Defaults.emptyStream;
-import static org.talend.dataprep.api.service.command.common.Defaults.pipeStream;
+import static org.talend.dataprep.command.Defaults.emptyStream;
+import static org.talend.dataprep.command.Defaults.pipeStream;
 
 import java.io.InputStream;
 
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.talend.daikon.exception.ExceptionContext;
-import org.talend.dataprep.api.service.command.common.GenericCommand;
+import org.talend.dataprep.command.GenericCommand;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 
@@ -36,8 +35,8 @@ public class VersionCommand extends GenericCommand<InputStream> {
 
     public static final HystrixCommandGroupKey VERSION_GROUP = HystrixCommandGroupKey.Factory.asKey("version"); //$NON-NLS-1$
 
-    private VersionCommand(HttpClient client, String serviceUrl) {
-        super(VERSION_GROUP, client);
+    private VersionCommand(String serviceUrl) {
+        super(VERSION_GROUP);
 
         execute(() -> {
             String url = serviceUrl + "/version";

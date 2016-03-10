@@ -43,8 +43,7 @@ describe('Dataset xls preview controller', function () {
         spyOn(DatasetSheetPreviewService, 'loadSheet').and.returnValue();
         spyOn(DatasetSheetPreviewService, 'setDatasetSheet').and.returnValue($q.when(true));
         spyOn(DatasetService, 'getContent').and.returnValue($q.when(content));
-        spyOn(StateService, 'setPreviousState').and.returnValue();
-        spyOn(StateService, 'setPreviousStateOptions').and.returnValue();
+        spyOn(StateService, 'setPreviousRoute').and.returnValue();
         spyOn($state, 'go').and.returnValue();
     }));
 
@@ -182,8 +181,7 @@ describe('Dataset xls preview controller', function () {
             scope.$digest();
 
             //then
-            expect(StateService.setPreviousState).toHaveBeenCalledWith('nav.index.datasets');
-            expect(StateService.setPreviousStateOptions).toHaveBeenCalledWith({folderPath: '/my/folder'});
+            expect(StateService.setPreviousRoute).toHaveBeenCalledWith('nav.index.datasets', {folderPath: '/my/folder'});
             expect($state.go).toHaveBeenCalledWith('playground.dataset', {datasetid: '13aa256cf813a25d158'});
         }));
     });

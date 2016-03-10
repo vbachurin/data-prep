@@ -63,8 +63,7 @@ export default function UploadWorkflowService($stateParams, $state, StateService
             self.openDraft(dataset);
         }
         else {
-            StateService.setPreviousState('nav.index.datasets');
-            StateService.setPreviousStateOptions({folderPath: $stateParams.folderPath});
+            StateService.setPreviousRoute('nav.index.datasets', {folderPath: $stateParams.folderPath});
             $state.go('playground.dataset', {datasetid: dataset.id});
         }
     };

@@ -13,8 +13,6 @@
 
 export const playgroundState = {
     preparationName: '',
-    previousState: 'nav.index.datasets',
-    previousStateOptions: {folderPath: ''},
     preparation: null,
     candidatePreparations: [],
     displayPreparationPicker: false
@@ -46,8 +44,6 @@ export function PlaygroundStateService(RecipeStateService, recipeState,
         setPreparationName: setPreparationName,
         setNameEditionMode: setNameEditionMode,
         setData: setData,
-        setPreviousState: setPreviousState,
-        setPreviousStateOptions: setPreviousStateOptions,
         updateDatasetRecord: updateDatasetRecord,
         updateDatasetStatistics: updateDatasetStatistics,
         setCandidatePreparations: setCandidatePreparations,
@@ -145,14 +141,6 @@ export function PlaygroundStateService(RecipeStateService, recipeState,
 
     function updateDatasetRecord(records) {
         playgroundState.dataset.records = records;
-    }
-
-    function setPreviousState(previousState) {
-        playgroundState.previousState = previousState;
-    }
-
-    function setPreviousStateOptions(previousStateOptions) {
-        playgroundState.previousStateOptions = previousStateOptions;
     }
 
     function setIsFetchingStats(value) {

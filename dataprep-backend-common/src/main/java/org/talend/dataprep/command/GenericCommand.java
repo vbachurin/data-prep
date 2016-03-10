@@ -11,17 +11,19 @@
 //
 // ============================================================================
 
-package org.talend.dataprep.api.service.command.common;
+package org.talend.dataprep.command;
 
-import static org.talend.dataprep.api.service.command.common.Defaults.passthrough;
+import static org.apache.http.HttpHeaders.AUTHORIZATION;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -33,51 +35,83 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.daikon.exception.json.JsonErrorCode;
+import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
+import org.talend.dataprep.security.Security;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.HystrixCommand;
 import com.netflix.hystrix.HystrixCommandGroupKey;
 
+/**
+ * Base Hystrix command request for all DataPrep commands.
+ * @param <T> Command result type.
+ */
 @Component
 @Scope("request")
 public class GenericCommand<T> extends HystrixCommand<T> {
 
+    /** Hystrix group used for dataset related commands. */
+    public static final HystrixCommandGroupKey DATASET_GROUP = HystrixCommandGroupKey.Factory.asKey("dataset");
+    /** Hystrix group used for preparation related commands. */
+    public static final HystrixCommandGroupKey PREPARATION_GROUP = HystrixCommandGroupKey.Factory.asKey("preparation");
+    /** Hystrix group used for transformation related commands. */
+    public static final HystrixCommandGroupKey TRANSFORM_GROUP = HystrixCommandGroupKey.Factory.asKey("transform");
+
+    /** This class' logger. */
     private static final Logger LOGGER = LoggerFactory.getLogger(GenericCommand.class);
 
-    protected final HttpClient client;
-
+    /** Behaviours map.  */
     private final Map<HttpStatus, BiFunction<HttpRequestBase, HttpResponse, T>> behavior = new EnumMap<>(HttpStatus.class);
-
-    @Autowired
-    protected Jackson2ObjectMapperBuilder builder;
-
-    @Autowired
-    protected ApplicationContext context;
-
-    @Value("${transformation.service.url}")
-    protected String transformationServiceUrl;
-
-    @Value("${dataset.service.url}")
-    protected String datasetServiceUrl;
-
-    @Value("${preparation.service.url}")
-    protected String preparationServiceUrl;
 
     private Supplier<HttpRequestBase> httpCall;
 
     /** Headers of the response received by the command. Set in the run command. */
     private Header[] commandResponseHeaders = new Header[0];
 
-    private Function<Exception, RuntimeException> onError = passthrough();
+    /** Default onError behaviour. */
+    private Function<Exception, RuntimeException> onError = Defaults.passthrough();
 
-    protected GenericCommand(HystrixCommandGroupKey group, HttpClient client) {
+    /** DataPrep security holder. */
+    @Autowired
+    private Security security;
+
+    /** The http client. */
+    @Autowired
+    protected HttpClient client;
+
+    /** Jackson object mapper to handle json. */
+    @Autowired
+    protected ObjectMapper objectMapper;
+
+    /** Spring application context.*/
+    @Autowired
+    protected ApplicationContext context;
+
+    /** Transformation service URL. */
+    @Value("${transformation.service.url:}")
+    protected String transformationServiceUrl;
+
+    /** Dataset service URL. */
+    @Value("${dataset.service.url:}")
+    protected String datasetServiceUrl;
+
+    /** Preparation service URL. */
+    @Value("${preparation.service.url:}")
+    protected String preparationServiceUrl;
+
+    /**
+     * Protected constructor.
+     *
+     * @param group the command group.
+     */
+    protected GenericCommand(HystrixCommandGroupKey group) {
         super(group);
-        this.client = client;
     }
 
     /**
@@ -95,6 +129,13 @@ public class GenericCommand<T> extends HystrixCommand<T> {
     @Override
     protected T run() throws Exception {
         final HttpRequestBase request = httpCall.get();
+
+        // update request header with security token
+        String authenticationToken = security.getAuthenticationToken();
+        if (StringUtils.isNotBlank(authenticationToken)) {
+            request.addHeader(AUTHORIZATION, authenticationToken);
+        }
+
         final HttpResponse response = client.execute(request);
         commandResponseHeaders = response.getAllHeaders();
 
@@ -143,9 +184,10 @@ public class GenericCommand<T> extends HystrixCommand<T> {
      */
     private BiFunction<HttpRequestBase, HttpResponse, T> callOnError(Function<Exception, RuntimeException> onError) {
         return (req, res) -> {
+            LOGGER.trace("request on error {} -> {}", req.toString(), res.getStatusLine());
             final int statusCode = res.getStatusLine().getStatusCode();
             try {
-                JsonErrorCode code = builder.build().readerFor(JsonErrorCode.class).readValue(res.getEntity().getContent());
+                JsonErrorCode code = objectMapper.readerFor(JsonErrorCode.class).readValue(res.getEntity().getContent());
                 code.setHttpStatus(statusCode);
                 final TDPException cause = new TDPException(code);
                 throw onError.apply(cause);
@@ -228,5 +270,15 @@ public class GenericCommand<T> extends HystrixCommand<T> {
                 GenericCommand.this.behavior.put(currentStatus, action);
             }
         }
+    }
+
+    /**
+     * Serialize the actions to string.
+     *
+     * @param stepActions - map of couple (stepId, action)
+     * @return the serialized actions
+     */
+    protected String serializeActions(final Collection<Action> stepActions) throws JsonProcessingException {
+        return "{\"actions\": " + objectMapper.writeValueAsString(stepActions) + "}";
     }
 }

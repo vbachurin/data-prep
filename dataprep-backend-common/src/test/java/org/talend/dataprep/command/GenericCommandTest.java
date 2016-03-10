@@ -11,11 +11,11 @@
 //
 //  ============================================================================
 
-package org.talend.dataprep.api.service.command.common;
+package org.talend.dataprep.command;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.talend.dataprep.api.service.command.common.Defaults.asString;
+import static org.talend.dataprep.command.Defaults.asString;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -28,23 +28,29 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.context.WebApplicationContext;
-import org.talend.dataprep.api.service.APIService;
-import org.talend.dataprep.dataset.Application;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
+import org.talend.dataprep.security.Security;
+import org.talend.dataprep.test.MockTestApplication;
+import org.talend.dataprep.test.ServerConfiguration;
+
+import com.netflix.hystrix.HystrixCommandGroupKey;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Application.class)
+@SpringApplicationConfiguration(classes = { MockTestApplication.class, ServerConfiguration.class })
+@TestPropertySource(properties = {"security.mode=genericCommandTest", "transformation.service.url=", "preparation.service.url=", "dataset.service.url="})
 @WebAppConfiguration
-@IntegrationTest
+@IntegrationTest({ "server.port=0" })
 public class GenericCommandTest {
 
     private static TDPException lastException;
@@ -58,6 +64,9 @@ public class GenericCommandTest {
     @Autowired
     private HttpClient httpClient;
 
+    @Autowired
+    private Security security;
+
     private static RuntimeException error(Exception e) {
         lastException = (TDPException) e;
         return new RuntimeException(e);
@@ -69,7 +78,7 @@ public class GenericCommandTest {
     }
 
     private TestCommand getCommand(String url, Function<Exception, RuntimeException> errorHandling) {
-        return context.getBean(TestCommand.class, httpClient, url, errorHandling);
+        return context.getBean(TestCommand.class, url, errorHandling);
     }
 
     @Test
@@ -81,6 +90,18 @@ public class GenericCommandTest {
         final String result = command.run();
         // Then
         assertThat(result, is("success"));
+        assertThat(lastException, nullValue());
+    }
+
+    @Test
+    public void testAuthenticationToken() throws Exception {
+        // Given
+        final GenericCommand<String> command = getCommand("http://localhost:" + port + "/command/test/authentication/token",
+                GenericCommandTest::error);
+        // When
+        final String result = command.run();
+        // Then
+        assertThat(result, is(security.getAuthenticationToken()));
         assertThat(lastException, nullValue());
     }
 
@@ -224,11 +245,26 @@ public class GenericCommandTest {
     @Scope("prototype")
     private static class TestCommand extends GenericCommand<String> {
 
-        protected TestCommand(HttpClient client, String url, Function<Exception, RuntimeException> errorHandling) {
-            super(APIService.DATASET_GROUP, client);
+        protected TestCommand(String url, Function<Exception, RuntimeException> errorHandling) {
+            super(HystrixCommandGroupKey.Factory.asKey("dataset"));
             execute(() -> new HttpGet(url));
             onError(errorHandling);
             on(HttpStatus.OK).then(asString());
+        }
+    }
+
+    @Component
+    @ConditionalOnProperty(name = "security.mode", havingValue = "genericCommandTest", matchIfMissing = false)
+    private static class TestSecurity implements Security {
+
+        @Override
+        public String getUserId() {
+            return "anonymous";
+        }
+
+        @Override
+        public String getAuthenticationToken() {
+            return "#1234";
         }
     }
 }

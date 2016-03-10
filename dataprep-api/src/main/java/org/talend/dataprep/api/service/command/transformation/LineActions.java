@@ -14,16 +14,14 @@
 package org.talend.dataprep.api.service.command.transformation;
 
 import static org.springframework.http.HttpStatus.OK;
-import static org.talend.dataprep.api.service.APIService.TRANSFORM_GROUP;
-import static org.talend.dataprep.api.service.command.common.Defaults.pipeStream;
+import static org.talend.dataprep.command.Defaults.pipeStream;
 
 import java.io.InputStream;
 
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.service.command.common.GenericCommand;
+import org.talend.dataprep.command.GenericCommand;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.APIErrorCodes;
 
@@ -36,13 +34,11 @@ public class LineActions extends GenericCommand<InputStream> {
 
     /**
      * Constructor.
-     *
-     * @param client the http client.
      */
-    private LineActions(final HttpClient client) {
-        super(TRANSFORM_GROUP, client);
+    private LineActions() {
+        super(TRANSFORM_GROUP);
         execute(() -> new HttpGet(transformationServiceUrl + "/actions/line"));
-        onError((e) -> new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_SUGGESTED_ACTIONS, e));
+        onError(e -> new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_SUGGESTED_ACTIONS, e));
         on(OK).then(pipeStream());
     }
 

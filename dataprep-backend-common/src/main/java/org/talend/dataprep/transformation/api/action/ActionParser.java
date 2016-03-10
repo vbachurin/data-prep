@@ -57,10 +57,10 @@ public class ActionParser {
             // Actions cannot be null (but can be empty string for no op actions).
             throw new IllegalArgumentException("Actions parameter can not be null.");
         }
+        if (StringUtils.isEmpty(actions)) {
+            return Collections.emptyList();
+        }
         try {
-            if (StringUtils.isEmpty(actions)) {
-                return Collections.emptyList();
-            }
             // Parse action JSON
             final Actions parsedActions = builder.build().readerFor(Actions.class).readValue(actions);
             // Create closures from parsed actions
@@ -75,7 +75,12 @@ public class ActionParser {
             }
             // all set: wraps everything and return to caller
             return builtActions;
-        } catch (Exception e) {
+        }
+        catch(TDPException tpe) {
+            // leave TDPException as is
+            throw tpe;
+        }
+        catch (Exception e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
         }
     }

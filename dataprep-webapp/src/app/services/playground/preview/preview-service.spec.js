@@ -1,10 +1,10 @@
-describe('Preview Service', function () {
+describe('Preview Service', () => {
     'use strict';
 
-    var stateMock, dataViewMock;
-    var gridRangeIndex = {top: 1, bottom: 5};
-    var displayedTdpIds = [1,3,6,7,8];
-    var originalData = {
+    let stateMock, dataViewMock, shouldPreviewReturnError;
+    const gridRangeIndex = {top: 1, bottom: 5};
+    const displayedTdpIds = [1, 3, 6, 7, 8];
+    const originalData = {
         records: [
             {tdpId: 0, firstname: 'Tata'},
             {tdpId: 1, firstname: 'Tete'},
@@ -23,7 +23,7 @@ describe('Preview Service', function () {
     };
 
     //diff result corresponding to gridRangeIndex
-    var diff = {
+    const diff = {
         data: {
             records: [
                 {tdpId: 1, firstname: 'Tete'},
@@ -37,24 +37,26 @@ describe('Preview Service', function () {
         }
     };
 
-    var previewExecutor = {};
-    var reverterExecutor = {};
+    const previewExecutor = {};
+    const reverterExecutor = {};
 
-    beforeEach(angular.mock.module('data-prep.services.playground', function ($provide) {
+    beforeEach(angular.mock.module('data-prep.services.playground', ($provide) => {
         stateMock = {playground: {grid: {}}};
         $provide.constant('state', stateMock);
     }));
 
-
-    beforeEach(inject(function ($q, PreviewService, DatagridService, PreparationService) {
+    beforeEach(inject(($q, PreviewService, DatagridService, PreparationService) => {
         stateMock.playground.data = originalData;
         dataViewMock = new DataViewMock();
         stateMock.playground.grid.dataView = dataViewMock;
         PreviewService.gridRangeIndex = gridRangeIndex;
 
+        shouldPreviewReturnError = false;
+        const previewMock = () => shouldPreviewReturnError ? $q.reject() : $q.when(diff);
+
         //simulate datagrid get item to have displayedTdpIds = [1,3,6,7,8]
-        spyOn(stateMock.playground.grid.dataView, 'getItem').and.callFake(function(id) {
-            switch(id) {
+        spyOn(stateMock.playground.grid.dataView, 'getItem').and.callFake((id) => {
+            switch (id) {
                 case 1:
                     return originalData.records[1];
                 case 2:
@@ -70,8 +72,8 @@ describe('Preview Service', function () {
         });
 
         //simulate datagrid get array index by (tdp) id
-        spyOn(stateMock.playground.grid.dataView, 'getIdxById').and.callFake(function(id) {
-            switch(id) {
+        spyOn(stateMock.playground.grid.dataView, 'getIdxById').and.callFake((id) => {
+            switch (id) {
                 case 1:
                     return 1;
                 case 8:
@@ -83,22 +85,22 @@ describe('Preview Service', function () {
         spyOn(DatagridService, 'previewDataExecutor').and.returnValue(previewExecutor);
         spyOn(DatagridService, 'execute').and.returnValue(reverterExecutor);
 
-        spyOn(PreparationService, 'getPreviewDiff').and.returnValue($q.when(diff));
-        spyOn(PreparationService, 'getPreviewUpdate').and.returnValue($q.when(diff));
-        spyOn(PreparationService, 'getPreviewAdd').and.returnValue($q.when(diff));
+        spyOn(PreparationService, 'getPreviewDiff').and.callFake(previewMock);
+        spyOn(PreparationService, 'getPreviewUpdate').and.callFake(previewMock);
+        spyOn(PreparationService, 'getPreviewAdd').and.callFake(previewMock);
     }));
 
-    describe('diff preview', function() {
-        it('should call and display preview', inject(function($rootScope, PreviewService, PreparationService, DatagridService) {
+    describe('diff preview', () => {
+        it('should call and display preview', inject(($rootScope, PreviewService, PreparationService, DatagridService) => {
             //given
-            var preparationId = '86c4135ab218646f54';
-            var currentStep = {
-                column:{id:'0001'},
-                transformation: { stepId: '1'}
+            const preparationId = '86c4135ab218646f54';
+            const currentStep = {
+                column: {id: '0001'},
+                transformation: {stepId: '1'}
             };
-            var previewStep = {
-                column:{id:'0000'},
-                transformation: { stepId: '2'}
+            const previewStep = {
+                column: {id: '0000'},
+                transformation: {stepId: '2'}
             };
 
             //when
@@ -108,7 +110,7 @@ describe('Preview Service', function () {
             //then
             expect(PreparationService.getPreviewDiff).toHaveBeenCalled();
 
-            var previewArgs = PreparationService.getPreviewDiff.calls.mostRecent().args;
+            const previewArgs = PreparationService.getPreviewDiff.calls.mostRecent().args;
             expect(previewArgs[0]).toEqual({
                 preparationId: preparationId,
                 currentStepId: currentStep.transformation.stepId,
@@ -120,18 +122,43 @@ describe('Preview Service', function () {
             expect(DatagridService.execute).toHaveBeenCalledWith(previewExecutor); //preview diff
         }));
 
-        it('should focus on provided column', inject(function($rootScope, PreviewService, DatagridService) {
+        it('should cancel preview on error', inject(($rootScope, PreviewService, PreparationService, DatagridService) => {
             //given
-            var preparationId = '86c4135ab218646f54';
-            var currentStep = {
-                column:{id:'0001'},
-                transformation: { stepId: '1'}
+            const preparationId = '86c4135ab218646f54';
+            const currentStep = {
+                column: {id: '0001'},
+                transformation: {stepId: '1'}
             };
-            var previewStep = {
-                column:{id:'0000'},
-                transformation: { stepId: '2'}
+            const previewStep = {
+                column: {id: '0000'},
+                transformation: {stepId: '2'}
             };
-            var focusColumnId = '0000';
+            shouldPreviewReturnError = true;
+            let rejected = false;
+
+            //when
+            PreviewService.getPreviewDiffRecords(preparationId, currentStep, previewStep, null)
+                .catch(() => rejected = true);
+            expect(PreviewService.previewInProgress()).toBe(true);
+            $rootScope.$digest();
+
+            //then
+            expect(rejected).toBe(true);
+            expect(PreviewService.previewInProgress()).toBe(false);
+        }));
+
+        it('should focus on provided column', inject(($rootScope, PreviewService, DatagridService) => {
+            //given
+            const preparationId = '86c4135ab218646f54';
+            const currentStep = {
+                column: {id: '0001'},
+                transformation: {stepId: '1'}
+            };
+            const previewStep = {
+                column: {id: '0000'},
+                transformation: {stepId: '2'}
+            };
+            const focusColumnId = '0000';
 
             //when
             PreviewService.getPreviewDiffRecords(preparationId, currentStep, previewStep, focusColumnId);
@@ -141,21 +168,21 @@ describe('Preview Service', function () {
             expect(DatagridService.focusedColumn).toBe(focusColumnId);
         }));
 
-        it('should cancel current pending preview', inject(function($rootScope, PreviewService, PreparationService) {
+        it('should cancel current pending preview', inject(($rootScope, PreviewService, PreparationService) => {
             //given
-            var preparationId = '86c4135ab218646f54';
-            var currentStep = {
-                column:{id:'0001'},
-                transformation: { stepId: '1'}
+            const preparationId = '86c4135ab218646f54';
+            const currentStep = {
+                column: {id: '0001'},
+                transformation: {stepId: '1'}
             };
-            var previewStep = {
-                column:{id:'0000'},
-                transformation: { stepId: '2'}
+            const previewStep = {
+                column: {id: '0000'},
+                transformation: {stepId: '2'}
             };
 
             PreviewService.getPreviewDiffRecords(preparationId, currentStep, previewStep, null);
-            var previewArgs = PreparationService.getPreviewDiff.calls.mostRecent().args;
-            var previewCanceler = previewArgs[1];
+            const previewArgs = PreparationService.getPreviewDiff.calls.mostRecent().args;
+            const previewCanceler = previewArgs[1];
 
             expect(previewCanceler.promise.$$state.status).toBe(0); //eslint-disable-line angular/no-private-call
 
@@ -167,21 +194,21 @@ describe('Preview Service', function () {
         }));
     });
 
-    describe('update preview', function() {
-        it('should call and display preview', inject(function($rootScope, PreviewService, PreparationService, DatagridService) {
+    describe('update preview', () => {
+        it('should call and display preview', inject(($rootScope, PreviewService, PreparationService, DatagridService) => {
             //given
-            var preparationId = '86c4135ab218646f54';
-            var currentStep = {
-                column:{id: '0001'},
-                transformation: { stepId: '1'},
+            const preparationId = '86c4135ab218646f54';
+            const currentStep = {
+                column: {id: '0001'},
+                transformation: {stepId: '1'},
                 actionParameters: {action: 'fillEmptyWithValue'}
             };
-            var updateStep = {
-                column:{id: '0000'},
-                transformation: { stepId: '2'},
+            const updateStep = {
+                column: {id: '0000'},
+                transformation: {stepId: '2'},
                 actionParameters: {action: 'fillEmptyWithValue'}
             };
-            var newParams = {value: '--'};
+            const newParams = {value: '--'};
 
             //when
             PreviewService.getPreviewUpdateRecords(preparationId, currentStep, updateStep, newParams);
@@ -190,7 +217,7 @@ describe('Preview Service', function () {
             //then
             expect(PreparationService.getPreviewUpdate).toHaveBeenCalled();
 
-            var previewArgs = PreparationService.getPreviewUpdate.calls.mostRecent().args;
+            const previewArgs = PreparationService.getPreviewUpdate.calls.mostRecent().args;
             expect(previewArgs[0]).toEqual({
                 preparationId: preparationId,
                 tdpIds: displayedTdpIds,
@@ -206,20 +233,49 @@ describe('Preview Service', function () {
             expect(DatagridService.execute).toHaveBeenCalledWith(previewExecutor); //preview diff
         }));
 
-        it('should focus on update step column', inject(function($rootScope, PreviewService, DatagridService) {
+        it('should cancel preview on error', inject(($rootScope, PreviewService) => {
             //given
-            var preparationId = '86c4135ab218646f54';
-            var currentStep = {
-                column:{id:'0001'},
-                transformation: { stepId: '1'},
+            const preparationId = '86c4135ab218646f54';
+            const currentStep = {
+                column: {id: '0001'},
+                transformation: {stepId: '1'},
                 actionParameters: {action: 'fillEmptyWithValue'}
             };
-            var updateStep = {
-                column:{id:'0000'},
-                transformation: { stepId: '2'},
+            const updateStep = {
+                column: {id: '0000'},
+                transformation: {stepId: '2'},
                 actionParameters: {action: 'fillEmptyWithValue'}
             };
-            var newParams = {value: '--'};
+            const newParams = {value: '--'};
+
+            shouldPreviewReturnError = true;
+            let rejected = false;
+
+            //when
+            PreviewService.getPreviewUpdateRecords(preparationId, currentStep, updateStep, newParams)
+                .catch(() => rejected = true);
+            expect(PreviewService.previewInProgress()).toBe(true);
+            $rootScope.$digest();
+
+            //then
+            expect(rejected).toBe(true);
+            expect(PreviewService.previewInProgress()).toBe(false);
+        }));
+
+        it('should focus on update step column', inject(($rootScope, PreviewService, DatagridService) => {
+            //given
+            const preparationId = '86c4135ab218646f54';
+            const currentStep = {
+                column: {id: '0001'},
+                transformation: {stepId: '1'},
+                actionParameters: {action: 'fillEmptyWithValue'}
+            };
+            const updateStep = {
+                column: {id: '0000'},
+                transformation: {stepId: '2'},
+                actionParameters: {action: 'fillEmptyWithValue'}
+            };
+            const newParams = {value: '--'};
 
             //when
             PreviewService.getPreviewUpdateRecords(preparationId, currentStep, updateStep, newParams);
@@ -229,24 +285,24 @@ describe('Preview Service', function () {
             expect(DatagridService.focusedColumn).toBe(updateStep.column.id);
         }));
 
-        it('should cancel current pending preview', inject(function($rootScope, PreviewService, PreparationService) {
+        it('should cancel current pending preview', inject(($rootScope, PreviewService, PreparationService) => {
             //given
-            var preparationId = '86c4135ab218646f54';
-            var currentStep = {
-                column:{id:'0001'},
-                transformation: { stepId: '1'},
+            const preparationId = '86c4135ab218646f54';
+            const currentStep = {
+                column: {id: '0001'},
+                transformation: {stepId: '1'},
                 actionParameters: {action: 'fillEmptyWithValue'}
             };
-            var updateStep = {
-                column:{id:'0000'},
-                transformation: { stepId: '2'},
+            const updateStep = {
+                column: {id: '0000'},
+                transformation: {stepId: '2'},
                 actionParameters: {action: 'fillEmptyWithValue'}
             };
-            var newParams = {value: '--'};
+            const newParams = {value: '--'};
 
             PreviewService.getPreviewUpdateRecords(preparationId, currentStep, updateStep, newParams);
-            var previewArgs = PreparationService.getPreviewUpdate.calls.mostRecent().args;
-            var previewCanceler = previewArgs[1];
+            const previewArgs = PreparationService.getPreviewUpdate.calls.mostRecent().args;
+            const previewCanceler = previewArgs[1];
 
             expect(previewCanceler.promise.$$state.status).toBe(0); //eslint-disable-line angular/no-private-call
 
@@ -256,16 +312,15 @@ describe('Preview Service', function () {
             //then
             expect(previewCanceler.promise.$$state.status).toBe(1); //eslint-disable-line angular/no-private-call
         }));
-
     });
 
-    describe('add preview', function() {
-        it('should call and display preview', inject(function($rootScope, PreviewService, PreparationService, DatagridService) {
+    describe('add preview', () => {
+        it('should call and display preview', inject(($rootScope, PreviewService, PreparationService, DatagridService) => {
             //given
-            var preparationId = '86c4135ab218646f54';
-            var datasetId = '46c541b683ef5151';
-            var action = 'fillEmptyWithValue';
-            var actionParams = {
+            const preparationId = '86c4135ab218646f54';
+            const datasetId = '46c541b683ef5151';
+            const action = 'fillEmptyWithValue';
+            const actionParams = {
                 scope: 'column',
                 column_id: '0001',
                 value: '--'
@@ -278,9 +333,9 @@ describe('Preview Service', function () {
             //then
             expect(PreparationService.getPreviewAdd).toHaveBeenCalled();
 
-            var previewArgs = PreparationService.getPreviewAdd.calls.mostRecent().args;
+            const previewArgs = PreparationService.getPreviewAdd.calls.mostRecent().args;
             expect(previewArgs[0]).toEqual({
-                action : {
+                action: {
                     action: action,
                     parameters: actionParams
                 },
@@ -293,12 +348,37 @@ describe('Preview Service', function () {
             expect(DatagridService.execute).toHaveBeenCalledWith(previewExecutor); //preview diff
         }));
 
-        it('should focus on add step column', inject(function($rootScope, PreviewService, DatagridService) {
+        it('should cancel preview on error', inject(($rootScope, PreviewService) => {
             //given
-            var preparationId = '86c4135ab218646f54';
-            var datasetId = '46c541b683ef5151';
-            var action = 'fillEmptyWithValue';
-            var params = {
+            const preparationId = '86c4135ab218646f54';
+            const datasetId = '46c541b683ef5151';
+            const action = 'fillEmptyWithValue';
+            const actionParams = {
+                scope: 'column',
+                column_id: '0001',
+                value: '--'
+            };
+
+            shouldPreviewReturnError = true;
+            let rejected = false;
+
+            //when
+            PreviewService.getPreviewAddRecords(preparationId, datasetId, action, actionParams)
+                .catch(() => rejected = true);
+            expect(PreviewService.previewInProgress()).toBe(true);
+            $rootScope.$digest();
+
+            //then
+            expect(rejected).toBe(true);
+            expect(PreviewService.previewInProgress()).toBe(false);
+        }));
+
+        it('should focus on add step column', inject(($rootScope, PreviewService, DatagridService) => {
+            //given
+            const preparationId = '86c4135ab218646f54';
+            const datasetId = '46c541b683ef5151';
+            const action = 'fillEmptyWithValue';
+            const params = {
                 scope: 'column',
                 column_id: '0001',
                 value: '--'
@@ -312,20 +392,20 @@ describe('Preview Service', function () {
             expect(DatagridService.focusedColumn).toBe('0001');
         }));
 
-        it('should cancel current pending preview', inject(function($rootScope, PreviewService, PreparationService) {
+        it('should cancel current pending preview', inject(($rootScope, PreviewService, PreparationService) => {
             //given
-            var preparationId = '86c4135ab218646f54';
-            var datasetId = '46c541b683ef5151';
-            var action = 'fillEmptyWithValue';
-            var params = {
+            const preparationId = '86c4135ab218646f54';
+            const datasetId = '46c541b683ef5151';
+            const action = 'fillEmptyWithValue';
+            const params = {
                 scope: 'column',
                 column_id: '0001',
                 value: '--'
             };
 
             PreviewService.getPreviewAddRecords(preparationId, datasetId, action, params);
-            var previewArgs = PreparationService.getPreviewAdd.calls.mostRecent().args;
-            var previewCanceler = previewArgs[1];
+            const previewArgs = PreparationService.getPreviewAdd.calls.mostRecent().args;
+            const previewCanceler = previewArgs[1];
 
             expect(previewCanceler.promise.$$state.status).toBe(0); //eslint-disable-line angular/no-private-call
 
@@ -337,26 +417,26 @@ describe('Preview Service', function () {
         }));
     });
 
-    describe('reset/cancel/stop preview', function() {
-        var preparationId = '86c4135ab218646f54';
+    describe('reset/cancel/stop preview', () => {
+        const preparationId = '86c4135ab218646f54';
 
-        beforeEach(inject(function($rootScope, PreviewService) {
-            var currentStep = {
-                column:{id:'0001'},
-                transformation: { stepId: '1'}
+        beforeEach(inject(($rootScope, PreviewService) => {
+            const currentStep = {
+                column: {id: '0001'},
+                transformation: {stepId: '1'}
             };
-            var previewStep = {
-                column:{id:'0000'},
-                transformation: { stepId: '2'}
+            const previewStep = {
+                column: {id: '0000'},
+                transformation: {stepId: '2'}
             };
 
             PreviewService.getPreviewDiffRecords(preparationId, currentStep, previewStep, null);
         }));
 
-        it('should stop pending preview', inject(function(PreviewService, PreparationService) {
+        it('should stop pending preview', inject((PreviewService, PreparationService) => {
             //given
-            var previewArgs = PreparationService.getPreviewDiff.calls.mostRecent().args;
-            var previewCanceler = previewArgs[1];
+            const previewArgs = PreparationService.getPreviewDiff.calls.mostRecent().args;
+            const previewCanceler = previewArgs[1];
 
             expect(previewCanceler.promise.$$state.status).toBe(0); //eslint-disable-line angular/no-private-call
 
@@ -367,7 +447,7 @@ describe('Preview Service', function () {
             expect(previewCanceler.promise.$$state.status).toBe(1); //eslint-disable-line angular/no-private-call
         }));
 
-        it('should restore original data on reset', inject(function($rootScope, PreviewService, DatagridService) {
+        it('should restore original data on reset', inject(($rootScope, PreviewService, DatagridService) => {
             //given
             $rootScope.$digest();
             expect(DatagridService.execute.calls.count()).toBe(2);
@@ -382,7 +462,7 @@ describe('Preview Service', function () {
             expect(DatagridService.execute).toHaveBeenCalledWith(reverterExecutor);
         }));
 
-        it('should NOT restore original data on reset', inject(function(PreviewService, DatagridService) {
+        it('should NOT restore original data on reset', inject((PreviewService, DatagridService) => {
             //given
             expect(DatagridService.execute).not.toHaveBeenCalled();
 
@@ -393,10 +473,10 @@ describe('Preview Service', function () {
             expect(DatagridService.execute).not.toHaveBeenCalled();
         }));
 
-        it('should stop pending preview on cancel call', inject(function(PreviewService, PreparationService) {
+        it('should stop pending preview on cancel call', inject((PreviewService, PreparationService) => {
             //given
-            var previewArgs = PreparationService.getPreviewDiff.calls.mostRecent().args;
-            var previewCanceler = previewArgs[1];
+            const previewArgs = PreparationService.getPreviewDiff.calls.mostRecent().args;
+            const previewCanceler = previewArgs[1];
 
             expect(previewCanceler.promise.$$state.status).toBe(0); //eslint-disable-line angular/no-private-call
 
@@ -407,7 +487,7 @@ describe('Preview Service', function () {
             expect(previewCanceler.promise.$$state.status).toBe(1); //eslint-disable-line angular/no-private-call
         }));
 
-        it('should set focused column and restore original data on cancel call', inject(function($rootScope, PreviewService, DatagridService) {
+        it('should set focused column and restore original data on cancel call', inject(($rootScope, PreviewService, DatagridService) => {
             //given
             $rootScope.$digest();
             expect(DatagridService.execute.calls.count()).toBe(2);
@@ -415,7 +495,7 @@ describe('Preview Service', function () {
             expect(DatagridService.execute).toHaveBeenCalledWith(previewExecutor);
             expect(DatagridService.focusedColumn).toBeFalsy();
 
-            var focusedColId = '0001';
+            const focusedColId = '0001';
 
             //when
             PreviewService.cancelPreview(focusedColId);

@@ -11,7 +11,7 @@
 //
 //  ============================================================================
 
-package org.talend.dataprep.api.service.command;
+package org.talend.dataprep.command;
 
 import java.io.IOException;
 import java.io.InputStream;

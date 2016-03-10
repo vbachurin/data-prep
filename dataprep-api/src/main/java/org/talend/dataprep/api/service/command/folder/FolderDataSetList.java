@@ -13,21 +13,20 @@
 
 package org.talend.dataprep.api.service.command.folder;
 
-import static org.talend.dataprep.api.service.command.common.Defaults.pipeStream;
+
+import static org.talend.dataprep.command.Defaults.pipeStream;
 
 import java.io.InputStream;
 import java.net.URISyntaxException;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.URIBuilder;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.service.PreparationAPI;
-import org.talend.dataprep.api.service.command.common.GenericCommand;
+import org.talend.dataprep.command.GenericCommand;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 
@@ -35,8 +34,8 @@ import org.talend.dataprep.exception.error.CommonErrorCodes;
 @Scope("request")
 public class FolderDataSetList extends GenericCommand<InputStream> {
 
-    public FolderDataSetList(HttpClient client, String sort, String order, String folder) {
-        super(PreparationAPI.TRANSFORM_GROUP, client);
+    public FolderDataSetList(String sort, String order, String folder) {
+        super(GenericCommand.TRANSFORM_GROUP);
         execute(() -> onExecute(sort, order, folder));
         on(HttpStatus.OK).then(pipeStream());
     }

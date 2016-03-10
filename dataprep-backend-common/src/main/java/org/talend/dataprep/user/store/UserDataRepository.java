@@ -19,7 +19,7 @@ import org.talend.dataprep.api.user.UserData;
 /**
  * Storage interface for the user data.
  */
-public interface UserDataRepository {
+public interface UserDataRepository<U extends UserData> {
 
     /**
      * get the {@link UserData} for the given userId from the current storage
@@ -28,14 +28,14 @@ public interface UserDataRepository {
      * @return the {@link UserData} for the given userId
      */
     @NotNull
-    UserData get(String userId);
+    U get(String userId);
 
     /**
      * store the given {@link UserData}
      * 
      * @param userData the {@link UserData} to store
      */
-    void save(UserData userData);
+    void save(U userData);
 
     /**
      * remove the userData associated with the userId

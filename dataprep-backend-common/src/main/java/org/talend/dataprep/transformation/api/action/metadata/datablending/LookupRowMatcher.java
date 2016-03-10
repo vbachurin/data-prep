@@ -25,21 +25,19 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.WebApplicationContext;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.command.dataset.DataSetGet;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.TransformationErrorCodes;
 
@@ -56,17 +54,17 @@ public class LookupRowMatcher implements DisposableBean {
     /** This class' logger. */
     private static final Logger LOGGER = LoggerFactory.getLogger(LookupRowMatcher.class);
 
-    /** The http client to use. */
-    @Autowired
-    private CloseableHttpClient httpClient;
-
     /** The dataprep ready jackson builder. */
     @Autowired
     @Lazy // needed to prevent a circular dependency
-    private Jackson2ObjectMapperBuilder builder;
+    private ObjectMapper mapper;
 
-    /** Where to look for the lookup dataset. */
-    private String url;
+    /** The Spring application context. */
+    @Autowired
+    private WebApplicationContext context;
+
+    /** The dataset id to lookup. */
+    private String datasetId;
 
     /** The dataset lookup input stream. */
     private InputStream input;
@@ -83,10 +81,10 @@ public class LookupRowMatcher implements DisposableBean {
     /**
      * Default constructor.
      * 
-     * @param url where to load the lookup content.
+     * @param datasetId the dataset id to lookup.
      */
-    public LookupRowMatcher(String url) {
-        this.url = url;
+    public LookupRowMatcher(String datasetId) {
+        this.datasetId = datasetId;
     }
 
     /**
@@ -95,10 +93,11 @@ public class LookupRowMatcher implements DisposableBean {
     @PostConstruct
     private void init() {
 
-        LOGGER.debug("opening {}", url);
+        final DataSetGet dataSetGet = context.getBean(DataSetGet.class, datasetId, true, null);
 
-        this.input = getLookupContent(url);
-        final ObjectMapper mapper = builder.build();
+        LOGGER.debug("opening {}", datasetId);
+
+        this.input = dataSetGet.execute();
         try {
             JsonParser jsonParser = mapper.getFactory().createParser(input);
             DataSet lookup = mapper.readerFor(DataSet.class).readValue(jsonParser);
@@ -119,7 +118,7 @@ public class LookupRowMatcher implements DisposableBean {
         } catch (IOException e) {
             LOGGER.warn("Error cleaning LookupRowMatcher", e);
         }
-        LOGGER.debug("{} closed", url);
+        LOGGER.debug("connection to {} closed", datasetId);
     }
 
     /**
@@ -129,7 +128,7 @@ public class LookupRowMatcher implements DisposableBean {
      * @param joinValue the join value.
      * @return the matching row or an empty one based on the
      */
-    public DataSetRow getMatchingRow(String joinOn, String joinValue) {
+    protected DataSetRow getMatchingRow(String joinOn, String joinValue) {
 
         if (joinValue == null) {
             LOGGER.debug("join value is null, returning empty row");
@@ -181,30 +180,8 @@ public class LookupRowMatcher implements DisposableBean {
         return defaultRow;
     }
 
-    /**
-     * Return the lookup dataset content from the given url.
-     *
-     * @param url where to load the dataset lookup content.
-     * @return the lookup dataset content as input stream.
-     */
-    private InputStream getLookupContent(String url) {
-        HttpGet get = new HttpGet(url);
-        CloseableHttpResponse response;
-        try {
-            response = httpClient.execute(get);
-            if (response.getStatusLine().getStatusCode() >= 400) {
-                throw new IOException("error reading dataset lookup " + url + " -> " + response.getStatusLine());
-            }
-
-            LOGGER.debug("Lookup dataset read from {} ", url);
-            return response.getEntity().getContent();
-        } catch (IOException e) {
-            throw new TDPException(TransformationErrorCodes.UNABLE_TO_READ_LOOKUP_DATASET, e);
-        }
-    }
-
     @Override
     public String toString() {
-        return "LookupRowMatcher{url='" + url + '}';
+        return "LookupRowMatcher{datasetId='" + datasetId + '}';
     }
 }

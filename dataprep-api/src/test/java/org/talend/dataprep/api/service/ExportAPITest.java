@@ -1,15 +1,15 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.api.service;
 
@@ -90,8 +90,14 @@ public class ExportAPITest extends ApiServiceTestBase {
         final String firstActionStep = steps.get(1);
 
         // when
-        final String export = given().formParam("exportType", "CSV").formParam("preparationId", preparationId)
-                .formParam("stepId", firstActionStep).when().get("/api/export").asString();
+        final String export = given() //
+                .formParam("exportType", "CSV") //
+                .formParam("preparationId", preparationId) //
+                .formParam("stepId", firstActionStep) //
+                .when() //
+                .expect().statusCode(200).log().ifError() //
+                .get("/api/export") //
+                .asString();
 
         // then
         assertEquals(expectedExport, export);
@@ -104,12 +110,18 @@ public class ExportAPITest extends ApiServiceTestBase {
         applyActionFromFile(preparationId, "export/make_header.json");
         applyActionFromFile(preparationId, "export/upper_case_lastname.json");
 
-        final String expectedExport = IOUtils
-                .toString(this.getClass().getResourceAsStream("export/expected_export_preparation_header_uppercase_firstname.csv"));
+        final String expectedExport = IOUtils.toString(
+                this.getClass().getResourceAsStream("export/expected_export_preparation_header_uppercase_firstname.csv"));
 
         // when
-        final String export = given().formParam("exportType", "CSV").formParam("preparationId", preparationId)
-                .formParam("stepId", "").when().get("/api/export").asString();
+        final String export = given() //
+                .formParam("exportType", "CSV") //
+                .formParam("preparationId", preparationId) //
+                .formParam("stepId", "") //
+                .when() //
+                .expect().statusCode(200).log().ifError() //
+                .get("/api/export") //
+                .asString();
 
         // then
         assertEquals(expectedExport, export);
@@ -127,8 +139,14 @@ public class ExportAPITest extends ApiServiceTestBase {
         final String expectedExport = IOUtils.toString(this.getClass().getResourceAsStream("export/split_cars_expected.csv"));
 
         // when
-        final String export = given().formParam("exportType", "CSV").formParam("preparationId", preparationId)
-                .formParam("stepId", "").when().get("/api/export").asString();
+        final String export = given() //
+                .formParam("exportType", "CSV") //
+                .formParam("preparationId", preparationId) //
+                .formParam("stepId", "") //
+                .when() //
+                .expect().statusCode(200).log().ifError() //
+                .get("/api/export") //
+                .asString();
 
         // then
         assertEquals(expectedExport, export);
@@ -165,8 +183,14 @@ public class ExportAPITest extends ApiServiceTestBase {
                 .toString(this.getClass().getResourceAsStream("export/expected_export_semicolon_separator.csv"));
 
         // when
-        final String export = given().formParam("exportType", "CSV").formParam(ExportFormat.PREFIX + "csvSeparator", ";")
-                .formParam("preparationId", preparationId).formParam("stepId", "head").when().get("/api/export").asString();
+        final String export = given() //
+                .formParam("exportType", "CSV") //
+                .formParam(ExportFormat.PREFIX + "csvSeparator", ";") //
+                .formParam("preparationId", preparationId) //
+                .formParam("stepId", "head") //
+                .when() //
+                .expect().statusCode(200).log().ifError() //
+                .get("/api/export").asString();
 
         // then
         assertEquals(expectedExport, export);
@@ -211,11 +235,12 @@ public class ExportAPITest extends ApiServiceTestBase {
                 .formParam("stepId", "head") //
                 .formParam(ExportFormat.PREFIX + ExportFormat.Parameter.FILENAME_PARAMETER, fileName) //
                 .when() //
+                .expect().statusCode(200).log().ifError() //
                 .get("/api/export");
 
         // then
         String contentDispositionHeaderValue = export.getHeader("Content-Disposition");
-        Assertions.assertThat( contentDispositionHeaderValue ).contains( "filename=\"" + fileName );
+        Assertions.assertThat(contentDispositionHeaderValue).contains("filename=\"" + fileName);
 
     }
 
@@ -230,9 +255,10 @@ public class ExportAPITest extends ApiServiceTestBase {
         final Response export = given() //
                 .formParam("exportType", "CSV") //
                 .formParam(ExportFormat.PREFIX + "csvSeparator", ";") //
-            .formParam("preparationId", preparationId) //
-            .formParam("stepId", "head") //
-            .when() //
+                .formParam("preparationId", preparationId) //
+                .formParam("stepId", "head") //
+                .when() //
+                .expect().statusCode(200).log().ifError() //
                 .get("/api/export");
 
         // then

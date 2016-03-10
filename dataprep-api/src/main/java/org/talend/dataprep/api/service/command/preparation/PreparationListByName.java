@@ -13,20 +13,19 @@
 
 package org.talend.dataprep.api.service.command.preparation;
 
-import static org.talend.dataprep.api.service.command.common.Defaults.emptyStream;
-import static org.talend.dataprep.api.service.command.common.Defaults.pipeStream;
+
+import static org.talend.dataprep.command.Defaults.emptyStream;
+import static org.talend.dataprep.command.Defaults.pipeStream;
 
 import java.io.InputStream;
 import java.net.URISyntaxException;
 
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.service.APIService;
-import org.talend.dataprep.api.service.command.common.GenericCommand;
+import org.talend.dataprep.command.GenericCommand;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.APIErrorCodes;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
@@ -44,8 +43,8 @@ public class PreparationListByName extends GenericCommand<InputStream> {
      * @param name the specified name
      * @param exactMatch the specified boolean
      */
-    private PreparationListByName(HttpClient client, String name, boolean exactMatch) {
-        super(APIService.PREPARATION_GROUP, client);
+    private PreparationListByName(String name, boolean exactMatch) {
+        super(GenericCommand.PREPARATION_GROUP);
         execute(() -> {
             try {
                 URIBuilder uriBuilder = new URIBuilder(preparationServiceUrl + "/preparations");

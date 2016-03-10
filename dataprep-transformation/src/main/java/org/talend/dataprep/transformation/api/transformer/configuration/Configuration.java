@@ -66,7 +66,7 @@ public class Configuration {
     }
 
     /**
-     * @return a TransformerConfiguration builder.
+     * @return a TransformerConfiguration mapper.
      */
     public static Builder builder() {
         return new Builder();
@@ -139,7 +139,7 @@ public class Configuration {
 
         /**
          * @param output where to write the transformed dataset.
-         * @return the builder to chain calls.
+         * @return the mapper to chain calls.
          */
         public Builder output(final OutputStream output) {
             this.output = output;
@@ -147,7 +147,7 @@ public class Configuration {
         }
 
         /**
-         * @return a new {@link Configuration} from the builder setup.
+         * @return a new {@link Configuration} from the mapper setup.
          */
         public Configuration build() {
             return new Configuration(output, format, actions, arguments, dataVolume);
@@ -157,7 +157,7 @@ public class Configuration {
          * Builder DSL for format setter
          *
          * @param format The format type id.
-         * @return The builder
+         * @return The mapper
          */
         public Builder format(final String format) {
             this.format = format;
@@ -168,7 +168,7 @@ public class Configuration {
          * Builder DSL for actions setter
          *
          * @param actions The actions in JSON string format.
-         * @return The builder
+         * @return The mapper
          */
         public Builder actions(final String actions) {
             this.actions = actions;
@@ -179,7 +179,7 @@ public class Configuration {
          * Builder DSL for arguments setter
          *
          * @param arguments The arguments in Map
-         * @return The builder
+         * @return The mapper
          */
         public Builder args(final Map<String, String> arguments) {
             this.arguments = arguments;

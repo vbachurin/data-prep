@@ -13,21 +13,19 @@
 
 package org.talend.dataprep.api.service.command.dataset;
 
-import static org.talend.dataprep.api.service.command.common.Defaults.asString;
-import static org.talend.dataprep.api.service.command.common.Defaults.emptyString;
+import static org.talend.dataprep.command.Defaults.asString;
+import static org.talend.dataprep.command.Defaults.emptyString;
 
 import java.io.InputStream;
 import java.net.URISyntaxException;
 
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.InputStreamEntity;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.service.PreparationAPI;
-import org.talend.dataprep.api.service.command.common.GenericCommand;
+import org.talend.dataprep.command.GenericCommand;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.APIErrorCodes;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
@@ -42,13 +40,12 @@ public class CreateOrUpdateDataSet extends GenericCommand<String> {
     /**
      * Private constructor.
      *
-     * @param client the http client.
      * @param id the dataset id.
      * @param name the dataset name.
      * @param dataSetContent the new dataset content.
      */
-    private CreateOrUpdateDataSet(HttpClient client, String id, String name, InputStream dataSetContent) {
-        super(PreparationAPI.DATASET_GROUP, client);
+    private CreateOrUpdateDataSet(String id, String name, InputStream dataSetContent) {
+        super(GenericCommand.DATASET_GROUP);
         execute(() -> {
             try {
                 URIBuilder uriBuilder = new URIBuilder(datasetServiceUrl + "/datasets/" + id + "/raw/") //

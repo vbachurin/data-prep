@@ -13,9 +13,13 @@
 
 package org.talend.dataprep.api.service;
 
+import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.talend.dataprep.format.export.ExportFormat.PREFIX;
+import static org.talend.dataprep.format.export.ExportFormat.Parameter.FILENAME_PARAMETER;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Enumeration;
@@ -30,16 +34,21 @@ import org.apache.http.Header;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.service.api.ExportParameters;
-import org.talend.dataprep.api.service.command.common.GenericCommand;
+import org.talend.dataprep.api.service.command.dataset.DataSetGetMetadata;
 import org.talend.dataprep.api.service.command.export.Export;
 import org.talend.dataprep.api.service.command.export.ExportTypes;
+import org.talend.dataprep.command.GenericCommand;
+import org.talend.dataprep.command.preparation.PreparationDetailsGet;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.APIErrorCodes;
 import org.talend.dataprep.format.export.ExportFormat;
 import org.talend.dataprep.http.HttpRequestContext;
 import org.talend.dataprep.http.HttpResponseContext;
 import org.talend.dataprep.metrics.Timed;
+import org.talend.dataprep.security.PublicAPI;
 
 import com.netflix.hystrix.HystrixCommand;
 
@@ -60,11 +69,14 @@ public class ExportAPI extends APIService {
                 final String paramName = names.nextElement();
                 if (StringUtils.contains(paramName, ExportFormat.PREFIX)) {
                     final String paramValue = HttpRequestContext.parameter(paramName);
-                    arguments.put(paramName, StringUtils.isNotEmpty(paramValue)? paramValue : StringUtils.EMPTY);
+                    arguments.put(paramName, StringUtils.isNotEmpty(paramValue)? paramValue : EMPTY);
                 }
             }
             input.setArguments(arguments);
-            final GenericCommand<InputStream> command = getCommand(Export.class, getClient(), input);
+
+
+            String exportName = getExportNameAndConsolidateParameters(input);
+            final GenericCommand<InputStream> command = getCommand(Export.class, input, exportName);
 
             // copy all headers from the command response so that the mime-type is correctly forwarded for instance
             try (InputStream commandInputStream = command.execute()) {
@@ -82,14 +94,59 @@ public class ExportAPI extends APIService {
         }
     }
 
+    private String getExportNameAndConsolidateParameters(ExportParameters parameters) {
+
+        // export file name comes from :
+        // 1. the form parameter
+        // 2. the preparation name
+        // 3. the dataset name
+
+
+        String exportName = EMPTY;
+
+        if (parameters.getArguments().containsKey(PREFIX + FILENAME_PARAMETER)) {
+            exportName = parameters.getArguments().get(PREFIX + FILENAME_PARAMETER);
+        }
+
+        // deal with preparation (update the export name and dataset id if needed)
+        if (StringUtils.isNotBlank(parameters.getPreparationId())) {
+
+            final PreparationDetailsGet preparationDetailsGet = getCommand(PreparationDetailsGet.class, parameters.getPreparationId());
+            try (InputStream details = preparationDetailsGet.execute()) {
+                final Preparation preparation = mapper.readerFor(Preparation.class).readValue(details);
+
+                if (StringUtils.isBlank(exportName)) {
+                    exportName = preparation.getName();
+                }
+
+                // update the dataset id in the parameters if needed
+                if (StringUtils.isBlank(parameters.getDatasetId())) {
+                    parameters.setDatasetId(preparation.getDataSetId());
+                }
+
+            } catch (IOException e) {
+                LOG.warn("unable to get the preparation to for the export", e);
+            }
+        }
+        // deal export name in case of dataset
+        else if (StringUtils.isBlank(exportName)){
+            DataSetGetMetadata dataSetGetMetadata = getCommand(DataSetGetMetadata.class, parameters.getDatasetId());
+            final DataSetMetadata metadata = dataSetGetMetadata.execute();
+            exportName = metadata.getName();
+        }
+
+        return exportName;
+    }
+
     /**
      * Get the available export formats
      */
     @RequestMapping(value = "/api/export/formats", method = GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get the available format types")
     @Timed
+    @PublicAPI
     public void exportTypes(final OutputStream output) {
-        final HystrixCommand<InputStream> command = getCommand(ExportTypes.class, getClient());
+        final HystrixCommand<InputStream> command = getCommand(ExportTypes.class);
         try (InputStream commandResult = command.execute()) {
             IOUtils.copyLarge(commandResult, output);
             output.flush();

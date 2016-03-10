@@ -25,7 +25,7 @@ import org.talend.dataprep.validation.OneNotBlank;
  * Bean that models a preview on an "Add action" request.
  */
 @OneNotBlank({"preparationId", "datasetId"})
-public class PreviewAddInput {
+public class PreviewAddParameters {
 
     /** The action to preview. */
     @NotNull
@@ -116,7 +116,7 @@ public class PreviewAddInput {
 
     @Override
     public String toString() {
-        return "PreviewAddInput{" + "action=" + action + ", tdpIds=" + tdpIds + ", datasetId='" + datasetId + '\''
+        return "PreviewAddParameters{" + "action=" + action + ", tdpIds=" + tdpIds + ", datasetId='" + datasetId + '\''
                 + ", preparationId='" + preparationId + '\'' + ", sample=" + sample + '}';
     }
 }

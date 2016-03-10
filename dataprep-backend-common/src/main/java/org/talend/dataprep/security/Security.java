@@ -20,4 +20,9 @@ public interface Security {
      * currently logged in.
      */
     String getUserId();
+
+    /**
+     * @return an authentication token.
+     */
+    String getAuthenticationToken();
 }

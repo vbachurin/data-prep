@@ -22,7 +22,6 @@ import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -174,7 +173,7 @@ public class PreparationAPITest extends ApiServiceTestBase {
     @Test
     public void should_append_action_after_actual_head() throws Exception {
         // when
-        final String preparationId = createPreparationFromDataset("1234", "testPreparation");
+        final String preparationId = createPreparationFromFile("dataset/dataset.csv", "testPreparation", "text/csv");
 
         // when
         applyActionFromFile(preparationId, "transformation/upper_case_firstname.json");
@@ -206,7 +205,7 @@ public class PreparationAPITest extends ApiServiceTestBase {
     public void should_fail_properly_on_append_error() throws Exception {
         // given
         final String missingScopeAction = IOUtils.toString(PreparationAPITest.class.getResourceAsStream("transformation/upper_case_firstname_without_scope.json"));
-        final String preparationId = createPreparationFromDataset("1234", "testPreparation");
+        final String preparationId = createPreparationFromFile("dataset/dataset.csv", "testPreparation", "text/csv");
 
         // when
         final Response request = given().contentType(ContentType.JSON)//
@@ -277,7 +276,7 @@ public class PreparationAPITest extends ApiServiceTestBase {
     public void should_fail_properly_on_update_error() throws Exception {
         // given
         final String missingScopeAction = IOUtils.toString(PreparationAPITest.class.getResourceAsStream("transformation/upper_case_firstname_without_scope.json"));
-        final String preparationId = createPreparationFromDataset("1234", "testPreparation");
+        final String preparationId = createPreparationFromFile("dataset/dataset.csv", "testPreparation", "text/csv");
         applyActionFromFile(preparationId, "transformation/upper_case_lastname.json");
         applyActionFromFile(preparationId, "transformation/upper_case_firstname.json");
 
@@ -330,7 +329,7 @@ public class PreparationAPITest extends ApiServiceTestBase {
     @Test
     public void should_change_preparation_head() throws Exception {
         //given
-        final String preparationId = createPreparationFromDataset("1234", "testPreparation");
+        final String preparationId = createPreparationFromFile("dataset/dataset.csv", "testPreparation", "text/csv");
         applyActionFromFile(preparationId, "transformation/upper_case_firstname.json");
 
         Preparation preparation = preparationRepository.get(preparationId, Preparation.class);
@@ -550,11 +549,15 @@ public class PreparationAPITest extends ApiServiceTestBase {
                 + "         }\n" //
                 + "    }\n" //
                 + "}";
-        final InputStream expectedPreviewStream = PreparationAPITest.class
-                .getResourceAsStream("preview/expected_add_preview.json");
+        final InputStream expectedPreviewStream = getClass().getResourceAsStream("preview/expected_add_preview.json");
 
         // when
-        final String preview = given().contentType(ContentType.JSON).body(input).when().post("/api/preparations/preview/add")
+        final String preview = given() //
+                .contentType(ContentType.JSON) //
+                .body(input) //
+                .when() //
+                .expect().statusCode(200).log().ifError() //
+                .post("/api/preparations/preview/add") //
                 .asString();
 
         // then

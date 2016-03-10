@@ -12,6 +12,8 @@
 //  ============================================================================
 package org.talend.dataprep.lock;
 
+import java.util.concurrent.locks.Lock;
+
 /**
  * Basic distributed Lock implementation for locking. This implementation relies on Hazelcast but it was created to
  * avoid Hazelcast dependencies in all the Talend classes. Use LockFactory.getLock(String) to get a new instance.
@@ -47,5 +49,13 @@ public interface DistributedLock {
      * @return the key used for the lock
      */
     String getKey();
+
+    /**
+     *
+     * Acquires the lock only if it is free at the time of invocation.
+     * @return {@code true} if the lock was acquired and {@code false} otherwise.
+     * @see Lock#tryLock()
+     */
+    boolean tryLock();
 
 }

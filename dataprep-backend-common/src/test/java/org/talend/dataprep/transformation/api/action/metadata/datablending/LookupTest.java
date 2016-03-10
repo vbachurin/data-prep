@@ -41,6 +41,8 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadataBuilder;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.test.MockTestApplication;
+import org.talend.dataprep.test.ServerConfiguration;
 import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionFactory;
@@ -52,7 +54,7 @@ import org.talend.dataprep.transformation.api.action.parameters.Parameter;
  * @see Lookup
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = { LookupTestApplication.class, LookupTestConfiguration.class })
+@SpringApplicationConfiguration(classes = { MockTestApplication.class, ServerConfiguration.class })
 @WebAppConfiguration
 @IntegrationTest({ "server.port=0" })
 public class LookupTest {
@@ -83,10 +85,11 @@ public class LookupTest {
     @Before
     public void setUp() {
         // Overrides connection information with random port value
-        MockPropertySource connectionInformation = new MockPropertySource().withProperty("dataset.service.url",
-                "http://localhost:" + port);
+        MockPropertySource connectionInformation = new MockPropertySource() //
+                .withProperty("dataset.service.url", "http://localhost:" + port) //
+                .withProperty("preparation.service.url", "http://localhost:" + port) //
+                .withProperty("transformation.service.url", "http://localhost:" + port);
         environment.getPropertySources().addFirst(connectionInformation);
-
         action = applicationContext.getBean(Lookup.class);
     }
 

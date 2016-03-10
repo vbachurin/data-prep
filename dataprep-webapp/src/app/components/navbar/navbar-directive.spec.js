@@ -52,4 +52,12 @@ describe('Navbar directive', function() {
         //then
         expect(element.find('ui-view.content').length).toBe(1);
     });
+
+    it('should render navigation items insertion point', function() {
+        //when
+        createElement();
+
+        //then
+        expect(element.find('.navigation-items[insertion-home-right-header]').length).toBe(1);
+    });
 });

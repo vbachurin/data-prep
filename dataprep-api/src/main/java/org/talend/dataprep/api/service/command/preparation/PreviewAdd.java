@@ -20,39 +20,44 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.client.HttpClient;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.preparation.Preparation;
-import org.talend.dataprep.api.service.api.PreviewAddInput;
+import org.talend.dataprep.api.service.api.PreviewAddParameters;
 
+/**
+ * Command used to retrieve a preview when adding an action to a dataset/preparation.
+ */
 @Component
 @Scope("request")
 public class PreviewAdd extends PreviewAbstract {
 
     /** The parameters to perform the preview on the Add Action request. */
-    private final PreviewAddInput input;
+    private final PreviewAddParameters addParameters;
 
     /**
      * Default constructor.
      *
-     * @param client the http client to use.
-     * @param input the parameters to perform the request.
+     * @param parameters the parameters to perform the request.
+     * @param preparation the preparation to deal with (may be null if dealing with dataset).
+     * @param actions the preparation actions (may be empty if dealing with dataset).
      */
-    public PreviewAdd(final HttpClient client, final PreviewAddInput input) {
-        super(client);
-        this.input = input;
+    private PreviewAdd(final PreviewAddParameters parameters, Preparation preparation, List<Action> actions) {
+        super(preparation, actions);
+        this.addParameters = parameters;
     }
 
+    /**
+     * @see PreviewAbstract#run()
+     */
     @Override
     protected InputStream run() throws Exception {
         final Map<String, Action> originalActions = new LinkedHashMap<>();
-        String dataSetId = input.getDatasetId();
+        String dataSetId = addParameters.getDatasetId();
 
         // get preparation details to initialize actions list
-        if (StringUtils.isNotBlank(input.getPreparationId())) {
-            final Preparation preparation = getPreparation(input.getPreparationId());
+        if (StringUtils.isNotBlank(addParameters.getPreparationId())) {
             dataSetId = preparation.getDataSetId();
 
             // Get steps from first transformation
@@ -60,16 +65,16 @@ public class PreviewAdd extends PreviewAbstract {
             steps.remove(0);
 
             // extract actions by steps in chronological order, until defined last active step (from input)
-            final Iterator<Action> actions = getPreparationActions(preparation, "head").iterator();
-            steps.stream().filter(step -> actions.hasNext()).forEach(step -> originalActions.put(step, actions.next()));
+            final Iterator<Action> iterator = actions.iterator();
+            steps.stream().filter(step -> iterator.hasNext()).forEach(step -> originalActions.put(step, iterator.next()));
         }
 
         // modify actions to include the update
         final Map<String, Action> modifiedActions = new LinkedHashMap<>(originalActions);
-        modifiedActions.put("preview", input.getAction());
+        modifiedActions.put("preview", addParameters.getAction());
 
         // execute transformation preview with content and the 2 transformations
-        setContext(originalActions.values(), modifiedActions.values(), dataSetId, input.getTdpIds());
+        setContext(originalActions.values(), modifiedActions.values(), dataSetId, addParameters.getTdpIds());
         return super.run();
     }
 

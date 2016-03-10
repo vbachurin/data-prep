@@ -54,7 +54,8 @@ export default function TransformationCacheService($q, $cacheFactory, Transforma
             .then(function (value) {
                 cache.put(key, value);
                 return value;
-            });
+            })
+            .catch(() => cache.remove(key));
 
         cache.put(key, fetchPromise);
         return fetchPromise;

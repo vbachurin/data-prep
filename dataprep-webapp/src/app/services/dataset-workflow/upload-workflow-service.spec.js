@@ -17,9 +17,8 @@ describe('UploadWorkflow Service', () => {
     beforeEach(angular.mock.module('data-prep.services.datasetWorkflowService'));
     beforeEach(inject(($state, $q, StateService, DatasetSheetPreviewService, MessageService, DatasetService) => {
         spyOn($state, 'go').and.returnValue();
-        spyOn(StateService, 'setPreviousState').and.returnValue();
-        spyOn(StateService, 'setPreviousStateOptions').and.returnValue();
-        spyOn(DatasetSheetPreviewService, 'loadPreview').and.returnValue($q.when(true));
+        spyOn(StateService, 'setPreviousRoute').and.returnValue();
+        spyOn(DatasetSheetPreviewService, 'loadPreview').and.returnValue($q.when());
         spyOn(DatasetSheetPreviewService, 'display').and.returnValue();
         spyOn(MessageService, 'error').and.returnValue();
         spyOn(DatasetService, 'refreshDatasets').and.returnValue();
@@ -45,8 +44,7 @@ describe('UploadWorkflow Service', () => {
             UploadWorkflowService.openDataset(dataset);
 
             //then
-            expect(StateService.setPreviousState).toHaveBeenCalledWith('nav.index.datasets');
-            expect(StateService.setPreviousStateOptions).toHaveBeenCalledWith({folderPath: 'test/'});
+            expect(StateService.setPreviousRoute).toHaveBeenCalledWith('nav.index.datasets', {folderPath: 'test/'});
         }));
 
         it('should open sheet preview when dataset is a draft', inject(($rootScope, UploadWorkflowService, DatasetSheetPreviewService) => {

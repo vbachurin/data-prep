@@ -18,7 +18,6 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.http.client.HttpClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
@@ -32,6 +31,7 @@ import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.info.ManifestInfo;
 import org.talend.dataprep.info.Version;
 import org.talend.dataprep.metrics.Timed;
+import org.talend.dataprep.security.PublicAPI;
 
 import com.netflix.hystrix.HystrixCommand;
 import io.swagger.annotations.ApiOperation;
@@ -60,6 +60,7 @@ public class VersionServiceAPI extends APIService {
     @RequestMapping(value = "/api/version", method = GET)
     @ApiOperation(value = "Get the version of all services (including underlying low level services)", produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
+    @PublicAPI
     public Version[] allVersions() {
         Version[] versions = new Version[4];
         ManifestInfo manifestInfo = ManifestInfo.getInstance();
@@ -79,8 +80,7 @@ public class VersionServiceAPI extends APIService {
      * @return the version of the called service
      */
     private Version callVersionService(String serviceUrl, String serviceName) {
-        HttpClient client = getClient();
-        HystrixCommand<InputStream> versionCommand = getCommand(VersionCommand.class, client, serviceUrl);
+        HystrixCommand<InputStream> versionCommand = getCommand(VersionCommand.class, serviceUrl);
         try (InputStream content = versionCommand.execute()) {
             final Version version = builder.build().readerFor(Version.class).readValue(content);
             version.setServiceName(serviceName);

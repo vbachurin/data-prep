@@ -147,15 +147,17 @@ export default function PreviewService($q, state, DatagridService, PreparationSe
             previewStepId: previewStep.transformation.stepId,
             tdpIds: displayedTdpIds
         };
-        PreparationService.getPreviewDiff(params, previewCanceler)
+        return PreparationService.getPreviewDiff(params, previewCanceler)
             .then(function (response) {
                 DatagridService.focusedColumn = targetColumnId;
                 return response;
             })
             .then(replaceRecords)
-            .finally(function () {
-                previewCanceler = null;
-            });
+            .catch((e) => {
+                cancelPreview();
+                return $q.reject(e);
+            })
+            .finally(() => previewCanceler = null);
     }
 
     /**
@@ -183,15 +185,17 @@ export default function PreviewService($q, state, DatagridService, PreparationSe
                 parameters: newParams
             }
         };
-        PreparationService.getPreviewUpdate(params, previewCanceler)
+        return PreparationService.getPreviewUpdate(params, previewCanceler)
             .then(function (response) {
                 DatagridService.focusedColumn = updateStep.column.id;
                 return response;
             })
             .then(replaceRecords)
-            .finally(function () {
-                previewCanceler = null;
-            });
+            .catch((e) => {
+                cancelPreview();
+                return $q.reject(e);
+            })
+            .finally(() => previewCanceler = null);
     }
 
     /**
@@ -218,15 +222,17 @@ export default function PreviewService($q, state, DatagridService, PreparationSe
             datasetId: datasetId,
             preparationId: preparationId
         };
-        PreparationService.getPreviewAdd(params, previewCanceler)
+        return PreparationService.getPreviewAdd(params, previewCanceler)
             .then(function (response) {
                 DatagridService.focusedColumn = actionParams.column_id;
                 return response;
             })
             .then(replaceRecords)
-            .finally(function () {
-                previewCanceler = null;
-            });
+            .catch((e) => {
+                cancelPreview();
+                return $q.reject(e);
+            })
+            .finally(() => previewCanceler = null);
     }
 
     /**

@@ -1,105 +1,105 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
 
-describe('Transformation cache service', function() {
+describe('Transformation cache service', () => {
     'use strict';
 
-    var transformationsMock = function() {
+    const transformationsMock = () => {
         return [
             {
-                'name':'uppercase',
-                'category':'case',
-                'items':null,
-                'parameters':null
+                'name': 'uppercase',
+                'category': 'case',
+                'items': null,
+                'parameters': null
             },
             {
-                'name':'rename',
-                'category':'columns',
-                'items':null,
-                'parameters':null
+                'name': 'rename',
+                'category': 'columns',
+                'items': null,
+                'parameters': null
             },
             {
-                'name':'lowercase',
-                'category':'case',
-                'items':null,
-                'parameters':null
+                'name': 'lowercase',
+                'category': 'case',
+                'items': null,
+                'parameters': null
             },
             {
-                'name':'withParam',
-                'category':'case',
-                'items':null,
-                'parameters':[
+                'name': 'withParam',
+                'category': 'case',
+                'items': null,
+                'parameters': [
                     {
-                        'name':'param',
-                        'type':'string',
-                        'default':'.',
-                        'inputType':'text'
+                        'name': 'param',
+                        'type': 'string',
+                        'default': '.',
+                        'inputType': 'text'
                     }
                 ]
             },
             {
-                'name':'split',
-                'category':'columns',
-                'parameters':null,
-                'items':[
+                'name': 'split',
+                'category': 'columns',
+                'parameters': null,
+                'items': [
                     {
-                        'name':'mode',
-                        'values':[
+                        'name': 'mode',
+                        'values': [
                             {
-                                'name':'noparam'
+                                'name': 'noparam'
                             },
                             {
-                                'name':'regex',
-                                'parameters':[
+                                'name': 'regex',
+                                'parameters': [
                                     {
-                                        'name':'regexp',
-                                        'type':'string',
-                                        'default':'.',
-                                        'inputType':'text'
+                                        'name': 'regexp',
+                                        'type': 'string',
+                                        'default': '.',
+                                        'inputType': 'text'
                                     }
                                 ]
                             },
                             {
-                                'name':'index',
-                                'parameters':[
+                                'name': 'index',
+                                'parameters': [
                                     {
-                                        'name':'index',
-                                        'type':'integer',
-                                        'default':'5',
-                                        'inputType':'number'
+                                        'name': 'index',
+                                        'type': 'integer',
+                                        'default': '5',
+                                        'inputType': 'number'
                                     }
                                 ]
                             },
                             {
-                                'name':'threeParams',
-                                'parameters':[
+                                'name': 'threeParams',
+                                'parameters': [
                                     {
-                                        'name':'index',
-                                        'type':'numeric',
-                                        'default':'5',
-                                        'inputType':'number'
+                                        'name': 'index',
+                                        'type': 'numeric',
+                                        'default': '5',
+                                        'inputType': 'number'
                                     },
                                     {
-                                        'name':'index2',
-                                        'type':'float',
-                                        'default':'5',
-                                        'inputType':'number'
+                                        'name': 'index2',
+                                        'type': 'float',
+                                        'default': '5',
+                                        'inputType': 'number'
                                     },
                                     {
-                                        'name':'index3',
-                                        'type':'double',
-                                        'default':'5',
-                                        'inputType':'number'
+                                        'name': 'index3',
+                                        'type': 'double',
+                                        'default': '5',
+                                        'inputType': 'number'
                                     }
                                 ]
                             }
@@ -109,26 +109,24 @@ describe('Transformation cache service', function() {
             }
         ];
     };
-    var column = {id: '0002', name: 'Firstname'};
+    const column = {id: '0002', name: 'Firstname'};
 
     beforeEach(angular.mock.module('data-prep.services.transformation'));
 
-    describe('transformations', function() {
-        beforeEach(inject(function($q, TransformationService) {
+    describe('transformations', () => {
+        beforeEach(inject(($q, TransformationService) => {
             spyOn(TransformationService, 'getColumnTransformations').and.returnValue($q.when(transformationsMock()));
             spyOn(TransformationService, 'getLineTransformations').and.returnValue($q.when(transformationsMock()));
         }));
 
-        describe('column', function() {
-            it('should call TransformationService when column is not in cache', inject(function($rootScope, TransformationCacheService, TransformationService) {
+        describe('column', () => {
+            it('should call TransformationService when column is not in cache', inject(($rootScope, TransformationCacheService, TransformationService) => {
                 //given
-                var result = null;
+                let result = null;
 
                 //when
                 TransformationCacheService.getColumnTransformations(column)
-                    .then(function(transformations) {
-                        result = transformations;
-                    });
+                    .then((transformations) => result = transformations);
                 $rootScope.$digest();
 
                 //then
@@ -136,22 +134,18 @@ describe('Transformation cache service', function() {
                 expect(result).toEqual(transformationsMock());
             }));
 
-            it('should return the same result from cache', inject(function($rootScope, TransformationCacheService, TransformationService) {
+            it('should return the same result from cache', inject(($rootScope, TransformationCacheService, TransformationService) => {
                 //given
-                var oldResult = null;
-                var newResult = null;
+                let oldResult = null;
+                let newResult = null;
                 TransformationCacheService.getColumnTransformations(column)
-                    .then(function(transformations) {
-                        oldResult = transformations;
-                    });
+                    .then((transformations) => oldResult = transformations);
 
                 expect(TransformationService.getColumnTransformations.calls.count()).toBe(1);
 
                 //when
                 TransformationCacheService.getColumnTransformations(column)
-                    .then(function(transformations) {
-                        newResult = transformations;
-                    });
+                    .then((transformations) => newResult = transformations);
                 $rootScope.$digest();
 
                 //then
@@ -159,7 +153,7 @@ describe('Transformation cache service', function() {
                 expect(TransformationService.getColumnTransformations.calls.count()).toBe(1);
             }));
 
-            it('should remove all cache entries', inject(function($rootScope, TransformationCacheService, TransformationService) {
+            it('should remove all cache entries', inject(($rootScope, TransformationCacheService, TransformationService) => {
                 //given
                 TransformationCacheService.getColumnTransformations(column);
                 $rootScope.$digest();
@@ -177,16 +171,14 @@ describe('Transformation cache service', function() {
             }));
         });
 
-        describe('line', function() {
-            it('should call TransformationService when line is not in cache', inject(function($rootScope, TransformationCacheService, TransformationService) {
+        describe('line', () => {
+            it('should call TransformationService when line is not in cache', inject(($rootScope, TransformationCacheService, TransformationService) => {
                 //given
-                var result = null;
+                let result = null;
 
                 //when
                 TransformationCacheService.getLineTransformations()
-                    .then(function(transformations) {
-                        result = transformations;
-                    });
+                    .then((transformations) => result = transformations);
                 $rootScope.$digest();
 
                 //then
@@ -194,22 +186,18 @@ describe('Transformation cache service', function() {
                 expect(result).toEqual(transformationsMock());
             }));
 
-            it('should return the same result from cache', inject(function($rootScope, TransformationCacheService, TransformationService) {
+            it('should return the same result from cache', inject(($rootScope, TransformationCacheService, TransformationService) => {
                 //given
-                var oldResult = null;
-                var newResult = null;
+                let oldResult = null;
+                let newResult = null;
                 TransformationCacheService.getLineTransformations()
-                    .then(function(transformations) {
-                        oldResult = transformations;
-                    });
+                    .then((transformations) => oldResult = transformations);
 
                 expect(TransformationService.getLineTransformations.calls.count()).toBe(1);
 
                 //when
                 TransformationCacheService.getLineTransformations()
-                    .then(function(transformations) {
-                        newResult = transformations;
-                    });
+                    .then((transformations) => newResult = transformations);
                 $rootScope.$digest();
 
                 //then
@@ -217,7 +205,7 @@ describe('Transformation cache service', function() {
                 expect(TransformationService.getLineTransformations.calls.count()).toBe(1);
             }));
 
-            it('should remove all cache entries', inject(function($rootScope, TransformationCacheService, TransformationService) {
+            it('should remove all cache entries', inject(($rootScope, TransformationCacheService, TransformationService) => {
                 //given
                 TransformationCacheService.getLineTransformations(column);
                 $rootScope.$digest();
@@ -236,20 +224,18 @@ describe('Transformation cache service', function() {
         });
     });
 
-    describe('suggestions', function() {
-        beforeEach(inject(function($q, TransformationService) {
+    describe('suggestions', () => {
+        beforeEach(inject(($q, TransformationService) => {
             spyOn(TransformationService, 'getColumnSuggestions').and.returnValue($q.when(transformationsMock()));
         }));
 
-        it('should call TransformationService when column is not in cache', inject(function($rootScope, TransformationCacheService, TransformationService) {
+        it('should call TransformationService when column is not in cache', inject(($rootScope, TransformationCacheService, TransformationService) => {
             //given
-            var result = null;
+            let result = null;
 
             //when
             TransformationCacheService.getColumnSuggestions(column)
-                .then(function(transformations) {
-                    result = transformations;
-                });
+                .then((transformations) => result = transformations);
             $rootScope.$digest();
 
             //then
@@ -257,22 +243,18 @@ describe('Transformation cache service', function() {
             expect(result).toEqual(transformationsMock());
         }));
 
-        it('should return the same result from cache', inject(function($rootScope, TransformationCacheService, TransformationService) {
+        it('should return the same result from cache', inject(($rootScope, TransformationCacheService, TransformationService) => {
             //given
-            var oldResult = null;
-            var newResult = null;
+            let oldResult = null;
+            let newResult = null;
             TransformationCacheService.getColumnSuggestions(column)
-                .then(function(transformations) {
-                    oldResult = transformations;
-                });
+                .then((transformations) => oldResult = transformations);
 
             expect(TransformationService.getColumnSuggestions.calls.count()).toBe(1);
 
             //when
             TransformationCacheService.getColumnSuggestions(column)
-                .then(function(transformations) {
-                    newResult = transformations;
-                });
+                .then((transformations) => newResult = transformations);
             $rootScope.$digest();
 
             //then
@@ -280,7 +262,7 @@ describe('Transformation cache service', function() {
             expect(TransformationService.getColumnSuggestions.calls.count()).toBe(1);
         }));
 
-        it('should remove all cache entries', inject(function($rootScope, TransformationCacheService, TransformationService) {
+        it('should remove all cache entries', inject(($rootScope, TransformationCacheService, TransformationService) => {
             //given
             TransformationCacheService.getColumnSuggestions(column);
             $rootScope.$digest();
@@ -297,4 +279,24 @@ describe('Transformation cache service', function() {
             expect(TransformationService.getColumnSuggestions.calls.count()).toBe(2);
         }));
     });
+
+    it('should remove entry from cache when GET returns an error', inject(($rootScope, $q, TransformationService, TransformationCacheService) => {
+        //given
+        let callCount = 0;
+        spyOn(TransformationService, 'getColumnTransformations').and.callFake(() => {
+            return callCount++ < 1 ? $q.reject() : $q.when(transformationsMock());
+        });
+
+        TransformationCacheService.getColumnTransformations(column); //first call rejected
+        $rootScope.$digest();
+
+        expect(TransformationService.getColumnTransformations.calls.count()).toBe(1);
+
+        //when
+        TransformationCacheService.getColumnTransformations(column); //second call pass
+        $rootScope.$digest();
+
+        //then
+        expect(TransformationService.getColumnTransformations.calls.count()).toBe(2);
+    }));
 });

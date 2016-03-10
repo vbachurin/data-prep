@@ -24,6 +24,7 @@ import {playgroundState, PlaygroundStateService} from './playground/playground-s
 import {recipeState, RecipeStateService} from './recipe/recipe-state-service';
 import {statisticsState, StatisticsStateService} from './statistics/statistics-state-service';
 import {suggestionsState, SuggestionsStateService} from './suggestions/suggestions-state-service';
+import {routeState, RouteStateService} from './route/route-state-service';
 import {state, StateService} from './state-service';
 
 (() => {
@@ -73,6 +74,9 @@ import {state, StateService} from './state-service';
 
         .service('SuggestionsStateService', SuggestionsStateService)
         .constant('suggestionsState', suggestionsState)
+
+        .service('RouteStateService', RouteStateService)
+        .constant('routeState', routeState)
 
         .service('StateService', StateService)
         .constant('state', state);

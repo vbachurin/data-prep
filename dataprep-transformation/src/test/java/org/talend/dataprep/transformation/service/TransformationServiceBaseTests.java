@@ -28,7 +28,10 @@ import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.mock.env.MockPropertySource;
 import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
 import org.talend.dataprep.transformation.TransformationBaseTest;
@@ -44,18 +47,32 @@ public abstract class TransformationServiceBaseTests extends TransformationBaseT
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TransformationServiceBaseTests.class);
 
+    @Value("${local.server.port}")
+    protected int port;
+
+    @Autowired
+    protected ConfigurableEnvironment environment;
+
     @Autowired
     private TransformationServiceUrlRuntimeUpdater urlUpdater;
 
     @Autowired
     protected DataSetMetadataRepository dataSetMetadataRepository;
 
-    /** The dataprep ready to use jackson object builder. */
+    /** The dataprep ready to use jackson object mapper. */
     @Autowired
     protected Jackson2ObjectMapperBuilder builder;
 
     @Before
     public void setUp() {
+
+        // Overrides connection information with random port value
+        MockPropertySource connectionInformation = new MockPropertySource()
+                .withProperty("dataset.service.url", "http://localhost:" + port)
+                .withProperty("transformation.service.url", "http://localhost:" + port)
+                .withProperty("preparation.service.url", "http://localhost:" + port);
+        environment.getPropertySources().addFirst(connectionInformation);
+
         urlUpdater.setUp();
     }
 

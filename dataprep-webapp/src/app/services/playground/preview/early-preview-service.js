@@ -94,8 +94,8 @@ export default function EarlyPreviewService($timeout, state, RecipeService, Prev
                 params.column_name = column && column.name;
                 params.row_id = line && line.tdpId;
 
-                RecipeService.earlyPreview(action, params);
-                PreviewService.getPreviewAddRecords(preparationId, state.playground.dataset.id, action.name, params);
+                PreviewService.getPreviewAddRecords(preparationId, state.playground.dataset.id, action.name, params)
+                    .then(() => RecipeService.earlyPreview(action, params));
             }, DELAY);
         };
     }

@@ -32,7 +32,7 @@ describe('Preparation list controller', function () {
         spyOn(PreparationService, 'clone').and.returnValue($q.when(true));
         spyOn(PreparationService, 'delete').and.returnValue($q.when(true));
         spyOn(PreparationService, 'setName').and.returnValue($q.when(true));
-        spyOn(StateService, 'setPreviousState').and.returnValue();
+        spyOn(StateService, 'setPreviousRoute').and.returnValue();
         spyOn(MessageService, 'success').and.returnValue(null);
         spyOn(MessageService, 'error').and.returnValue(null);
         spyOn($state, 'go').and.returnValue();
@@ -61,7 +61,7 @@ describe('Preparation list controller', function () {
             scope.$digest();
 
             //then
-            expect(StateService.setPreviousState).toHaveBeenCalledWith('nav.index.preparations');
+            expect(StateService.setPreviousRoute).toHaveBeenCalledWith('nav.index.preparations');
         }));
 
         it('should redirect to preparation playground', inject(function ($state) {

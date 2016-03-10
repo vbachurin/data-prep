@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * Bean that models a preview on an "Diff action" request.
  */
-public class PreviewDiffInput {
+public class PreviewDiffParameters {
 
     private String preparationId;
     private String currentStepId;

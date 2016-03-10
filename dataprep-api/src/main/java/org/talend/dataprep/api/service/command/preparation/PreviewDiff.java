@@ -14,48 +14,64 @@
 package org.talend.dataprep.api.service.command.preparation;
 
 import java.io.InputStream;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import org.apache.http.client.HttpClient;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.preparation.Preparation;
-import org.talend.dataprep.api.service.api.PreviewDiffInput;
+import org.talend.dataprep.api.service.api.PreviewDiffParameters;
 
+/**
+ * Command used to retrieve preview from a diff.
+ */
 @Component
 @Scope("request")
 public class PreviewDiff extends PreviewAbstract {
 
-    private final PreviewDiffInput input;
+    /** The diff parameters. */
+    private final PreviewDiffParameters input;
+    /** Preparation actions up to the last active step. */
+    private final List<Action> lastActiveStepActions;
+    /** Preparation actions up to the preview step. */
+    private final List<Action> previewStepActions;
 
-    public PreviewDiff(final HttpClient client, final PreviewDiffInput input) {
-        super(client);
+    /**
+     * Default constructor.
+     * @param input the parameters.
+     * @param preparation the preparation to deal with.
+     * @param lastActiveStepActions preparation actions up to the last active step.
+     * @param previewStepActions preparation actions up to the preview step.
+     */
+    // private constructor used to ensure the IoC
+    private PreviewDiff(final PreviewDiffParameters input, Preparation preparation, List<Action> lastActiveStepActions, List<Action> previewStepActions) {
+        super(preparation, new ArrayList<>(0));
         this.input = input;
+        this.lastActiveStepActions = lastActiveStepActions;
+        this.previewStepActions = previewStepActions;
     }
 
+    /**
+     * @see PreviewAbstract#run()
+     */
     @Override
     protected InputStream run() throws Exception {
 
         // get preparation details
-        final Preparation preparation = getPreparation(input.getPreparationId());
         final String dataSetId = preparation.getDataSetId();
 
         // get steps from first operation to head
         final List<String> steps = preparation.getSteps();
         steps.remove(0);
-        
+
         // extract actions by steps in chronological order, until defined last active step (from input)
         final Map<String, Action> originalActions = new LinkedHashMap<>();
-        final Iterator<Action> actions = getPreparationActions(preparation, input.getCurrentStepId()).iterator();
+        final Iterator<Action> actions = lastActiveStepActions.iterator();
         steps.stream().filter(step -> actions.hasNext()).forEach(step -> originalActions.put(step, actions.next()));
 
         // extract actions by steps in chronological order, until preview step (from input)
         final Map<String, Action> previewActions = new LinkedHashMap<>();
-        final Iterator<Action> previewActionsIterator = getPreparationActions(preparation, input.getPreviewStepId()).iterator();
+        final Iterator<Action> previewActionsIterator = previewStepActions.iterator();
         steps.stream().filter(step -> previewActionsIterator.hasNext()).forEach(step -> previewActions.put(step, previewActionsIterator.next()));
 
         // execute transformation preview with content and the 2 transformations

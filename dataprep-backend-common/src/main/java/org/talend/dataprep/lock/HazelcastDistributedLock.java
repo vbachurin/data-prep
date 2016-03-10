@@ -67,6 +67,14 @@ public class HazelcastDistributedLock implements DistributedLock {
     }
 
     /**
+     * @see DistributedLock#tryLock()
+     */
+    @Override
+    public boolean tryLock() {
+        return lock.tryLock();
+    }
+
+    /**
      * Getter for key used for the lock.
      * 
      * @return the key used for the lock

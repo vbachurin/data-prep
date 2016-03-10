@@ -13,20 +13,18 @@
 
 package org.talend.dataprep.api.service.command.dataset;
 
-import static org.talend.dataprep.api.service.command.common.Defaults.asString;
-import static org.talend.dataprep.api.service.command.common.Defaults.emptyString;
+import static org.talend.dataprep.command.Defaults.asString;
+import static org.talend.dataprep.command.Defaults.emptyString;
 
 import java.io.InputStream;
 
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.InputStreamEntity;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.service.PreparationAPI;
-import org.talend.dataprep.api.service.command.common.GenericCommand;
+import org.talend.dataprep.command.GenericCommand;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.APIErrorCodes;
 
@@ -34,8 +32,8 @@ import org.talend.dataprep.exception.error.APIErrorCodes;
 @Scope("request")
 public class UpdateDataSet extends GenericCommand<String> {
 
-    private UpdateDataSet(HttpClient client, String id, InputStream dataSetContent) {
-        super(PreparationAPI.DATASET_GROUP, client);
+    private UpdateDataSet(String id, InputStream dataSetContent) {
+        super(GenericCommand.DATASET_GROUP);
         execute(() -> {
             final HttpPut put = new HttpPut(datasetServiceUrl + "/datasets/" + id); //$NON-NLS-1$ //$NON-NLS-2$
             put.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE);

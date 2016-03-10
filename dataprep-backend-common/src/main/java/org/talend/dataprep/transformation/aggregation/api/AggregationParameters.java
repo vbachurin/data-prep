@@ -16,6 +16,7 @@ package org.talend.dataprep.transformation.aggregation.api;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.talend.dataprep.validation.OneNotBlank;
 
@@ -36,7 +37,7 @@ public class AggregationParameters {
     private String preparationId;
 
     /** The Step id, if null, 'head' is used. */
-    private String stepId;
+    private String stepId = "head";
 
     /** List of column ids to group by. */
     @NotEmpty
@@ -100,7 +101,7 @@ public class AggregationParameters {
      * @param stepId the stepId to set.
      */
     public void setStepId(String stepId) {
-        this.stepId = stepId;
+        this.stepId = StringUtils.isBlank(stepId) ? "head" : stepId;
     }
 
     /**

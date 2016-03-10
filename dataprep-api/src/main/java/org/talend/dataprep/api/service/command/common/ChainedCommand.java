@@ -13,7 +13,7 @@
 
 package org.talend.dataprep.api.service.command.common;
 
-import org.apache.http.client.HttpClient;
+import org.talend.dataprep.command.GenericCommand;
 
 import com.netflix.hystrix.HystrixCommand;
 import com.netflix.hystrix.HystrixCommandGroupKey;
@@ -32,22 +32,20 @@ public abstract class ChainedCommand<O, I> extends GenericCommand<O> {
      * Constructor.
      *
      * @param group the command group.
-     * @param client the http client to use.
      * @param input the command to execute to get the input.
      */
-    public ChainedCommand(HystrixCommandGroupKey group, HttpClient client, HystrixCommand<I> input) {
-        super(group, client);
+    public ChainedCommand(HystrixCommandGroupKey group, HystrixCommand<I> input) {
+        super(group);
         this.input = input;
     }
 
     /**
      * Simplified constructor.
      *
-     * @param client the http client to use.
      * @param input the command to execute to get the input.
      */
-    public ChainedCommand(HttpClient client, HystrixCommand<I> input) {
-        this(input.getCommandGroup(), client, input);
+    public ChainedCommand(HystrixCommand<I> input) {
+        this(input.getCommandGroup(), input);
     }
 
     /**

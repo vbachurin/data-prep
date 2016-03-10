@@ -24,18 +24,18 @@ import java.io.OutputStream;
 import javax.validation.Valid;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.http.client.HttpClient;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.talend.dataprep.api.service.api.DynamicParamsInput;
-import org.talend.dataprep.api.service.command.dataset.DataSetGet;
 import org.talend.dataprep.api.service.command.preparation.PreparationGetContent;
 import org.talend.dataprep.api.service.command.transformation.ColumnActions;
 import org.talend.dataprep.api.service.command.transformation.LineActions;
 import org.talend.dataprep.api.service.command.transformation.SuggestActionParams;
 import org.talend.dataprep.api.service.command.transformation.SuggestColumnActions;
+import org.talend.dataprep.command.dataset.DataSetGet;
+import org.talend.dataprep.command.preparation.PreparationDetailsGet;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.APIErrorCodes;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
@@ -65,10 +65,8 @@ public class TransformAPI extends APIService {
     public void columnActions(@ApiParam(value = "Optional column Metadata content as JSON") InputStream body,
                                      final OutputStream output) {
 
-        HttpClient client = getClient();
-
         // Asks transformation service for all actions for column type and domain
-        HystrixCommand<InputStream> getSuggestedActions = getCommand(ColumnActions.class, client, body);
+        HystrixCommand<InputStream> getSuggestedActions = getCommand(ColumnActions.class, body);
         // Returns actions
         try (InputStream commandResult = getSuggestedActions.execute()) {
             // olamy: this is weird to have to configure that manually whereas there is an annotation for the method!!
@@ -94,10 +92,8 @@ public class TransformAPI extends APIService {
     public void suggestColumnActions(@ApiParam(value = "Column Metadata content as JSON") InputStream body,
             final OutputStream output) {
 
-        HttpClient client = getClient();
-
         // Asks transformation service for suggested actions for column type and domain
-        HystrixCommand<InputStream> getSuggestedActions = getCommand(SuggestColumnActions.class, client, body);
+        HystrixCommand<InputStream> getSuggestedActions = getCommand(SuggestColumnActions.class, body);
         // Returns actions
         try (InputStream commandResult = getSuggestedActions.execute()) {
             // olamy: this is weird to have to configure that manually whereas there is an annotation for the method!!
@@ -116,8 +112,7 @@ public class TransformAPI extends APIService {
     @ApiOperation(value = "Get all actions on line", notes = "Returns all actions for the given column.")
     @Timed
     public void lineActions(OutputStream output) {
-        final HttpClient client = getClient();
-        final HystrixCommand<InputStream> getSuggestedActions = getCommand(LineActions.class, client);
+        final HystrixCommand<InputStream> getSuggestedActions = getCommand(LineActions.class);
         try (InputStream commandResult = getSuggestedActions.execute()) {
             IOUtils.copyLarge(commandResult, output);
             output.flush();
@@ -142,14 +137,16 @@ public class TransformAPI extends APIService {
         try {
             // get preparation/dataset content
             HystrixCommand<InputStream> inputData;
-            if (isNotBlank(dynamicParamsInput.getPreparationId())) {
-                inputData = getCommand(PreparationGetContent.class, getClient(), dynamicParamsInput.getPreparationId(), dynamicParamsInput.getStepId());
+            final String preparationId = dynamicParamsInput.getPreparationId();
+            if (isNotBlank(preparationId)) {
+                final PreparationDetailsGet preparationDetailsGet = getCommand(PreparationDetailsGet.class, preparationId);
+                inputData = getCommand(PreparationGetContent.class, preparationId, dynamicParamsInput.getStepId(), preparationDetailsGet);
             } else {
-                inputData = getCommand(DataSetGet.class, getClient(), dynamicParamsInput.getDatasetId(), true, null);
+                inputData = getCommand(DataSetGet.class, dynamicParamsInput.getDatasetId(), true, null);
             }
 
             // get params, passing content in the body
-            final HystrixCommand<InputStream> getActionDynamicParams = getCommand(SuggestActionParams.class, getClient(),
+            final HystrixCommand<InputStream> getActionDynamicParams = getCommand(SuggestActionParams.class,
                     inputData, action, dynamicParamsInput.getColumnId());
 
 

@@ -13,12 +13,11 @@
 
 package org.talend.dataprep.api.service.command.dataset;
 
-import static org.talend.dataprep.api.service.command.common.Defaults.*;
+import static org.talend.dataprep.command.Defaults.*;
 
 import java.io.InputStream;
 import java.net.URISyntaxException;
 
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.URIBuilder;
@@ -27,8 +26,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.talend.daikon.exception.error.ErrorCode;
-import org.talend.dataprep.api.service.PreparationAPI;
-import org.talend.dataprep.api.service.command.common.GenericCommand;
+import org.talend.dataprep.command.GenericCommand;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.APIErrorCodes;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
@@ -44,13 +42,12 @@ public class CreateDataSet extends GenericCommand<String> {
     /**
      * Default constructor.
      *
-     * @param client http client.
      * @param name name of the dataset.
      * @param contentType content-type of the dataset.
      * @param dataSetContent Dataset content or import parameters in json for remote datasets.
      */
-    private CreateDataSet(HttpClient client, String name, String contentType, InputStream dataSetContent, String folderPath) {
-        super(PreparationAPI.DATASET_GROUP, client);
+    private CreateDataSet(String name, String contentType, InputStream dataSetContent, String folderPath) {
+        super(GenericCommand.DATASET_GROUP);
         execute(() -> onExecute(name, contentType, dataSetContent, folderPath));
         onError(e -> {
             if (e instanceof TDPException) {

@@ -13,12 +13,11 @@
 
 package org.talend.dataprep.api.service.command.aggregation;
 
-import static org.talend.dataprep.api.service.command.common.Defaults.pipeStream;
+import static org.talend.dataprep.command.Defaults.pipeStream;
 
 import java.io.InputStream;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.ContentType;
@@ -28,8 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.service.APIService;
-import org.talend.dataprep.api.service.command.common.GenericCommand;
+import org.talend.dataprep.command.GenericCommand;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.transformation.aggregation.api.AggregationParameters;
@@ -48,23 +46,21 @@ public class Aggregate extends GenericCommand<InputStream> {
 
     /**
      * Default constructor.
-     *
-     * @param client the http client to use.
+     * @param parameters aggregation parameters.
      */
-    public Aggregate(final HttpClient client, final AggregationParameters parameters) {
-        super(APIService.TRANSFORM_GROUP, client);
-        execute(() -> onExecute(client, parameters));
+    public Aggregate(final AggregationParameters parameters) {
+        super(GenericCommand.TRANSFORM_GROUP);
+        execute(() -> onExecute(parameters));
         on(HttpStatus.OK).then(pipeStream());
     }
 
     /**
      * Call the transformation service with the export parameters in json the request body.
      *
-     * @param client the http client.
      * @param parameters the aggregate parameters.
      * @return the http request to execute.
      */
-    private HttpRequestBase onExecute(HttpClient client, AggregationParameters parameters) {
+    private HttpRequestBase onExecute(AggregationParameters parameters) {
         // must work on either a dataset or a preparation, if both parameters are set, an error is thrown
         if (StringUtils.isNotBlank(parameters.getDatasetId()) && StringUtils.isNotBlank(parameters.getPreparationId())) {
             LOG.error("Cannot aggregate on both dataset id & preparation id : {}", parameters);
@@ -75,7 +71,7 @@ public class Aggregate extends GenericCommand<InputStream> {
         HttpPost aggregateCall = new HttpPost(uri);
 
         try {
-            String paramsAsJson = builder.build().writer().writeValueAsString(parameters);
+            String paramsAsJson = objectMapper.writer().writeValueAsString(parameters);
             aggregateCall.setEntity(new StringEntity(paramsAsJson, ContentType.APPLICATION_JSON));
         } catch (JsonProcessingException e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_AGGREGATE, e);

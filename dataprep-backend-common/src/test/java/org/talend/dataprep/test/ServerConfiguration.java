@@ -11,7 +11,7 @@
 //
 //  ============================================================================
 
-package org.talend.dataprep.transformation.api.action.metadata.datablending;
+package org.talend.dataprep.test;
 
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
@@ -22,7 +22,7 @@ import org.springframework.context.annotation.Configuration;
  * Configuration for the test application so that an embedded Jetty server can run.
  */
 @Configuration
-public class LookupTestConfiguration {
+public class ServerConfiguration {
 
     @Bean
     public EmbeddedServletContainerFactory servletContainer() {

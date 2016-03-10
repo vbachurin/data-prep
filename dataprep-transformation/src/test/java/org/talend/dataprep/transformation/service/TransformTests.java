@@ -40,7 +40,7 @@ public class TransformTests extends TransformationServiceBaseTests {
     @Autowired
     private ContentCache contentCache;
 
-    /** The dataprep ready to use jackson object builder. */
+    /** The dataprep ready to use jackson object mapper. */
     @Autowired
     private Jackson2ObjectMapperBuilder builder;
 
@@ -95,7 +95,7 @@ public class TransformTests extends TransformationServiceBaseTests {
 
         // then
         Assert.assertEquals(500, response.getStatusCode());
-        assertTrue(response.asString().contains("UNABLE_TO_READ_DATASET_CONTENT"));
+        assertTrue(response.asString().contains("UNABLE_TO_TRANSFORM_DATASET"));
     }
 
     @Test
@@ -110,7 +110,7 @@ public class TransformTests extends TransformationServiceBaseTests {
 
         // then
         Assert.assertEquals(500, response.getStatusCode());
-        assertTrue(response.asString().contains("UNABLE_TO_READ_PREPARATION"));
+        assertTrue(response.asString().contains("UNABLE_TO_TRANSFORM_DATASET"));
     }
 
     @Test

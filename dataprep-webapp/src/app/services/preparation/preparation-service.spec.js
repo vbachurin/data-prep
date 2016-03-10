@@ -188,8 +188,7 @@ describe('Preparation Service', function () {
             it('should open a preparation', inject(($stateParams, $rootScope, $state, StateService, PreparationService) => {
                 //given
                 spyOn($state, 'go').and.returnValue();
-                spyOn(StateService, 'setPreviousState').and.returnValue();
-                spyOn(StateService, 'setPreviousStateOptions').and.returnValue();
+                spyOn(StateService, 'setPreviousRoute').and.returnValue();
 
                 var preparation = {
                     id: 'de618c62ef97b3a95b5c171bc077ffe22e1d6f79',
@@ -204,8 +203,7 @@ describe('Preparation Service', function () {
                 $rootScope.$digest();
 
                 //then
-                expect(StateService.setPreviousState).toHaveBeenCalledWith('nav.index.datasets');
-                expect(StateService.setPreviousStateOptions).toHaveBeenCalledWith({folderPath: 'test/'});
+                expect(StateService.setPreviousRoute).toHaveBeenCalledWith('nav.index.datasets', {folderPath: 'test/'});
                 expect($state.go).toHaveBeenCalledWith('playground.preparation', {prepid: preparation.id});
             }));
         });

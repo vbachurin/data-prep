@@ -12,6 +12,10 @@
   ============================================================================*/
 
 button.talend-button-loader {
+  >* {
+    @include display(flex);
+  }
+
   .talend-button-loader-icon {
     font-size: 0.8em;
   }

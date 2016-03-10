@@ -22,7 +22,6 @@ import java.util.function.BiFunction;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.springframework.context.annotation.Scope;
@@ -30,8 +29,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.preparation.Actions;
-import org.talend.dataprep.api.service.command.ReleasableInputStream;
 import org.talend.dataprep.api.service.command.common.ChainedCommand;
+import org.talend.dataprep.command.ReleasableInputStream;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.APIErrorCodes;
 import org.talend.dataprep.transformation.api.action.metadata.datablending.Lookup;
@@ -53,11 +52,10 @@ public class SuggestLookupActions extends ChainedCommand<InputStream, String> {
     /**
      * Constructor.
      *
-     * @param client the http client to use.
      * @param input the command to execute to get the input.
      */
-    public SuggestLookupActions(HttpClient client, HystrixCommand<String> input, String dataSetId) {
-        super(client, input);
+    public SuggestLookupActions(HystrixCommand<String> input, String dataSetId) {
+        super(input);
         execute(() -> new HttpGet(datasetServiceUrl + "/datasets"));
         on(HttpStatus.OK).then(process(dataSetId));
         // on error, @see getFallBack()
@@ -85,11 +83,11 @@ public class SuggestLookupActions extends ChainedCommand<InputStream, String> {
             // read suggested actions from previous command
             ArrayNode suggestedActions = null;
             try {
-                suggestedActions = (ArrayNode) builder.build().readerFor(Actions.class).readTree(getInput());
+                suggestedActions = (ArrayNode) objectMapper.readerFor(Actions.class).readTree(getInput());
 
                 // list datasets from this command's response
                 List<DataSetMetadata> dataSets = null;
-                dataSets = builder.build().readValue(response.getEntity().getContent(),
+                dataSets = objectMapper.readValue(response.getEntity().getContent(),
                         new TypeReference<List<DataSetMetadata>>() {
                 });
 
@@ -101,7 +99,7 @@ public class SuggestLookupActions extends ChainedCommand<InputStream, String> {
                     }
                     final Lookup lookup = new Lookup();
                     lookup.adapt(dataset);
-                    final JsonNode jsonNode = builder.build().valueToTree(lookup);
+                    final JsonNode jsonNode = objectMapper.valueToTree(lookup);
                     suggestedActions.add(jsonNode);
                 }
 

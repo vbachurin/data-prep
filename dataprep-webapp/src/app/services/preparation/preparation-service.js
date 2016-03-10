@@ -198,8 +198,7 @@ export default function PreparationService($stateParams, $q, state, $state, Stat
      * @description open a preparation
      */
     function open(preparation) {
-        StateService.setPreviousState('nav.index.datasets');
-        StateService.setPreviousStateOptions({folderPath: $stateParams.folderPath});
+        StateService.setPreviousRoute('nav.index.datasets', {folderPath: $stateParams.folderPath});
         $state.go('playground.preparation', {prepid: preparation.id});
     }
 }

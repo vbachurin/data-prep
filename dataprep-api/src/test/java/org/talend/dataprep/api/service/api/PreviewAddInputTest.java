@@ -25,9 +25,9 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.talend.dataprep.api.preparation.Action;
 
 /**
- * Unit test for the PreviewAddInput class.
+ * Unit test for the PreviewAddParameters class.
  * 
- * @see PreviewAddInput
+ * @see PreviewAddParameters
  */
 public class PreviewAddInputTest {
 
@@ -46,10 +46,10 @@ public class PreviewAddInputTest {
     @Test
     public void noDataSetIdNorPreparationId() {
         // given parameters without preparation not dataset id
-        PreviewAddInput input = new PreviewAddInput();
+        PreviewAddParameters input = new PreviewAddParameters();
 
         // when
-        Set<ConstraintViolation<PreviewAddInput>> constraintViolations = validator.validate(input);
+        Set<ConstraintViolation<PreviewAddParameters>> constraintViolations = validator.validate(input);
 
         // then 3 violations (dataset & preparation id are missing, action is null and tdpIds is empty)
         Assert.assertEquals(3, constraintViolations.size());
@@ -58,11 +58,11 @@ public class PreviewAddInputTest {
     @Test
     public void noDataSetId() {
         // given parameters without preparation not dataset id
-        PreviewAddInput input = new PreviewAddInput();
+        PreviewAddParameters input = new PreviewAddParameters();
         input.setPreparationId("prep#98435");
 
         // when
-        Set<ConstraintViolation<PreviewAddInput>> constraintViolations = validator.validate(input);
+        Set<ConstraintViolation<PreviewAddParameters>> constraintViolations = validator.validate(input);
 
         // then 2 violations (action is null and tdpIds is empty)
         Assert.assertEquals(2, constraintViolations.size());
@@ -71,11 +71,11 @@ public class PreviewAddInputTest {
     @Test
     public void noPreparationId() {
         // given parameters without preparation not dataset id
-        PreviewAddInput params = new PreviewAddInput();
+        PreviewAddParameters params = new PreviewAddParameters();
         params.setDatasetId("dataset#19843");
 
         // when
-        Set<ConstraintViolation<PreviewAddInput>> constraintViolations = validator.validate(params);
+        Set<ConstraintViolation<PreviewAddParameters>> constraintViolations = validator.validate(params);
 
         // then 2 violations (action is null and tdpIds is empty)
         Assert.assertEquals(2, constraintViolations.size());
@@ -84,13 +84,13 @@ public class PreviewAddInputTest {
     @Test
     public void validInput() {
         // given parameters without preparation not dataset id
-        PreviewAddInput input = new PreviewAddInput();
+        PreviewAddParameters input = new PreviewAddParameters();
         input.setDatasetId("dataset#19843");
         input.setAction(new Action());
         input.setTdpIds(Arrays.asList(1, 3));
 
         // when
-        Set<ConstraintViolation<PreviewAddInput>> constraintViolations = validator.validate(input);
+        Set<ConstraintViolation<PreviewAddParameters>> constraintViolations = validator.validate(input);
 
         // then no violation
         Assert.assertTrue(constraintViolations.isEmpty());

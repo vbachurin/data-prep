@@ -21,7 +21,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Iterator;
 
-import org.apache.http.client.HttpClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.talend.daikon.exception.error.ErrorCode;
 import org.talend.dataprep.api.service.command.error.ErrorList;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.command.GenericCommand;
 import org.talend.dataprep.exception.error.APIErrorCodes;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.exception.json.JsonErrorCodeDescription;
@@ -74,22 +74,19 @@ public class CommonAPI extends APIService {
         writeErrorsFromEnum(generator, APIErrorCodes.values());
 
         // get dataset api errors
-        HttpClient client = getClient();
-        HystrixCommand<InputStream> datasetErrors = getCommand(ErrorList.class, client, PreparationAPI.DATASET_GROUP, DATASET);
+        HystrixCommand<InputStream> datasetErrors = getCommand(ErrorList.class, GenericCommand.DATASET_GROUP, DATASET);
         try (InputStream errorsInput = datasetErrors.execute()) {
             writeErrorsFromApi(generator, errorsInput);
         }
 
         // get preparation api errors
-        HystrixCommand<InputStream> preparationErrors = getCommand(ErrorList.class, client, PreparationAPI.PREPARATION_GROUP,
-                PREPARATION);
+        HystrixCommand<InputStream> preparationErrors = getCommand(ErrorList.class, GenericCommand.PREPARATION_GROUP, PREPARATION);
         try (InputStream errorsInput = preparationErrors.execute()) {
             writeErrorsFromApi(generator, errorsInput);
         }
 
         // get transformation api errors
-        HystrixCommand<InputStream> transformationErrors = getCommand(ErrorList.class, client, PreparationAPI.TRANSFORM_GROUP,
-                TRANSFORMATION);
+        HystrixCommand<InputStream> transformationErrors = getCommand(ErrorList.class, GenericCommand.TRANSFORM_GROUP, TRANSFORMATION);
         try (InputStream errorsInput = transformationErrors.execute()) {
             writeErrorsFromApi(generator, errorsInput);
         }

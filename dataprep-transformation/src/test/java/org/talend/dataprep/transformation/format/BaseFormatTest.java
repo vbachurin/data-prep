@@ -30,7 +30,7 @@ import org.talend.dataprep.transformation.TransformationBaseTest;
  */
 public abstract class BaseFormatTest extends TransformationBaseTest {
 
-    /** Dataprep ready json builder. */
+    /** Dataprep ready json mapper. */
     @Autowired
     protected Jackson2ObjectMapperBuilder builder;
 

@@ -33,6 +33,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.ApiOperation;
+import org.talend.dataprep.security.PublicAPI;
 
 @ConditionalOnProperty(name = "upgrade.location")
 @RestController
@@ -92,6 +93,7 @@ public class UpgradeAPI extends APIService {
     @RequestMapping(value = "/api/upgrade/check", method = GET)
     @ApiOperation(value = "Checks if a newer versions are available and returns them as JSON.", produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
+    @PublicAPI
     public List<UpgradeServerVersion> check() {
         try {
             // Get current version

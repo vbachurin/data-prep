@@ -34,7 +34,7 @@ import com.jayway.restassured.http.ContentType;
  */
 public class DiffTests extends TransformationServiceBaseTests {
 
-    /** The dataprep ready to use jackson object builder. */
+    /** The dataprep ready to use jackson object mapper. */
     @Autowired
     protected Jackson2ObjectMapperBuilder builder;
 

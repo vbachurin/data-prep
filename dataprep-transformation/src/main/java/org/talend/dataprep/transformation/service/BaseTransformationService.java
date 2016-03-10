@@ -13,6 +13,8 @@
 
 package org.talend.dataprep.transformation.service;
 
+import static org.talend.dataprep.exception.error.PreparationErrorCodes.UNABLE_TO_READ_PREPARATION;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Map;
@@ -20,25 +22,24 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.context.ApplicationContext;
 import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.api.dataset.DataSet;
+import org.talend.dataprep.command.preparation.PreparationGetActions;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.exception.error.PreparationErrorCodes;
 import org.talend.dataprep.exception.error.TransformationErrorCodes;
 import org.talend.dataprep.format.export.ExportFormat;
 import org.talend.dataprep.http.HttpResponseContext;
 import org.talend.dataprep.transformation.api.transformer.TransformerFactory;
 import org.talend.dataprep.transformation.api.transformer.configuration.Configuration;
 import org.talend.dataprep.transformation.format.FormatRegistrationService;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Base class used to share code across all TransformationService implementation.
@@ -68,9 +69,13 @@ public abstract class BaseTransformationService {
     @Autowired
     protected HttpClient httpClient;
 
-    /** The dataprep ready to use jackson object builder. */
+    /** The dataprep ready to use jackson object mapper. */
     @Autowired
-    protected Jackson2ObjectMapperBuilder builder;
+    protected ObjectMapper mapper;
+
+    /** Spring application context. */
+    @Autowired
+    private ApplicationContext applicationContext;
 
     /**
      * Transformation business logic.
@@ -93,7 +98,13 @@ public abstract class BaseTransformationService {
         if (StringUtils.isBlank(preparationId)) {
             actions = "{\"actions\": []}";
         } else {
-            actions = getActions(preparationId, stepId);
+            final PreparationGetActions getActionsCommand = applicationContext.getBean(PreparationGetActions.class, preparationId, stepId);
+            try {
+                actions = "{\"actions\": "+ IOUtils.toString(getActionsCommand.execute()) + '}';
+            } catch (IOException e) {
+                final ExceptionContext context = ExceptionContext.build().put("id", preparationId).put("version", stepId);
+                throw new TDPException(UNABLE_TO_READ_PREPARATION, e, context);
+            }
         }
 
         setExportHeaders(exportName, format);
@@ -133,37 +144,6 @@ public abstract class BaseTransformationService {
             throw new TDPException(TransformationErrorCodes.OUTPUT_TYPE_NOT_SUPPORTED);
         }
         return format;
-    }
-
-
-    /**
-     * Return the actions from the preparation id and the step id.
-     *
-     * @param preparationId the preparation id.
-     * @param stepId the step id.
-     * @return the actions that match the given ids.
-     */
-    private String getActions(String preparationId, String stepId) {
-
-        String version = stepId;
-        if (StringUtils.isBlank(stepId)) {
-            version = "head";
-        }
-        final HttpGet actionsRetrieval = new HttpGet(
-                preparationServiceUrl + "/preparations/" + preparationId + "/actions/" + version);
-        try {
-            final HttpResponse get = httpClient.execute(actionsRetrieval);
-            final HttpStatus status = HttpStatus.valueOf(get.getStatusLine().getStatusCode());
-            if (status.is4xxClientError() || status.is5xxServerError()) {
-                throw new IOException(status.getReasonPhrase());
-            }
-            return "{\"actions\": " + IOUtils.toString(get.getEntity().getContent()) + '}';
-        } catch (IOException e) {
-            final ExceptionContext context = ExceptionContext.build().put("id", preparationId).put("version", version);
-            throw new TDPException(PreparationErrorCodes.UNABLE_TO_READ_PREPARATION, e, context);
-        } finally {
-            actionsRetrieval.releaseConnection();
-        }
     }
 
     /**

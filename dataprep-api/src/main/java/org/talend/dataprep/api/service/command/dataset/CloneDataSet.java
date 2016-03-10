@@ -21,16 +21,14 @@ import java.net.URISyntaxException;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.utils.URIBuilder;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.talend.daikon.exception.ExceptionContext;
-import org.talend.dataprep.api.service.PreparationAPI;
-import org.talend.dataprep.api.service.command.common.GenericCommand;
 import org.talend.dataprep.api.service.command.common.HttpResponse;
+import org.talend.dataprep.command.GenericCommand;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.APIErrorCodes;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
@@ -45,13 +43,12 @@ public class CloneDataSet extends GenericCommand<HttpResponse> {
     /**
      * Constructor.
      *
-     * @param client the http client to use.
      * @param dataSetId the requested dataset id.
      * @param folderPath the folder to clone the dataset
      * @param cloneName the cloned name
      */
-    public CloneDataSet(HttpClient client, String dataSetId, String folderPath, String cloneName) {
-        super(PreparationAPI.DATASET_GROUP, client);
+    public CloneDataSet(String dataSetId, String folderPath, String cloneName) {
+        super(GenericCommand.DATASET_GROUP);
         execute(() -> {
             try {
                 URIBuilder uriBuilder = new URIBuilder(datasetServiceUrl + "/datasets/clone/" + dataSetId);

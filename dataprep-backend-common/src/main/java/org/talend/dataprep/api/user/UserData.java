@@ -49,6 +49,7 @@ public class UserData implements Serializable {
      * Constructor.
      * 
      * @param userId the used id.
+     * @param appVersion the application version.
      */
     @JsonCreator
     public UserData(@JsonProperty("userId") String userId, @JsonProperty("app-version") String appVersion) {

@@ -19,30 +19,40 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.http.client.HttpClient;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.preparation.Preparation;
-import org.talend.dataprep.api.service.api.PreviewUpdateInput;
+import org.talend.dataprep.api.service.api.PreviewUpdateParameters;
 
+/**
+ * Command used to retrieve a preview when updating a command.
+ */
 @Component
 @Scope("request")
 public class PreviewUpdate extends PreviewAbstract {
 
     /** The all the preview parameters. */
-    private final PreviewUpdateInput input;
+    private final PreviewUpdateParameters parameters;
 
-    public PreviewUpdate(final HttpClient client, final PreviewUpdateInput input) {
-        super(client);
-        this.input = input;
+    /**
+     * Default constructor.
+     * @param parameters
+     * @param preparation
+     * @param actions
+     */
+    // private constructor used to ensure the IoC
+    private PreviewUpdate(final PreviewUpdateParameters parameters, Preparation preparation, List<Action> actions) {
+        super(preparation, actions);
+        this.parameters = parameters;
     }
 
+    /**
+     * @see PreviewAbstract#run()
+     */
     @Override
     protected InputStream run() throws Exception {
 
-        // get preparation details
-        final Preparation preparation = getPreparation(input.getPreparationId());
         final String dataSetId = preparation.getDataSetId();
 
         //Get steps from first transformation
@@ -51,17 +61,17 @@ public class PreviewUpdate extends PreviewAbstract {
         
         // extract actions by steps in chronological order, until defined last active step (from input)
         Map<String, Action> originalActions = new LinkedHashMap<>();
-        final Iterator<Action> actions = getPreparationActions(preparation, input.getCurrentStepId()).iterator();
-        steps.stream().filter(step -> actions.hasNext()).forEach(step -> originalActions.put(step, actions.next()));
+        final Iterator<Action> iterator = actions.iterator();
+        steps.stream().filter(step -> iterator.hasNext()).forEach(step -> originalActions.put(step, iterator.next()));
 
         // modify actions to include the update
         final Map<String, Action> modifiedActions = new LinkedHashMap<>(originalActions);
-        if (modifiedActions.get(input.getUpdateStepId()) != null) {
-            modifiedActions.put(input.getUpdateStepId(), input.getAction());
+        if (modifiedActions.get(parameters.getUpdateStepId()) != null) {
+            modifiedActions.put(parameters.getUpdateStepId(), parameters.getAction());
         }
 
         // execute transformation preview with content and the 2 transformations
-        setContext(originalActions.values(), modifiedActions.values(), dataSetId, input.getTdpIds());
+        setContext(originalActions.values(), modifiedActions.values(), dataSetId, parameters.getTdpIds());
         return super.run();
     }
 

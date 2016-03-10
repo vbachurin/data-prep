@@ -14,6 +14,7 @@
 package org.talend.dataprep.configuration;
 
 import static com.google.common.base.Predicates.or;
+import static springfox.documentation.spi.DocumentationType.SWAGGER_2;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -28,7 +29,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.service.ApiInfo;
-import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
@@ -45,13 +45,16 @@ import com.google.common.base.Predicate;
 @SuppressWarnings("InsufficientBranchCoverage")
 public class Documentation {
 
+    /** Value for regex that match all characters. */
+    private static final String MATCH_ALL=".*";
+
     @Value("${service.documentation.name}")
     private String serviceDisplayName;
 
     @Value("${service.documentation.description}")
     private String serviceDescription;
 
-    @Value("#{'${service.documentation.path}'.split(',')}")
+    @Value("#{'${service.paths}'.split(',')}")
     private String[] servicePaths;
 
     @Controller
@@ -67,7 +70,7 @@ public class Documentation {
      */
     @Bean
     public Docket customImplementation() {
-        return new Docket(DocumentationType.SWAGGER_2).apiInfo(apiInfo()).select().paths(paths()).build();
+        return new Docket(SWAGGER_2).apiInfo(apiInfo()).select().paths(paths()).build();
     }
 
     /**
@@ -81,7 +84,24 @@ public class Documentation {
      * @return where to look for controllers to document them.
      */
     private Predicate<String> paths() {
-        return or(Arrays.stream(servicePaths).map(PathSelectors::regex).collect(Collectors.toList()));
+        return or(Arrays.stream(servicePaths).map(this::matchAll).map(PathSelectors::regex).collect(Collectors.toList()));
+    }
+
+
+    /**
+     * Make sure the given input will match all strings with this pattern : ".*input.*".
+     * @param input the input to transform.
+     * @return ".*input.*"
+     */
+    private String matchAll(String input) {
+        String path = input;
+        if (!path.startsWith(MATCH_ALL)) {
+            path = MATCH_ALL + path;
+        }
+        if (!path.endsWith(MATCH_ALL)) {
+            path = path+MATCH_ALL;
+        }
+        return path;
     }
 
 }

@@ -57,12 +57,14 @@ describe('Playground controller', () => {
 
     beforeEach(angular.mock.module('data-prep.playground', ($provide) => {
         stateMock = {
+            route: {
+              previous: 'nav.index.preparations'
+            },
             playground: {
                 dataset: {},
                 lookup: {
                     actions: []
                 },
-                previousState: 'nav.index.preparations',
                 preparationName: ''
             },
             inventory: {
@@ -197,7 +199,7 @@ describe('Playground controller', () => {
         beforeEach(inject(($q, PreparationService, StateService) => {
             preparation = {id: '9af874865e42b546', draft: true};
             stateMock.playground.preparation = preparation;
-            stateMock.playground.previousState = 'nav.index.preparations';
+            stateMock.route.previous = 'nav.index.preparations';
 
             spyOn(PreparationService, 'delete').and.returnValue($q.when(true));
             spyOn(StateService, 'resetPlayground').and.returnValue();
@@ -222,8 +224,8 @@ describe('Playground controller', () => {
             it('should reset and redirect with params', inject(($state) => {
                 //given
                 preparation.draft = false;
-                stateMock.playground.previousState = 'nav.index.datasets';
-                stateMock.playground.previousStateOptions = {folderPath: 'test'};
+                stateMock.route.previous = 'nav.index.datasets';
+                stateMock.route.previousOptions = {folderPath: 'test'};
 
                 //when
                 ctrl.beforeClose();
@@ -400,7 +402,7 @@ describe('Playground controller', () => {
 
                 //then
                 expect(MessageService.error).toHaveBeenCalledWith('PLAYGROUND_FILE_NOT_FOUND_TITLE', 'PLAYGROUND_FILE_NOT_FOUND', {type: 'preparation'});
-                expect($state.go).toHaveBeenCalledWith('nav.index.preparations');
+                expect($state.go).toHaveBeenCalledWith('nav.index.preparations', undefined);
             }));
 
             it('should go back to previous state when preparation content GET return an error', inject(($q, $state, $stateParams, MessageService, PlaygroundService) => {
@@ -414,7 +416,7 @@ describe('Playground controller', () => {
 
                 //then
                 expect(MessageService.error).toHaveBeenCalledWith('PLAYGROUND_FILE_NOT_FOUND_TITLE', 'PLAYGROUND_FILE_NOT_FOUND', {type: 'preparation'});
-                expect($state.go).toHaveBeenCalledWith('nav.index.preparations');
+                expect($state.go).toHaveBeenCalledWith('nav.index.preparations', undefined);
             }));
         });
 
@@ -537,7 +539,7 @@ describe('Playground controller', () => {
 
                 //then
                 expect(MessageService.error).toHaveBeenCalledWith('PLAYGROUND_FILE_NOT_FOUND_TITLE', 'PLAYGROUND_FILE_NOT_FOUND', {type: 'dataset'});
-                expect($state.go).toHaveBeenCalledWith('nav.index.preparations');
+                expect($state.go).toHaveBeenCalledWith('nav.index.preparations', undefined);
             }));
 
             it('should go back to previous state when dataset content GET return an error', inject(($q, $state, $stateParams, MessageService, PlaygroundService) => {
@@ -551,7 +553,7 @@ describe('Playground controller', () => {
 
                 //then
                 expect(MessageService.error).toHaveBeenCalledWith('PLAYGROUND_FILE_NOT_FOUND_TITLE', 'PLAYGROUND_FILE_NOT_FOUND', {type: 'dataset'});
-                expect($state.go).toHaveBeenCalledWith('nav.index.preparations');
+                expect($state.go).toHaveBeenCalledWith('nav.index.preparations', undefined);
             }));
         });
     });

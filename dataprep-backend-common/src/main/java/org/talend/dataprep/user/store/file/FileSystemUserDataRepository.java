@@ -41,7 +41,7 @@ import org.talend.dataprep.util.FilesHelper;
  */
 @Component
 @ConditionalOnProperty(name = "user.data.store", havingValue = "file")
-public class FileSystemUserDataRepository implements UserDataRepository {
+public class FileSystemUserDataRepository implements UserDataRepository<UserData> {
 
     /** This class' logger. */
     private static final Logger LOG = LoggerFactory.getLogger(FileSystemUserDataRepository.class);

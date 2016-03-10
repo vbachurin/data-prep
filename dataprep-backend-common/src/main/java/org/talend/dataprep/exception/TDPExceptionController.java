@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.talend.dataprep.http.HttpResponseContext;
 
 /**
- * Controller advice applied to all controller so that they can handle TDPExceptions.
+ * Controller advice applied to all controllers so that they can handle TDPExceptions.
  */
 @ControllerAdvice
 public class TDPExceptionController {

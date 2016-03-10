@@ -17,6 +17,7 @@ import static java.util.stream.Collectors.toList;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
+import static org.talend.daikon.exception.ExceptionContext.build;
 import static org.talend.dataprep.transformation.api.action.metadata.category.ScopeCategory.COLUMN;
 import static org.talend.dataprep.transformation.api.action.metadata.category.ScopeCategory.LINE;
 
@@ -34,17 +35,13 @@ import javax.annotation.Resource;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.TeeOutputStream;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpRequestBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.core.task.TaskExecutor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.WebApplicationContext;
 import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSet;
@@ -52,15 +49,17 @@ import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.preparation.StepDiff;
 import org.talend.dataprep.cache.ContentCache;
+import org.talend.dataprep.command.dataset.DataSetGet;
+import org.talend.dataprep.command.preparation.PreparationDetailsGet;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
-import org.talend.dataprep.exception.error.DataSetErrorCodes;
 import org.talend.dataprep.exception.error.PreparationErrorCodes;
 import org.talend.dataprep.exception.error.TransformationErrorCodes;
 import org.talend.dataprep.exception.json.JsonErrorCodeDescription;
 import org.talend.dataprep.format.export.ExportFormat;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.metrics.VolumeMetered;
+import org.talend.dataprep.security.PublicAPI;
 import org.talend.dataprep.transformation.aggregation.AggregationService;
 import org.talend.dataprep.transformation.aggregation.api.AggregationParameters;
 import org.talend.dataprep.transformation.aggregation.api.AggregationResult;
@@ -78,7 +77,6 @@ import org.talend.dataprep.transformation.preview.api.PreviewParameters;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -93,7 +91,8 @@ public class TransformationService extends BaseTransformationService {
 
     /** The Spring application context. */
     @Autowired
-    private ApplicationContext context;
+    private WebApplicationContext context;
+
     /** All available transformation actions. */
     @Autowired
     private ActionMetadata[] allActions;
@@ -137,16 +136,13 @@ public class TransformationService extends BaseTransformationService {
                                @ApiParam(name = "Sample size", value = "Optional sample size to use for the dataset, if missing, the full dataset is returned") @RequestParam(value="sample", required = false) Long sample,
                                @ApiParam(value = "Step id", defaultValue = "head") @RequestParam(value = "stepId", required = false, defaultValue = "head") final String stepId,
                                @ApiParam(value = "Name of the transformation", defaultValue = "untitled") @RequestParam(value = "name", required = false, defaultValue = "untitled") final String name,
-                               final @RequestParam Map<String, String> exportParams,
+                               @RequestParam final Map<String, String> exportParams,
                                final OutputStream output) {
         //@formatter:on
 
-        final ObjectMapper mapper = builder.build();
-
-        final HttpRequestBase datasetRetrieval = getDataSetRequest(datasetId, sample);
-        try {
-            // get the dataset content
-            InputStream datasetContent = getDataSetContent(datasetRetrieval);
+        // get the dataset content (in an auto-closable block to make sure it is properly closed)
+        final DataSetGet dataSetGet = context.getBean(DataSetGet.class, datasetId, true, sample);
+        try (InputStream datasetContent = dataSetGet.execute()){
 
             // the parser need to be encapsulated within an auto closeable block so that its records can be fully
             // streamed
@@ -156,12 +152,9 @@ public class TransformationService extends BaseTransformationService {
             }
 
         } catch (Exception e) {
-            throw new TDPException(TransformationErrorCodes.UNABLE_TRANSFORM_DATASET, e);
+            throw new TDPException(TransformationErrorCodes.UNABLE_TO_TRANSFORM_DATASET, e);
         }
-        // need to release the connection eventually
-        finally {
-            datasetRetrieval.releaseConnection();
-        }
+
     }
 
     /**
@@ -182,7 +175,7 @@ public class TransformationService extends BaseTransformationService {
             @ApiParam(value = "Output format") @PathVariable("format") final String formatName,
             @ApiParam(name = "Sample size", value = "Optional sample size to use for the dataset, if missing, the full dataset is returned") @RequestParam(value="sample", required = false) Long sample,
             @ApiParam(value = "Name of the transformation", defaultValue = "untitled") @RequestParam(value = "name", required = false, defaultValue = "untitled") final String name,
-            final @RequestParam Map<String, String> exportParams,
+            @RequestParam final Map<String, String> exportParams,
             final OutputStream output) {
         //@formatter:on
         applyOnDataset(null, datasetId, formatName, sample, null, name, exportParams, output);
@@ -209,6 +202,7 @@ public class TransformationService extends BaseTransformationService {
         // head is not allowed as step id
         if (StringUtils.equals("head", stepId)) {
             Preparation preparation = getPreparation(preparationId);
+
             version = preparation.getSteps().get(preparation.getSteps().size() - 1);
         }
 
@@ -249,8 +243,6 @@ public class TransformationService extends BaseTransformationService {
     public AggregationResult aggregate(@ApiParam(value = "The aggregation rawParams in json") @RequestBody final String rawParams) {
         // @formatter:on
 
-        final ObjectMapper mapper = builder.build();
-
         // parse the aggregation parameters
         final AggregationParameters parameters;
         try {
@@ -263,7 +255,6 @@ public class TransformationService extends BaseTransformationService {
         InputStream contentToAggregate;
 
         // get the content of the preparation (internal call with piped streams)
-        HttpRequestBase getContentRequest = null;
         if (StringUtils.isNotBlank(parameters.getPreparationId())) {
             try {
                 Preparation preparation = getPreparation(parameters.getPreparationId());
@@ -285,9 +276,11 @@ public class TransformationService extends BaseTransformationService {
                 throw new TDPException(CommonErrorCodes.UNABLE_TO_AGGREGATE, e);
             }
         } else {
-            // or from the dataset
-            getContentRequest = getDataSetRequest(parameters.getDatasetId(), parameters.getSampleSize());
-            contentToAggregate = getDataSetContent(getContentRequest);
+            final DataSetGet dataSetGet = context.getBean(DataSetGet.class, //
+                    parameters.getDatasetId(), //
+                    true, //
+                    parameters.getSampleSize());
+            contentToAggregate = dataSetGet.execute();
         }
 
         // apply the aggregation
@@ -298,8 +291,12 @@ public class TransformationService extends BaseTransformationService {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
         } finally {
             // don't forget to release the connection
-            if (getContentRequest != null) {
-                getContentRequest.releaseConnection();
+            if (contentToAggregate != null) {
+                try {
+                    contentToAggregate.close();
+                } catch (IOException e) {
+                    LOG.warn("Could not close dataset input stream while aggregating", e);
+                }
             }
         }
     }
@@ -326,22 +323,18 @@ public class TransformationService extends BaseTransformationService {
                                  final OutputStream output) {
         //@formatter:on
 
-        final ObjectMapper mapper = builder.build();
-
         // parse the preview parameters from the request body
         PreviewParameters previewParameters;
         try {
-            previewParameters = builder.build().readerFor(PreviewParameters.class).readValue(rawParameters);
+            previewParameters = mapper.readerFor(PreviewParameters.class).readValue(rawParameters);
         } catch (IOException e) {
             throw new TDPException(TransformationErrorCodes.UNABLE_TO_PERFORM_PREVIEW, e);
         }
 
-        // get the dataset content
-        final HttpRequestBase dataSetRequest = getDataSetRequest(previewParameters.getDataSetId(), null);
-        final InputStream dataSetContent = getDataSetContent(dataSetRequest);
-
         // because of dataset records streaming, the dataset content must be within an auto closeable block
-        try (JsonParser parser = mapper.getFactory().createParser(dataSetContent)) {
+        final DataSetGet dataSetGet = context.getBean(DataSetGet.class, previewParameters.getDataSetId(), true, null);
+        try (InputStream dataSetContent = dataSetGet.execute(); //
+             JsonParser parser = mapper.getFactory().createParser(dataSetContent)) {
             final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
 
             // execute the... preview !
@@ -350,10 +343,6 @@ public class TransformationService extends BaseTransformationService {
 
         } catch (IOException e) {
             throw new TDPException(TransformationErrorCodes.UNABLE_TO_PERFORM_PREVIEW, e);
-        }
-        // don't forget to release the connection in any case
-        finally {
-            dataSetRequest.releaseConnection();
         }
     }
 
@@ -367,8 +356,6 @@ public class TransformationService extends BaseTransformationService {
     public StepDiff getCreatedColumns(@ApiParam(name = "body", value = "Preview parameters in json.") @RequestBody final String rawParameters) {
         //@formatter:on
 
-        final ObjectMapper mapper = builder.build();
-
         // parse parameters
         PreviewParameters previewParameters;
         try {
@@ -378,10 +365,9 @@ public class TransformationService extends BaseTransformationService {
         }
 
         // get the dataset content
-        final HttpRequestBase datasetGet = getDataSetRequest(previewParameters.getDataSetId(), 1L);
-        final InputStream content = getDataSetContent(datasetGet);
-
-        try (JsonParser parser = mapper.getFactory().createParser(content)) {
+        final DataSetGet dataSetGet = context.getBean(DataSetGet.class, previewParameters.getDataSetId(), true, 1L);
+        try (InputStream content = dataSetGet.execute(); //
+             JsonParser parser = mapper.getFactory().createParser(content)) {
             final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
 
             final OutputStream output = new ByteArrayOutputStream();
@@ -392,9 +378,12 @@ public class TransformationService extends BaseTransformationService {
             // extract created columns ids
             final JsonNode node = mapper.readTree(output.toString());
             final JsonNode columnsNode = node.findPath("columns");
-            final List<String> createdColumns = StreamSupport.stream(columnsNode.spliterator(), false)
-                    .filter(col -> "new".equals(col.path("__tdpColumnDiff").asText())).map(col -> col.path("id").asText())
-                    .collect(toList());
+            final List<String> createdColumns;
+            try (Stream<JsonNode> stream = StreamSupport.stream(columnsNode.spliterator(), false)) {
+                createdColumns = stream.filter(col -> "new".equals(col.path("__tdpColumnDiff").asText())) //
+                        .map(col -> col.path("id").asText()) //
+                        .collect(toList());
+            }
 
             // create/return diff
             final StepDiff diff = new StepDiff();
@@ -403,8 +392,6 @@ public class TransformationService extends BaseTransformationService {
             return diff;
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
-        } finally {
-            datasetGet.releaseConnection();
         }
     }
 
@@ -448,10 +435,9 @@ public class TransformationService extends BaseTransformationService {
 
         final DynamicType actionType = DynamicType.fromAction(action);
         if (actionType == null) {
-            final ExceptionContext exceptionContext = ExceptionContext.build().put("name", action);
+            final ExceptionContext exceptionContext = build().put("name", action);
             throw new TDPException(TransformationErrorCodes.UNKNOWN_DYNAMIC_ACTION, exceptionContext);
         }
-        final ObjectMapper mapper = builder.build();
         try (JsonParser parser = mapper.getFactory().createParser(content)) {
             final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
             return actionType.getGenerator(context).getParameters(columnId, dataSet);
@@ -493,10 +479,12 @@ public class TransformationService extends BaseTransformationService {
         if (column == null) {
             return Collections.emptyList();
         }
+
         // look for all actions applicable to the column type
-        final List<ActionMetadata> actions = Stream.of(allActions) //
-                .filter(am -> am.acceptColumn(column)) // Filter on acceptable columns (for type)
-                .collect(toList());
+        final List<ActionMetadata> actions;
+        try(Stream<ActionMetadata> stream = Stream.of(this.allActions)){
+            actions = stream.filter(am -> am.acceptColumn(column)).collect(toList());
+        }
         final List<Suggestion> suggestions = suggestionEngine.score(actions, column);
         return suggestions.stream() //
                 .filter(s -> s.getScore() > 0) // Keep only strictly positive score (negative and 0 indicates not
@@ -516,10 +504,12 @@ public class TransformationService extends BaseTransformationService {
     @ApiOperation(value = "Return all actions on lines", notes = "This operation returns an array of actions.")
     @ResponseBody
     public List<ActionMetadata> lineActions() {
-        return Stream.of(allActions) //
-                .filter(action -> action.acceptScope(LINE)) //
-                .map(action -> action.adapt(LINE)) //
-                .collect(toList());
+        try (Stream<ActionMetadata> stream = Stream.of(this.allActions)){
+            return stream //
+                    .filter(action -> action.acceptScope(LINE)) //
+                    .map(action -> action.adapt(LINE)) //
+                    .collect(toList());
+        }
     }
 
     /**
@@ -557,6 +547,7 @@ public class TransformationService extends BaseTransformationService {
     @RequestMapping(value = "/export/formats", method = GET)
     @ApiOperation(value = "Get the available format types")
     @Timed
+    @PublicAPI
     public List<ExportFormat> exportTypes() {
         return formatRegistrationService.getExternalFormats().stream() //
                 .sorted((f1, f2) -> f1.getOrder() - f2.getOrder()) // Enforce strict order.
@@ -564,61 +555,18 @@ public class TransformationService extends BaseTransformationService {
     }
 
     /**
-     * Return the http request to use to get the dataset content.
-     *
-     * @param datasetId the wanted dataset id.
-     * @param sample the optional sample size.
-     * @return the http request to use to get the dataset content.
-     */
-    private HttpRequestBase getDataSetRequest(String datasetId, Long sample) {
-
-        String datasetGetUrl = datasetServiceUrl + "/datasets/" + datasetId + "/content";
-        if (sample != null) {
-            datasetGetUrl += "?sample=" + sample;
-        }
-
-        return new HttpGet(datasetGetUrl);
-    }
-
-    /**
-     * Return the dataset content as input stream out of the given http get request.
-     *
-     * @param datasetRetrieval the http request to perform.
-     * @return the dataset content as input stream out of the given http get request.
-     */
-    private InputStream getDataSetContent(HttpRequestBase datasetRetrieval) {
-        try {
-            final HttpResponse datasetGet = httpClient.execute(datasetRetrieval);
-            final HttpStatus response = HttpStatus.valueOf(datasetGet.getStatusLine().getStatusCode());
-            if (response.is4xxClientError() || response.is5xxServerError() || response.value() == HttpStatus.NO_CONTENT.value()) {
-                throw new IOException("could not read dataset");
-            }
-            return datasetGet.getEntity().getContent();
-        } catch (IOException e) {
-            throw new TDPException(DataSetErrorCodes.UNABLE_TO_READ_DATASET_CONTENT, e);
-        }
-    }
-
-    /**
      * @param preparationId the wanted preparation id.
      * @return the preparation out of its id.
      */
     private Preparation getPreparation(String preparationId) {
-        String datasetGetUrl = preparationServiceUrl + "/preparations/" + preparationId;
-        final HttpGet httpRequest = new HttpGet(datasetGetUrl);
-        try {
-            final HttpResponse preparationGet = httpClient.execute(httpRequest);
-            final HttpStatus response = HttpStatus.valueOf(preparationGet.getStatusLine().getStatusCode());
-            if (response.is4xxClientError() || response.is5xxServerError() || response.value() == HttpStatus.NO_CONTENT.value()) {
-                throw new IOException("could not read preparation " + preparationId + " -> " + preparationGet.getStatusLine());
-            }
-            return (Preparation) builder.build().readerFor(Preparation.class).readValue(preparationGet.getEntity().getContent());
+
+        final PreparationDetailsGet preparationDetailsGet = context.getBean(PreparationDetailsGet.class, preparationId);
+        try (InputStream details = preparationDetailsGet.execute()) {
+            return mapper.readerFor(Preparation.class).readValue(details);
         } catch (IOException e) {
-            throw new TDPException(PreparationErrorCodes.UNABLE_TO_READ_PREPARATION, e);
+            throw new TDPException(PreparationErrorCodes.UNABLE_TO_READ_PREPARATION, e, build().put("id", preparationId));
         }
-        finally {
-            httpRequest.releaseConnection();
-        }
+
     }
 
 }

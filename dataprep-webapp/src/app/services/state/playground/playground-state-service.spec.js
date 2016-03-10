@@ -47,35 +47,6 @@ describe('Playground state service', () => {
         spyOn(RecipeStateService, 'reset').and.returnValue();
     }));
 
-    describe('routing', () => {
-        it('should init previous state to datasets list', inject((playgroundState) => {
-            //then
-            expect(playgroundState.previousState).toBe('nav.index.datasets');
-        }));
-
-        it('should set the previous state of playground', inject((playgroundState, PlaygroundStateService) => {
-            //given
-            playgroundState.previousState  = '';
-
-            //when
-            PlaygroundStateService.setPreviousState('home');
-
-            //then
-            expect(playgroundState.previousState).toBe('home');
-        }));
-
-        it('should set the previous state options of playground', inject((playgroundState, PlaygroundStateService) => {
-            //given
-            playgroundState.previousStateOptions  = {folderPath: ''};
-
-            //when
-            PlaygroundStateService.setPreviousStateOptions({folderPath: 'test/'});
-
-            //then
-            expect(playgroundState.previousStateOptions).toEqual({folderPath: 'test/'});
-        }));
-    });
-
     describe('dataset', () => {
         it('should set dataset metadata in state', inject((playgroundState, PlaygroundStateService) => {
             //given

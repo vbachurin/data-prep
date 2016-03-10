@@ -14,7 +14,7 @@
 package org.talend.dataprep.api.preparation;
 
 /**
- * Bean that extends Preparation used for json serialization towards frontend.
+ * Bean that wraps Preparation used for json serialization towards frontend.
  * 
  * @see org.talend.dataprep.api.preparation.json.PreparationDetailsJsonSerializer
  */
@@ -23,8 +23,11 @@ public class PreparationDetails {
     /** The wrapped Preparation. */
     private Preparation preparation;
 
+    /**
+     * Default empty constructor.
+     */
     public PreparationDetails(){
-
+        // needed for jackson processing
     }
 
     /**

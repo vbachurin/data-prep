@@ -165,7 +165,7 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
      */
     function close() {
         $timeout(StateService.resetPlayground, 500, false);
-        $state.go(state.playground.previousState, state.playground.previousStateOptions);
+        $state.go(state.route.previous, state.route.previousOptions);
     }
 
     //--------------------------------------------------------------------------------------------------------------
@@ -224,7 +224,7 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
      */
     function errorGoBack(errorOptions) {
         MessageService.error('PLAYGROUND_FILE_NOT_FOUND_TITLE', 'PLAYGROUND_FILE_NOT_FOUND', errorOptions);
-        $state.go(state.playground.previousState);
+        $state.go(state.route.previous, state.route.previousOptions);
     }
 
     /**

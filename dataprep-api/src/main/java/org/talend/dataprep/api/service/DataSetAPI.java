@@ -16,17 +16,17 @@ package org.talend.dataprep.api.service;
 import static org.springframework.http.MediaType.*;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.netflix.hystrix.exception.HystrixRuntimeException;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.client.HttpClient;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -38,13 +38,17 @@ import org.talend.dataprep.api.service.command.dataset.*;
 import org.talend.dataprep.api.service.command.preparation.PreparationList;
 import org.talend.dataprep.api.service.command.transformation.SuggestDataSetActions;
 import org.talend.dataprep.api.service.command.transformation.SuggestLookupActions;
+import org.talend.dataprep.command.dataset.DataSetGet;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.APIErrorCodes;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.http.HttpResponseContext;
 import org.talend.dataprep.metrics.Timed;
+import org.talend.dataprep.security.PublicAPI;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.netflix.hystrix.HystrixCommand;
+import com.netflix.hystrix.exception.HystrixRuntimeException;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -69,8 +73,7 @@ public class DataSetAPI extends APIService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Creating dataset (pool: {} )...", getConnectionStats());
         }
-        HttpClient client = getClient();
-        HystrixCommand<String> creation = getCommand(CreateDataSet.class, client, name, contentType, dataSetContent, folderPath);
+        HystrixCommand<String> creation = getCommand(CreateDataSet.class, name, contentType, dataSetContent, folderPath);
         String result = creation.execute();
         LOG.debug("Dataset creation done.");
         return result;
@@ -86,8 +89,7 @@ public class DataSetAPI extends APIService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Creating or updating dataset #{} (pool: {})...", id, getConnectionStats());
         }
-        HttpClient client = getClient();
-        HystrixCommand<String> creation = getCommand(CreateOrUpdateDataSet.class, client, id, name, dataSetContent);
+        HystrixCommand<String> creation = getCommand(CreateOrUpdateDataSet.class, id, name, dataSetContent);
         String result = creation.execute();
         LOG.debug("Dataset creation or update for #{} done.", id);
         return result;
@@ -101,8 +103,7 @@ public class DataSetAPI extends APIService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Creating or updating dataset #{} (pool: {})...", id, getConnectionStats());
         }
-        HttpClient client = getClient();
-        HystrixCommand<String> creation = getCommand(UpdateDataSet.class, client, id, dataSetContent);
+        HystrixCommand<String> creation = getCommand(UpdateDataSet.class, id, dataSetContent);
         String result = creation.execute();
         LOG.debug("Dataset creation or update for #{} done.", id);
         return result;
@@ -119,8 +120,7 @@ public class DataSetAPI extends APIService {
             LOG.debug("Creating or updating dataset #{} (pool: {})...", datasetId, getConnectionStats());
         }
 
-        final HttpClient client = getClient();
-        final HystrixCommand<Void> creation = getCommand( UpdateColumn.class, client, datasetId, columnId, body );
+        final HystrixCommand<Void> creation = getCommand( UpdateColumn.class, datasetId, columnId, body );
         creation.execute();
 
         LOG.debug("Dataset creation or update for #{} done.", datasetId);
@@ -137,7 +137,6 @@ public class DataSetAPI extends APIService {
             LOG.debug("Requesting dataset #{} (pool: {})...", id, getConnectionStats());
         }
         HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
-        HttpClient client = getClient();
 
         Long sampleValue;
         try {
@@ -146,7 +145,7 @@ public class DataSetAPI extends APIService {
             sampleValue = null;
         }
         
-        HystrixCommand<InputStream> retrievalCommand = getCommand(DataSetGet.class, client, id, metadata, sampleValue);
+        HystrixCommand<InputStream> retrievalCommand = getCommand(DataSetGet.class, id, metadata, sampleValue);
         try (InputStream content = retrievalCommand.execute()){
             IOUtils.copyLarge(content, output);
             output.flush();
@@ -173,9 +172,8 @@ public class DataSetAPI extends APIService {
         }
 
         HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
-        HttpClient client = getClient();
 
-        HystrixCommand<DataSetMetadata> getMetadataCommand = getCommand(DataSetGetMetadata.class, client, id);
+        HystrixCommand<DataSetMetadata> getMetadataCommand = getCommand(DataSetGetMetadata.class, id);
         final DataSetMetadata metadata = getMetadataCommand.execute();
 
         if (LOG.isDebugEnabled()) {
@@ -202,8 +200,7 @@ public class DataSetAPI extends APIService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Cloning dataset (pool: {} )...", getConnectionStats());
         }
-        HttpClient client = getClient();
-        HystrixCommand<HttpResponse> creation = getCommand(CloneDataSet.class, client, id, folderPath, cloneName);
+        HystrixCommand<HttpResponse> creation = getCommand(CloneDataSet.class, id, folderPath, cloneName);
         HttpResponse result = creation.execute();
         LOG.debug("Dataset clone done.");
         try {
@@ -232,8 +229,7 @@ public class DataSetAPI extends APIService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Moving dataset (pool: {} )...", getConnectionStats());
         }
-        HttpClient client = getClient();
-        HystrixCommand<HttpResponse> creation = getCommand(MoveDataSet.class, client, //
+        HystrixCommand<HttpResponse> creation = getCommand(MoveDataSet.class, //
                 dataSetId, //
                 dataSetMoveRequest.getFolderPath(), //
                 dataSetMoveRequest.getNewFolderPath(), //
@@ -263,8 +259,7 @@ public class DataSetAPI extends APIService {
             LOG.debug("Requesting dataset #{} (pool: {})...", id, getConnectionStats());
         }
         HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
-        HttpClient client = getClient();
-        HystrixCommand<InputStream> retrievalCommand = getCommand(DataSetPreview.class, client, id, metadata, sheetName);
+        HystrixCommand<InputStream> retrievalCommand = getCommand(DataSetPreview.class, id, metadata, sheetName);
         try (InputStream content = retrievalCommand.execute()) {
             IOUtils.copyLarge(content, output);
             output.flush();
@@ -285,8 +280,7 @@ public class DataSetAPI extends APIService {
             LOG.debug("Listing datasets (pool: {})...", getConnectionStats());
         }
         HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
-        HttpClient client = getClient();
-        HystrixCommand<InputStream> listCommand = getCommand(DataSetList.class, client, sort, order);
+        HystrixCommand<InputStream> listCommand = getCommand(DataSetList.class, sort, order);
         try (InputStream content = listCommand.execute()) {
             IOUtils.copyLarge(content, output);
             output.flush();
@@ -319,8 +313,7 @@ public class DataSetAPI extends APIService {
             LOG.debug("Listing compatible datasets (pool: {})...", getConnectionStats());
         }
         HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
-        HttpClient client = getClient();
-        HystrixCommand<InputStream> listCommand = getCommand(CompatibleDataSetList.class, client, id, sort, order);
+        HystrixCommand<InputStream> listCommand = getCommand(CompatibleDataSetList.class, id, sort, order);
         try (InputStream content = listCommand.execute()) {
             IOUtils.copyLarge(content, output);
             output.flush();
@@ -353,7 +346,6 @@ public class DataSetAPI extends APIService {
             LOG.debug("Listing compatible preparations (pool: {})...", getConnectionStats());
         }
         HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
-        HttpClient client = getClient();
         try {
             // get the list of compatible data sets
             final ByteArrayOutputStream temp = new ByteArrayOutputStream();
@@ -367,19 +359,18 @@ public class DataSetAPI extends APIService {
             compatibleDataSetIds.add(dataSetId);
 
             // get list of preparations
-            HystrixCommand<InputStream> listCommand = getCommand(PreparationList.class, client, PreparationList.Format.LONG, sort,
+            HystrixCommand<InputStream> listCommand = getCommand(PreparationList.class, PreparationList.Format.LONG, sort,
                     order);
             try {
                 String preparationsJson = IOUtils.toString(listCommand.execute());
-                final Collection<Preparation> preparationsList = builder.build()
-                        .readerFor(new TypeReference<Collection<Preparation>>() {
-                        }).readValue(preparationsJson);
+                final Collection<Preparation> preparationsList = mapper.readerFor(new TypeReference<Collection<Preparation>>() {
+                }).readValue(preparationsJson);
 
                 // filter and keep only data sets ids that are compatible
                 List<Preparation> preparations = preparationsList.stream()
                         .filter(p -> compatibleDataSetIds.contains(p.getDataSetId())).collect(Collectors.toList());
 
-                InputStream content = IOUtils.toInputStream(builder.build().writeValueAsString(preparations));
+                InputStream content = IOUtils.toInputStream(mapper.writeValueAsString(preparations));
                 IOUtils.copyLarge(content, output);
                 output.flush();
                 if (LOG.isDebugEnabled()) {
@@ -402,8 +393,7 @@ public class DataSetAPI extends APIService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Delete dataset #{} (pool: {})...", dataSetId, getConnectionStats());
         }
-        HttpClient client = getClient();
-        HystrixCommand<Void> deleteCommand = getCommand(DataSetDelete.class, client, dataSetId);
+        HystrixCommand<Void> deleteCommand = getCommand(DataSetDelete.class, dataSetId);
 
         deleteCommand.execute();
 
@@ -420,8 +410,7 @@ public class DataSetAPI extends APIService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Ask certification for dataset #{}", dataSetId);
         }
-        HttpClient client = getClient();
-        HystrixCommand<Void> command = getCommand(DatasetCertification.class, client, dataSetId);
+        HystrixCommand<Void> command = getCommand(DatasetCertification.class, dataSetId);
         command.execute();
     }
 
@@ -432,12 +421,11 @@ public class DataSetAPI extends APIService {
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Data set id to get suggestions from.") String dataSetId,
             final OutputStream output) {
         // Get dataset metadata
-        HttpClient client = getClient();
-        HystrixCommand<DataSetMetadata> retrieveMetadata = getCommand(DataSetGetMetadata.class, client, dataSetId);
+        HystrixCommand<DataSetMetadata> retrieveMetadata = getCommand(DataSetGetMetadata.class, dataSetId);
         // Asks transformation service for suggested actions for column type and domain...
-        HystrixCommand<String> getSuggestedActions = getCommand(SuggestDataSetActions.class, client, retrieveMetadata);
+        HystrixCommand<String> getSuggestedActions = getCommand(SuggestDataSetActions.class, retrieveMetadata);
         // ... also adds lookup actions
-        HystrixCommand<InputStream> getLookupActions = getCommand(SuggestLookupActions.class, client, getSuggestedActions,
+        HystrixCommand<InputStream> getLookupActions = getCommand(SuggestLookupActions.class, getSuggestedActions,
                 dataSetId);
         // Returns actions
         try (InputStream content = getLookupActions.execute()) {
@@ -457,8 +445,7 @@ public class DataSetAPI extends APIService {
         if (LOG.isDebugEnabled()) {
             LOG.debug((unset ? "Unset" : "Set") + " favorite dataset #{} (pool: {})...", id, getConnectionStats());
         }
-        HttpClient client = getClient();
-        HystrixCommand<String> creation = getCommand(SetFavorite.class, client, id, unset);
+        HystrixCommand<String> creation = getCommand(SetFavorite.class, id, unset);
         String result = creation.execute();
         LOG.debug("Set Favorite for user (can'tget user now) #{} done.", id);
         return result;
@@ -468,10 +455,10 @@ public class DataSetAPI extends APIService {
         final String json;
         try {
             json = new String(byteArray.toByteArray());
-            final T object = builder.build().readerFor(type).readValue(json);
+            final T object = mapper.readerFor(type).readValue(json);
             return object;
         } catch (IOException e) {
-            throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON);
+            throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
         } finally {
             IOUtils.closeQuietly(byteArray);
         }
@@ -480,10 +467,11 @@ public class DataSetAPI extends APIService {
     @RequestMapping(value = "/api/datasets/encodings", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List supported dataset encodings.", notes = "Returns the supported dataset encodings.")
     @Timed
+    @PublicAPI
     public void listEncodings(final OutputStream output) {
 
         // Get dataset metadata
-        HystrixCommand<InputStream> retrieveEncodings = getCommand(DataSetGetEncodings.class, getClient());
+        HystrixCommand<InputStream> retrieveEncodings = getCommand(DataSetGetEncodings.class);
 
         try (InputStream content = retrieveEncodings.execute()) {
             IOUtils.copyLarge(content, output);

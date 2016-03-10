@@ -11,14 +11,16 @@
 //
 //  ============================================================================
 
-package org.talend.dataprep.api.service.command.common;
+package org.talend.dataprep.command;
+
+import static org.apache.http.HttpHeaders.AUTHORIZATION;
 
 import java.io.IOException;
 
-import com.netflix.hystrix.HystrixInvokable;
-import com.netflix.hystrix.exception.HystrixRuntimeException;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,6 +28,7 @@ import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.http.HttpResponseContext;
 
+import com.netflix.hystrix.exception.HystrixRuntimeException;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
@@ -34,6 +37,14 @@ public class GenericCommandTestService {
     @RequestMapping(value = "/command/test/success", method = RequestMethod.GET, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
     public String success() throws IOException {
         return "success";
+    }
+
+    @RequestMapping(value = "/command/test/authentication/token", method = RequestMethod.GET, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    public String testToken(@RequestHeader(value= AUTHORIZATION) String token) throws IOException {
+        if (StringUtils.isBlank(token)) {
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION);
+        }
+        return token;
     }
 
     @RequestMapping(value = "/command/test/success_with_unknown", method = RequestMethod.GET, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)

@@ -17,7 +17,7 @@ import java.util.List;
 
 import org.talend.dataprep.api.preparation.Action;
 
-public class PreviewUpdateInput {
+public class PreviewUpdateParameters {
 
     private Action action;
     private List<Integer> tdpIds;

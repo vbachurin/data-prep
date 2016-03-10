@@ -48,5 +48,10 @@ public class NoOpLockFactory implements LockFactory {
         public String getKey() {
             return id;
         }
+
+        @Override
+        public boolean tryLock() {
+            return true;
+        }
     }
 }

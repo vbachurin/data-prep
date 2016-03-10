@@ -68,8 +68,7 @@ export default function DatasetXlsPreviewCtrl($timeout, $state, $stateParams, st
                 vm.visible = false;
             })
             .then(() => {
-                StateService.setPreviousState('nav.index.datasets');
-                StateService.setPreviousStateOptions({folderPath: $stateParams.folderPath});
+                StateService.setPreviousRoute('nav.index.datasets', {folderPath: $stateParams.folderPath});
                 $state.go('playground.dataset', {datasetid: vm.metadata.id});
             });
     };

@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.talend.dataprep.info.ManifestInfo;
 import org.talend.dataprep.info.Version;
 import org.talend.dataprep.metrics.Timed;
+import org.talend.dataprep.security.PublicAPI;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -32,6 +33,7 @@ public class VersionService {
     @RequestMapping(value = "/version", method = GET)
     @ApiOperation(value = "Get the version of the service", produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
+    @PublicAPI
     public Version version() {
         ManifestInfo manifestInfo = ManifestInfo.getInstance();
         return new Version(manifestInfo.getVersionId(), manifestInfo.getBuildId());

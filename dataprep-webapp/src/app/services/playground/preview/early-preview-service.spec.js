@@ -1,4 +1,4 @@
-describe('Early Preview Service', function () {
+describe('Early Preview Service', () => {
     'use strict';
 
     var stateMock;
@@ -10,16 +10,18 @@ describe('Early Preview Service', function () {
     var transformation;
     var params;
 
-    beforeEach(angular.mock.module('data-prep.services.playground', function ($provide) {
-        stateMock = {playground: {
-            dataset: dataset,
-            preparation: preparation,
-            grid: {}
-        }};
+    beforeEach(angular.mock.module('data-prep.services.playground', ($provide) => {
+        stateMock = {
+            playground: {
+                dataset: dataset,
+                preparation: preparation,
+                grid: {}
+            }
+        };
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(inject(function (PlaygroundService, PreviewService, RecipeService, EarlyPreviewService) {
+    beforeEach(inject(($q, PlaygroundService, PreviewService, RecipeService, EarlyPreviewService) => {
         stateMock.playground.grid.selectedColumn = column;
         stateMock.playground.grid.selectedLine = line;
 
@@ -34,12 +36,12 @@ describe('Early Preview Service', function () {
 
         spyOn(RecipeService, 'earlyPreview').and.returnValue();
         spyOn(RecipeService, 'cancelEarlyPreview').and.returnValue();
-        spyOn(PreviewService, 'getPreviewAddRecords').and.returnValue();
+        spyOn(PreviewService, 'getPreviewAddRecords').and.returnValue($q.when());
         spyOn(PreviewService, 'cancelPreview').and.returnValue();
         spyOn(EarlyPreviewService, 'cancelPendingPreview').and.returnValue();
     }));
 
-    it('should trigger preview without preparation id after a 1s delay', inject(function ($timeout, PreviewService, EarlyPreviewService, RecipeService) {
+    it('should trigger preview without preparation id after a 1s delay', inject(($timeout, PreviewService, EarlyPreviewService, RecipeService) => {
         //when
         stateMock.playground.preparation = null;
         EarlyPreviewService.earlyPreview(transformation, transfoScope)(params);
@@ -73,7 +75,7 @@ describe('Early Preview Service', function () {
         );
     }));
 
-    it('should trigger preview with preparation id after a 1s delay', inject(function ($timeout, PreviewService, EarlyPreviewService, RecipeService) {
+    it('should trigger preview with preparation id after a 1s delay', inject(($timeout, PreviewService, EarlyPreviewService, RecipeService) => {
         //when
         EarlyPreviewService.earlyPreview(transformation, transfoScope)(params);
         expect(PreviewService.getPreviewAddRecords).not.toHaveBeenCalled();
@@ -106,7 +108,7 @@ describe('Early Preview Service', function () {
         );
     }));
 
-    it('should cancel pending early preview', inject(function ($timeout, RecipeService, PreviewService, EarlyPreviewService) {
+    it('should cancel pending early preview', inject(($timeout, RecipeService, PreviewService, EarlyPreviewService) => {
         //given
         EarlyPreviewService.earlyPreview(transformation, transfoScope)(params);
         expect(RecipeService.earlyPreview).not.toHaveBeenCalled();
@@ -121,7 +123,7 @@ describe('Early Preview Service', function () {
         expect(PreviewService.getPreviewAddRecords).not.toHaveBeenCalled();
     }));
 
-    it('should cancel current early preview after a 100ms delay', inject(function ($timeout, RecipeService, EarlyPreviewService, PreviewService) {
+    it('should cancel current early preview after a 100ms delay', inject(($timeout, RecipeService, EarlyPreviewService, PreviewService) => {
         //when
         EarlyPreviewService.cancelEarlyPreview();
         expect(RecipeService.cancelEarlyPreview).not.toHaveBeenCalled();
@@ -133,7 +135,7 @@ describe('Early Preview Service', function () {
         expect(PreviewService.cancelPreview).toHaveBeenCalled();
     }));
 
-    it('should NOT trigger preview when it is disabled', inject(function ($timeout, PreviewService, EarlyPreviewService, RecipeService) {
+    it('should NOT trigger preview when it is disabled', inject(($timeout, PreviewService, EarlyPreviewService, RecipeService) => {
         //given
         EarlyPreviewService.deactivatePreview();
 
@@ -146,7 +148,7 @@ describe('Early Preview Service', function () {
         expect(PreviewService.getPreviewAddRecords).not.toHaveBeenCalled();
     }));
 
-    it('should NOT cancel current early preview when it is disabled', inject(function ($timeout, RecipeService, EarlyPreviewService, PreviewService) {
+    it('should NOT cancel current early preview when it is disabled', inject(($timeout, RecipeService, EarlyPreviewService, PreviewService) => {
         //given
         EarlyPreviewService.deactivatePreview();
 
@@ -159,7 +161,7 @@ describe('Early Preview Service', function () {
         expect(PreviewService.cancelPreview).not.toHaveBeenCalled();
     }));
 
-    it('should trigger preview when it is enabled', inject(function ($timeout, PreviewService, EarlyPreviewService, RecipeService) {
+    it('should trigger preview when it is enabled', inject(($timeout, PreviewService, EarlyPreviewService, RecipeService) => {
         //given
         EarlyPreviewService.deactivatePreview();
         EarlyPreviewService.earlyPreview(transformation, transfoScope)(params);

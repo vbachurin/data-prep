@@ -18,13 +18,15 @@ export const state = {};
  * @name data-prep.services.state.service:StateService
  * @description Entry level for State services
  */
-export function StateService(PlaygroundStateService, playgroundState, //
+export function StateService(RouteStateService, routeState, //
+                             PlaygroundStateService, playgroundState, //
                              DatasetStateService, datasetState, //
                              EasterEggsStateService, easterEggsState, //
                              InventoryStateService, inventoryState,
                              FeedbackStateService, feedbackState) {
     'ngInject';
 
+    state.route = routeState;
     state.playground = playgroundState;
     state.dataset = datasetState;
     state.easterEggsState = easterEggsState;
@@ -32,6 +34,13 @@ export function StateService(PlaygroundStateService, playgroundState, //
     state.feedback = feedbackState;
 
     return {
+        //route
+        setPreviousRoute: RouteStateService.setPrevious,
+        setNextRoute: RouteStateService.setNext,
+        resetPreviousRoute: RouteStateService.resetPrevious,
+        resetNextRoute: RouteStateService.resetNext,
+        resetRoute: RouteStateService.reset.bind(RouteStateService),
+
         //playground
         resetPlayground: PlaygroundStateService.reset,
         setCurrentDataset: PlaygroundStateService.setDataset,
@@ -40,8 +49,6 @@ export function StateService(PlaygroundStateService, playgroundState, //
         setIsFetchingStats: PlaygroundStateService.setIsFetchingStats,
         setNameEditionMode: PlaygroundStateService.setNameEditionMode,
         setPreparationName: PlaygroundStateService.setPreparationName,
-        setPreviousState: PlaygroundStateService.setPreviousState,
-        setPreviousStateOptions: PlaygroundStateService.setPreviousStateOptions,
         updateDatasetStatistics: PlaygroundStateService.updateDatasetStatistics,
         updateDatasetRecord: PlaygroundStateService.updateDatasetRecord,
         setCandidatePreparations: PlaygroundStateService.setCandidatePreparations,
