@@ -52,7 +52,7 @@ public class CSVSerializer implements Serializer {
             Runnable r = () -> {
                 final Map<String, String> parameters = metadata.getContent().getParameters();
                 final String separator = parameters.get(CSVFormatGuess.SEPARATOR_PARAMETER);
-                try (CSVReader reader = new CSVReader(new InputStreamReader(rawContent), separator.charAt(0))) {
+                try (CSVReader reader = new CSVReader(new InputStreamReader(rawContent, metadata.getEncoding()), separator.charAt(0))) {
                     JsonGenerator generator = new JsonFactory().createGenerator(jsonOutput);
                     int i = 0;
                     while (i++ < metadata.getContent().getNbLinesInHeader() ) {

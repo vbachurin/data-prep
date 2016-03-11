@@ -100,4 +100,18 @@ public class CSVSerializerTest extends AbstractSchemaTestUtils {
         InputStream expected = this.getClass().getResourceAsStream("simple.csv_expected.json");
         Assert.assertThat(actual, sameJSONAsFile(expected));
     }
+
+    @Test
+    public void should_serialize_csv_with_the_specified_encoding() throws IOException {
+        InputStream inputStream = this.getClass().getResourceAsStream("x_mac_roman.csv");
+        DataSetMetadata datasetMetadata = ioTestUtils.getSimpleDataSetMetadata("Titre", "Pr�nom");
+        datasetMetadata.getContent().setNbLinesInHeader(1);
+        datasetMetadata.setEncoding("x-MacRoman");
+
+        InputStream input = serializer.serialize(inputStream, datasetMetadata);
+        String actual = IOUtils.toString(input);
+
+        String expected = "[{\"0000\":\",\\\"GÈrard\",\"0001\":null}]";
+        Assert.assertEquals(expected, actual);
+    }
 }
