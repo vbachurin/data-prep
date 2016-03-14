@@ -46,7 +46,13 @@ public class PipelineTransformer implements Transformer {
                 .withActions(actionParser.parse(configuration.getActions()))
                 .withInitialMetadata(rowMetadata)
                 .withInlineAnalysis(analyzerService::schemaAnalysis)
-                .withDelayedAnalysis(analyzerService::full)
+                .withDelayedAnalysis(columns -> {
+                    if (columns.isEmpty()) {
+                        return NullAnalyzer.INSTANCE;
+                    } else {
+                        return analyzerService.full(columns);
+                    }
+                })
                 .withOutput(() -> new WriterNode(writer))
                 .withContext(configuration.getTransformationContext())
                 .withStatisticsAdapter(adapter)
