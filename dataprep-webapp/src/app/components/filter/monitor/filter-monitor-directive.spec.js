@@ -20,7 +20,6 @@ describe('Filter monitor directive', function() {
     beforeEach(angular.mock.module('htmlTemplates'));
     beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
-            'REMOVE_ALL_FILTER': 'Remove all filters',
             'NB_LINES_MATCHING_FILTERS': '{{percentage}}% of lines are matching your filter(s)'
         });
         $translateProvider.preferredLanguage('en');
@@ -31,10 +30,10 @@ describe('Filter monitor directive', function() {
         createElement = function() {
             element = angular.element('<filter-monitor ' +
                 'filters="filters" ' +
-                'on-reset="removeAllFilters()" ' +
+                'on-toogle="toogle()" ' +
                 'nb-lines="nbLines" ' +
                 'nb-total-lines="nbTotalLines" ' +
-                'percentage="percentage"></filter-monitor>');
+                'percentage="percentage" state="state"></filter-monitor>');
             $compile(element)(scope);
             scope.$digest();
         };
@@ -57,18 +56,6 @@ describe('Filter monitor directive', function() {
             expect(element.find('#reset-filters').length).toBe(0);
         });
 
-        it('should render "remove all" icon when there are filters', function() {
-            //given
-            scope.filters = [{}];
-
-            //when
-            createElement();
-
-            //then
-            expect(element.find('#reset-filters').length).toBe(1);
-            expect(element.find('#reset-filters').attr('title')).toBe('Remove all filters');
-        });
-
         it('should render stats', function() {
             //given
             scope.percentage = 25;
@@ -86,18 +73,19 @@ describe('Filter monitor directive', function() {
     });
 
     describe('actions', function() {
-        it('should execute reset callback on "remove all" icon click', function() {
+        it('should execute reset callback on "toogle" icon click', function() {
             //given
             scope.filters = [{}];
             createElement();
             var ctrl = element.controller('filterMonitor');
-            ctrl.onReset = jasmine.createSpy('onReset');
+            spyOn(ctrl,'onToogle');
 
             //when
-            element.find('#reset-filters').click();
+            var ngModelController = element.find('input').controller('ngModel');
+            ngModelController.$setViewValue('true');
 
             //then
-            expect(ctrl.onReset).toHaveBeenCalled();
+            expect(ctrl.onToogle).toHaveBeenCalled();
         });
     });
 });

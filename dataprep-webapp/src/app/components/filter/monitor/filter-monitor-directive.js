@@ -17,10 +17,11 @@ export default function FilterMonitor() {
         templateUrl: 'app/components/filter/monitor/filter-monitor.html',
         scope: {
             filters: '=',
-            onReset: '&',
+            onToogle: '&',
             nbLines: '=',
             nbTotalLines: '=',
-            percentage: '='
+            percentage: '=',
+            state: "="
         },
         bindToController: true,
         controller: () => {},

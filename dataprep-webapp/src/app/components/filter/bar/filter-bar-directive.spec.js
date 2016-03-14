@@ -16,12 +16,20 @@ describe('Filter bar directive', function() {
 
     var scope, createElement, element;
 
-    beforeEach(angular.mock.module('data-prep.filter-bar'));
+    var stateMock;
+    beforeEach(angular.mock.module('data-prep.filter-bar', function($provide) {
+        stateMock = {playground: {
+            filter : {
+                gridFilters: [{}]
+            }
+        }};
+        $provide.constant('state', stateMock);
+    }));
+
     beforeEach(angular.mock.module('htmlTemplates'));
     beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
-            'FILTER': 'Search and filter',
-            'COLON': ': '
+            'REMOVE_ALL_FILTERS': 'Remove all filters'
         });
         $translateProvider.preferredLanguage('en');
     }));
@@ -40,12 +48,27 @@ describe('Filter bar directive', function() {
         element.remove();
     });
 
-    it('should render filter title', function() {
+    it('should render "remove all" icon when there are filters', function() {
         //when
         createElement();
 
         //then
-        expect(element.find('.title').eq(0).text()).toBe('Search and filter: ');
+        expect(element.find('#reset-filters').length).toBe(1);
+        expect(element.find('#reset-filters').attr('title')).toBe('Remove all filters');
+    });
+
+    it('should execute reset callback on "remove all" icon click', function() {
+        //given
+        createElement();
+
+        var ctrl = element.controller('filterBar');
+        ctrl.filterService.removeAllFilters = jasmine.createSpy('removeAllFilters');
+
+        //when
+        element.find('#reset-filters').click();
+
+        //then
+        expect(ctrl.filterService.removeAllFilters).toHaveBeenCalled();
     });
 
     it('should render filter search', function() {

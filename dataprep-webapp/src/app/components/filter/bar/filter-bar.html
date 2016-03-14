@@ -14,19 +14,27 @@
   -->
 
 <div id="filter-bar">
-    <div class="title"><span translate-once="FILTER"></span><span translate-once="COLON"></span></div>
+    <filter-monitor class="monitor"
+                    filters="filterBarCtrl.state.playground.filter.gridFilters"
+                    state="filterBarCtrl.state.playground.filter.filtersEnabled"
+                    on-toogle="filterBarCtrl.filterService.toggleFilters()"
+                    nb-lines="filterBarCtrl.state.playground.grid.nbLines"
+                    nb-total-lines="filterBarCtrl.state.playground.grid.nbTotalLines"
+                    percentage="filterBarCtrl.state.playground.grid.displayLinesPercentage"
+                    title="{{::'TOOGLE_ALL_FILTERS' | translate}}"></filter-monitor>
 
     <filter-search class="search"></filter-search>
 
     <filter-list class="list"
                  filters="filterBarCtrl.state.playground.filter.gridFilters"
                  on-filter-change="filterBarCtrl.filterService.updateFilter(filter, value)"
-                 on-filter-remove="filterBarCtrl.filterService.removeFilter(filter)"></filter-list>
+                 on-filter-remove="filterBarCtrl.filterService.removeFilter(filter)"
+                 filters-enabled="filterBarCtrl.state.playground.filter.filtersEnabled"></filter-list>
 
-    <filter-monitor class="monitor"
-                    filters="filterBarCtrl.state.playground.filter.gridFilters"
-                    on-reset="filterBarCtrl.filterService.removeAllFilters()"
-                    nb-lines="filterBarCtrl.state.playground.grid.nbLines"
-                    nb-total-lines="filterBarCtrl.state.playground.grid.nbTotalLines"
-                    percentage="filterBarCtrl.state.playground.grid.displayLinesPercentage"></filter-monitor>
+    <div id="reset-filters"
+         class="filters-remove"
+         data-icon="e"
+         ng-click="filterBarCtrl.filterService.removeAllFilters()"
+         title="{{::'REMOVE_ALL_FILTERS' | translate}}"
+         ng-if="filterBarCtrl.state.playground.filter.gridFilters.length"></div>
 </div>

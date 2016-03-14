@@ -78,6 +78,8 @@ export function StateService(PlaygroundStateService, playgroundState, //
         removeGridFilter: PlaygroundStateService.removeGridFilter,
         removeAllGridFilters: PlaygroundStateService.removeAllGridFilters,
         updateGridFilter: PlaygroundStateService.updateGridFilter,
+        enableFilters: PlaygroundStateService.enableFilters,
+        disableFilters: PlaygroundStateService.disableFilters,
 
         //playground - Suggestions
         setColumnTransformations: PlaygroundStateService.setColumnTransformations,

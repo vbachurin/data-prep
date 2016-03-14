@@ -16,6 +16,23 @@ describe('Filter state service', function () {
 
     beforeEach(angular.mock.module('data-prep.services.state'));
 
+    describe('toogle', function() {
+        it('should enable filter', inject(function(filterState, FilterStateService) {
+            //when
+            FilterStateService.enableFilters();
+
+            //then
+            expect(filterState.filtersEnabled).toBe(true);
+        }));
+        it('should disable filter', inject(function(filterState, FilterStateService) {
+            //when
+            FilterStateService.disableFilters();
+
+            //then
+            expect(filterState.filtersEnabled).toBe(false);
+        }));
+    });
+
     describe('reset', function() {
         it('should reset grid filter', inject(function(filterState, FilterStateService) {
             //given

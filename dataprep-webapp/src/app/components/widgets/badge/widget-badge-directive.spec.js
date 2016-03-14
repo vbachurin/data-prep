@@ -45,9 +45,10 @@ describe('Badge directive', function () {
         beforeEach(inject(function ($rootScope, $compile, $timeout) {
             scope = $rootScope.$new();
             scope.close = fns.close;
+            scope.enabled = true;
 
             createElement = function () {
-                var template = '<talend-badge on-close="close()" text="Displayed text"></talend-badge>';
+                var template = '<talend-badge on-close="close()" text="Displayed text" enabled="enabled"></talend-badge>';
                 element = $compile(template)(scope);
                 $timeout.flush();
                 scope.$digest();

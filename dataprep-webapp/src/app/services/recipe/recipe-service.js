@@ -460,7 +460,7 @@ export default function RecipeService(state, PreparationService, TransformationS
                 lastActiveStep: activeThresholdStep
             };
 
-        var stepFilters = state.playground.filter.applyTransformationOnFilters ?
+        var stepFilters = state.playground.filter.applyTransformationOnFilters && state.playground.filter.filtersEnabled ?
             state.playground.filter.gridFilters.slice(0) :
             [];
 

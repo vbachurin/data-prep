@@ -13,7 +13,8 @@
 
 export const filterState = {
     gridFilters: [],
-    applyTransformationOnFilters: false
+    applyTransformationOnFilters: false,
+    filtersEnabled: true
 };
 
 export function FilterStateService() {
@@ -25,7 +26,9 @@ export function FilterStateService() {
         addGridFilter: addGridFilter,
         updateGridFilter: updateGridFilter,
         removeGridFilter: removeGridFilter,
-        removeAllGridFilters: removeAllGridFilters
+        removeAllGridFilters: removeAllGridFilters,
+        enableFilters: enableFilters,
+        disableFilters: disableFilters
     };
 
     //--------------------------------------------------------------------------------------------------------------
@@ -60,6 +63,14 @@ export function FilterStateService() {
     function removeAllGridFilters() {
         filterState.gridFilters = [];
         filterState.applyTransformationOnFilters = false;
+    }
+
+    function enableFilters() {
+        filterState.filtersEnabled = true;
+    }
+
+    function disableFilters() {
+        filterState.filtersEnabled = false;
     }
 
     //--------------------------------------------------------------------------------------------------------------

@@ -14,10 +14,14 @@
   -->
 
 <div id="filter-monitor">
-    <a id="reset-filters"
-       title="{{::'REMOVE_ALL_FILTER' | translate}}"
-       ng-if="filterMonitorCtrl.filters.length" data-icon="A"
-       ng-click="filterMonitorCtrl.onReset()"></a>
+    <div class="filter-toogle">
+        <label class="label-switch" ng-if="filterMonitorCtrl.filters.length">
+            <input type="checkbox"
+                   ng-model="filterMonitorCtrl.state"
+                   ng-change="filterMonitorCtrl.onToogle()"/>
+            <div id="recipe-toggle-switch" class="checkbox"></div>
+        </label>
+    </div>
 
     <div id="filters-monitor-stats"
          title="{{ 'NB_LINES_MATCHING_FILTERS' | translate:{percentage: filterMonitorCtrl.percentage} }}">

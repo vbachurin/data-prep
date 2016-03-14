@@ -36,6 +36,8 @@ describe('Playground state service', () => {
         spyOn(FilterStateService, 'removeGridFilter').and.returnValue();
         spyOn(FilterStateService, 'removeAllGridFilters').and.returnValue();
         spyOn(FilterStateService, 'reset').and.returnValue();
+        spyOn(FilterStateService, 'enableFilters').and.returnValue();
+        spyOn(FilterStateService, 'disableFilters').and.returnValue();
         spyOn(LookupStateService, 'reset').and.returnValue();
         spyOn(SuggestionsStateService, 'reset').and.returnValue();
         spyOn(ParametersStateService, 'hide').and.returnValue();
@@ -164,12 +166,28 @@ describe('Playground state service', () => {
             const data = {records: []};
             const filters = [{}, {}];
             filterStateMock.gridFilters = filters;
+            filterStateMock.filtersEnabled = true;
 
             //when
             PlaygroundStateService.setData(data);
 
             //then
             expect(GridStateService.setFilter).toHaveBeenCalledWith(filters, data);
+        }));
+
+        it('should set data with disabled filter', inject((playgroundState, PlaygroundStateService, GridStateService) => {
+            //given
+            expect(GridStateService.setData).not.toHaveBeenCalled();
+            const data = {records: []};
+            const filters = [{}, {}];
+            filterStateMock.gridFilters = filters;
+            filterStateMock.filtersEnabled = false;
+
+            //when
+            PlaygroundStateService.setData(data);
+
+            //then
+            expect(GridStateService.setFilter).toHaveBeenCalledWith([], data);
         }));
     });
 
@@ -280,7 +298,7 @@ describe('Playground state service', () => {
                 expect(FilterStateService.addGridFilter).toHaveBeenCalledWith(filter);
             }));
 
-            it('should apply filters in grid', inject((playgroundState, PlaygroundStateService, GridStateService) => {
+            it('should apply filters in grid', inject((playgroundState, PlaygroundStateService, GridStateService, FilterStateService) => {
                 //given
                 const filter = {column: '0001'};
                 const filters = [{}, {}];
@@ -293,6 +311,7 @@ describe('Playground state service', () => {
 
                 //then
                 expect(GridStateService.setFilter).toHaveBeenCalledWith(filters, data);
+                expect(FilterStateService.enableFilters).toHaveBeenCalledWith();
             }));
         });
 
@@ -309,7 +328,7 @@ describe('Playground state service', () => {
                 expect(FilterStateService.updateGridFilter).toHaveBeenCalledWith(oldFilter, newFilter);
             }));
 
-            it('should apply filters in grid', inject((playgroundState, PlaygroundStateService, GridStateService) => {
+            it('should apply filters in grid', inject((playgroundState, PlaygroundStateService, GridStateService, FilterStateService) => {
                 //given
                 const oldFilter = {column: '0001'};
                 const newFilter = {column: '0002'};
@@ -323,6 +342,7 @@ describe('Playground state service', () => {
 
                 //then
                 expect(GridStateService.setFilter).toHaveBeenCalledWith(filters, data);
+                expect(FilterStateService.enableFilters).toHaveBeenCalledWith();
             }));
         });
 
@@ -373,6 +393,37 @@ describe('Playground state service', () => {
 
                 //then
                 expect(GridStateService.setFilter).toHaveBeenCalledWith(filters, data);
+            }));
+        });
+
+        describe('toogle', () => {
+            it('should enable filters', inject((playgroundState, PlaygroundStateService, FilterStateService, GridStateService) => {
+                //given
+                const filters = [{}, {}];
+                const data = {records: []};
+                filterStateMock.gridFilters = filters;
+                playgroundState.data = data;
+
+                //when
+                PlaygroundStateService.enableFilters();
+                //then
+                expect(FilterStateService.enableFilters).toHaveBeenCalled();
+                expect(GridStateService.setFilter).toHaveBeenCalledWith(filterStateMock.gridFilters, playgroundState.data);
+            }));
+
+            it('should disable filters', inject((playgroundState, PlaygroundStateService, FilterStateService, GridStateService) => {
+                //given
+                const filters = [{}, {}];
+                const data = {records: []};
+                filterStateMock.gridFilters = filters;
+                playgroundState.data = data;
+
+                //when
+                PlaygroundStateService.disableFilters();
+
+                //then
+                expect(FilterStateService.disableFilters).toHaveBeenCalledWith();
+                expect(GridStateService.setFilter).toHaveBeenCalledWith([], playgroundState.data);
             }));
         });
     });

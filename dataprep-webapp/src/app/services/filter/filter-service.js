@@ -1,15 +1,15 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
 
 /**
  * @ngdoc service
@@ -36,7 +36,8 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
         addFilterAndDigest: addFilterAndDigest,
         updateFilter: updateFilter,
         removeAllFilters: removeAllFilters,
-        removeFilter: removeFilter
+        removeFilter: removeFilter,
+        toggleFilters: toggleFilters
     };
     return service;
 
@@ -515,6 +516,21 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
      */
     function pushFilter(filter) {
         StateService.addGridFilter(filter);
+        StatisticsService.updateFilteredStatistics();
+    }
+
+    /**
+     * @ngdoc method
+     * @name toggleFilters
+     * @methodOf data-prep.services.filter.service:FilterService
+     * @description Push a filter in the filter list
+     */
+    function toggleFilters() {
+        if (state.playground.filter.filtersEnabled) {
+            StateService.disableFilters();
+        } else {
+            StateService.enableFilters();
+        }
         StatisticsService.updateFilteredStatistics();
     }
 }

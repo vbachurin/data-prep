@@ -1067,7 +1067,8 @@ describe('Recipe service', function () {
 
             stateMock.playground.filter = {
                 applyTransformationOnFilters: true,
-                gridFilters: [88]
+                gridFilters: [88],
+                filtersEnabled: true
             };
         }));
 
@@ -1107,6 +1108,48 @@ describe('Recipe service', function () {
                 preview: true,
                 inactive: false,
                 filters:[88]
+            });
+            expect(recipe[3].transformation.parameters).not.toBe(transformation.parameters);
+        }));
+
+
+        it('should create a new recipe with preview step appended with disabled filter', inject(function(RecipeService) {
+            //when
+            stateMock.playground.filter.filtersEnabled = false;
+            RecipeService.earlyPreview(transformation, params);
+
+            //then
+            var recipe = RecipeService.getRecipe();
+            expect(recipe).not.toBe(originalRecipe);
+            expect(recipe.length).toBe(4);
+            expect(recipe[0]).toBe(originalRecipe[0]);
+            expect(recipe[1]).toBe(originalRecipe[1]);
+            expect(recipe[2]).toBe(originalRecipe[2]);
+            expect(recipe[3]).toEqual({
+                column: {
+                    id: column.id,
+                    name: column.name
+                },
+                row: {id: undefined},
+                transformation: {
+                    stepId: 'early preview',
+                    name: transformation.name,
+                    label: transformation.label,
+                    description: transformation.description,
+                    parameters: [
+                        { name: 'value', type: 'string', value: 'James', initialValue: 'James', inputType: 'text' },
+                        { name: 'replace', type: 'string', value: 'Jimmy', initialValue: 'Jimmy', inputType: 'text' },
+                        { name: 'dummy param', type: 'select', value: undefined, initialValue: undefined, inputType: 'text' }
+                    ],
+                    dynamic: transformation.dynamic
+                },
+                actionParameters: {
+                    action: transformation.name,
+                    parameters: params
+                },
+                preview: true,
+                inactive: false,
+                filters: []
             });
             expect(recipe[3].transformation.parameters).not.toBe(transformation.parameters);
         }));

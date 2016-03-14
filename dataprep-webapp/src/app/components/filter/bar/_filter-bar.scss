@@ -14,17 +14,16 @@
 #filter-bar {
   background-color: $shadow-gray;
   color: $dark-gray;
-  min-height: 45px;
+  min-height: 60px;
+  padding: 4px 0;
   @include display(flex);
   @include flex-direction(row);
   @include align-items(center);
-
-  .title {
-    font-size: .9em;
-    @include flex-grow(0);
-    @include flex-shrink(0);
-    @include flex-basis(150px);
-    padding-left: 15px;
+  @include label-switch();
+  .label-switch {
+    input[type="checkbox"] + .checkbox {
+      margin: 0;
+    }
   }
 
   .search {
@@ -42,6 +41,15 @@
   .monitor {
     @include flex-grow(0);
     @include flex-shrink(0);
-    @include flex-basis(100px);
+    @include flex-basis(80px);
+  }
+
+  .filters-remove {
+    font-size: 0.7em;
+    padding-right: 10px;
+
+    &:hover{
+      color: $blue;
+    }
   }
 }

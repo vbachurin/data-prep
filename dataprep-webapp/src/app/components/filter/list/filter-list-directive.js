@@ -31,7 +31,8 @@ export default function FilterList() {
         scope: {
             filters: '=',
             onFilterChange: '&',
-            onFilterRemove: '&'
+            onFilterRemove: '&',
+            filtersEnabled: "<"
         },
         bindToController: true,
         controllerAs: 'filterCtrl',

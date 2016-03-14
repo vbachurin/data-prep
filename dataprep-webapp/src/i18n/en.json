@@ -88,7 +88,8 @@
   "NB_LINES_MATCHING_FILTERS": "{{percentage}}% of lines are matching your filter(s)",
   "NEW_FILTER": "New filter...",
   "PREPARATION": "Preparation",
-  "REMOVE_ALL_FILTER": "Remove all filters",
+  "REMOVE_ALL_FILTERS": "Remove all filters",
+  "TOOGLE_ALL_FILTERS": "Enable/Disable all filters",
 
   "_comment": "Buttons",
   "CANCEL": "Cancel",

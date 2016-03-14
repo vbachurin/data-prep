@@ -49,7 +49,8 @@ export default function TalendBadge($timeout) {
             text: '@',
             obj: '=',
             editable: '=',
-            type: '='
+            type: '=',
+            enabled: '<'
         },
         bindToController: true,
         controllerAs: 'badgeCtrl',

@@ -96,13 +96,23 @@ export default function Datagrid($timeout, state, DatagridGridService, DatagridC
              * @ngdoc method
              * @name getFilters
              * @methodOf data-prep.datagrid.directive:Datagrid
-             * @description Get the filter list
+             * @description Get the filters list
              */
             function getFilters() {
                 return state.playground.filter.gridFilters;
             }
 
             /**
+             * @ngdoc method
+             * @name getFiltersState
+             * @methodOf data-prep.datagrid.directive:Datagrid
+             * @description Get the filters state
+             */
+            function getFiltersState() {
+                return state.playground.filter.filtersEnabled;
+            }
+
+                /**
              * @ngdoc method
              * @name getResizeCondition
              * @methodOf data-prep.datagrid.directive:Datagrid
@@ -291,7 +301,7 @@ export default function Datagrid($timeout, state, DatagridGridService, DatagridC
             /**
              * When filter change, displayed values change, so we reset active cell and cell styles
              */
-            scope.$watch(getFilters, onFiltersChange);
+            scope.$watchGroup([getFilters, getFiltersState], onFiltersChange);
 
             /**
              * When lookup is displayed/hidden changes, the grid should be resized fit available space
