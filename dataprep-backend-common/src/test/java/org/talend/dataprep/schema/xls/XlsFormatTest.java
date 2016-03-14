@@ -1,5 +1,6 @@
 package org.talend.dataprep.schema.xls;
 
+import static java.util.Locale.ENGLISH;
 import static org.junit.Assert.assertThat;
 import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
 import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
@@ -12,6 +13,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.data.MapEntry;
+import org.assertj.core.internal.cglib.core.Local;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -458,12 +460,13 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
 
     @Test
     public void read_evaluate_formulas() throws Exception {
+        final Locale defaultLocale = Locale.getDefault();
+        Locale.setDefault(ENGLISH);
 
         String fileName = "000_DTA_DailyTimeLog.xlsm";
-
+        String sheetName = "WEEK SUMMARY";
         FormatGuess formatGuess;
 
-        String sheetName = "WEEK SUMMARY";
 
         try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
             formatGuess = formatGuesser.guess(getRequest(inputStream, UUID.randomUUID().toString()), "UTF-8").getFormatGuess();
@@ -475,12 +478,9 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
         DataSetMetadata dataSetMetadata = metadataBuilder.metadata().id("beer").sheetName(sheetName).build();
 
         try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
-
             List<SchemaParserResult.SheetContent> sheetContents = xlsSchemaParser.parseAllSheets(getRequest(inputStream, "#8"));
-
             List<ColumnMetadata> columnMetadatas = sheetContents.stream()
                     .filter(sheetContent -> sheetName.equals(sheetContent.getName())).findFirst().get().getColumnMetadatas();
-
             logger.debug("columnMetadatas: {}", columnMetadatas);
 
             Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize(33);
@@ -489,19 +489,15 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
         }
 
         List<Map<String, String>> values = getValuesFromFile(fileName, formatGuess, dataSetMetadata);
-
         logger.debug("values: {}", values);
 
         Assertions.assertThat(values.get(4).get("0003")).isNotEmpty().isEqualTo("10/26/15");
-
         Assertions.assertThat(values.get(5).get("0003")).isNotEmpty().isEqualTo("MONDAY");
-
         Assertions.assertThat(values.get(7).get("0003")).isNotEmpty().isEqualTo("8.00");
-
         Assertions.assertThat(values.get(30).get("0003")).isNotEmpty().isEqualTo("6.00");
-
         Assertions.assertThat(values.get(31).get("0003")).isNotEmpty().isEqualTo("18.50");
 
+        Locale.setDefault(defaultLocale);
     }
 
     @Test
