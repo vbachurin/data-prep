@@ -49,6 +49,17 @@ export default function HistoryService($q) {
     };
     return service;
 
+    /**
+     * @ngdoc method
+     * @name isPerforming
+     * @methodOf data-prep.services.history.service:HistoryService
+     * @description Check if an undo or a redo is being performed
+     * @returns {boolean} True if an undo or a redo is in progress
+     */
+    function isPerforming() {
+        return service.undoing || service.redoing;
+    }
+
     //----------------------------------------------------------------------------------------------------
     //-----------------------------------------------ADD HISTORY------------------------------------------
     //----------------------------------------------------------------------------------------------------
@@ -90,7 +101,7 @@ export default function HistoryService($q) {
      * @returns {number} The number of action in history (Truthy if we can undo any action)
      */
     function canUndo() {
-        return history.length;
+        return history.length && !isPerforming();
     }
 
     /**
@@ -132,7 +143,7 @@ export default function HistoryService($q) {
      * @returns {number} The number of action in undone history (Truthy if we can redo any action)
      */
     function canRedo() {
-        return undoneHistory.length;
+        return undoneHistory.length && !isPerforming();
     }
 
     /**

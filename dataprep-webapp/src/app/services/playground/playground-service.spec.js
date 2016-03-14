@@ -55,6 +55,7 @@ describe('Playground Service', function () {
         spyOn(DatagridService, 'updateData').and.returnValue();
         spyOn(DatasetService, 'getContent').and.returnValue($q.when(datasetColumns));
         spyOn(DatasetService, 'updateParameters').and.returnValue($q.when());
+        spyOn(HistoryService, 'addAction').and.returnValue();
         spyOn(HistoryService, 'clear').and.returnValue();
         spyOn(PreparationService, 'create').and.returnValue($q.when(createdPreparation));
         spyOn(PreparationService, 'setHead').and.returnValue($q.when());
@@ -74,24 +75,76 @@ describe('Playground Service', function () {
         spyOn(ExportService, 'reset').and.returnValue();
     }));
 
-    it('should set new name to the preparation name', inject(function ($rootScope, PlaygroundService, PreparationService, StateService) {
-        //given
-        var name = 'My preparation';
-        var newName = 'My new preparation name';
+    describe('update preparation', () => {
+        it('should set new name to the preparation name', inject(function ($rootScope, PlaygroundService, PreparationService, StateService) {
+            //given
+            var name = 'My preparation';
+            var newName = 'My new preparation name';
 
-        PlaygroundService.preparationName = name;
-        stateMock.playground.dataset = {id: '123d120394ab0c53'};
-        stateMock.playground.preparation = {id: 'e85afAa78556d5425bc2'};
+            PlaygroundService.preparationName = name;
+            stateMock.playground.dataset = {id: '123d120394ab0c53'};
+            stateMock.playground.preparation = {id: 'e85afAa78556d5425bc2'};
 
-        //when
-        PlaygroundService.createOrUpdatePreparation(newName);
-        $rootScope.$digest();
+            //when
+            PlaygroundService.createOrUpdatePreparation(newName);
+            $rootScope.$digest();
 
-        //then
-        expect(PreparationService.create).not.toHaveBeenCalled();
-        expect(PreparationService.setName).toHaveBeenCalledWith('e85afAa78556d5425bc2', newName);
-        expect(StateService.setPreparationName).toHaveBeenCalledWith(createdPreparation.name);
-    }));
+            //then
+            expect(PreparationService.create).not.toHaveBeenCalled();
+            expect(PreparationService.setName).toHaveBeenCalledWith('e85afAa78556d5425bc2', newName);
+            expect(StateService.setPreparationName).toHaveBeenCalledWith(createdPreparation.name);
+        }));
+
+        describe('history', function () {
+            var undo, redo;
+            var oldName = 'My preparation';
+            var newName = 'My new preparation name';
+
+            beforeEach(inject(function ($rootScope, PlaygroundService, HistoryService) {
+                //given
+                PlaygroundService.preparationName = oldName;
+                stateMock.playground.dataset = {id: '123d120394ab0c53'};
+                stateMock.playground.preparation = {id: 'e85afAa78556d5425bc2', name: oldName};
+
+                //when
+                PlaygroundService.createOrUpdatePreparation(newName);
+                $rootScope.$digest();
+
+                //then
+                undo = HistoryService.addAction.calls.argsFor(0)[0];
+                redo = HistoryService.addAction.calls.argsFor(0)[1];
+            }));
+
+            it('should add undo/redo actions after append transformation', inject(function (HistoryService) {
+                //then
+                expect(HistoryService.addAction).toHaveBeenCalled();
+            }));
+
+            it('should change preparation name on UNDO', inject(function ($rootScope, PreparationService) {
+                //given
+                expect(PreparationService.setName.calls.count()).toBe(1);
+
+                //when
+                undo();
+
+                //then
+                expect(PreparationService.setName.calls.count()).toBe(2);
+                expect(PreparationService.setName.calls.argsFor(1)).toEqual([stateMock.playground.preparation.id, oldName]);
+            }));
+
+            it('should change preparation name on REDO', inject(function ($rootScope, PreparationService) {
+                //given
+                expect(PreparationService.setName.calls.count()).toBe(1);
+
+                //when
+                redo();
+
+                //then
+                expect(PreparationService.setName.calls.count()).toBe(2);
+                expect(PreparationService.setName.calls.argsFor(1)).toEqual([stateMock.playground.preparation.id, newName]);
+            }));
+        });
+    });
 
     describe('load dataset', function () {
         var dataset = {
@@ -499,7 +552,6 @@ describe('Playground Service', function () {
             spyOn(RecipeService, 'getPreviousStep').and.callFake(function (step) {
                 return step === lastStep ? previousLastStep : null;
             });
-            spyOn(HistoryService, 'addAction').and.returnValue();
         }));
 
         describe('append', function () {

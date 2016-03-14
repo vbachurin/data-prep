@@ -68,4 +68,18 @@ describe('History control directive', function() {
         //then
         expect(HistoryService.redo).toHaveBeenCalled();
     }));
+
+    it('should unregister listener on destroy', inject(function($document) {
+        //given
+        expect($._data(angular.element($document)[0], 'events').keydown).not.toBeDefined();
+        createElement();
+
+        expect($._data(angular.element($document)[0], 'events').keydown).toBeDefined();
+
+        //when
+        scope.$destroy();
+
+        //then
+        expect($._data(angular.element($document)[0], 'events').keydown).not.toBeDefined();
+    }));
 });
