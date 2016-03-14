@@ -2,8 +2,11 @@ package org.talend.dataprep.transformation.pipeline.model;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,6 +57,13 @@ public class InlineAnalysisNode extends AnalysisNode implements Monitored {
         // Analyze received row
         final long start = System.currentTimeMillis();
         try {
+            // Some clean up before order
+            Set<String> columnsToRemove = row.values().entrySet().stream().map(Map.Entry::getKey).collect(Collectors.toSet());
+            for (ColumnMetadata column : rowColumns) {
+                columnsToRemove.remove(column.getId());
+            }
+            columnsToRemove.forEach(row::deleteColumnById);
+            // Analyze row
             final DataSetRow orderedRow = row.order(rowColumns);
             final String[] array = orderedRow.toArray(DataSetRow.SKIP_TDP_ID);
             int filteredOutValues = 0;
@@ -66,7 +76,8 @@ public class InlineAnalysisNode extends AnalysisNode implements Monitored {
             LOGGER.trace("{}/{} value(s) filtered out during analysis (in #{})", filteredOutValues, rowColumns.size(),
                     row.getTdpId());
             inlineAnalyzer.analyze(array);
-            adapter.adapt(rowColumns, inlineAnalyzer.getResult(), filter);
+        } catch (Exception e) {
+            LOGGER.warn("Unexpected exception during on the fly analysis.", e);
         } finally {
             previousColumns = rowColumns;
             totalTime += System.currentTimeMillis() - start;
@@ -110,6 +121,9 @@ public class InlineAnalysisNode extends AnalysisNode implements Monitored {
 
     @Override
     public void signal(Signal signal) {
+        if (signal == Signal.END_OF_STREAM) {
+            adapter.adapt(previousColumns, inlineAnalyzer.getResult(), filter);
+        }
         link.signal(signal);
     }
 

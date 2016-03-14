@@ -118,42 +118,45 @@ public class DelayedAnalysisNode extends AnalysisNode implements Monitored {
                 generator.writeEndObject();
                 generator.flush();
                 // Prepare columns for analysis
-                final List<ColumnMetadata> columns = rowMetadata.getColumns().stream().filter(filter)
-                        .collect(Collectors.toList());
-                LOGGER.debug("Reduced column analysis from {} to {}.", rowMetadata.getColumns().size(), columns.size());
-                try (final Analyzer<Analyzers.Result> delayedAnalyzer = analyzer.apply(columns)) {
-                    // Process it
-                    ObjectMapper mapper = new ObjectMapper();
-                    try (JsonParser parser = mapper.getFactory()
-                            .createParser(new GZIPInputStream(new FileInputStream(transformationDelayed)))) {
-                        final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
-                        final Set<String> columnToAnalyze = columns.stream().map(ColumnMetadata::getId).collect(Collectors.toSet());
-                        dataSet.getRecords().forEach(r -> {
-                            final String[] values = r.order(rowMetadata.getColumns()) //
-                                    .toArray(DataSetRow.SKIP_TDP_ID.and(e -> columnToAnalyze.contains(e.getKey())));
-                            delayedAnalyzer.analyze(values);
-                        });
-                    }
-                    delayedAnalyzer.end();
-                    // Adapt results
-                    List<String> forcedTypes = columns.stream().map(c -> {
-                        if (c.isTypeForced()) {
-                            return c.getType();
-                        } else {
-                            return StringUtils.EMPTY;
+                if (rowMetadata != null) {
+                    final List<ColumnMetadata> columns = rowMetadata.getColumns().stream().filter(filter)
+                            .collect(Collectors.toList());
+                    LOGGER.debug("Reduced column analysis from {} to {}.", rowMetadata.getColumns().size(), columns.size());
+                    LOGGER.debug("Column types: {}.", columns.stream().map(ColumnMetadata::getType).collect(Collectors.toList()));
+                    try (final Analyzer<Analyzers.Result> delayedAnalyzer = analyzer.apply(columns)) {
+                        // Process it
+                        ObjectMapper mapper = new ObjectMapper();
+                        try (JsonParser parser = mapper.getFactory()
+                                .createParser(new GZIPInputStream(new FileInputStream(transformationDelayed)))) {
+                            final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
+                            final Set<String> columnToAnalyze = columns.stream().map(ColumnMetadata::getId).collect(Collectors.toSet());
+                            dataSet.getRecords().forEach(r -> {
+                                final String[] values = r.order(rowMetadata.getColumns()) //
+                                        .toArray(DataSetRow.SKIP_TDP_ID.and(e -> columnToAnalyze.contains(e.getKey())));
+                                delayedAnalyzer.analyze(values);
+                            });
                         }
-                    }).collect(Collectors.toList());
-                    for (ColumnMetadata column : columns) {
-                        // temporary type forced disabled (analyzer was configured with forced type), but other
-                        column.setTypeForced(false);
-                    }
-                    adapter.adapt(columns, delayedAnalyzer.getResult(), filter);
-                    final Iterator<String> iterator = forcedTypes.iterator();
-                    for (ColumnMetadata column : columns) {
-                        final String forcedType = iterator.next();
-                        if(!forcedType.isEmpty()) {
-                            column.setTypeForced(true);
-                            column.setType(forcedType);
+                        delayedAnalyzer.end();
+                        // Adapt results
+                        List<String> forcedTypes = columns.stream().map(c -> {
+                            if (c.isTypeForced()) {
+                                return c.getType();
+                            } else {
+                                return StringUtils.EMPTY;
+                            }
+                        }).collect(Collectors.toList());
+                        for (ColumnMetadata column : columns) {
+                            // temporary type forced disabled (analyzer was configured with forced type), but other
+                            column.setTypeForced(false);
+                        }
+                        adapter.adapt(columns, delayedAnalyzer.getResult(), filter);
+                        final Iterator<String> iterator = forcedTypes.iterator();
+                        for (ColumnMetadata column : columns) {
+                            final String forcedType = iterator.next();
+                            if(!forcedType.isEmpty()) {
+                                column.setTypeForced(true);
+                                column.setType(forcedType);
+                            }
                         }
                     }
                 }

@@ -190,7 +190,6 @@ public class Pipeline implements Node {
             return this;
         }
 
-
         public Pipeline build() {
             // Source
             final SourceNode sourceNode = new SourceNode();
@@ -245,6 +244,11 @@ public class Pipeline implements Node {
             current = buildApplyActions(current, a -> new ActionNode(a, context.in(a.getRowAction())));
             // Analyze (delayed)
             if (!modifiedColumns.isEmpty() || createColumnActions > 0) {
+                // Inline analysis
+                Node inlineAnalysisNode = new InlineAnalysisNode(inlineAnalyzer, filter, adapter);
+                current.setLink(new BasicLink(inlineAnalysisNode));
+                current = inlineAnalysisNode;
+                // Delayed analysis
                 Node delayedAnalysisNode = new DelayedAnalysisNode(delayedAnalyzer, filter, adapter);
                 current.setLink(new BasicLink(delayedAnalysisNode));
                 current = delayedAnalysisNode;
