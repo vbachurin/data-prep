@@ -122,6 +122,7 @@ public class DelayedAnalysisNode extends AnalysisNode implements Monitored {
                     final List<ColumnMetadata> columns = rowMetadata.getColumns().stream().filter(filter)
                             .collect(Collectors.toList());
                     LOGGER.debug("Reduced column analysis from {} to {}.", rowMetadata.getColumns().size(), columns.size());
+                    LOGGER.debug("Column types: {}.", columns.stream().map(ColumnMetadata::getType).collect(Collectors.toList()));
                     try (final Analyzer<Analyzers.Result> delayedAnalyzer = analyzer.apply(columns)) {
                         // Process it
                         ObjectMapper mapper = new ObjectMapper();
