@@ -164,7 +164,9 @@ public class Concat extends ActionMetadata implements ColumnAction, OtherColumnP
         if (parameters.get(MODE_PARAMETER).equals(OTHER_COLUMN_MODE)) {
             ColumnMetadata selectedColumn = rowMetadata.getById(parameters.get(SELECTED_COLUMN_PARAMETER));
             String selectedColumnValue = row.get(selectedColumn.getId());
-            newValue.append( getParameter(parameters, SEPARATOR_PARAMETER, StringUtils.EMPTY) + selectedColumnValue );
+            if (StringUtils.isNotBlank( selectedColumnValue )) {
+                newValue.append( getParameter( parameters, SEPARATOR_PARAMETER, StringUtils.EMPTY ) + selectedColumnValue );
+            }
         }
 
         newValue.append( getParameter(parameters, SUFFIX_PARAMETER, StringUtils.EMPTY));
