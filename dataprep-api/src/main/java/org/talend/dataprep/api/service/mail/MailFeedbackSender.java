@@ -60,7 +60,7 @@ public class MailFeedbackSender extends AbstractFeedbackSender {
         try {
             this.subjectPrefix = AESEncryption.decrypt(subjectPrefix);
         } catch (Exception exc) {
-            LOGGER.debug("Unable to parse given subject prefix used to send feedback mails {}", subjectPrefix);
+            LOGGER.debug("Unable to parse given subject prefix used to send feedback mails {}", subjectPrefix, exc);
         }
     }
 
@@ -69,7 +69,7 @@ public class MailFeedbackSender extends AbstractFeedbackSender {
         try {
             this.bodyPrefix = AESEncryption.decrypt(bodyPrefix);
         } catch (Exception exc) {
-            LOGGER.debug("Unable to parse given body prefix used to send feedback mails {}", bodyPrefix);
+            LOGGER.debug("Unable to parse given body prefix used to send feedback mails {}", bodyPrefix, exc);
         }
     }
 
@@ -78,7 +78,7 @@ public class MailFeedbackSender extends AbstractFeedbackSender {
         try {
             this.bodySuffix = AESEncryption.decrypt(bodySuffix);
         } catch (Exception exc) {
-            LOGGER.debug("Unable to parse given body suffix used to send feedback mails {}", bodySuffix);
+            LOGGER.debug("Unable to parse given body suffix used to send feedback mails {}", bodySuffix, exc);
         }
     }
 
@@ -87,7 +87,7 @@ public class MailFeedbackSender extends AbstractFeedbackSender {
         try {
             this.password = AESEncryption.decrypt(password);
         } catch (Exception exc) {
-            LOGGER.debug("Unable to parse given password used to send feedback mails {}", password);
+            LOGGER.debug("Unable to parse given password used to send feedback mails {}", password, exc);
         }
     }
 
@@ -96,7 +96,7 @@ public class MailFeedbackSender extends AbstractFeedbackSender {
         try {
             this.smtpHost = AESEncryption.decrypt(smtpHost);
         } catch (Exception exc) {
-            LOGGER.debug("Unable to parse given smtp host used to send feedback mails {}", smtpHost);
+            LOGGER.debug("Unable to parse given smtp host used to send feedback mails {}", smtpHost, exc);
         }
     }
 
@@ -105,7 +105,7 @@ public class MailFeedbackSender extends AbstractFeedbackSender {
         try {
             this.smtpPort = AESEncryption.decrypt(smtpPort);
         } catch (Exception exc) {
-            LOGGER.debug("Unable to parse given smtp port used to send feedback mails {}", smtpPort);
+            LOGGER.debug("Unable to parse given smtp port used to send feedback mails {}", smtpPort, exc);
         }
     }
 

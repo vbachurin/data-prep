@@ -44,7 +44,7 @@ public abstract class AbstractFeedbackSender implements FeedbackSender {
             this.recipients = AESEncryption.decrypt(recipients).split(",");
         } catch (Exception exc) {
             LOGGER.debug("Unable to parse given recipients used to send feedback mails, falling back to the default value {}",
-                    recipients);
+                    recipients, exc);
             this.recipients = new String[] { DEFAULT_RECIPIENT };
         }
     }
@@ -55,7 +55,7 @@ public abstract class AbstractFeedbackSender implements FeedbackSender {
             this.userName = AESEncryption.decrypt(userName);
         } catch (Exception exc) {
             LOGGER.debug("Unable to parse given smtp user name used to send feedback mails, falling back to the default value {}",
-                    userName);
+                    userName, exc);
             this.userName = DEFAULT_SMTP_USER_NAME;
         }
     }
@@ -66,7 +66,7 @@ public abstract class AbstractFeedbackSender implements FeedbackSender {
             this.sender = AESEncryption.decrypt(sender);
         } catch (Exception exc) {
             LOGGER.debug("Unable to parse given sender used to send feedback mails, falling back to the default value {}",
-                    sender);
+                    sender, exc);
             this.userName = DEFAULT_SENDER;
         }
     }

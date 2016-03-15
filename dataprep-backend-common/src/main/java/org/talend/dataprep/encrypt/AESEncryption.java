@@ -35,7 +35,7 @@ public class AESEncryption {
 
     private static final String ENCODING = "UTF-8";
 
-    private static final byte[] SECRET_KEY;
+    private static Key SECRET_KEY;
 
     static {
         byte[] defaultValue;
@@ -45,7 +45,11 @@ public class AESEncryption {
             defaultValue = "DataPrepIsSoCool".getBytes();
             LOGGER.debug("Unable to find Encoding {}", ENCODING);
         }
-        SECRET_KEY = defaultValue;
+        try {
+            SECRET_KEY = generateKey(defaultValue);
+        } catch (Exception e) {
+            LOGGER.warn("Unable to generate the key used for AES");
+        }
     }
 
     /**
@@ -56,9 +60,8 @@ public class AESEncryption {
      * @throws Exception
      */
     public static String encrypt(final String src) throws Exception {
-        final Key key = generateKey();
         final Cipher c = Cipher.getInstance(ALGO);
-        c.init(Cipher.ENCRYPT_MODE, key);
+        c.init(Cipher.ENCRYPT_MODE, SECRET_KEY);
         final byte[] encVal = c.doFinal(src.getBytes());
         return new String(Base64.getEncoder().encode(encVal));
     }
@@ -71,9 +74,8 @@ public class AESEncryption {
      * @throws Exception
      */
     public static String decrypt(final String src) throws Exception {
-        final Key key = generateKey();
         final Cipher c = Cipher.getInstance(ALGO);
-        c.init(Cipher.DECRYPT_MODE, key);
+        c.init(Cipher.DECRYPT_MODE, SECRET_KEY);
         final byte[] decodedValue = Base64.getDecoder().decode(src);
         final byte[] decValue = c.doFinal(decodedValue);
         return new String(decValue, ENCODING);
@@ -85,7 +87,7 @@ public class AESEncryption {
      * @return the key used to encrypt and decrypt
      * @throws Exception
      */
-    private static Key generateKey() throws Exception {
-        return new SecretKeySpec(SECRET_KEY, ALGO);
+    private static Key generateKey(byte[] defaultValue) throws Exception {
+        return new SecretKeySpec(defaultValue, ALGO);
     }
 }
