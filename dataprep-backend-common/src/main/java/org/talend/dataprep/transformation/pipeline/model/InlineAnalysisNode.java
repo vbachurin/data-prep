@@ -125,6 +125,11 @@ public class InlineAnalysisNode extends AnalysisNode implements Monitored {
         if (signal == Signal.END_OF_STREAM) {
             adapter.adapt(previousColumns, inlineAnalyzer.getResult(), filter);
         }
+        try {
+            inlineAnalyzer.close();
+        } catch (Exception e) {
+            LOGGER.debug("Unable to close inline analyzer.", e);
+        }
         link.signal(signal);
     }
 
