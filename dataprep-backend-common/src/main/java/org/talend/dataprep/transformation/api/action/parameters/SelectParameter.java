@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.talend.dataprep.i18n.MessagesBundle;
-import org.talend.dataprep.util.MessagesBundleThreadLocal;
+import org.talend.dataprep.util.MessagesBundleContext;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -117,7 +117,7 @@ public class SelectParameter extends Parameter implements Serializable {
          */
         private Item(String value, List<Parameter> parameters) {
             this.value = value;
-            this.label = MessagesBundleThreadLocal.get() //
+            this.label = MessagesBundleContext.get() //
                     .getString("choice." + value, value);
             this.inlineParameters = parameters;
         }

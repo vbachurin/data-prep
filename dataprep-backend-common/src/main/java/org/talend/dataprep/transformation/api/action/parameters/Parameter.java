@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.talend.dataprep.i18n.MessagesBundle;
-import org.talend.dataprep.util.MessagesBundleThreadLocal;
+import org.talend.dataprep.util.MessagesBundleContext;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -170,7 +170,7 @@ public class Parameter implements Serializable {
     @JsonIgnore
     private MessagesBundle getMessagesBundle(){
         if (this.messagesBundle == null) {
-            this.messagesBundle = MessagesBundleThreadLocal.get();
+            this.messagesBundle = MessagesBundleContext.get();
         }
         return this.messagesBundle;
     }

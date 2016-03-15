@@ -14,8 +14,6 @@ package org.talend.dataprep.i18n;
 
 import java.util.Locale;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ResourceBundleMessageSource;
@@ -24,11 +22,11 @@ import org.springframework.stereotype.Component;
 /**
  * This class provides i18n support and provides a simple way to access {@link ResourceBundleMessageSource} in current
  * Spring context.
+ *
+ * @see org.talend.dataprep.util.MessagesBundleContext To get the current message bundle when serving a request.
  */
 @Component
 public class MessagesBundle {
-
-    private static final Logger LOG = LoggerFactory.getLogger(MessagesBundle.class);
 
     /**
      * Source resource bundle that holds all the actions name and parameters name.

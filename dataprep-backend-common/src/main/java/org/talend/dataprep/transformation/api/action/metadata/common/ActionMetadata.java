@@ -17,12 +17,7 @@ import static org.talend.dataprep.api.preparation.Action.Builder.builder;
 import static org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters.ROW_ID;
 import static org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters.SCOPE;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 
 import org.apache.commons.lang.ObjectUtils;
@@ -43,9 +38,9 @@ import org.talend.dataprep.transformation.api.action.metadata.category.ActionSco
 import org.talend.dataprep.transformation.api.action.metadata.category.ScopeCategory;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 import org.talend.dataprep.transformation.api.action.validation.ActionMetadataValidation;
+import org.talend.dataprep.util.MessagesBundleContext;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.talend.dataprep.util.MessagesBundleThreadLocal;
 
 /**
  * Model an action to perform on a dataset.
@@ -358,7 +353,7 @@ public abstract class ActionMetadata {
     @JsonIgnore
     protected MessagesBundle getMessagesBundle() {
         if (this.messagesBundle == null){
-            this.messagesBundle = MessagesBundleThreadLocal.get();
+            this.messagesBundle = MessagesBundleContext.get();
         }
         return this.messagesBundle;
     }
