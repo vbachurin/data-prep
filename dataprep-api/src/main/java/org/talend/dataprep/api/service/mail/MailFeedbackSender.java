@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
+import org.talend.dataprep.encrypt.AESEncryption;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.APIErrorCodes;
 
@@ -57,7 +58,7 @@ public class MailFeedbackSender extends AbstractFeedbackSender {
     @Autowired
     public void setSubjectPrefix(@Value("${mail.smtp.subject.prefix}") String subjectPrefix) {
         try {
-            this.subjectPrefix = new String(Base64.getDecoder().decode(subjectPrefix));
+            this.subjectPrefix = AESEncryption.decrypt(subjectPrefix);
         } catch (Exception exc) {
             LOGGER.debug("Unable to parse given subject prefix used to send feedback mails {}", subjectPrefix);
         }
@@ -66,7 +67,7 @@ public class MailFeedbackSender extends AbstractFeedbackSender {
     @Autowired
     public void setBodyPrefix(@Value("${mail.smtp.body.prefix}") String bodyPrefix) {
         try {
-            this.bodyPrefix = new String(Base64.getDecoder().decode(bodyPrefix));
+            this.bodyPrefix = AESEncryption.decrypt(bodyPrefix);
         } catch (Exception exc) {
             LOGGER.debug("Unable to parse given body prefix used to send feedback mails {}", bodyPrefix);
         }
@@ -75,7 +76,7 @@ public class MailFeedbackSender extends AbstractFeedbackSender {
     @Autowired
     public void setBodySuffix(@Value("${mail.smtp.body.suffix}") String bodySuffix) {
         try {
-            this.bodySuffix = new String(Base64.getDecoder().decode(bodySuffix));
+            this.bodySuffix = AESEncryption.decrypt(bodySuffix);
         } catch (Exception exc) {
             LOGGER.debug("Unable to parse given body suffix used to send feedback mails {}", bodySuffix);
         }
@@ -84,7 +85,7 @@ public class MailFeedbackSender extends AbstractFeedbackSender {
     @Autowired
     public void setPassword(@Value("${mail.smtp.password}") String password) {
         try {
-            this.password = new String(Base64.getDecoder().decode(password));
+            this.password = AESEncryption.decrypt(password);
         } catch (Exception exc) {
             LOGGER.debug("Unable to parse given password used to send feedback mails {}", password);
         }
@@ -93,7 +94,7 @@ public class MailFeedbackSender extends AbstractFeedbackSender {
     @Autowired
     public void setSmtpHost(@Value("${mail.smtp.host}") String smtpHost) {
         try {
-            this.smtpHost = new String(Base64.getDecoder().decode(smtpHost));
+            this.smtpHost = AESEncryption.decrypt(smtpHost);
         } catch (Exception exc) {
             LOGGER.debug("Unable to parse given smtp host used to send feedback mails {}", smtpHost);
         }
@@ -102,7 +103,7 @@ public class MailFeedbackSender extends AbstractFeedbackSender {
     @Autowired
     public void setSmtpPort(@Value("${mail.smtp.port}") String smtpPort) {
         try {
-            this.smtpPort = new String(Base64.getDecoder().decode(smtpPort));
+            this.smtpPort = AESEncryption.decrypt(smtpPort);
         } catch (Exception exc) {
             LOGGER.debug("Unable to parse given smtp port used to send feedback mails {}", smtpPort);
         }
