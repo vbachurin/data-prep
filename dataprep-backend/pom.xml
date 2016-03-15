@@ -36,7 +36,6 @@
         <jackson.version>2.6.4</jackson.version>
         <java.version>1.8</java.version>
         <junit.version>4.12</junit.version>
-        <powermock.version>1.6.4</powermock.version>
         <org.talend.dataquality.version>1.4.2</org.talend.dataquality.version>
         <org.talend.dataquality.common.version>1.4.2</org.talend.dataquality.common.version>
         <org.talend.dataquality.semantic.version>1.4.2</org.talend.dataquality.semantic.version>
@@ -460,19 +459,7 @@
             <dependency>
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-core</artifactId>
-                <version>3.2.0</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.powermock</groupId>
-                <artifactId>powermock-api-mockito</artifactId>
-                <version>${powermock.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.powermock</groupId>
-                <artifactId>powermock-module-junit4</artifactId>
-                <version>${powermock.version}</version>
+                <version>3.3.0</version>
                 <scope>test</scope>
             </dependency>
 
@@ -589,6 +576,8 @@
                                         <exclude>org.codehaus.jackson:jackson-core-asl</exclude>
                                         <exclude>org.codehaus.jackson:jackson-mapper-asl</exclude>
                                         <exclude>javax.servlet.jsp:jsp-api</exclude>
+                                        <exclude>org.powermock:powermock-api-mockito</exclude>
+                                        <exclude>org.powermock:powermock-module-junit4</exclude>
                                     </excludes>
                                 </bannedDependencies>
                             </rules>

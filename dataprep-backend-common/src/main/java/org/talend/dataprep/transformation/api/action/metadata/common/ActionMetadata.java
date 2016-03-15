@@ -38,6 +38,7 @@ import org.talend.dataprep.transformation.api.action.metadata.category.ActionSco
 import org.talend.dataprep.transformation.api.action.metadata.category.ScopeCategory;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 import org.talend.dataprep.transformation.api.action.validation.ActionMetadataValidation;
+import org.talend.dataprep.util.MessagesBundleContext;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -60,6 +61,9 @@ public abstract class ActionMetadata {
 
     @Autowired
     private FilterService filterService;
+
+    @Autowired
+    private MessagesBundle messagesBundle;
 
     public enum Behavior {
         VALUES_ALL,
@@ -133,7 +137,7 @@ public abstract class ActionMetadata {
      * @see MessagesBundle
      */
     public String getLabel() {
-        return MessagesBundle.getString("action." + getName() + ".label");
+        return getMessagesBundle().getString("action." + getName() + ".label");
     }
 
     /**
@@ -141,7 +145,7 @@ public abstract class ActionMetadata {
      * @see MessagesBundle
      */
     public String getDescription() {
-        return MessagesBundle.getString("action." + getName() + ".desc");
+        return getMessagesBundle().getString("action." + getName() + ".desc");
     }
 
     /**
@@ -149,7 +153,7 @@ public abstract class ActionMetadata {
      * @see MessagesBundle
      */
     public String getDocUrl() {
-        return MessagesBundle.getString("action." + getName() + ".url", StringUtils.EMPTY);
+        return getMessagesBundle().getString("action." + getName() + ".url", StringUtils.EMPTY);
     }
 
     /**
@@ -344,5 +348,13 @@ public abstract class ActionMetadata {
         // Safe strategy: use all behaviors to disable all optimizations. Each implementation of action must explicitly
         // declare its behavior(s).
         return EnumSet.allOf(Behavior.class);
+    }
+    
+    @JsonIgnore
+    protected MessagesBundle getMessagesBundle() {
+        if (this.messagesBundle == null){
+            this.messagesBundle = MessagesBundleContext.get();
+        }
+        return this.messagesBundle;
     }
 }
