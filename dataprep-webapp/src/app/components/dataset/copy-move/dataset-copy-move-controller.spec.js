@@ -11,21 +11,21 @@
 
  ============================================================================*/
 
-describe('DatasetCopyMove controller', function () {
-    var  createController, scope, ctrl, $element;
+describe('DatasetCopyMove controller', () => {
+    let createController, scope, ctrl, $element;
 
     beforeEach(angular.mock.module('data-prep.dataset-copy-move'));
 
-    beforeEach(inject(function ($rootScope, $componentController) {
+    beforeEach(inject(($rootScope, $componentController) => {
         scope = $rootScope.$new();
         $element = {};
-        createController = function () {
+        createController = () => {
             return $componentController('datasetCopyMove', {
                 $scope: scope,
                 $element: $element
             }, {
-                dataset : {name: 'my ds name'},
-                initialFolder : {
+                dataset: {name: 'my ds name'},
+                initialFolder: {
                     path: 'folder1',
                     name: 'my folder name'
                 }
@@ -33,99 +33,115 @@ describe('DatasetCopyMove controller', function () {
         };
     }));
 
-    describe('clone', function () {
-        beforeEach(inject(function () {
+    describe('clone', () => {
+        beforeEach(() => {
             ctrl = createController();
-            ctrl.destinationFolder = {name: 'my folder name', path:'/parent/child'};
+            ctrl.destinationFolder = {name: 'my folder name', path: '/parent/child'};
             ctrl.copyMoveForm = {};
             ctrl.copyMoveForm.$commitViewValue = jasmine.createSpy('$commitViewValue');
+        });
+
+        it('should call clone service', inject(($q) => {
+            //given
+            ctrl.onCopy = jasmine.createSpy('onCopy').and.returnValue($q.when(true));
+            expect(ctrl.copyMoveForm.$commitViewValue).not.toHaveBeenCalled();
+            expect(ctrl.onCopy).not.toHaveBeenCalled();
+
+            //when
+            ctrl.clone();
+
+            //then
+            expect(ctrl.copyMoveForm.$commitViewValue).toHaveBeenCalled();
+            expect(ctrl.onCopy).toHaveBeenCalledWith({
+                dataset: ctrl.dataset,
+                destination: ctrl.destinationFolder,
+                name: ctrl.newDsName
+            });
         }));
 
-        describe('when success', function () {
-            beforeEach(inject(function ($q) {
-                ctrl.onCopy = jasmine.createSpy('onCopy').and.returnValue($q.when(true));
-            }));
+        it('should manage cloning flag', inject(($q) => {
+            //given
+            ctrl.onCopy = jasmine.createSpy('onCopy').and.returnValue($q.when(true));
+            expect(ctrl.isCloningDs).toBeFalsy();
 
-            it('should call clone service', inject(function () {
-                //when
-                ctrl.clone();
-                expect(ctrl.isCloningDs).toBeTruthy();
-                expect(ctrl.copyMoveForm.$commitViewValue).toHaveBeenCalled();
+            //when
+            ctrl.clone();
+            expect(ctrl.isCloningDs).toBeTruthy();
+            scope.$digest();
 
-                //then
-                expect(ctrl.onCopy).toHaveBeenCalledWith({
-                    dataset: ctrl.dataset,
-                    destination: ctrl.destinationFolder,
-                    name: ctrl.newDsName
-                });
-            }));
-        });
+            //then
+            expect(ctrl.isCloningDs).toBeFalsy();
+        }));
 
-        describe('when failure due to server error', function () {
-            beforeEach(inject(function ($q) {
-                ctrl.onCopy = jasmine.createSpy('onCopy').and.returnValue($q.reject());
-                ctrl._focusOnNameInput = jasmine.createSpy('_focusOnNameInput');
-            }));
+        it('should reset flag and focus on input when clone fails', inject(($q) => {
+            //given
+            ctrl.onCopy = jasmine.createSpy('onCopy').and.returnValue($q.reject());
+            ctrl._focusOnNameInput = jasmine.createSpy('_focusOnNameInput');
 
-            it('should fail on clone service call', inject(function ($timeout) {
-                //when
-                ctrl.clone();
-                expect(ctrl.isCloningDs).toBeTruthy();
-                scope.$digest();
-                $timeout.flush();
+            //when
+            ctrl.clone();
+            expect(ctrl.isCloningDs).toBeTruthy();
+            scope.$digest();
 
-                //then
-                expect(ctrl.isCloningDs).toBeFalsy();
-                expect(ctrl._focusOnNameInput).toHaveBeenCalled();
-            }));
-        });
+            //then
+            expect(ctrl.isCloningDs).toBeFalsy();
+            expect(ctrl._focusOnNameInput).toHaveBeenCalled();
+        }));
     });
 
-    describe('move', function () {
-        beforeEach(inject(function () {
+    describe('move', () => {
+        beforeEach(() => {
             ctrl = createController();
-            ctrl.destinationFolder = {name: 'my folder name', path:'/parent/child'};
+            ctrl.destinationFolder = {name: 'my folder name', path: '/parent/child'};
             ctrl.copyMoveForm = {};
             ctrl.copyMoveForm.$commitViewValue = jasmine.createSpy('$commitViewValue');
+        });
+
+        it('should call move service', inject(($q) => {
+            //given
+            ctrl.onMove = jasmine.createSpy('onMove').and.returnValue($q.when(true));
+            expect(ctrl.copyMoveForm.$commitViewValue).not.toHaveBeenCalled();
+            expect(ctrl.onMove).not.toHaveBeenCalled();
+
+            //when
+            ctrl.move();
+
+            //then
+            expect(ctrl.copyMoveForm.$commitViewValue).toHaveBeenCalled();
+            expect(ctrl.onMove).toHaveBeenCalledWith({
+                dataset: ctrl.dataset,
+                destination: ctrl.destinationFolder,
+                name: ctrl.newDsName
+            });
         }));
 
-        describe('when success', function () {
-            beforeEach(inject(function ($q) {
-                ctrl.onMove = jasmine.createSpy('onMove').and.returnValue($q.when(true));
-            }));
+        it('should manage moving flag', inject(($q) => {
+            //given
+            ctrl.onMove = jasmine.createSpy('onMove').and.returnValue($q.when(true));
+            expect(ctrl.isMovingDs).toBeFalsy();
 
-            it('should call move service', inject(function () {
-                //when
-                ctrl.move();
-                expect(ctrl.isMovingDs).toBeTruthy();
-                expect(ctrl.copyMoveForm.$commitViewValue).toHaveBeenCalled();
+            //when
+            ctrl.move();
+            expect(ctrl.isMovingDs).toBeTruthy();
+            scope.$digest();
 
-                //then
-                expect(ctrl.onMove).toHaveBeenCalledWith({
-                    dataset: ctrl.dataset,
-                    destination: ctrl.destinationFolder,
-                    name: ctrl.newDsName
-                });
-            }));
-        });
+            //then
+            expect(ctrl.isMovingDs).toBeFalsy();
+        }));
 
-        describe('when failure due to server error', function () {
-            beforeEach(inject(function ($q) {
-                ctrl.onMove = jasmine.createSpy('onMove').and.returnValue($q.reject());
-                ctrl._focusOnNameInput = jasmine.createSpy('_focusOnNameInput');
-            }));
+        it('should reset flag and focus on input when clone fails', inject(($q) => {
+            //given
+            ctrl.onMove = jasmine.createSpy('onMove').and.returnValue($q.reject());
+            ctrl._focusOnNameInput = jasmine.createSpy('_focusOnNameInput');
 
-            it('should fail on move service call', inject(function ($timeout) {
-                //when
-                ctrl.move();
-                expect(ctrl.isMovingDs).toBeTruthy();
-                scope.$digest();
-                $timeout.flush();
+            //when
+            ctrl.move();
+            expect(ctrl.isMovingDs).toBeTruthy();
+            scope.$digest();
 
-                //then
-                expect(ctrl.isMovingDs).toBeFalsy();
-                expect(ctrl._focusOnNameInput).toHaveBeenCalled();
-            }));
-        });
+            //then
+            expect(ctrl.isMovingDs).toBeFalsy();
+            expect(ctrl._focusOnNameInput).toHaveBeenCalled();
+        }));
     });
 });

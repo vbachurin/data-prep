@@ -72,10 +72,10 @@ class FolderSelectionCtrl {
      **/
     _locateFolder(currentFolder, childPathParts, currentFolderPath) {
         const childName = childPathParts.shift();
-        let nextFolderPath = currentFolderPath + '/' + childName;
+        const nextFolderPath = currentFolderPath + '/' + childName;
         this._getChildrenIntoTree(currentFolder)
             .then((children) => {
-                let nextFolder = _.find(children, {name: childName});
+                const nextFolder = _.find(children, {name: childName});
                 if (nextFolder) {
                     if (childPathParts.length) {
                         nextFolder.collapsed = false;
@@ -107,7 +107,6 @@ class FolderSelectionCtrl {
     _getChildrenIntoTree(currentFolder) {
         return this.folderService.children(currentFolder.path)
             .then((children) => this._adaptFolderToItem(children, currentFolder.level + 1))
-            // array
             .then((children) => {
                 this._insertFolderChildren(currentFolder, children);
                 return children;
@@ -147,7 +146,7 @@ class FolderSelectionCtrl {
             parentFolder.hasNoChildren = true;
             return;
         }
-        let currentIndex = _.findIndex(this.tree, parentFolder);
+        const currentIndex = _.findIndex(this.tree, parentFolder);
         this.tree.splice(currentIndex + 1, 0, ...children);
     }
 
@@ -158,8 +157,8 @@ class FolderSelectionCtrl {
      * @param {Object} parent whose children will be extracted
      **/
     _getChildren(parent) {
-        let parentIndex = _.findIndex(this.tree, parent);
-        let followingFolders = this.tree.slice(parentIndex + 1);
+        const parentIndex = _.findIndex(this.tree, parent);
+        const followingFolders = this.tree.slice(parentIndex + 1);
         let siblingIndex = _.findIndex(followingFolders, (followingFolder) => followingFolder.level <= parent.level);
         if (siblingIndex === -1) {
             siblingIndex = this.tree.length - 1;
@@ -212,7 +211,7 @@ class FolderSelectionCtrl {
      * @ngdoc method
      * @name _displayChildren
      * @description shows the children of a given folder in the tree
-     * @param {Object} folder to be selected
+     * @param {Object} parent folders-to-display parent
      **/
     _displayChildren(parent) {
         _.chain(this._getChildren(parent))
@@ -230,7 +229,7 @@ class FolderSelectionCtrl {
      * @ngdoc method
      * @name _hideChildren
      * @description hides the children of a given folder in the tree
-     * @param {Object} folder to be selected
+     * @param {Object} parent folders-to-hide parent
      **/
     _hideChildren(parent) {
         _.forEach(this._getChildren(parent), (child) => {
@@ -269,12 +268,12 @@ class FolderSelectionCtrl {
      **/
     _searchFolders() {
         //Add the root folder if it matches the filter
-        let homePosition = this.$translate.instant('HOME_FOLDER').toLowerCase().indexOf(this.searchFolderQuery.toLowerCase());
         return this.folderService.search(this.searchFolderQuery)
-            .then((response) => { // TODO  this.folderService.search return array
+            .then((response) => {
                 let searchResult = [];
+                const homePosition = this.$translate.instant('HOME_FOLDER').toLowerCase().indexOf(this.searchFolderQuery.toLowerCase());
                 if (homePosition > -1) {
-                    let rootFolder = {
+                    const rootFolder = {
                         path: '',
                         display: true,
                         hasNoChildren: true,

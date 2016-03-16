@@ -23,6 +23,7 @@ import DatasetCopyMove from './dataset-copy-move-component';
      */
     angular.module('data-prep.dataset-copy-move', [
             'data-prep.folder-selection',
-            'talend.widget'])
-           .component('datasetCopyMove', DatasetCopyMove);
+            'talend.widget'
+        ])
+        .component('datasetCopyMove', DatasetCopyMove);
 })();

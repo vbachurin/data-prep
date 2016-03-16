@@ -17,7 +17,7 @@ describe('DatasetList directive', function () {
         return str.match(suffix + '$')[0] === suffix;
     }
 
-    var scope,  createElement, element, stateMock, controller;
+    var scope,  createElement, element, stateMock;
     var datasets = [
         {
             'id': '12ce6c32-bf80-41c8-92e5-66d70f22ec1f',
@@ -91,8 +91,6 @@ describe('DatasetList directive', function () {
             element = angular.element('<dataset-list></dataset-list>');
             $compile(element)(scope);
             scope.$digest();
-            controller = element.controller('datasetList');
-            return element;
         };
 
         spyOn(FolderService, 'getContent').and.returnValue($q.when(true));
@@ -143,20 +141,5 @@ describe('DatasetList directive', function () {
         expect(element.find('.inventory-item').eq(1).find('.inventory-actions-related-item-menu > li').length).toBe(3);
         expect(element.find('.inventory-item').eq(2).find('.inventory-actions-related-item-menu > li').length).toBe(0);
     }));
-
-    //it('should render folder copy/move modal', inject(function($rootScope, $q,  FolderService){
-    //    //given
-    //    spyOn(FolderService, 'children').and.returnValue($q.when({data:[]}));
-    //
-    //    createElement();
-    //    controller.datasetCopyVisibility = true;
-    //    controller.datasetToCopyMove = {name: 'new dataset name'};
-    //
-    //    //when
-    //    $rootScope.$digest();
-    //
-    //    //then
-    //    console.log(element.eq(0)[0]);
-    //    expect(element.find('dataset-copy-move').length).toBe(1);
     //}));
 });

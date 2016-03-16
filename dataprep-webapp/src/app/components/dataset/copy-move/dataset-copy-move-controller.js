@@ -12,10 +12,9 @@
  ============================================================================*/
 
 class DatasetCopyMoveCtrl {
-    constructor($timeout, $element) {
+    constructor($element) {
         'ngInject';
 
-        this.$timeout = $timeout;
         this.$element = $element;
         this.isCloningDs = false;
         this.isMovingDs = false;
@@ -43,7 +42,7 @@ class DatasetCopyMoveCtrl {
                 name: this.newDsName
             })
             .catch(() => {
-                this.$timeout(this._focusOnNameInput.bind(this), 100, false);
+                this._focusOnNameInput();
             })
             .finally(() => {
                 this.isCloningDs = false;
@@ -66,7 +65,7 @@ class DatasetCopyMoveCtrl {
                 name: this.newDsName
             })
             .catch(() => {
-                this.$timeout(this._focusOnNameInput.bind(this), 100, false);
+                this._focusOnNameInput();
             })
             .finally(() => {
                 this.isMovingDs = false;

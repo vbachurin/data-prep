@@ -11,16 +11,18 @@
 
  ============================================================================*/
 
-describe('dataset copy move component', function(){
+describe('dataset copy move component', () => {
     var scope, createElement, element, controller;
 
     beforeEach(angular.mock.module('data-prep.dataset-copy-move'));
     beforeEach(angular.mock.module('htmlTemplates'));
 
-    beforeEach(inject(function($rootScope, $compile) {
+    beforeEach(inject(function ($rootScope, $compile) {
         scope = $rootScope.$new();
+        scope.dataset = {name: 'my dataset'};
+        scope.initialFolder = {path: '0-folder1/1-folder11'};
 
-        createElement = function() {
+        createElement = () => {
             element = angular.element(
                 `<dataset-copy-move
                     initial-folder="initialFolder"
@@ -30,11 +32,6 @@ describe('dataset copy move component', function(){
                 ></dataset-copy-move>`
             );
 
-            angular.element('body').append(element);
-
-            scope.dataset = {name:'my dataset'};
-            scope.initialFolder = {path:'0-folder1/1-folder11'};
-
             $compile(element)(scope);
             scope.$digest();
 
@@ -42,18 +39,17 @@ describe('dataset copy move component', function(){
         };
     }));
 
-    afterEach(function () {
+    beforeEach(inject(($q, FolderService) => {
+        spyOn(FolderService, 'children').and.returnValue($q.when({data: []}));
+    }));
+
+    afterEach(() => {
         scope.$destroy();
         element.remove();
     });
 
-    describe('modal display', function(){
-
-        beforeEach(inject(function($q, FolderService){
-            spyOn(FolderService, 'children').and.returnValue($q.when({data:[]}));
-        }));
-
-        it('should display modal content', function(){
+    describe('render', () => {
+        it('should render copy/move elements', () => {
             //when
             createElement();
             scope.$digest();
@@ -62,104 +58,107 @@ describe('dataset copy move component', function(){
             expect(element.find('folder-selection').length).toBe(1);
             expect(element.find('.clone-name > input').length).toBe(1);
             expect(element.find('button').length).toBe(3);
-            expect(element.find('talend-button-loader').length).toBe(2);
-        });
-
-        it('should focus on the name input field', function(){
-            //given
-            createElement();
-            scope.$digest();
-
-            //when
-            controller._focusOnNameInput();
-
-            //then
-            var activeEl = document.activeElement;
-            expect(angular.element(activeEl).attr('id')).toBe('new-name-input-id');
         });
     });
 
-    describe('submit form', function(){
-
-        beforeEach(inject(function($q, FolderService){
-            spyOn(FolderService, 'children').and.returnValue($q.when({data:[]}));
-
+    describe('form', () => {
+        it('should disable submit buttons when form is invalid', () => {
+            //given
             createElement();
-            //enable submit buttons
-            controller.move = jasmine.createSpy('move');
-            controller.clone = jasmine.createSpy('clone');
-            scope.$digest();
-        }));
-
-        it('should submit move query on move button click', function(){
-            //given
-            var moveBtn = element.find('#move-ds-btn').eq(0);
-
-            //when
-            moveBtn.click();
-
-            //then
-            expect(controller.move).toHaveBeenCalled();
-        });
-
-        it('should submit clone query on clone button click', function(){
-            //given
-            var cloneBtn = element.find('#clone-ds-btn').eq(0);
-
-            //when
-            cloneBtn.click();
-
-            //then
-            expect(controller.clone).toHaveBeenCalled();
-        });
-
-        it('should disable submit buttons while moving', function(){
-            //given
-            controller.isMovingDs = true;
             var cancelBtn = element.find('#cancel-move-copy-btn').eq(0);
             var cloneBtn = element.find('#clone-ds-btn').eq(0);
             var moveBtn = element.find('#move-ds-btn').eq(0);
 
-            //when
-            scope.$digest();
-
-            //then
-            expect(cancelBtn.attr('disabled')).toBe('disabled');
-            expect(cloneBtn.find('button').attr('disabled')).toBe('disabled');
-            expect(moveBtn.find('button').attr('disabled')).toBe('disabled');
-        });
-
-        it('should disable submit buttons while cloning', function(){
-            //given
-            controller.isCloningDs = true;
-            var cancelBtn = element.find('#cancel-move-copy-btn').eq(0);
-            var cloneBtn = element.find('#clone-ds-btn').eq(0);
-            var moveBtn = element.find('#move-ds-btn').eq(0);
+            expect(cancelBtn.attr('disabled')).toBeFalsy();
+            expect(cloneBtn.find('button').attr('disabled')).toBeFalsy();
+            expect(moveBtn.find('button').attr('disabled')).toBeFalsy();
 
             //when
-            scope.$digest();
-
-            //then
-            expect(cancelBtn.attr('disabled')).toBe('disabled');
-            expect(cloneBtn.find('button').attr('disabled')).toBe('disabled');
-            expect(moveBtn.find('button').attr('disabled')).toBe('disabled');
-        });
-
-        it('should disable submit buttons when form is invalid', function(){
-            //given
-            var cancelBtn = element.find('#cancel-move-copy-btn').eq(0);
-            var cloneBtn = element.find('#clone-ds-btn').eq(0);
-            var moveBtn = element.find('#move-ds-btn').eq(0);
             controller.newDsName = '';
-
-            //when
             scope.$digest();
 
             //then
             expect(controller.copyMoveForm.$invalid).toBe(true);
-            expect(cancelBtn.attr('disabled')).toBe(undefined);
+            expect(cancelBtn.attr('disabled')).toBeFalsy();
             expect(cloneBtn.find('button').attr('disabled')).toBe('disabled');
             expect(moveBtn.find('button').attr('disabled')).toBe('disabled');
+        });
+
+        describe('move', () => {
+            beforeEach(() => {
+                createElement();
+                controller.move = jasmine.createSpy('move');
+            });
+
+            it('should move dataset on move button click', () => {
+                //given
+                var moveBtn = element.find('#move-ds-btn').eq(0);
+
+                //when
+                moveBtn.click();
+
+                //then
+                expect(controller.move).toHaveBeenCalled();
+            });
+
+            it('should disable submit buttons while moving', () => {
+                //given
+                var cancelBtn = element.find('#cancel-move-copy-btn').eq(0);
+                var cloneBtn = element.find('#clone-ds-btn').eq(0);
+                var moveBtn = element.find('#move-ds-btn').eq(0);
+
+                expect(cancelBtn.attr('disabled')).toBeFalsy();
+                expect(cloneBtn.find('button').attr('disabled')).toBeFalsy();
+                expect(moveBtn.find('button').attr('disabled')).toBeFalsy();
+
+                //when
+                controller.isMovingDs = true;
+                scope.$digest();
+
+                //then
+                expect(cancelBtn.attr('disabled')).toBe('disabled');
+                expect(cloneBtn.find('button').attr('disabled')).toBe('disabled');
+                expect(moveBtn.find('button').attr('disabled')).toBe('disabled');
+            });
+        });
+
+        describe('clone', () => {
+
+            beforeEach(() => {
+                createElement();
+                controller.clone = jasmine.createSpy('clone');
+            });
+
+            it('should clone dataset on clone button click', () => {
+                //given
+                var cloneBtn = element.find('#clone-ds-btn').eq(0);
+
+                //when
+                cloneBtn.click();
+
+                //then
+                expect(controller.clone).toHaveBeenCalled();
+            });
+
+            it('should disable submit buttons while cloning', () => {
+                //given
+                var cancelBtn = element.find('#cancel-move-copy-btn').eq(0);
+                var cloneBtn = element.find('#clone-ds-btn').eq(0);
+                var moveBtn = element.find('#move-ds-btn').eq(0);
+
+                expect(cancelBtn.attr('disabled')).toBeFalsy();
+                expect(cloneBtn.find('button').attr('disabled')).toBeFalsy();
+                expect(moveBtn.find('button').attr('disabled')).toBeFalsy();
+
+                //when
+                controller.isCloningDs = true;
+                scope.$digest();
+
+                //then
+                expect(cancelBtn.attr('disabled')).toBe('disabled');
+                expect(cloneBtn.find('button').attr('disabled')).toBe('disabled');
+                expect(moveBtn.find('button').attr('disabled')).toBe('disabled');
+            });
         });
     });
 });

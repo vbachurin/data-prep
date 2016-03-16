@@ -16,7 +16,7 @@ import DatasetCopyMoveCtrl from './dataset-copy-move-controller';
 const DatasetCopyMove = {
     bindings: {
         initialFolder: '<',
-        dataset: '=',
+        dataset: '<',
         onCopy: '&',
         onMove: '&'
     },

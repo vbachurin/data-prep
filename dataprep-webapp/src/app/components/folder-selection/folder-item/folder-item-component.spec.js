@@ -11,23 +11,23 @@
 
  ============================================================================*/
 
-describe('folder Item Component', function(){
+describe('Folder Item Component', () => {
 
     beforeEach(angular.mock.module('data-prep.folder-selection'));
     beforeEach(angular.mock.module('htmlTemplates'));
 
     let createElement, scope, element;
 
-    beforeEach(inject(function ($rootScope, $compile) {
+    beforeEach(inject(($rootScope, $compile) => {
         scope = $rootScope.$new();
-        createElement = function () {
+        createElement = () => {
             element = angular.element(
-
                 `<folder-item
                     item="item"
                     on-toggle="toggle(folder)"
-                    on-select="chooseFolder(dest)"
-                ></folder-item>`);
+                    on-select="chooseFolder(folder)"
+                ></folder-item>`
+            );
 
             $compile(element)(scope);
             scope.$digest();
@@ -35,12 +35,12 @@ describe('folder Item Component', function(){
         };
     }));
 
-    afterEach(function () {
+    afterEach(() => {
         scope.$destroy();
         element.remove();
     });
 
-    it('should show the name of the item', function(){
+    it('should show the name of the item', () => {
         //given
         scope.item = {
             name: '1-folder1',
@@ -53,11 +53,11 @@ describe('folder Item Component', function(){
         createElement();
 
         //then
-        expect(element.find('span').eq(1).find('span').eq(0).text().trim()).toBe(scope.item.name);
+        expect(element.text().trim()).toBe(scope.item.name);
     });
 
-    describe('render a folder', function(){
-        it('should highlight selected folder', function(){
+    describe('render a folder', () => {
+        it('should highlight selected folder', () => {
             //given
             scope.item = {
                 name: '1-folder1',
@@ -73,7 +73,7 @@ describe('folder Item Component', function(){
             expect(element.find('li').eq(0).hasClass('folder-selected')).toBe(true);
         });
 
-        it('should not highlight a non-selected folder', function(){
+        it('should not highlight a non-selected folder', () => {
             //given
             scope.item = {
                 name: '1-folder1',
@@ -89,7 +89,7 @@ describe('folder Item Component', function(){
             expect(element.find('li').eq(0).hasClass('folder-selected')).toBe(false);
         });
 
-        it('should render a collapsed folder', function(){
+        it('should render a collapsed folder', () => {
             //given
             scope.item = {
                 name: '1-folder1',
@@ -102,12 +102,10 @@ describe('folder Item Component', function(){
             createElement();
 
             //then
-            expect(element.find('a > span > i[data-icon="J"]').length).toBe(0);
-            expect(element.find('a > span > i[data-icon="I"]').length).toBe(1);
-            expect(element.find('li > a > span > img').eq(0).attr('src')).toBe('assets/images/folder/folder_close_small-icon.png');
+            expect(element.find('.icon-img').eq(0).attr('src')).toBe('assets/images/folder/folder_close_small-icon.png');
         });
 
-        it('should render a not collapsed folder', function(){
+        it('should render a not collapsed folder', () => {
             //given
             scope.item = {
                 name: '1-folder1',
@@ -120,50 +118,13 @@ describe('folder Item Component', function(){
             createElement();
 
             //then
-            expect(element.find('a > span > i[data-icon="I"]').length).toBe(0);
-            expect(element.find('a > span > i[data-icon="J"]').length).toBe(1);
-            expect(element.find('li > a > span > img').eq(0).attr('src')).toBe('assets/images/folder/folder_open_small-icon.png');
-        });
-
-
-        it('should render a folder with children', function(){
-            //given
-            scope.item = {
-                name: '1-folder1',
-                path: '1-folder1',
-                level: 1,
-                hasNoChildren: false
-            };
-
-            //when
-            createElement();
-
-            //then
-            expect(element.find('.empty-caret').length).toBe(0);
-        });
-
-
-
-        it('should render the folder with the right margin-left', function(){
-            //given
-            scope.item = {
-                name: '5-folder1',
-                path: '///5-folder1',
-                level: 5,
-                showFolder: true
-            };
-
-            //when
-            createElement();
-
-            //then
-            expect(element.find('li').eq(0).css('margin-left')).toBe(20 * scope.item.level + 'px');
+            expect(element.find('.icon-img').eq(0).attr('src')).toBe('assets/images/folder/folder_open_small-icon.png');
         });
     });
 
-    describe('render a caret', function(){
+    describe('render a caret', () => {
 
-        it('should render a folder with no children', function(){
+        it('should render a folder with no children', () => {
             //given
             scope.item = {
                 name: '1-folder1',
@@ -176,28 +137,50 @@ describe('folder Item Component', function(){
             createElement();
 
             //then
+            expect(element.find('.dropdown-caret-down').length).toBe(0);
+            expect(element.find('.dropdown-caret-right').length).toBe(0);
             expect(element.find('.empty-caret').length).toBe(1);
         });
 
-        it('should render a folder with children', function(){
+        it('should render a collapsed caret', () => {
             //given
             scope.item = {
                 name: '1-folder1',
                 path: '1-folder1',
                 level: 1,
-                hasNoChildren: false
+                collapsed: true
             };
 
             //when
             createElement();
 
             //then
+            expect(element.find('.dropdown-caret-down').length).toBe(1);
+            expect(element.find('.dropdown-caret-right').length).toBe(0);
             expect(element.find('.empty-caret').length).toBe(0);
+        });
+
+        it('should render a not collapsed caret', () => {
+            //given
+            scope.item = {
+                name: '1-folder1',
+                path: '1-folder1',
+                level: 1,
+                collapsed: false
+            };
+
+            //when
+            createElement();
+
+            //then
+            expect(element.find('.dropdown-caret-down').length).toBe(0);
+            expect(element.find('.dropdown-caret-right').length).toBe(1);
+            expect(element.find('.empty-caret').length).toBe(0)
         });
     });
 
-    describe('render folder item with right level', function(){
-        it('should render the folder with the right margin-left', function(){
+    describe('render folder item with right level', () => {
+        it('should render the folder with a left space corresponding to its level', () => {
             //given
             scope.item = {
                 name: '5-folder1',
@@ -213,7 +196,8 @@ describe('folder Item Component', function(){
             expect(element.find('li').eq(0).css('margin-left')).toBe(20 * scope.item.level + 'px');
         });
     });
-    describe('clicks', function(){
+
+    describe('clicks', () => {
         var controller;
         beforeEach(() => {
             createElement();
@@ -222,8 +206,8 @@ describe('folder Item Component', function(){
             controller.onSelect = jasmine.createSpy('onSelect');
         });
 
-        describe('toggle', function(){
-            it('should trigger callback on closed caret simple click', inject(function($rootScope){
+        describe('toggle', () => {
+            it('should trigger callback on opened caret simple click', () => {
                 //given
                 controller.item = {
                     name: '1-folder1',
@@ -231,16 +215,16 @@ describe('folder Item Component', function(){
                     level: 1,
                     collapsed: true
                 };
-                $rootScope.$digest();
+                scope.$digest();
 
                 //when
-                element.find('a > span').eq(0).click();
+                element.find('.dropdown-caret-down').eq(0).click();
 
                 //then
                 expect(controller.onToggle).toHaveBeenCalledWith({folder: controller.item});
-            }));
+            });
 
-            it('should trigger callback on opened caret simple click', inject(function($rootScope){
+            it('should trigger callback on closed caret simple click', () => {
                 //given
                 controller.item = {
                     name: '1-folder1',
@@ -248,16 +232,16 @@ describe('folder Item Component', function(){
                     level: 1,
                     collapsed: false
                 };
-                $rootScope.$digest();
+                scope.$digest();
 
                 //when
-                element.find('a > span').eq(0).click();
+                element.find('.dropdown-caret-right').eq(0).click();
 
                 //then
                 expect(controller.onToggle).toHaveBeenCalledWith({folder: controller.item});
-            }));
+            });
 
-            it('should trigger callback on line double click', inject(function($rootScope){
+            it('should trigger callback on line double click', () => {
                 //given
                 controller.item = {
                     name: '1-folder1',
@@ -265,18 +249,18 @@ describe('folder Item Component', function(){
                     level: 1,
                     collapsed: true
                 };
-                $rootScope.$digest();
+                scope.$digest();
 
                 //when
                 element.find('li').eq(0).dblclick();
 
                 //then
                 expect(controller.onToggle).toHaveBeenCalledWith({folder: controller.item});
-            }));
+            });
         });
 
-        describe('select', function(){
-            it('should trigger callback on name click', inject(function($rootScope){
+        describe('select', () => {
+            it('should trigger callback on name click', () => {
                 //given
                 controller.item = {
                     name: '1-folder1',
@@ -284,16 +268,16 @@ describe('folder Item Component', function(){
                     level: 1,
                     collapsed: true
                 };
-                $rootScope.$digest();
+                scope.$digest();
 
                 //when
-                element.find('span').eq(1).click();
+                element.find('#1-folder1').click();
 
                 //then
-                expect(controller.onSelect).toHaveBeenCalledWith({dest: controller.item});
-            }));
+                expect(controller.onSelect).toHaveBeenCalledWith({folder: controller.item});
+            });
 
-            it('should trigger callback on folder image simple click', inject(function($rootScope){
+            it('should trigger callback on folder image simple click', () => {
                 //given
                 controller.item = {
                     name: '1-folder1',
@@ -301,14 +285,14 @@ describe('folder Item Component', function(){
                     level: 1,
                     collapsed: true
                 };
-                $rootScope.$digest();
+                scope.$digest();
 
                 //when
-                element.find('li > a > span > img').eq(0).click();
+                element.find('.icon-img').eq(0).click();
 
                 //then
-                expect(controller.onSelect).toHaveBeenCalledWith({dest: controller.item});
-            }));
+                expect(controller.onSelect).toHaveBeenCalledWith({folder: controller.item});
+            });
         });
     });
 });

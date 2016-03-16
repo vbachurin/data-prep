@@ -11,13 +11,12 @@
 
  ============================================================================*/
 
-describe('folder selection component', function() {
+describe('folder selection component', () => {
 
     beforeEach(angular.mock.module('data-prep.folder-selection'));
     beforeEach(angular.mock.module('htmlTemplates'));
 
-    var createElement, scope, element, controller;
-
+    var createElement, scope, element;
 
     var folders = [// the json objects are in a tree way
         {
@@ -61,28 +60,23 @@ describe('folder selection component', function() {
         }
     ];
 
-    beforeEach(inject(function ($rootScope, $compile) {
+    beforeEach(inject(($rootScope, $compile) => {
         scope = $rootScope.$new();
-        createElement = function () {
-            element = angular.element(
-                `<folder-selection
-                    ng-model="destinationFolder"
-                ></folder-selection>`);
 
+        createElement = () => {
+            element = angular.element(`<folder-selection ng-model="destinationFolder"></folder-selection>`);
             $compile(element)(scope);
             scope.$digest();
-            controller = element.controller('folderSelection');
-            return element;
         };
     }));
 
-    afterEach(function () {
+    afterEach(() => {
         scope.$destroy();
         element.remove();
     });
 
-    describe('display folder selection content', function(){
-        it('should render input search', function(){
+    describe('display folder selection content', () => {
+        it('should render input search', () => {
             //when
             createElement();
 
@@ -90,16 +84,17 @@ describe('folder selection component', function() {
             expect(element.find('input').length).toBe(1);
         });
 
-        it('should render folders tree', inject(function($rootScope){
+        it('should render folders tree', () => {
             //given
             createElement();
-            controller.folderItems = folders;
+            const ctrl = element.controller('folderSelection');
+            ctrl.folderItems = folders;
 
             //when
-            $rootScope.$digest();
+            scope.$digest();
 
             //then
-            expect(element.find('folder-item').length).toBe(folders.length - 1);
-        }));
+            expect(element.find('folder-item').length).toBe(5);
+        });
     });
 });

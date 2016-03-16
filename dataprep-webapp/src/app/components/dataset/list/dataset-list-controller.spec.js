@@ -657,23 +657,24 @@ describe('Dataset list controller', function () {
     });
 
     describe('copy/move a dataset', () => {
-        let dataset = {name: 'my Dataset'};
-        let folderDest = {name: 'my folder destination', path: '/folder1/folder2'};
-        let name = {name: 'my new Dataset name'};
+        const dataset = {name: 'my Dataset'};
+        const folderDest = {name: 'my folder destination', path: '/folder1/folder2'};
+        const name = {name: 'my new Dataset name'};
 
-        beforeEach(inject(($q, DatasetService, FolderService, MessageService) => {
+        beforeEach(inject(($q, FolderService, MessageService) => {
             spyOn(FolderService, 'getContent').and.returnValue($q.when());
             spyOn(MessageService, 'success').and.returnValue();
         }));
 
         describe('copy', () => {
-            beforeEach(inject(($q, DatasetService, FolderService, MessageService) => {
-                spyOn(DatasetService, 'clone').and.returnValue($q.when(true));
+            beforeEach(inject(($q, DatasetService) => {
+                spyOn(DatasetService, 'clone').and.returnValue($q.when());
             }));
 
             it('should call clone function', inject((DatasetService) => {
                 //given
-                let ctrl = createController();
+                const ctrl = createController();
+                expect(DatasetService.clone).not.toHaveBeenCalled();
 
                 //when
                 ctrl.clone(dataset, folderDest, name);
@@ -682,9 +683,23 @@ describe('Dataset list controller', function () {
                 expect(DatasetService.clone).toHaveBeenCalledWith(dataset, folderDest, name);
             }));
 
-            it('should show success message on clone success', inject((FolderService, MessageService) => {
+            it('should show success message on clone success', inject((MessageService) => {
                 //given
-                let ctrl = createController();
+                const ctrl = createController();
+                expect(MessageService.success).not.toHaveBeenCalled();
+
+                //when
+                ctrl.clone(dataset, folderDest, name);
+                scope.$digest();
+
+                //then
+                expect(MessageService.success).toHaveBeenCalledWith('COPY_SUCCESS_TITLE', 'COPY_SUCCESS');
+            }));
+
+            it('should show refresh current colder content', inject((FolderService) => {
+                //given
+                const ctrl = createController();
+                expect(FolderService.getContent).not.toHaveBeenCalledWith(stateMock.inventory.currentFolder);
 
                 //when
                 ctrl.clone(dataset, folderDest, name);
@@ -692,19 +707,30 @@ describe('Dataset list controller', function () {
 
                 //then
                 expect(FolderService.getContent).toHaveBeenCalledWith(stateMock.inventory.currentFolder);
-                expect(MessageService.success).toHaveBeenCalledWith('COPY_SUCCESS_TITLE', 'COPY_SUCCESS');
-                expect(ctrl.datasetCopyVisibility).toBe(false);
             }));
+
+            it('should hide clone modal', () => {
+                //given
+                const ctrl = createController();
+
+                //when
+                ctrl.clone(dataset, folderDest, name);
+                scope.$digest();
+
+                //then
+                expect(ctrl.datasetCopyVisibility).toBe(false);
+            });
         });
 
         describe('move', () => {
             beforeEach(inject(($q, DatasetService) => {
-                spyOn(DatasetService, 'move').and.returnValue($q.when(true));
+                spyOn(DatasetService, 'move').and.returnValue($q.when());
             }));
 
             it('should call move function', inject((DatasetService) => {
                 //given
-                let ctrl = createController();
+                const ctrl = createController();
+                expect(DatasetService.move).not.toHaveBeenCalled();
 
                 //when
                 ctrl.move(dataset, folderDest, name);
@@ -713,9 +739,23 @@ describe('Dataset list controller', function () {
                 expect(DatasetService.move).toHaveBeenCalledWith(dataset, folderDest, name);
             }));
 
-            it('should show success message on move success', inject((FolderService, MessageService) => {
+            it('should show success message on move success', inject((MessageService) => {
                 //given
-                let ctrl = createController();
+                const ctrl = createController();
+                expect(MessageService.success).not.toHaveBeenCalled();
+
+                //when
+                ctrl.move(dataset, folderDest, name);
+                scope.$digest();
+
+                //then
+                expect(MessageService.success).toHaveBeenCalledWith('MOVE_SUCCESS_TITLE', 'MOVE_SUCCESS');
+            }));
+
+            it('should refresh current folder content', inject((FolderService) => {
+                //given
+                const ctrl = createController();
+                expect(FolderService.getContent).not.toHaveBeenCalledWith(stateMock.inventory.currentFolder);
 
                 //when
                 ctrl.move(dataset, folderDest, name);
@@ -723,9 +763,19 @@ describe('Dataset list controller', function () {
 
                 //then
                 expect(FolderService.getContent).toHaveBeenCalledWith(stateMock.inventory.currentFolder);
-                expect(MessageService.success).toHaveBeenCalledWith('MOVE_SUCCESS_TITLE', 'MOVE_SUCCESS');
-                expect(ctrl.datasetCopyVisibility).toBe(false);
             }));
+
+            it('should hide copy modal', () => {
+                //given
+                const ctrl = createController();
+
+                //when
+                ctrl.move(dataset, folderDest, name);
+                scope.$digest();
+
+                //then
+                expect(ctrl.datasetCopyVisibility).toBe(false);
+            });
         });
     });
 });

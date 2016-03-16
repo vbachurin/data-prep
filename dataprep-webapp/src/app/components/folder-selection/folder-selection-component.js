@@ -17,30 +17,8 @@ const FolderSelection = {
     bindings: {
         selectedFolder: '=ngModel'
     },
-    bindToController: true,
-    controllerAs: 'folderSelectionCtrl',
     controller: FolderSelectionCtrl,
-    template: `
-    <div class="folders-modal">
-        <input type="search"
-               class="action-search"
-               id="action-suggestions-search"
-               translate-once-placeholder="FIND_FOLDER"
-               ng-model="folderSelectionCtrl.searchFolderQuery"
-               ng-model-options="{debounce: { default: 300, blur: 0 }}"
-               ng-change="folderSelectionCtrl.populateSearchResult()"
-               talend-search-input
-        >
-        <ul class="folders">
-            <folder-item
-                    ng-repeat="item in folderSelectionCtrl.folderItems track by item.path"
-                    item="item"
-                    ng-if="item.display"
-                    on-toggle="folderSelectionCtrl.toggle(folder)"
-                    on-select="folderSelectionCtrl.chooseFolder(dest)"
-            ></folder-item>
-        </ul>
-    </div>`
+    templateUrl: 'app/components/folder-selection/folder-selection.html'
 };
 
 export default FolderSelection;
