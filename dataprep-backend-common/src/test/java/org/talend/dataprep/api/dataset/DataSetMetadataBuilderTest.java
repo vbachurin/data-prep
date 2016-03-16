@@ -13,10 +13,19 @@
 
 package org.talend.dataprep.api.dataset;
 
+import static java.util.stream.Collectors.toList;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
+import static org.talend.dataprep.api.dataset.DataSetGovernance.Certification.CERTIFIED;
+import static org.talend.dataprep.api.type.Type.INTEGER;
+import static org.talend.dataprep.api.type.Type.STRING;
 
+import org.apache.poi.ss.formula.functions.Match;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +35,16 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.talend.dataprep.api.dataset.location.HttpLocation;
+import org.talend.dataprep.api.dataset.location.LocalStoreLocation;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.schema.FormatGuess;
 import org.talend.dataprep.schema.SchemaParserResult;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = DataSetMetadataBuilderTest.class)
@@ -157,20 +174,45 @@ public class DataSetMetadataBuilderTest {
     @Test
     public void testCertificationStep() throws Exception {
         final DataSetMetadata metadata = builder.metadata().id("1234")
-                .certificationStep(DataSetGovernance.Certification.CERTIFIED).build();
-        assertEquals(DataSetGovernance.Certification.CERTIFIED, metadata.getGovernance().getCertificationStep());
+                .certificationStep(CERTIFIED).build();
+        assertEquals(CERTIFIED, metadata.getGovernance().getCertificationStep());
     }
 
     @Test
-    public void testCopy() throws Exception {
-        final DataSetMetadata build = builder.metadata() //
-                .id("1234") //
-                .row(column().type(Type.STRING).name("col0"), column().type(Type.STRING).name("col1")) //
-                .build();
-        final DataSetMetadata copy = builder.metadata().copy(build).build();
-        assertEquals("1234", copy.getId());
-        assertEquals("col0", copy.getRowMetadata().getColumns().get(0).getName());
-        assertEquals("col1", copy.getRowMetadata().getColumns().get(1).getName());
+    public void copyNonContentRelated_should_copy_non_content_related_metadata() throws Exception {
+        //given
+        final DataSetMetadata original = createCompleteMetadata();
+
+        //when
+        final DataSetMetadata copy = builder.metadata().copyNonContentRelated(original).build();
+
+        //then
+        assertNonContentRelatedMetadata(original, copy);
+    }
+
+    @Test
+    public void copyContentRelated_should_copy_content_related_metadata() throws Exception {
+        //given
+        final DataSetMetadata original = createCompleteMetadata();
+
+        //when
+        final DataSetMetadata copy = builder.metadata().id("2f57de4641a66").copyContentRelated(original).build();
+
+        //then
+        assertContentRelatedMetadata(original, copy);
+    }
+
+    @Test
+    public void copy_should_copy_all_metadata() throws Exception {
+        //given
+        final DataSetMetadata original = createCompleteMetadata();
+
+        //when
+        final DataSetMetadata copy = builder.metadata().copy(original).build();
+
+        //then
+        assertNonContentRelatedMetadata(original, copy);
+        assertContentRelatedMetadata(original, copy);
     }
 
     @Test
@@ -178,5 +220,88 @@ public class DataSetMetadataBuilderTest {
         final DataSetMetadata metadata = builder.metadata().id("1234")
                 .schemaParserResult(SchemaParserResult.Builder.parserResult().sheetName("sheetName").build()).build();
         assertEquals("sheetName", metadata.getSchemaParserResult().getSheetName());
+    }
+
+    private DataSetMetadata createCompleteMetadata() {
+        final Map<String, String> parameters = new HashMap<>(0);
+        parameters.put("encoding", "UTF-8");
+
+        final List<ColumnMetadata> columnsMetadata = new ArrayList<>(2);
+        columnsMetadata.add(ColumnMetadata.Builder.column().id(0).name("id").type(INTEGER).build());
+        columnsMetadata.add(ColumnMetadata.Builder.column().id(1).name("Name").type(STRING).build());
+
+        final RowMetadata rowMetadata = new RowMetadata();
+        rowMetadata.setColumns(columnsMetadata);
+
+        final DataSetContent content = new DataSetContent();
+        content.setNbRecords(1000);
+        content.setLimit(1000L);
+        content.setNbLinesInHeader(10);
+        content.setNbLinesInFooter(10);
+        content.setFormatGuessId("formatGuess#csv");
+        content.setMediaType("text/csv");
+        content.setParameters(parameters);
+
+        final SchemaParserResult schemaParserResult = new SchemaParserResult.Builder()
+                .draft(true)
+                .build();
+
+        final DataSetMetadata metadata = new DataSetMetadata("18ba64c154d5", "Avengers stats", "Stan Lee", System.currentTimeMillis(), System.currentTimeMillis(), rowMetadata, "1.0");
+        metadata.setFavorite(true);
+        metadata.setLocation(new LocalStoreLocation());
+        metadata.getGovernance().setCertificationStep(CERTIFIED);
+        metadata.setSheetName("Sheet 1");
+        metadata.setDraft(true);
+        metadata.setContent(content);
+        metadata.setEncoding("UTF-8");
+        metadata.getLifecycle().contentIndexed(true);
+        metadata.getLifecycle().qualityAnalyzed(true);
+        metadata.getLifecycle().schemaAnalyzed(true);
+        metadata.getLifecycle().inProgress(true);
+        metadata.getLifecycle().importing(true);
+        metadata.setSchemaParserResult(schemaParserResult);
+
+        return metadata;
+    }
+
+    private void assertNonContentRelatedMetadata(final DataSetMetadata original, final DataSetMetadata copy) {
+        assertThat(copy.getId(), equalTo(original.getId()));
+        assertThat(copy.getAppVersion(), equalTo(original.getAppVersion()));
+        assertThat(copy.getAuthor(), equalTo(original.getAuthor()));
+        assertThat(copy.getCreationDate(), equalTo(original.getCreationDate()));
+        assertThat(copy.isFavorite(), equalTo(original.isFavorite()));
+        assertThat(copy.getLocation(), equalTo(original.getLocation()));
+        assertThat(copy.getLastModificationDate(), equalTo(original.getLastModificationDate()));
+    }
+
+    private void assertContentRelatedMetadata(final DataSetMetadata original, final DataSetMetadata copy) {
+        assertThat(copy.getGovernance().getCertificationStep(), equalTo(original.getGovernance().getCertificationStep()));
+        assertThat(copy.getSheetName(), equalTo(original.getSheetName()));
+        assertThat(copy.isDraft(), equalTo(original.isDraft()));
+        assertThat(copy.getContent().getNbRecords(), equalTo(original.getContent().getNbRecords()));
+        assertThat(copy.getContent().getLimit().get(), equalTo(original.getContent().getLimit().get()));
+        assertThat(copy.getContent().getNbLinesInHeader(), equalTo(original.getContent().getNbLinesInHeader()));
+        assertThat(copy.getContent().getNbLinesInFooter(), equalTo(original.getContent().getNbLinesInFooter()));
+        assertThat(copy.getContent().getFormatGuessId(), equalTo(original.getContent().getFormatGuessId()));
+        assertThat(copy.getContent().getMediaType(), equalTo(original.getContent().getMediaType()));
+        assertThat(copy.getContent().getParameters(), equalTo(original.getContent().getParameters()));
+        assertThat(copy.getEncoding(), equalTo(original.getEncoding()));
+        assertThat(copy.getLifecycle().contentIndexed(), equalTo(original.getLifecycle().contentIndexed()));
+        assertThat(copy.getLifecycle().qualityAnalyzed(), equalTo(original.getLifecycle().qualityAnalyzed()));
+        assertThat(copy.getLifecycle().schemaAnalyzed(), equalTo(original.getLifecycle().schemaAnalyzed()));
+        assertThat(copy.getLifecycle().inProgress(), equalTo(original.getLifecycle().inProgress()));
+        assertThat(copy.getLifecycle().importing(), equalTo(original.getLifecycle().importing()));
+        assertThat(copy.getSchemaParserResult(), equalTo(original.getSchemaParserResult()));
+        final List<String> originalColumnsIds = original.getRowMetadata()
+                .getColumns()
+                .stream()
+                .map(ColumnMetadata::getId)
+                .collect(toList());
+        final List<String> actualColumnsIds = copy.getRowMetadata()
+                .getColumns()
+                .stream()
+                .map(ColumnMetadata::getId)
+                .collect(toList());
+        assertThat(actualColumnsIds, equalTo(originalColumnsIds));
     }
 }

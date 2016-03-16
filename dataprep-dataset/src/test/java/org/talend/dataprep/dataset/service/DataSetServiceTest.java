@@ -13,24 +13,13 @@
 
 package org.talend.dataprep.dataset.service;
 
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.RestAssured.when;
-import static com.jayway.restassured.http.ContentType.JSON;
-import static com.jayway.restassured.path.json.JsonPath.from;
-import static org.hamcrest.Matchers.*;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.*;
-import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
-import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
-
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.jayway.restassured.response.Response;
 import org.apache.commons.io.IOUtils;
 import org.assertj.core.api.Assertions;
 import org.hamcrest.CoreMatchers;
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,13 +33,27 @@ import org.talend.dataprep.api.service.info.VersionService;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.api.user.UserData;
 import org.talend.dataprep.dataset.DataSetBaseTest;
+import org.talend.dataprep.inventory.DatasetMetadataInfo;
 import org.talend.dataprep.lock.DistributedLock;
 import org.talend.dataprep.schema.csv.CSVFormatGuess;
 import org.talend.dataprep.schema.csv.CSVFormatGuesser;
 import org.talend.dataprep.security.Security;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.jayway.restassured.response.Response;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.RestAssured.when;
+import static com.jayway.restassured.http.ContentType.JSON;
+import static com.jayway.restassured.path.json.JsonPath.from;
+import static org.hamcrest.Matchers.*;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.*;
+import static org.springframework.http.HttpStatus.OK;
+import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
+import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
 public class DataSetServiceTest extends DataSetBaseTest {
 
@@ -91,7 +94,7 @@ public class DataSetServiceTest extends DataSetBaseTest {
 
     @Test
     public void list() throws Exception {
-        when().get("/datasets").then().statusCode(HttpStatus.OK.value()).body(equalTo("[]"));
+        when().get("/datasets").then().statusCode(OK.value()).body(equalTo("[]"));
         // Adds 1 data set to store
         String id1 = UUID.randomUUID().toString();
         final DataSetMetadata metadata = metadataBuilder.metadata().id(id1).name("name1").author("anonymous").created(0)
@@ -115,7 +118,7 @@ public class DataSetServiceTest extends DataSetBaseTest {
                 .formatGuessId(new CSVFormatGuess().getBeanId()).build();
         metadata2.getContent().addParameter(CSVFormatGuess.SEPARATOR_PARAMETER, ";");
         dataSetMetadataRepository.add(metadata2);
-        when().get("/datasets").then().statusCode(HttpStatus.OK.value());
+        when().get("/datasets").then().statusCode(OK.value());
         String response = when().get("/datasets").asString();
         List<String> ids = from(response).get("id");
         assertThat(ids, hasItems(id1, id2));
@@ -142,7 +145,7 @@ public class DataSetServiceTest extends DataSetBaseTest {
 
     @Test
     public void listNameSort() throws Exception {
-        when().get("/datasets?sort=name").then().statusCode(HttpStatus.OK.value()).body(equalTo("[]"));
+        when().get("/datasets?sort=name").then().statusCode(OK.value()).body(equalTo("[]"));
         // Adds 2 data set metadata to store
         String id1 = UUID.randomUUID().toString();
         final DataSetMetadata metadata1 = metadataBuilder.metadata().id(id1).name("AAAA").author("anonymous").created(0)
@@ -164,7 +167,7 @@ public class DataSetServiceTest extends DataSetBaseTest {
 
     @Test
     public void listDateSort() throws Exception {
-        when().get("/datasets?sort=date").then().statusCode(HttpStatus.OK.value()).body(equalTo("[]"));
+        when().get("/datasets?sort=date").then().statusCode(OK.value()).body(equalTo("[]"));
         // Adds 2 data set metadata to store
         String id1 = UUID.randomUUID().toString();
         final DataSetMetadata metadata1 = metadataBuilder.metadata().id(id1).name("AAAA").author("anonymous").created(20)
@@ -186,7 +189,7 @@ public class DataSetServiceTest extends DataSetBaseTest {
 
     @Test
     public void listDateOrder() throws Exception {
-        when().get("/datasets?sort=date&order=asc").then().statusCode(HttpStatus.OK.value()).body(equalTo("[]"));
+        when().get("/datasets?sort=date&order=asc").then().statusCode(OK.value()).body(equalTo("[]"));
         // Adds 2 data set metadata to store
         String id1 = UUID.randomUUID().toString();
         final DataSetMetadata metadata1 = metadataBuilder.metadata().id(id1).name("AAAA").author("anonymous").created(20)
@@ -224,7 +227,7 @@ public class DataSetServiceTest extends DataSetBaseTest {
 
     @Test
     public void listNameOrder() throws Exception {
-        when().get("/datasets?sort=name&order=asc").then().statusCode(HttpStatus.OK.value()).body(equalTo("[]"));
+        when().get("/datasets?sort=name&order=asc").then().statusCode(OK.value()).body(equalTo("[]"));
         // Adds 2 data set metadata to store
         String id1 = UUID.randomUUID().toString();
         final DataSetMetadata metadata1 = metadataBuilder.metadata().id(id1).name("AAAA").author("anonymous").created(20)
@@ -340,7 +343,7 @@ public class DataSetServiceTest extends DataSetBaseTest {
         assertThat(ids.size(), is(1));
         int statusCode = when().get("/datasets/{id}/content", expectedId).getStatusCode();
         assertTrue("statusCode is:" + statusCode,
-                statusCode == HttpStatus.ACCEPTED.value() || statusCode == HttpStatus.OK.value());
+                statusCode == HttpStatus.ACCEPTED.value() || statusCode == OK.value());
     }
 
     @Test
@@ -442,7 +445,7 @@ public class DataSetServiceTest extends DataSetBaseTest {
         List<String> ids = from(when().get("/datasets").asString()).get("");
         assertThat(ids.size(), is(1));
         int before = dataSetMetadataRepository.size();
-        when().delete("/datasets/{id}", expectedId).then().statusCode(HttpStatus.OK.value());
+        when().delete("/datasets/{id}", expectedId).then().statusCode(OK.value());
         int after = dataSetMetadataRepository.size();
         logger.debug("delete before {} after {}", before, after);
         assertThat(before - after, is(1));
@@ -452,10 +455,44 @@ public class DataSetServiceTest extends DataSetBaseTest {
     public void updateRawContent() throws Exception {
         String dataSetId = "123456";
         given().body(IOUtils.toString(this.getClass().getResourceAsStream(TAGADA_CSV))).when()
-                .put("/datasets/{id}/raw", dataSetId).then().statusCode(HttpStatus.OK.value());
+                .put("/datasets/{id}/raw", dataSetId).then().statusCode(OK.value());
         List<String> ids = from(when().get("/datasets").asString()).get("id");
         assertThat(ids, hasItem(dataSetId));
         assertQueueMessages(dataSetId);
+    }
+
+    @Test
+    public void updateRawContent_should_preserve_non_content_related_metadata() throws Exception {
+        //given
+        final String dataSetId = "123456";
+        given().body(IOUtils.toString(this.getClass().getResourceAsStream(TAGADA_CSV)))
+                .when()
+                .put("/datasets/{id}/raw", dataSetId)
+                .then()
+                .statusCode(OK.value());
+
+        String datasets = when().get("/datasets").asString();
+        List<DatasetMetadataInfo> datasetsMetadata = builder.build().readValue(datasets, new TypeReference<ArrayList<DatasetMetadataInfo>>() {});
+        final DataSetMetadata original = datasetsMetadata.get(0).getMetadata();
+
+        //when
+        given().body(IOUtils.toString(this.getClass().getResourceAsStream(TAGADA2_CSV)))
+                .when()
+                .put("/datasets/{id}/raw", dataSetId)
+                .then()
+                .statusCode(OK.value());
+
+        //then
+        datasets = when().get("/datasets").asString();
+        datasetsMetadata = builder.build().readValue(datasets, new TypeReference<ArrayList<DatasetMetadataInfo>>() {});
+        final DataSetMetadata copy = datasetsMetadata.get(0).getMetadata();
+
+        assertThat(copy.getId(), equalTo(original.getId()));
+        assertThat(copy.getAppVersion(), equalTo(original.getAppVersion()));
+        assertThat(copy.getAuthor(), equalTo(original.getAuthor()));
+        assertThat(copy.getCreationDate(), equalTo(original.getCreationDate()));
+        assertThat(copy.isFavorite(), equalTo(original.isFavorite()));
+        assertThat(copy.getLocation(), equalTo(original.getLocation()));
     }
 
     @Test
@@ -485,7 +522,7 @@ public class DataSetServiceTest extends DataSetBaseTest {
         // Should receive a 200 if code follows redirection
         given().redirects().follow(true).contentType(JSON).get("/datasets/{id}/preview", dataSetId) //
                 .then() //
-                .statusCode(HttpStatus.OK.value());
+                .statusCode(OK.value());
     }
 
     @Test
@@ -914,7 +951,7 @@ public class DataSetServiceTest extends DataSetBaseTest {
         assertThat(dataSetMetadata, notNullValue());
         assertEquals(Certification.NONE, dataSetMetadata.getGovernance().getCertificationStep());
 
-        when().put("/datasets/{id}/processcertification", dataSetId).then().statusCode(HttpStatus.OK.value());
+        when().put("/datasets/{id}/processcertification", dataSetId).then().statusCode(OK.value());
         dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
         assertThat(dataSetMetadata, notNullValue());
         assertEquals(Certification.PENDING, dataSetMetadata.getGovernance().getCertificationStep());
@@ -936,9 +973,9 @@ public class DataSetServiceTest extends DataSetBaseTest {
         assertEquals(Certification.NONE, dataSetMetadata.getGovernance().getCertificationStep());
 
         // NONE -> PENDING
-        when().put("/datasets/{id}/processcertification", dataSetId).then().statusCode(HttpStatus.OK.value());
+        when().put("/datasets/{id}/processcertification", dataSetId).then().statusCode(OK.value());
         // PENDING -> CERTIFIED
-        when().put("/datasets/{id}/processcertification", dataSetId).then().statusCode(HttpStatus.OK.value());
+        when().put("/datasets/{id}/processcertification", dataSetId).then().statusCode(OK.value());
         dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
         assertThat(dataSetMetadata, notNullValue());
         assertEquals(Certification.CERTIFIED, dataSetMetadata.getGovernance().getCertificationStep());
@@ -947,7 +984,7 @@ public class DataSetServiceTest extends DataSetBaseTest {
 
     @Test
     public void testGetFavoritesDatasetList() {
-        when().get("/datasets/favorites").then().statusCode(HttpStatus.OK.value()).body(equalTo("[]"));
+        when().get("/datasets/favorites").then().statusCode(OK.value()).body(equalTo("[]"));
         String dsId1 = UUID.randomUUID().toString();
         String dsId2 = UUID.randomUUID().toString();
         UserData userData = new UserData(security.getUserId(), versionService.version().getVersionId());
@@ -966,17 +1003,17 @@ public class DataSetServiceTest extends DataSetBaseTest {
         String dsId1 = UUID.randomUUID().toString();
         String dsId2 = UUID.randomUUID().toString();
 
-        when().get("/datasets/favorites").then().statusCode(HttpStatus.OK.value()).body(equalTo("[]"));
+        when().get("/datasets/favorites").then().statusCode(OK.value()).body(equalTo("[]"));
         dataSetMetadataRepository.add(metadataBuilder.metadata().id(dsId1).build());
         dataSetMetadataRepository.add(metadataBuilder.metadata().id(dsId2).build());
         // check set
-        when().put("/datasets/{id}/favorite", dsId1).then().statusCode(HttpStatus.OK.value());
-        when().put("/datasets/{id}/favorite?unset=false", dsId2).then().statusCode(HttpStatus.OK.value());
+        when().put("/datasets/{id}/favorite", dsId1).then().statusCode(OK.value());
+        when().put("/datasets/{id}/favorite?unset=false", dsId2).then().statusCode(OK.value());
         List<String> favoritesResp = from(when().get("/datasets/favorites").asString()).get(); //$NON-NLS-1$
         assertEquals(2, favoritesResp.size());
         assertThat(favoritesResp, hasItems(dsId1, dsId2));
         // check unset
-        when().put("/datasets/{id}/favorite?unset=true", dsId2).then().statusCode(HttpStatus.OK.value());
+        when().put("/datasets/{id}/favorite?unset=true", dsId2).then().statusCode(OK.value());
         favoritesResp = from(when().get("/datasets/favorites").asString()).get();
         assertEquals(1, favoritesResp.size());
         assertThat(favoritesResp, hasItem(dsId1));

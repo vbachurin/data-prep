@@ -66,7 +66,7 @@ public class DataSetMetadataBuilder {
     /**
      * @see org.talend.dataprep.api.dataset.DataSetMetadata#lastModificationDate
      */
-    private long lastModificationDate = System.currentTimeMillis();;
+    private long lastModificationDate = System.currentTimeMillis();
 
     /**
      * @see org.talend.dataprep.api.dataset.DataSetMetadata#sheetName
@@ -310,41 +310,61 @@ public class DataSetMetadataBuilder {
         return this;
     }
 
-    public DataSetMetadataBuilder copy(DataSetMetadata original) {
+    public DataSetMetadataBuilder copyNonContentRelated(final DataSetMetadata original) {
         this.id = original.getId();
         this.appVersion = original.getAppVersion();
         this.author = original.getAuthor();
         this.name = original.getName();
         this.createdDate = original.getCreationDate();
-        this.lastModificationDate = original.getLastModificationDate();
-        this.sheetName = original.getSheetName();
-        this.draft = original.isDraft();
         this.isFavorite = original.isFavorite();
         this.location = original.getLocation();
+        this.lastModificationDate = original.getLastModificationDate();
+        return this;
+    }
+
+    public DataSetMetadataBuilder copyContentRelated(final DataSetMetadata original) {
+        this.certificationStep = original.getGovernance().getCertificationStep();
+
+        this.sheetName = original.getSheetName();
+        this.draft = original.isDraft();
+
         this.size = original.getContent().getNbRecords();
         if (original.getContent().getLimit().isPresent()) {
             this.limit = original.getContent().getLimit().get();
         }
+
         this.headerSize = original.getContent().getNbLinesInHeader();
         this.footerSize = original.getContent().getNbLinesInFooter();
+
         this.formatGuessId = original.getContent().getFormatGuessId();
         this.mediaType = original.getContent().getMediaType();
+        this.parameters = original.getContent().getParameters();
+        this.encoding = original.getEncoding();
+
         this.contentAnalyzed = original.getLifecycle().contentIndexed();
         this.qualityAnalyzed = original.getLifecycle().qualityAnalyzed();
         this.schemaAnalyzed = original.getLifecycle().schemaAnalyzed();
         this.inProgress = original.getLifecycle().inProgress();
         this.importing = original.getLifecycle().importing();
-        this.parameters = original.getContent().getParameters();
-        this.encoding = original.getEncoding();
-        List<ColumnMetadata.Builder> builders = new ArrayList<>();
-        if (original.getRowMetadata() != null) {
-            for (ColumnMetadata col : original.getRowMetadata().getColumns()) {
-                builders.add(ColumnMetadata.Builder.column().copy(col));
-            }
-        }
-        this.columnBuilders = builders.toArray(new ColumnMetadata.Builder[builders.size()]);
-        this.certificationStep = original.getGovernance().getCertificationStep();
+
         this.schemaParserResult = original.getSchemaParserResult();
+        if (original.getRowMetadata() != null) {
+            this.columnBuilders = original.getRowMetadata()
+                    .getColumns()
+                    .stream()
+                    .map(col -> ColumnMetadata.Builder.column().copy(col))
+                    .toArray(ColumnMetadata.Builder[]::new);
+        }
+        else {
+            this.columnBuilders = new ColumnMetadata.Builder[0];
+        }
+
+        return this;
+    }
+
+    public DataSetMetadataBuilder copy(DataSetMetadata original) {
+        copyNonContentRelated(original);
+        copyContentRelated(original);
         return this;
     }
 
