@@ -1,37 +1,40 @@
-package org.talend.dataprep.transformation.pipeline.model;
+package org.talend.dataprep.transformation.pipeline.node;
 
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.transformation.pipeline.*;
 
-public class NullNode implements Node {
+public class BasicNode implements Node, RuntimeNode {
 
-    public static final Node INSTANCE = new NullNode();
-
-    private NullNode() {
-    }
+    protected Link link;
 
     @Override
     public void receive(DataSetRow row, RowMetadata metadata) {
-        // Nothing to do
+        link.exec().emit(row, metadata);
     }
 
     @Override
     public void setLink(Link link) {
-        // Nothing to do
+        this.link = link;
     }
 
     @Override
     public Link getLink() {
-        return NullLink.INSTANCE;
+        return link;
     }
 
     @Override
     public void signal(Signal signal) {
-        // Nothing to do
+        link.exec().signal(signal);
     }
 
     @Override
     public void accept(Visitor visitor) {
         visitor.visitNode(this);
+    }
+
+    @Override
+    public RuntimeNode exec() {
+        return this;
     }
 }

@@ -1,17 +1,16 @@
-package org.talend.dataprep.transformation.pipeline.model;
+package org.talend.dataprep.transformation.pipeline.node;
 
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
+import org.talend.dataprep.transformation.pipeline.*;
 
-public class ActionNode implements Node, Monitored {
+public class ActionNode extends BasicNode implements Monitored {
 
     private final Action action;
 
     private final ActionContext actionContext;
-
-    private Link link = NullLink.INSTANCE;
 
     private long totalTime;
 
@@ -42,30 +41,12 @@ public class ActionNode implements Node, Monitored {
             totalTime += System.currentTimeMillis() - start;
             count++;
         }
-        link.emit(actionRow, actionContext.getRowMetadata());
+        link.exec().emit(actionRow, actionContext.getRowMetadata());
     }
 
     @Override
     public void accept(Visitor visitor) {
         visitor.visitAction(this);
-        if (link != null) {
-            link.accept(visitor);
-        }
-    }
-
-    @Override
-    public void setLink(Link link) {
-        this.link = link;
-    }
-
-    @Override
-    public Link getLink() {
-        return link;
-    }
-
-    @Override
-    public void signal(Signal signal) {
-        link.signal(signal);
     }
 
     @Override

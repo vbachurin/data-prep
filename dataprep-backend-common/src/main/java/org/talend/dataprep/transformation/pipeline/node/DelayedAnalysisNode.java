@@ -1,4 +1,4 @@
-package org.talend.dataprep.transformation.pipeline.model;
+package org.talend.dataprep.transformation.pipeline.node;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,6 +23,9 @@ import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.dataset.statistics.StatisticsAdapter;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
+import org.talend.dataprep.transformation.pipeline.Monitored;
+import org.talend.dataprep.transformation.pipeline.Signal;
+import org.talend.dataprep.transformation.pipeline.Visitor;
 import org.talend.dataprep.util.FilesHelper;
 import org.talend.datascience.common.inference.Analyzer;
 import org.talend.datascience.common.inference.Analyzers;
@@ -39,8 +42,6 @@ public class DelayedAnalysisNode extends AnalysisNode implements Monitored {
     private final JsonGenerator generator;
 
     private final File transformationDelayed;
-
-    private Link link = NullLink.INSTANCE;
 
     private RowMetadata rowMetadata;
 
@@ -89,30 +90,19 @@ public class DelayedAnalysisNode extends AnalysisNode implements Monitored {
             count++;
         }
 
-        link.emit(row, metadata);
+        link.exec().emit(row, metadata);
     }
 
     @Override
     public void accept(Visitor visitor) {
         visitor.visitDelayedAnalysis(this);
-        link.accept(visitor);
-    }
-
-    @Override
-    public void setLink(Link link) {
-        this.link = link;
-    }
-
-    @Override
-    public Link getLink() {
-        return link;
     }
 
     @Override
     public void signal(Signal signal) {
         final long start = System.currentTimeMillis();
         try {
-            if (signal == Signal.END_OF_STREAM) {
+            if (signal == Signal.END_OF_STREAM || signal == Signal.CANCEL) {
                 // End temporary output
                 generator.writeEndArray();
                 generator.writeEndObject();
@@ -167,7 +157,7 @@ public class DelayedAnalysisNode extends AnalysisNode implements Monitored {
             FilesHelper.deleteQuietly(transformationDelayed);
             totalTime += System.currentTimeMillis() - start;
         }
-        link.signal(signal);
+        super.signal(signal);
     }
 
     @Override

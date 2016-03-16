@@ -19,11 +19,11 @@ import org.talend.dataprep.transformation.api.action.context.TransformationConte
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
 import org.talend.dataprep.transformation.api.transformer.json.NullAnalyzer;
-import org.talend.dataprep.transformation.pipeline.model.*;
+import org.talend.dataprep.transformation.pipeline.node.*;
 import org.talend.datascience.common.inference.Analyzer;
 import org.talend.datascience.common.inference.Analyzers;
 
-public class Pipeline implements Node {
+public class Pipeline implements Node, RuntimeNode {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Pipeline.class);
 
@@ -33,15 +33,15 @@ public class Pipeline implements Node {
      * @param node The source node (the node in the pipeline that submit content to the pipeline).
      * @see Builder to create a new instance of this class.
      */
-    private Pipeline(Node node) {
+    Pipeline(Node node) {
         this.node = node;
     }
 
     public void execute(DataSet dataSet) {
         final RowMetadata rowMetadata = dataSet.getMetadata().getRowMetadata().clone();
         try (Stream<DataSetRow> records = dataSet.getRecords()) {
-            records.forEach(r -> node.receive(r, rowMetadata));
-            node.signal(Signal.END_OF_STREAM);
+            records.forEach(r -> node.exec().receive(r, rowMetadata));
+            node.exec().signal(Signal.END_OF_STREAM);
         }
     }
 
@@ -54,12 +54,7 @@ public class Pipeline implements Node {
 
     @Override
     public void receive(DataSetRow row, RowMetadata metadata) {
-        node.receive(row, metadata);
-    }
-
-    @Override
-    public void setLink(Link link) {
-        throw new UnsupportedOperationException();
+        node.exec().receive(row, metadata);
     }
 
     @Override
@@ -68,13 +63,23 @@ public class Pipeline implements Node {
     }
 
     @Override
+    public void setLink(Link link) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public void signal(Signal signal) {
-        node.signal(signal);
+        node.exec().signal(signal);
     }
 
     @Override
     public void accept(Visitor visitor) {
         visitor.visitPipeline(this);
+    }
+
+    @Override
+    public RuntimeNode exec() {
+        return this;
     }
 
     public Node getNode() {
@@ -97,8 +102,6 @@ public class Pipeline implements Node {
 
         private ActionRegistry actionRegistry;
 
-        private Predicate<ColumnMetadata> filter = c -> true;
-
         private TransformationContext context;
 
         private StatisticsAdapter adapter;
@@ -107,15 +110,6 @@ public class Pipeline implements Node {
 
         public static Builder builder() {
             return new Builder();
-        }
-
-        private Node buildAction(Node previousNode, Action action, Function<Action, Node> compile, Function<Action, Node> execute) {
-            Node compileAction = compile.apply(action);
-            Node executeAction = execute.apply(action);
-
-            previousNode.setLink(new BasicLink(compileAction));
-            compileAction.setLink(new BasicLink(executeAction));
-            return executeAction;
         }
 
         public Builder withStatisticsAdapter(StatisticsAdapter adapter) {
@@ -158,16 +152,13 @@ public class Pipeline implements Node {
             return this;
         }
 
-        public Pipeline build() {
-            // Source
-            final Node sourceNode = new SourceNode();
-            Node current = sourceNode;
+        private ActionAnalysis analyzeActions() {
             // Compile actions
             final Set<String> readOnlyColumns = rowMetadata.getColumns().stream().map(ColumnMetadata::getId)
                     .collect(Collectors.toSet());
             final Set<String> modifiedColumns = new HashSet<>();
             int createColumnActions = 0;
-            final boolean needDelayedAnalysis;
+            ActionAnalysis analysisResult = new ActionAnalysis();
             if (actionRegistry != null) {
                 for (Action action : actions) {
                     final ActionMetadata actionMetadata = actionRegistry.get(action.getName());
@@ -205,38 +196,40 @@ public class Pipeline implements Node {
                         }
                     }
                 }
-                filter = c -> modifiedColumns.contains(c.getId()) || !readOnlyColumns.contains(c.getId());
-                needDelayedAnalysis = !modifiedColumns.isEmpty() || createColumnActions > 0;
+                analysisResult.filter = c -> modifiedColumns.contains(c.getId()) || !readOnlyColumns.contains(c.getId());
+                analysisResult.needDelayedAnalysis = !modifiedColumns.isEmpty() || createColumnActions > 0;
             } else {
                 LOGGER.warn("Unable to statically analyze actions (no action registry defined).");
-                filter = c -> true;
-                needDelayedAnalysis = true;
+                analysisResult.filter = c -> true;
+                analysisResult.needDelayedAnalysis = true;
             }
-            // Compile actions
-            for (Action action : actions) {
-                current = buildAction(current, //
-                        action, //
-                        a -> new CompileNode(a, context.create(a.getRowAction())), //
-                        a -> new ActionNode(a, context.in(a.getRowAction()))
-                );
-            }
+            return analysisResult;
+        }
 
+        public Pipeline build() {
+            final NodeBuilder current = NodeBuilder.source();
+            // Apply actions
+            for (Action action : actions) {
+                current.to(new CompileNode(action, context.create(action.getRowAction())));
+                current.to(new ActionNode(action, context.in(action.getRowAction())));
+            }
             // Analyze (delayed)
-            if (needDelayedAnalysis) {
-                // Inline analysis
-                Node inlineAnalysisNode = new InlineAnalysisNode(inlineAnalyzer, filter, adapter);
-                current.setLink(new BasicLink(inlineAnalysisNode));
-                current = inlineAnalysisNode;
-                // Delayed analysis
-                Node delayedAnalysisNode = new DelayedAnalysisNode(delayedAnalyzer, filter, adapter);
-                current.setLink(new BasicLink(delayedAnalysisNode));
-                current = delayedAnalysisNode;
+            final ActionAnalysis analysis = analyzeActions();
+            if (analysis.needDelayedAnalysis) {
+                current.to(new InlineAnalysisNode(inlineAnalyzer, analysis.filter, adapter));
+                current.to(new DelayedAnalysisNode(delayedAnalyzer, analysis.filter, adapter));
             }
             // Output
-            final Node outputNode = outputSupplier.get();
-            current.setLink(new BasicLink(outputNode));
+            current.to(outputSupplier.get());
             // Finally build pipeline
-            return new Pipeline(sourceNode);
+            return new Pipeline(current.build());
+        }
+
+        private class ActionAnalysis {
+
+            private boolean needDelayedAnalysis;
+
+            private Predicate<ColumnMetadata> filter = c -> true;
         }
 
     }

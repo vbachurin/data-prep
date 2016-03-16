@@ -11,8 +11,11 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
+import org.talend.dataprep.transformation.pipeline.*;
+import org.talend.dataprep.transformation.pipeline.link.NullLink;
+import org.talend.dataprep.transformation.pipeline.node.TerminalNode;
 
-public class DiffWriterNode implements Node, Monitored {
+public class DiffWriterNode extends TerminalNode implements Monitored {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DiffWriterNode.class);
 
@@ -88,18 +91,8 @@ public class DiffWriterNode implements Node, Monitored {
     }
 
     @Override
-    public Link getLink() {
-        return NullLink.INSTANCE;
-    }
-
-    @Override
-    public void setLink(Link link) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public void signal(Signal signal) {
-        if (signal == Signal.END_OF_STREAM && !endMetadata) {
+        if ((signal == Signal.END_OF_STREAM || signal == Signal.CANCEL) && !endMetadata) {
             final long start = System.currentTimeMillis();
             try {
                 emptyRowSources();

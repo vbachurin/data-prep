@@ -1,9 +1,10 @@
-package org.talend.dataprep.transformation.pipeline.model;
+package org.talend.dataprep.transformation.pipeline.link;
 
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.transformation.pipeline.*;
 
-public class BasicLink implements Link {
+public class BasicLink implements Link, RuntimeLink {
 
     private final Node target;
 
@@ -13,7 +14,7 @@ public class BasicLink implements Link {
 
     @Override
     public void emit(DataSetRow row, RowMetadata metadata) {
-        target.receive(row, metadata);
+        target.exec().receive(row, metadata);
     }
 
     @Override
@@ -22,8 +23,13 @@ public class BasicLink implements Link {
     }
 
     @Override
+    public RuntimeLink exec() {
+        return this;
+    }
+
+    @Override
     public void signal(Signal signal) {
-        target.signal(signal);
+        target.exec().signal(signal);
     }
 
     public Node getTarget() {

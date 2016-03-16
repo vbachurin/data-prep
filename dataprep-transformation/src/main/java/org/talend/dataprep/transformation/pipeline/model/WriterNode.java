@@ -7,8 +7,11 @@ import org.slf4j.LoggerFactory;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
+import org.talend.dataprep.transformation.pipeline.*;
+import org.talend.dataprep.transformation.pipeline.link.NullLink;
+import org.talend.dataprep.transformation.pipeline.node.TerminalNode;
 
-public class WriterNode implements Node, Monitored {
+public class WriterNode extends TerminalNode implements Monitored {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WriterNode.class);
 
@@ -50,18 +53,8 @@ public class WriterNode implements Node, Monitored {
     }
 
     @Override
-    public void setLink(Link link) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Link getLink() {
-        return NullLink.INSTANCE;
-    }
-
-    @Override
     public void signal(Signal signal) {
-        if (signal == Signal.END_OF_STREAM) {
+        if (signal == Signal.END_OF_STREAM || signal == Signal.CANCEL) {
             final long start = System.currentTimeMillis();
             try {
                 writer.endArray(); // <- end records

@@ -1,9 +1,10 @@
-package org.talend.dataprep.transformation.pipeline.model;
+package org.talend.dataprep.transformation.pipeline.link;
 
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.transformation.pipeline.*;
 
-public class CloneLink implements Link {
+public class CloneLink implements Link, RuntimeLink {
 
     private final Node[] nodes;
 
@@ -14,20 +15,25 @@ public class CloneLink implements Link {
     @Override
     public void emit(DataSetRow row, RowMetadata metadata) {
         for (Node node : nodes) {
-            node.receive(row.clone(), metadata.clone());
+            node.exec().receive(row.clone(), metadata.clone());
         }
     }
 
     @Override
     public void signal(Signal signal) {
         for (Node node : nodes) {
-            node.signal(signal);
+            node.exec().signal(signal);
         }
     }
 
     @Override
     public void accept(Visitor visitor) {
         visitor.visitCloneLink(this);
+    }
+
+    @Override
+    public RuntimeLink exec() {
+        return this;
     }
 
     public Node[] getNodes() {

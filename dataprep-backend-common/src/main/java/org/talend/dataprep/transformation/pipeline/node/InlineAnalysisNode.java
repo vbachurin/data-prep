@@ -1,4 +1,4 @@
-package org.talend.dataprep.transformation.pipeline.model;
+package org.talend.dataprep.transformation.pipeline.node;
 
 import java.util.Collections;
 import java.util.List;
@@ -15,14 +15,15 @@ import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.dataset.statistics.StatisticsAdapter;
 import org.talend.dataprep.transformation.api.transformer.json.NullAnalyzer;
+import org.talend.dataprep.transformation.pipeline.Monitored;
+import org.talend.dataprep.transformation.pipeline.Signal;
+import org.talend.dataprep.transformation.pipeline.Visitor;
 import org.talend.datascience.common.inference.Analyzer;
 import org.talend.datascience.common.inference.Analyzers;
 
 public class InlineAnalysisNode extends AnalysisNode implements Monitored {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AnalysisNode.class);
-
-    private Link link = NullLink.INSTANCE;
 
     private List<ColumnMetadata> previousColumns = Collections.emptyList();
 
@@ -84,7 +85,7 @@ public class InlineAnalysisNode extends AnalysisNode implements Monitored {
             totalTime += System.currentTimeMillis() - start;
             count++;
         }
-        link.emit(row, metadata);
+        link.exec().emit(row, metadata);
     }
 
     private boolean newAnalyzerNeeded(List<ColumnMetadata> rowColumns) {
@@ -107,22 +108,11 @@ public class InlineAnalysisNode extends AnalysisNode implements Monitored {
     @Override
     public void accept(Visitor visitor) {
         visitor.visitInlineAnalysis(this);
-        link.accept(visitor);
-    }
-
-    @Override
-    public void setLink(Link link) {
-        this.link = link;
-    }
-
-    @Override
-    public Link getLink() {
-        return link;
     }
 
     @Override
     public void signal(Signal signal) {
-        if (signal == Signal.END_OF_STREAM) {
+        if (signal == Signal.END_OF_STREAM || signal == Signal.CANCEL) {
             adapter.adapt(previousColumns, inlineAnalyzer.getResult(), filter);
         }
         try {
@@ -130,7 +120,7 @@ public class InlineAnalysisNode extends AnalysisNode implements Monitored {
         } catch (Exception e) {
             LOGGER.debug("Unable to close inline analyzer.", e);
         }
-        link.signal(signal);
+        super.signal(signal);
     }
 
     @Override
