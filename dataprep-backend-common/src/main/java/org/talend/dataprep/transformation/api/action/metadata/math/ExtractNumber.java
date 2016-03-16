@@ -39,20 +39,20 @@ import org.talend.dataprep.transformation.api.action.metadata.common.ColumnActio
  *
  * We use metric prefix from <a href="https://en.wikipedia.org/wiki/Metric_prefix">Wikipedia</a>
  *
- *  <ul>
- *     <li>tera, T, 1000000000000</li>
- *     <li>giga, G, 1000000000</li>
- *     <li>mega, M, 1000000</li>
- *     <li>kilo, k, 1000</li>
- *     <li>hecto, h, 100</li>
- *     <li>deca, da, 10</li>
- *     <li>(none), (none), 1</li>
- *     <li>deci, d, 0.1</li>
- *     <li>centi, c, 0.01</li>
- *     <li>milli, m, 0.001</li>
- *     <li>micro, μ, 0.000001</li>
- *     <li>nano, n, 0.000000001</li>
- *     <li>pico p 0.000000000001</li>
+ * <ul>
+ * <li>tera, T, 1000000000000</li>
+ * <li>giga, G, 1000000000</li>
+ * <li>mega, M, 1000000</li>
+ * <li>kilo, k, 1000</li>
+ * <li>hecto, h, 100</li>
+ * <li>deca, da, 10</li>
+ * <li>(none), (none), 1</li>
+ * <li>deci, d, 0.1</li>
+ * <li>centi, c, 0.01</li>
+ * <li>milli, m, 0.001</li>
+ * <li>micro, μ, 0.000001</li>
+ * <li>nano, n, 0.000000001</li>
+ * <li>pico p 0.000000000001</li>
  * </ul>
  */
 @Component(ActionMetadata.ACTION_BEAN_PREFIX + ExtractNumber.EXTRACT_NUMBER_ACTION_NAME)
@@ -67,52 +67,33 @@ public class ExtractNumber extends ActionMetadata implements ColumnAction {
      */
     public static final int MAX_FRACTION_DIGITS_DISPLAY = 30;
 
+    public static String DECIMAL_SEPARATOR = "decimal_separator"; //$NON-NLS-1$
+
+    public static String DOT = ".";
+
+    public static String COMMA = ",";
+
     /**
      * K: the prefix, V: the value
      */
     private Map<String, MetricPrefix> metricPrefixes = new HashMap<>(13);
 
-    public static class MetricPrefix {
-
-        private final String name, sign;
-
-        private final BigDecimal multiply;
-
-        public MetricPrefix(BigDecimal multiply, String name, String sign) {
-            this.multiply = multiply;
-            this.name = name;
-            this.sign = sign;
-        }
-
-        public BigDecimal getMultiply() {
-            return multiply;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getSign() {
-            return sign;
-        }
-    }
-
     /**
      * Initialize the metrics
      * <ul>
-     *     <li>tera, T, 1000000000000</li>
-     *     <li>giga, G, 1000000000</li>
-     *     <li>mega, M, 1000000</li>
-     *     <li>kilo, k, 1000</li>
-     *     <li>hecto, h, 100</li>
-     *     <li>deca, da, 10</li>
-     *     <li>(none), (none), 1</li>
-     *     <li>deci, d, 0.1</li>
-     *     <li>centi, c, 0.01</li>
-     *     <li>milli, m, 0.001</li>
-     *     <li>micro, μ, 0.000001</li>
-     *     <li>nano, n, 0.000000001</li>
-     *     <li>pico p 0.000000000001</li>
+     * <li>tera, T, 1000000000000</li>
+     * <li>giga, G, 1000000000</li>
+     * <li>mega, M, 1000000</li>
+     * <li>kilo, k, 1000</li>
+     * <li>hecto, h, 100</li>
+     * <li>deca, da, 10</li>
+     * <li>(none), (none), 1</li>
+     * <li>deci, d, 0.1</li>
+     * <li>centi, c, 0.01</li>
+     * <li>milli, m, 0.001</li>
+     * <li>micro, μ, 0.000001</li>
+     * <li>nano, n, 0.000000001</li>
+     * <li>pico p 0.000000000001</li>
      * </ul>
      */
     @PostConstruct
@@ -192,7 +173,7 @@ public class ExtractNumber extends ActionMetadata implements ColumnAction {
 
         // we build a new value including only number or separator as , or .
         StringBuilder reducedValue = new StringBuilder( value.length() );
-        
+
         for (char c = iter.first(); c != CharacterIterator.DONE; c = iter.next()) {
             // we take the first metric prefix found
             if (metricPrefix == null) {
@@ -227,6 +208,31 @@ public class ExtractNumber extends ActionMetadata implements ColumnAction {
         decimalFormat.setMaximumFractionDigits(MAX_FRACTION_DIGITS_DISPLAY);
         return decimalFormat.format(bigDecimal.stripTrailingZeros());
 
+    }
+
+    public static class MetricPrefix {
+
+        private final String name, sign;
+
+        private final BigDecimal multiply;
+
+        public MetricPrefix(BigDecimal multiply, String name, String sign) {
+            this.multiply = multiply;
+            this.name = name;
+            this.sign = sign;
+        }
+
+        public BigDecimal getMultiply() {
+            return multiply;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getSign() {
+            return sign;
+        }
     }
 
 }
