@@ -22,52 +22,24 @@
       padding-left: 10px;
     }
     .inventory-entry {
-      @include flex-basis(50px);
-      @include flex-grow(0);
-      @include flex-shrink(0);
-      @include align-items(center);
-
-      @include flex-row();
-      @include align-items(center);
-
       padding: 5px 10px;
 
       .inventory-icon {
         @include flex-basis(40px);
-        @include flex-shrink(0);
-        @include flex-grow(0);
-        padding: 5px 2px;
-        position: relative;
-        cursor: pointer;
-        vertical-align: middle;
+
+        @include display(flex);
+        @include align-items(center);
 
         .preparation-icon-div {
-          font-size: 1.5em;
-          color: $dark-blue;
+          font-size: 1.3em;
         }
       }
 
       .inventory-text {
         @include flex-basis(350px);
-        @include flex-shrink(1);
-        @include flex-grow(1);
-
-        @include flex-column();
 
         .inventory-title {
-          font-size: 1.0em;
           font-weight: 600;
-          text-transform: uppercase;
-          overflow: hidden;
-          cursor: pointer;
-          @include ellipsis(350px);
-        }
-
-        .inventory-description {
-          font-weight: 300;
-          font-size: 0.9em;
-          color: $secondary-text;
-          overflow: hidden;
         }
       }
     }

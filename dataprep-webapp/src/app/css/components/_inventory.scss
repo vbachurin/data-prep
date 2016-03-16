@@ -98,8 +98,8 @@ $border-color: #CECECE;
       @include flex-shrink(1);
       @include flex-grow(1);
 
-      @include flex-column();
       @include ellipsis();
+      @include flex-column();
       padding-left: 10px;
 
       &.inventory-folder {
