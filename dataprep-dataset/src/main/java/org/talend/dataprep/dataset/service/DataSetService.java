@@ -483,7 +483,7 @@ public class DataSetService {
                 cloneName = original.getName() + " Copy";
             }
             // first check if the name is already used in the target folder
-            final Iterable<FolderEntry> entries = folderRepository.entries(folderPath, "dataset");
+            final Iterable<FolderEntry> entries = folderRepository.entries(folderPath, FolderEntry.ContentType.DATASET);
             final String newDatasetName = cloneName;
             entries.forEach(folderEntry -> {
                 DataSetMetadata dataSetEntry = dataSetMetadataRepository.get(folderEntry.getContentId());

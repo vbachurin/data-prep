@@ -630,32 +630,6 @@ describe('Dataset list controller', function () {
         }));
     });
 
-    describe('related preparations', function () {
-
-        it('should load preparation and show playground', inject(function ($stateParams, $q, $state, $timeout, StateService, FolderService) {
-            //given
-            spyOn(FolderService, 'getContent').and.returnValue($q.when(true));
-            var ctrl = createController();
-            var preparation = {
-                id: 'de618c62ef97b3a95b5c171bc077ffe22e1d6f79',
-                dataSetId: 'dacd45cf-5bd0-4768-a9b7-f6c199581efc',
-                author: 'anonymousUser'
-            };
-
-            $stateParams.folderPath = 'test/';
-
-            //when
-            ctrl.openPreparation(preparation);
-            scope.$digest();
-            $timeout.flush();
-
-            //then
-            expect(StateService.setPreviousState).toHaveBeenCalledWith('nav.index.datasets');
-            expect(StateService.setPreviousStateOptions).toHaveBeenCalledWith({folderPath: 'test/'});
-            expect($state.go).toHaveBeenCalledWith('playground.preparation', {prepid: preparation.id});
-        }));
-    });
-
     describe('copy/move a dataset', () => {
         const dataset = {name: 'my Dataset'};
         const folderDest = {name: 'my folder destination', path: '/folder1/folder2'};
