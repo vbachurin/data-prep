@@ -28,8 +28,7 @@ describe('Inventory Search controller', function () {
             spyOn(InventoryService, 'search').and.returnValue($q.when({datasets : [], folders: [], preparations:[]}));
 
             //when
-            component.searchInput = 'barcelona';
-            component.search();
+            component.search('barcelona');
             scope.$digest();
 
             //then

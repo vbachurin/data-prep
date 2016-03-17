@@ -24,266 +24,140 @@ describe('Typeahead directive', function () {
         element.remove();
     });
 
-    describe('closeable dropdown', function () {
+    beforeEach(inject(function ($rootScope, $compile) {
 
-        beforeEach(inject(function ($rootScope, $compile) {
+        scope = $rootScope.$new();
+        scope.search = function() {};
 
-            scope = $rootScope.$new();
-            scope.search = function() {};
-            scope.searchInput = '';
+        var html = '<typeahead search="search">' +
+            '    <div class="inventory">' +
+            '    </div>' +
+            '</typeahead>';
+        element = $compile(html)(scope);
+        scope.$digest();
 
-            var html = '<typeahead search-string="searchInput" on-change="search">' +
-                '    <div class="inventory">' +
-                '    </div>' +
-                '</typeahead>';
-            element = $compile(html)(scope);
-            scope.$digest();
+        ctrl = element.controller('typeahead');
+    }));
 
-            ctrl = element.controller('typeahead');
-        }));
+    it('should show typeahead-menu when input changes', function () {
+        //given
+        var menu = element.find('.typeahead-menu').eq(0);
+        expect(menu.hasClass('show-menu')).toBe(false);
 
-        it('should show dropdown-menu when input changes', function () {
-            //given
-            var menu = element.find('.dropdown-menu').eq(0);
-            expect(menu.hasClass('show-menu')).toBe(false);
+        //when
+        ctrl.searchString = 'test';
+        scope.$digest();
 
-            //when
-            ctrl.searchString = 'test';
-            scope.$digest();
-
-            //then
-            expect(menu.hasClass('show-menu')).toBe(true);
-        });
-
-        it('should hide dropdown-menu', function () {
-            //given
-            ctrl.searchString = 'test';
-            scope.$digest();
-
-            //when
-            ctrl.searchString = '';
-            scope.$digest();
-
-            //then
-            var menu = element.find('.dropdown-menu').eq(0);
-            expect(menu.hasClass('show-menu')).toBe(false);
-        });
-
-        it('should hide dropdown-menu on item click', function () {
-            //given
-            var menu = element.find('.dropdown-menu').eq(0);
-            menu.addClass('show-menu');
-
-            //when
-            element.find('.inventory').eq(0).click();
-
-            //then
-            expect(menu.hasClass('show-menu')).toBe(false);
-        });
-
-        it('should register window scroll handler on open', inject(function ($window) {
-            //given
-            expect($._data(angular.element($window)[0], 'events')).not.toBeDefined();
-
-            //when
-            ctrl.searchString = 'test';
-            scope.$digest();
-
-            //then
-            expect($._data(angular.element($window)[0], 'events')).toBeDefined();
-            expect($._data(angular.element($window)[0], 'events').scroll.length).toBe(1);
-        }));
-
-        it('should unregister window scroll on close', inject(function ($window) {
-            //given
-            ctrl.searchString = 'test';
-            scope.$digest();
-
-            expect($._data(angular.element($window)[0], 'events').scroll.length).toBe(1);
-
-            //when
-            ctrl.searchString = '';
-            scope.$digest();
-
-            //then
-            expect($._data(angular.element($window)[0], 'events')).not.toBeDefined();
-        }));
-
-        it('should hide dropdown-menu on body mousedown', function () {
-            //given
-            var menu = element.find('.dropdown-menu').eq(0);
-            menu.addClass('show-menu');
-
-            //when
-            angular.element('body').mousedown();
-
-            //then
-            expect(menu.hasClass('show-menu')).toBe(false);
-        });
-
-        it('should unregister body mousedown on element remove', function () {
-            //given
-            expect($._data(angular.element('body')[0], 'events').mousedown.length).toBe(1);
-
-            //when
-            element.remove();
-
-            //then
-            expect($._data(angular.element('body')[0], 'events')).not.toBeDefined();
-        });
-
-        it('should stop mousedown propagation on dropdown-menu mousedown', function () {
-            //Given
-            var bodyMouseDown = false;
-            var  mouseDownCallBack = function () {
-                bodyMouseDown = true;
-            };
-            angular.element('body').mousedown(mouseDownCallBack);
-
-            //when
-            element.find('.dropdown-menu').mousedown();
-
-            //then
-            expect(bodyMouseDown).toBe(false);
-
-            angular.element('body').off('mousedown', mouseDownCallBack);
-        });
-
-        it('should hide dropdown menu on ESC', function () {
-            //given
-            var menu = element.find('.dropdown-menu').eq(0);
-            menu.addClass('show-menu');
-
-            var event = angular.element.Event('keydown');
-            event.keyCode = 27;
-
-            //when
-            menu.trigger(event);
-
-            //then
-            expect(menu.hasClass('show-menu')).toBe(false);
-        });
-
-        it('should not hide dropdown menu on not ESC keydown', function () {
-            //given
-            var menu = element.find('.dropdown-menu').eq(0);
-            menu.addClass('show-menu');
-
-            var event = angular.element.Event('keydown');
-            event.keyCode = 13;
-
-            //when
-            menu.trigger(event);
-
-            //then
-            expect(menu.hasClass('show-menu')).toBe(true);
-        });
+        //then
+        expect(menu.hasClass('show-menu')).toBe(true);
     });
 
-    describe('not closeable on click dropdown', function () {
-        var createElement;
+    it('should hide typeahead-menu', function () {
+        //given
+        ctrl.searchString = 'test';
+        scope.$digest();
 
-        beforeEach(inject(function ($rootScope, $compile) {
-            scope = $rootScope.$new();
-            scope.search = function() {};
-            scope.side = null;
-            scope.searchInput = '';
+        //when
+        ctrl.searchString = '';
+        scope.$digest();
 
-            createElement = function() {
-                var html = '<typeahead close-on-select="false" search-string="searchInput" on-change="search">' +
-                    '    <div class="inventory">' +
-                    '    </div>' +
-                    '</typeahead>';
-                element = angular.element(html);
-                $compile(element)(scope);
-                scope.$digest();
-            };
-        }));
-
-        it('should not hide dropdown-menu on item click if closeOnSelect is false', function () {
-            //given
-            createElement();
-
-            var menu = element.find('.dropdown-menu').eq(0);
-            menu.addClass('show-menu');
-
-            //when
-            element.find('.inventory').eq(0).click();
-
-            //then
-            expect(menu.hasClass('show-menu')).toBe(true);
-        });
+        //then
+        var menu = element.find('.typeahead-menu').eq(0);
+        expect(menu.hasClass('show-menu')).toBe(false);
     });
 
-    describe('force placement side', function () {
-        var createElement;
+    it('should not hide when clicking on input', function () {
+        //given
+        var menu = element.find('.typeahead-menu').eq(0);
+        ctrl.searchString = 'test';
+        scope.$digest();
 
-        beforeEach(inject(function ($rootScope, $compile) {
-            scope = $rootScope.$new();
-            scope.search = function() {};
+        //when
+        element.find('input').eq(0).click();
 
-            createElement = function() {
-                var html = '<typeahead force-side="{{side}}" search-string="searchInput" on-change="search">' +
-                    '    <div class="inventory">' +
-                    '    </div>' +
-                    '</typeahead>';
-                element = angular.element(html);
-                $compile(element)(scope);
-                scope.$digest();
+        //then
+        expect(menu.hasClass('show-menu')).toBe(true);
+    });
 
-                ctrl = element.controller('typeahead');
-            };
-        }));
+    it('should hide typeahead-menu on item click', function () {
+        //given
+        var menu = element.find('.typeahead-menu').eq(0);
+        menu.addClass('show-menu');
 
-        it('should set menu placement to the right by default', function () {
-            //given
-            scope.side = null;
-            scope.searchInput = '';
-            createElement();
+        //when
+        element.find('.inventory').eq(0).click();
 
-            var menu = element.find('.dropdown-menu').eq(0);
-            expect(menu.hasClass('right')).toBe(false);
+        //then
+        expect(menu.hasClass('show-menu')).toBe(false);
+    });
 
-            //when
-            ctrl.searchString = 'te';
-            scope.$digest();
+    it('should hide typeahead-menu on body click', function () {
+        //given
+        var menu = element.find('.typeahead-menu').eq(0);
+        menu.addClass('show-menu');
 
-            //then
-            expect(menu.hasClass('right')).toBe(true);
-        });
+        //when
+        angular.element('body').click();
 
-        it('should force menu placement to the left', function () {
-            //given
-            scope.side = 'left';
-            scope.searchInput = '';
-            createElement();
+        //then
+        expect(menu.hasClass('show-menu')).toBe(false);
+    });
 
-            var menu = element.find('.dropdown-menu').eq(0);
-            menu.addClass('right');
+    it('should unregister body click on element remove', function () {
+        //given
+        expect($._data(angular.element('body')[0], 'events').click.length).toBe(1);
 
-            //when
-            ctrl.searchString = 'te';
-            scope.$digest();
+        //when
+        element.remove();
 
-            //then
-            expect(menu.hasClass('right')).toBe(false);
-        });
+        //then
+        expect($._data(angular.element('body')[0], 'events')).not.toBeDefined();
+    });
 
-        it('should force menu placement to the right', function () {
-            //given
-            scope.side = 'right';
-            scope.searchInput = '';
-            createElement();
+    it('should stop click propagation on typeahead-menu click', function () {
+        //Given
+        var bodyClick = false;
+        var  clickCallBack = function () {
+            bodyClick = true;
+        };
+        angular.element('body').click(clickCallBack);
 
-            var menu = element.find('.dropdown-menu').eq(0);
-            expect(menu.hasClass('right')).toBe(false);
+        //when
+        element.find('.typeahead-menu').click();
 
-            //when
-            ctrl.searchString = 'te';
-            scope.$digest();
+        //then
+        expect(bodyClick).toBe(false);
 
-            //then
-            expect(menu.hasClass('right')).toBe(true);
-        });
+        angular.element('body').off('click', clickCallBack);
+    });
+
+    it('should hide typeahead menu on ESC', function () {
+        //given
+        var menu = element.find('.typeahead-menu').eq(0);
+        menu.addClass('show-menu');
+
+        var event = angular.element.Event('keydown');
+        event.keyCode = 27;
+
+        //when
+        menu.trigger(event);
+
+        //then
+        expect(menu.hasClass('show-menu')).toBe(false);
+    });
+
+    it('should not hide typeahead menu on not ESC keydown', function () {
+        //given
+        var menu = element.find('.typeahead-menu').eq(0);
+        menu.addClass('show-menu');
+
+        var event = angular.element.Event('keydown');
+        event.keyCode = 13;
+
+        //when
+        menu.trigger(event);
+
+        //then
+        expect(menu.hasClass('show-menu')).toBe(true);
     });
 });

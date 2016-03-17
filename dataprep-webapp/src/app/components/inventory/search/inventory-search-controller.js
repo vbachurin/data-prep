@@ -21,14 +21,15 @@
  * @requires data-prep.services.preparation.service:PreparationService
  *
  */
-export default function InventorySearchCtrl($state, UploadWorkflowService, InventoryService, FolderService, PreparationService) {
-    'ngInject';
-    var vm = this;
-    vm.uploadWorkflowService = UploadWorkflowService;
-    vm.folderService = FolderService;
-    vm.preparationService = PreparationService;
+class InventorySearchCtrl {
 
-    vm.searchInput = '';
+    constructor($state, UploadWorkflowService, InventoryService, FolderService, PreparationService) {
+        this.uploadWorkflowService = UploadWorkflowService;
+        this.folderService = FolderService;
+        this.preparationService = PreparationService;
+        this.inventoryService = InventoryService;
+        this.$state = $state;
+    }
 
     /**
      * @ngdoc method
@@ -36,12 +37,12 @@ export default function InventorySearchCtrl($state, UploadWorkflowService, Inven
      * @methodOf data-prep.inventory-search.controller:InventorySearchCtrl
      * @description Search based on searchInput
      */
-    vm.search = function () {
-        InventoryService.search(vm.searchInput)
-        .then((response)=> {
-                vm.results = response;
-        });
-    };
+    search (searchInput) {
+        this.inventoryService.search(searchInput)
+            .then((response)=> {
+                this.results = response;
+            });
+    }
 
     /**
      * @ngdoc method
@@ -49,8 +50,22 @@ export default function InventorySearchCtrl($state, UploadWorkflowService, Inven
      * @methodOf data-prep.inventory-search.controller:InventorySearchCtrl
      * @description go to a folder
      */
-    vm.goToFolder = function (stateString, options) {
-        $state.go(stateString, options);
-    };
+    goToFolder (stateString, options) {
+        this.$state.go(stateString, options);
+    }
 
+    /**
+     * @ngdoc method
+     * @name resetItemName
+     * @methodOf data-prep.inventory-search.controller:InventorySearchCtrl
+     * @description remove html from item name
+     */
+    resetItemName(item) {
+        item.name = item.name.replace(new RegExp('(<span class="highlighted">)', 'g'),'');
+        item.name = item.name.replace(new RegExp('</span>', 'g'),'');
+        return item;
+    }
 }
+
+export default InventorySearchCtrl;
+

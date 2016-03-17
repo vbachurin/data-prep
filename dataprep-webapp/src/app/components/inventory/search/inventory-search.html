@@ -13,10 +13,7 @@
   ~ ============================================================================
   -->
 
-<typeahead search-string="$ctrl.searchInput"
-           on-change="$ctrl.search"
-           force-side="left"
-           close-on-select="true"
+<typeahead search="$ctrl.search(value)"
            class="inventory-search">
     <div class="inventory" id="search-inventory-list" ng-switch="$ctrl.results.length">
         <ul ng-if="$ctrl.results.length === 0" class="no-results-div" translate-once="NO_RESULTS">
@@ -39,7 +36,7 @@
                         details="SEARCH_DATASET_DETAILS"
                         item="item"
                         type="dataset"
-                        ng-click="$ctrl.uploadWorkflowService.openDataset(item)">
+                        ng-click="$ctrl.uploadWorkflowService.openDataset($ctrl.resetItemName(item))">
                 </inventory-item>
             </li>
         </ul>

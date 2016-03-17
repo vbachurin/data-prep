@@ -99,7 +99,7 @@ class InventoryService {
      */
     highlight(object, key, highlightText) {
         let originalValue = object[key];
-        if (originalValue.toLowerCase().indexOf(highlightText) !== -1) {
+        if (originalValue.indexOf(highlightText) !== -1) {
             object[key] = originalValue.replace(
                 new RegExp('(' + this.TextFormatService.escapeRegex(highlightText) + ')', 'gi'),
                 '<span class="highlighted">$1</span>');

@@ -20,7 +20,7 @@
  * @param {string} searchString input model
  * @param {function} onChange function called when input changes
  */
-export default function Typeahead($window) {
+export default function Typeahead() {
     'ngInject';
 
     return {
@@ -28,107 +28,35 @@ export default function Typeahead($window) {
         transclude: true,
         templateUrl: 'app/components/widgets/typeahead/typeahead.html',
         scope: {
-            searchString: '=',
-            onChange: '=',
-            forceSide: '@',
-            closeOnSelect: '='
+            search: '&'
         },
         bindToController: true,
-        controller: () => {
-        },
-        controllerAs: 'ctrl',
+        controller: 'TypeaheadCtrl',
+        controllerAs: 'typeaheadCtrl',
         link: {
             post: function (scope, iElement, iAttrs, ctrl) {
                 var body = angular.element('body').eq(0);
-                var windowElement = angular.element($window);
                 var input = iElement.find('.input-search');
-                var menu = iElement.find('.dropdown-menu');
+                var menu = iElement.find('.typeahead-menu');
 
-                //Hide current dropdown menu
                 function hideMenu() {
                     menu.removeClass('show-menu');
-                    windowElement.off('scroll', positionMenu);
                 }
 
-                //Show current dropdown menu and set focus on it
                 function showMenu() {
                     menu.addClass('show-menu');
-                    positionMenu();
-                    windowElement.on('scroll', positionMenu);
-                }
-
-                function positionMenu() {
                     menu.css('width', input[0].getBoundingClientRect().width + 'px');
-                    positionHorizontalMenu();
-                    positionVerticalMenu();
                 }
 
-                function alignMenuRight(position) {
-                    menu.addClass('right');
-                    menu.css('right', $window.innerWidth - position.right);
-                    menu.css('left', 'auto');
-                }
+                input.click(function (event) {
+                    event.stopPropagation();
+                });
 
-                function alignMenuLeft(position) {
-                    menu.removeClass('right');
-                    menu.css('left', position.left);
-                    menu.css('right', 'auto');
-                }
-
-                //Move the menu to the left if its left part is out of the window
-                //Otherwise it is positionned to the right
-                //if a side is forced by input, the position follows
-                function positionHorizontalMenu() {
-                    var position = input[0].getBoundingClientRect();
-
-                    switch (ctrl.forceSide) {
-                        case 'left':
-                            alignMenuLeft(position);
-                            break;
-                        case 'right':
-                            alignMenuRight(position);
-                            break;
-                        default:
-                            alignMenuRight(position);
-                            var menuPosition = menu[0].getBoundingClientRect();
-                            if (menuPosition.left < 0) {
-                                alignMenuLeft(position);
-                            }
-                    }
-                }
-
-                //Move the menu to the top if its bottom is not visible (out of the window)
-                //Otherwise it is positionned at the bottom of trigger button
-                function positionVerticalMenu() {
-                    var position = input[0].getBoundingClientRect();
-                    var menuHeight = menu[0].getBoundingClientRect().height;
-                    var menuTopPosition = position.bottom;
-
-                    //when menu bottom is outside of the window, we position the menu at the top of the button
-                    if (menuTopPosition + menuHeight > windowElement.height()) {
-                        menuTopPosition = position.top - menuHeight;
-                        menu.addClass('top');
-                    }
-                    else {
-                        menu.removeClass('top');
-                    }
-                    menu.css('top', menuTopPosition);
-                }
-
-                //Click : hide menu on item select if 'closeOnSelect' is not false
                 menu.click(function (event) {
                     event.stopPropagation();
-                    if (ctrl.closeOnSelect !== false) {
-                        hideMenu();
-                    }
+                    hideMenu();
                 });
 
-                //Mousedown : stop propagation not to hide dropdown
-                menu.mousedown(function (event) {
-                    event.stopPropagation();
-                });
-
-                //ESC keydown : hide menu, set focus on dropdown action and stop propagation
                 menu.keydown(function (event) {
                     if (event.keyCode === 27) {
                         hideMenu();
@@ -136,29 +64,22 @@ export default function Typeahead($window) {
                     }
                 });
 
-                //make input and menu focusable
-                input.attr('tabindex', '1');
-                menu.attr('tabindex', '2');
+                body.click(hideMenu);
 
-                //hide menu on body mousedown
-                body.mousedown(hideMenu);
-
-                //on element destroy, we destroy the scope which unregister body mousedown and window scroll handlers
                 iElement.on('$destroy', function () {
                     scope.$destroy();
                 });
                 scope.$on('$destroy', function () {
-                    body.off('mousedown', hideMenu);
-                    windowElement.off('scroll', positionMenu);
+                    body.off('click', hideMenu);
                 });
 
-                scope.$watch('ctrl.searchString', function (newValue) {
+                scope.$watch('typeaheadCtrl.searchString', function (newValue) {
                     if (newValue) {
                         var isVisible = menu.hasClass('show-menu');
                         if (!isVisible) {
                             showMenu();
                         }
-                        ctrl.onChange(newValue)
+                        ctrl.search({value: ctrl.searchString})
                     } else {
                         hideMenu();
                     }

@@ -42,6 +42,7 @@ import TalendSlidable from './slidable/widget-slidable-directive';
 import TalendTooltipCtrl from './tooltip/widget-tooltip-controller';
 import TalendTooltip from './tooltip/widget-tooltip-directive';
 import Typeahead from './typeahead/typeahead-directive';
+import TypeaheadCtrl from './typeahead/typeahead-controller';
 
 
 (() => {
@@ -103,5 +104,7 @@ import Typeahead from './typeahead/typeahead-directive';
 
         .controller('TalendTooltipCtrl', TalendTooltipCtrl)
         .directive('talendTooltip', TalendTooltip)
+
+        .controller('TypeaheadCtrl', TypeaheadCtrl)
         .directive('typeahead', Typeahead);
 })();
