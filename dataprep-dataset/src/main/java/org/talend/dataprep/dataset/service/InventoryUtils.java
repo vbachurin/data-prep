@@ -56,17 +56,17 @@ public class InventoryUtils {
     /**
      * Wraps specified data set metadatas and folders and wrap them with path information (for data sets) and number of
      * data sets and preparations ( for folders).
-     * 
-     * @param metadatas
-     * @param folders
-     * @return
+     *
+     * @param metadata the list of data set metadata of the inventory
+     * @param folders the list of folders of the inventory
+     * @return the inventory
      */
-    public Inventory inventory(List<DataSetMetadata> metadatas, List<Folder> folders) {
+    public Inventory inventory(List<DataSetMetadata> metadata, List<Folder> folders) {
 
-        if (metadatas == null || folders == null) {
+        if (metadata == null || folders == null) {
             throw new IllegalArgumentException("To create an inventory, you should provide non null arguments");
         }
-        List<DatasetMetadataInfo> datasets = metadatas.stream().map(d -> wrapDataset(d)).collect(Collectors.toList());
+        List<DatasetMetadataInfo> datasets = metadata.stream().map(d -> wrapDataset(d)).collect(Collectors.toList());
 
         List<FolderInfo> folderInfos = folders.stream().map(f -> wrapFolder(f)).collect(Collectors.toList());
 
@@ -81,69 +81,79 @@ public class InventoryUtils {
      * @param name the specified name
      * @return the inventory of elements contained in a folder.
      */
-    public Inventory inventory(String path, String name) {
-        Inventory result = null;
+    public Inventory inventory(final String path, final String name) {
+        final Inventory result;
 
-        if (!folderRepository.exists(path)){
-            throw  new TDPException(FolderErrorCodes.FOLDER_DOES_NOT_EXIST);
+        // TODO: Add a folder to each folder repository
+        final String rootPath = "";
+
+        if (!folderRepository.exists(path)) {
+            throw new TDPException(FolderErrorCodes.FOLDER_DOES_NOT_EXIST);
         }
 
         Iterable<Folder> folderIterable = folderRepository.allFolder();
-        List<Folder> folders = StreamSupport.stream(folderIterable.spliterator(), false).filter(f -> f.getPath().startsWith(path))
+        List<Folder> folders = StreamSupport.stream(folderIterable.spliterator(), false) // @formatter:off
+                .filter(f -> StringUtils.startsWithIgnoreCase(f.getPath(), path))
                 .collect(Collectors.toList());
+        // @formatter:on
 
         Set<String> contentIds = new HashSet<>();
         // retrieve data sets contained in folders having path as prefix
         for (Folder folder : folders) {
             Set<String> entries = StreamSupport
                     .stream(folderRepository.entries(folder.getPath(), FolderEntry.ContentType.DATASET).spliterator(), false)
-                    .map(f -> f.getContentId()).collect(Collectors.toSet());
+                    .map(FolderEntry::getContentId) // @formatter:off
+                    .collect(Collectors.toSet());// @formatter:on
             contentIds.addAll(entries);
         }
 
-        // retrieve data sets contained the root of path
-        Set<String> entries = StreamSupport
-                .stream(folderRepository.entries(path, FolderEntry.ContentType.DATASET).spliterator(), false)
-                .map(f -> f.getContentId()).collect(Collectors.toSet());
-        contentIds.addAll(entries);
+        if (StringUtils.equalsIgnoreCase(rootPath, path)) {
+            // retrieve data sets contained in the root of path
+            Set<String> entries = StreamSupport // @formatter:off
+                    .stream(folderRepository.entries(rootPath, FolderEntry.ContentType.DATASET).spliterator(), false)
+                    .map(FolderEntry::getContentId)
+                    .collect(Collectors.toSet()); // @formatter:on
+            contentIds.addAll(entries);
+        }
 
         // retrieve the data sets metadata from their ids and filter on matching name
         List<DataSetMetadata> datasets = contentIds.stream().map(s -> dataSetMetadataRepository.get(s))
-                .filter(d -> d != null && d.getName() != null && d.getName().contains(name)).collect(Collectors.toList());
+                .filter(d -> d != null && d.getName() != null && StringUtils.containsIgnoreCase(d.getName(), name))
+                .collect(Collectors.toList());
 
         // filter folders by name
-        List<Folder> folderList = StreamSupport.stream(folders.spliterator(), false).filter(f -> f.getName().contains(name))
-                .collect(Collectors.toList());
+        List<Folder> folderList = StreamSupport.stream(folders.spliterator(), false) // @formatter:off
+                .filter(f -> StringUtils.containsIgnoreCase(f.getName(), name))
+                .collect(Collectors.toList()); // @formatter:on
 
         result = inventory(datasets, folderList);
         return result;
     }
 
     /**
-     * Wraps a data set with path information.
-     * 
-     * @param dataSetMetadata
-     * @return
+     * Wraps a data set metadata with path information.
+     *
+     * @param metadata the list of data set metadata of the inventory
+     * @return the data set with path information
      */
-    public DatasetMetadataInfo wrapDataset(DataSetMetadata dataSetMetadata) {
-        Iterable<FolderEntry> entries = folderRepository.findFolderEntries(dataSetMetadata.getId(),
-                FolderEntry.ContentType.DATASET);
+    public DatasetMetadataInfo wrapDataset(DataSetMetadata metadata) {
+        Iterable<FolderEntry> entries = folderRepository.findFolderEntries(metadata.getId(), FolderEntry.ContentType.DATASET);
         FolderEntry entry = null;
         if (entries != null) {
             try {
                 entry = Iterables.find(entries, Predicates.notNull());
-            }catch(Exception e){
+            } catch (Exception e) {
                 LOGGER.debug("all entries are null");
             }
         }
-        return new DatasetMetadataInfo(dataSetMetadata, entry != null ? entry.getFolderId() : StringUtils.EMPTY);
+        return new DatasetMetadataInfo(metadata, entry != null ? entry.getFolderId() : StringUtils.EMPTY);
     }
 
     /**
-     * Wraps folder with its number of datasets and preparations.
+     * Wraps folder with its number of data sets and preparations.
      * 
-     * @param folder
-     * @return
+     * @param folder the specified folder
+     * @return the folder with its number of contained data sets and its number of contained preparations
      */
     public FolderInfo wrapFolder(Folder folder) {
         int nbDatasets = (int) StreamSupport

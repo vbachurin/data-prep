@@ -1,17 +1,17 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
-package org.talend.dataprep.preparation.store;
+package org.talend.dataprep.preparation.store.inmemory;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -25,14 +25,15 @@ import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.preparation.PreparationActions;
 import org.talend.dataprep.api.preparation.Step;
-import org.talend.dataprep.preparation.store.inmemory.InMemoryPreparationRepository;
+import org.talend.dataprep.preparation.store.PreparationRepository;
+import org.talend.dataprep.preparation.store.PreparationRepositoryTest;
 
 /**
  * Unit test for the InMemoryPreparationRepository.
  * 
  * @see InMemoryPreparationRepository
  */
-public class InMemoryPreparationRepositoryTest {
+public class InMemoryPreparationRepositoryTest extends PreparationRepositoryTest {
 
     /** The preparation repository to test. */
     private PreparationRepository repository;
@@ -108,7 +109,8 @@ public class InMemoryPreparationRepositoryTest {
      * @param rootName root name for all the preparation attributes.
      * @return a new Preparation.
      */
-    private Preparation getPreparation(String rootName) {
+    @Override
+    protected Preparation getPreparation(String rootName) {
         return getPreparation(rootName + "_setId", rootName);
     }
 
@@ -123,5 +125,11 @@ public class InMemoryPreparationRepositoryTest {
         Preparation preparation = new Preparation(datasetId, getStep(rootName).id(), "1.0");
         preparation.setName(rootName + "_name");
         return preparation;
+    }
+
+
+    @Override
+    protected PreparationRepository getRepository() {
+        return repository;
     }
 }

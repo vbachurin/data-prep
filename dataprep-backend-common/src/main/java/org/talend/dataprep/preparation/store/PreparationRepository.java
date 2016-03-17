@@ -1,20 +1,22 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.preparation.store;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.preparation.Identifiable;
 import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.preparation.Step;
@@ -38,6 +40,41 @@ public interface PreparationRepository {
      * @return all preparations used by a dataset or an empty list if there's none.
      */
     Collection<Preparation> getByDataSet(String dataSetId);
+
+    /**
+     * Returns all the preparations that match the specified name on an exact match whether <i>exactMatch</i> is
+     * <tt>true</tt>. Otherwise it returns all the preparations having their names containing the specified name.
+     *
+     * If <i>name</i> is null or empty it returns the list of all preparations.
+     * 
+     * @param name the specified name
+     * @param exactMatch the specified boolean
+     * @return all the preparations having their names either matching <i>name</i> or containing <i>name</i>according to
+     * specified <i>exactMatch</i>
+     */
+    /**
+     * @see PreparationRepository#getByMatchingName(String, boolean)
+     */
+    default Collection<Preparation> getByMatchingName(String name, boolean exactMatch) {
+        Collection<Preparation> result = null;
+        if (StringUtils.isEmpty(name)) {
+            result = listAll(Preparation.class);
+        } else {
+            if (exactMatch) {
+                result = listAll(Preparation.class) // @formatter:off
+                        .stream() //
+                        .filter(preparation -> StringUtils.equalsIgnoreCase(name, preparation.getName())) //
+                        .collect(Collectors.toList()); // @formatter:on
+            } else {
+                result = listAll(Preparation.class) // @formatter:off
+                        .stream() //
+                        .filter(preparation -> StringUtils.containsIgnoreCase(preparation.getName(),name)) //
+                        .collect(Collectors.toList()); // @formatter:on
+
+            }
+        }
+        return result;
+    }
 
     <T extends Identifiable> Collection<T> listAll(Class<T> clazz);
 

@@ -26,6 +26,8 @@ import org.talend.daikon.exception.error.ErrorCode;
 public enum FolderErrorCodes implements ErrorCode {
     UNEXPECTED_IO_EXCEPTION(500),
     UNABLE_TO_DELETE_FOLDER(400, "folderId"),
+    UNABLE_TO_LIST_FOLDER_ENTRIES(400, "folderId"),
+    UNABLE_TO_DELETE_FOLDER_ENTRY(400, "contentId"),
     FOLDER_DOES_NOT_EXIST(400, "folderId");
 
     /** The http status to use. */

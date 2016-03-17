@@ -39,6 +39,7 @@ import org.talend.dataprep.api.user.UserData;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.DataSetErrorCodes;
+import org.talend.dataprep.exception.error.FolderErrorCodes;
 import org.talend.dataprep.folder.store.FolderRepository;
 import org.talend.dataprep.folder.store.NotEmptyFolderException;
 import org.talend.dataprep.inventory.Inventory;
@@ -174,9 +175,8 @@ public class FolderService {
             FolderEntry.ContentType checkedContentType = FolderEntry.ContentType.get(contentType);
             folderRepository.removeFolderEntry(path, contentId, checkedContentType);
         } catch (IllegalArgumentException exc) {
-            throw new TDPException(DataSetErrorCodes.UNABLE_TO_REMOVE_FOLDER_ENTRY, exc);
+            throw new TDPException(FolderErrorCodes.UNABLE_TO_DELETE_FOLDER_ENTRY, exc);
         }
-
     }
 
     /**
@@ -194,7 +194,7 @@ public class FolderService {
     }
 
     /**
-     * Return the list of folder entries out of the given path.
+     * ReturnS the list of folder entries out of the given path.
      *
      * @param path the path where to look for entries.
      * @param contentType the type of wanted entries.
@@ -208,9 +208,8 @@ public class FolderService {
             FolderEntry.ContentType checkedContentType = FolderEntry.ContentType.get(contentType);
             return folderRepository.entries(path, checkedContentType);
         } catch (IllegalArgumentException exc) {
-            throw new TDPException(DataSetErrorCodes.UNABLE_TO_LIST_FOLDER_ENTRIES, exc);
+            throw new TDPException(FolderErrorCodes.UNABLE_TO_LIST_FOLDER_ENTRIES, exc);
         }
-
     }
 
     @RequestMapping(value = "/folders/datasets", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -220,6 +219,10 @@ public class FolderService {
             @ApiParam(value = "Sort key (by name or date).") @RequestParam(defaultValue = "DATE", required = false) String sort,
             @ApiParam(value = "Order for sort key (desc or asc).") @RequestParam(defaultValue = "DESC", required = false) String order,
             @ApiParam(value = "Folder id to search datasets") @RequestParam(defaultValue = "", required = false) String folder) {
+        // do not go any further if the folder does not exist
+        if (!folderRepository.exists(folder)) {
+            throw new TDPException(DataSetErrorCodes.FOLDER_NOT_FOUND, ExceptionContext.build().put("path", folder));
+        }
 
         Spliterator<DataSetMetadata> iterator;
         if (StringUtils.isNotEmpty(folder)) {
@@ -284,13 +287,9 @@ public class FolderService {
                 .map(metadata -> {
                     completeWithUserData(metadata);
                     return metadata;
-                }) //
-                .sorted(comparator) //
-
-        .collect(Collectors.toList());
-        if (!folderRepository.exists(folder)) {
-            throw new TDPException(DataSetErrorCodes.FOLDER_NOT_FOUND, ExceptionContext.build().put("path", folder));
-        }
+                }) // @formatter:off
+                .sorted(comparator)
+                .collect(Collectors.toList()); // @formatter:on
         List<Folder> folders = StreamSupport.stream(folderRepository.children(folder).spliterator(), false).sorted(comparator2)
                 .collect(Collectors.toList());
 

@@ -40,6 +40,7 @@ public class FolderInfo {
     @JsonProperty
     private int nbPreparations;
 
+    // For Jackson Marshaller/Un-marshaller
     public FolderInfo() {
     }
 

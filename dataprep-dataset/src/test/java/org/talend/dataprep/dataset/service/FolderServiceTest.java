@@ -18,6 +18,7 @@ import static java.util.stream.Collectors.toList;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.List;
@@ -32,6 +33,7 @@ import org.talend.dataprep.folder.store.FolderRepository;
 import org.talend.dataprep.inventory.Inventory;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.restassured.response.Response;
 
@@ -50,6 +52,18 @@ public class FolderServiceTest extends DataSetBaseTest {
 
     @Autowired
     private ObjectMapper mapper;
+
+    private void createFolder(String path) {
+        given().queryParam("path", path) //
+                .expect().statusCode(200).log().ifError()//
+                .when() //
+                .put("/folders").then().assertThat().statusCode(200);
+    }
+
+    private String createFolderEntry(String path, String name) throws IOException {
+        return given().body(IOUtils.toString(this.getClass().getResourceAsStream(""))).queryParam("Content-Type", "text/csv")
+                .queryParam("folderPath", path).queryParam("name", name).when().post("/datasets").asString();
+    }
 
     @Test
     public void shouldListChildren() throws Exception {
@@ -84,34 +98,8 @@ public class FolderServiceTest extends DataSetBaseTest {
         assertThat(response.getStatusCode(), is(404));
     }
 
-    private void createFolder(String path) {
-        given().queryParam("path", path) //
-                .expect().statusCode(200).log().ifError()//
-                .when() //
-                .put("/folders").then().assertThat().statusCode(200);
-    }
-
-    private void removeThenCreateFolder(String path) {
-
-        given().queryParam("path", path) //
-                .when() //
-                .delete("/folders");
-
-        given().queryParam("path", path) //
-                .expect().statusCode(200).log().ifError()//
-                .when() //
-                .put("/folders").then().assertThat().statusCode(200);
-    }
-
-    private String createFolderEntry(String path, String name) throws IOException {
-
-        return given().body(IOUtils.toString(this.getClass().getResourceAsStream(""))).queryParam("Content-Type", "text/csv")
-                .queryParam("folderPath", path).queryParam("name", name).when().post("/datasets").asString();
-
-    }
-
     @Test
-    public void shouldSearchInventory() throws Exception {
+    public void shouldSearchInventoryWhenPathIsNotRoot() throws Exception {
         // given
         createFolder("foo");
         createFolder("foo/bar");
@@ -133,6 +121,69 @@ public class FolderServiceTest extends DataSetBaseTest {
         assertThat(inventory.getPreparations().size(), is(0));
         assertThat(inventory.getFolders().get(0).getPath(), is("foo/bar"));
         assertThat(inventory.getDatasets().get(0).getMetadata().getName(), is("bar"));
+    }
+
+    @Test
+    public void shouldSearchInventoryWhenPathIsRoot() throws Exception {
+        // given
+        createFolder("foo");
+        createFolder("foo/bar");
+        createFolder("foo/toto");
+        createFolder("yoyo/bar/bari");
+        createFolderEntry("foo/toto", "bar");
+
+        // when
+        final String json = given().queryParam("path", "").queryParam("name", "") //
+                .expect().statusCode(200).log().ifError()//
+                .when() //
+                .get("/inventory/search").asString();
+
+        // then
+        Inventory inventory = mapper.readValue(json, new TypeReference<Inventory>() {
+        });
+        assertThat(inventory.getFolders().size(), is(6));
+        assertThat(inventory.getDatasets().size(), is(1));
+        assertThat(inventory.getPreparations().size(), is(0));
+        assertThat(inventory.getDatasets().get(0).getMetadata().getName(), is("bar"));
+    }
+
+    @Test
+    public void shouldThrowAnExceptionIfBadContentTypeWhenAskingForFolderEntryRemoval() throws Exception {
+        // given
+        createFolder("foo");
+
+        // when
+        final String json = given().queryParam("path", "foo").expect().statusCode(400).log().ifError()//
+                .when() //
+                .delete("/folders/entries/non-existent/1").asString();
+
+        // then
+        JsonNode rootNode = mapper.readTree(json);
+        assertTrue(rootNode.has("code"));
+        assertTrue(rootNode.has("message"));
+        assertTrue(rootNode.has("message_title"));
+        assertTrue(rootNode.has("context"));
+
+    }
+
+    @Test
+    public void shouldThrowAnExceptionIfBadContentTypeWhenAskingForFolderEntries() throws Exception {
+        // given
+        createFolder("foo");
+
+        // when
+        final String json = given().queryParam("path", "foo").queryParam("contentType", "non-existent").expect().statusCode(400)
+                .log().ifError()//
+                .when() //
+                .get("/folders/entries").asString();
+
+        // then
+        JsonNode rootNode = mapper.readTree(json);
+        assertTrue(rootNode.has("code"));
+        assertTrue(rootNode.has("message"));
+        assertTrue(rootNode.has("message_title"));
+        assertTrue(rootNode.has("context"));
+
     }
 
 }

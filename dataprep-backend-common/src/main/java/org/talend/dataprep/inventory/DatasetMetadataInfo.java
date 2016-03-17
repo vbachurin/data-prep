@@ -28,6 +28,7 @@ public class DatasetMetadataInfo {
 
     private String path;
 
+    // For Jackson Marshaller/Un-marshaller
     public DatasetMetadataInfo() {
     }
 

@@ -14,6 +14,7 @@
 package org.talend.dataprep.inventory;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 
 import org.talend.dataprep.api.preparation.Preparation;
@@ -22,9 +23,8 @@ import org.talend.dataprep.api.preparation.PreparationDetails;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * This class groups all the contains of a folder. I contains all the datasets, the preparations and the sub-folders
- * recursively contained
- * inventory.
+ * This class permits to group folders, preparations and data sets. It may be useful to list the content of a folder
+ * either recursively or not.
  */
 public class Inventory implements Serializable {
 
@@ -43,10 +43,16 @@ public class Inventory implements Serializable {
     @JsonProperty("preparations")
     private List<Preparation> preparations;
 
+    // For Jackson Marshaller/Un-marshaller
     public Inventory() {
-        // no op
     }
 
+    /**
+     * Creates an inventory with specified data sets and folders and preparations.
+     * @param datasets the list of data sets of the inventory
+     * @param folders the list of folders of the inventory
+     * @param preparations the list of preparations of the inventory
+     */
     public Inventory(List<DatasetMetadataInfo> datasets, List<FolderInfo> folders, List<Preparation> preparations) {
         this.datasets = datasets;
         this.folders = folders;
@@ -54,16 +60,16 @@ public class Inventory implements Serializable {
     }
 
     /**
-     * Creates a inventory
+     * Creates an inventory with specified data sets and folders. The preparation list is considered as empty.
      * 
-     * @param datasets
-     * @param folders
+     * @param datasets the list of data sets of the inventory
+     * @param folders the list of folders of the inventory
      */
     public Inventory(List<DatasetMetadataInfo> datasets, List<FolderInfo> folders) {
 
         this.datasets = datasets;
         this.folders = folders;
-        this.preparations = preparations;
+        this.preparations = Collections.emptyList();
     }
 
     public List<DatasetMetadataInfo> getDatasets() {

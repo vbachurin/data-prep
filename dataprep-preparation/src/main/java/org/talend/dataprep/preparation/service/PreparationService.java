@@ -1,15 +1,15 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.preparation.service;
 
@@ -103,6 +103,18 @@ public class PreparationService {
         return getDetails(preparations);
     }
 
+    @RequestMapping(value = "/preparations", method = GET, params = "name", produces = APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "List all preparations matching the specified name", notes = "Returns the list of preparations matching the specified name. Creation date is always displayed in UTC time zone. See 'preparations/all' to get all details at once.")
+    @Timed
+    public Collection<PreparationDetails> listByMatchingName(@RequestParam("name") @ApiParam("name") String name,
+            @RequestParam(value = "exactMatch", defaultValue = "true") @ApiParam("exactMatch") boolean exactMatch) {
+        Collection<Preparation> preparations = preparationRepository.getByMatchingName(name, exactMatch);
+
+        String message = exactMatch ? "{} preparation(s) having name that match {}.": "{} preparation(s) having name containing {}.";
+        LOGGER.debug(message, preparations.size(), name);
+        return getDetails(preparations);
+    }
+
     @RequestMapping(value = "/preparations/all", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List all preparations", notes = "Returns the list of preparations the current user is allowed to see. Creation date is always displayed in UTC time zone. This operation return all details on the preparations.")
     @Timed
@@ -115,7 +127,9 @@ public class PreparationService {
     @RequestMapping(value = "/preparations", method = PUT, produces = TEXT_PLAIN_VALUE, consumes = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Create a preparation", notes = "Returns the id of the created preparation.")
     @Timed
-    public String create(@ApiParam("preparation") @RequestBody final Preparation preparation) {
+    public String create(@ApiParam("preparation")
+    @RequestBody
+    final Preparation preparation) {
         LOGGER.debug("Create new preparation for data set {}", preparation.getDataSetId());
         preparation.setHeadId(rootStep.id());
         preparation.setAuthor(security.getUserId());
@@ -139,7 +153,9 @@ public class PreparationService {
     @ApiOperation(value = "Create a preparation", notes = "Returns the id of the updated preparation.")
     @Timed
     public String update(@ApiParam("id") @PathVariable("id") String id, //
-                         @RequestBody @ApiParam("preparation") final Preparation preparation) {
+            @RequestBody
+    @ApiParam("preparation")
+    final Preparation preparation) {
         Preparation previousPreparation = preparationRepository.get(id, Preparation.class);
         LOGGER.debug("Updating preparation with id {}: {}", preparation.id(), previousPreparation);
         Preparation updated = previousPreparation.merge(preparation);
@@ -168,7 +184,7 @@ public class PreparationService {
     public String clone(@ApiParam("id") @PathVariable("id") String id) {
         LOGGER.debug("Clone preparation  #{}.", id);
         Preparation preparation = preparationRepository.get(id, Preparation.class);
-        preparation.setName( preparation.getName() + " Copy" );
+        preparation.setName(preparation.getName() + " Copy");
         preparation.setCreationDate(System.currentTimeMillis());
         preparation.setLastModificationDate(System.currentTimeMillis());
         preparationRepository.add(preparation);
@@ -190,7 +206,9 @@ public class PreparationService {
     @RequestMapping(value = "/preparations/{id}/actions", method = POST, consumes = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Adds an action to a preparation", notes = "Append an action at end of the preparation with given id.")
     @Timed
-    public void appendSteps(@PathVariable("id") final String id, @RequestBody final AppendStep stepsToAppend) {
+    public void appendSteps(@PathVariable("id")
+    final String id, @RequestBody
+    final AppendStep stepsToAppend) {
         checkActionStepConsistency(stepsToAppend);
 
         LOGGER.debug("Adding actions to preparation #{}", id);
@@ -221,10 +239,13 @@ public class PreparationService {
     @RequestMapping(value = "/preparations/{id}/actions/{stepId}", method = PUT, consumes = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Updates an action in a preparation", notes = "Modifies an action in preparation's steps.")
     @Timed
-    public void updateAction(@PathVariable("id") final String preparationId, //
-                            @PathVariable("stepId") final String stepToModifyId, //
-                            @RequestBody final AppendStep newStep) {
-        
+    public void updateAction(@PathVariable("id")
+    final String preparationId, //
+            @PathVariable("stepId")
+    final String stepToModifyId, //
+            @RequestBody
+    final AppendStep newStep) {
+
         checkActionStepConsistency(newStep);
 
         LOGGER.debug("Modifying actions in preparation #{}", preparationId);
@@ -309,8 +330,10 @@ public class PreparationService {
     @RequestMapping(value = "/preparations/{id}/head/{headId}", method = PUT)
     @ApiOperation(value = "Move preparation head", notes = "Set head to the specified head id")
     @Timed
-    public void setPreparationHead(@PathVariable("id") final String preparationId, //
-                                   @PathVariable("headId") final String headId) {
+    public void setPreparationHead(@PathVariable("id")
+    final String preparationId, //
+            @PathVariable("headId")
+    final String headId) {
 
         final Step head = getStep(headId);
         if (head == null) {
@@ -325,8 +348,12 @@ public class PreparationService {
     @RequestMapping(value = "/preparations/{id}/actions/{version}", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get all the actions of a preparation at given version.", notes = "Returns the action JSON at version.")
     @Timed
-    public List<Action> getVersionedAction(@ApiParam("id") @PathVariable("id") final String id, //
-                                           @ApiParam("version") @PathVariable("version") final String version) {
+    public List<Action> getVersionedAction(@ApiParam("id")
+    @PathVariable("id")
+    final String id, //
+            @ApiParam("version")
+    @PathVariable("version")
+    final String version) {
         LOGGER.debug("Get list of actions of preparations #{} at version {}.", id, version);
         final Preparation preparation = preparationRepository.get(id, Preparation.class);
         if (preparation != null) {
@@ -558,7 +585,7 @@ public class PreparationService {
      * @return The same step but modified
      */
     private Function<AppendStep, AppendStep> shiftCreatedColumns(final int shiftColumnAfterId, final int shiftNumber) {
-        
+
         final DecimalFormat format = new DecimalFormat("0000"); //$NON-NLS-1$
         return step -> {
             final List<String> stepCreatedCols = step.getDiff().getCreatedColumns();
@@ -676,6 +703,5 @@ public class PreparationService {
     private PreparationDetails getDetails(Preparation preparation) {
         return new PreparationDetails(preparation);
     }
-
 
 }

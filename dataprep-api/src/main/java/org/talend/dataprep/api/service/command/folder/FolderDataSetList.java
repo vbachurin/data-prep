@@ -38,7 +38,6 @@ public class FolderDataSetList extends GenericCommand<InputStream> {
     public FolderDataSetList(HttpClient client, String sort, String order, String folder) {
         super(PreparationAPI.TRANSFORM_GROUP, client);
         execute(() -> onExecute(sort, order, folder));
-        // on(HttpStatus.NO_CONTENT, HttpStatus.ACCEPTED).then(emptyFolderContent());
         on(HttpStatus.OK).then(pipeStream());
     }
 

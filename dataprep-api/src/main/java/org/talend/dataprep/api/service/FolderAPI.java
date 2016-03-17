@@ -38,6 +38,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.talend.dataprep.api.folder.FolderContent;
+import org.talend.dataprep.api.service.command.preparation.PreparationListByName;
 import org.talend.dataprep.inventory.Inventory;
 import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.preparation.PreparationDetails;
@@ -282,14 +283,12 @@ public class FolderAPI extends APIService {
         }
 
         if (StringUtils.isEmpty(folderPath)) { // preparations are considered to be in the root folder (empty)
-            HystrixCommand<InputStream> command = getCommand(PreparationList.class, client, PreparationList.Format.LONG);
+            HystrixCommand<InputStream> command = getCommand(PreparationListByName.class, client, name, false);
             try (InputStream ios = command.execute()) {
                 String jsonMap = IOUtils.toString(ios);
                 List<Preparation> preparations = mapper.readValue(jsonMap, new TypeReference<ArrayList<Preparation>>() {
                 });
-                List<Preparation> filteredPreparations = preparations.stream()
-                        .filter(p -> p.getName() != null && p.getName().contains(name)).collect(Collectors.toList());
-                inventory.setPreparations(filteredPreparations);
+                inventory.setPreparations(preparations);
 
             } catch (IOException e) {
                 throw new TDPException(APIErrorCodes.UNABLE_TO_LIST_FOLDER_INVENTORY, e);
