@@ -10,30 +10,24 @@
  9 rue Pages 92150 Suresnes, France
 
  ============================================================================*/
+class InventoryService {
 
-/**
- * @ngdoc service
- * @name data-prep.services.lookup.service:InventoryService
- * @description Inventory service.
- */
-export default function InventoryService($q, InventoryRestService, TextFormatService) {
-    'ngInject';
-
-    var searchPromise, deferredCancel;
-
-    return {
-        search :search
-    };
+    constructor($q, InventoryRestService, TextFormatService) {
+        this.deferredCancel = null;
+        this.$q = $q;
+        this.InventoryRestService = InventoryRestService;
+        this.TextFormatService = TextFormatService;
+    }
 
     /**
      * @ngdoc method
      * @name cancelPendingGetRequest
      * @description Cancel the pending search GET request
      */
-    function cancelPendingGetRequest() {
-        if (searchPromise) {
-            deferredCancel.resolve('user cancel');
-            searchPromise = null;
+    cancelPendingGetRequest() {
+        if (this.deferredCancel) {
+            this.deferredCancel.resolve('user cancel');
+            this.deferredCancel = null;
         }
     }
 
@@ -44,18 +38,16 @@ export default function InventoryService($q, InventoryRestService, TextFormatSer
      * @param {String} searchValue string
      * @description Search inventory items
      */
-    function search(searchValue) {
-        cancelPendingGetRequest();
+    search(searchValue) {
+        this.cancelPendingGetRequest();
 
-        deferredCancel = $q.defer();
+        this.deferredCancel = this.$q.defer();
 
-        searchPromise = InventoryRestService.search(searchValue, deferredCancel)
+        return this.InventoryRestService.search(searchValue, this.deferredCancel)
             .then((response) => {
-                return addHtmlLabelsAndSort(searchValue, response.data);
+                return this.addHtmlLabelsAndSort(searchValue, response.data);
             })
-            .finally(() => searchPromise = null);
-
-        return searchPromise;
+            .finally(() => this.deferredCancel = null);
     }
 
     /**
@@ -65,46 +57,36 @@ export default function InventoryService($q, InventoryRestService, TextFormatSer
      * @param {Object} data data to process
      * @description add html label to data based on searchValue and sort the results
      */
-    function addHtmlLabelsAndSort(searchValue, data) {
-        var inventory_items = [];
+    addHtmlLabelsAndSort(searchValue, data) {
+        let inventory_items = [];
 
-        if(data.datasets && data.datasets.length) {
+        if (data.datasets && data.datasets.length) {
             _.each(data.datasets, function (item) {
                 item.inventoryType = 'dataset';
             });
-            inventory_items =  inventory_items.concat(data.datasets);
+            inventory_items = inventory_items.concat(data.datasets);
         }
-        if(data.preparations && data.preparations.length) {
+        if (data.preparations && data.preparations.length) {
             _.each(data.preparations, function (item) {
                 item.inventoryType = 'preparation';
             });
-            inventory_items =  inventory_items.concat(data.preparations);
+            inventory_items = inventory_items.concat(data.preparations);
         }
-        if(data.folders && data.folders.length) {
+        if (data.folders && data.folders.length) {
             _.each(data.folders, function (item) {
                 item.inventoryType = 'folder';
             });
-            inventory_items =  inventory_items.concat(data.folders);
+            inventory_items = inventory_items.concat(data.folders);
         }
 
         return _.chain(inventory_items)
-            .map(highlightDisplayedLabels(searchValue))
+            .map((item) => {
+                this.highlight(item, 'name', searchValue);
+                return item;
+            })
             .sortBy('lastModificationDate')
             .reverse()
             .value();
-    }
-
-    /**
-     * @ngdoc method
-     * @name highlightDisplayedLabels
-     * @param {String} searchValue string
-     * @description define property to highlight
-     */
-    function highlightDisplayedLabels(searchValue) {
-        return function (item) {
-            highlight(item, 'name', searchValue);
-            return item;
-        };
     }
 
     /**
@@ -115,15 +97,14 @@ export default function InventoryService($q, InventoryRestService, TextFormatSer
      * @param {String} highlightText text to highlight
      * @description highlight an item of the object
      */
-    function highlight(object, key, highlightText) {
-        var originalValue = object[key];
+    highlight(object, key, highlightText) {
+        let originalValue = object[key];
         if (originalValue.toLowerCase().indexOf(highlightText) !== -1) {
             object[key] = originalValue.replace(
-                new RegExp('(' + TextFormatService.escapeRegex(highlightText) + ')', 'gi'),
+                new RegExp('(' + this.TextFormatService.escapeRegex(highlightText) + ')', 'gi'),
                 '<span class="highlighted">$1</span>');
         }
     }
-
-
-
 }
+
+export default InventoryService;

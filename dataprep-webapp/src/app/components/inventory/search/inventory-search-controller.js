@@ -15,18 +15,15 @@
  * @ngdoc controller
  * @name data-prep.inventory-search.controller:InventorySearchCtrl
  * @description InventorySearchCtrl controller.
- * @requires data-prep.services.state.constant:state
- * @requires data-prep.services.state.service:StateService
  * @requires data-prep.services.inventory.service:InventoryService
  * @requires data-prep.services.datasetWorkflowService:UploadWorkflowService
  * @requires data-prep.services.folder.service:FolderService
  * @requires data-prep.services.preparation.service:PreparationService
  *
  */
-export default function InventorySearchCtrl($state, $stateParams, state, UploadWorkflowService, StateService, InventoryService, FolderService, PreparationService) {
+export default function InventorySearchCtrl($state, UploadWorkflowService, InventoryService, FolderService, PreparationService) {
     'ngInject';
     var vm = this;
-    vm.state = state;
     vm.uploadWorkflowService = UploadWorkflowService;
     vm.folderService = FolderService;
     vm.preparationService = PreparationService;
@@ -45,4 +42,15 @@ export default function InventorySearchCtrl($state, $stateParams, state, UploadW
                 vm.results = response;
         });
     };
+
+    /**
+     * @ngdoc method
+     * @name goToFolder
+     * @methodOf data-prep.inventory-search.controller:InventorySearchCtrl
+     * @description go to a folder
+     */
+    vm.goToFolder = function (stateString, options) {
+        $state.go(stateString, options);
+    };
+
 }

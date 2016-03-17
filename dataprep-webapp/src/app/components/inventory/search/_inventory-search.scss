@@ -17,10 +17,15 @@
     font-weight: 900;
   }
   .inventory{
-    .no-results {
+    width: 100%;
+    .no-results-div {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
       font-weight: 900;
-      padding-left: 10px;
+      width: 100%;
     }
+
     .inventory-entry {
       padding: 5px 10px;
 
@@ -32,6 +37,10 @@
 
         .preparation-icon-div {
           font-size: 1.3em;
+        }
+
+        img.pin {
+          width: 23px;
         }
       }
 

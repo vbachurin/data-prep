@@ -18,10 +18,9 @@
  * @requires data-prep.services.utils.service:StorageService
  * @requires data-prep.services.preparation.service:PreparationListService
  * @requires data-prep.services.preparation.service:PreparationRestService
- * @requires data-prep.services.folder.service:FolderService
  * @requires data-prep.services.state.service:StateService
  */
-export default function PreparationService($stateParams, $q, state, StateService, StorageService, PreparationListService, PreparationRestService, FolderService) {
+export default function PreparationService($stateParams, $q, state, $state, StateService, StorageService, PreparationListService, PreparationRestService) {
     'ngInject';
 
     return {
@@ -200,8 +199,6 @@ export default function PreparationService($stateParams, $q, state, StateService
     function open(preparation) {
         StateService.setPreviousState('nav.index.datasets');
         StateService.setPreviousStateOptions({folderPath: $stateParams.folderPath});
-        FolderService.goToFolder('playground.preparation', {prepid: preparation.id});
+        $state.go('playground.preparation', {prepid: preparation.id});
     }
-
-
 }

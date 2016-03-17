@@ -13,7 +13,7 @@
 
 describe('Recipe directive', function () {
     'use strict';
-    var scope, element, stateMock;
+    var scope, element;
 
     var recipe = [
         {
@@ -706,14 +706,7 @@ describe('Recipe directive', function () {
         }
     ];
 
-    beforeEach(angular.mock.module('data-prep.recipe', function ($provide) {
-        stateMock = {
-            playground: {
-                data: [{}]
-            }
-        };
-        $provide.constant('state', stateMock);
-    }));
+    beforeEach(angular.mock.module('data-prep.recipe'));
 
     beforeEach(angular.mock.module('htmlTemplates'));
 

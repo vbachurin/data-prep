@@ -323,19 +323,4 @@ describe('Folder services', function () {
             expect(StateService.setMenuChildren).toHaveBeenCalledWith([{path: 'toto', name: 'toto'}]);
         }));
     });
-
-    describe('folder', function () {
-        it('should go to folder', inject(function ($state, FolderService) {
-            //given
-            spyOn($state, 'go').and.returnValue();
-
-            //when
-            FolderService.goToFolder('nav.index.datasets', {folderPath : '1/2'});
-
-            //then
-            expect($state.go).toHaveBeenCalledWith('nav.index.datasets', {folderPath : '1/2'});
-
-        }));
-    });
-
 });

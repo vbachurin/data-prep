@@ -39,7 +39,6 @@ export default function FolderService($state, $translate, state, StateService, F
         remove: FolderRestService.remove,
         search: FolderRestService.search,
         getContent: getContent,
-        goToFolder: goToFolder,
 
         // shared folder ui mngt
         populateMenuChildren: populateMenuChildren,
@@ -143,15 +142,4 @@ export default function FolderService($state, $translate, state, StateService, F
             StateService.setDatasetsOrder(_.find(state.inventory.orderList, {id: savedSortOrder}));
         }
     }
-
-    /**
-     * @ngdoc method
-     * @methodOf data-prep.folder.controller:FolderCtrl
-     * @name goToFolder
-     * @description go into a folder
-     */
-    function goToFolder(stateString, options) {
-        $state.go(stateString, options);
-    }
-
 }

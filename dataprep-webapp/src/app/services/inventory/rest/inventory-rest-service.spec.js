@@ -18,11 +18,9 @@ describe('Inventory Rest Service', function () {
 
     beforeEach(angular.mock.module('data-prep.services.inventory'));
 
-    beforeEach(inject(function ($rootScope, $injector, RestURLs) {
+    beforeEach(inject(function ($injector, RestURLs) {
         RestURLs.setServerUrl('');
         $httpBackend = $injector.get('$httpBackend');
-
-        spyOn($rootScope, '$emit').and.returnValue();
     }));
     it('should call inventory search rest service ', inject(function ($rootScope, InventoryRestService, RestURLs, $q) {
         //given

@@ -24,11 +24,9 @@ describe('Inventory Search controller', function () {
     }));
 
     describe('search ', function() {
-        beforeEach(inject(function ($q, InventoryService) {
-            spyOn(InventoryService, 'search').and.returnValue($q.when({}));
-        }));
+        it('should call the easter eggs service', inject(function ($q,InventoryService) {
+            spyOn(InventoryService, 'search').and.returnValue($q.when({datasets : [], folders: [], preparations:[]}));
 
-        it('should call the easter eggs service', inject(function (InventoryService) {
             //when
             component.searchInput = 'barcelona';
             component.search();
@@ -36,7 +34,19 @@ describe('Inventory Search controller', function () {
 
             //then
             expect(InventoryService.search).toHaveBeenCalledWith('barcelona');
-            expect(component.results).toEqual({});
+            expect(component.results).toEqual({datasets : [], folders: [], preparations:[]});
+        }));
+
+        it('should go to folder', inject(function ($state) {
+            //given
+            spyOn($state, 'go').and.returnValue();
+
+            //when
+            component.goToFolder('nav.index.datasets', {folderPath : '1/2'});
+
+            //then
+            expect($state.go).toHaveBeenCalledWith('nav.index.datasets', {folderPath : '1/2'});
+
         }));
     });
 });

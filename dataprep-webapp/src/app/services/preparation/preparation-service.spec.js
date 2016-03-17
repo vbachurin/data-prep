@@ -185,7 +185,7 @@ describe('Preparation Service', function () {
 
 
         describe('open', () => {
-            it('should open a preparation', inject(($stateParams, $rootScope, $state, $timeout, StateService, PreparationService) => {
+            it('should open a preparation', inject(($stateParams, $rootScope, $state, StateService, PreparationService) => {
                 //given
                 spyOn($state, 'go').and.returnValue();
                 spyOn(StateService, 'setPreviousState').and.returnValue();
@@ -202,7 +202,6 @@ describe('Preparation Service', function () {
                 //when
                 PreparationService.open(preparation);
                 $rootScope.$digest();
-                $timeout.flush();
 
                 //then
                 expect(StateService.setPreviousState).toHaveBeenCalledWith('nav.index.datasets');

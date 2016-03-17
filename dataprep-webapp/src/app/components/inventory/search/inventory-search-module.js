@@ -11,7 +11,7 @@
 
  ============================================================================*/
 
-import InventorySearchCtrl from './inventory-search-controller';
+import InventorySearch from './inventory-search-component';
 
 (() => {
     'use strict';
@@ -28,13 +28,9 @@ import InventorySearchCtrl from './inventory-search-controller';
             'data-prep.services.utils',
             'talend.widget',
             'data-prep.services.datasetWorkflowService',
-            'data-prep.services.state',
             'data-prep.services.inventory',
             'data-prep.services.preparation'
         ])
-        .component('inventorySearch', {
-            templateUrl: 'app/components/inventory/search/inventory-search.html',
-            controller: InventorySearchCtrl
-        });
+        .component('inventorySearch', InventorySearch);
 })();
 

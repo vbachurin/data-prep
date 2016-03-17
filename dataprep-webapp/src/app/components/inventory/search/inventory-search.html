@@ -18,32 +18,30 @@
            force-side="left"
            close-on-select="true"
            class="inventory-search">
-    <div class="inventory" id="search-inventory-list">
-        <div class="inventory-list" ng-if ="$ctrl.results.length">
-            <div ng-repeat="item in $ctrl.results">
+    <div class="inventory" id="search-inventory-list" ng-switch="$ctrl.results.length">
+        <ul ng-if="$ctrl.results.length === 0" class="no-results-div" translate-once="NO_RESULTS">
+        </ul>
+        <ul ng-switch-default class="inventory-list" ng-if ="$ctrl.results.length">
+            <li ng-repeat="item in $ctrl.results">
                 <inventory-item ng-if="item.inventoryType==='preparation'"
                         item="item"
                         type="preparation"
-                        details="PREPARATION_DETAILS"
+                        details="SEARCH_PREPARATION_DETAILS"
                         ng-click="$ctrl.preparationService.open(item)">
                 </inventory-item>
                 <inventory-item ng-if="item.inventoryType==='folder'"
                         item="item"
                         type="folder"
                         details="SEARCH_FOLDER_DETAILS"
-                        ng-click="$ctrl.folderService.goToFolder('nav.index.datasets', {folderPath: item.path})">
+                        ng-click="$ctrl.goToFolder('nav.index.datasets', {folderPath: item.path})">
                 </inventory-item>
                 <inventory-item ng-if="item.inventoryType==='dataset'"
                         details="SEARCH_DATASET_DETAILS"
                         item="item"
                         type="dataset"
-                        ng-click="$ctrl.uploadWorkflowService.openDataset(item)"
-                        toggle-favorite="angular.noop">
+                        ng-click="$ctrl.uploadWorkflowService.openDataset(item)">
                 </inventory-item>
-            </div>
-        </div>
-        <div ng-if="$ctrl.results.length === 0">
-            <span class="no-results" translate-once="NO_RESULTS"></span>
-        </div>
+            </li>
+        </ul>
     </div>
 </typeahead>
