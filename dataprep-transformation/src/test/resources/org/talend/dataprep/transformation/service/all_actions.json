@@ -3438,28 +3438,6 @@
         "default": "",
         "label": "Filter",
         "description": "An optional filter to apply action on matching values only."
-      },
-      {
-        "name": "decimal_separator",
-        "type": "select",
-        "implicit": false,
-        "canBeBlank": false,
-        "configuration": {
-          "values": [
-            {
-              "value": ",",
-              "label": ","
-            },
-            {
-              "value": ".",
-              "label": "."
-            }
-          ],
-          "multiple": false
-        },
-        "default": ".",
-        "label": "Decimal Separator",
-        "description": "The decimal separator used in the input"
       }
     ],
     "category": "split",
