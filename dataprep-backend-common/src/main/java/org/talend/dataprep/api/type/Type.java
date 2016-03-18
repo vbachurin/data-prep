@@ -33,7 +33,7 @@ public enum Type implements Serializable {
     DATE("date", STRING, "DATE"), //$NON-NLS-1$
     NUMERIC("numeric", STRING, "NUMERIC"), //$NON-NLS-1$
     DOUBLE("double", NUMERIC, "DOUBLE"), //$NON-NLS-1$
-    INTEGER("integer", DOUBLE, "INTEGER"), //$NON-NLS-1$
+    INTEGER("integer", NUMERIC, "INTEGER"), //$NON-NLS-1$
     FLOAT("float", NUMERIC, "FLOAT"); //$NON-NLS-1$
 
     /** Serialization UID. */

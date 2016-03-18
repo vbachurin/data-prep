@@ -16,8 +16,7 @@ package org.talend.dataprep.api.type;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
-
-import static org.talend.dataprep.api.type.TypeUtils.*;
+import static org.talend.dataprep.api.type.TypeUtils.subTypeOfOther;
 
 import java.util.Collections;
 
@@ -86,8 +85,6 @@ public class TypeUtilsTest {
         assertThat(Type.BOOLEAN, is(subTypeOfOther(Type.STRING, Type.BOOLEAN)));
         assertThat(Type.DATE, is(subTypeOfOther(Type.DATE, Type.STRING)));
         assertThat(Type.DATE, is(subTypeOfOther(Type.STRING, Type.DATE)));
-        assertThat(Type.INTEGER, is(subTypeOfOther(Type.INTEGER, Type.DOUBLE)));
-        assertThat(Type.INTEGER, is(subTypeOfOther(Type.DOUBLE, Type.INTEGER)));
         assertThat(Type.INTEGER, is(subTypeOfOther(Type.INTEGER, Type.STRING)));
         assertThat(Type.INTEGER, is(subTypeOfOther(Type.STRING, Type.INTEGER)));
         assertThat(Type.DOUBLE, is(subTypeOfOther(Type.DOUBLE, Type.STRING)));
@@ -109,6 +106,8 @@ public class TypeUtilsTest {
         assertThat(Type.STRING, is(subTypeOfOther(Type.STRING, null)));
 
         // not subtype
+        assertThat(null, is(subTypeOfOther(Type.DOUBLE, Type.INTEGER)));
+        assertThat(null, is(subTypeOfOther(Type.INTEGER, Type.DOUBLE)));
         assertThat(null, is(subTypeOfOther(Type.BOOLEAN, Type.INTEGER)));
         assertThat(null, is(subTypeOfOther(Type.INTEGER, Type.BOOLEAN)));
         assertThat(null, is(subTypeOfOther(Type.DOUBLE, Type.BOOLEAN)));
