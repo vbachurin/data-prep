@@ -175,7 +175,7 @@ public class MakeLineHeaderTest extends AbstractMetadataBaseTest {
         assertThat(row3.isDeleted(), is(false));
 
         //when
-        ActionTestWorkbench.test(Arrays.asList( row1,row2, row3 ), action.create(parameters));
+        ActionTestWorkbench.test(Arrays.asList( row1,row2, row3 ), factory.create(action, parameters));
 
         // then
         assertThat(row1.isDeleted(), is(true));

@@ -1,24 +1,22 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.transformation.api.action.metadata.line;
 
 import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.DATA_CLEANSING;
+import static org.talend.dataprep.transformation.api.action.parameters.ParameterType.BOOLEAN;
 
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -32,10 +30,9 @@ import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.RowAction;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
-import org.talend.dataprep.transformation.api.action.parameters.SelectParameter;
 
 /**
- * This action do two things:
+ * This action does two things:
  * <ul>
  * <li>Take the value in each column of this row, and use them as column names</li>
  * <li>Delete this row</li>
@@ -46,9 +43,9 @@ public class MakeLineHeader extends ActionMetadata implements RowAction {
 
     public static final String ACTION_NAME = "make_line_header";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MakeLineHeader.class);
-
     public static final String SKIP_UNTIL = "make_line_header_skip_until";
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MakeLineHeader.class);
 
     @Override
     public String getName() {
@@ -71,18 +68,8 @@ public class MakeLineHeader extends ActionMetadata implements RowAction {
     }
 
     @Override
-    public List<Parameter> getParameters()
-    {
-        List<Parameter> parameters = super.getParameters();
-
-        parameters.add( SelectParameter.Builder.builder() //
-                            .name(SKIP_UNTIL) //
-                            .item(Boolean.TRUE.toString()) //
-                            .item(Boolean.FALSE.toString()) //
-                            .defaultValue( Boolean.TRUE.toString() ) //
-                            .build());
-
-        return parameters;
+    public List<Parameter> getParameters() {
+        return Collections.singletonList(new Parameter(SKIP_UNTIL, BOOLEAN, Boolean.TRUE.toString()));
     }
 
     @Override
@@ -90,13 +77,13 @@ public class MakeLineHeader extends ActionMetadata implements RowAction {
         Map<String, String> parameters = context.getParameters();
         String skipUntilStr = parameters.get(SKIP_UNTIL);
         // default is true
-        boolean skipPreviousRows = StringUtils.isBlank( skipUntilStr )? true : BooleanUtils.toBoolean( skipUntilStr );
+        boolean skipPreviousRows = StringUtils.isBlank(skipUntilStr) || BooleanUtils.toBoolean(skipUntilStr);
 
         long tdpId = row.getTdpId();
-        long rowId = NumberUtils.toLong( parameters.get( "row_id" ), 0);
+        long rowId = NumberUtils.toLong(parameters.get("row_id"), 0);
 
-        if (skipPreviousRows && ( tdpId < rowId )) {
-            row.setDeleted( true );
+        if (skipPreviousRows && (tdpId < rowId)) {
+            row.setDeleted(true);
             return;
         }
 
