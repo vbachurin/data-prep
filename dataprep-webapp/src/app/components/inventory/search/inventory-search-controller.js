@@ -53,18 +53,6 @@ class InventorySearchCtrl {
     goToFolder (stateString, options) {
         this.$state.go(stateString, options);
     }
-
-    /**
-     * @ngdoc method
-     * @name resetItemName
-     * @methodOf data-prep.inventory-search.controller:InventorySearchCtrl
-     * @description remove html from item name
-     */
-    resetItemName(item) {
-        item.name = item.name.replace(new RegExp('(<span class="highlighted">)', 'g'),'');
-        item.name = item.name.replace(new RegExp('</span>', 'g'),'');
-        return item;
-    }
 }
 
 export default InventorySearchCtrl;

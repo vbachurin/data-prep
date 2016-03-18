@@ -36,7 +36,7 @@
                         details="SEARCH_DATASET_DETAILS"
                         item="item"
                         type="dataset"
-                        ng-click="$ctrl.uploadWorkflowService.openDataset($ctrl.resetItemName(item))">
+                        ng-click="$ctrl.uploadWorkflowService.openDataset(item.originalItem)">
                 </inventory-item>
             </li>
         </ul>

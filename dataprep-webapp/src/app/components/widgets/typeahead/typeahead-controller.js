@@ -16,7 +16,10 @@
  * @name talend.widget.controller:TypeaheadCtrl
  * @description Typeahead directive controller
  */
-export default function TypeaheadCtrl() {
-    var vm = this;
-    vm.searchString = '';
+class TypeaheadCtrl {
+
+    constructor() {
+        this.searchString = '';
+    }
 }
+export default TypeaheadCtrl;

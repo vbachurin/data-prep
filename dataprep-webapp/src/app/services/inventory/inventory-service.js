@@ -62,9 +62,21 @@ class InventoryService {
 
         if (data.datasets && data.datasets.length) {
             _.each(data.datasets, function (item) {
-                item.inventoryType = 'dataset';
+                let itemToDisplay = {};
+
+                itemToDisplay.inventoryType = 'dataset';
+                itemToDisplay.author = item.author;
+                itemToDisplay.created = item.created;
+                itemToDisplay.records = item.records;
+                itemToDisplay.name = item.name;
+                itemToDisplay.path = item.path;
+                itemToDisplay.type = item.type;
+                itemToDisplay.originalItem = item;
+                itemToDisplay.lastModificationDate = item.lastModificationDate;
+
+                inventory_items.push(itemToDisplay);
             });
-            inventory_items = inventory_items.concat(data.datasets);
+
         }
         if (data.preparations && data.preparations.length) {
             _.each(data.preparations, function (item) {
@@ -99,7 +111,7 @@ class InventoryService {
      */
     highlight(object, key, highlightText) {
         let originalValue = object[key];
-        if (originalValue.indexOf(highlightText) !== -1) {
+        if (originalValue.toLowerCase().indexOf(highlightText.toLowerCase()) !== -1) {
             object[key] = originalValue.replace(
                 new RegExp('(' + this.TextFormatService.escapeRegex(highlightText) + ')', 'gi'),
                 '<span class="highlighted">$1</span>');

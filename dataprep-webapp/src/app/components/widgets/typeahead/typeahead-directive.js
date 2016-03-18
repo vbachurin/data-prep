@@ -14,11 +14,8 @@
 /**
  * @ngdoc directive
  * @name talend.widget.directive:Typeahead
- * @description This directive create an input with a dropdown element.<br/>
- * @param {boolean} closeOnSelect Default `true`. If set to false, dropdown will not close on inner item click
- * @param {string} forceSide Force display on the specified side (left | right)
- * @param {string} searchString input model
- * @param {function} onChange function called when input changes
+ * @description This directive create an input with a dropdown element.
+ * @param {function} search function called when input changes
  */
 export default function Typeahead() {
     'ngInject';
@@ -34,30 +31,30 @@ export default function Typeahead() {
         controller: 'TypeaheadCtrl',
         controllerAs: 'typeaheadCtrl',
         link: {
-            post: function (scope, iElement, iAttrs, ctrl) {
-                var body = angular.element('body').eq(0);
-                var input = iElement.find('.input-search');
-                var menu = iElement.find('.typeahead-menu');
+            post: (scope, iElement, iAttrs, ctrl) => {
+                let body = angular.element('body').eq(0);
+                let input = iElement.find('.input-search');
+                let menu = iElement.find('.typeahead-menu');
 
-                function hideMenu() {
+                let hideMenu = () => {
                     menu.removeClass('show-menu');
-                }
+                };
 
-                function showMenu() {
+                let showMenu = () => {
                     menu.addClass('show-menu');
                     menu.css('width', input[0].getBoundingClientRect().width + 'px');
-                }
+                };
 
-                input.click(function (event) {
+                input.click((event) => {
                     event.stopPropagation();
                 });
 
-                menu.click(function (event) {
+                menu.click((event) => {
                     event.stopPropagation();
                     hideMenu();
                 });
 
-                menu.keydown(function (event) {
+                menu.keydown((event) => {
                     if (event.keyCode === 27) {
                         hideMenu();
                         event.stopPropagation();
@@ -66,16 +63,16 @@ export default function Typeahead() {
 
                 body.click(hideMenu);
 
-                iElement.on('$destroy', function () {
+                iElement.on('$destroy', () => {
                     scope.$destroy();
                 });
-                scope.$on('$destroy', function () {
+                scope.$on('$destroy', () => {
                     body.off('click', hideMenu);
                 });
 
-                scope.$watch('typeaheadCtrl.searchString', function (newValue) {
+                scope.$watch('typeaheadCtrl.searchString', (newValue) => {
                     if (newValue) {
-                        var isVisible = menu.hasClass('show-menu');
+                        let isVisible = menu.hasClass('show-menu');
                         if (!isVisible) {
                             showMenu();
                         }

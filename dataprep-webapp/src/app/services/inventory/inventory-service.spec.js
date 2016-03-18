@@ -18,7 +18,15 @@ describe('Inventory Service', function () {
         data: {
             folders: [{name : 'folder test', lastModificationDate: 1}],
             preparations: [{name : 'prep test', lastModificationDate: 2}],
-            datasets: [{name : 'dataset test', lastModificationDate: 3}]
+            datasets: [{
+                name : 'dataset test',
+                lastModificationDate: 3,
+                author: 'toto' ,
+                created: 1,
+                records: 100,
+                path: 'home',
+                type: 'csv'
+            }]
 
         }
     };
@@ -33,10 +41,11 @@ describe('Inventory Service', function () {
         //given
         var result= null;
         var expectedResult = [
-            {name : 'dataset <span class="highlighted">test</span>', lastModificationDate: 3, inventoryType: 'dataset'},
+            {inventoryType: 'dataset', author: 'toto', created: 1, records: 100, name: 'dataset <span class="highlighted">test</span>', path: 'home', type: 'csv', originalItem: results.data.datasets[0], lastModificationDate: 3},
             {name : 'prep <span class="highlighted">test</span>', lastModificationDate: 2, inventoryType: 'preparation'},
             {name : 'folder <span class="highlighted">test</span>', lastModificationDate: 1, inventoryType: 'folder'}
         ];
+
         //when
         InventoryService.search('test').then(function (response) {
             result = response;
