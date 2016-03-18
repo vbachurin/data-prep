@@ -230,10 +230,11 @@ public class TransformationService extends BaseTransformationService {
             return;
         }
 
-        // or save it into the cache
-        final OutputStream newCacheEntry = contentCache.put(key, ContentCache.TimeToLive.DEFAULT);
-        OutputStream outputStreams = new TeeOutputStream(output, newCacheEntry);
-        internalTransform(preparationId, dataSet, outputStreams, formatName, stepId, name, optionalParams);
+        // or save it into the cache (and make sure the cache entry is closed properly)
+        try (final OutputStream newCacheEntry = contentCache.put(key, ContentCache.TimeToLive.DEFAULT)) {
+            OutputStream outputStreams = new TeeOutputStream(output, newCacheEntry);
+            internalTransform(preparationId, dataSet, outputStreams, formatName, stepId, name, optionalParams);
+        }
     }
 
     /**
