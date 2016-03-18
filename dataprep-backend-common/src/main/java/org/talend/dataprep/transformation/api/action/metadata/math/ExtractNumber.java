@@ -17,15 +17,14 @@ import java.text.CharacterIterator;
 import java.text.DecimalFormat;
 import java.text.StringCharacterIterator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.stereotype.Component;
+import org.talend.daikon.number.BigDecimalParser;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
@@ -34,8 +33,6 @@ import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
-import org.talend.dataprep.transformation.api.action.parameters.Parameter;
-import org.talend.dataprep.transformation.api.action.parameters.SelectParameter;
 
 /**
  * This will extract the numeric part
@@ -62,12 +59,6 @@ import org.talend.dataprep.transformation.api.action.parameters.SelectParameter;
 public class ExtractNumber extends ActionMetadata implements ColumnAction {
 
     public static final String EXTRACT_NUMBER_ACTION_NAME = "extract_number"; //$NON-NLS-1$
-
-    public static String DECIMAL_SEPARATOR = "decimal_separator"; //$NON-NLS-1$
-
-    public static String DOT = ".";
-
-    public static String COMMA = ",";
 
     public static final String DEFAULT_RESULT = "0";
 
@@ -157,103 +148,84 @@ public class ExtractNumber extends ActionMetadata implements ColumnAction {
     }
 
     @Override
-    @Nonnull
-    public List<Parameter> getParameters() {
-        final List<Parameter> parameters = super.getParameters();
+    public void compile(ActionContext context) {
+        super.compile(context);
+        if (context.getActionStatus() == ActionContext.ActionStatus.OK) {
 
-        //@formatter:off
-        parameters.add(
-        SelectParameter.Builder.builder() //
-            .name(DECIMAL_SEPARATOR) //
-            .item( COMMA ) //
-            .item( DOT ) //
-            .defaultValue(DOT) //
-            .build()
-        );
-        //@formatter:on
+            String columnId = context.getColumnId();
+            RowMetadata rowMetadata = context.getRowMetadata();
+            ColumnMetadata column = rowMetadata.getById(columnId);
 
-        return parameters;
+            // create new column and append it after current column
+            context.column("result", (r) -> {
+                ColumnMetadata c = ColumnMetadata.Builder //
+                    .column() //
+                    .name(column.getName() + "_number") //
+                    .type(Type.NUMERIC) //
+                    .build();
+                rowMetadata.insertAfter(columnId, c);
+                return c;
+            });
+        }
     }
 
     @Override
     public void applyOnColumn(DataSetRow row, ActionContext context) {
 
         final String columnId = context.getColumnId();
-        final RowMetadata rowMetadata = row.getRowMetadata();
 
-        final Map<String, String> parameters = context.getParameters();
+        final String newColumnId = context.column("result");
 
-        String decimalSeparator = parameters.get(DECIMAL_SEPARATOR);
-
-        if (StringUtils.isEmpty(decimalSeparator)) {
-            decimalSeparator = DOT;
-        }
-
-        // create new column and append it after current column
-        final ColumnMetadata column = rowMetadata.getById(columnId);
-        final String newColumnId = context.column("result", (r) -> {
-            final ColumnMetadata c = ColumnMetadata.Builder //
-                    .column() //
-                    .name(column.getName() + "_number") //
-                    .type(Type.NUMERIC) //
-                    .build();
-            rowMetadata.insertAfter(columnId, c);
-            return c;
-        });
-
-        row.set(newColumnId, extractNumber(row.get(columnId), decimalSeparator));
+        row.set(newColumnId, extractNumber(row.get(columnId)));
 
     }
 
-    protected String extractNumber(String value, String decimalSeparator) {
+    protected String extractNumber(String value) {
 
-        if (StringUtils.isEmpty( value )) {
+        if (StringUtils.isEmpty(value)) {
             return DEFAULT_RESULT;
         }
 
         StringCharacterIterator iter = new StringCharacterIterator(value);
 
-        StringBuilder firstPart = new StringBuilder();
-        StringBuilder secondPart = new StringBuilder();
-        boolean decimalSeparatorFound = false;
         MetricPrefix metricPrefix = null;
 
+        // we build a new value including only number or separator as , or .
+        StringBuilder reducedValue = new StringBuilder( value.length() );
+        
         for (char c = iter.first(); c != CharacterIterator.DONE; c = iter.next()) {
-            if (StringUtils.equals(decimalSeparator, String.valueOf(c))) {
-                decimalSeparatorFound = true;
-                continue;
-            }
-            if (NumberUtils.isNumber(String.valueOf(c))) {
-                if (decimalSeparatorFound) {
-                    secondPart.append(c);
-                } else {
-                    firstPart.append(c);
+            // we take the first metric prefix found
+            if (metricPrefix == null) {
+                MetricPrefix found = metricPrefixes.get(String.valueOf(c));
+                if (found != null) {
+                    metricPrefix = found;
+                    continue;
                 }
-                continue;
             }
-            // we take the last metric prefix after digit found
-            MetricPrefix found = metricPrefixes.get(String.valueOf(c));
-            if (found != null) {
-                metricPrefix = found;
+            // we remove all non numeric characters but keep separators
+            if ( NumberUtils.isNumber( String.valueOf( c ) ) || c == '.' || c == ',') {
+                reducedValue.append( c );
             }
         }
 
-        if (firstPart.length()<1 && secondPart.length()<1){
+        BigDecimal bigDecimal = null;
+        try {
+            bigDecimal = BigDecimalParser.toBigDecimal(reducedValue.toString());
+        } catch (NumberFormatException e) {
             return DEFAULT_RESULT;
         }
-        if (firstPart.length()<1){
-            firstPart.append( '0' );
-        }
 
-        BigDecimal bigDecimal = new BigDecimal(firstPart.append(DOT).append(secondPart).toString());
+        if (bigDecimal == null) {
+            return DEFAULT_RESULT;
+        }
 
         if (metricPrefix != null) {
             bigDecimal = bigDecimal.multiply(metricPrefix.getMultiply());
         }
 
-        DecimalFormat decimalFormat = new DecimalFormat( "0.#" );
-        decimalFormat.setMaximumFractionDigits( MAX_FRACTION_DIGITS_DISPLAY );
-        return decimalFormat.format( bigDecimal.stripTrailingZeros() );
+        DecimalFormat decimalFormat = new DecimalFormat("0.#");
+        decimalFormat.setMaximumFractionDigits(MAX_FRACTION_DIGITS_DISPLAY);
+        return decimalFormat.format(bigDecimal.stripTrailingZeros());
 
     }
 
