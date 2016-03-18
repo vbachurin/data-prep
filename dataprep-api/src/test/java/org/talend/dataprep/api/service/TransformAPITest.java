@@ -205,14 +205,14 @@ public class TransformAPITest extends ApiServiceTestBase {
      * see https://jira.talendforge.org/browse/TDP-714
      */
     @Test
-    public void testCustomDateFormatTransformation() throws Exception {
+    public void testCustomDateFormat_MMM_dd_yyyyTransformation() throws Exception {
 
         // given (a dataset with single date column)
         final String preparationId = createPreparationFromFile("dataset/TDP-714.csv", "dates", "text/csv");
 
         // when (change the date format to an unknown DQ pattern)
         applyAction(preparationId,
-                IOUtils.toString(this.getClass().getResourceAsStream("transformation/change_date_format.json")));
+                IOUtils.toString(this.getClass().getResourceAsStream("transformation/change_date_format_MMM_dd_yyyy.json")));
 
         // then (the column is still a date without any invalid)
         final String datasetContent = given().when() //
@@ -229,5 +229,35 @@ public class TransformAPITest extends ApiServiceTestBase {
         assertThat(column.getType(), is("date"));
         assertThat(column.getQuality().getInvalid(), is(0));
     }
+
+    /**
+     * see https://jira.talendforge.org/browse/TDP-1012
+     */
+    @Test
+    public void testCustomDateFormat_MMMM_yyyy_dd_Transformation() throws Exception {
+
+        // given (a dataset with single date column)
+        final String preparationId = createPreparationFromFile("dataset/TDP-714.csv", "dates", "text/csv");
+
+        // when (change the date format to an unknown DQ pattern)
+        applyAction(preparationId,
+                IOUtils.toString(this.getClass().getResourceAsStream("transformation/change_date_format_MMMM_yyyy_dd.json")));
+
+        // then (the column is still a date without any invalid)
+        final String datasetContent = given().when() //
+                .expect().statusCode(200).log().ifError() //
+                .get("/api/preparations/{id}/content?version=head", preparationId)
+                .asString();
+
+        final JsonNode rootNode = builder.build().readTree(datasetContent);
+        final DataSetMetadata metadata = builder.build().readerFor(DataSetMetadata.class).readValue(rootNode.path("metadata"));
+
+        assertThat(metadata.getRowMetadata().getColumns().isEmpty(), is(false));
+        final ColumnMetadata column = metadata.getRowMetadata().getColumns().get(0);
+        assertThat(column.getName(), is("date"));
+        assertThat(column.getType(), is("date"));
+        assertThat(column.getStatistics().getHistogram().getItems().size(), is(12));
+    }
+
 
 }

@@ -221,7 +221,7 @@ public class AnalyzerService implements DisposableBean {
      * @param columns the columns to analyze.
      * @return the analyzer for the given columns.
      */
-    public AbstractFrequencyAnalyzer getPatternFrequencyAnalyzer(List<ColumnMetadata> columns) {
+    private AbstractFrequencyAnalyzer getPatternFrequencyAnalyzer(List<ColumnMetadata> columns) {
 
         // deal with specific date, even custom date pattern
         final DateTimePatternRecognizer dateTimePatternFrequencyAnalyzer = getDateTimePatternFrequencyAnalyzer(columns);
@@ -240,13 +240,6 @@ public class AnalyzerService implements DisposableBean {
         final List<String> mostUsedDatePatterns = getMostUsedDatePatterns(columns);
         dateTimePatternFrequencyAnalyzer.addCustomDateTimePatterns(mostUsedDatePatterns);
         return dateTimePatternFrequencyAnalyzer;
-    }
-
-    public Analyzer<Analyzers.Result> transformationInlineAnalysis(List<ColumnMetadata> columns) {
-        // Configure value quality analysis
-        final Analyzer<Analyzers.Result> analyzer = Analyzers.with(getDataTypeAnalyzer(columns));
-        analyzer.init();
-        return analyzer;
     }
 
     public Analyzer<Analyzers.Result> qualityAnalysis(List<ColumnMetadata> columns) {
@@ -336,7 +329,7 @@ public class AnalyzerService implements DisposableBean {
      * @param column the column to inspect.
      * @return the most used pattern or null if there's none.
      */
-    private String getMostUsedDatePattern(ColumnMetadata column) {
+    public static String getMostUsedDatePattern(ColumnMetadata column) {
         // only filter out non date columns
         if (Type.get(column.getType()) != Type.DATE) {
             return null;
