@@ -49,16 +49,16 @@ export default function Typeahead() {
                     event.stopPropagation();
                 });
 
-                menu.click((event) => {
-                    event.stopPropagation();
-                    hideMenu();
-                });
-
-                menu.keydown((event) => {
+                input.keydown((event) => {
                     if (event.keyCode === 27) {
                         hideMenu();
                         event.stopPropagation();
                     }
+                });
+
+                menu.click((event) => {
+                    event.stopPropagation();
+                    hideMenu();
                 });
 
                 body.click(hideMenu);

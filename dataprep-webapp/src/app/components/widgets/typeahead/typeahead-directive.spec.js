@@ -133,6 +133,7 @@ describe('Typeahead directive', function () {
 
     it('should hide typeahead menu on ESC', function () {
         //given
+        var input = element.find('input').eq(0);
         var menu = element.find('.typeahead-menu').eq(0);
         menu.addClass('show-menu');
 
@@ -140,7 +141,7 @@ describe('Typeahead directive', function () {
         event.keyCode = 27;
 
         //when
-        menu.trigger(event);
+        input.trigger(event);
 
         //then
         expect(menu.hasClass('show-menu')).toBe(false);
@@ -149,13 +150,14 @@ describe('Typeahead directive', function () {
     it('should not hide typeahead menu on not ESC keydown', function () {
         //given
         var menu = element.find('.typeahead-menu').eq(0);
+        var input = element.find('input').eq(0);
         menu.addClass('show-menu');
 
         var event = angular.element.Event('keydown');
         event.keyCode = 13;
 
         //when
-        menu.trigger(event);
+        input.trigger(event);
 
         //then
         expect(menu.hasClass('show-menu')).toBe(true);
