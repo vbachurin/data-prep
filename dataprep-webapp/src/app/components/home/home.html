@@ -127,12 +127,13 @@
     </div>
 
     <div class="home-main">
-        <div id="upload-list-container">
-            <dataset-upload-list datasets="homeCtrl.uploadingDatasets"></dataset-upload-list>
-        </div>
-        <div id="inventory-list-container">
-            <ui-view name="home-content"></ui-view>
-        </div>
+        <dataset-upload-list id="upload-list-container"
+                             ng-if="homeCtrl.uploadingDatasets.length"
+                             datasets="homeCtrl.uploadingDatasets"></dataset-upload-list>
+        <ui-view id="inventory-list-header"
+                 name="home-content-header"></ui-view>
+        <ui-view id="inventory-list-container"
+                 name="home-content"></ui-view>
     </div>
 </div>
 

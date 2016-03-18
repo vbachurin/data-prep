@@ -13,7 +13,7 @@
   ~ ============================================================================
   -->
 
-<div class="inventory-entry inventory-item" ng-dblclick="inventoryItemCtrl.openInventoryItem()">
+<div class="inventory-item" ng-dblclick="inventoryItemCtrl.openInventoryItem()">
     <div class="inventory-icon"
          title="{{inventoryItemCtrl.open ? ('OPEN_ACTION' | translate: inventoryItemCtrl.getTooltipContent()) : ''}}"
          ng-switch="inventoryItemCtrl.type"
@@ -53,7 +53,7 @@
          class="inventory-actions">
         <a  ng-if="inventoryItemCtrl.remove"
             data-icon="e"
-            class="btn-icon btn-transparent"
+            class="btn-icon"
             translate-once-title="DELETE_ACTION"
             translate-values="{type: inventoryItemCtrl.type, name: inventoryItemCtrl.item.name}"
             ng-click="inventoryItemCtrl.remove(inventoryItemCtrl.item)"></a>
@@ -61,7 +61,7 @@
 
     <!-- Not draft actions icons -->
     <div ng-if="!inventoryItemCtrl.item.draft" class="inventory-actions">
-        <talend-button-dropdown class="inventory-actions-related-item btn-icon btn-transparent"
+        <talend-button-dropdown class="inventory-actions-related-item btn-icon"
                                 button-icon="c"
                                 button-action="inventoryItemCtrl.openRelatedInventoryItem(inventoryItemCtrl.relatedInventories[0])"
                                 ng-if="inventoryItemCtrl.relatedInventories.length"
@@ -72,7 +72,6 @@
                     <span data-icon="K" >&nbsp;</span>
                     <span class="dropdown-container-middle" translate-once="CREATE_NEW_PREP"></span>
                 </li>
-                <li class="divider"></li>
                 <li ng-repeat="relatedItem in inventoryItemCtrl.relatedInventories track by $index"
                     ng-click="inventoryItemCtrl.openRelatedInventoryItem(relatedItem)">
                         <span class="inventory-actions-related-item-name" title="{{relatedItem.name}}">{{relatedItem.name}}</span>
@@ -94,35 +93,36 @@
         </talend-file-selector>
 
         <div ng-if="(inventoryItemCtrl.update || (inventoryItemCtrl.relatedInventories)) && (inventoryItemCtrl.copy || inventoryItemCtrl.remove)"
-             class="divider btn-transparent">
+             class="divider">
 
         </div>
 
         <a ng-if="inventoryItemCtrl.copy"
            data-icon="B"
-           class="btn-icon btn-transparent"
+           class="btn-icon"
            translate-once-title="COPY_CLONE_ACTION"
            translate-values="{type: inventoryItemCtrl.type, name: inventoryItemCtrl.item.name}"
            ng-click="inventoryItemCtrl.copy(inventoryItemCtrl.item)"></a>
 
         <a ng-if="inventoryItemCtrl.remove"
            data-icon="e"
-           class="btn-icon btn-transparent"
+           class="btn-icon"
            translate-once-title="DELETE_ACTION"
            translate-values="{type: inventoryItemCtrl.type, name: inventoryItemCtrl.item.name}"
            ng-click="inventoryItemCtrl.remove(inventoryItemCtrl.item)"></a>
 
         <div ng-if="(inventoryItemCtrl.copy || inventoryItemCtrl.remove) && (inventoryItemCtrl.processCertification || inventoryItemCtrl.toggleFavorite)"
-             class="divider btn-transparent">
+             class="divider">
         </div>
         <a ng-if="inventoryItemCtrl.processCertification"
            data-icon="n"
-           class="btn-icon btn-transparent"
+           class="btn-icon"
            translate-once-title="CERTIFY_ACTION"
            translate-values="{type: inventoryItemCtrl.type, name: inventoryItemCtrl.item.name}"
            ng-click="inventoryItemCtrl.processCertification(inventoryItemCtrl.item)"></a>
+
         <a data-icon="f" ng-if="inventoryItemCtrl.open && inventoryItemCtrl.type !== 'folder'"
-           class="btn-icon btn-transparent favorite"
+           class="btn-icon favorite"
            translate-once-title="FAVORITE_ACTION"
            translate-values="{type: inventoryItemCtrl.type, name: inventoryItemCtrl.item.name}"
            ng-class="{'favorite-true':inventoryItemCtrl.item.favorite}"

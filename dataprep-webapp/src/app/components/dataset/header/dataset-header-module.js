@@ -11,38 +11,27 @@
 
   ============================================================================*/
 
-import DatasetList from './dataset-list-component';
+import DatasetHeader from './dataset-header-component';
 
 (() => {
     'use strict';
 
     /**
      * @ngdoc object
-     * @name data-prep.dataset-list
-     * @description This module contains the controller and directives to manage the dataset list
+     * @name data-prep.dataset-header
+     * @description This module contains the controller and directives to manage the dataset list header
      * @requires talend.widget
-     * @requires data-prep.dataset-xls-preview
-     * @requires data-prep.inventory-item
-     * @requires data-prep.services.dataset
-     * @requires data-prep.services.datasetWorkflowService
      * @requires data-prep.services.utils
      * @requires data-prep.services.state
-     * @requires data-prep.dataset-copy-move
      * @requires data-prep.services.folder
      */
-    angular.module('data-prep.dataset-list',
+    angular.module('data-prep.dataset-header',
         [
-            'ui.router',
             'pascalprecht.translate',
             'talend.widget',
-            'data-prep.dataset-xls-preview',
-            'data-prep.inventory-item',
-            'data-prep.services.dataset',
-            'data-prep.services.datasetWorkflowService',
             'data-prep.services.utils',
             'data-prep.services.state',
-            'data-prep.dataset-copy-move',
             'data-prep.services.folder'
         ])
-        .component('datasetList', DatasetList);
+        .component('datasetHeader', DatasetHeader);
 })();

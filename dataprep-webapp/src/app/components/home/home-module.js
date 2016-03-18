@@ -23,6 +23,7 @@ import HomeCtrl from './home-controller';
      * @description This module contains the home page of the app.
      * @requires talend.widget
      * @requires data-prep.dataset-upload-list
+     * @requires data-prep.dataset-header
      * @requires data-prep.dataset-list
      * @requires data-prep.playground
      * @requires data-prep.preparation-list
@@ -36,8 +37,9 @@ import HomeCtrl from './home-controller';
     angular.module('data-prep.home',
         [
             'talend.widget',
-            'data-prep.dataset-list',
             'data-prep.dataset-upload-list',
+            'data-prep.dataset-header',
+            'data-prep.dataset-list',
             'data-prep.folder',
             'data-prep.playground',
             'data-prep.preparation-list',

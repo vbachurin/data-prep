@@ -207,8 +207,8 @@ describe('InventoryItem directive', () => {
                 //then
                 expect(element.find('.inventory-actions-related-item').length).toBe(1);
                 const menuItems = element.find('.inventory-actions-related-item-menu > li');
-                expect(menuItems.length).toBe(4);
-                const relatedPrepsList = menuItems.eq(3).text().trim();
+                expect(menuItems.length).toBe(3);
+                const relatedPrepsList = menuItems.eq(2).text().trim();
                 expect(relatedPrepsList.indexOf(dataset.preparations[1].name) > -1).toBeTruthy();
             });
 
@@ -418,10 +418,10 @@ describe('InventoryItem directive', () => {
                 //given
                 scope.preparations = [{}, {}];
                 createElement();
-                const secRelatedInv = element.find('.inventory-actions-related-item-menu > li').eq(3);
+                const secRelatedInv = element.find('.inventory-actions-related-item-menu > li').eq(2);
 
                 //when
-                secRelatedInv.dblclick();
+                secRelatedInv.click();
 
                 //then
                 expect(ctrl.openRelatedInventory).toHaveBeenCalledWith(scope.preparations[1]);

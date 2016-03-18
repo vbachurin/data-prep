@@ -13,101 +13,50 @@
   ~ ============================================================================
   -->
 
-<div class="inventory dataset">
-    <div class="inventory-sort">
-        <div class="add-folder-button">
-            <button class="btn-primary modal-primary-button" ng-click="datasetListCtrl.actionsOnAddFolderClick()">
-                <span translate-once="CREATE_FOLDER"></span>
-            </button>
-        </div>
-        <div translate-once="SORTED_BY"></div>
-        <div class="button-switch">
-            <talend-button-switch
-                    values="datasetListCtrl.state.inventory.sortList"
-                    current-value="datasetListCtrl.state.inventory.sort"
-                    display-key="name"
-                    change-action="datasetListCtrl.updateSortBy(selected)">
-            </talend-button-switch>
-        </div>
-        <div translate-once="SORT_IN"> </div>
-        <div class="button-switch">
-            <talend-button-switch
-                    values="datasetListCtrl.state.inventory.orderList"
-                    current-value="datasetListCtrl.state.inventory.order"
-                    display-key="name"
-                    change-action="datasetListCtrl.updateSortOrder(selected)">
-            </talend-button-switch>
-        </div>
-        <div translate-once="SORT_ORDER"></div>
-    </div>
+<div class="dataset-inventory">
+    <div id="dataset-inventory-list" class="inventory-list">
+        <inventory-item
+                id="folder_{{$index}}"
+                ng-repeat="folder in $ctrl.state.inventory.currentFolderContent.folders track by folder.path"
+                item="folder"
+                type="folder"
+                details="FOLDER_DETAILS"
+                open="$ctrl.goToFolder"
+                remove="$ctrl.removeFolder"
+                rename="$ctrl.renameFolder">
+        </inventory-item>
 
-    <div class="inventory-list" id="datasets-list">
-        <div ng-repeat="folder in datasetListCtrl.state.inventory.currentFolderContent.folders track by folder.path">
-            <inventory-item
-                    item="folder"
-                    open="datasetListCtrl.goToFolder"
-                    remove="datasetListCtrl.removeFolder"
-                    rename="datasetListCtrl.renameFolder"
-                    type="folder"
-                    details="FOLDER_DETAILS">
-            </inventory-item>
-        </div>
-
-        <div ng-repeat="dataset in datasetListCtrl.state.inventory.currentFolderContent.datasets track by dataset.id" id="dataset_{{$index}}">
-            <inventory-item
-                copy="datasetListCtrl.openFolderSelection"
-                details="DATASET_DETAILS"
-                file-model="datasetListCtrl.updateDatasetFile"
+        <inventory-item
+                id="dataset_{{$index}}"
+                ng-repeat="dataset in $ctrl.state.inventory.currentFolderContent.datasets track by dataset.id"
                 item="dataset"
-                open="datasetListCtrl.uploadWorkflowService.openDataset"
-                open-related-inventory="datasetListCtrl.preparationService.open"
-                process-certification="datasetListCtrl.processCertification"
-                remove="datasetListCtrl.remove"
-                rename="datasetListCtrl.rename"
+                type="dataset"
+                details="DATASET_DETAILS"
+                file-model="$ctrl.updateDatasetFile"
                 related-inventories="dataset.preparations"
                 related-inventories-type="preparation"
-                toggle-favorite="datasetListCtrl.datasetService.toggleFavorite"
-                type="dataset"
-                update="datasetListCtrl.uploadUpdatedDatasetFile">
-            </inventory-item>
-        </div>
+                open="$ctrl.UploadWorkflowService.openDataset"
+                open-related-inventory="$ctrl.PreparationService.open"
+                update="$ctrl.uploadUpdatedDatasetFile"
+                copy="$ctrl.openFolderSelection"
+                process-certification="$ctrl.processCertification"
+                remove="$ctrl.remove"
+                rename="$ctrl.rename"
+                toggle-favorite="$ctrl.DatasetService.toggleFavorite">
+        </inventory-item>
     </div>
-
-    <talend-modal fullscreen="false"
-                  close-button="true"
-                  state="datasetListCtrl.folderNameModal"
-                  ng-if="datasetListCtrl.folderNameModal"
-                  disable-enter="true">
-        <span translate-once="ENTER_FOLDER_NAME"></span>
-        <form name="datasetListCtrl.folderNameForm" ng-submit="datasetListCtrl.folderNameForm.$valid && datasetListCtrl.addFolder()">
-            <input type="text"
-                   ng-model="datasetListCtrl.folderName"
-                   ng-model-options="{debounce: { default: 300, blur: 0 }}"
-                   unique-folder="datasetListCtrl.state.folder.currentFolderContent.folders"/>
-
-            <div class="modal-buttons">
-                <button type="button" class="talend-modal-close btn-secondary modal-secondary-button" translate-once="CANCEL">
-                </button>
-                <button class="btn-primary modal-primary-button" translate-once="OK"
-                        ng-disabled="datasetListCtrl.folderNameForm.$invalid">
-                </button>
-            </div>
-        </form>
-    </talend-modal>
-
-    <talend-modal fullscreen="false"
-                  close-button="false"
-                  ng-if="datasetListCtrl.datasetCopyVisibility"
-                  state="datasetListCtrl.datasetCopyVisibility"
-                  disable-close-on-background-click="true"
-                  disable-enter="true">
-
-        <dataset-copy-move
-                initial-folder="datasetListCtrl.state.inventory.currentFolder"
-                dataset="datasetListCtrl.datasetToCopyMove"
-                on-copy="datasetListCtrl.clone(dataset, destination, name)"
-                on-move="datasetListCtrl.move(dataset, destination, name)"
-        ></dataset-copy-move>
-    </talend-modal>
-
 </div>
+
+<talend-modal fullscreen="false"
+              close-button="false"
+              ng-if="$ctrl.datasetCopyVisibility"
+              state="$ctrl.datasetCopyVisibility"
+              disable-close-on-background-click="true"
+              disable-enter="true">
+
+    <dataset-copy-move
+            initial-folder="$ctrl.state.inventory.currentFolder"
+            dataset="$ctrl.datasetToCopyMove"
+            on-copy="$ctrl.clone(dataset, destination, name)"
+            on-move="$ctrl.move(dataset, destination, name)"></dataset-copy-move>
+</talend-modal>

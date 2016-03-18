@@ -80,6 +80,9 @@
                 .state('nav.index.datasets', {
                     url: "/datasets/{folderPath:.*}",
                     views: {
+                        'home-content-header': {
+                            template: '<dataset-header></dataset-header>'
+                        },
                         'home-content': {
                             template: '<dataset-list></dataset-list>'
                         }

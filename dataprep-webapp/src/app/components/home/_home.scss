@@ -49,8 +49,9 @@ $footer-height: 49px;
     @extend .flex-center;
     @extend .flex-column;
 
+    #inventory-list-header,
     #upload-list-container {
-      @include flex-fixed();
+      @include flex-shrink(0);
     }
 
     #inventory-list-container {
@@ -65,6 +66,6 @@ $footer-height: 49px;
   .large{
     font-size: 5em;
     color: $light-blue;
-    -webkit-filter: none;
+    @include filter(none);
   }
 }
