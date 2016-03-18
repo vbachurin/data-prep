@@ -171,7 +171,7 @@ public class ExtractNumberTest extends AbstractMetadataBaseTest {
         Assertions.assertThat(row.getRowMetadata().getColumns()).isNotEmpty().hasSize(1);
 
         // when
-        ActionTestWorkbench.test(row, action.create(parameters));
+        ActionTestWorkbench.test(row, factory.create(action, parameters));
 
         // then
         Assertions.assertThat(row.getRowMetadata().getColumns()) //
@@ -222,7 +222,7 @@ public class ExtractNumberTest extends AbstractMetadataBaseTest {
         Assertions.assertThat(row.getRowMetadata().getColumns()).isNotEmpty().hasSize(1);
 
         // when
-        ActionTestWorkbench.test(row, action.create(parameters));
+        ActionTestWorkbench.test(row, factory.create(action, parameters));
 
         // then
         Assertions.assertThat(row.getRowMetadata().getColumns()) //
@@ -323,7 +323,7 @@ public class ExtractNumberTest extends AbstractMetadataBaseTest {
         Assertions.assertThat(row.getRowMetadata().getColumns()).isNotEmpty().hasSize(1);
 
         // when
-        ActionTestWorkbench.test(row, action.create(parameters));
+        ActionTestWorkbench.test(row, factory.create(action, parameters));
 
         // then
         Assertions.assertThat(row.getRowMetadata().getColumns()) //
