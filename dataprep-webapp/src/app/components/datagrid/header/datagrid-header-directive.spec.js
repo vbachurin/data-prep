@@ -42,6 +42,7 @@ describe('Datagrid header directive', function () {
 
             ctrl = element.controller('datagridHeader');
             spyOn(ctrl, 'updateColumnName').and.returnValue();
+            ctrl.columnNameEdition = {$commitViewValue: jasmine.createSpy('$commitViewValue')};
         };
     }));
 
@@ -189,6 +190,7 @@ describe('Datagrid header directive', function () {
 
         //then
         expect(ctrl.updateColumnName).toHaveBeenCalled();
+        expect(ctrl.columnNameEdition.$commitViewValue).toHaveBeenCalled();
     });
 
     it('should switch from input to text on BLUR event without changes', function () {

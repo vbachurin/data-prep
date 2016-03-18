@@ -51,6 +51,7 @@ export default function TalendBadgeCtrl($scope, $translate) {
      * @description Trigger the change callback
      */
     vm.manageChange = function () {
+        vm.editBadgeValueForm.$commitViewValue();
         if (vm.obj.value !== vm.value) {
             vm.onChange({
                 obj: vm.obj,

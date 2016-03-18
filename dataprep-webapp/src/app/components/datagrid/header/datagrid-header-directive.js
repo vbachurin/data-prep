@@ -62,6 +62,7 @@ export default function DatagridHeader($timeout) {
                  * @description Update column name if it has changed, just toggle edition mode otherwise
                  */
                 function executeRenameAction() {
+                    ctrl.columnNameEdition.$commitViewValue();
                     if (ctrl.nameHasChanged()) {
                         ctrl.updateColumnName();
                     }

@@ -78,9 +78,11 @@ describe('Playground controller', () => {
         scope = $rootScope.$new();
 
         createController = () => {
-            return $controller('PlaygroundCtrl', {
+            let ctrlFn =  $controller('PlaygroundCtrl', {
                 $scope: scope
             });
+            ctrlFn.savePreparationForm = {$commitViewValue: jasmine.createSpy('$commitViewValue')};
+            return ctrlFn;
         };
 
         spyOn(PlaygroundService, 'createOrUpdatePreparation').and.returnValue($q.when(createPreparation));
@@ -275,6 +277,7 @@ describe('Playground controller', () => {
 
                 //then
                 expect(PlaygroundService.createOrUpdatePreparation).toHaveBeenCalledWith('my preparation');
+                expect(ctrl.savePreparationForm.$commitViewValue).toHaveBeenCalled();
             }));
 
             it('should reset and redirect to previous route', inject(($timeout, $state, StateService) => {

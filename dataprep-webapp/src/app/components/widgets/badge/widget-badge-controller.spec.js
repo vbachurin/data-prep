@@ -44,7 +44,7 @@ describe('Badge controller', function () {
             ctrlFn.instance.obj = obj;
             ctrlFn.instance.onChange = fns.change;
             ctrlFn.instance.onClose = fns.close;
-
+            ctrlFn.instance.editBadgeValueForm = {$commitViewValue: jasmine.createSpy('$commitViewValue')};
             return ctrlFn();
         };
     }));
@@ -103,6 +103,7 @@ describe('Badge controller', function () {
 
         //then
         expect(fns.change).toHaveBeenCalledWith({obj: obj, newValue: 'tata'});
+        expect(ctrl.editBadgeValueForm.$commitViewValue).toHaveBeenCalled();
     });
 
     it('should do nothing if the editable value has not changed', function () {

@@ -91,13 +91,14 @@ describe('Dataset parameters controller', function () {
                 separator: ';',
                 encoding: 'UTF-8'
             };
-
+            ctrl.datasetParamForm = {$commitViewValue: jasmine.createSpy('$commitViewValue')};
             expect(ctrl.onParametersChange).not.toHaveBeenCalledWith();
 
             //when
             ctrl.validate();
 
             //then
+            expect(ctrl.datasetParamForm.$commitViewValue).toHaveBeenCalled();
             expect(ctrl.onParametersChange).toHaveBeenCalledWith({
                 dataset: {id: '1348b684f2e548'},
                 parameters: {

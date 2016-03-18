@@ -52,7 +52,10 @@
                   state="homeCtrl.datasetNameModal">
         <span translate-once="ENTER_DATASET_NAME"></span>
         <form name="homeCtrl.datasetNameForm">
-            <input type="text" ng-model="homeCtrl.datasetName" required/>
+            <input type="text"
+                   ng-model="homeCtrl.datasetName"
+                   required
+                   ng-model-options="{debounce: { 'default': 200, 'blur': 0 }}"/>
 
             <div class="modal-buttons">
                 <button class="talend-modal-close btn-secondary modal-secondary-button">

@@ -33,7 +33,13 @@
 
     <div class="talend-dropdown-text-div">
         <div class="grid-header-title" ng-show="!datagridHeaderCtrl.isEditMode" title="{{ datagridHeaderCtrl.column.name }}">{{ datagridHeaderCtrl.column.name }}</div>
-        <input class="grid-header-title-input" type="text" ng-show="datagridHeaderCtrl.isEditMode" ng-model="datagridHeaderCtrl.newName"/>
+        <form name="datagridHeaderCtrl.columnNameEdition">
+            <input class="grid-header-title-input"
+               type="text"
+               ng-show="datagridHeaderCtrl.isEditMode"
+               ng-model="datagridHeaderCtrl.newName"
+               ng-model-options="{debounce: { 'default': 200, 'blur': 0 }}"/>
+        </form>
     </div>
 
     <div class="grid-header-type" ng-if="datagridHeaderCtrl.column.domain">{{ datagridHeaderCtrl.column.domain }}</div>

@@ -136,6 +136,7 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
      * @description Save implicit preparation with provided name. The playground is then closed.
      */
     vm.confirmSaveOnClose = function confirmSaveOnClose() {
+        vm.savePreparationForm.$commitViewValue();
         vm.saveInProgress = true;
         const cleanName = vm.state.playground.preparationName.trim();
         changeName(cleanName).then(close);

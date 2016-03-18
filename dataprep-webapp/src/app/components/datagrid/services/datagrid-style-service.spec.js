@@ -28,7 +28,6 @@ describe('Datagrid style service', function () {
     }));
 
     beforeEach(function () {
-        jasmine.clock().install();
         gridColumns = [
             {id: '0000', field: 'col0', tdpColMetadata: {id: '0000', name: 'col0', type: 'string'}},
             {id: '0001', field: 'col1', tdpColMetadata: {id: '0001', name: 'col1', type: 'integer'}},
@@ -48,10 +47,6 @@ describe('Datagrid style service', function () {
         spyOn(gridMock.onActiveCellChanged, 'subscribe').and.returnValue();
         spyOn(gridMock, 'resetActiveCell').and.returnValue();
         spyOn(gridMock, 'invalidate').and.returnValue();
-    });
-
-    afterEach(function() {
-        jasmine.clock().uninstall();
     });
 
     describe('reset cell styles', function() {

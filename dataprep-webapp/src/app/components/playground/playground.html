@@ -100,8 +100,8 @@
     <div translate-once="SAVE_CHANGE_DESCRITION_2"></div>
     <br/><br/>
 
-    <form id="playground-save-form" name="savePreparationForm"
-          ng-submit="savePreparationForm.$valid && playgroundCtrl.confirmSaveOnClose()">
+    <form id="playground-save-form" name="playgroundCtrl.savePreparationForm"
+          ng-submit="playgroundCtrl.savePreparationForm.$valid && playgroundCtrl.confirmSaveOnClose()">
 
         <div class="modal-form-row">
             <div class="param-name" translate-once="PREPARATION_NAME"></div>
@@ -110,6 +110,7 @@
                    class="param-input"
                    translate-once-placeholder="ENTER_PREPARATION_NAME"
                    ng-model="playgroundCtrl.state.playground.preparationName"
+                   ng-model-options="{debounce: { 'default': 200, 'blur': 0 }}"
                    can-be-blank="false"/>
         </div>
 
@@ -117,7 +118,7 @@
             <a class="modal-secondary-button"
                ng-click="playgroundCtrl.discardSaveOnClose()" translate-once="NO_THANKS"></a>
             <talend-button-loader button-class="modal-primary-button btn-primary"
-                                  disable-condition="savePreparationForm.$invalid || playgroundCtrl.saveInProgress"
+                                  disable-condition="playgroundCtrl.savePreparationForm.$invalid || playgroundCtrl.saveInProgress"
                                   loading="playgroundCtrl.saveInProgress"
                                   loading-class="icon">
                 <span translate-once="SAVE_IT"></span>

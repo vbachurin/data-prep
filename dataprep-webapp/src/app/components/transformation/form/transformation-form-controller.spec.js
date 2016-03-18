@@ -30,6 +30,7 @@ describe('Transform params controller', function () {
             ctrlFn.instance.onSubmit = function(args) {
                 extractedParams = args.params;
             };
+            ctrlFn.instance.paramForm = {$commitViewValue: jasmine.createSpy('$commitViewValue')};
             return ctrlFn();
         };
     }));
@@ -52,6 +53,7 @@ describe('Transform params controller', function () {
         ctrl.transformWithParam();
 
         //then
+        expect(ctrl.paramForm.$commitViewValue).toHaveBeenCalled();
         expect(extractedParams).toEqual({ param1: 'param1Value', param2: 4 });
     });
 

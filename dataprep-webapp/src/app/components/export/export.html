@@ -47,6 +47,7 @@
         </div>
         <div ng-if="parameter.type == 'text'">
             <input ng-model="exportCtrl.exportService.currentExportParameters['exportParameters.' + parameter.name]"
+                   ng-model-options="{debounce: { 'default': 200, 'blur': 0 }}"
                    type="text"
                    value="{{parameter.defaultValue.value}}"/>
         </div>
@@ -60,7 +61,7 @@
     </div>
 </talend-modal>
 
-<form id="exportForm">
+<form id="exportForm" name="exportCtrl.exportFormName">
     <input type="hidden" name="preparationId" value="{{ exportCtrl.state.playground.preparation.id }}"/>
     <input type="hidden" name="stepId" value="{{ exportCtrl.stepId }}"/>
     <input type="hidden" name="datasetId" value="{{ exportCtrl.datasetId }}"/>

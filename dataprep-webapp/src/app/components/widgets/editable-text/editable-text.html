@@ -26,7 +26,8 @@
         <input class="edition-text-input"
                type="text"
                translate-once-placeholder="{{editableTextCtrl.placeholder}}"
-               ng-model="editableTextCtrl.editionText"/>
+               ng-model="editableTextCtrl.editionText"
+               ng-model-options="{debounce: { 'default': 200, 'blur': 0 }}"/>
         <button class="valid-btn" data-icon="b"></button>
         <button type='button' class="cancel-btn" data-icon="d" ng-click="editableTextCtrl.cancel()"></button>
     </form>

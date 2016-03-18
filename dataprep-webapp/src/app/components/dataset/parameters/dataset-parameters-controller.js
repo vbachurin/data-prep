@@ -36,6 +36,8 @@ export default function DatasetParametersCtrl() {
      * @description Call the parameter change validation callback
      */
     vm.validate = function validate() {
+        vm.datasetParamForm.$commitViewValue();
+
         vm.onParametersChange({
             dataset: vm.dataset,
             parameters: vm.parameters
