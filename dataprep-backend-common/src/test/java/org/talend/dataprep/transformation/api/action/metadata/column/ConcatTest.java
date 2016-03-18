@@ -136,7 +136,7 @@ public class ConcatTest extends AbstractMetadataBaseTest {
         DataSetRow row = getRow("first", "", "Done !");
 
         // when
-        ActionTestWorkbench.test(row, action.create(parameters));
+        ActionTestWorkbench.test(row, factory.create(action, parameters));
 
         // then
         Assertions.assertThat(row.values()).contains(MapEntry.entry("0000", "first"), //
@@ -151,7 +151,7 @@ public class ConcatTest extends AbstractMetadataBaseTest {
         DataSetRow row = getRow("first", "  ", "Done !");
 
         // when
-        ActionTestWorkbench.test(row, action.create(parameters));
+        ActionTestWorkbench.test(row, factory.create(action, parameters));
 
         // then
         Assertions.assertThat(row.values()).contains(MapEntry.entry("0000", "first"), //
