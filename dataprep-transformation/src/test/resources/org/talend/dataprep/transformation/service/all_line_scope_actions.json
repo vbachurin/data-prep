@@ -91,6 +91,28 @@
         "description":"An optional filter to apply action on matching values only.",
         "label":"Filter",
         "default":""
+      },
+      {
+        "name": "make_line_header_skip_until",
+        "type": "select",
+        "implicit": false,
+        "canBeBlank": false,
+        "configuration": {
+          "values": [
+            {
+              "value": "true",
+              "label": "true"
+            },
+            {
+              "value": "false",
+              "label": "false"
+            }
+          ],
+          "multiple": false
+        },
+        "default": "true",
+        "label": "Skip previous rows",
+        "description": "Previous rows will be deleted"
       }
     ]
   }

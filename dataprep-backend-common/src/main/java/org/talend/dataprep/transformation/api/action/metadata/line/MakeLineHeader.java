@@ -16,8 +16,13 @@ package org.talend.dataprep.transformation.api.action.metadata.line;
 import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.DATA_CLEANSING;
 
 import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -26,6 +31,8 @@ import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.RowAction;
+import org.talend.dataprep.transformation.api.action.parameters.Parameter;
+import org.talend.dataprep.transformation.api.action.parameters.SelectParameter;
 
 /**
  * This action do two things:
@@ -40,6 +47,8 @@ public class MakeLineHeader extends ActionMetadata implements RowAction {
     public static final String ACTION_NAME = "make_line_header";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MakeLineHeader.class);
+
+    public static final String SKIP_UNTIL = "make_line_header_skip_until";
 
     @Override
     public String getName() {
@@ -62,7 +71,35 @@ public class MakeLineHeader extends ActionMetadata implements RowAction {
     }
 
     @Override
+    public List<Parameter> getParameters()
+    {
+        List<Parameter> parameters = super.getParameters();
+
+        parameters.add( SelectParameter.Builder.builder() //
+                            .name(SKIP_UNTIL) //
+                            .item(Boolean.TRUE.toString()) //
+                            .item(Boolean.FALSE.toString()) //
+                            .defaultValue( Boolean.TRUE.toString() ) //
+                            .build());
+
+        return parameters;
+    }
+
+    @Override
     public void applyOnLine(DataSetRow row, ActionContext context) {
+        Map<String, String> parameters = context.getParameters();
+        String skipUntilStr = parameters.get(SKIP_UNTIL);
+        // default is true
+        boolean skipPreviousRows = StringUtils.isBlank( skipUntilStr )? true : BooleanUtils.toBoolean( skipUntilStr );
+
+        long tdpId = row.getTdpId();
+        long rowId = NumberUtils.toLong( parameters.get( "row_id" ), 0);
+
+        if (skipPreviousRows && ( tdpId < rowId )) {
+            row.setDeleted( true );
+            return;
+        }
+
         if (context.getFilter().test(row)) {
             LOGGER.debug("Make line header for rowId {} with parameters {} ", context.getRowId(), context.getParameters());
             for (ColumnMetadata column : context.getRowMetadata().getColumns()) {
