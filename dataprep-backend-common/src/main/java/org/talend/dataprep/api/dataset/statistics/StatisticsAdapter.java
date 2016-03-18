@@ -83,7 +83,7 @@ public class StatisticsAdapter {
      * @param filter A {@link Predicate predicate} to filter columns to adapt.
      */
     public void adapt(List<ColumnMetadata> columns, List<Analyzers.Result> results, Predicate<ColumnMetadata> filter) {
-        genericAdapt(columns, results, filter, false);
+        genericAdapt(columns, results, filter);
     }
 
     /**
@@ -107,7 +107,7 @@ public class StatisticsAdapter {
      * @param filter A {@link Predicate predicate} to filter columns to adapt.
      */
     public void adaptForSampling(List<ColumnMetadata> columns, List<Analyzers.Result> results, Predicate<ColumnMetadata> filter) {
-        genericAdapt(columns, results, filter, true);
+        genericAdapt(columns, results, filter);
     }
 
     /**
@@ -117,8 +117,7 @@ public class StatisticsAdapter {
      * @param results The analysis results
      * @param filter A {@link Predicate predicate} to filter columns to adapt.
      */
-    private void genericAdapt(List<ColumnMetadata> columns, List<Analyzers.Result> results, Predicate<ColumnMetadata> filter,
-            boolean sampling) {
+    private void genericAdapt(List<ColumnMetadata> columns, List<Analyzers.Result> results, Predicate<ColumnMetadata> filter) {
         for (int i = 0; i < results.size(); ++i) {
             final ColumnMetadata currentColumn = columns.get(i);
             if (!filter.test(currentColumn)) {
@@ -126,7 +125,7 @@ public class StatisticsAdapter {
                 continue;
             }
             final Analyzers.Result result = results.get(i);
-            injectDataTypeAnalysis(currentColumn, result, sampling);
+            injectDataTypeAnalysis(currentColumn, result);
             adaptCommonAnalysis(currentColumn, result);
         }
     }
@@ -149,7 +148,7 @@ public class StatisticsAdapter {
         injectDateHistogram(currentColumn, result);
     }
 
-    private void injectDataTypeAnalysis(final ColumnMetadata column, final Analyzers.Result result, boolean sampling) {
+    private void injectDataTypeAnalysis(final ColumnMetadata column, final Analyzers.Result result) {
         if (result.exist(DataTypeOccurences.class) && !column.isTypeForced()) {
             final DataTypeOccurences dataType = result.get(DataTypeOccurences.class);
             final DataTypeEnum suggestedEnumType = dataType.getSuggestedType();
