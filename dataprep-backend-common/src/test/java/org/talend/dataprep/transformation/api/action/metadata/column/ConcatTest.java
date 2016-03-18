@@ -22,6 +22,8 @@ import static org.talend.dataprep.transformation.api.action.metadata.ActionMetad
 import java.io.InputStream;
 import java.util.Map;
 
+import org.assertj.core.api.Assertions;
+import org.assertj.core.data.MapEntry;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -126,6 +128,36 @@ public class ConcatTest extends AbstractMetadataBaseTest {
         // then
         DataSetRow expected = getRow("first", "second", "Done !", "<firstsecond>");
         assertEquals(expected, row);
+    }
+
+    @Test
+    public void should_apply_without_second_value() {
+        // given
+        DataSetRow row = getRow("first", "", "Done !");
+
+        // when
+        ActionTestWorkbench.test(row, action.create(parameters));
+
+        // then
+        Assertions.assertThat(row.values()).contains(MapEntry.entry("0000", "first"), //
+                MapEntry.entry("0001", ""), //
+                MapEntry.entry("0002", "Done !"), //
+                MapEntry.entry("0003", "<first>"));
+    }
+
+    @Test
+    public void should_apply_with_blank_second_value() {
+        // given
+        DataSetRow row = getRow("first", "  ", "Done !");
+
+        // when
+        ActionTestWorkbench.test(row, action.create(parameters));
+
+        // then
+        Assertions.assertThat(row.values()).contains(MapEntry.entry("0000", "first"), //
+                                                     MapEntry.entry("0001", "  "), //
+                                                     MapEntry.entry("0002", "Done !"), //
+                                                     MapEntry.entry("0003", "<first>"));
     }
 
     @Test

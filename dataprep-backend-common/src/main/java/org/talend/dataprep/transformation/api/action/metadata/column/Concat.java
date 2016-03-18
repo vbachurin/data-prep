@@ -156,18 +156,22 @@ public class Concat extends ActionMetadata implements ColumnAction, OtherColumnP
 
         // Set new column value
         String sourceValue = row.get(columnId);
-        String newValue = getParameter(parameters, PREFIX_PARAMETER, StringUtils.EMPTY);
-        newValue += sourceValue;
+        // 64 should be ok for most of values
+        StringBuilder newValue = new StringBuilder(64);
+        newValue.append(getParameter(parameters, PREFIX_PARAMETER, StringUtils.EMPTY));
+        newValue.append(sourceValue == null ? StringUtils.EMPTY : sourceValue);
 
         if (parameters.get(MODE_PARAMETER).equals(OTHER_COLUMN_MODE)) {
             ColumnMetadata selectedColumn = rowMetadata.getById(parameters.get(SELECTED_COLUMN_PARAMETER));
             String selectedColumnValue = row.get(selectedColumn.getId());
-            newValue += getParameter(parameters, SEPARATOR_PARAMETER, StringUtils.EMPTY) + selectedColumnValue;
+            if (StringUtils.isNotBlank(selectedColumnValue)) {
+                newValue.append(getParameter(parameters, SEPARATOR_PARAMETER, StringUtils.EMPTY)).append(selectedColumnValue);
+            }
         }
 
-        newValue += getParameter(parameters, SUFFIX_PARAMETER, StringUtils.EMPTY);
+        newValue.append(getParameter(parameters, SUFFIX_PARAMETER, StringUtils.EMPTY));
 
-        row.set(concatColumn, newValue);
+        row.set(concatColumn, newValue.toString());
     }
 
     private String evalNewColumnName(String sourceColumnName, RowMetadata rowMetadata, Map<String, String> parameters) {
