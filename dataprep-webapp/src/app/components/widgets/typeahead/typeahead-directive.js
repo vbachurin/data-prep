@@ -17,7 +17,7 @@
  * @description This directive create an input with a dropdown element.
  * @param {function} search function called when input changes
  */
-export default function Typeahead() {
+export default function Typeahead($timeout) {
     'ngInject';
 
     return {
@@ -36,13 +36,13 @@ export default function Typeahead() {
                 const input = iElement.find('.input-search');
 
                 function hideResults() {
-                    ctrl.hideResults();
-                    scope.$digest();
+                    $timeout(() => ctrl.hideResults());
                 }
 
                 input.keydown((event) => {
                     if (event.keyCode === 27) {
-                        hideResults();
+                        ctrl.hideResults();
+                        scope.$digest();
                     }
                 });
                 input.click((event) => event.stopPropagation());

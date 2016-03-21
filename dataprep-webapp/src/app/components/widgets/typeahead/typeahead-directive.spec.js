@@ -88,15 +88,16 @@ describe('Typeahead directive', () => {
             expect(element.find('.typeahead-result').length).toBe(1);
         });
 
-        it('should hide on body click', () => {
+        it('should hide on body click', inject(($timeout) => {
             //given
             expect(element.find('.typeahead-result').length).toBe(1);
 
             //when
             angular.element('body').click();
+            $timeout.flush();
 
             //then
             expect(element.find('.typeahead-result').length).toBe(0);
-        });
+        }));
     });
 });
