@@ -21,5 +21,18 @@ class TypeaheadCtrl {
     constructor() {
         this.searchString = '';
     }
+
+    onChange() {
+        this.search({value: this.searchString});
+        this.showResults();
+    }
+
+    hideResults() {
+        this.results = false;
+    }
+
+    showResults() {
+        this.results = true;
+    }
 }
 export default TypeaheadCtrl;

@@ -32,55 +32,24 @@ export default function Typeahead() {
         controllerAs: 'typeaheadCtrl',
         link: {
             post: (scope, iElement, iAttrs, ctrl) => {
-                let body = angular.element('body').eq(0);
-                let input = iElement.find('.input-search');
-                let menu = iElement.find('.typeahead-menu');
+                const body = angular.element('body').eq(0);
+                const input = iElement.find('.input-search');
 
-                let hideMenu = () => {
-                    menu.removeClass('show-menu');
-                };
-
-                let showMenu = () => {
-                    menu.addClass('show-menu');
-                    menu.css('width', input[0].getBoundingClientRect().width + 'px');
-                };
-
-                input.click((event) => {
-                    event.stopPropagation();
-                });
+                function hideResults() {
+                    ctrl.hideResults();
+                    scope.$digest();
+                }
 
                 input.keydown((event) => {
                     if (event.keyCode === 27) {
-                        hideMenu();
-                        event.stopPropagation();
+                        hideResults();
                     }
                 });
+                input.click((event) => event.stopPropagation());
+                body.click(hideResults);
 
-                menu.click((event) => {
-                    event.stopPropagation();
-                    hideMenu();
-                });
-
-                body.click(hideMenu);
-
-                iElement.on('$destroy', () => {
-                    scope.$destroy();
-                });
-                scope.$on('$destroy', () => {
-                    body.off('click', hideMenu);
-                });
-
-                scope.$watch('typeaheadCtrl.searchString', (newValue) => {
-                    if (newValue) {
-                        let isVisible = menu.hasClass('show-menu');
-                        if (!isVisible) {
-                            showMenu();
-                        }
-                        ctrl.search({value: ctrl.searchString})
-                    } else {
-                        hideMenu();
-                    }
-                });
+                iElement.on('$destroy', () => scope.$destroy());
+                scope.$on('$destroy', () => body.off('click', hideResults));
             }
         }
     };

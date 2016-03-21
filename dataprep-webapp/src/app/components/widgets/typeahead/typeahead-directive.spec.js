@@ -13,153 +13,90 @@
 
 'use strict';
 
-describe('Typeahead directive', function () {
-    var scope, element, ctrl;
+describe('Typeahead directive', () => {
+    var scope, element;
 
     beforeEach(angular.mock.module('talend.widget'));
     beforeEach(angular.mock.module('htmlTemplates'));
 
-    afterEach(function () {
+    beforeEach(inject(($rootScope, $compile) => {
+
+        scope = $rootScope.$new();
+        scope.search = jasmine.createSpy('search');
+
+        var html = `
+            <typeahead search="search">
+                <div id="inventory"></div>
+            </typeahead>
+        `;
+        element = $compile(html)(scope);
+        angular.element('body').append(element);
+        scope.$digest();
+
+        const ctrl = element.controller('typeahead');
+        ctrl.searchString = 'aze';
+        ctrl.results = true;
+        scope.$digest();
+    }));
+
+    afterEach(() => {
         scope.$destroy();
         element.remove();
     });
 
-    beforeEach(inject(function ($rootScope, $compile) {
+    describe('input keydown', () => {
+        it('should hide results on ESC', () => {
+            //given
+            const input = element.find('.input-search');
+            const event = angular.element.Event('keydown');
+            event.keyCode = 27;
 
-        scope = $rootScope.$new();
-        scope.search = function() {};
+            expect(element.find('.typeahead-result').length).toBe(1);
 
-        var html = '<typeahead search="search">' +
-            '    <div class="inventory">' +
-            '    </div>' +
-            '</typeahead>';
-        element = $compile(html)(scope);
-        scope.$digest();
+            //when
+            input.trigger(event);
 
-        ctrl = element.controller('typeahead');
-    }));
+            //then
+            expect(element.find('.typeahead-result').length).toBe(0);
+        });
 
-    it('should show typeahead-menu when input changes', function () {
-        //given
-        var menu = element.find('.typeahead-menu').eq(0);
-        expect(menu.hasClass('show-menu')).toBe(false);
+        it('should NOT hide results on non ESC', () => {
+            //given
+            const input = element.find('.input-search');
+            const event = angular.element.Event('keydown');
+            event.keyCode = 13;
 
-        //when
-        ctrl.searchString = 'test';
-        scope.$digest();
+            expect(element.find('.typeahead-result').length).toBe(1);
 
-        //then
-        expect(menu.hasClass('show-menu')).toBe(true);
+            //when
+            input.trigger(event);
+
+            //then
+            expect(element.find('.typeahead-result').length).toBe(1);
+        });
     });
 
-    it('should hide typeahead-menu', function () {
-        //given
-        ctrl.searchString = 'test';
-        scope.$digest();
+    describe('click', () => {
+        it('should not hide on input click', () => {
+            //given
+            expect(element.find('.typeahead-result').length).toBe(1);
 
-        //when
-        ctrl.searchString = '';
-        scope.$digest();
+            //when
+            element.find('input').eq(0).click();
 
-        //then
-        var menu = element.find('.typeahead-menu').eq(0);
-        expect(menu.hasClass('show-menu')).toBe(false);
-    });
+            //then
+            expect(element.find('.typeahead-result').length).toBe(1);
+        });
 
-    it('should not hide when clicking on input', function () {
-        //given
-        var menu = element.find('.typeahead-menu').eq(0);
-        ctrl.searchString = 'test';
-        scope.$digest();
+        it('should hide on body click', () => {
+            //given
+            expect(element.find('.typeahead-result').length).toBe(1);
 
-        //when
-        element.find('input').eq(0).click();
+            //when
+            angular.element('body').click();
 
-        //then
-        expect(menu.hasClass('show-menu')).toBe(true);
-    });
-
-    it('should hide typeahead-menu on item click', function () {
-        //given
-        var menu = element.find('.typeahead-menu').eq(0);
-        menu.addClass('show-menu');
-
-        //when
-        element.find('.inventory').eq(0).click();
-
-        //then
-        expect(menu.hasClass('show-menu')).toBe(false);
-    });
-
-    it('should hide typeahead-menu on body click', function () {
-        //given
-        var menu = element.find('.typeahead-menu').eq(0);
-        menu.addClass('show-menu');
-
-        //when
-        angular.element('body').click();
-
-        //then
-        expect(menu.hasClass('show-menu')).toBe(false);
-    });
-
-    it('should unregister body click on element remove', function () {
-        //given
-        expect($._data(angular.element('body')[0], 'events').click.length).toBe(1);
-
-        //when
-        element.remove();
-
-        //then
-        expect($._data(angular.element('body')[0], 'events')).not.toBeDefined();
-    });
-
-    it('should stop click propagation on typeahead-menu click', function () {
-        //Given
-        var bodyClick = false;
-        var  clickCallBack = function () {
-            bodyClick = true;
-        };
-        angular.element('body').click(clickCallBack);
-
-        //when
-        element.find('.typeahead-menu').click();
-
-        //then
-        expect(bodyClick).toBe(false);
-
-        angular.element('body').off('click', clickCallBack);
-    });
-
-    it('should hide typeahead menu on ESC', function () {
-        //given
-        var input = element.find('input').eq(0);
-        var menu = element.find('.typeahead-menu').eq(0);
-        menu.addClass('show-menu');
-
-        var event = angular.element.Event('keydown');
-        event.keyCode = 27;
-
-        //when
-        input.trigger(event);
-
-        //then
-        expect(menu.hasClass('show-menu')).toBe(false);
-    });
-
-    it('should not hide typeahead menu on not ESC keydown', function () {
-        //given
-        var menu = element.find('.typeahead-menu').eq(0);
-        var input = element.find('input').eq(0);
-        menu.addClass('show-menu');
-
-        var event = angular.element.Event('keydown');
-        event.keyCode = 13;
-
-        //when
-        input.trigger(event);
-
-        //then
-        expect(menu.hasClass('show-menu')).toBe(true);
+            //then
+            expect(element.find('.typeahead-result').length).toBe(0);
+        });
     });
 });

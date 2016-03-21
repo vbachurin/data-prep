@@ -10,20 +10,23 @@
   9 rue Pages 92150 Suresnes, France
 
   ============================================================================*/
-  $base-border-radius: 3px !default;
 
-  .typeahead-menu {
+typeahead {
+  display: block;
+  position: relative;
+
+  .typeahead-result {
     @include menu-shape;
-    border-radius: $base-border-radius;
-    cursor: pointer;
-    display: none;
-    overflow: auto;
-    position: fixed;
-    z-index: 20;
-    max-height: 85vh;
+    border-radius: 3px;
     box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.2);
-  }
+    cursor: pointer;
+    max-height: 85vh;
+    overflow: auto;
+    z-index: 10;
 
-  .show-menu {
-    display: block;
+    position: absolute;
+    top: 35px;
+    left: 0;
+    right:0;
   }
+}

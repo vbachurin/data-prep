@@ -13,7 +13,11 @@
   ~ ============================================================================
   -->
 
-<input type="search" ng-model="typeaheadCtrl.searchString" translate-once-placeholder="SEARCH"
+<input type="search"
+       translate-once-placeholder="SEARCH"
+       ng-model="typeaheadCtrl.searchString"
        ng-model-options="{debounce: { default: 300, blur: 0 }}"
+       ng-change="typeaheadCtrl.onChange()"
        class="input-search"/>
-<ng-transclude class="typeahead-menu"></ng-transclude>
+<ng-transclude class="typeahead-result"
+               ng-if="typeaheadCtrl.searchString && typeaheadCtrl.results"></ng-transclude>
