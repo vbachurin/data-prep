@@ -462,7 +462,7 @@ public class DataSetServiceTest extends DataSetBaseTest {
     }
 
     @Test
-    public void updateRawContent_should_preserve_non_content_related_metadata() throws Exception {
+    public void updateRawContent_should_preserve_non_content_related_metadata_except_last_modification_date() throws Exception {
         //given
         final String dataSetId = "123456";
         given().body(IOUtils.toString(this.getClass().getResourceAsStream(TAGADA_CSV)))

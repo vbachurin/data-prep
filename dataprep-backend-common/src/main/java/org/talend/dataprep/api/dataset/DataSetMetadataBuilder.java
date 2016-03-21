@@ -310,6 +310,11 @@ public class DataSetMetadataBuilder {
         return this;
     }
 
+    /**
+     * Copies fields of the specified data set metadata that are not related to the content of the data set.
+     * @param original the specified data set metadata
+     * @return the data set metadata builder obtained from the non-content-related fields of the specified data set metadata
+     */
     public DataSetMetadataBuilder copyNonContentRelated(final DataSetMetadata original) {
         this.id = original.getId();
         this.appVersion = original.getAppVersion();
@@ -322,6 +327,11 @@ public class DataSetMetadataBuilder {
         return this;
     }
 
+    /**
+     * Copies fields of the specified data set metadata that are related to the content of the data set.
+     * @param original the specified data set metadata
+     * @return the data set metadata builder obtained from the content-related fields of the specified data set metadata
+     */
     public DataSetMetadataBuilder copyContentRelated(final DataSetMetadata original) {
         this.certificationStep = original.getGovernance().getCertificationStep();
 
@@ -355,13 +365,14 @@ public class DataSetMetadataBuilder {
                     .map(col -> ColumnMetadata.Builder.column().copy(col))
                     .toArray(ColumnMetadata.Builder[]::new);
         }
-        else {
-            this.columnBuilders = new ColumnMetadata.Builder[0];
-        }
-
         return this;
     }
 
+    /**
+     * Initializes a data set metadata builder obtained from the specified data set metadata.
+     * @param original the specified data set metadata
+     * @return the data set metadata builder obtained from the specified data set metadata
+     */
     public DataSetMetadataBuilder copy(DataSetMetadata original) {
         copyNonContentRelated(original);
         copyContentRelated(original);
