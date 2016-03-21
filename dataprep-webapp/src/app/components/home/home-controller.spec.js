@@ -44,11 +44,9 @@ describe('Home controller', function () {
         scope = $rootScope.$new();
 
         createController = function () {
-            var ctrlFn = $controller('HomeCtrl', {
+            return $controller('HomeCtrl', {
                 $scope: scope
             });
-            ctrlFn.datasetNameForm = {$commitViewValue: jasmine.createSpy('$commitViewValue')};
-            return ctrlFn;
         };
     }));
 
@@ -273,7 +271,6 @@ describe('Home controller', function () {
                     //given
                     expect(ctrl.uploadingDatasets.length).toBe(0);
                     ctrl.uploadDatasetName();
-                    expect(ctrl.datasetNameForm.$commitViewValue).toHaveBeenCalled();
                     expect(StateService.startUploadingDataset).toHaveBeenCalled();
 
                     //when

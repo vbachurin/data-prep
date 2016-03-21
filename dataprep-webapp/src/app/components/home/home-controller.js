@@ -252,8 +252,6 @@ export default function HomeCtrl($window, $document, $state,
      * exists, and trigger the upload
      */
     vm.uploadDatasetName = function uploadDatasetName() {
-        vm.datasetNameForm.$commitViewValue();
-
         var file = vm.datasetFile[0];
         var name = vm.datasetName;
 

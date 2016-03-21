@@ -184,7 +184,6 @@ describe('Transformation cluster params directive', function () {
         expect(firstRowCheckbox.is(':checked')).toBe(true);
         expect(secondRowCheckbox.is(':checked')).toBe(true);
 
-
         //when
         allCheck.click();
         scope.$digest();

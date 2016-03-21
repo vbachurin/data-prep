@@ -53,7 +53,6 @@ describe('Transform params controller', function () {
         ctrl.transformWithParam();
 
         //then
-        expect(ctrl.paramForm.$commitViewValue).toHaveBeenCalled();
         expect(extractedParams).toEqual({ param1: 'param1Value', param2: 4 });
     });
 
@@ -315,6 +314,7 @@ describe('Transform params controller', function () {
         ctrl.submitHoverOn();
 
         //then
+        expect(ctrl.paramForm.$commitViewValue).toHaveBeenCalled();
         expect(hoverArgs.params).toEqual({ param1: 'param1Value', param2: 4 });
     });
 

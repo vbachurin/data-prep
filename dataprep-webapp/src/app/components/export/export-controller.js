@@ -71,7 +71,6 @@ export default function ExportCtrl($timeout, state, PreparationService, RecipeSe
      * @description Save the currently edited export parameters and launch the export
      */
     vm.saveEditionAndExport = function saveEditionAndExport() {
-        vm.exportFormName.$commitViewValue();
         vm.exportService.setParameters(vm.exportService.currentExportType);
         vm.export();
     };

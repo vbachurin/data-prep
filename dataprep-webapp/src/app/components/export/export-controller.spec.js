@@ -81,7 +81,6 @@ describe('Export controller', function() {
                 $scope: scope
             });
             ctrl.form = form; //simulate init by directive
-            ctrl.exportFormName = {$commitViewValue: jasmine.createSpy('$commitViewValue')};
             return ctrl;
         };
 
@@ -239,7 +238,6 @@ describe('Export controller', function() {
             ctrl.saveEditionAndExport();
 
             //then
-            expect(ctrl.exportFormName.$commitViewValue).toHaveBeenCalled();
             expect(ExportService.setParameters).toHaveBeenCalledWith(exportTypes[0]);
         }));
 

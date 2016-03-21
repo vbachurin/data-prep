@@ -100,7 +100,6 @@ export default function TransformFormCtrl() {
      * @description Gather params and perform a transformation on the column if the form is valid
      */
     vm.transformWithParam = function () {
-        vm.paramForm.$commitViewValue();
         var transformationParams = gatherParams();
         vm.onSubmit({params: transformationParams});
     };
@@ -112,6 +111,7 @@ export default function TransformFormCtrl() {
      * @description Gather params and perform the submit mouseenter action
      */
     vm.submitHoverOn = function () {
+        vm.paramForm.$commitViewValue();
         var params = gatherParams();
         vm.onSubmitHoverOn({params: params});
     };

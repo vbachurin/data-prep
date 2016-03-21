@@ -51,21 +51,20 @@
                   close-button="true"
                   state="homeCtrl.datasetNameModal">
         <span translate-once="ENTER_DATASET_NAME"></span>
-        <form name="homeCtrl.datasetNameForm">
+        <form name="homeCtrl.datasetNameForm"
+              ng-submit="homeCtrl.datasetNameForm.$valid && homeCtrl.uploadDatasetName()">
             <input type="text"
                    ng-model="homeCtrl.datasetName"
                    required
                    ng-model-options="{debounce: { 'default': 200, 'blur': 0 }}"/>
 
             <div class="modal-buttons">
-                <button class="talend-modal-close btn-secondary modal-secondary-button">
-                    <span translate-once="CANCEL"></span>
-                </button>
+                <button class="talend-modal-close btn-secondary modal-secondary-button"
+                        type="button"
+                        translate-once="CANCEL"></button>
                 <button class="talend-modal-close btn-primary modal-primary-button"
-                        ng-click="homeCtrl.uploadDatasetName()"
-                        ng-disabled="homeCtrl.datasetNameForm.$invalid">
-                    <span translate-once="OK"></span>
-                </button>
+                        ng-disabled="homeCtrl.datasetNameForm.$invalid"
+                        translate-once="OK"></button>
             </div>
         </form>
     </talend-modal>

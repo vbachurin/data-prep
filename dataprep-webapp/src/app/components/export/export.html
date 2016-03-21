@@ -29,11 +29,12 @@
     <div class="modal-title" translate-once="EXPORT_CSV" ng-if="exportCtrl.exportService.currentExportType.id === 'CSV'"></div>
     <div class="modal-title" translate-once="EXPORT_XLS" ng-if="exportCtrl.exportService.currentExportType.id === 'XLSX'"></div>
     <br/>
-    <div class="export-parameter"
-         ng-repeat="parameter in exportCtrl.exportService.currentExportType.parameters track by $index">
-        <p>{{ parameter.labelKey | translate }}</p>
+    <form ng-submit="exportCtrl.saveEditionAndExport()">
+        <div class="export-parameter"
+             ng-repeat="parameter in exportCtrl.exportService.currentExportType.parameters track by $index">
+            <p>{{ parameter.labelKey | translate }}</p>
 
-        <div ng-if="parameter.type == 'radio'">
+            <div ng-if="parameter.type == 'radio'">
             <span class="parameter-span">
                 <input ng-model="exportCtrl.exportService.currentExportParameters['exportParameters.' + parameter.name]"
                        type="radio"
@@ -41,27 +42,30 @@
             </span>
             <span class="parameter-span" ng-repeat="parameterValue in parameter.values track by $index">
                 <input ng-model="exportCtrl.exportService.currentExportParameters['exportParameters.' + parameter.name]"
-                   type="radio"
-                   value="{{parameterValue.value}}">{{ parameterValue.labelKey | translate }}( {{parameterValue.value}} )
+                       type="radio"
+                       value="{{parameterValue.value}}">{{ parameterValue.labelKey | translate }}( {{parameterValue.value}} )
             </span>
+            </div>
+            <div ng-if="parameter.type == 'text'">
+                <input ng-model="exportCtrl.exportService.currentExportParameters['exportParameters.' + parameter.name]"
+                       ng-model-options="{debounce: { 'default': 200, 'blur': 0 }}"
+                       type="text"
+                       value="{{parameter.defaultValue.value}}"/>
+            </div>
         </div>
-        <div ng-if="parameter.type == 'text'">
-            <input ng-model="exportCtrl.exportService.currentExportParameters['exportParameters.' + parameter.name]"
-                   ng-model-options="{debounce: { 'default': 200, 'blur': 0 }}"
-                   type="text"
-                   value="{{parameter.defaultValue.value}}"/>
-        </div>
-    </div>
 
-    <div class="modal-buttons">
-        <button class="talend-modal-close btn-secondary modal-secondary-button"
-                ng-click="exportCtrl.cancelCurrentParameters()" translate-once="CANCEL"></button>
-        <button class="talend-modal-close btn-primary modal-primary-button" ng-click="exportCtrl.saveEditionAndExport()"
-                translate-once="EXPORT"></button>
-    </div>
+        <div class="modal-buttons">
+            <button class="talend-modal-close btn-secondary modal-secondary-button"
+                    type="button"
+                    ng-click="exportCtrl.cancelCurrentParameters()"
+                    translate-once="CANCEL"></button>
+            <button class="talend-modal-close btn-primary modal-primary-button"
+                    translate-once="EXPORT"></button>
+        </div>
+    </form>
 </talend-modal>
 
-<form id="exportForm" name="exportCtrl.exportFormName">
+<form id="exportForm">
     <input type="hidden" name="preparationId" value="{{ exportCtrl.state.playground.preparation.id }}"/>
     <input type="hidden" name="stepId" value="{{ exportCtrl.stepId }}"/>
     <input type="hidden" name="datasetId" value="{{ exportCtrl.datasetId }}"/>

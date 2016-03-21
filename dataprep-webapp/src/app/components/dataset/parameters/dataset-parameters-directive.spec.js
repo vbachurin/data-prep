@@ -14,7 +14,7 @@
 describe('Dataset parameters directive', function() {
     'use strict';
 
-    var scope, createElement, element, controller;
+    var scope, createElement, element;
 
     beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
@@ -52,8 +52,6 @@ describe('Dataset parameters directive', function() {
             element = angular.element(html);
             $compile(element)(scope);
             scope.$digest();
-
-            controller = element.controller('datasetParameters');
             return element;
         };
     }));
@@ -177,14 +175,13 @@ describe('Dataset parameters directive', function() {
             scope.parameters.separator = '|';
             scope.parameters.encoding = 'UTF-16';
             createElement();
-            controller.datasetParamForm = {$commitViewValue: jasmine.createSpy('$commitViewValue')};
+
             expect(scope.validate).not.toHaveBeenCalled();
 
             //when
             element.find('button').click();
 
             //then
-            expect(controller.datasetParamForm.$commitViewValue).toHaveBeenCalled();
             expect(scope.validate).toHaveBeenCalledWith(
                 {id: '54a146cf854b54', type: 'text/csv'},
                 {separator: '|', encoding: 'UTF-16'}
