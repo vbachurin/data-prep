@@ -13,6 +13,7 @@
 class InventoryService {
 
     constructor($q, InventoryRestService, TextFormatService) {
+        'ngInject';
         this.deferredCancel = null;
         this.$q = $q;
         this.InventoryRestService = InventoryRestService;

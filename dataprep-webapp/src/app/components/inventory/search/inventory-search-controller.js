@@ -24,6 +24,7 @@
 class InventorySearchCtrl {
 
     constructor($state, UploadWorkflowService, InventoryService, FolderService, PreparationService) {
+        'ngInject';
         this.uploadWorkflowService = UploadWorkflowService;
         this.folderService = FolderService;
         this.preparationService = PreparationService;
