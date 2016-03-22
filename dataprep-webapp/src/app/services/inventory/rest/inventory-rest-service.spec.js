@@ -31,7 +31,7 @@ describe('Inventory Rest Service', function () {
             datasets: []
         };
         $httpBackend
-            .expectGET(RestURLs.inventoryUrl + '/search?path="/"&name=test')
+            .expectGET(RestURLs.inventoryUrl + '/search?path=/&name=test')
             .respond(200, expectedResult);
 
         //when
