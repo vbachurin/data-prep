@@ -55,16 +55,16 @@ public class MakeLineHeaderTest extends AbstractMetadataBaseTest {
     }
 
     @Test
-    public void should_delete_line_with_provided_row_id() {
+    public void should_delete_line_with_provided_row_id_and_not_skip() {
         // given
-        Long rowId = 120L;
+        long rowId = 120;
 
         // row 1
         Map<String, String> rowContent = new HashMap<>();
         rowContent.put("0000", "David");
         rowContent.put("0001", "Bowie");
         final DataSetRow row1 = new DataSetRow(rowContent);
-        row1.setTdpId(rowId);
+        row1.setTdpId(rowId++);
 
         // row 2
         rowContent = new HashMap<>();
@@ -76,15 +76,17 @@ public class MakeLineHeaderTest extends AbstractMetadataBaseTest {
         final Map<String, String> parameters = new HashMap<>();
         parameters.put(ImplicitParameters.SCOPE.getKey().toLowerCase(), "line");
         parameters.put("row_id", row2.getTdpId().toString());
+        parameters.put( MakeLineHeader.SKIP_UNTIL, Boolean.FALSE.toString() );
 
         assertThat(row1.isDeleted(), is(false));
         assertThat(row2.isDeleted(), is(false));
 
         //when
-        ActionTestWorkbench.test(row2, factory.create(action, parameters));
+        ActionTestWorkbench.test(Arrays.asList(row1, row2), factory.create(action, parameters));
 
         // then
         assertThat(row1.isDeleted(), is(false));
+
         assertThat(row2.isDeleted(), is(true));
 
         assertEquals("John", row2.getRowMetadata().getById("0000").getName());
@@ -135,6 +137,55 @@ public class MakeLineHeaderTest extends AbstractMetadataBaseTest {
         assertEquals("Lennon", row2.getRowMetadata().getById("0001").getName());
         assertEquals("John", row3.getRowMetadata().getById("0000").getName());
         assertEquals("Lennon", row3.getRowMetadata().getById("0001").getName());
+    }
+
+
+    @Test
+    public void should_delete_line_with_provided_row_id_and_previous_as_well() {
+        // given
+        long rowId = 120;
+
+        // row 1
+        Map<String, String> rowContent = new HashMap<>();
+        rowContent.put("0000", "David");
+        rowContent.put("0001", "Bowie");
+        final DataSetRow row1 = new DataSetRow(rowContent);
+        row1.setTdpId(rowId++);
+
+        // row 2
+        rowContent = new HashMap<>();
+        rowContent.put("0000", "John");
+        rowContent.put("0001", "Lennon");
+        final DataSetRow row2 = new DataSetRow(rowContent);
+        row2.setTdpId(rowId++);
+
+        // row 3
+        rowContent = new HashMap<>();
+        rowContent.put("0000", "John");
+        rowContent.put("0001", "Lennon");
+        final DataSetRow row3 = new DataSetRow(rowContent);
+        row3.setTdpId(rowId++);
+
+        final Map<String, String> parameters = new HashMap<>();
+        parameters.put(ImplicitParameters.SCOPE.getKey().toLowerCase(), "line");
+        parameters.put("row_id", row2.getTdpId().toString());
+
+        assertThat(row1.isDeleted(), is(false));
+        assertThat(row2.isDeleted(), is(false));
+        assertThat(row3.isDeleted(), is(false));
+
+        //when
+        ActionTestWorkbench.test(Arrays.asList( row1,row2, row3 ), factory.create(action, parameters));
+
+        // then
+        assertThat(row1.isDeleted(), is(true));
+
+        assertThat(row2.isDeleted(), is(true));
+
+        assertThat(row3.isDeleted(), is(false));
+
+        assertEquals("John", row2.getRowMetadata().getById("0000").getName());
+        assertEquals("Lennon", row2.getRowMetadata().getById("0001").getName());
     }
 
 }
