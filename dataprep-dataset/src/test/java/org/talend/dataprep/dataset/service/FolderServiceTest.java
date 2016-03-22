@@ -133,7 +133,7 @@ public class FolderServiceTest extends DataSetBaseTest {
         createFolderEntry("foo/toto", "bar");
 
         // when
-        final String json = given().queryParam("path", "").queryParam("name", "") //
+        final String json = given().queryParam("path", "/").queryParam("name", "") //
                 .expect().statusCode(200).log().ifError()//
                 .when() //
                 .get("/inventory/search").asString();
