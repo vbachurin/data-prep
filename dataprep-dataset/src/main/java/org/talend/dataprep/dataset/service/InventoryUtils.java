@@ -85,15 +85,17 @@ public class InventoryUtils {
         final Inventory result;
 
         // TODO: Add a folder to each folder repository
-        final String rootPath = "";
+        final String rootPath = "/";
 
-        if (!folderRepository.exists(path)) {
+        if (!folderRepository.exists(path) || StringUtils.isEmpty(path)) {
             throw new TDPException(FolderErrorCodes.FOLDER_DOES_NOT_EXIST);
         }
 
+        final String prefix = StringUtils.equals(rootPath, path) ? "" : path;
+
         Iterable<Folder> folderIterable = folderRepository.allFolder();
         List<Folder> folders = StreamSupport.stream(folderIterable.spliterator(), false) // @formatter:off
-                .filter(f -> StringUtils.startsWithIgnoreCase(f.getPath(), path))
+                .filter(f -> StringUtils.startsWithIgnoreCase(f.getPath(), prefix))
                 .collect(Collectors.toList());
         // @formatter:on
 

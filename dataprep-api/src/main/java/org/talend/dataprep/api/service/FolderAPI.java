@@ -255,7 +255,7 @@ public class FolderAPI extends APIService {
     /**
      * no javadoc here so see description in @ApiOperation notes.
      *
-     * @param folderPath
+     * @param path
      * @param name
      * @return
      */
@@ -263,7 +263,7 @@ public class FolderAPI extends APIService {
     @ApiOperation(value = "List the inventory of elements contained in a folder matching the given name", produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
     public void inventorySearch(
-            @ApiParam(value = "Folder path") @RequestParam(defaultValue = "", required = false) String folderPath,
+            @ApiParam(value = "Folder path") @RequestParam(defaultValue = "", required = false) String path,
             @ApiParam(value = "Name") @RequestParam(defaultValue = "", required = false) String name, final OutputStream output) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Listing datasets (pool: {})...", getConnectionStats());
@@ -272,7 +272,7 @@ public class FolderAPI extends APIService {
         HttpClient client = getClient();
         Inventory inventory;
         ObjectMapper mapper = builder.build();
-        HystrixCommand<InputStream> matchingName = getCommand(FolderInventorySearch.class, client, folderPath, name);
+        HystrixCommand<InputStream> matchingName = getCommand(FolderInventorySearch.class, client, path, name);
         try (InputStream ios = matchingName.execute()) {
 
             String jsonMap = IOUtils.toString(ios);
@@ -282,7 +282,7 @@ public class FolderAPI extends APIService {
             throw new TDPException(APIErrorCodes.UNABLE_TO_LIST_FOLDER_INVENTORY, e);
         }
 
-        if (StringUtils.isEmpty(folderPath)) { // preparations are considered to be in the root folder (empty)
+        if (StringUtils.isEmpty(path)) { // preparations are considered to be in the root folder (empty)
             HystrixCommand<InputStream> command = getCommand(PreparationListByName.class, client, name, false);
             try (InputStream ios = command.execute()) {
                 String jsonMap = IOUtils.toString(ios);
