@@ -17,8 +17,6 @@ public class ActionNode implements Node, Monitored {
 
     private int count;
 
-    private int previousMetadataHash;
-
     public ActionNode(Action action, ActionContext actionContext) {
         this.action = action;
         this.actionContext = actionContext;
@@ -26,9 +24,6 @@ public class ActionNode implements Node, Monitored {
 
     @Override
     public void receive(DataSetRow row, RowMetadata metadata) {
-        if (metadata.hashCode() != previousMetadataHash) {
-            actionContext.setRowMetadata(metadata);
-        }
         final DataSetRow actionRow;
         final long start = System.currentTimeMillis();
         try {
@@ -44,7 +39,6 @@ public class ActionNode implements Node, Monitored {
                 break;
             }
         } finally {
-            previousMetadataHash = metadata.hashCode();
             totalTime += System.currentTimeMillis() - start;
             count++;
         }

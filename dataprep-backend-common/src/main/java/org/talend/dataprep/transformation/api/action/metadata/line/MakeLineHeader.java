@@ -28,6 +28,7 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
 import org.talend.dataprep.transformation.api.action.metadata.common.RowAction;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
@@ -80,7 +81,7 @@ public class MakeLineHeader extends ActionMetadata implements RowAction {
         boolean skipPreviousRows = StringUtils.isBlank(skipUntilStr) || BooleanUtils.toBoolean(skipUntilStr);
 
         long tdpId = row.getTdpId();
-        long rowId = NumberUtils.toLong(parameters.get("row_id"), 0);
+        long rowId = NumberUtils.toLong(parameters.get(ImplicitParameters.ROW_ID.getKey()), 0);
 
         if (skipPreviousRows && (tdpId < rowId)) {
             row.setDeleted(true);

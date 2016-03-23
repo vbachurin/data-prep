@@ -13,13 +13,11 @@
 
 package org.talend.dataprep.transformation.api.action.context;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,6 +54,8 @@ public class ActionContext {
          */
         CANCELED
     }
+
+    private static final String COLUMN_CONTEXT_PREFIX = "col#";
 
     /** Link to the transformation context. */
     private final TransformationContext parent;
@@ -145,7 +145,7 @@ public class ActionContext {
      * @return the context key for the column.
      */
     protected String getColumnKey(String name) {
-        return "col#" + name;
+        return COLUMN_CONTEXT_PREFIX + name;
     }
 
     public boolean has(String key) {
@@ -204,6 +204,12 @@ public class ActionContext {
 
     public void setRowMetadata(RowMetadata rowMetadata) {
         this.rowMetadata = rowMetadata;
+        // Remove previous columns
+        final List<String> toRemove = context.keySet().stream().filter(s -> s.startsWith(COLUMN_CONTEXT_PREFIX)).collect(Collectors.toList());
+        for (String column : toRemove) {
+            context.remove(column);
+        }
+        LOGGER.debug("Removed {} when new row was set.", toRemove);
     }
 
     public void setParameters(Map<String, String> parameters) {

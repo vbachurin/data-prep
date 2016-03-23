@@ -28,7 +28,9 @@ import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.metadata.AbstractMetadataBaseTest;
+import org.talend.dataprep.transformation.api.action.metadata.column.Concat;
 import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
+import org.talend.dataprep.transformation.api.action.metadata.common.OtherColumnParameters;
 import org.talend.dataprep.transformation.api.action.metadata.text.UpperCase;
 
 public class MakeLineHeaderTest extends AbstractMetadataBaseTest {
@@ -131,6 +133,55 @@ public class MakeLineHeaderTest extends AbstractMetadataBaseTest {
         ActionTestWorkbench.test(Arrays.asList(row1, row2, row3), makeHeader, upperCase);
 
         // then
+        assertEquals("0000", row1.getRowMetadata().getById("0000").getName());
+        assertEquals("0001", row1.getRowMetadata().getById("0001").getName());
+        assertEquals("John", row2.getRowMetadata().getById("0000").getName());
+        assertEquals("Lennon", row2.getRowMetadata().getById("0001").getName());
+        assertEquals("John", row3.getRowMetadata().getById("0000").getName());
+        assertEquals("Lennon", row3.getRowMetadata().getById("0001").getName());
+    }
+
+    @Test
+    public void should_keep_header_after_modifications_with_concat() {
+        // given
+        Long rowId = 0L;
+
+        // row 1
+        Map<String, String> rowContent = new HashMap<>();
+        rowContent.put("0000", "David");
+        rowContent.put("0001", "Bowie");
+        final DataSetRow row1 = new DataSetRow(rowContent);
+        row1.setTdpId(rowId++);
+
+        // row 2
+        rowContent = new HashMap<>();
+        rowContent.put("0000", "John");
+        rowContent.put("0001", "Lennon");
+        final DataSetRow row2 = new DataSetRow(rowContent);
+        row2.setTdpId(rowId++);
+
+        // row 3
+        rowContent = new HashMap<>();
+        rowContent.put("0000", "Johnny");
+        rowContent.put("0001", "Lennon");
+        final DataSetRow row3 = new DataSetRow(rowContent);
+        row3.setTdpId(rowId++);
+
+        // when
+        final Map<String, String> makeHeaderParameters = new HashMap<>();
+        makeHeaderParameters.put(ImplicitParameters.SCOPE.getKey().toLowerCase(), "line");
+        makeHeaderParameters.put("row_id", row2.getTdpId().toString());
+        final Action makeHeader = factory.create(action, makeHeaderParameters);
+        final Map<String, String> concatColumnParameters = new HashMap<>();
+        concatColumnParameters.put(ImplicitParameters.SCOPE.getKey().toLowerCase(), "column");
+        concatColumnParameters.put(ImplicitParameters.COLUMN_ID.getKey().toLowerCase(), "0000");
+        concatColumnParameters.put(OtherColumnParameters.MODE_PARAMETER, "other_column_mode");
+        concatColumnParameters.put(OtherColumnParameters.SELECTED_COLUMN_PARAMETER, "0001");
+        final Action concat = factory.create(new Concat(), concatColumnParameters);
+        ActionTestWorkbench.test(Arrays.asList(row1, row2, row3), makeHeader, concat);
+
+        // then
+        assertEquals(3, row3.getRowMetadata().getColumns().size());
         assertEquals("0000", row1.getRowMetadata().getById("0000").getName());
         assertEquals("0001", row1.getRowMetadata().getById("0001").getName());
         assertEquals("John", row2.getRowMetadata().getById("0000").getName());
