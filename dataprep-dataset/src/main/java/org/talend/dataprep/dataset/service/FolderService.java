@@ -308,7 +308,7 @@ public class FolderService {
     @RequestMapping(value = "/inventory/search", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List the inventory of elements contained in a folder matching the given name", produces = APPLICATION_JSON_VALUE, notes = "List the inventory of elements contained in a folder matching the given name")
     @Timed
-    public Inventory inventorySearch(@RequestParam(defaultValue = "", required = false) String path,
+    public Inventory inventorySearch(@RequestParam(defaultValue = "/", required = false) String path,
             @RequestParam(defaultValue = "", required = true) String name) {
         return inventoryUtils.inventory(path, name);
     }

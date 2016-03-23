@@ -13,13 +13,16 @@
 
 package org.talend.dataprep.api.service;
 
+import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
 import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,6 +36,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.response.Response;
+import org.talend.dataprep.api.preparation.Preparation;
 
 /**
  * Unit tests for the folder API.
@@ -390,5 +394,45 @@ public class FolderAPITest extends ApiServiceTestBase {
         Assertions.assertThat(response.getStatusCode()).isEqualTo(200);
         return builder.build().readValue(response.asString(), new TypeReference<List<FolderEntry>>() {
         });
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+    //-----------------------------------------------------INVENTORY------------------------------------------------------
+    //------------------------------------------------------------------------------------------------------------------
+
+
+    @Test
+    public void shouldReturnMatchingPreparationsWhenPerformingInventory() throws IOException {
+        // given
+        final String preparationId = createPreparationFromFile("t-shirt_100.csv", "testInventoryOfPreparations", "text/csv");
+
+        // when
+        String inventory = given().queryParam("path", "/").queryParam("name", "Inventory").get("/api/inventory/search")
+                .asString();
+
+        // then
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode rootNode = mapper.readTree(inventory);
+        JsonNode preparations = rootNode.get("preparations");
+        List<Preparation> preparationList = mapper.readValue(preparations.toString(), new TypeReference<List<Preparation>>(){});
+        assertThat(preparationList.size(), is(1));
+        assertEquals("testInventoryOfPreparations", preparationList.get(0).getName());
+    }
+
+    @Test
+    public void shouldNotReturnMatchingPreparationsWhenPerformingInventory() throws IOException {
+        // given
+        final String preparationId = createPreparationFromFile("t-shirt_100.csv", "notMatchingPreparation", "text/csv");
+
+        // when
+        String inventory = given().queryParam("path", "/").queryParam("name", "Inventory").get("/api/inventory/search")
+                .asString();
+
+        // then
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode rootNode = mapper.readTree(inventory);
+        JsonNode preparations = rootNode.get("preparations");
+        List<Preparation> preparationList = mapper.readValue(preparations.toString(), new TypeReference<List<Preparation>>(){});
+        assertThat(preparationList.size(), is(0));
     }
 }
