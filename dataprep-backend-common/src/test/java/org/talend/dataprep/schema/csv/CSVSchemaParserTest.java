@@ -16,11 +16,11 @@ package org.talend.dataprep.schema.csv;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
+import org.apache.commons.math3.util.Pair;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,8 +93,8 @@ public class CSVSchemaParserTest extends AbstractSchemaTestUtils {
     private void resetParameters(DataSetMetadata dataSetMetadata, String separator, List<String> headers, int headerNbLines, boolean isFirstLineHeader) {
         dataSetMetadata.getContent().setNbLinesInHeader(headerNbLines);
         Separator newSeparator = new Separator(separator.charAt(0));
-        final Map<String, Type> columns = new LinkedHashMap<>();
-        headers.stream().forEach(h -> columns.put(h, Type.STRING));
+        final List<Pair<String, Type>> columns = new ArrayList<>();
+        headers.stream().forEach(h -> columns.add(new Pair<>(h, Type.STRING)));
         newSeparator.setHeaders(columns); // default type to string
         newSeparator.setFirstLineAHeader(isFirstLineHeader);
         dataSetMetadata.getContent().setParameters(csvFormatUtils.compileSeparatorProperties(newSeparator));
