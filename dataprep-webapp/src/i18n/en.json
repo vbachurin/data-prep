@@ -264,6 +264,7 @@
   "CHOOSE_PREPARATION_TO_APPLY": "Choose a preparation to apply on this dataset",
   "NEW_CANDIDATE_PREPARATION_NAME": "New preparation name",
   "APPLY_PREPARATION": "Apply",
+  "NO_COMPATIBLE_PREPARATIONS": "There are no compatible preparations to dataset: {{name}}",
 
   "_comment": "Confirm Popup",
   "SAVE_CHANGE": "Do you want to save your changes?",

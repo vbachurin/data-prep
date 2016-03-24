@@ -49,7 +49,7 @@ const PlaygroundHeader = {
         onFeedback: '&',
         onClose: '&',
         onOpenPreparationPicker: '&',
-        activePreprationPickerBtn: '<'
+        activePreparationPickerBtn: '='
     }
 };
 

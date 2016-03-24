@@ -15,7 +15,8 @@ import PreparationPickerCtrl from './preparation-picker-controller';
 
 const PreparationPicker = {
     bindings: {
-        dataset: '<'
+        datasetName: '@',
+        datasetId: '@'
     },
     controller: PreparationPickerCtrl,
     templateUrl: 'app/components/playground/preparation-picker/preparation-picker.html'

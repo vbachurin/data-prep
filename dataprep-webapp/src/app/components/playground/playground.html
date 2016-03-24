@@ -24,7 +24,7 @@
                        on-feedback="playgroundCtrl.openFeedbackForm()"
                        on-close="playgroundCtrl.beforeClose()"
                        on-open-preparation-picker="playgroundCtrl.openPreparationPicker()"
-                       active-prepration-picker-btn="playgroundCtrl.state.playground.preparation"
+                       active-preparation-picker-btn="!playgroundCtrl.recipeService.getRecipe().length"
     ></playground-header>
 
     <div class="playground">
@@ -136,11 +136,11 @@
             class="preparation-picker-modal"
             fullscreen="false"
             state="playgroundCtrl.state.playground.displayPreparationPicker"
-            close-button="false"
-            disable-close-on-background-click="true"
+            close-button="true"
             ng-if="playgroundCtrl.state.playground.displayPreparationPicker">
 
     <preparation-picker
-        dataset="playgroundCtrl.state.playground.dataset">
+        dataset-name="{{playgroundCtrl.state.playground.dataset.name}}"
+        dataset-id="{{playgroundCtrl.state.playground.dataset.id}}">
     </preparation-picker>
 </talend-modal>

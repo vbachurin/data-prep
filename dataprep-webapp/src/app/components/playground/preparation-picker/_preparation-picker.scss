@@ -14,6 +14,8 @@
 @mixin preparation-list-layout() {
   @include flex-row();
   @include flex-wrap(wrap);
+  @include align-items(flex-start);
+  @include align-content(flex-start);
 
   .preparation {
     @include flex-basis(290px);
@@ -22,12 +24,6 @@
 
     @include flex-row();
     @include align-items(stretch);
-
-    .radiobox-picker {
-      @include flex-shrink(1);
-      @include flex-grow(1);
-      @include align-self(center);
-    }
 
     .information {
       @include flex-shrink(1);
@@ -47,8 +43,17 @@
 }
 
 .preparation-picker-modal {
-  .modal-inner{
-    width: 1050px !important;
+  .modal .modal-inner{
+    width: 70vw;
+
+    .fetching-spinner{
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      .continuous-rotate{
+        float: left;
+      }
+    }
 
     .preparation-list {
       $grid-item-border-size: 10px;
@@ -60,7 +65,7 @@
       $important-color: $dark-blue;
       $standard-color: $black;
 
-      height: 500px;
+      max-height: 500px;
       overflow-y: auto;
 
       padding: 5px;
@@ -71,14 +76,24 @@
         cursor: pointer;
         background-color: $grid-items-background;
 
-        &.selected {
-          background-color: #00d6b2;
-        }
         position: relative;
         margin: 5px;
         padding: $grid-item-border-size;
         box-shadow: inset 0 0 1px 1px $shadow-gray;
         text-align: left;
+
+        &:focus,
+        &:hover {
+          background-color: darken($grid-items-background, 5%);
+          box-shadow: 5px 4px 6px -4px $dark-gray;
+
+          .actions a {
+            &.trash,
+            &.clone-btn {
+              display: block;
+            }
+          }
+        }
 
         .one-line {
           @include ellipsis(210px);
