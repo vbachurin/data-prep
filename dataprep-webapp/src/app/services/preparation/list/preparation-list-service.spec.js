@@ -311,7 +311,7 @@ describe('Preparation list service', () => {
             PreparationListService.update('84ab54cd867f4645a', 'my preparation');
 
             //then
-            expect(PreparationRestService.update).toHaveBeenCalledWith('84ab54cd867f4645a', 'my preparation');
+            expect(PreparationRestService.update).toHaveBeenCalledWith('84ab54cd867f4645a', {name: 'my preparation'});
         }));
 
         it('should refresh preparations list on creation', inject(($rootScope, PreparationListService, PreparationRestService) => {

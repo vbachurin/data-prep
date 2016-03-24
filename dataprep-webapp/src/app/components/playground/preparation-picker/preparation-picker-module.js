@@ -25,7 +25,10 @@ import PreparationPicker from './preparation-picker-component';
     angular.module('data-prep.preparation-picker', [
         'data-prep.services.dataset',
         'data-prep.services.state',
-        'ui.router'
+        'ui.router',
+        'data-prep.services.preparation',
+        'data-prep.services.recipe'
+
     ])
         .component('preparationPicker', PreparationPicker);
 })();

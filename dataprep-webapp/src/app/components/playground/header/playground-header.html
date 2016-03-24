@@ -43,11 +43,11 @@
 
     <ul id="playground-right-header">
         <li translate-once-title="CHOOSE_PREPARATION_TO_APPLY">
-            <button id="playground-preparation-picker-icon"
+            <a id="playground-preparation-picker-icon"
                class="icon"
                data-icon="c"
-               ng-disabled="$ctrl.activePreprationPickerBtn"
-               ng-click="$ctrl.onOpenPreparationPicker()"></button>
+               ng-if="$ctrl.activePreparationPickerBtn"
+               ng-click="$ctrl.onOpenPreparationPicker()"></a>
         </li>
         <li id="preview" ng-if="$ctrl.preview">
             <div id="previewBadge">
