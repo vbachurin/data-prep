@@ -21,10 +21,7 @@ import static org.talend.dataprep.transformation.api.action.metadata.ActionMetad
 import static org.talend.dataprep.transformation.api.action.metadata.math.ChangeNumberFormat.*;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -71,6 +68,13 @@ public class ChangeNumberFormatTest extends AbstractMetadataBaseTest {
         assertThat(action.adapt((ColumnMetadata) null), is(action));
         ColumnMetadata column = column().name("myColumn").id(0).type(Type.STRING).build();
         assertThat(action.adapt(column), is(action));
+    }
+
+    @Test
+    public void shouldReturnBehaviour() throws Exception {
+        final Set<Behavior> actual = action.getBehavior();
+        assertEquals(1, actual.size());
+        assertTrue(actual.contains(Behavior.VALUES_COLUMN));
     }
 
     @Test
@@ -163,6 +167,49 @@ public class ChangeNumberFormatTest extends AbstractMetadataBaseTest {
 
         // then
         final DataSetRow expectedRow = getRow("toto", "1 012,5", "tata");
+        assertEquals(expectedRow.values(), row.values());
+    }
+
+    @Test
+    public void should_process_row_from_CH() throws Exception {
+        // given
+        final DataSetRow row = getRow("toto", "1'012.50", "tata");
+        parameters.put(TARGET_PATTERN, US_PATTERN);
+
+        // when
+        ActionTestWorkbench.test(row, factory.create(action, parameters));
+
+        // then
+        final DataSetRow expectedRow = getRow("toto", "1,012.5", "tata");
+        assertEquals(expectedRow.values(), row.values());
+    }
+
+    @Test
+    public void should_process_row_from_CH_2() throws Exception {
+        // given
+        final DataSetRow row = getRow("toto", "1'012.50", "tata");
+        parameters.put(FROM_SEPARATORS, CH_SEPARATORS);
+
+        // when
+        ActionTestWorkbench.test(row, factory.create(action, parameters));
+
+        // then
+        final DataSetRow expectedRow = getRow("toto", "1,012.5", "tata");
+        assertEquals(expectedRow.values(), row.values());
+    }
+
+    @Test
+    public void should_process_row_to_CH() throws Exception {
+        // given
+        final DataSetRow row = getRow("toto", "1.012,50", "tata");
+        parameters.put(FROM_SEPARATORS, EU_SEPARATORS);
+        parameters.put(TARGET_PATTERN, CH_PATTERN);
+
+        // when
+        ActionTestWorkbench.test(row, factory.create(action, parameters));
+
+        // then
+        final DataSetRow expectedRow = getRow("toto", "1'012.5", "tata");
         assertEquals(expectedRow.values(), row.values());
     }
 
