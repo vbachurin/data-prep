@@ -37,9 +37,8 @@ $navigation-item-space: 10px;
   }
 
   .icon {
+    padding: 8px 0;
     color: darken($white, 10%);
-    padding-left: 10px;
-    padding-right: 10px;
     @include filter(drop-shadow(0px 1px 1px #1f2024));
 
     &:hover {
@@ -87,10 +86,9 @@ $navigation-item-space: 10px;
     }
 
     #playground-lookup-icon {
-      padding: 8px;
-
       > img {
         vertical-align: middle;
+        width: 90%;
       }
 
       &.pressed {

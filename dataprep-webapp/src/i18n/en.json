@@ -82,7 +82,6 @@
 
   "_comment": "Datagrid",
   "ENTER_PREPARATION_NAME": "Enter a name for your preparation",
-  "FILE_DETAILS_NAME": "File: {{name}} ",
   "FILE_DETAILS_LINES": "{{records}} lines",
   "FILE_DETAILS_LIMIT": "cut at {{records}} lines",
   "FILTER": "Search and Filter",

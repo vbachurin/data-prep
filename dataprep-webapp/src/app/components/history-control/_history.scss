@@ -27,12 +27,10 @@
     }
 
     &.redo {
-      //@include transform(rotate(90deg));
-      margin-left: 10px;
+      margin-left: 5px;
     }
     &.undo {
-      //@include transform(rotate(-90deg));
-      margin-right: 10px;
+      margin-right: 5px;
     }
   }
 }

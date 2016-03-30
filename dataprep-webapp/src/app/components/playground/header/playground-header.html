@@ -18,8 +18,7 @@
         <li id="dataset-header-details">
             <span class="playground-dataset-name"
                   title="{{$ctrl.dataset.name}}"
-                  translate="FILE_DETAILS_NAME"
-                  translate-value-name="{{$ctrl.dataset.name}}"></span>
+                  ng-bind="$ctrl.dataset.name"></span>
 
             <span ng-if="$ctrl.displayNbLines"
                   ng-switch="!!$ctrl.dataset.limit">
@@ -51,6 +50,7 @@
         </li>
         <li>
             <a id="playground-lookup-icon"
+               class="icon"
                ng-click="$ctrl.onLookup()"
                ng-class="{pressed: $ctrl.lookup}">
                 <img src="assets/images/lookup/lookup-button.png">
