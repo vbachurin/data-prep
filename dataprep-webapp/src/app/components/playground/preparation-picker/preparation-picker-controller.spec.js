@@ -151,7 +151,7 @@ describe('Preparation Picker controller', () => {
             scope.$digest();
 
             //then
-            expect(StateService.setCandidatePreparations).not.toHaveBeenCalled();
+            expect(StateService.setCandidatePreparations).toHaveBeenCalledWith([]);
             expect(ctrl.isFetchingPreparations).toBe(false);
         }));
     });

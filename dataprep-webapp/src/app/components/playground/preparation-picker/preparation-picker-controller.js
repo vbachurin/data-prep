@@ -50,6 +50,9 @@ class PreparationPickerCtrl {
 
                     this.stateService.setCandidatePreparations(candidatePreparations);
                 }
+                else {
+                    this.stateService.setCandidatePreparations([]);
+                }
             })
             .finally(() => {
                 this.isFetchingPreparations = false;
@@ -97,6 +100,8 @@ class PreparationPickerCtrl {
             })
             .finally(() => {
                 this.$rootScope.$emit('talend.loading.stop');
+
+                //this.stateService.setCandidatePreparations([]);
             });
     }
 }

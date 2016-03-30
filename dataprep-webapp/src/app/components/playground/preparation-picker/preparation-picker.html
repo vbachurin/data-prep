@@ -28,7 +28,7 @@
     <form name="$ctrl.preparationPickerForm">
         <div class="preparation-list">
             <div class="preparation"
-                 ng-repeat="candidate in $ctrl.state.playground.candidatePreparations track by $index"
+                 ng-repeat="candidate in $ctrl.state.playground.candidatePreparations track by candidate.preparation.id"
                  ng-click="$ctrl.selectPreparation(candidate)">
 
                 <div class="information">
