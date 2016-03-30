@@ -62,7 +62,7 @@ $slide-action-background: $base-background-color;
     }
 
     .steps-header {
-      margin: 15px 0 15px 10px;
+      margin: 15px 15px 15px 10px;
 
       .editable-text {
         padding: 5px;
@@ -155,11 +155,17 @@ $slide-action-background: $base-background-color;
 //-----------------------------------------------------------------------------------------------------------
 //-----------------------------------------------------BODY--------------------------------------------------
 //-----------------------------------------------------------------------------------------------------------
+.playground-container {
+  height: 100vh;
+  @include flex-column();
+}
+
 .playground {
-  @include flex-row();
   @include flex-grow(1);
+  @include flex-shrink(1);
+
+  @include flex-row();
   @include align-items(stretch);
-  @include justify-content(center);
 
   @include recipe-layout();
   @include playground-center-layout();

@@ -20,7 +20,6 @@ describe('Playground header directive', function () {
     beforeEach(angular.mock.module('htmlTemplates'));
     beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
-            'FILE_DETAILS_NAME': 'File: {{name}}',
             'FILE_DETAILS_LINES': '{{records}} lines',
             'FILE_DETAILS_LIMIT': 'cut at {{records}} lines'
         });
@@ -65,7 +64,7 @@ describe('Playground header directive', function () {
             createElement();
 
             //then
-            expect(element.find('#playground-left-header').text().trim().replace(/[\s]+/g, ' ')).toBe('File: US States - 3 lines');
+            expect(element.find('#playground-left-header').text().trim().replace(/[\s]+/g, ' ')).toBe('US States - 3 lines');
         });
 
         it('should render dataset name and cut lines number when dataset is truncated', function () {
@@ -82,7 +81,7 @@ describe('Playground header directive', function () {
             createElement();
 
             //then
-            expect(element.find('#playground-left-header').text().trim().replace(/[\s]+/g, ' ')).toBe('File: US States - cut at 50 lines');
+            expect(element.find('#playground-left-header').text().trim().replace(/[\s]+/g, ' ')).toBe('US States - cut at 50 lines');
         });
 
         it('should not render dataset nb lines', function () {
@@ -99,7 +98,7 @@ describe('Playground header directive', function () {
             createElement();
 
             //then
-            expect(element.find('#playground-left-header').text().trim()).toBe('File: US States');
+            expect(element.find('#playground-left-header').text().trim()).toBe('US States');
         });
 
         it('should render insertion playground left header', function () {
