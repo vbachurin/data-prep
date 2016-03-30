@@ -92,6 +92,48 @@ describe('Datagrid style service', () => {
             expect(DatagridStyleService.hightlightedColumnId).toBe(colId);
             expect(DatagridStyleService.hightlightedContent).toBe(content);
         }));
+
+        it('should invalidate all rows when there is no cell editor', inject((DatagridStyleService) => {
+            //given
+            var colId = '0000';
+            var content = 'toto';
+
+            gridMock.initCellEditorMock(null);
+            DatagridStyleService.init(gridMock);
+
+            expect(gridMock.invalidate).not.toHaveBeenCalled();
+
+            //when
+            DatagridStyleService.highlightCellsContaining(colId, content);
+
+            //then
+            expect(gridMock.invalidate).toHaveBeenCalled();
+        }));
+
+        it('should invalidate all rows except the currently edited one', inject((DatagridStyleService) => {
+            //given
+            var colId = '0000';
+            var content = 'toto';
+
+            spyOn(gridMock, 'invalidateRows');
+            spyOn(gridMock, 'render');
+
+            gridMock.initCellEditorMock({}); //truthy editor
+            gridMock.initRenderedRangeMock({top: 20, bottom: 30});
+            gridMock.initActiveCellMock({row: 25});
+
+            DatagridStyleService.init(gridMock);
+
+            expect(gridMock.invalidateRows).not.toHaveBeenCalled();
+            expect(gridMock.render).not.toHaveBeenCalled();
+
+            //when
+            DatagridStyleService.highlightCellsContaining(colId, content);
+
+            //then
+            expect(gridMock.invalidateRows).toHaveBeenCalledWith([20, 21, 22, 23, 24, /*missing 25*/ 26, 27, 28, 29, 30]);
+            expect(gridMock.render).toHaveBeenCalled();
+        }));
     });
 
     describe('update column styles', () => {

@@ -235,7 +235,6 @@ export default function Datagrid($timeout, state, DatagridGridService, DatagridC
                                 const colId = stateSelectedColumn && stateSelectedColumn.id;
                                 const content = stateSelectedLine[colId];
                                 DatagridStyleService.highlightCellsContaining(colId, content);
-                                grid.invalidate();
                             },
                             500,
                             false

@@ -29,6 +29,9 @@ function SlickGridMock () {
         initActiveCellMock: function(activeCell) {
             this.activeCell = activeCell;
         },
+        initCellEditorMock: function(editor) {
+            this.cellEditor = editor;
+        },
         cssStyleConfig: {},
 
         //slickGrid events
@@ -50,6 +53,7 @@ function SlickGridMock () {
         invalidateRows: function() {},
         getActiveCell: function() {return this.activeCell;},
         getColumns: function() {return this.columns;},
+        getCellEditor: function() {return this.cellEditor;},
         getCellFromEvent: function() {return this.cell;},
         getCellNodeBox: function() {return this.box;},
         getRenderedRange: function() {return this.range;},

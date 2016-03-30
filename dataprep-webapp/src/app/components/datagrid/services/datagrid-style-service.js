@@ -209,6 +209,19 @@ export default class DatagridStyleService {
     highlightCellsContaining(colId, content) {
         this.hightlightedColumnId = colId;
         this.hightlightedContent = content;
+
+        const hasCellEditor = this.grid.getCellEditor();
+        if(hasCellEditor) {
+            const activeLine = this.grid.getActiveCell().row;
+            const range = this.grid.getRenderedRange();
+            const indexes = _.range(range.top, range.bottom + 1).filter((index) => index !== activeLine);
+
+            this.grid.invalidateRows(indexes);
+            this.grid.render();
+        }
+        else {
+            this.grid.invalidate();
+        }
     }
 
     /**
