@@ -33,7 +33,7 @@ describe('Typeahead directive', () => {
                 <ul id="inventory">
                     <li id="item1"><div ng-click="clickOnItem1()"></div></li>
                     <li id="item2"></li>
-                    <li id="item3"><a href="http"></a></li>
+                    <li id="item3"><a href="http" target="_blank"></a></li>
                 </ul>
             </typeahead>
         `;

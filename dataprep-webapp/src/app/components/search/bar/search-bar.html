@@ -30,13 +30,12 @@
                 </inventory-item>
             </a>
 
-            <a ng-if="item.inventoryType === 'folder'"
-               ui-sref="nav.index.datasets({folderPath: item.path})">
-                <inventory-item item="item"
-                                type="folder"
-                                details="SEARCH_FOLDER_DETAILS">
-                </inventory-item>
-            </a>
+            <inventory-item ng-if="item.inventoryType === 'folder'"
+                            ui-sref="nav.index.datasets({folderPath: item.path})"
+                            item="item"
+                            type="folder"
+                            details="SEARCH_FOLDER_DETAILS">
+            </inventory-item>
 
             <inventory-item ng-if="item.inventoryType==='preparation'"
                             item="item"

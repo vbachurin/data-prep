@@ -114,7 +114,7 @@ export default function Typeahead($timeout, $window) {
                             current = getCurrentItem();
                             if (current.length) {
                                 if (current.children().eq(0).is('a')) {
-                                    $window.open(current.children().eq(0).attr('href'), '_blank');
+                                    $window.open(current.children().eq(0).attr('href'), current.children().eq(0).attr('target'));
                                 }
                                 else {
                                     current.children().click();
