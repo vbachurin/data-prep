@@ -68,7 +68,12 @@ public class UpgradeAPI extends APIService {
         StringTokenizer tokenizer = new StringTokenizer(versionAsString, ".");
         int i = 0;
         while (tokenizer.hasMoreTokens() && i < 3) {
-            versionNumbers[i++] = Integer.parseInt(tokenizer.nextToken());
+            try {
+                versionNumbers[i] = Integer.parseInt(tokenizer.nextToken());
+            } catch (NumberFormatException e) {
+                versionNumbers[i] = 0;
+            }
+            i++;
         }
         return com.github.zafarkhaja.semver.Version.forIntegers(versionNumbers[0], versionNumbers[1], versionNumbers[2]);
     }
