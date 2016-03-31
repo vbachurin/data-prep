@@ -133,6 +133,23 @@ describe('Badge directive', function () {
             expect(input.css('width')).toBe('42px');
         });
 
+        it('should adjust input size on keyboard down press with min width', function () {
+            //given
+            createElement();
+            var input = element.find('.editable-input').eq(0);
+
+            var event = angular.element.Event('keydown');
+            event.keyCode = 65;
+
+            //when
+            element.controller('talendBadge').value = 't';
+            input.trigger(event);
+            scope.$digest();
+
+            //then
+            expect(input.css('width')).toBe('30px');
+        });
+
         it('should perform change on ENTER key down', function () {
             //given
             createElement();

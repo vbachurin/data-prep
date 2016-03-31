@@ -68,7 +68,6 @@ export default function TextFormatService() {
         }
 
         var constraints = [
-            addTab,
             escapeHtmlTags,
             addLineBreaks,
             addTrailingAndLeadingSpacesDivs
@@ -97,17 +96,6 @@ export default function TextFormatService() {
 
     /**
      * @ngdoc method
-     * @name addTab
-     * @methodOf data-prep.services.utils:TextFormatService
-     * @description Add tab char
-     * @param {string} value The value to adapt
-     */
-    function addTab(value) {
-        return value.replace(new RegExp('\t', 'g'), '↹'); //eslint-disable-line no-control-regex
-    }
-
-    /**
-     * @ngdoc method
      * @name addTrailingAndLeadingSpacesDivs
      * @methodOf data-prep.services.utils:TextFormatService
      * @description Add divs with "hiddenChars" class to show the leading and trailing spaces
@@ -119,7 +107,7 @@ export default function TextFormatService() {
 
         //leading hidden chars found
         if (hiddenCharsRegExpMatch[1]) {
-            returnStr = '<span class="hiddenChars">' + hiddenCharsRegExpMatch[1] + '</span>';
+            returnStr = '<span class="hiddenChars">' + hiddenCharsRegExpMatch[1].replace(new RegExp('\t', 'g'), '    ') + '</span>'; //eslint-disable-line no-control-regex
         }
 
         //trimmed value
@@ -127,7 +115,7 @@ export default function TextFormatService() {
 
         //trailing hidden chars
         if (hiddenCharsRegExpMatch[3]) {
-            returnStr += '<span class="hiddenChars">' + hiddenCharsRegExpMatch[3] + '</span>';
+            returnStr += '<span class="hiddenChars">' + hiddenCharsRegExpMatch[3].replace(new RegExp('\t', 'g'), '    ') + '</span>'; //eslint-disable-line no-control-regex
         }
         return returnStr;
     }

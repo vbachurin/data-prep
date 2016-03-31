@@ -56,12 +56,12 @@ export default function TalendBadge($timeout) {
         controller: 'BadgeCtrl',
         link: function (scope, iElement, iAttrs, ctrl) {
             /**
-             * Change input width, depending on its content
+             * Change input width, depending on its content (add width for tabs)
              * @param input - the target input
              */
             var adjustWidth = function (input) {
-                var width = ((ctrl.value.length + 1) * 7) + 'px';
-                input.css('width', width);
+                var width = ((ctrl.value.length + 1 + (ctrl.value.split("\t").length - 1) * 8) * 7);
+                input.css('width', width < 30 ? '30px' : width + 'px');
             };
 
             /**

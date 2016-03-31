@@ -26,7 +26,8 @@
                        ng-model="badgeCtrl.value"
                        ng-model-options="{debounce: { 'default': 200, 'blur': 0 }}"
                        ng-blur="badgeCtrl.manageChange()"
-                       title="{{badgeCtrl.value}}"/>
+                       title="{{badgeCtrl.value}}"
+                       ng-trim="false"/>
             </form>
             <span class="description textEllipsis" ng-if="badgeCtrl.editable === false">{{badgeCtrl.value}}</span>
         </span>
