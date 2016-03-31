@@ -394,13 +394,15 @@ export default function RangeSlider($timeout) {
                         if (newRangeLimits.min !== newRangeLimits.max) {
                             $timeout.cancel(renderTimeout);
                             ctrl.showRangeInputs = true;
-                            renderTimeout = $timeout(function () {
-                                renderRangerSlider();
-                            }, 100, false);
+                            renderTimeout = $timeout(renderRangerSlider, 100, false);
                         }
                     }
                 }
             );
+
+            scope.$on('$destroy', function () {
+                $timeout.cancel(renderTimeout);
+            });
         }
     };
 }

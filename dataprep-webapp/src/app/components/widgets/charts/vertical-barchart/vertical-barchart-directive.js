@@ -387,6 +387,9 @@ export default function VerticalBarchart($timeout) {
 
             scope.$on('$destroy', function () {
                 d3.selectAll('.vertical-barchart-cls.d3-tip').remove();
+                $timeout.cancel(renderPrimaryTimeout);
+                $timeout.cancel(renderSecondaryTimeout);
+                $timeout.cancel(updateLimitsTimeout);
             });
         }
     };

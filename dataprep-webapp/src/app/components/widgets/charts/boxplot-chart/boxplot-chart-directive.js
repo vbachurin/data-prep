@@ -338,6 +338,10 @@ export default function BoxplotChart($timeout) {
                     }
                 }
             );
+
+            scope.$on('$destroy', function () {
+                $timeout.cancel(renderTimeout);
+            });
         }
     };
 }

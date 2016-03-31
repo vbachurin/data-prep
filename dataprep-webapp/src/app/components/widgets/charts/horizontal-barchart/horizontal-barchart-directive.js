@@ -334,6 +334,8 @@ export default function HorizontalBarchart($timeout) {
 
             scope.$on('$destroy', function () {
                 d3.selectAll('.horizontal-barchart-cls.d3-tip').remove();
+                $timeout.cancel(renderPrimaryTimeout);
+                $timeout.cancel(renderSecondaryTimeout);
             });
         }
     };
