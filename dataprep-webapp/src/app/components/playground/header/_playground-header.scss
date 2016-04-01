@@ -14,7 +14,7 @@ $navigation-item-space: 10px;
   display: table;
   height: $navigation-height;
   min-height: $navigation-height;
-  width: 100%;
+  width: 100vw;
 
   @include background(linear-gradient($navigation-background-top, $navigation-background-bottom) left repeat);
   border-bottom: 1px solid darken($navigation-border, 10);
