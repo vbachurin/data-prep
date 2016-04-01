@@ -19,6 +19,10 @@
   margin: 8px 0px 15px 0px;
   text-align: left;
 
+  .folder {
+    text-transform: uppercase;
+  }
+
   li {
     background-color: transparent;
     display: inline-block;
@@ -90,7 +94,7 @@
       }
     }
 
-    li:hover{
+    li:hover {
       background-color: $light-gray;
     }
     &:focus {

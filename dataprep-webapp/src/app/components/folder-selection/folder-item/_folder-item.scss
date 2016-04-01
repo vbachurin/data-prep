@@ -10,6 +10,9 @@
     @include display(flex);
     @include align-items(center);
     cursor: pointer;
+    .folder-name {
+      text-transform: uppercase;
+    }
   }
 
   .empty-caret {
