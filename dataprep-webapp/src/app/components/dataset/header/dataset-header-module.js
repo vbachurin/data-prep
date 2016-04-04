@@ -21,17 +21,17 @@ import DatasetHeader from './dataset-header-component';
      * @name data-prep.dataset-header
      * @description This module contains the controller and directives to manage the dataset list header
      * @requires talend.widget
-     * @requires data-prep.services.utils
-     * @requires data-prep.services.state
      * @requires data-prep.services.folder
+     * @requires data-prep.services.state
+     * @requires data-prep.services.utils
      */
     angular.module('data-prep.dataset-header',
         [
             'pascalprecht.translate',
             'talend.widget',
-            'data-prep.services.utils',
+            'data-prep.services.folder',
             'data-prep.services.state',
-            'data-prep.services.folder'
+            'data-prep.services.utils'
         ])
         .component('datasetHeader', DatasetHeader);
 })();
