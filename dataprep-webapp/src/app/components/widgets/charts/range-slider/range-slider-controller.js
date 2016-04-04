@@ -21,13 +21,17 @@ export default function RangeSliderCtrl() {
 
     /**
      * @ngdoc method
-     * @name isMaxReached
+     * @name adaptFilterInterval
      * @propertyOf talend.widget.controller:RangeSliderCtrl
-     * @description checks max interval is equal or greater than the maxModel
+     * @description checks max interval >= the max of data values and  if the min interval < max interval
      * @params {Object} filterToApply the filter to apply
      * @returns {Object}
      */
-    vm.isMaxReached = function isMaxReached(filterToTrigger) {
+    vm.adaptFilterInterval = function adaptFilterInterval(filterToTrigger) {
+        filterToTrigger = filterToTrigger.min > filterToTrigger.max ?
+        {min: filterToTrigger.max, max: filterToTrigger.min} :
+            filterToTrigger;
+
         filterToTrigger.isMaxReached = filterToTrigger.max >= vm.rangeLimits.max;
         return filterToTrigger;
     };

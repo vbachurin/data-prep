@@ -81,12 +81,32 @@ export default function StatisticsTooltipService($translate, state) {
     function getTooltip(keyLabel, key, primaryValue, secondaryValue) {
         var title = 'Record';
         var keyString = key;
+        var rangeLimits = state.playground.statistics.rangeLimits;
+        var minLabel = $translate.instant('MIN');
+        var maxLabel = $translate.instant('MAX');
 
         //range
         if (key instanceof Array) {
             var uniqueValue = key[0] === key[1];
             title = uniqueValue ? 'Value' : 'Range';
-            keyString = uniqueValue ? key[0] : '[' + key + '[';
+
+            if (uniqueValue) {
+                keyString = key[0];
+            } else {
+                if(key[0] <=  rangeLimits.min) {
+                    if (key[1] >= rangeLimits.max) {
+                        keyString = '[' + minLabel + ',' +  maxLabel + ']';
+                    } else {
+                        keyString = '[' + minLabel + ',' +  key[1] + '[';
+                    }
+                } else {
+                    if (key[1] >= rangeLimits.max) {
+                        keyString = '[' + key[0] + ',' +  maxLabel + ']';
+                    } else {
+                        keyString = '[' + key[0] + ',' + key[1] + '[';
+                    }
+                }
+            }
         }
 
         if (state.playground.filter.gridFilters.length) {

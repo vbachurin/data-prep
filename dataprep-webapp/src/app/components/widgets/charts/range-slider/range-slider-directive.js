@@ -124,12 +124,7 @@ export default function RangeSlider($timeout) {
                 //--------------------------------------------------------------------------------------------------
 
                 function triggerFilter(filterToTrigger) {
-                    //check if the minFilter < maxFilter
-                    filterToTrigger = filterToTrigger.min > filterToTrigger.max ?
-                    {min: filterToTrigger.max, max: filterToTrigger.min} :
-                        filterToTrigger;
-
-                    ctrl.onBrushEnd({interval: ctrl.isMaxReached(filterToTrigger)});
+                    ctrl.onBrushEnd({interval: ctrl.adaptFilterInterval(filterToTrigger)});
                 }
 
                 function prepareBrushFilter(initialBrushValues) {

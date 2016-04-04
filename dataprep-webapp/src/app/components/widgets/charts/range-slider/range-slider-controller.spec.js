@@ -40,7 +40,7 @@ describe('RangeSlider controller', function () {
         };
 
         //when
-        var result = ctrl.isMaxReached({min: 2, max: 98});
+        var result = ctrl.adaptFilterInterval({min: 2, max: 98});
 
         //then
         expect(result).toEqual({min: 2, max: 98, isMaxReached: true});

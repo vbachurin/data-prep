@@ -192,6 +192,7 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
      * @methodOf data-prep.services.filter.service:FilterService
      * @param {string} colId The column id
      * @param {Array} values The filter interval
+     * @param {boolean} isMaxReached Exclude the max
      * @description Create a 'range' filter function
      * @returns {function} The predicate function
      */

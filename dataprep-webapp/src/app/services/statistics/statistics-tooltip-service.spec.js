@@ -17,6 +17,11 @@ describe('Statistics Tooltip service', function () {
                 statistics:{
                     histogram:{
                         aggregation:null
+                    },
+                    rangeLimits : {
+                        min: -10,
+                        max: 5
+
                     }
                 }
             }
@@ -42,7 +47,7 @@ describe('Statistics Tooltip service', function () {
                 '<strong>Record: </strong><span style="color:yellow">96ebf96df2</span>');
         }));
 
-        it('should create tooltip for range record', inject(function (StatisticsTooltipService) {
+        it('should create tooltip for range record with min > min data values and  max < max data values', inject(function (StatisticsTooltipService) {
             //given
             stateMock.playground.filter.gridFilters = [];
             var keyLabel = 'Occurrences';
@@ -57,6 +62,57 @@ describe('Statistics Tooltip service', function () {
                 '<strong>Occurrences: </strong><span style="color:yellow">10</span>' +
                 '<br/><br/>' +
                 '<strong>Range: </strong><span style="color:yellow">[-9.375,2[</span>');
+        }));
+
+        it('should create tooltip for range record with min < min data values and  max < max data values', inject(function (StatisticsTooltipService) {
+            //given
+            stateMock.playground.filter.gridFilters = [];
+            var keyLabel = 'Occurrences';
+            var key = [-15, 2];
+            var primaryValue = 10;
+
+            //when
+            var tooltip = StatisticsTooltipService.getTooltip(keyLabel, key, primaryValue, undefined);
+
+            //then
+            expect(tooltip).toBe(
+                '<strong>Occurrences: </strong><span style="color:yellow">10</span>' +
+                '<br/><br/>' +
+                '<strong>Range: </strong><span style="color:yellow">[MIN,2[</span>');
+        }));
+
+        it('should create tooltip for range record with min < min data values and  max >= max data values', inject(function (StatisticsTooltipService) {
+            //given
+            stateMock.playground.filter.gridFilters = [];
+            var keyLabel = 'Occurrences';
+            var key = [-15, 10];
+            var primaryValue = 10;
+
+            //when
+            var tooltip = StatisticsTooltipService.getTooltip(keyLabel, key, primaryValue, undefined);
+
+            //then
+            expect(tooltip).toBe(
+                '<strong>Occurrences: </strong><span style="color:yellow">10</span>' +
+                '<br/><br/>' +
+                '<strong>Range: </strong><span style="color:yellow">[MIN,MAX]</span>');
+        }));
+
+        it('should create tooltip for range record with min > min data values and  max >= max data values', inject(function (StatisticsTooltipService) {
+            //given
+            stateMock.playground.filter.gridFilters = [];
+            var keyLabel = 'Occurrences';
+            var key = [-1, 10];
+            var primaryValue = 10;
+
+            //when
+            var tooltip = StatisticsTooltipService.getTooltip(keyLabel, key, primaryValue, undefined);
+
+            //then
+            expect(tooltip).toBe(
+                '<strong>Occurrences: </strong><span style="color:yellow">10</span>' +
+                '<br/><br/>' +
+                '<strong>Range: </strong><span style="color:yellow">[-1,MAX]</span>');
         }));
 
         it('should create tooltip for unique-value range record', inject(function (StatisticsTooltipService) {
