@@ -1,13 +1,12 @@
 package org.talend.dataprep.transformation.pipeline;
 
-import static org.junit.Assert.*;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.hamcrest.CoreMatchers;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.*;
@@ -22,6 +21,10 @@ import org.talend.dataprep.transformation.pipeline.link.BasicLink;
 import org.talend.dataprep.transformation.pipeline.link.CloneLink;
 import org.talend.dataprep.transformation.pipeline.link.NullLink;
 import org.talend.dataprep.transformation.pipeline.node.*;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class PipelineTest {
 
@@ -337,8 +340,8 @@ public class PipelineTest {
         // Then
         final Class[] expectedClasses = { Pipeline.class, SourceNode.class, BasicLink.class, BasicNode.class, CloneLink.class,
                 ActionNode.class, InlineAnalysisNode.class, DelayedAnalysisNode.class };
-        assertThat(visitor.traversedClasses, CoreMatchers.hasItems(expectedClasses));
-        assertNotNull(pipeline.toString());
+        Assert.assertThat(visitor.traversedClasses, CoreMatchers.hasItems(expectedClasses));
+        Assert.assertNotNull(pipeline.toString());
     }
 
     private static class TestOutput extends TerminalNode {
