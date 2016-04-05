@@ -1,0 +1,52 @@
+{
+  "records": [
+    {
+      "0000": "1",
+      "0001": "123",
+      "tdpId": 1
+    },
+    {
+      "0000": "2",
+      "0001": "123",
+      "tdpId": 2
+    },
+    {
+      "0000": "3",
+      "0001": "123",
+      "tdpId": 3
+    },
+    {
+      "0000": "4",
+      "0001": "123",
+      "tdpId": 4
+    }
+  ],
+  "metadata": {
+    "columns": [
+      {
+        "name": "id",
+        "headerSize": 0,
+        "type": "integer",
+        "id": "0000",
+        "domain": "",
+        "domainLabel": "",
+        "domainFrequency": 0.0,
+        "semanticDomains": [],
+        "domainForced": false,
+        "typeForced": false
+      },
+      {
+        "name": "gender",
+        "headerSize": 0,
+        "type": "integer",
+        "id": "0001",
+        "domain": "",
+        "domainLabel": "",
+        "domainFrequency": 0.0,
+        "semanticDomains": [],
+        "domainForced": false,
+        "typeForced": false
+      }
+    ]
+  }
+}

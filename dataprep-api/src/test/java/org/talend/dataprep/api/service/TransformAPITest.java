@@ -184,6 +184,26 @@ public class TransformAPITest extends ApiServiceTestBase {
         assertThat(transformed, sameJSONAsFile(expectedContent));
     }
 
+    /**
+     * see TDP-1308 (Replace all gender values with )
+     */
+    @Test
+    public void shouldChangeTypeOnTransformation() throws Exception {
+        // given
+        final String preparationId = createPreparationFromFile("dataset/dataset_TDP-1308.csv", "testDataset", "text/csv");
+        applyAction(preparationId, IOUtils.toString(this.getClass().getResourceAsStream("transformation/TDP-1308.json")));
+
+        // when
+        final String transformed = given().when() //
+                .expect().statusCode(200).log().ifError() //
+                .get("/api/preparations/{id}/content?version=head", preparationId).asString();
+
+        // then
+        final InputStream expectedContent = this.getClass().getResourceAsStream("dataset/dataset_TDP-1308_expected.json");
+        assertThat(transformed, sameJSONAsFile(expectedContent));
+    }
+
+
     @Test
     public void testMultipleParams() throws Exception {
         // given

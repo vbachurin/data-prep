@@ -1,0 +1,35 @@
+{
+  "actions": [
+    {
+      "action": "replace_on_value",
+      "parameters": {
+        "column_id": "0001",
+        "scope": "column",
+        "cell_value": {
+          "token": "M",
+          "operator": "starts_with",
+          "builder": null,
+          "pattern": null,
+          "strict": true
+        },
+        "replace_entire_cell": "true",
+        "replace_value": "123"
+      }
+    },
+    {
+      "action": "replace_on_value",
+      "parameters": {
+        "column_id": "0001",
+        "scope": "column",
+        "cell_value": {
+          "token": "F",
+          "operator": "starts_with",
+          "builder": null,
+          "pattern": null,
+          "strict": true
+        },
+        "replace_entire_cell": "true",
+        "replace_value": "123"
+      }
+    }  ]
+}
