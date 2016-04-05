@@ -22,7 +22,7 @@
     </appenders>
     <loggers>
         <!-- interesting debug log for this unit test -->
-        <root level="error" includeLocation="true">
+        <root level="fatal" includeLocation="true">
             <appender-ref ref="console"/>
         </root>
     </loggers>
