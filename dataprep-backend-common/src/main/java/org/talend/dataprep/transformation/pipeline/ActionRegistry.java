@@ -4,5 +4,6 @@ import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetad
 
 @FunctionalInterface
 public interface ActionRegistry {
+
     ActionMetadata get(String name);
 }

@@ -1,5 +1,8 @@
 package org.talend.dataprep.transformation.pipeline;
 
+import java.util.function.Function;
+import java.util.function.Predicate;
+
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
@@ -9,9 +12,6 @@ import org.talend.dataprep.transformation.pipeline.link.NullLink;
 import org.talend.dataprep.transformation.pipeline.node.FilteredSourceNode;
 import org.talend.dataprep.transformation.pipeline.node.NullNode;
 import org.talend.dataprep.transformation.pipeline.node.SourceNode;
-
-import java.util.function.Function;
-import java.util.function.Predicate;
 
 public class NodeBuilder {
 
@@ -43,7 +43,8 @@ public class NodeBuilder {
             state = state.next(n -> new BasicLink(n[0]));
             state = state.next(node);
         } catch (IllegalStateException e) {
-            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, new Exception("Each to() must be followed by node().", e));
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION,
+                    new Exception("Each to() must be followed by node().", e));
         }
         return this;
     }
@@ -53,7 +54,8 @@ public class NodeBuilder {
             state = state.next(CloneLink::new);
             state = state.next(nodes);
         } catch (Exception e) {
-            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, new Exception("Each toMany() must be followed by nodes().", e));
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION,
+                    new Exception("Each toMany() must be followed by nodes().", e));
         }
         return this;
     }
@@ -93,7 +95,8 @@ public class NodeBuilder {
             try {
                 previousNode.setLink(linkFunction.apply(node));
             } catch (UnsupportedOperationException e) {
-                throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, new Exception("Unable to specify a new output after a terminal node.", e));
+                throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION,
+                        new Exception("Unable to specify a new output after a terminal node.", e));
             }
             return new NodeState(node);
         }

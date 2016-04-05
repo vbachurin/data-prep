@@ -18,8 +18,8 @@ public interface RuntimeLink {
     void emit(DataSetRow row, RowMetadata metadata);
 
     /**
-     * Sends a {@link Signal event} to the {@link RuntimeNode}. Signals are data-independent events to indicate external events
-     * (such as end of the stream).
+     * Sends a {@link Signal event} to the {@link RuntimeNode}. Signals are data-independent events to indicate external
+     * events (such as end of the stream).
      * 
      * @param signal A {@link Signal signal} to be sent to the pipeline.
      */

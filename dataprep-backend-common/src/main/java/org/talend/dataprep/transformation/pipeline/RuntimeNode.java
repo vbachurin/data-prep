@@ -18,11 +18,11 @@ public interface RuntimeNode {
 
     /**
      * Sends a {@link Signal event} to the node. Signals are data-independent events to indicate external events (such
-     * as end of the stream). Node implementations are responsible of the signal propagation using the {@link RuntimeLink link}
-     * .
+     * as end of the stream). Node implementations are responsible of the signal propagation using the
+     * {@link RuntimeLink link} .
      *
      * @param signal A {@link Signal signal} to be sent to the pipeline.
-     * @see #setLink(RuntimeLink)
+     * @see Node#setLink(Link)
      */
     void signal(Signal signal);
 

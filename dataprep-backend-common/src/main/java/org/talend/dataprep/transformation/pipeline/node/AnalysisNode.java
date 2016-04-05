@@ -6,8 +6,6 @@ import java.util.function.Predicate;
 
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.statistics.StatisticsAdapter;
-import org.talend.dataprep.transformation.pipeline.Node;
-import org.talend.dataprep.transformation.pipeline.RuntimeNode;
 import org.talend.datascience.common.inference.Analyzer;
 import org.talend.datascience.common.inference.Analyzers;
 
@@ -19,10 +17,8 @@ public abstract class AnalysisNode extends BasicNode {
 
     protected final StatisticsAdapter adapter;
 
-    public AnalysisNode(Function<List<ColumnMetadata>,
-                        Analyzer<Analyzers.Result>> analyzer,
-                        Predicate<ColumnMetadata> filter,
-                        StatisticsAdapter adapter) {
+    public AnalysisNode(Function<List<ColumnMetadata>, Analyzer<Analyzers.Result>> analyzer, Predicate<ColumnMetadata> filter,
+            StatisticsAdapter adapter) {
         this.analyzer = analyzer;
         this.filter = filter;
         this.adapter = adapter;

@@ -40,7 +40,7 @@ public abstract class Visitor {
         pipeline.getNode().accept(this);
     }
 
-    public void visitNode(Node node)  {
+    public void visitNode(Node node) {
         doNodeVisit(node);
     }
 
@@ -50,6 +50,5 @@ public abstract class Visitor {
             node.accept(this);
         }
     }
-
 
 }

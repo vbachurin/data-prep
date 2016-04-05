@@ -14,13 +14,13 @@ public class BasicNode implements Node, RuntimeNode {
     }
 
     @Override
-    public void setLink(Link link) {
-        this.link = link;
+    public Link getLink() {
+        return link;
     }
 
     @Override
-    public Link getLink() {
-        return link;
+    public void setLink(Link link) {
+        this.link = link;
     }
 
     @Override

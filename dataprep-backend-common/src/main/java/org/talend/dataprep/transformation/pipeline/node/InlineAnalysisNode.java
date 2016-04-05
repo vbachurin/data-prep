@@ -60,7 +60,8 @@ public class InlineAnalysisNode extends AnalysisNode implements Monitored {
         try {
             // Some clean up before order
             final DataSetRow analysisRow = row.clone();
-            Set<String> columnsToRemove = analysisRow.values().entrySet().stream().map(Map.Entry::getKey).collect(Collectors.toSet());
+            Set<String> columnsToRemove = analysisRow.values().entrySet().stream().map(Map.Entry::getKey)
+                    .collect(Collectors.toSet());
             for (ColumnMetadata column : rowColumns) {
                 columnsToRemove.remove(column.getId());
             }

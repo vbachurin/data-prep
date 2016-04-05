@@ -119,7 +119,8 @@ public class DelayedAnalysisNode extends AnalysisNode implements Monitored {
                         try (JsonParser parser = mapper.getFactory()
                                 .createParser(new GZIPInputStream(new FileInputStream(transformationDelayed)))) {
                             final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
-                            final Set<String> columnToAnalyze = columns.stream().map(ColumnMetadata::getId).collect(Collectors.toSet());
+                            final Set<String> columnToAnalyze = columns.stream().map(ColumnMetadata::getId)
+                                    .collect(Collectors.toSet());
                             dataSet.getRecords().forEach(r -> {
                                 final String[] values = r.order(rowMetadata.getColumns()) //
                                         .toArray(DataSetRow.SKIP_TDP_ID.and(e -> columnToAnalyze.contains(e.getKey())));
@@ -143,7 +144,7 @@ public class DelayedAnalysisNode extends AnalysisNode implements Monitored {
                         final Iterator<String> iterator = forcedTypes.iterator();
                         for (ColumnMetadata column : columns) {
                             final String forcedType = iterator.next();
-                            if(!forcedType.isEmpty()) {
+                            if (!forcedType.isEmpty()) {
                                 column.setTypeForced(true);
                                 column.setType(forcedType);
                             }

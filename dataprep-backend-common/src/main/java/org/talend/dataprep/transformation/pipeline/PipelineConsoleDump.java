@@ -20,8 +20,8 @@ public class PipelineConsoleDump extends Visitor {
         final long count = monitored.getCount();
         double speed = totalTime > 0 ? Math.round(((double) count * 1000) / totalTime) : Double.POSITIVE_INFINITY;
 
-        builder.append("(").append(monitored.getTotalTime()).append(" ms - ").append(monitored.getCount())
-                .append(" rows - ").append(speed).append(" rows/s) ");
+        builder.append("(").append(monitored.getTotalTime()).append(" ms - ").append(monitored.getCount()).append(" rows - ")
+                .append(speed).append(" rows/s) ");
     }
 
     @Override
