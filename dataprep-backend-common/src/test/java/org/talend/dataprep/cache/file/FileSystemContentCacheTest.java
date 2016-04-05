@@ -59,7 +59,7 @@ public class FileSystemContentCacheTest {
         // Put a content in cache...
         ContentCacheKey key = new DummyCacheKey("titi");
         Assert.assertThat(cache.has(key), is(false));
-        addCacheEntry(key, "content");
+        addCacheEntry(key, "content", ContentCache.TimeToLive.DEFAULT);
         // ... has() must return true
         Assert.assertThat(cache.has(key), is(true));
     }
@@ -70,7 +70,7 @@ public class FileSystemContentCacheTest {
         ContentCacheKey key = new DummyCacheKey("tata");
         String content = "yet another content...";
         // Put a content in cache...
-        addCacheEntry(key, content);
+        addCacheEntry(key, content, ContentCache.TimeToLive.DEFAULT);
         // ... get() should return this content back.
         final String actual = IOUtils.toString(cache.get(key));
         Assert.assertThat(actual, is(content));
@@ -80,7 +80,7 @@ public class FileSystemContentCacheTest {
     public void testEvict() throws Exception {
         ContentCacheKey key = new DummyCacheKey("tutu");
         // Put a content in cache...
-        addCacheEntry(key, "content, yes again");
+        addCacheEntry(key, "content, yes again", ContentCache.TimeToLive.DEFAULT);
         Assert.assertThat(cache.has(key), is(true));
         // ... evict() it...
         cache.evict(key);
@@ -99,7 +99,7 @@ public class FileSystemContentCacheTest {
         }
 
         for (ContentCacheKey key : keys) {
-            addCacheEntry(key, "content");
+            addCacheEntry(key, "content", ContentCache.TimeToLive.DEFAULT);
             Assert.assertThat(cache.has(key), is(true));
         }
 
@@ -121,7 +121,7 @@ public class FileSystemContentCacheTest {
             keys.add(new DummyCacheKey("janitor me " + i + 1));
         }
         for (ContentCacheKey key : keys) {
-            addCacheEntry(key, "janitor content");
+            addCacheEntry(key, "janitor content", ContentCache.TimeToLive.DEFAULT);
             Assert.assertThat(cache.has(key), is(true));
         }
 
@@ -143,15 +143,58 @@ public class FileSystemContentCacheTest {
         });
     }
 
+    @Test
+    public void testJanitorEvictionPeriod() throws Exception {
+
+        // given some cache entries
+        List<ContentCacheKey> keys = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            keys.add(new DummyCacheKey("janitor me " + i + 1));
+        }
+        for (ContentCacheKey key : keys) {
+            addCacheEntry(key, "janitor content", ContentCache.TimeToLive.IMMEDIATE);
+            Assert.assertThat(cache.has(key), is(true));
+        }
+
+        // when eviction is performed and the janitor is called
+        cache.janitor();
+
+        // then, none of the cache entries should be removed
+        for (ContentCacheKey key : keys) {
+            Assert.assertThat(cache.has(key), is(true));
+        }
+
+        Thread.sleep(ContentCache.TimeToLive.IMMEDIATE.getTime() + 500);
+
+        // then, none of the cache entries should be removed
+        for (ContentCacheKey key : keys) {
+            Assert.assertThat(cache.has(key), is(false));
+        }
+
+        // when eviction is performed and the janitor is called
+        cache.janitor();
+        Files.walkFileTree(Paths.get(TEST_DIRECTORY), new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                if (!StringUtils.contains(file.toFile().getName(), ".nfs")) {
+                    Assert.fail("file " + file + " was not cleaned by the janitor");
+                }
+                return super.visitFile(file, attrs);
+            }
+        });
+    }
+
+
     /**
      * Add the cache entry.
      *
      * @param key where to put the cache entry.
      * @param content the cache entry content.
+     * @param timeToLive the time to live for entry
      * @throws IOException if an error occurs.
      */
-    private void addCacheEntry(ContentCacheKey key, String content) throws IOException {
-        try (OutputStream entry = cache.put(key, ContentCache.TimeToLive.DEFAULT)) {
+    private void addCacheEntry(ContentCacheKey key, String content, ContentCache.TimeToLive timeToLive) throws IOException {
+        try (OutputStream entry = cache.put(key, timeToLive)) {
             entry.write(content.getBytes());
             entry.flush();
         }

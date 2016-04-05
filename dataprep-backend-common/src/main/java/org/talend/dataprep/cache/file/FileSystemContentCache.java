@@ -1,15 +1,15 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.cache.file;
 
@@ -72,6 +72,22 @@ public class FileSystemContentCache implements ContentCache {
     }
 
     /**
+     * Checks if the timeToLive (TTL) of a cache entry is ok for the cache entry.
+     *
+     * @param timeToLive The TTL of the cache entry.
+     * @return <code>true</code> is TTL is greater than current time (+ {@link #EVICTION_PERIOD}), <code>false</code>
+     * otherwise (or if time to live is not a number).
+     */
+    private static boolean isLiveEntry(String timeToLive) {
+        try {
+            return Long.parseLong(timeToLive) > (System.currentTimeMillis() + EVICTION_PERIOD);
+        } catch (NumberFormatException e) {
+            LOGGER.debug("Invalid time to live '{}', consider entry as invalid.", timeToLive, e);
+            return false;
+        }
+    }
+
+    /**
      * Compute the path for the given key.
      *
      * @param key the cache key entry.
@@ -92,10 +108,9 @@ public class FileSystemContentCache implements ContentCache {
         final File[] files = path.getParent().toFile().listFiles();
         if (files != null) {
             for (File file : files) {
-                final long now = System.currentTimeMillis();
                 final String fileName = file.getName();
                 final String suffix = StringUtils.substringAfterLast(fileName, ".");
-                if (Long.parseLong(suffix) > now) {
+                if (isLiveEntry(suffix)) {
                     LOGGER.debug("[{}] Cache hit.", key);
                     return true;
                 }
@@ -117,7 +132,7 @@ public class FileSystemContentCache implements ContentCache {
                 }
 
                 final String suffix = StringUtils.substringAfterLast(file.getName(), ".");
-                if (Long.parseLong(suffix) > System.currentTimeMillis()) {
+                if (isLiveEntry(suffix)) {
                     try {
                         return Files.newInputStream(file.toPath());
                     } catch (IOException e) {

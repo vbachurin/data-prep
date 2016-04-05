@@ -24,6 +24,13 @@ import java.util.concurrent.TimeUnit;
 public interface ContentCache {
 
     /**
+     * A constant to prevent cache hits and janitor to collide (cache won't serve entries that are going to be cleared
+     * in <= EVICTION_PERIOD milliseconds). This constant then assumes it takes less than EVICTION_PERIOD to serve
+     * cached content to client.
+     */
+    int EVICTION_PERIOD = 2000;
+
+    /**
      * Check whether a cached content exists for given <code>preparationId</code> at step <code>stepId</code> for a
      * specific sample size.
      * 
@@ -87,7 +94,11 @@ public interface ContentCache {
         /**
          * Long time to live (long period -> 1 day).
          */
-        LONG(TimeUnit.DAYS.toMillis(1));
+        LONG(TimeUnit.DAYS.toMillis(1)),
+        /**
+         * A very short expiration time (
+         */
+        IMMEDIATE(ContentCache.EVICTION_PERIOD + 500L);
 
         private final long time;
 
