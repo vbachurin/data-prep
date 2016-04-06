@@ -1,15 +1,15 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.dataset.service.analysis.synchronous;
 
@@ -29,6 +29,7 @@ import org.talend.dataprep.api.dataset.statistics.StatisticsAdapter;
 import org.talend.dataprep.dataset.store.content.ContentStoreRouter;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.exception.error.DataSetErrorCodes;
 import org.talend.dataprep.lock.DistributedLock;
 import org.talend.dataprep.quality.AnalyzerService;
@@ -81,7 +82,8 @@ public class QualityAnalysis implements SynchronousDataSetAnalyzer {
             }
             try (Stream<DataSetRow> stream = store.stream(metadata)) {
                 if (!metadata.getLifecycle().schemaAnalyzed()) {
-                    LOGGER.debug("Schema information must be computed before quality analysis can be performed, ignoring message");
+                    LOGGER.debug(
+                            "Schema information must be computed before quality analysis can be performed, ignoring message");
                     return; // no acknowledge to allow re-poll.
                 }
                 LOGGER.debug("Analyzing quality of dataset #{}...", metadata.getId());
@@ -126,7 +128,7 @@ public class QualityAnalysis implements SynchronousDataSetAnalyzer {
      *
      * @param dataset the dataset metadata.
      * @param records the dataset records
-     * @param limit   indicates how many records will be read from stream. Use a number < 0 to perform a full scan of
+     * @param limit indicates how many records will be read from stream. Use a number < 0 to perform a full scan of
      */
     public void computeQuality(DataSetMetadata dataset, Stream<DataSetRow> records, long limit) {
         // Compute valid / invalid / empty count, need data types for analyzer first
@@ -135,21 +137,24 @@ public class QualityAnalysis implements SynchronousDataSetAnalyzer {
             LOGGER.debug("Skip analysis of {} (no column information).", dataset.getId());
             return;
         }
-        final Analyzer<Analyzers.Result> analyzer = analyzerService.qualityAnalysis(columns);
-        if (limit > 0) { // Only limit number of rows if limit > 0 (use limit to speed up sync analysis.
-            LOGGER.debug("Limit analysis to the first {}.", limit);
-            records = records.limit(limit);
-        } else {
-            LOGGER.debug("Performing full analysis.");
-        }
-        records.map(row -> row.toArray(DataSetRow.SKIP_TDP_ID)).forEach(analyzer::analyze);
-        // Determine content size
-        final List<Analyzers.Result> result = analyzer.getResult();
-        adapter.adaptForSampling(columns, result);
-        // Remember the number of records
-        if (!result.isEmpty()) {
-            final long recordCount = result.get(0).get(ValueQualityStatistics.class).getCount();
-            dataset.getContent().setNbRecords((int) recordCount);
+        try (Analyzer<Analyzers.Result> analyzer = analyzerService.qualityAnalysis(columns)) {
+            if (limit > 0) { // Only limit number of rows if limit > 0 (use limit to speed up sync analysis.
+                LOGGER.debug("Limit analysis to the first {}.", limit);
+                records = records.limit(limit);
+            } else {
+                LOGGER.debug("Performing full analysis.");
+            }
+            records.map(row -> row.toArray(DataSetRow.SKIP_TDP_ID)).forEach(analyzer::analyze);
+            // Determine content size
+            final List<Analyzers.Result> result = analyzer.getResult();
+            adapter.adaptForSampling(columns, result);
+            // Remember the number of records
+            if (!result.isEmpty()) {
+                final long recordCount = result.get(0).get(ValueQualityStatistics.class).getCount();
+                dataset.getContent().setNbRecords((int) recordCount);
+            }
+        } catch (Exception e) {
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
     }
 }

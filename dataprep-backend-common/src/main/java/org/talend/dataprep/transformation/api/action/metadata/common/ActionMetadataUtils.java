@@ -1,19 +1,22 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.transformation.api.action.metadata.common;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,11 +26,9 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.type.TypeUtils;
 import org.talend.dataprep.quality.AnalyzerService;
-import org.talend.dataquality.statistics.quality.DataTypeQualityAnalyzer;
-import org.talend.dataquality.statistics.type.DataTypeEnum;
 import org.talend.datascience.common.inference.Analyzer;
+import org.talend.datascience.common.inference.Analyzers;
 import org.talend.datascience.common.inference.ValueQualityStatistics;
 
 /**
@@ -39,7 +40,7 @@ public class ActionMetadataUtils implements ApplicationContextAware {
     /** This class' logger. */
     private static final Logger LOGGER = LoggerFactory.getLogger(ActionMetadataUtils.class);
 
-    private static final Map<String, Analyzer<ValueQualityStatistics>> analyzerCache = new HashMap<>();
+    private static final Map<String, Analyzer<Analyzers.Result>> analyzerCache = new HashMap<>();
 
     private static ApplicationContext applicationContext;
 
@@ -67,14 +68,14 @@ public class ActionMetadataUtils implements ApplicationContextAware {
             return true;
         }
         // Find analyzer for column type
+        final AnalyzerService analyzerService = applicationContext.getBean(AnalyzerService.class);
         final String domain = colMetadata.getDomain();
-        Analyzer<ValueQualityStatistics> analyzer;
+        Analyzer<Analyzers.Result> analyzer;
         if (!StringUtils.isEmpty(domain)) {
             synchronized (analyzerCache) {
                 analyzer = analyzerCache.get(domain);
                 if (analyzer == null) {
-                    analyzer = applicationContext.getBean(AnalyzerService.class).getQualityAnalyzer(Collections.singletonList(colMetadata));
-                    analyzer.init();
+                    analyzer = analyzerService.build(colMetadata, AnalyzerService.Analysis.QUALITY);
                     analyzerCache.put(domain, analyzer);
                 }
                 analyzer.getResult().clear();
@@ -83,23 +84,22 @@ public class ActionMetadataUtils implements ApplicationContextAware {
             }
         } else {
             // perform a data type only (no domain set).
-            DataTypeEnum[] types = TypeUtils.convert(Collections.singletonList(colMetadata));
-            analyzer = new DataTypeQualityAnalyzer(types, true);
+            analyzer = analyzerService.build(colMetadata, AnalyzerService.Analysis.QUALITY);
             analyzer.analyze(value);
             analyzer.end();
         }
-        final List<ValueQualityStatistics> results = analyzer.getResult();
+        final List<Analyzers.Result> results = analyzer.getResult();
         if (results.isEmpty()) {
             LOGGER.warn("ValueQualityAnalysis of {} returned an empty result, invalid value could not be detected...");
             return false;
         }
-        final Set<String> updatedInvalidValues = results.get(0).getInvalidValues();
+        final Set<String> updatedInvalidValues = results.get(0).get(ValueQualityStatistics.class).getInvalidValues();
         // update invalid values of column metadata to prevent unnecessary future analysis
         invalidValues.addAll(updatedInvalidValues);
         return updatedInvalidValues.contains(value);
     }
 
-    public static Map<String, Analyzer<ValueQualityStatistics>> getAnalyzerCache() {
+    public static Map<String, Analyzer<Analyzers.Result>> getAnalyzerCache() {
         return analyzerCache;
     }
 

@@ -1,18 +1,19 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.dataset.service.analysis.synchronous;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
@@ -20,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.statistics.StatisticsAdapter;
@@ -76,16 +78,17 @@ public class SchemaAnalysis implements SynchronousDataSetAnalyzer {
             try (Stream<DataSetRow> stream = store.stream(metadata)) {
                 LOGGER.info("Analyzing schema in dataset #{}...", dataSetId);
                 // Configure analyzers
-                final Analyzer<Analyzers.Result> analyzer = analyzerService
-                        .schemaAnalysis(metadata.getRowMetadata().getColumns());
-                // Determine schema for the content (on the 20 first rows).
-                stream.limit(20).map(row -> row.toArray(DataSetRow.SKIP_TDP_ID)).forEach(analyzer::analyze);
+                final List<ColumnMetadata> columns = metadata.getRowMetadata().getColumns();
+                try (Analyzer<Analyzers.Result> analyzer = analyzerService.schemaAnalysis(columns)) {
+                    // Determine schema for the content (on the 20 first rows).
+                    stream.limit(20).map(row -> row.toArray(DataSetRow.SKIP_TDP_ID)).forEach(analyzer::analyze);
 
-                // Find the best suitable type
-                adapter.adaptForSampling(metadata.getRowMetadata().getColumns(), analyzer.getResult());
-                LOGGER.info("Analyzed schema in dataset #{}.", dataSetId);
-                metadata.getLifecycle().schemaAnalyzed(true);
-                repository.add(metadata);
+                    // Find the best suitable type
+                    adapter.adaptForSampling(columns, analyzer.getResult());
+                    LOGGER.info("Analyzed schema in dataset #{}.", dataSetId);
+                    metadata.getLifecycle().schemaAnalyzed(true);
+                    repository.add(metadata);
+                }
             } catch (Exception e) {
                 LOGGER.error("Unable to analyse schema for dataset " + dataSetId + ".", e);
                 throw new TDPException(DataSetErrorCodes.UNABLE_TO_ANALYZE_COLUMN_TYPES, e);

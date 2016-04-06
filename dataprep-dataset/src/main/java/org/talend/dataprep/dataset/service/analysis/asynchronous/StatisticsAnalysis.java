@@ -1,15 +1,15 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.dataset.service.analysis.asynchronous;
 
@@ -36,6 +36,7 @@ import org.talend.dataprep.dataset.service.analysis.DataSetAnalyzer;
 import org.talend.dataprep.dataset.store.content.ContentStoreRouter;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.exception.error.DataSetErrorCodes;
 import org.talend.dataprep.lock.DistributedLock;
 import org.talend.dataprep.quality.AnalyzerService;
@@ -117,10 +118,11 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
                 } else {
                     // base analysis
                     try (final Stream<DataSetRow> stream = store.stream(metadata)) {
-                        final Analyzer<Analyzers.Result> analyzer = analyzerService.baselineAnalysis(columns);
-                        computeStatistics(analyzer, columns, stream);
-                        updateNbRecords(metadata, analyzer.getResult());
-                        LOGGER.debug("Base statistics analysis done for{}", dataSetId);
+                        try (Analyzer<Analyzers.Result> analyzer = analyzerService.baselineAnalysis(columns)) {
+                            computeStatistics(analyzer, columns, stream);
+                            updateNbRecords(metadata, analyzer.getResult());
+                            LOGGER.debug("Base statistics analysis done for{}", dataSetId);
+                        }
                     } catch (Exception e) {
                         LOGGER.warn("Base statistics analysis, dataset {} generates an error", dataSetId, e);
                         throw new TDPException(UNABLE_TO_ANALYZE_DATASET_QUALITY, e);
@@ -128,9 +130,10 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
 
                     // advanced analysis
                     try (final Stream<DataSetRow> stream = store.stream(metadata)) {
-                        final Analyzer<Analyzers.Result> analyzer = analyzerService.advancedAnalysis(columns);
-                        computeStatistics(analyzer, columns, stream);
-                        LOGGER.debug("Advanced statistics analysis done for{}", dataSetId);
+                        try (Analyzer<Analyzers.Result> analyzer = analyzerService.advancedAnalysis(columns)) {
+                            computeStatistics(analyzer, columns, stream);
+                            LOGGER.debug("Advanced statistics analysis done for{}", dataSetId);
+                        }
                     } catch (Exception e) {
                         LOGGER.warn("Advances statistics analysis, dataset {} generates an error", dataSetId, e);
                         throw new TDPException(UNABLE_TO_ANALYZE_DATASET_QUALITY, e);
@@ -200,8 +203,11 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
             LOGGER.debug("Skip statistics of {} (no column information).", metadata.getId());
             return;
         }
-        final Analyzer<Analyzers.Result> analyzer = analyzerService.full(columns);
-        computeStatistics(analyzer, columns, stream);
+        try (Analyzer<Analyzers.Result> analyzer = analyzerService.full(columns)) {
+            computeStatistics(analyzer, columns, stream);
+        } catch (Exception e) {
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
+        }
     }
 
     /**

@@ -1,15 +1,15 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.transformation.api.action.metadata.date;
 
@@ -23,19 +23,24 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.statistics.PatternFrequency;
 import org.talend.dataprep.quality.AnalyzerService;
-import org.talend.dataquality.statistics.frequency.AbstractFrequencyAnalyzer;
 import org.talend.dataquality.statistics.frequency.pattern.PatternFrequencyStatistics;
+import org.talend.datascience.common.inference.Analyzer;
+import org.talend.datascience.common.inference.Analyzers;
 
 /**
  * Component in charge of parsing dates.
  */
 @Component
 public class DateParser {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DateParser.class);
 
     @Autowired
     private AnalyzerService analyzerService;
@@ -61,7 +66,7 @@ public class DateParser {
      * At first uses the known date patterns from the column statistics. If it fails, the DQ library is called to try to
      * get the pattern.
      *
-     * @param value  the value to get the date time from. Value can't be be empty or null/
+     * @param value the value to get the date time from. Value can't be be empty or null/
      * @param column the column to get the date patterns from.
      * @return the parsed date time. For date only value, time is set to 00:00:00.
      * @throws DateTimeException if the date cannot be parsed, or if value is empty or null.
@@ -70,6 +75,7 @@ public class DateParser {
         try {
             return parseDateFromPatterns(value, getPatterns(column.getStatistics().getPatternFrequencies()));
         } catch (DateTimeException e) {
+            LOGGER.debug("Unable to parse date '{}'", value, e);
             return guessAndParse(value, column);
         }
     }
@@ -78,12 +84,12 @@ public class DateParser {
      * Try to guess the pattern from the value. If the date is successfully parsed, the column statistics is updated
      * with the new pattern.
      *
-     * @param value  the date to parse.
+     * @param value the date to parse.
      * @param column the column.
      * @return the parsed date.
      * @throws DateTimeException if the date cannot be parsed.
      */
-    protected LocalDateTime guessAndParse(String value, ColumnMetadata column) {
+    LocalDateTime guessAndParse(String value, ColumnMetadata column) {
         final DatePattern guessedPattern = guessPattern(value, column);
         LocalDateTime result = parseDateFromPatterns(value, Collections.singletonList(guessedPattern));
 
@@ -97,45 +103,51 @@ public class DateParser {
     /**
      * Guess the pattern from the given value.
      *
-     * @param value  the value to get the date time from.
+     * @param value the value to get the date time from.
      * @param column the column metadata
      * @return the wanted parsed date time. For date only value, time is set to 00:00:00.
      */
-    protected DatePattern guessPattern(String value, ColumnMetadata column) {
-
+    DatePattern guessPattern(String value, ColumnMetadata column) {
         if (StringUtils.isEmpty(value)) {
             throw new DateTimeException("No pattern can be found out of '" + value + "'");
         }
         // call DQ on the given value
-        final AbstractFrequencyAnalyzer<PatternFrequencyStatistics> analyzer = analyzerService
-                .getPatternFrequencyAnalyzer(column);
-        analyzer.analyze(value);
-        analyzer.end();
+        try (Analyzer<Analyzers.Result> analyzer = analyzerService.build(column, AnalyzerService.Analysis.PATTERNS)) {
+            analyzer.analyze(value);
+            analyzer.end();
 
-        // only one value --> only one result
-        final PatternFrequencyStatistics patternFrequencyStatistics = analyzer.getResult().get(0);
-        final Map<String, Long> topTerms = patternFrequencyStatistics.getTopK(1);
-        List<PatternFrequency> patterns = new ArrayList<>(1);
-        topTerms.forEach((s, o) -> patterns.add(new PatternFrequency(s, o)));
+            // only one value --> only one result
+            final Analyzers.Result result = analyzer.getResult().get(0);
+            if (result.exist(PatternFrequencyStatistics.class)) {
+                final PatternFrequencyStatistics patternFrequencyStatistics = result.get(PatternFrequencyStatistics.class);
+                final Map<String, Long> topTerms = patternFrequencyStatistics.getTopK(1);
+                List<PatternFrequency> patterns = new ArrayList<>(1);
+                topTerms.forEach((s, o) -> patterns.add(new PatternFrequency(s, o)));
 
-        // get & check the results
-        final List<DatePattern> results = getPatterns(patterns);
-        if (results.isEmpty()) {
-            throw new DateTimeException("DQ did not find any pattern for '" + value + "'");
+                // get & check the results
+                final List<DatePattern> results = getPatterns(patterns);
+                if (results.isEmpty()) {
+                    throw new DateTimeException("DQ did not find any pattern for '" + value + "'");
+                }
+
+                // as Christopher L. said : "there can be only one" :-)
+                return getPatterns(patterns).get(0);
+            } else {
+                throw new DateTimeException("DQ did not find any pattern for '" + value + "'");
+            }
+        } catch (Exception e) {
+            throw new DateTimeException("Unable to close analyzer after analyzing value '" + value + "'", e);
         }
-
-        // as Christopher L. said : "there can be only one" :-)
-        return getPatterns(patterns).get(0);
     }
 
     /**
      * Parse the date from the given patterns.
      *
-     * @param value    the text to parse.
+     * @param value the text to parse.
      * @param patterns the patterns to use.
      * @return the parsed date-time
      */
-    protected LocalDateTime parseDateFromPatterns(String value, List<DatePattern> patterns) {
+    LocalDateTime parseDateFromPatterns(String value, List<DatePattern> patterns) {
 
         // take care of the null value
         if (value == null) {
@@ -149,11 +161,13 @@ public class DateParser {
             try {
                 return LocalDateTime.parse(value, formatter);
             } catch (DateTimeException e) {
+                LOGGER.debug("Unable to parse date '{}' using LocalDateTime.", value, e);
                 // if it fails, let's try the LocalDate first
                 try {
                     LocalDate temp = LocalDate.parse(value, formatter);
                     return temp.atStartOfDay();
                 } catch (DateTimeException e2) {
+                    LOGGER.debug("Unable to parse date '{}' using LocalDate.", value, e2);
                     // nothing to do here, just try the next formatter
                 }
             }
@@ -166,23 +180,21 @@ public class DateParser {
      *
      * @param patternsFrequency the column to get the patterns from.
      */
-    protected List<DatePattern> getPatterns(List<PatternFrequency> patternsFrequency) {
+    List<DatePattern> getPatterns(List<PatternFrequency> patternsFrequency) {
         final Set<String> distinctPatterns = new HashSet<>(patternsFrequency.size());
 
-        return patternsFrequency.stream()
-                .filter(patternFreqItem -> isNotEmpty(patternFreqItem.getPattern()))
-                .filter(patternFreqItem -> distinctPatterns.add(patternFreqItem.getPattern())) // use Set<> to detect if pattern is a duplicate
+        return patternsFrequency.stream().filter(patternFreqItem -> isNotEmpty(patternFreqItem.getPattern()))
+                .filter(patternFreqItem -> distinctPatterns.add(patternFreqItem.getPattern())) // use Set<> to detect if
+                                                                                               // pattern is a duplicate
                 .map(patternFreqItem -> {
-                    try{
+                    try {
                         return new DatePattern(patternFreqItem.getPattern(), patternFreqItem.getOccurrences());
-                    }
-                    //thrown when pattern is not a valid date pattern
-                    catch(final IllegalArgumentException e) {
+                    } catch (final IllegalArgumentException e) {
+                        // thrown when pattern is not a valid date pattern
+                        LOGGER.debug("Unable to parse pattern '{}'", patternFreqItem.getPattern(), e);
                         return null;
                     }
-                })
-                .filter(datePattern -> datePattern != null) // remove non valid date patterns
-                .sorted()
-                .collect(toList());
+                }).filter(datePattern -> datePattern != null) // remove non valid date patterns
+                .sorted().collect(toList());
     }
 }
