@@ -387,7 +387,7 @@ public class DataSetService {
     @ResponseBody
     public DataSet get(
             @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata, //
-            @RequestParam(required = false) @ApiParam(name = "sample", value = "Size of the wanted sample, if missing, the full dataset is returned") Long sample, //
+            @RequestParam(required = false) @ApiParam(name = "sample", defaultValue = "0", value = "Size of the wanted sample, if missing, the full dataset is returned") Long sample, //
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the requested data set") String dataSetId) {
 
         HttpResponseContext.header("Content-Type", MediaType.APPLICATION_JSON_VALUE);

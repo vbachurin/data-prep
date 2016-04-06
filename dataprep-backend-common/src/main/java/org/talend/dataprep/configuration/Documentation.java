@@ -23,6 +23,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.service.ApiInfo;
@@ -51,6 +53,14 @@ public class Documentation {
 
     @Value("#{'${service.documentation.path}'.split(',')}")
     private String[] servicePaths;
+
+    @Controller
+    public static class SwaggerUIRedirection {
+        @RequestMapping("/docs")
+        String swaggerUI() {
+            return "redirect:/docs/index.html";
+        }
+    }
 
     /**
      * @return The swagger documentation.
