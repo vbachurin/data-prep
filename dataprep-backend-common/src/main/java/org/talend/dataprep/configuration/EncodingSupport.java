@@ -11,7 +11,7 @@
 //
 //  ============================================================================
 
-package org.talend.dataprep.dataset.configuration;
+package org.talend.dataprep.configuration;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
