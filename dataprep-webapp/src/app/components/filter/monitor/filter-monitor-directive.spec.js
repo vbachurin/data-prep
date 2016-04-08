@@ -27,6 +27,7 @@ describe('Filter monitor directive', function() {
 
     beforeEach(inject(function($rootScope, $compile) {
         scope = $rootScope.$new();
+        scope.toogle = () => {};
         createElement = function() {
             element = angular.element('<filter-monitor ' +
                 'filters="filters" ' +
@@ -37,6 +38,8 @@ describe('Filter monitor directive', function() {
             $compile(element)(scope);
             scope.$digest();
         };
+
+        spyOn(scope,'toogle');
     }));
 
     afterEach(function() {
@@ -77,15 +80,13 @@ describe('Filter monitor directive', function() {
             //given
             scope.filters = [{}];
             createElement();
-            var ctrl = element.controller('filterMonitor');
-            spyOn(ctrl,'onToogle');
 
             //when
             var ngModelController = element.find('input').controller('ngModel');
             ngModelController.$setViewValue('true');
 
             //then
-            expect(ctrl.onToogle).toHaveBeenCalled();
+            expect(scope.toogle).toHaveBeenCalled();
         });
     });
 });

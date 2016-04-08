@@ -117,7 +117,7 @@ export function PlaygroundStateService(RecipeStateService, recipeState,
         playgroundState.data = data;
         GridStateService.setData(data);
 
-        if(filterState.filtersEnabled) {
+        if(filterState.enabled) {
             GridStateService.setFilter(filterState.gridFilters, playgroundState.data);
         } else {
             GridStateService.setFilter([], playgroundState.data);

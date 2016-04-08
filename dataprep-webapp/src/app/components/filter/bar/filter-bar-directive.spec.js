@@ -57,6 +57,15 @@ describe('Filter bar directive', function() {
         expect(element.find('#reset-filters').attr('title')).toBe('Remove all filters');
     });
 
+    it('should NOT render "remove all" icon when there are not filters', function() {
+        //when
+        stateMock.playground.filter.gridFilters = [];
+        createElement();
+
+        //then
+        expect(element.find('#reset-filters').length).toBe(0);
+    });
+
     it('should execute reset callback on "remove all" icon click', function() {
         //given
         createElement();

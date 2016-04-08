@@ -23,6 +23,7 @@
  * @param {array} filters The filters to display
  * @param {function} onFilterChange The change filter callback
  * @param {function} onFilterRemove The remove filter callback
+ * @param {boolean} enabled Filters are enabled or disabled
  */
 export default function FilterList() {
     return {
@@ -32,7 +33,7 @@ export default function FilterList() {
             filters: '=',
             onFilterChange: '&',
             onFilterRemove: '&',
-            filtersEnabled: "<"
+            enabled: "<"
         },
         bindToController: true,
         controllerAs: 'filterCtrl',

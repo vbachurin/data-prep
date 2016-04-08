@@ -14,7 +14,7 @@
 export const filterState = {
     gridFilters: [],
     applyTransformationOnFilters: false,
-    filtersEnabled: true
+    enabled: true
 };
 
 export function FilterStateService() {
@@ -66,11 +66,13 @@ export function FilterStateService() {
     }
 
     function enableFilters() {
-        filterState.filtersEnabled = true;
+        filterState.enabled = true;
+        filterState.applyTransformationOnFilters = true;
     }
 
     function disableFilters() {
-        filterState.filtersEnabled = false;
+        filterState.enabled = false;
+        filterState.applyTransformationOnFilters = false;
     }
 
     //--------------------------------------------------------------------------------------------------------------

@@ -109,7 +109,7 @@ export default function Datagrid($timeout, state, DatagridGridService, DatagridC
              * @description Get the filters state
              */
             function getFiltersState() {
-                return state.playground.filter.filtersEnabled;
+                return state.playground.filter.enabled;
             }
 
                 /**

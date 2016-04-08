@@ -81,7 +81,7 @@ export default function TransformationApplicationService(state, PlaygroundServic
             params.column_name = column && column.name;
             params.row_id = line && line.tdpId;
 
-            if (state.playground.filter.applyTransformationOnFilters && state.playground.filter.filtersEnabled) {
+            if (state.playground.filter.applyTransformationOnFilters) {
                 var stepFilters = FilterAdapterService.toTree(state.playground.filter.gridFilters);
                 _.extend(params, stepFilters);
             }

@@ -22,14 +22,14 @@ describe('Filter state service', function () {
             FilterStateService.enableFilters();
 
             //then
-            expect(filterState.filtersEnabled).toBe(true);
+            expect(filterState.enabled).toBe(true);
         }));
         it('should disable filter', inject(function(filterState, FilterStateService) {
             //when
             FilterStateService.disableFilters();
 
             //then
-            expect(filterState.filtersEnabled).toBe(false);
+            expect(filterState.enabled).toBe(false);
         }));
     });
 

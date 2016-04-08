@@ -526,7 +526,7 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
      * @description Push a filter in the filter list
      */
     function toggleFilters() {
-        if (state.playground.filter.filtersEnabled) {
+        if (state.playground.filter.enabled) {
             StateService.disableFilters();
         } else {
             StateService.enableFilters();

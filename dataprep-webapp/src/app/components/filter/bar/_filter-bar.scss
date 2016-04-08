@@ -19,7 +19,6 @@
   @include display(flex);
   @include flex-direction(row);
   @include align-items(center);
-  @include label-switch();
   .label-switch {
     input[type="checkbox"] + .checkbox {
       margin: 0;
@@ -47,9 +46,6 @@
   .filters-remove {
     font-size: 0.7em;
     padding-right: 10px;
-
-    &:hover{
-      color: $blue;
-    }
+    color: $dark-gray;;
   }
 }

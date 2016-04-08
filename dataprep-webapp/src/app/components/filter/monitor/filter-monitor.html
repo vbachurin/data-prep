@@ -14,14 +14,12 @@
   -->
 
 <div id="filter-monitor">
-    <div class="filter-toogle">
-        <label class="label-switch" ng-if="filterMonitorCtrl.filters.length">
-            <input type="checkbox"
-                   ng-model="filterMonitorCtrl.state"
-                   ng-change="filterMonitorCtrl.onToogle()"/>
-            <div id="recipe-toggle-switch" class="checkbox"></div>
-        </label>
-    </div>
+    <label class="label-switch" ng-if="filterMonitorCtrl.filters.length">
+        <input type="checkbox"
+               ng-model="filterMonitorCtrl.state"
+               ng-change="filterMonitorCtrl.onToogle()"/>
+        <div id="recipe-toggle-switch" class="checkbox"></div>
+    </label>
 
     <div id="filters-monitor-stats"
          title="{{ 'NB_LINES_MATCHING_FILTERS' | translate:{percentage: filterMonitorCtrl.percentage} }}">

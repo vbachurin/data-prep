@@ -94,7 +94,6 @@ describe('Transformation Application Service', function () {
             var scope = 'column';
             stateMock.playground.grid.selectedColumn = {id: '0001', name: 'firstname'};
             stateMock.playground.filter.applyTransformationOnFilters = true;
-            stateMock.playground.filter.filtersEnabled = true;
 
             //when
             TransformationApplicationService.append(transformation, scope);
@@ -111,27 +110,6 @@ describe('Transformation Application Service', function () {
                         value: 'john'
                     }
                 }
-            };
-            expect(PlaygroundService.appendStep).toHaveBeenCalledWith('tolowercase', expectedParams);
-        }));
-
-        it('should call appendStep with disabled filter', inject((TransformationApplicationService, PlaygroundService) => {
-            //given
-            var transformation = {name: 'tolowercase'};
-            var scope = 'column';
-            stateMock.playground.grid.selectedColumn = {id: '0001', name: 'firstname'};
-            stateMock.playground.filter.applyTransformationOnFilters = true;
-            stateMock.playground.filter.filtersEnabled = false;
-
-            //when
-            TransformationApplicationService.append(transformation, scope);
-
-            //then
-            var expectedParams = {
-                scope: 'column',
-                column_id: '0001',
-                column_name: 'firstname',
-                row_id: undefined
             };
             expect(PlaygroundService.appendStep).toHaveBeenCalledWith('tolowercase', expectedParams);
         }));
@@ -230,7 +208,6 @@ describe('Transformation Application Service', function () {
             stateMock.playground.grid.selectedLine = {tdpId: 58};
             stateMock.playground.grid.selectedColumn = {id: '0001', name: 'firstname'};
             stateMock.playground.filter.applyTransformationOnFilters = true; // apply on filter
-            stateMock.playground.filter.filtersEnabled = true; // apply on filter
 
             //when
             TransformationApplicationService.editCell(rowItem, column, newValue, updateAllCellWithValue);

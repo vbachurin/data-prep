@@ -86,7 +86,7 @@
         </sc-tabs-item>
     </sc-tabs>
 
-    <div ng-if="actionsSuggestionsCtrl.state.playground.filter.gridFilters.length"
+    <div ng-if="actionsSuggestionsCtrl.state.playground.filter.gridFilters.length && actionsSuggestionsCtrl.state.playground.filter.enabled"
          class="filters-actions-form" >
         <span translate-once="APPLY_CHANGE_TO"></span>
         <input type="radio"

@@ -166,7 +166,7 @@ describe('Playground state service', () => {
             const data = {records: []};
             const filters = [{}, {}];
             filterStateMock.gridFilters = filters;
-            filterStateMock.filtersEnabled = true;
+            filterStateMock.enabled = true;
 
             //when
             PlaygroundStateService.setData(data);
@@ -181,7 +181,7 @@ describe('Playground state service', () => {
             const data = {records: []};
             const filters = [{}, {}];
             filterStateMock.gridFilters = filters;
-            filterStateMock.filtersEnabled = false;
+            filterStateMock.enabled = false;
 
             //when
             PlaygroundStateService.setData(data);
