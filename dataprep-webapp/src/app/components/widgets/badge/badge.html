@@ -20,7 +20,7 @@
         <span class="badge-item">{{badgeCtrl.text}}{{badgeCtrl.sign}}</span>
         <span class="badge-item">
             <form name="badgeCtrl.editBadgeValueForm">
-                <input ng-show="badgeCtrl.editable === true && badgeCtrl.enabled === true"
+                <input ng-show="badgeCtrl.editable === true"
                        class="editable-input textEllipsis"
                        type="text"
                        ng-model="badgeCtrl.value"
@@ -29,9 +29,9 @@
                        title="{{badgeCtrl.value}}"
                        ng-trim="false"/>
             </form>
-            <span class="description textEllipsis" ng-show="badgeCtrl.editable === false || badgeCtrl.enabled === false">{{badgeCtrl.value}}</span>
+            <span class="description textEllipsis" ng-show="badgeCtrl.editable === false">{{badgeCtrl.value}}</span>
         </span>
     </span>
 
-    <a ng-if="badgeCtrl.enabled === true" class="badge-close badge-item" ng-click="badgeCtrl.close()">&times;</a>
+    <a ng-if="badgeCtrl.removable === true" class="badge-close badge-item" ng-click="badgeCtrl.close()">&times;</a>
 </span>

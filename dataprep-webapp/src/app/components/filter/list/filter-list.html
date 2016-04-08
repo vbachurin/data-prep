@@ -19,9 +19,9 @@
                       obj="filter"
                       on-change="filterCtrl.changeFilter(obj, newValue)"
                       on-close="filterCtrl.removeFilter(obj)"
-                      editable="filter.editable"
+                      editable="filter.editable && filterCtrl.enabled"
                       type="filter.type"
-                      enabled ="filterCtrl.enabled">
+                      removable ="filterCtrl.enabled">
         </talend-badge>
     </li>
 </ul>

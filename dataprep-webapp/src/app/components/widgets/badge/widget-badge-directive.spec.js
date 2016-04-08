@@ -45,10 +45,10 @@ describe('Badge directive', function () {
         beforeEach(inject(function ($rootScope, $compile, $timeout) {
             scope = $rootScope.$new();
             scope.close = fns.close;
-            scope.enabled = true;
+            scope.removable = true;
 
             createElement = function () {
-                var template = '<talend-badge on-close="close()" text="Displayed text" enabled="enabled"></talend-badge>';
+                var template = '<talend-badge on-close="close()" text="Displayed text" removable="removable"></talend-badge>';
                 element = $compile(template)(scope);
                 $timeout.flush();
                 scope.$digest();
@@ -74,6 +74,15 @@ describe('Badge directive', function () {
 
             //then
             expect(fns.close).toHaveBeenCalled();
+        });
+
+        it('should not render a close button', function () {
+            //given
+            scope.removable = false;
+            createElement();
+
+            //then
+            expect(element.find('.badge-close').length).toBe(0);
         });
     });
 
