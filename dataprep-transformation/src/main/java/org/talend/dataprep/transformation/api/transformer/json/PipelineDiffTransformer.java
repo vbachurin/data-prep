@@ -98,12 +98,29 @@ class PipelineDiffTransformer implements Transformer {
         Predicate<DataSetRow> filter = isWithinWantedIndexes(minIndex, maxIndex);
         final Stream<DataSetRow> source = input.getRecords().filter(filter);
         // Run diff
-        source.forEach(r -> mergePipelineNode.receive(r, rowMetadata));
-        mergePipelineNode.signal(Signal.END_OF_STREAM);
-        // Print pipeline after execution (for debug purposes).
-        final StringBuilder afterExecution = new StringBuilder();
-        mergePipelineNode.accept(new PipelineConsoleDump(afterExecution));
-        LOGGER.debug("After execution: {}", afterExecution.toString());
+        try {
+            // Print pipeline before execution (for debug purposes).
+            logPipelineStatus(mergePipelineNode, "Before execution: {}");
+            // Run diff
+            source.forEach(r -> mergePipelineNode.receive(r, rowMetadata));
+            mergePipelineNode.signal(Signal.END_OF_STREAM);
+        } finally {
+            // Print pipeline after execution (for debug purposes).
+            logPipelineStatus(mergePipelineNode, "After execution: {}");
+            // Don't forget to clean up contexts (release connections used in lookup)
+            previewConfiguration.getReferenceContext().cleanup();
+            previewConfiguration.getPreviewContext().cleanup();
+        }
+    }
+
+    // Log diff pipeline to DEBUG level using provided message
+    private void logPipelineStatus(Node diffPipeline, String message) {
+        if (LOGGER.isDebugEnabled()) {
+            final StringBuilder builder = new StringBuilder();
+            final PipelineConsoleDump visitor = new PipelineConsoleDump(builder);
+            diffPipeline.accept(visitor);
+            LOGGER.debug(message, builder);
+        }
     }
 
     private Pipeline buildPipeline(RowMetadata rowMetadata,
