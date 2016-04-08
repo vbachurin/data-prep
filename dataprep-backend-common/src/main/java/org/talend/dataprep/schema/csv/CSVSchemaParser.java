@@ -61,7 +61,7 @@ public class CSVSchemaParser implements SchemaParser {
             List<String> header = csvFormatUtils.retrieveHeader(parameters);
 
             if (header == null || header.isEmpty()) {
-                try (CSVReader reader = new CSVReader(new InputStreamReader(request.getContent(), metadata.getEncoding()), separator)) {
+                try (CSVReader reader = new CSVReader(new InputStreamReader(request.getContent(), metadata.getEncoding()), separator, '\"', '\0')) {
                     String[] columns = reader.readNext();
                     if (columns == null) { // Empty content?
                         return SchemaParserResult.Builder.parserResult() //

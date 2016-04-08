@@ -111,7 +111,25 @@ public class CSVSerializerTest extends AbstractSchemaTestUtils {
         InputStream input = serializer.serialize(inputStream, datasetMetadata);
         String actual = IOUtils.toString(input);
 
+        // strange json because schema has not been detected
         String expected = "[{\"0000\":\",\\\"GÈrard\",\"0001\":null}]";
+        Assert.assertEquals(expected, actual);
+    }
+
+    /**
+     * Please have a look at <a href="https://jira.talendforge.org/browse/TDP-1623>TDP-1623</a>
+     * @throws IOException
+     */
+    @Test
+    public void should_serialize_csv_with_backslash() throws IOException {
+        InputStream inputStream = this.getClass().getResourceAsStream("tdp-1623_backslash_not_imported.csv");
+        DataSetMetadata datasetMetadata = ioTestUtils.getSimpleDataSetMetadata("City");
+        datasetMetadata.getContent().setNbLinesInHeader(1);
+
+        InputStream input = serializer.serialize(inputStream, datasetMetadata);
+        String actual = IOUtils.toString(input);
+
+        String expected = "[{\"0000\":\"Carson City\\\\Seine\"}]";
         Assert.assertEquals(expected, actual);
     }
 }
