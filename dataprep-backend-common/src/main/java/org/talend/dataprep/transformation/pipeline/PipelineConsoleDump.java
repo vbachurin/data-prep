@@ -8,7 +8,7 @@ public class PipelineConsoleDump extends Visitor {
 
     private final StringBuilder builder;
 
-    int indent;
+    private int indent;
 
     public PipelineConsoleDump(StringBuilder builder) {
         this.builder = builder;
@@ -29,58 +29,59 @@ public class PipelineConsoleDump extends Visitor {
         buildMonitorInformation(actionNode);
         builder.append("ACTION").append(" [").append(actionNode.getAction().getName()).append("] ").append("(status: ")
                 .append(actionNode.getActionContext().getActionStatus()).append(")").append('\n');
+        super.visitAction(actionNode);
     }
 
     @Override
     public void visitCompile(CompileNode compileNode) {
         builder.append("COMPILE").append(" [").append(compileNode.getAction().getName()).append("] ").append("(status: ")
                 .append(compileNode.getActionContext().getActionStatus()).append(")").append('\n');
+        super.visitCompile(compileNode);
     }
 
     @Override
     public void visitInlineAnalysis(InlineAnalysisNode inlineAnalysisNode) {
         buildMonitorInformation(inlineAnalysisNode);
         builder.append("INLINE ANALYSIS").append('\n');
+        super.visitInlineAnalysis(inlineAnalysisNode);
     }
 
     @Override
     public void visitSource(SourceNode sourceNode) {
         builder.append("-> SOURCE").append('\n');
+        super.visitSource(sourceNode);
     }
 
     @Override
     public void visitBasicLink(BasicLink basicLink) {
         builder.append("-> ");
-        basicLink.getTarget().accept(this);
+        super.visitBasicLink(basicLink);
     }
 
     @Override
     public void visitDelayedAnalysis(DelayedAnalysisNode delayedAnalysisNode) {
         buildMonitorInformation(delayedAnalysisNode);
         builder.append("DELAYED ANALYSIS").append('\n');
+        super.visitDelayedAnalysis(delayedAnalysisNode);
     }
 
     @Override
     public void visitPipeline(Pipeline pipeline) {
         builder.append("PIPELINE {").append('\n');
-        pipeline.getNode().accept(this);
+        super.visitPipeline(pipeline);
         builder.append('\n').append('}').append('\n');
     }
 
     @Override
     public void visitNode(Node node) {
         builder.append("UNKNOWN NODE").append('\n');
-        node.getLink().accept(this);
+        super.visitNode(node);
     }
 
     @Override
     public void visitCloneLink(CloneLink cloneLink) {
         builder.append("->").append('\n');
-        final Node[] nodes = cloneLink.getNodes();
-        for (int i = 0; i < nodes.length; i++) {
-            builder.append("\t-(").append(i + 1).append("/").append(nodes.length).append(")-> ");
-            nodes[i].accept(this);
-        }
+        super.visitCloneLink(cloneLink);
     }
 
 }

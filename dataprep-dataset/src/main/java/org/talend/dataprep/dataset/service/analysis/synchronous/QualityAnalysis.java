@@ -41,7 +41,7 @@ import org.talend.datascience.common.inference.ValueQualityStatistics;
 public class QualityAnalysis implements SynchronousDataSetAnalyzer {
 
     @Value("#{'${max_records:5000}'}")
-    public static final int MAX_RECORD = 5000;
+    private final int maxRecord = 5000;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(QualityAnalysis.class);
 
@@ -91,13 +91,13 @@ public class QualityAnalysis implements SynchronousDataSetAnalyzer {
                 // async).
                 final long dataSetSize = metadata.getContent().getNbRecords();
                 final boolean isNewDataSet = dataSetSize == 0;
-                if (isNewDataSet || dataSetSize == MAX_RECORD) {
-                    // If data set size is MAX_RECORD, performs a full scan, otherwise only take first MAX_RECORD
+                if (isNewDataSet || dataSetSize == maxRecord) {
+                    // If data set size is maxRecord, performs a full scan, otherwise only take first maxRecord
                     // records.
-                    computeQuality(metadata, stream, dataSetSize == MAX_RECORD ? -1 : MAX_RECORD);
+                    computeQuality(metadata, stream, dataSetSize == maxRecord ? -1 : maxRecord);
                 }
                 // Turn on / off "in progress" flag
-                if (isNewDataSet && metadata.getContent().getNbRecords() >= MAX_RECORD) {
+                if (isNewDataSet && metadata.getContent().getNbRecords() >= maxRecord) {
                     metadata.getLifecycle().inProgress(true);
                 } else {
                     metadata.getLifecycle().inProgress(false);

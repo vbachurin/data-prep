@@ -26,9 +26,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.HttpClient;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.web.bind.annotation.*;
 import org.talend.dataprep.api.preparation.AppendStep;
 import org.talend.dataprep.api.preparation.Preparation;
@@ -340,12 +338,7 @@ public class PreparationAPI extends APIService {
     public void previewDiff(@RequestBody
     final PreviewDiffInput input, final OutputStream output) {
         final HystrixCommand<InputStream> transformation = getCommand(PreviewDiff.class, getClient(), input);
-        try (InputStream commandResult = transformation.execute()){
-            IOUtils.copyLarge(commandResult, output);
-            output.flush();
-        } catch (Exception e) {
-            throw new TDPException(APIErrorCodes.UNABLE_TO_TRANSFORM_DATASET, e);
-        }
+        executePreviewCommand(output, transformation);
     }
 
     @RequestMapping(value = "/api/preparations/preview/update", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
@@ -353,12 +346,7 @@ public class PreparationAPI extends APIService {
     public void previewUpdate(@RequestBody
     final PreviewUpdateInput input, final OutputStream output) {
         final HystrixCommand<InputStream> transformation = getCommand(PreviewUpdate.class, getClient(), input);
-        try (InputStream commandResult = transformation.execute()){
-            IOUtils.copyLarge(commandResult, output);
-            output.flush();
-        } catch (Exception e) {
-            throw new TDPException(APIErrorCodes.UNABLE_TO_TRANSFORM_DATASET, e);
-        }
+        executePreviewCommand(output, transformation);
     }
 
     @RequestMapping(value = "/api/preparations/preview/add", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
@@ -367,9 +355,17 @@ public class PreparationAPI extends APIService {
     @Valid
     final PreviewAddInput input, final OutputStream output) {
         final HystrixCommand<InputStream> transformation = getCommand(PreviewAdd.class, getClient(), input);
-        try (InputStream commandResult = transformation.execute()){
+        executePreviewCommand(output, transformation);
+    }
+
+    private void executePreviewCommand(OutputStream output, HystrixCommand<InputStream> transformation) {
+        try (InputStream commandResult = transformation.execute()) {
             IOUtils.copyLarge(commandResult, output);
             output.flush();
+            LOG.info("Done executing preview command");
+        } catch (IOException e) {
+            // Preview commands are very often cancelled by UI, this is not an actual issue.
+            LOG.error("Aborted preview due to I/O exception.", e);
         } catch (Exception e) {
             throw new TDPException(APIErrorCodes.UNABLE_TO_TRANSFORM_DATASET, e);
         }
