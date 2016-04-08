@@ -19,7 +19,12 @@ import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
 import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.UUID;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -564,6 +569,34 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
         Assertions.assertThat(values.get(1)) //
                 .contains(MapEntry.entry("0000", "Boo"), //
                         MapEntry.entry("0001", ""));
+    }
+
+    /**
+     * test for TDP-1660 and TDP-1648
+     */
+    @Test
+    public void more_than_52_columns() throws Exception {
+        String fileName = "TDP_Epics.xlsx";
+        DataSetMetadata dataSetMetadata = metadataBuilder.metadata().id("epics").build();
+
+        try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
+            dataSetMetadata.getRowMetadata() //
+                    .setColumns(xlsSchemaParser.parse(getRequest(inputStream, "#456")) //
+                            .getSheetContents() //
+                            .get(0) //
+                            .getColumnMetadatas());
+        }
+
+        Assertions.assertThat(dataSetMetadata.getRowMetadata().getColumns()) //
+                .isNotNull() //
+                .isNotEmpty() //
+                .hasSize(98);
+
+        List<Map<String, String>> values = getValuesFromFile(fileName, dataSetMetadata);
+
+        logger.debug("values: {}", values);
+
+        Assertions.assertThat( values.get( 3 ).get( "0090" ) ).isEqualTo( "Small" );
     }
 
 }
