@@ -17,8 +17,9 @@
     <ul id="playground-left-header" insertion-playground-left-header>
         <li id="dataset-header-details">
             <span class="playground-dataset-name"
-                  title="{{$ctrl.dataset.name}}"
-                  ng-bind="$ctrl.dataset.name"></span>
+                  ng-class="{'preview-mode': $ctrl.preview}"
+                  title="{{::$ctrl.dataset.name}}"
+                  ng-bind="::$ctrl.dataset.name"></span>
 
             <span ng-if="$ctrl.displayNbLines"
                   ng-switch="!!$ctrl.dataset.limit">
@@ -26,11 +27,11 @@
                 <span class="file-lines-count"
                       ng-switch-when="false"
                       translate="FILE_DETAILS_LINES"
-                      translate-value-records="{{$ctrl.dataset.records}}"></span>
+                      translate-value-records="{{::$ctrl.dataset.records}}"></span>
                 <span class="file-lines-count"
                       ng-switch-when="true"
                       translate="FILE_DETAILS_LIMIT"
-                      translate-value-records="{{$ctrl.dataset.limit}}"></span>
+                      translate-value-records="{{::$ctrl.dataset.limit}}"></span>
             </span>
 
             <a id="playground-gear-icon"
