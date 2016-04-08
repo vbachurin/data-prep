@@ -58,7 +58,12 @@ public class PipelineTransformer implements Transformer {
                 .withStatisticsAdapter(adapter)
                 .build();
         LOGGER.debug("Before transformation: {}", pipeline);
-        pipeline.execute(input);
+        try {
+            pipeline.execute(input);
+        } finally {
+            // Don't forget to clean up context (release connections used in lookup).
+            configuration.getTransformationContext().cleanup();
+        }
         LOGGER.debug("After transformation: {}", pipeline);
     }
 

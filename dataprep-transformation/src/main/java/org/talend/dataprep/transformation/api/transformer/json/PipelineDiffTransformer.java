@@ -96,12 +96,25 @@ class PipelineDiffTransformer implements Transformer {
         // Run diff
         try {
             // Print pipeline before execution (for debug purposes).
-            LOGGER.debug("Before execution: {}", diffPipeline.toString());
+            logPipelineStatus(diffPipeline, "Before execution: {}");
             input.getRecords().forEach(r -> diffPipeline.exec().receive(r, rowMetadata));
             diffPipeline.exec().signal(Signal.END_OF_STREAM);
         } finally {
             // Print pipeline after execution (for debug purposes).
-            LOGGER.debug("After execution: {}", diffPipeline.toString());
+            logPipelineStatus(diffPipeline, "After execution: {}");
+            // Don't forget to clean up contexts (release connections used in lookup)
+            previewConfiguration.getReferenceContext().cleanup();
+            previewConfiguration.getPreviewContext().cleanup();
+        }
+    }
+
+    // Log diff pipeline to DEBUG level using provided message
+    private void logPipelineStatus(Node diffPipeline, String message) {
+        if (LOGGER.isDebugEnabled()) {
+            final StringBuilder builder = new StringBuilder();
+            final PipelineConsoleDump visitor = new PipelineConsoleDump(builder);
+            diffPipeline.accept(visitor);
+            LOGGER.debug(message, builder);
         }
     }
 
