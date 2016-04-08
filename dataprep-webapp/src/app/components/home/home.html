@@ -49,7 +49,8 @@
     <!-- Import dataset from local file -->
     <talend-modal fullscreen="false"
                   close-button="true"
-                  state="homeCtrl.datasetNameModal">
+                  state="homeCtrl.datasetNameModal"
+                  disable-enter="true">
         <span translate-once="ENTER_DATASET_NAME"></span>
         <form name="homeCtrl.datasetNameForm"
               ng-submit="homeCtrl.datasetNameForm.$valid && homeCtrl.uploadDatasetName()">
@@ -73,7 +74,8 @@
     <!-- Import remote HTTP dataset -->
     <talend-modal fullscreen="false"
                   close-button="true"
-                  state="homeCtrl.datasetHttpModal">
+                  state="homeCtrl.datasetHttpModal"
+                  disable-enter="true">
 
         <div class="modal-title" translate-once="IMPORT_HTTP_DATASET"></div>
         <span translate-once="ENTER_DATASET_NAME"></span>
@@ -96,7 +98,8 @@
     <!-- Import remote HDFS dataset -->
     <talend-modal fullscreen="false"
                   close-button="true"
-                  state="homeCtrl.datasetHdfsModal">
+                  state="homeCtrl.datasetHdfsModal"
+                  disable-enter="true">
 
         <div class="modal-title" translate-once="IMPORT_HDFS_DATASET"></div>
         <span translate-once="ENTER_DATASET_NAME"></span>

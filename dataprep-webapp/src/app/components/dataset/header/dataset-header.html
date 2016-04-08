@@ -42,7 +42,8 @@
 <talend-modal fullscreen="false"
               close-button="true"
               state="$ctrl.folderNameModal"
-              ng-if="$ctrl.folderNameModal">
+              ng-if="$ctrl.folderNameModal"
+              disable-enter="true">
     <span translate-once="ENTER_FOLDER_NAME"></span>
     <form name="$ctrl.folderNameForm" ng-submit="$ctrl.folderNameForm.$valid && $ctrl.addFolder()">
         <input type="text"
