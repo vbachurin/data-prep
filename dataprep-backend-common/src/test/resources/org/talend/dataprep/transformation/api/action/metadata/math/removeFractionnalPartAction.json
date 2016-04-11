@@ -1,9 +1,8 @@
 {
   "actions": [
     {
-      "action": "ceil",
+      "action": "round_down",
       "parameters": {
-        "precision": "0",
         "column_id": "aNumber",
         "scope": "column"
       }

@@ -1,15 +1,15 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
@@ -68,11 +68,13 @@ public class RoundFloorTest extends AbstractMetadataBaseTest {
         assertThat(action.getCategory(), is(ActionCategory.MATH.getDisplayName()));
     }
 
-    public void testCommon(String input, String expected) {
+    public void testCommon(String input, String expected, int precision) {
         // given
         final Map<String, String> values = new HashMap<>();
         values.put("aNumber", input);
         final DataSetRow row = new DataSetRow(values);
+
+        parameters.put(AbstractRound.PRECISION, "" + precision);
 
         // when
         ActionTestWorkbench.test(row, factory.create(action, parameters));
@@ -83,46 +85,74 @@ public class RoundFloorTest extends AbstractMetadataBaseTest {
 
     @Test
     public void testPositive() {
-        testCommon("5.0", "5");
-        testCommon("5.1", "5");
-        testCommon("5.5", "5");
-        testCommon("5.8", "5");
+        testCommon("5.0", "5", 0);
+        testCommon("5.1", "5", 0);
+        testCommon("5.5", "5", 0);
+        testCommon("5.8", "5", 0);
+
+        testCommon("5.0", "5.0", 1);
+        testCommon("5.1", "5.1", 1);
+        testCommon("5.5", "5.5", 1);
+        testCommon("5.8", "5.8", 1);
+
+        testCommon("5.0", "5.00", 2);
+        testCommon("5.1", "5.10", 2);
+        testCommon("5.5", "5.50", 2);
+        testCommon("5.8", "5.80", 2);
+
+        testCommon("5.0", "5", -2);
+        testCommon("5.1", "5", -2);
+        testCommon("5.5", "5", -2);
+        testCommon("5.8", "5", -2);
     }
 
     @Test
     public void testNegative() {
-        testCommon("-5.0", "-5");
-        testCommon("-5.4", "-6");
-        testCommon("-5.6", "-6");
+        testCommon("-5.0", "-5", 0);
+        testCommon("-5.4", "-6", 0);
+        testCommon("-5.6", "-6", 0);
+
+        testCommon("-5.0", "-5.0", 1);
+        testCommon("-5.4", "-5.4", 1);
+        testCommon("-5.6", "-5.6", 1);
+
+        testCommon("-5.00", "-5.0", 1);
+        testCommon("-5.45", "-5.5", 1);
+        testCommon("-5.63", "-5.7", 1);
     }
 
     @Test
     public void test_huge_numbers_positive() {
-        testCommon("131234567890.1", "131234567890");
-        testCommon("89891234567897.9", "89891234567897");
-        testCommon("34891234567899.9", "34891234567899");
-        testCommon("678999999999999.9", "678999999999999");
+        testCommon("131234567890.1", "131234567890", 0);
+        testCommon("89891234567897.9", "89891234567897", 0);
+        testCommon("34891234567899.9", "34891234567899", 0);
+        testCommon("678999999999999.9", "678999999999999", 0);
     }
 
     @Test
     public void test_huge_numbers_negative() {
-        testCommon("-131234567890.1", "-131234567891");
-        testCommon("-89891234567897.9", "-89891234567898");
-        testCommon("-34891234567899.9", "-34891234567900");
-        testCommon("-678999999999999.9", "-679000000000000");
+        testCommon("-131234567890.1", "-131234567891", 0);
+        testCommon("-89891234567897.9", "-89891234567898", 0);
+        testCommon("-34891234567899.9", "-34891234567900", 0);
+        testCommon("-678999999999999.9", "-679000000000000", 0);
     }
 
     @Test
     public void testInteger() {
-        testCommon("5", "5");
-        testCommon("-5", "-5");
+        testCommon("5", "5", 0);
+        testCommon("-5", "-5", 0);
+
+        testCommon("5", "5.0", 1);
+        testCommon("-5", "-5.0", 1);
     }
 
     @Test
     public void testString() {
-        testCommon("tagada", "tagada");
-        testCommon("", "");
-        testCommon("null", "null");
+        for (int precision = 0; precision <= 5; precision++) {
+            testCommon("tagada", "tagada", precision);
+            testCommon("", "", precision);
+            testCommon("null", "null", precision);
+        }
     }
 
     @Test
