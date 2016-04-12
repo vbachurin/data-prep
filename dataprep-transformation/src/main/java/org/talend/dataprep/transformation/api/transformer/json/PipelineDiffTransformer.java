@@ -102,9 +102,6 @@ class PipelineDiffTransformer implements Transformer {
         } finally {
             // Print pipeline after execution (for debug purposes).
             logPipelineStatus(diffPipeline, "After execution: {}");
-            // Don't forget to clean up contexts (release connections used in lookup)
-            previewConfiguration.getReferenceContext().cleanup();
-            previewConfiguration.getPreviewContext().cleanup();
         }
     }
 

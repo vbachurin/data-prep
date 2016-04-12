@@ -220,6 +220,7 @@ public class Pipeline implements Node, RuntimeNode {
                 current.to(new DelayedAnalysisNode(delayedAnalyzer, analysis.filter, adapter));
             }
             // Output
+            current.to(new CleanUpNode(context));
             current.to(outputSupplier.get());
             // Finally build pipeline
             return new Pipeline(current.build());

@@ -9,6 +9,7 @@ import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.DisposableBean;
 import org.talend.dataprep.api.dataset.*;
 import org.talend.dataprep.api.dataset.statistics.StatisticsAdapter;
 import org.talend.dataprep.api.preparation.Action;
@@ -342,6 +343,27 @@ public class PipelineTest {
                 ActionNode.class, InlineAnalysisNode.class, DelayedAnalysisNode.class };
         Assert.assertThat(visitor.traversedClasses, CoreMatchers.hasItems(expectedClasses));
         Assert.assertNotNull(pipeline.toString());
+    }
+
+    @Test
+    public void testCleanUp() throws Exception {
+        // Given
+        final TransformationContext transformationContext = new TransformationContext();
+        final ActionContext actionContext = transformationContext.create((r, ac) -> r);
+        final AtomicInteger wasDestroyed = new AtomicInteger(0);
+        actionContext.get("test1", p -> (DisposableBean) wasDestroyed::incrementAndGet);
+        actionContext.get("test2", p -> (DisposableBean) wasDestroyed::incrementAndGet);
+        final Node node = NodeBuilder.source() //
+                .to(new BasicNode()) //
+                .to(new CleanUpNode(transformationContext))
+                .to(output) //
+                .build();
+
+        // When
+        node.exec().signal(Signal.END_OF_STREAM);
+
+        // Then
+        assertEquals(2, wasDestroyed.get());
     }
 
     private static class TestOutput extends TerminalNode {
