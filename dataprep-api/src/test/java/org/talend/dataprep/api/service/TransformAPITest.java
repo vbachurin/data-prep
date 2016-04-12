@@ -279,5 +279,29 @@ public class TransformAPITest extends ApiServiceTestBase {
         assertThat(column.getStatistics().getHistogram().getItems().size(), is(12));
     }
 
+    /**
+     * see https://jira.talendforge.org/browse/TDP-1624
+     */
+    @Test
+    public void testCompareNumbersAfterSplit() throws Exception {
+
+        // given (a dataset with single date column)
+        final String preparationId = createPreparationFromFile("dataset/TDP-714.csv", "dates", "text/csv");
+
+        // when (change the date format to an unknown DQ pattern)
+        applyAction(preparationId,
+                IOUtils.toString(this.getClass().getResourceAsStream("transformation/split_compare_numbers.json")));
+
+        // then (the column is still a date without any invalid)
+        final String datasetContent = given().when() //
+                .expect().statusCode(200).log().ifError() //
+                .get("/api/preparations/{id}/content?version=head", preparationId)
+                .asString();
+
+        // then
+        final InputStream expectedContent = this.getClass().getResourceAsStream("transformation/split_compare_numbers_expected.json");
+
+        assertThat(datasetContent, sameJSONAsFile(expectedContent));
+    }
 
 }

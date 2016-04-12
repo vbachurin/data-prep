@@ -34,8 +34,10 @@ import org.talend.dataprep.transformation.api.action.parameters.SelectParameter;
 public abstract class AbstractCompareAction extends ActionMetadata implements ColumnAction, OtherColumnParameters, CompareAction {
 
     public static final int ERROR_COMPARE_RESULT = Integer.MIN_VALUE;
+
     public static final String ERROR_COMPARE_RESULT_LABEL = StringUtils.EMPTY;
-    private final Logger LOGGER = LoggerFactory.getLogger(getClass());
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractCompareAction.class);
 
     @Override
     @Nonnull
@@ -60,7 +62,7 @@ public abstract class AbstractCompareAction extends ActionMetadata implements Co
     }
 
     /**
-     * can be overriden as keys can be different (date have different keys/labels)
+     * can be overridden as keys can be different (date have different keys/labels)
      * 
      * @return {@link SelectParameter}
      */
@@ -137,13 +139,13 @@ public abstract class AbstractCompareAction extends ActionMetadata implements Co
                 .setColumnMetadata1(row.getRowMetadata().getById(columnId)) //
                 .setValue1(row.get(columnId)) //
                 // this can be null when comparing with a constant
-                .setColumnMetadata2(getColumnMetadataToCompareWith(parameters, row)) //
-                .setValue2(getValueToCompareWith(parameters, row));
+                .setColumnMetadata2(getColumnMetadataToCompareWith(parameters, context)) //
+                .setValue2(getValueToCompareWith(parameters, context, row));
         row.set(newColumnId, toStringCompareResult(comparisonRequest));
     }
 
     /**
-     * can be overriden as keys can be different (date have different keys/labels)
+     * can be overridden as keys can be different (date have different keys/labels)
      * 
      * @param parameters
      * @return
@@ -152,22 +154,21 @@ public abstract class AbstractCompareAction extends ActionMetadata implements Co
         return parameters.get(COMPARE_MODE);
     }
 
-    private String getValueToCompareWith(Map<String, String> parameters, DataSetRow row) {
+    private String getValueToCompareWith(Map<String, String> parameters, ActionContext context, DataSetRow row) {
         if (parameters.get(MODE_PARAMETER).equals(CONSTANT_MODE)) {
             return parameters.get(CONSTANT_VALUE);
         } else {
-            final ColumnMetadata selectedColumn = row.getRowMetadata().getById(parameters.get(SELECTED_COLUMN_PARAMETER));
+            final ColumnMetadata selectedColumn = context.getRowMetadata().getById(parameters.get(SELECTED_COLUMN_PARAMETER));
             return row.get(selectedColumn.getId());
         }
     }
 
-    private ColumnMetadata getColumnMetadataToCompareWith(Map<String, String> parameters, DataSetRow row) {
+    private ColumnMetadata getColumnMetadataToCompareWith(Map<String, String> parameters, ActionContext context) {
         if (parameters.get(MODE_PARAMETER).equals(CONSTANT_MODE)) {
             // we return the primary columnMetadata as we do not have an other one.
             return null;
         }
-        final ColumnMetadata selectedColumn = row.getRowMetadata().getById(parameters.get(SELECTED_COLUMN_PARAMETER));
-        return selectedColumn;
+        return context.getRowMetadata().getById(parameters.get(SELECTED_COLUMN_PARAMETER));
 
     }
 

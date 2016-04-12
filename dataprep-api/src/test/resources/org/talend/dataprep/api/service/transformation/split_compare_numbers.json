@@ -1,0 +1,27 @@
+{
+  "actions": [
+    {
+      "action": "split",
+      "parameters": {
+        "column_id": "0000",
+        "manual_separator_string": "/",
+        "scope": "column",
+        "limit": "3",
+        "row_id": "2",
+        "separator": "other (string)"
+      }
+    },
+    {
+      "action": "compare_numbers",
+      "parameters": {
+        "mode": "other_column_mode",
+        "selected_column": "0001",
+        "column_id": "0002",
+        "scope": "column",
+        "compare_mode": "eq",
+        "row_id": "2"
+      }
+    }
+
+  ]
+}
