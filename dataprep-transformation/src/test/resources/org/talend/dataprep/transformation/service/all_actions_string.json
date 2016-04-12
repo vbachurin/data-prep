@@ -3589,7 +3589,6 @@
       }
     ],
     "actionScope": [
-      "column_metadata"
     ],
     "category": "columns",
     "description": "Swap the values with an other column",

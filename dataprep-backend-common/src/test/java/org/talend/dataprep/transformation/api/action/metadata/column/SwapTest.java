@@ -1,15 +1,15 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.transformation.api.action.metadata.column;
 
@@ -33,7 +33,6 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
-import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
 import org.talend.dataprep.transformation.api.action.metadata.common.OtherColumnParameters;
 import org.talend.dataprep.transformation.api.action.metadata.date.BaseDateTests;
 
@@ -74,100 +73,94 @@ public class SwapTest extends BaseDateTests {
     @Test
     public void swap_columns() throws Exception {
         // given
-        List<DataSetRow> rows = Lists.newArrayList( getRow( "5", "beer", "yup"), getRow( "10", "wine", "cheese"));
-        parameters.put( OtherColumnParameters.SELECTED_COLUMN_PARAMETER, "0001");
-
+        List<DataSetRow> rows = Lists.newArrayList(getRow("5", "beer", "yup"), getRow("10", "wine", "cheese"));
+        parameters.put(OtherColumnParameters.SELECTED_COLUMN_PARAMETER, "0001");
 
         // when
-        ActionTestWorkbench.test( rows, factory.create(action, parameters));
+        ActionTestWorkbench.test(rows, factory.create(action, parameters));
 
         // then
-        Assertions.assertThat( rows.get( 0 ).values() ) //
-            .contains( MapEntry.entry( "0000", "beer" ), //
-                       MapEntry.entry( "0001", "5" ), //
-                       MapEntry.entry( "0002", "yup" ));
+        Assertions.assertThat(rows.get(0).values()) //
+                .contains(MapEntry.entry("0000", "beer"), //
+                        MapEntry.entry("0001", "5"), //
+                        MapEntry.entry("0002", "yup"));
 
-        Assertions.assertThat( rows.get( 1 ).values() ) //
-            .contains( MapEntry.entry( "0000", "wine" ), //
-                       MapEntry.entry( "0001", "10" ), //
-                       MapEntry.entry( "0002", "cheese" ));
+        Assertions.assertThat(rows.get(1).values()) //
+                .contains(MapEntry.entry("0000", "wine"), //
+                        MapEntry.entry("0001", "10"), //
+                        MapEntry.entry("0002", "cheese"));
 
         // FIXME how to test that ???
         /*
-        Assertions.assertThat(parameters.get( ImplicitParameters.OTHER_COLUMN_ID.getKey())) //
-                .isNotNull().isEqualTo("0001");
-        */
+         * Assertions.assertThat(parameters.get( ImplicitParameters.OTHER_COLUMN_ID.getKey())) //
+         * .isNotNull().isEqualTo("0001");
+         */
     }
 
     @Test
     public void swap_columns_with_empty() throws Exception {
         // given
-        List<DataSetRow> rows = Lists.newArrayList( getRow( "5", "beer", "yup"), getRow( "10", "", "cheese"));
-        parameters.put( OtherColumnParameters.SELECTED_COLUMN_PARAMETER, "0001");
-
+        List<DataSetRow> rows = Lists.newArrayList(getRow("5", "beer", "yup"), getRow("10", "", "cheese"));
+        parameters.put(OtherColumnParameters.SELECTED_COLUMN_PARAMETER, "0001");
 
         // when
-        ActionTestWorkbench.test( rows, factory.create(action, parameters));
+        ActionTestWorkbench.test(rows, factory.create(action, parameters));
 
         // then
-        Assertions.assertThat( rows.get( 0 ).values() ) //
-            .contains( MapEntry.entry( "0000", "beer" ), //
-                       MapEntry.entry( "0001", "5" ), //
-                       MapEntry.entry( "0002", "yup" ));
+        Assertions.assertThat(rows.get(0).values()) //
+                .contains(MapEntry.entry("0000", "beer"), //
+                        MapEntry.entry("0001", "5"), //
+                        MapEntry.entry("0002", "yup"));
 
-        Assertions.assertThat( rows.get( 1 ).values() ) //
-            .contains( MapEntry.entry( "0000", "" ), //
-                       MapEntry.entry( "0001", "10" ), //
-                       MapEntry.entry( "0002", "cheese" ));
-
+        Assertions.assertThat(rows.get(1).values()) //
+                .contains(MapEntry.entry("0000", ""), //
+                        MapEntry.entry("0001", "10"), //
+                        MapEntry.entry("0002", "cheese"));
 
     }
 
     @Test
     public void swap_columns_with_blank() throws Exception {
         // given
-        List<DataSetRow> rows = Lists.newArrayList( getRow( "5", "beer", "yup"), getRow( "10", " ", "cheese"));
-        parameters.put( OtherColumnParameters.SELECTED_COLUMN_PARAMETER, "0001");
-
+        List<DataSetRow> rows = Lists.newArrayList(getRow("5", "beer", "yup"), getRow("10", " ", "cheese"));
+        parameters.put(OtherColumnParameters.SELECTED_COLUMN_PARAMETER, "0001");
 
         // when
-        ActionTestWorkbench.test( rows, factory.create(action, parameters));
+        ActionTestWorkbench.test(rows, factory.create(action, parameters));
 
         // then
-        Assertions.assertThat( rows.get( 0 ).values() ) //
-            .contains( MapEntry.entry( "0000", "beer" ), //
-                       MapEntry.entry( "0001", "5" ), //
-                       MapEntry.entry( "0002", "yup" ));
+        Assertions.assertThat(rows.get(0).values()) //
+                .contains(MapEntry.entry("0000", "beer"), //
+                        MapEntry.entry("0001", "5"), //
+                        MapEntry.entry("0002", "yup"));
 
-        Assertions.assertThat( rows.get( 1 ).values() ) //
-            .contains( MapEntry.entry( "0000", " " ), //
-                       MapEntry.entry( "0001", "10" ), //
-                       MapEntry.entry( "0002", "cheese" ));
-
+        Assertions.assertThat(rows.get(1).values()) //
+                .contains(MapEntry.entry("0000", " "), //
+                        MapEntry.entry("0001", "10"), //
+                        MapEntry.entry("0002", "cheese"));
 
     }
 
     @Test
     public void swap_not_fail_unknown_target_column() throws Exception {
         // given
-        List<DataSetRow> rows = Lists.newArrayList( getRow( "5", "beer", "yup"), getRow( "10", "wine", "cheese"));
-        parameters.put( OtherColumnParameters.SELECTED_COLUMN_PARAMETER, "0009");
+        List<DataSetRow> rows = Lists.newArrayList(getRow("5", "beer", "yup"), getRow("10", "wine", "cheese"));
+        parameters.put(OtherColumnParameters.SELECTED_COLUMN_PARAMETER, "0009");
 
         // when
-        ActionTestWorkbench.test( rows, factory.create(action, parameters));
+        ActionTestWorkbench.test(rows, factory.create(action, parameters));
 
         // then
-        Assertions.assertThat( rows.get( 0 ).values() ) //
-            .contains( MapEntry.entry( "0000", "5" ), //
-                       MapEntry.entry( "0001", "beer" ), //
-                       MapEntry.entry( "0002", "yup" ));
+        Assertions.assertThat(rows.get(0).values()) //
+                .contains(MapEntry.entry("0000", "5"), //
+                        MapEntry.entry("0001", "beer"), //
+                        MapEntry.entry("0002", "yup"));
 
-        Assertions.assertThat( rows.get( 1 ).values() ) //
-            .contains( MapEntry.entry( "0000", "10" ), //
-                       MapEntry.entry( "0001", "wine" ), //
-                       MapEntry.entry( "0002", "cheese" ));
+        Assertions.assertThat(rows.get(1).values()) //
+                .contains(MapEntry.entry("0000", "10"), //
+                        MapEntry.entry("0001", "wine"), //
+                        MapEntry.entry("0002", "cheese"));
 
     }
-
 
 }

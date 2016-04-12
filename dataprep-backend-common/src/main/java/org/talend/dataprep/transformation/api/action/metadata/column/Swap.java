@@ -1,19 +1,17 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.transformation.api.action.metadata.column;
-
-import static org.talend.dataprep.transformation.api.action.metadata.category.ActionScope.COLUMN_METADATA;
 
 import java.util.*;
 
@@ -82,41 +80,32 @@ public class Swap extends ActionMetadata implements ColumnAction, OtherColumnPar
         return parameters;
     }
 
-    /**
-     * @see ActionMetadata#getActionScope()
-     */
     @Override
-    public List<String> getActionScope() {
-        return Collections.singletonList(COLUMN_METADATA.getDisplayName());
-    }
+    public void compile(ActionContext actionContext) {
+        super.compile(actionContext);
 
-    @Override
-    public void compile( ActionContext actionContext )
-    {
-        super.compile( actionContext );
-
-        Map<String,String> parameters = actionContext.getParameters();
+        Map<String, String> parameters = actionContext.getParameters();
 
         RowMetadata rowMetadata = actionContext.getRowMetadata();
 
         ColumnMetadata selectedColumn = rowMetadata.getById(parameters.get(SELECTED_COLUMN_PARAMETER));
 
-        if (selectedColumn == null){
+        if (selectedColumn == null) {
             return;
         }
 
         String domain = selectedColumn.getDomain();
         String type = selectedColumn.getType();
 
-        String columnId = parameters.get( ImplicitParameters.COLUMN_ID.getKey() );
+        String columnId = parameters.get(ImplicitParameters.COLUMN_ID.getKey());
 
-        ColumnMetadata originColumn = rowMetadata.getById( columnId );
+        ColumnMetadata originColumn = rowMetadata.getById(columnId);
 
-        selectedColumn.setDomain( originColumn.getDomain() );
-        selectedColumn.setType( originColumn.getType() );
+        selectedColumn.setDomain(originColumn.getDomain());
+        selectedColumn.setType(originColumn.getType());
 
-        originColumn.setDomain( domain );
-        originColumn.setType( type );
+        originColumn.setDomain(domain);
+        originColumn.setType(type);
     }
 
     /**
@@ -129,19 +118,19 @@ public class Swap extends ActionMetadata implements ColumnAction, OtherColumnPar
 
         ColumnMetadata selectedColumn = rowMetadata.getById(parameters.get(SELECTED_COLUMN_PARAMETER));
 
-        if (selectedColumn == null){
+        if (selectedColumn == null) {
             return;
         }
 
         final String columnId = context.getColumnId();
 
-        LOGGER.debug( "swapping columns {} <-> {}", columnId, selectedColumn.getId() );
+        LOGGER.debug("swapping columns {} <-> {}", columnId, selectedColumn.getId());
 
-        String columnValue = row.get( columnId );
-        String selectedColumnValue = row.get( selectedColumn.getId() );
+        String columnValue = row.get(columnId);
+        String selectedColumnValue = row.get(selectedColumn.getId());
 
-        row.set( columnId, selectedColumnValue == null ? StringUtils.EMPTY : selectedColumnValue );
-        row.set( selectedColumn.getId(), columnValue == null ? StringUtils.EMPTY : columnValue );
+        row.set(columnId, selectedColumnValue == null ? StringUtils.EMPTY : selectedColumnValue);
+        row.set(selectedColumn.getId(), columnValue == null ? StringUtils.EMPTY : columnValue);
     }
 
     @Override
