@@ -60,8 +60,8 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
     //--------------------------------------------------------------------------------------------------------------
     //--------------------------------------------------PREPARATION PICKER------------------------------------------
     //--------------------------------------------------------------------------------------------------------------
-    vm.openPreparationPicker = function openPreparationPicker() {
-        StateService.updatePreparationPickerDisplay(!vm.state.playground.displayPreparationPicker);
+    vm.togglePreparationPicker = function togglePreparationPicker() {
+        vm.displayPreparationPicker = !vm.displayPreparationPicker;
     };
 
     //--------------------------------------------------------------------------------------------------------------

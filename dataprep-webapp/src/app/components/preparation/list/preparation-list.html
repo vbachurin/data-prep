@@ -1,0 +1,29 @@
+<!--
+  ~ ============================================================================
+  ~
+  ~  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+  ~
+  ~  This source code is available under agreement available at
+  ~  https://github.com/Talend/data-prep/blob/master/LICENSE
+  ~
+  ~  You should have received a copy of the agreement
+  ~  along with this program; if not, write to Talend SA
+  ~  9 rue Pages 92150 Suresnes, France
+  ~
+  ~ ============================================================================
+  -->
+
+<div class="preparation-list inventory-tile-list">
+    <inventory-tile
+            ng-repeat="preparation in preparationListCtrl.state.inventory.preparations track by preparation.id"
+
+            dataset="preparation.dataset"
+            preparation="preparation"
+            on-click="angular.noop"
+            on-title-click="preparationListCtrl.load(preparation)"
+            on-clone="preparationListCtrl.clone(preparation)"
+            on-favorite="preparation.favorite = !preparation.favorite"
+            on-remove="preparationListCtrl.remove(preparation)"
+            on-rename="preparationListCtrl.rename(preparation, text)"
+    ></inventory-tile>
+</div>

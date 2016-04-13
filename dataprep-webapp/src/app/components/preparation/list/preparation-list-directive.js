@@ -20,7 +20,7 @@
 export default function PreparationList() {
     return {
         restrict: 'E',
-        templateUrl: 'app/components/preparation-list/preparation-list.html',
+        templateUrl: 'app/components/preparation/list/preparation-list.html',
         bindToController: true,
         controllerAs: 'preparationListCtrl',
         controller: 'PreparationListCtrl'
