@@ -32,6 +32,10 @@
     .btn-transparent {
       opacity: 1;
     }
+
+    .inventory-text .edit-btn {
+      display: block;
+    }
   }
 
   .inventory-icon {
@@ -91,6 +95,10 @@
     .edition-text-input {
       padding: 4px;
       width: 220px;
+    }
+
+    .edit-btn {
+      display: none;
     }
   }
 
