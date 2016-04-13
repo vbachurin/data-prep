@@ -184,7 +184,9 @@ describe('Slidable directive', function () {
         createResizableElement('right');
 
         //then
-        expect(element[0].style.flex).toBe('0 0 500px');
+        const elementStyle = element[0].style;
+        const flexStyle = elementStyle['flex'] || elementStyle['-webkit-flex'];
+        expect(flexStyle).toBe('0 0 500px');
     }));
 
     it('should remove transition when resize start', function() {
@@ -229,6 +231,8 @@ describe('Slidable directive', function () {
         scope.$digest();
 
         //then
-        expect(element[0].style.flex).toBe('0 250px');
+        const elementStyle = element[0].style;
+        const flexStyle = elementStyle['flex'] || elementStyle['-webkit-flex'];
+        expect(flexStyle).toBe('0 0 250px');
     });
 });

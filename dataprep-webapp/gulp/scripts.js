@@ -13,7 +13,8 @@ function webpackWrapper(watch, callback) {
     var webpackOptions = {
         watch: watch,
         babel: {
-            presets: ['es2015']
+            presets: ['es2015'],
+            plugins: ['transform-object-rest-spread']
         },
         module: {
             preLoaders: [{test: /\.js$/, exclude: /node_modules/, loader: 'eslint-loader'}],

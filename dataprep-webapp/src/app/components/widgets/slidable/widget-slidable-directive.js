@@ -94,7 +94,7 @@ export default function TalendSlidable($window) {
                     resize: function (event, ui) {
                         iElement.css('left', 'auto');
                         iElement.css('right', 'auto');
-                        iElement.css('flex', '0 ' + ui.size.width + 'px');
+                        iElement.css('flex', '0 0 ' + ui.size.width + 'px');
                     }
                 });
             }

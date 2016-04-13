@@ -1,7 +1,8 @@
 var testConfig = {
     // *optional* babel options: isparta will use it as well as babel-loader
     babel: {
-        presets: ['es2015']
+        presets: ['es2015'],
+        plugins: ['transform-object-rest-spread']
     },
     // *optional* isparta options: istanbul behind isparta will use it
     isparta: {
@@ -9,7 +10,8 @@ var testConfig = {
         noAutoWrap: true,
         // these babel options will be passed only to isparta and not to babel-loader
         babel: {
-            presets: ['es2015']
+            presets: ['es2015'],
+            plugins: ['transform-object-rest-spread']
         }
     },
     module: {
