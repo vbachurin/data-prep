@@ -10,7 +10,8 @@
     "test": "karma start",
     "test:auto": "karma start --auto",
     "test:ci": "karma start karma.conf.ci.js",
-    "lint": "eslint --config .eslintrc src/**/*.js"
+    "lint": "eslint --config .eslintrc src/**/*.js",
+    "sasslint" : "sass-lint 'src/app/**/*.scss' -v -q"
   },
   "devDependencies": {
     "babel-core": "^6.5.2",
@@ -62,6 +63,7 @@
     "ng-annotate-loader": "0.0.10",
     "phantomjs-polyfill": "0.0.1",
     "phantomjs-prebuilt": "^2.1.7",
+    "sass-lint": "^1.5.1",
     "uglify-save-license": "~0.4.1",
     "webpack-stream": "~2.1.1",
     "wiredep": "~2.2.2",

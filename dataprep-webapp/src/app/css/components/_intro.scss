@@ -10,9 +10,7 @@
   9 rue Pages 92150 Suresnes, France
 
   ============================================================================*/
-
-/****    INTRO.JS -  START  ****/
-
+// scss-lint:disable all
 .introjs-overlay {
   position: absolute;
   z-index: 999999;
@@ -37,7 +35,6 @@
 .introjs-fixParent {
   z-index: auto !important;
   opacity: 1.0 !important;
-  /*position: absolute !important;   changed by MM to not trash the overall layout*/
   -webkit-transform: none !important;
   -moz-transform: none !important;
   -ms-transform: none !important;
@@ -225,10 +222,6 @@ tr.introjs-showElement > th {
   white-space: nowrap;
 }
 
-/*
- Buttons style by http://nicolasgallagher.com/lab/css3-github-buttons/
- Changed by Afshin Mehrabani
-*/
 .introjs-button {
   position: relative;
   overflow: visible;
@@ -252,7 +245,6 @@ tr.introjs-showElement > th {
 
 }
 
-/* overrides extra padding on button elements in Firefox */
 .introjs-button::-moz-focus-inner {
   padding: 0;
   border: 0;
@@ -364,4 +356,4 @@ tr.introjs-showElement > th {
   left: 50%;
   top: 50%;
 }
-
+// scss-lint:enable all

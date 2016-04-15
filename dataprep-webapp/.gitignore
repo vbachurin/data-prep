@@ -11,6 +11,9 @@
 # Coverage directory used by tools like istanbul
 coverage
 
+# Linters
+linters
+
 # Dependency directory
 node_modules
 
