@@ -34,6 +34,7 @@ import org.springframework.stereotype.Service;
 import org.talend.daikon.number.BigDecimalParser;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.date.DateManipulator;
 import org.talend.dataprep.exception.TDPException;
@@ -82,7 +83,7 @@ public class SimpleFilterService implements FilterService {
     private DateParser dateParser;
 
     @Override
-    public Predicate<DataSetRow> build(String filterAsString) {
+    public Predicate<DataSetRow> build(String filterAsString, RowMetadata rowMetadata) {
         if (isEmpty(filterAsString)) {
             return r -> true;
         }
@@ -93,14 +94,14 @@ public class SimpleFilterService implements FilterService {
             if (!elements.hasNext()) {
                 throw new IllegalArgumentException("Malformed filter: " + filterAsString);
             } else {
-                return buildFilter(root);
+                return buildFilter(root, rowMetadata);
             }
         } catch (Exception e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_FILTER, e);
         }
     }
 
-    private Predicate<DataSetRow> buildFilter(JsonNode currentNode) {
+    private Predicate<DataSetRow> buildFilter(JsonNode currentNode, RowMetadata rowMetadata) {
         final Iterator<JsonNode> children = currentNode.elements();
         final JsonNode currentNodeContent = children.next();
         final String columnId = currentNodeContent.has("field") ? currentNodeContent.get("field").asText() : null;
@@ -128,19 +129,19 @@ public class SimpleFilterService implements FilterService {
         case MATCHES:
             return createMatchesPredicate(currentNode, columnId, value);
         case INVALID:
-            return createInvalidPredicate(columnId);
+            return createInvalidPredicate(columnId, rowMetadata);
         case VALID:
-            return createValidPredicate(columnId);
+            return createValidPredicate(columnId, rowMetadata);
         case EMPTY:
             return createEmptyPredicate(columnId);
         case RANGE:
-            return createRangePredicate(columnId, currentNodeContent);
+            return createRangePredicate(columnId, currentNodeContent, rowMetadata);
         case AND:
-            return createAndPredicate(currentNodeContent);
+            return createAndPredicate(currentNodeContent, rowMetadata);
         case OR:
-            return createOrPredicate(currentNodeContent);
+            return createOrPredicate(currentNodeContent, rowMetadata);
         case NOT:
-            return createNotPredicate(currentNodeContent);
+            return createNotPredicate(currentNodeContent, rowMetadata);
         default:
             throw new UnsupportedOperationException(
                     "Unsupported query, unknown filter '" + currentNodeName + "': " + currentNode.toString());
@@ -151,12 +152,13 @@ public class SimpleFilterService implements FilterService {
      * Create a predicate that do a logical AND between 2 filters
      *
      * @param nodeContent The node content
+     * @param rowMetadata Row metadata to used to obtain information (valid/invalid, types...)
      * @return the AND predicate
      */
-    private Predicate<DataSetRow> createAndPredicate(final JsonNode nodeContent) {
+    private Predicate<DataSetRow> createAndPredicate(final JsonNode nodeContent, RowMetadata rowMetadata) {
         checkValidMultiPredicate(nodeContent);
-        final Predicate<DataSetRow> leftFilter = buildFilter(nodeContent.get(0));
-        final Predicate<DataSetRow> rightFilter = buildFilter(nodeContent.get(1));
+        final Predicate<DataSetRow> leftFilter = buildFilter(nodeContent.get(0), rowMetadata);
+        final Predicate<DataSetRow> rightFilter = buildFilter(nodeContent.get(1), rowMetadata);
         return leftFilter.and(rightFilter);
     }
 
@@ -164,12 +166,13 @@ public class SimpleFilterService implements FilterService {
      * Create a predicate that do a logical OR between 2 filters
      *
      * @param nodeContent The node content
+     * @param rowMetadata Row metadata to used to obtain information (valid/invalid, types...)
      * @return the OR predicate
      */
-    private Predicate<DataSetRow> createOrPredicate(final JsonNode nodeContent) {
+    private Predicate<DataSetRow> createOrPredicate(final JsonNode nodeContent, RowMetadata rowMetadata) {
         checkValidMultiPredicate(nodeContent);
-        final Predicate<DataSetRow> leftFilter = buildFilter(nodeContent.get(0));
-        final Predicate<DataSetRow> rightFilter = buildFilter(nodeContent.get(1));
+        final Predicate<DataSetRow> leftFilter = buildFilter(nodeContent.get(0), rowMetadata);
+        final Predicate<DataSetRow> rightFilter = buildFilter(nodeContent.get(1), rowMetadata);
         return leftFilter.or(rightFilter);
     }
 
@@ -177,16 +180,17 @@ public class SimpleFilterService implements FilterService {
      * Create a predicate that negates a filter
      *
      * @param nodeContent The node content
+     * @param rowMetadata Row metadata to used to obtain information (valid/invalid, types...)
      * @return The NOT predicate
      */
-    private Predicate<DataSetRow> createNotPredicate(final JsonNode nodeContent) {
+    private Predicate<DataSetRow> createNotPredicate(final JsonNode nodeContent, RowMetadata rowMetadata) {
         if (!nodeContent.isObject()) {
             throw new IllegalArgumentException("Unsupported query, malformed 'not' (expected 1 object child).");
         }
         if (nodeContent.size() == 0) {
             throw new IllegalArgumentException("Unsupported query, malformed 'not' (object child is empty).");
         }
-        return buildFilter(nodeContent).negate();
+        return buildFilter(nodeContent, rowMetadata).negate();
     }
 
     /**
@@ -287,11 +291,12 @@ public class SimpleFilterService implements FilterService {
      * Create a predicate that checks if the value is invalid
      *
      * @param columnId The column id
+     * @param rowMetadata Row metadata to used to obtain information (valid/invalid, types...)
      * @return The invalid value predicate
      */
-    private Predicate<DataSetRow> createInvalidPredicate(final String columnId) {
+    private Predicate<DataSetRow> createInvalidPredicate(final String columnId, RowMetadata rowMetadata) {
         return r -> {
-            final Set<String> invalidValues = getInvalidValues(r, columnId);
+            final Set<String> invalidValues = getInvalidValues(columnId, rowMetadata);
             final String columnValue = r.get(columnId);
             return invalidValues.contains(columnValue);
         };
@@ -301,11 +306,12 @@ public class SimpleFilterService implements FilterService {
      * Create a predicate that checks if the value is value (not empty and not invalid)
      *
      * @param columnId The column id
+     * @param rowMetadata Row metadata to used to obtain information (valid/invalid, types...)
      * @return The valid value predicate
      */
-    private Predicate<DataSetRow> createValidPredicate(final String columnId) {
+    private Predicate<DataSetRow> createValidPredicate(final String columnId, RowMetadata rowMetadata) {
         return r -> {
-            final Set<String> invalidValues = getInvalidValues(r, columnId);
+            final Set<String> invalidValues = getInvalidValues(columnId, rowMetadata);
             final String columnValue = r.get(columnId);
             return isNotEmpty(columnValue) && !invalidValues.contains(columnValue);
         };
@@ -328,18 +334,18 @@ public class SimpleFilterService implements FilterService {
      * @param nodeContent The node content that contains min/max values
      * @return The range predicate
      */
-    private Predicate<DataSetRow> createRangePredicate(final String columnId, final JsonNode nodeContent) {
+    private Predicate<DataSetRow> createRangePredicate(final String columnId, final JsonNode nodeContent, final RowMetadata rowMetadata) {
         final String start = nodeContent.get("start").asText();
         final String end = nodeContent.get("end").asText();
         return r -> {
-            final String columnType = r.getRowMetadata().getById(columnId).getType();
+            final String columnType = rowMetadata.getById(columnId).getType();
             Type parsedType = Type.get(columnType);
             if (Type.DATE.isAssignableFrom(parsedType)) {
-                return createDateRangePredicate(columnId, start, end).test(r);
-            } else if (Type.NUMERIC.isAssignableFrom(parsedType)) {
-                return createNumberRangePredicate(columnId, start, end).test(r);
+                return createDateRangePredicate(columnId, start, end, rowMetadata).test(r);
             } else {
-                throw new IllegalArgumentException("Type '" + parsedType.getName() + "' is not a valid type for range.");
+                // Assume range can be parsed as number (may happen if column is currently marked as string, but will
+                // contain some numbers).
+                return createNumberRangePredicate(columnId, start, end).test(r);
             }
         };
     }
@@ -352,7 +358,7 @@ public class SimpleFilterService implements FilterService {
      * @param end The end value
      * @return The date range predicate
      */
-    private Predicate<DataSetRow> createDateRangePredicate(final String columnId, final String start, final String end) {
+    private Predicate<DataSetRow> createDateRangePredicate(final String columnId, final String start, final String end, final RowMetadata rowMetadata) {
         try {
             final long minTimestamp = Long.parseLong(start);
             final long maxTimestamp = Long.parseLong(end);
@@ -361,7 +367,7 @@ public class SimpleFilterService implements FilterService {
             final LocalDateTime maxDate = dateManipulator.fromEpochMillisecondsWithSystemOffset(maxTimestamp);
 
             return safeDate(r -> {
-                final ColumnMetadata columnMetadata = r.getRowMetadata().getById(columnId);
+                final ColumnMetadata columnMetadata = rowMetadata.getById(columnId);
                 final LocalDateTime columnValue = dateParser.parse(r.get(columnId), columnMetadata);
                 return minDate.compareTo(columnValue) == 0 || (minDate.isBefore(columnValue) && maxDate.isAfter(columnValue));
             });
@@ -397,12 +403,11 @@ public class SimpleFilterService implements FilterService {
     /**
      * Get the invalid value collection on a specific column
      *
-     * @param row The dataset row
      * @param columnId The column id
      * @return The invalid values for the specified column
      */
-    private Set<String> getInvalidValues(final DataSetRow row, final String columnId) {
-        final ColumnMetadata column = row.getRowMetadata().getById(columnId);
+    private Set<String> getInvalidValues(final String columnId, final RowMetadata rowMetadata) {
+        final ColumnMetadata column = rowMetadata.getById(columnId);
         if (column != null) {
             return column.getQuality().getInvalidValues();
         }

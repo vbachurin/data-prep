@@ -1,0 +1,41 @@
+{
+  "actions": [
+    {
+      "action": "replace_on_value",
+      "parameters": {
+        "column_id": "0005",
+        "cell_value": {
+          "token": "false",
+          "operator": "equals"
+        },
+        "replace_value": "0",
+        "scope": "column"
+      }
+    },
+    {
+      "action": "replace_on_value",
+      "parameters": {
+        "column_id": "0005",
+        "cell_value": {
+          "token": "true",
+          "operator": "equals"
+        },
+        "replace_value": "1",
+        "scope": "column"
+      }
+    },
+    {
+      "action": "keep_only",
+      "parameters": {
+        "column_id": "0005",
+        "filter": {
+          "eq": {
+            "field": "0005",
+            "value": "0"
+          }
+        },
+        "scope": "column"
+      }
+    }
+  ]
+}

@@ -304,4 +304,23 @@ public class TransformAPITest extends ApiServiceTestBase {
         assertThat(datasetContent, sameJSONAsFile(expectedContent));
     }
 
+    /**
+     * see TDP-1672 (Filter on values created by previous step)
+     */
+    @Test
+    public void shouldFilterOnPreviouslyCreatedValues() throws Exception {
+        // given
+        final String preparationId = createPreparationFromFile("dataset/dataset_TDP-1672.csv", "testDataset", "text/csv");
+        applyAction(preparationId, IOUtils.toString(this.getClass().getResourceAsStream("transformation/TDP-1672.json")));
+
+        // when
+        final String transformed = given().when() //
+                .expect().statusCode(200).log().ifError() //
+                .get("/api/preparations/{id}/content?version=head", preparationId).asString();
+
+        // then
+        final InputStream expectedContent = this.getClass().getResourceAsStream("dataset/dataset_TDP-1672_expected.json");
+        assertThat(transformed, sameJSONAsFile(expectedContent));
+    }
+
 }

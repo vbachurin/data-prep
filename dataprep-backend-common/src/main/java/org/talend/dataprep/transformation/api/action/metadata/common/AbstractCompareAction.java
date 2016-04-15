@@ -136,7 +136,7 @@ public abstract class AbstractCompareAction extends ActionMetadata implements Co
 
         ComparisonRequest comparisonRequest = new ComparisonRequest() //
                 .setMode(compareMode) //
-                .setColumnMetadata1(row.getRowMetadata().getById(columnId)) //
+                .setColumnMetadata1(context.getRowMetadata().getById(columnId)) //
                 .setValue1(row.get(columnId)) //
                 // this can be null when comparing with a constant
                 .setColumnMetadata2(getColumnMetadataToCompareWith(parameters, context)) //

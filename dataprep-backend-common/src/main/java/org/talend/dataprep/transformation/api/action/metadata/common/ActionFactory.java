@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.filter.FilterService;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.transformation.api.action.DataSetMetadataAction;
@@ -33,7 +34,7 @@ public class ActionFactory {
     private ActionMetadataValidation validator;
 
     @Autowired(required = false)
-    private FilterService filterService = s -> (r -> true);
+    private FilterService filterService = (s, metadata) -> r -> true;
 
     /**
      * Get the scope category from parameters
@@ -61,21 +62,20 @@ public class ActionFactory {
         }
         final Map<String, String> parametersCopy = new HashMap<>(parameters);
         final ScopeCategory scope = getScope(parametersCopy);
-        final Predicate<DataSetRow> filter = getFilter(parametersCopy);
 
         return builder().withName(metadata.getName()) //
                 .withParameters(parametersCopy) //
                 .withCompile(actionContext -> {
                     try {
-                        actionContext.setFilter(filter);
                         actionContext.setParameters(parametersCopy);
                         metadata.compile(actionContext);
+                        actionContext.setFilter(getFilter(parametersCopy, actionContext.getRowMetadata()));
                     } catch (Exception e) {
                         LOGGER.error("Unable to use action '{}' due to unexpected error.", metadata.getName(), e);
                         actionContext.setActionStatus(ActionContext.ActionStatus.CANCELED);
                     }
                 }) //
-                .withRow((row, context) -> handleRow(metadata, parameters, scope, filter, row, context)) //
+                .withRow((row, context) -> handleRow(metadata, parameters, scope, row, context)) //
                 .build();
     }
 
@@ -83,10 +83,12 @@ public class ActionFactory {
      * Get the row filter from parameters.
      *
      * @param parameters the transformation parameters
+     * @param rowMetadata Row metadata to used to obtain information (valid/invalid, types...)
      * @return A {@link Predicate filter} for data set rows.
      */
-    private Predicate<DataSetRow> getFilter(Map<String, String> parameters) {
-        final Predicate<DataSetRow> predicate = filterService.build(parameters.get(ImplicitParameters.FILTER.getKey()));
+    private Predicate<DataSetRow> getFilter(Map<String, String> parameters, RowMetadata rowMetadata) {
+        final String filterAsString = parameters.get(ImplicitParameters.FILTER.getKey());
+        final Predicate<DataSetRow> predicate = filterService.build(filterAsString, rowMetadata);
         final ScopeCategory scope = getScope(parameters);
         if (scope == ScopeCategory.CELL || scope == ScopeCategory.LINE) {
             final Long rowId;
@@ -106,12 +108,11 @@ public class ActionFactory {
     private DataSetRow handleRow(final ActionMetadata metadata, //
             final Map<String, String> parameters, //
             final ScopeCategory scope, //
-            final Predicate<DataSetRow> filter, //
             final DataSetRow row, //
             final ActionContext context) {
         try {
             final DataSetRow actionRow;
-            if (metadata.implicitFilter() && !filter.test(row)) {
+            if (metadata.implicitFilter() && !context.getFilter().test(row)) {
                 // Return non-modifiable row since it didn't pass the filter (but metadata might be modified).
                 actionRow = row.unmodifiable();
             } else {

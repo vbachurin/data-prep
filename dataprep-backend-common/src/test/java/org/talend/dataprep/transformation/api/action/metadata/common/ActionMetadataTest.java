@@ -209,11 +209,10 @@ public class ActionMetadataTest extends AbstractMetadataBaseTest {
         final DataSetRow row = new DataSetRow(rowValues);
         row.setTdpId(58L);
 
-        final ActionContext context = new ActionContext(new TransformationContext(), row.getRowMetadata());
         final Action action = factory.create(lineTransformation, parameters);
 
         // when
-        action.getRowAction().apply(row, context);
+        ActionTestWorkbench.test(row, action);
 
         // then
         assertThat(row.get("0001"), is("TOTO"));
@@ -233,11 +232,10 @@ public class ActionMetadataTest extends AbstractMetadataBaseTest {
         final DataSetRow row = new DataSetRow(rowValues);
         row.setTdpId(60L);
 
-        final ActionContext context = new ActionContext(new TransformationContext(), row.getRowMetadata());
         final Action action = factory.create(lineTransformation, parameters);
 
         // when
-        action.getRowAction().apply(row, context);
+        ActionTestWorkbench.test(row, action);
 
         // then
         assertThat(row.get("0001"), is("toto"));

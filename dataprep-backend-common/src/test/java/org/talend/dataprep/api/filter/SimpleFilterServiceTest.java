@@ -37,10 +37,14 @@ import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.action.metadata.date.DateParser;
 
 public class SimpleFilterServiceTest {
-    final SimpleFilterService service = new SimpleFilterService();
+
+    private final SimpleFilterService service = new SimpleFilterService();
 
     private DataSetRow datasetRowFromValues;
+
     private DataSetRow datasetRowFromMetadata;
+
+    private RowMetadata rowMetadata;
 
     @Before
     public void init() {
@@ -51,7 +55,7 @@ public class SimpleFilterServiceTest {
         final ColumnMetadata column = new ColumnMetadata();
         column.setId("0001");
         column.getQuality().setInvalidValues(invalidValues);
-        final RowMetadata rowMetadata = new RowMetadata();
+        rowMetadata = new RowMetadata();
         rowMetadata.setColumns(singletonList(column));
         datasetRowFromMetadata = new DataSetRow(rowMetadata);
     }
@@ -62,7 +66,7 @@ public class SimpleFilterServiceTest {
         final String filtersDefinition = "";
 
         //when
-        final Predicate<DataSetRow> filter = service.build(filtersDefinition);
+        final Predicate<DataSetRow> filter = service.build(filtersDefinition, rowMetadata);
 
         //then
         assertThat(filter.test(datasetRowFromValues), is(true));
@@ -74,7 +78,7 @@ public class SimpleFilterServiceTest {
         final String filtersDefinition = "{}";
 
         //when
-        service.build(filtersDefinition);
+        service.build(filtersDefinition, rowMetadata);
 
         //then
     }
@@ -85,7 +89,7 @@ public class SimpleFilterServiceTest {
         final String filtersDefinition = "}";
 
         //when
-        service.build(filtersDefinition);
+        service.build(filtersDefinition, rowMetadata);
 
         //then
     }
@@ -101,7 +105,7 @@ public class SimpleFilterServiceTest {
                 "}";
 
         //when
-        final Predicate<DataSetRow> filter = service.build(filtersDefinition);
+        service.build(filtersDefinition, rowMetadata);
 
         //then
     }
@@ -117,7 +121,7 @@ public class SimpleFilterServiceTest {
                 "}";
 
         //when
-        final Predicate<DataSetRow> filter = service.build(filtersDefinition);
+        final Predicate<DataSetRow> filter = service.build(filtersDefinition, rowMetadata);
 
         //then
         datasetRowFromValues.set("0001", "toto");
@@ -144,7 +148,7 @@ public class SimpleFilterServiceTest {
                 "}";
 
         //when
-        final Predicate<DataSetRow> filter = service.build(filtersDefinition);
+        final Predicate<DataSetRow> filter = service.build(filtersDefinition, rowMetadata);
 
         //then
         datasetRowFromValues.set("0001", "5.0"); //eq
@@ -181,7 +185,7 @@ public class SimpleFilterServiceTest {
                 "}";
 
         //when
-        final Predicate<DataSetRow> filter = service.build(filtersDefinition);
+        final Predicate<DataSetRow> filter = service.build(filtersDefinition, rowMetadata);
 
         //then
         datasetRowFromValues.set("0001", "5.35"); //eq
@@ -218,7 +222,7 @@ public class SimpleFilterServiceTest {
                 "}";
 
         //when
-        final Predicate<DataSetRow> filter = service.build(filtersDefinition);
+        final Predicate<DataSetRow> filter = service.build(filtersDefinition, rowMetadata);
 
         //then
         datasetRowFromValues.set("0001", "6"); //gt
@@ -274,7 +278,7 @@ public class SimpleFilterServiceTest {
                 "}";
 
         //when
-        final Predicate<DataSetRow> filter = service.build(filtersDefinition);
+        final Predicate<DataSetRow> filter = service.build(filtersDefinition, rowMetadata);
 
         //then
         datasetRowFromValues.set("0001", "6"); //gt
@@ -330,7 +334,7 @@ public class SimpleFilterServiceTest {
                 "}";
 
         //when
-        final Predicate<DataSetRow> filter = service.build(filtersDefinition);
+        final Predicate<DataSetRow> filter = service.build(filtersDefinition, rowMetadata);
 
         //then
         datasetRowFromValues.set("0001", "6"); //gt
@@ -386,7 +390,7 @@ public class SimpleFilterServiceTest {
                 "}";
 
         //when
-        final Predicate<DataSetRow> filter = service.build(filtersDefinition);
+        final Predicate<DataSetRow> filter = service.build(filtersDefinition, rowMetadata);
 
         //then
         datasetRowFromValues.set("0001", "6"); //gt
@@ -442,7 +446,7 @@ public class SimpleFilterServiceTest {
                 "}";
 
         //when
-        final Predicate<DataSetRow> filter = service.build(filtersDefinition);
+        final Predicate<DataSetRow> filter = service.build(filtersDefinition, rowMetadata);
 
         //then
         datasetRowFromValues.set("0001", "toto"); //equals
@@ -466,7 +470,7 @@ public class SimpleFilterServiceTest {
                 "}";
 
         //when
-        final Predicate<DataSetRow> filter = service.build(filtersDefinition);
+        final Predicate<DataSetRow> filter = service.build(filtersDefinition, rowMetadata);
 
         //then
         datasetRowFromValues.set("0001", "toto"); // different pattern
@@ -493,7 +497,7 @@ public class SimpleFilterServiceTest {
                 "}";
 
         //when
-        final Predicate<DataSetRow> filter = service.build(filtersDefinition);
+        final Predicate<DataSetRow> filter = service.build(filtersDefinition, rowMetadata);
 
         //then
         datasetRowFromValues.set("0001", ""); // empty value
@@ -513,7 +517,7 @@ public class SimpleFilterServiceTest {
                 "}";
 
         //when
-        final Predicate<DataSetRow> filter = service.build(filtersDefinition);
+        final Predicate<DataSetRow> filter = service.build(filtersDefinition, rowMetadata);
 
         //then
         datasetRowFromMetadata.set("0001", "invalid value"); //value in invalid array in column metadata
@@ -534,7 +538,7 @@ public class SimpleFilterServiceTest {
                 "}";
 
         //when
-        final Predicate<DataSetRow> filter = service.build(filtersDefinition);
+        final Predicate<DataSetRow> filter = service.build(filtersDefinition, rowMetadata);
 
         //then
         datasetRowFromMetadata.set("0001", "invalid value"); //value in invalid array in column metadata
@@ -555,7 +559,7 @@ public class SimpleFilterServiceTest {
                 "}";
 
         //when
-        final Predicate<DataSetRow> filter = service.build(filtersDefinition);
+        final Predicate<DataSetRow> filter = service.build(filtersDefinition, rowMetadata);
 
         //then
         datasetRowFromMetadata.set("0001", ""); //empty
@@ -576,7 +580,7 @@ public class SimpleFilterServiceTest {
                 "}";
 
         //when
-        final Predicate<DataSetRow> filter = service.build(filtersDefinition);
+        final Predicate<DataSetRow> filter = service.build(filtersDefinition, rowMetadata);
 
         //then
         datasetRowFromMetadata.getRowMetadata().getById("0001").setType("integer");
@@ -651,7 +655,7 @@ public class SimpleFilterServiceTest {
         service.setDateParser(dateParser);
 
         //when
-        final Predicate<DataSetRow> filter = service.build(filtersDefinition);
+        final Predicate<DataSetRow> filter = service.build(filtersDefinition, rowMetadata);
 
         //then
         datasetRowFromMetadata.set("0001", "a"); //invalid number
@@ -688,7 +692,7 @@ public class SimpleFilterServiceTest {
                 "}";
 
         //when
-        final Predicate<DataSetRow> filter = service.build(filtersDefinition);
+        final Predicate<DataSetRow> filter = service.build(filtersDefinition, rowMetadata);
 
         //then
         datasetRowFromValues.set("0001", ""); //empty
@@ -722,7 +726,7 @@ public class SimpleFilterServiceTest {
                 "}";
 
         //when
-        final Predicate<DataSetRow> filter = service.build(filtersDefinition);
+        final Predicate<DataSetRow> filter = service.build(filtersDefinition, rowMetadata);
 
         //then
         datasetRowFromValues.set("0001", ""); //empty
@@ -752,7 +756,7 @@ public class SimpleFilterServiceTest {
                 "}";
 
         //when
-        final Predicate<DataSetRow> filter = service.build(filtersDefinition);
+        final Predicate<DataSetRow> filter = service.build(filtersDefinition, rowMetadata);
 
         //then
         datasetRowFromValues.set("0001", ""); //empty
@@ -781,7 +785,7 @@ public class SimpleFilterServiceTest {
                 "}";
 
         //when
-        final Predicate<DataSetRow> filter = service.build(filtersDefinition);
+        service.build(filtersDefinition, rowMetadata);
 
         //then
     }
@@ -796,7 +800,7 @@ public class SimpleFilterServiceTest {
                 "}";
 
         //when
-        final Predicate<DataSetRow> filter = service.build(filtersDefinition);
+        service.build(filtersDefinition, rowMetadata);
 
         //then
     }
