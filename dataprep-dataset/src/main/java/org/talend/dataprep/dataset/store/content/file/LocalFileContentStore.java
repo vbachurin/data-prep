@@ -13,6 +13,8 @@
 
 package org.talend.dataprep.dataset.store.content.file;
 
+import static org.talend.daikon.exception.ExceptionContext.build;
+
 import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -27,7 +29,6 @@ import org.slf4j.Marker;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
-import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.dataset.store.content.DataSetContentStore;
 import org.talend.dataprep.exception.TDPException;
@@ -77,7 +78,7 @@ public class LocalFileContentStore extends DataSetContentStore {
                 LOGGER.debug(marker, "Ignore update of data set as content seems empty");
             }
         } catch (IOException e) {
-            throw new TDPException(DataSetErrorCodes.UNABLE_TO_STORE_DATASET_CONTENT, e, ExceptionContext.build().put("id",
+            throw new TDPException(DataSetErrorCodes.UNABLE_TO_STORE_DATASET_CONTENT, e, build().put("id",
                     dataSetMetadata.getId()));
         }
     }
@@ -97,8 +98,7 @@ public class LocalFileContentStore extends DataSetContentStore {
         try {
             FilesHelper.delete(getFile(dataSetMetadata));
         } catch (IOException e) {
-            throw new TDPException(DataSetErrorCodes.UNABLE_TO_DELETE_DATASET, ExceptionContext.build().put("dataSetId",
-                    dataSetMetadata.getId()));
+            throw new TDPException(DataSetErrorCodes.UNABLE_TO_DELETE_DATASET, e, build().put("dataSetId", dataSetMetadata.getId()));
         }
     }
 

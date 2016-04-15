@@ -13,14 +13,15 @@
 
 package org.talend.dataprep.encrypt;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.crypto.Cipher;
-import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
 import java.security.Key;
 import java.util.Base64;
+
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class provides a helper class to encrypt and decrypt a given string with the
@@ -35,7 +36,7 @@ public class AESEncryption {
 
     private static final String ENCODING = "UTF-8";
 
-    private static Key SECRET_KEY;
+    private static Key secretKey;
 
     static {
         byte[] defaultValue;
@@ -43,13 +44,20 @@ public class AESEncryption {
             defaultValue = "DataPrepIsSoCool".getBytes(ENCODING);
         } catch (UnsupportedEncodingException e) {
             defaultValue = "DataPrepIsSoCool".getBytes();
-            LOGGER.debug("Unable to find Encoding {}", ENCODING);
+            LOGGER.debug("Unable to find Encoding {}", ENCODING, e);
         }
         try {
-            SECRET_KEY = generateKey(defaultValue);
+            secretKey = generateKey(defaultValue);
         } catch (Exception e) {
-            LOGGER.warn("Unable to generate the key used for AES");
+            LOGGER.warn("Unable to generate the key used for AES", e);
         }
+    }
+
+    /**
+     * Private default constructor.
+     */
+    private AESEncryption() {
+        // private constructor to ensure the utility style of this class
     }
 
     /**
@@ -61,7 +69,7 @@ public class AESEncryption {
      */
     public static String encrypt(final String src) throws Exception {
         final Cipher c = Cipher.getInstance(ALGO);
-        c.init(Cipher.ENCRYPT_MODE, SECRET_KEY);
+        c.init(Cipher.ENCRYPT_MODE, secretKey);
         final byte[] encVal = c.doFinal(src.getBytes());
         return new String(Base64.getEncoder().encode(encVal));
     }
@@ -75,7 +83,7 @@ public class AESEncryption {
      */
     public static String decrypt(final String src) throws Exception {
         final Cipher c = Cipher.getInstance(ALGO);
-        c.init(Cipher.DECRYPT_MODE, SECRET_KEY);
+        c.init(Cipher.DECRYPT_MODE, secretKey);
         final byte[] decodedValue = Base64.getDecoder().decode(src);
         final byte[] decValue = c.doFinal(decodedValue);
         return new String(decValue, ENCODING);

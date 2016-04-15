@@ -94,7 +94,7 @@ public class Cut extends ActionMetadata implements ColumnAction {
             String rawParam = parameters.get(PATTERN_PARAMETER);
 
             try {
-                actionContext.get(REGEX_HELPER_KEY,(p) -> regexParametersHelper.build(rawParam, false));
+                actionContext.get(REGEX_HELPER_KEY, p -> regexParametersHelper.build(rawParam, false));
             } catch (IllegalArgumentException e) {
                 actionContext.setActionStatus(ActionContext.ActionStatus.CANCELED);
             }

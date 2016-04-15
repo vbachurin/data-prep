@@ -22,11 +22,7 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
-import org.talend.dataprep.transformation.api.action.metadata.common.AbstractCompareAction;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
-import org.talend.dataprep.transformation.api.action.metadata.common.CompareAction;
-import org.talend.dataprep.transformation.api.action.metadata.common.OtherColumnParameters;
+import org.talend.dataprep.transformation.api.action.metadata.common.*;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 import org.talend.dataprep.transformation.api.action.parameters.ParameterType;
 import org.talend.dataprep.transformation.api.action.parameters.SelectParameter;
@@ -89,6 +85,7 @@ public class CompareDates extends AbstractCompareAction implements ColumnAction,
         return StringUtils.substringAfter(dateCompareMode, "date.");
     }
 
+    @Override
     protected Parameter getDefaultConstantValue() {
         // olamy the javascript will tranform to now if empty
         return new Parameter(CONSTANT_VALUE, ParameterType.DATE, StringUtils.EMPTY);
@@ -98,6 +95,7 @@ public class CompareDates extends AbstractCompareAction implements ColumnAction,
      * see constants
      * @return
      */
+    @Override
     protected SelectParameter getCompareModeSelectParameter(){
 
         //@formatter:off

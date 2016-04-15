@@ -18,7 +18,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.talend.dataprep.api.preparation.Preparation;
-import org.talend.dataprep.api.preparation.PreparationDetails;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -43,8 +42,12 @@ public class Inventory implements Serializable {
     @JsonProperty("preparations")
     private List<Preparation> preparations;
 
-    // For Jackson Marshaller/Un-marshaller
+
+    /**
+     * Default empty constructor.
+     */
     public Inventory() {
+        // For Jackson Marshaller/Un-marshaller
     }
 
     /**

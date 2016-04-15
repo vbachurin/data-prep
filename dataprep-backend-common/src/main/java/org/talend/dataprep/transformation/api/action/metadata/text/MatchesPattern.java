@@ -132,7 +132,7 @@ public class MatchesPattern extends ActionMetadata implements ColumnAction {
         super.compile(context);
         if (context.getActionStatus() == ActionContext.ActionStatus.OK) {
             try {
-                context.get(REGEX_HELPER_KEY,(p) -> getPattern(context.getParameters()));
+                context.get(REGEX_HELPER_KEY, p -> getPattern(context.getParameters()));
             } catch (IllegalArgumentException e) {
                 context.setActionStatus(ActionContext.ActionStatus.CANCELED);
             }
@@ -141,7 +141,7 @@ public class MatchesPattern extends ActionMetadata implements ColumnAction {
             final RowMetadata rowMetadata = context.getRowMetadata();
             final ColumnMetadata column = rowMetadata.getById(columnId);
             if (column != null) {
-                context.column(column.getName() + APPENDIX, (r) -> {
+                context.column(column.getName() + APPENDIX, r -> {
                     final ColumnMetadata c = ColumnMetadata.Builder //
                             .column() //
                             .name(column.getName() + APPENDIX) //

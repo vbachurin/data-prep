@@ -11,8 +11,9 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
-import org.talend.dataprep.transformation.pipeline.*;
-import org.talend.dataprep.transformation.pipeline.link.NullLink;
+import org.talend.dataprep.transformation.pipeline.Monitored;
+import org.talend.dataprep.transformation.pipeline.Signal;
+import org.talend.dataprep.transformation.pipeline.Visitor;
 import org.talend.dataprep.transformation.pipeline.node.TerminalNode;
 
 public class DiffWriterNode extends TerminalNode implements Monitored {
@@ -99,20 +100,20 @@ public class DiffWriterNode extends TerminalNode implements Monitored {
                 writer.endArray(); // <- end records
                 writer.fieldName("metadata"); // <- start metadata
                 writer.startObject();
-                {
-                    writer.fieldName("columns");
-                    final RowMetadata initialMetadata = metadataStack.pop();
-                    while (!metadataStack.isEmpty()) {
-                        initialMetadata.diff(metadataStack.pop());
-                    }
-                    // Preview don't need statistics, so wipe them out
-                    for (ColumnMetadata column : initialMetadata.getColumns()) {
-                        column.getStatistics().setInvalid(0);
-                        column.getQuality().setInvalidValues(Collections.emptySet());
-                        column.getQuality().setInvalid(0);
-                    }
-                    writer.write(initialMetadata);
+
+                writer.fieldName("columns");
+                final RowMetadata initialMetadata = metadataStack.pop();
+                while (!metadataStack.isEmpty()) {
+                    initialMetadata.diff(metadataStack.pop());
                 }
+                // Preview don't need statistics, so wipe them out
+                for (ColumnMetadata column : initialMetadata.getColumns()) {
+                    column.getStatistics().setInvalid(0);
+                    column.getQuality().setInvalidValues(Collections.emptySet());
+                    column.getQuality().setInvalid(0);
+                }
+                writer.write(initialMetadata);
+
                 writer.endObject();
                 writer.endObject(); // <- end data set
                 writer.flush();
