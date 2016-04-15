@@ -96,7 +96,7 @@ public interface DatePatternParamModel {
     default void compileDatePattern(ActionContext actionContext) {
         if (actionContext.getActionStatus() == ActionContext.ActionStatus.OK) {
             try {
-                actionContext.get(COMPILED_DATE_PATTERN, (p) -> getDateFormat(actionContext.getParameters()));
+                actionContext.get(COMPILED_DATE_PATTERN, p -> getDateFormat(actionContext.getParameters()));
             } catch (IllegalArgumentException e) {
                 // Nothing to do, when pattern is invalid, cancel action.
                 actionContext.setActionStatus(ActionContext.ActionStatus.CANCELED);

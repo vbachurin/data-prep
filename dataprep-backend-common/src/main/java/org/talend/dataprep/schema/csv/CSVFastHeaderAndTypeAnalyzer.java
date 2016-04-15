@@ -154,7 +154,7 @@ public class CSVFastHeaderAndTypeAnalyzer {
      */
     private List<Integer> setFieldType(int i) {
         List<Integer> result = new ArrayList<>();
-        String line = (i < sampleLines.size() ? sampleLines.get(i) : null);
+        String line = i < sampleLines.size() ? sampleLines.get(i) : null;
         if (StringUtils.isEmpty(line)) {
             return result;
         }
@@ -202,14 +202,12 @@ public class CSVFastHeaderAndTypeAnalyzer {
                 result = Arrays.asList(fields).stream().collect(Collectors.toList());
             }
         } catch (IOException e) {
-            LOGGER.info("Unable to read line {i} of sample", line);
+            LOGGER.info("Unable to read line {i} of sample", line, e);
         }
         // remove last fields if it is empty
         int size = result.size();
-        if (size > 0) {
-            if (StringUtils.isEmpty(result.get(size - 1))) {
-                result.remove(size - 1);
-            }
+        if (size > 0 && StringUtils.isEmpty(result.get(size - 1))) {
+            result.remove(size - 1);
         }
         return result;
     }
@@ -335,8 +333,7 @@ public class CSVFastHeaderAndTypeAnalyzer {
                 // if the first line is all text and all fields are present and following lines have some columns
                 // which are at least 50% not text
                 // mark the separator as having a header
-                if ((firstRecordTypes.contains(Type.INTEGER) || firstRecordTypes.contains(Type.DOUBLE) || firstRecordTypes.contains(Type.BOOLEAN))
-                        ){
+                if (firstRecordTypes.contains(Type.INTEGER) || firstRecordTypes.contains(Type.DOUBLE) || firstRecordTypes.contains(Type.BOOLEAN)){
                     firstLineAHeader = false;
                     headerInfoReliable = true;
                 }

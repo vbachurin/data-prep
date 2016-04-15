@@ -14,6 +14,7 @@
 package org.talend.dataprep.folder.store.file;
 
 import static java.util.Collections.emptyList;
+import static org.slf4j.LoggerFactory.getLogger;
 import static org.talend.daikon.exception.ExceptionContext.build;
 import static org.talend.dataprep.exception.error.DataSetErrorCodes.*;
 
@@ -32,6 +33,7 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
@@ -595,6 +597,11 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
 
     private static class FileInfo {
 
+        /**
+         * This class' logger.
+         */
+        private static final Logger LOG = getLogger(FileInfo.class);
+
         private final long lastModificationDate;
 
         private final long creationDate;
@@ -617,8 +624,8 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
             BasicFileAttributes attributes = null;
             try {
                 attributes = Files.readAttributes(path, BasicFileAttributes.class);
-            } catch (IOException exception) {
-
+            } catch (IOException e) {
+                LOG.debug("cannot read file attributes {}", path, e);
             }
             if (attributes != null) {
                 result = new FileInfo(attributes.creationTime().to(TimeUnit.MILLISECONDS),

@@ -44,7 +44,10 @@ ArrayModel.prototype.getSampleValue = function(modelsToIgnore) {
   }
   else if (this.ref) {
     var name = simpleRef(this.ref);
-    result = models[name].getSampleValue(modelsToIgnore);
+      var model = models[name];
+      if(model) {
+          result = model.getSampleValue(modelsToIgnore);
+      }
   }
   return [ result ];
 }
@@ -53,7 +56,10 @@ ArrayModel.prototype.getMockSignature = function(modelsToIgnore) {
   var propertiesStr = [];
 
   if(this.ref) {
-    return models[simpleRef(this.ref)].getMockSignature();
+      var model = models[simpleRef(this.ref)];
+      if (model) {
+          return model.getMockSignature();
+      }
   }
 };
 

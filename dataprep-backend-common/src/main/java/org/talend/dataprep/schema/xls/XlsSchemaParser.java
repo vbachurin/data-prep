@@ -582,11 +582,6 @@ public class XlsSchemaParser implements SchemaParser {
 
         });
 
-        // average cell type change
-        // double averageHeaderSizeDouble =
-        // cellTypeChange.values().stream().mapToInt(Integer::intValue).average().getAsDouble();
-        // int averageHeaderSize = (int) Math.ceil(averageHeaderSizeDouble);
-
         // FIXME think more about header size calculation
         // currently can fail so force an header of size 1
         int averageHeaderSize = 1;

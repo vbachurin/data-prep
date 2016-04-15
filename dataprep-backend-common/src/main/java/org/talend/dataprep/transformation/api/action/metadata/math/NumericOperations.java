@@ -148,7 +148,7 @@ public class NumericOperations extends ActionMetadata implements ColumnAction, O
                 final ColumnMetadata selectedColumn = rowMetadata.getById(parameters.get(SELECTED_COLUMN_PARAMETER));
                 operandName = selectedColumn.getName();
             }
-            context.column("result", (r) -> {
+            context.column("result", r -> {
                 final ColumnMetadata c = ColumnMetadata.Builder //
                         .column() //
                         .name(sourceColumn.getName() + " " + operator + " " + operandName) //

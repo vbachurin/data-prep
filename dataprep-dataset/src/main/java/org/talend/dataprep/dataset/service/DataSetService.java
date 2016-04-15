@@ -87,10 +87,11 @@ public class DataSetService {
      * Date format to use.
      */
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MM-dd-YYYY HH:mm"); // $NON-NLS-1
-
     static {
         DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC")); //$NON-NLS-1$
     }
+
+    private static final String CONTENT_TYPE = "Content-Type";
 
     /**
      * DQ asynchronous analyzers.
@@ -260,19 +261,19 @@ public class DataSetService {
             iterator = dataSetMetadataRepository.list().spliterator();
         }
 
-        Stream<DataSetMetadata> stream = StreamSupport.stream(iterator, false);
-
         final Comparator<String> comparisonOrder = getOrderComparator(order);
         final Comparator<DataSetMetadata> comparator = getDataSetMetadataComparator(sort, comparisonOrder);
 
         // Return sorted results
-        return stream.filter(metadata -> !metadata.getLifecycle().importing()) //
-                .map(metadata -> {
-                    completeWithUserData(metadata);
-                    return metadata;
-                }) //
-                .sorted(comparator) //
-                .collect(Collectors.toList());
+        try (Stream<DataSetMetadata> stream = StreamSupport.stream(iterator, false)) {
+            return stream.filter(metadata -> !metadata.getLifecycle().importing()) //
+                    .map(metadata -> {
+                        completeWithUserData(metadata);
+                        return metadata;
+                    }) //
+                    .sorted(comparator) //
+                    .collect(Collectors.toList());
+        }
     }
 
     /**
@@ -297,19 +298,19 @@ public class DataSetService {
 
         Spliterator<DataSetMetadata> iterator = dataSetMetadataRepository.listCompatible(dataSetId).spliterator();
 
-        Stream<DataSetMetadata> stream = StreamSupport.stream(iterator, false);
-
         final Comparator<String> comparisonOrder = getOrderComparator(order);
         final Comparator<DataSetMetadata> comparator = getDataSetMetadataComparator(sort, comparisonOrder);
 
         // Return sorted results
-        return stream.filter(metadata -> !metadata.getLifecycle().importing()) //
-                .map(metadata -> {
-                    completeWithUserData(metadata);
-                    return metadata;
-                }) //
-                .sorted(comparator) //
-                .collect(Collectors.toList());
+        try (Stream<DataSetMetadata> stream = StreamSupport.stream(iterator, false)) {
+            return stream.filter(metadata -> !metadata.getLifecycle().importing()) //
+                    .map(metadata -> {
+                        completeWithUserData(metadata);
+                        return metadata;
+                    }) //
+                    .sorted(comparator) //
+                    .collect(Collectors.toList());
+        }
     }
 
     /**
@@ -328,10 +329,10 @@ public class DataSetService {
     @VolumeMetered
     public String create(
             @ApiParam(value = "User readable name of the data set (e.g. 'Finance Report 2015', 'Test Data Set').") @RequestParam(defaultValue = "", required = false) String name,
-            @RequestHeader("Content-Type") String contentType, @ApiParam(value = "content") InputStream content,
+            @RequestHeader(CONTENT_TYPE) String contentType, @ApiParam(value = "content") InputStream content,
             @ApiParam(value = "The folder path to create the entry.") @RequestParam(defaultValue = "/", required = false) String folderPath)
             throws IOException {
-        HttpResponseContext.header("Content-Type", MediaType.TEXT_PLAIN_VALUE);
+        HttpResponseContext.header(CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE);
         final String id = UUID.randomUUID().toString();
         final Marker marker = Markers.dataset(id);
         LOG.debug(marker, "Creating...");
@@ -393,7 +394,7 @@ public class DataSetService {
             @RequestParam(required = false) @ApiParam(name = "sample", defaultValue = "0", value = "Size of the wanted sample, if missing, the full dataset is returned") Long sample, //
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the requested data set") String dataSetId) {
 
-        HttpResponseContext.header("Content-Type", MediaType.APPLICATION_JSON_VALUE);
+        HttpResponseContext.header(CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         final Marker marker = Markers.dataset(dataSetId);
         LOG.debug(marker, "Get data set #{}", dataSetId);
 
@@ -486,7 +487,7 @@ public class DataSetService {
             @ApiParam(value = "The folder path to create the entry.") @RequestParam(defaultValue = "", required = false) String folderPath)
             throws IOException {
 
-        HttpResponseContext.header("Content-Type", MediaType.TEXT_PLAIN_VALUE);
+        HttpResponseContext.header(CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE);
 
         DataSetMetadata original = dataSetMetadataRepository.get(dataSetId);
         final DistributedLock lock = dataSetMetadataRepository.createDatasetMetadataLock(dataSetId);
@@ -562,7 +563,7 @@ public class DataSetService {
                      @ApiParam(value = "The new name of the moved dataset.") @RequestParam(defaultValue = "", required = false) String newName)
             throws IOException {
 
-        HttpResponseContext.header("Content-Type", MediaType.TEXT_PLAIN_VALUE);
+        HttpResponseContext.header(CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE);
 
         DataSet dataSet = get(true, null, dataSetId);
 

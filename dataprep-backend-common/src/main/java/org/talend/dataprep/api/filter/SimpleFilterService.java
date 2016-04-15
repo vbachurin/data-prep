@@ -202,7 +202,7 @@ public class SimpleFilterService implements FilterService {
     private Predicate<DataSetRow> createEqualsPredicate(final JsonNode node, final String columnId, final String value) {
         checkValidValue(node, value);
         return safeNumber(
-                r -> StringUtils.equals(r.get(columnId), value) || toBigDecimal(r.get(columnId)) == toBigDecimal(value));
+                r -> StringUtils.equals(r.get(columnId), value) || NumberUtils.compare(toBigDecimal(r.get(columnId)), toBigDecimal(value)) == 0);
     }
 
     /**

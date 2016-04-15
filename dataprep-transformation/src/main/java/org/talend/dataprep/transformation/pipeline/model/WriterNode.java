@@ -7,8 +7,9 @@ import org.slf4j.LoggerFactory;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
-import org.talend.dataprep.transformation.pipeline.*;
-import org.talend.dataprep.transformation.pipeline.link.NullLink;
+import org.talend.dataprep.transformation.pipeline.Monitored;
+import org.talend.dataprep.transformation.pipeline.Signal;
+import org.talend.dataprep.transformation.pipeline.Visitor;
 import org.talend.dataprep.transformation.pipeline.node.TerminalNode;
 
 public class WriterNode extends TerminalNode implements Monitored {
@@ -60,10 +61,10 @@ public class WriterNode extends TerminalNode implements Monitored {
                 writer.endArray(); // <- end records
                 writer.fieldName("metadata"); // <- start metadata
                 writer.startObject();
-                {
-                    writer.fieldName("columns");
-                    writer.write(lastRowMetadata);
-                }
+
+                writer.fieldName("columns");
+                writer.write(lastRowMetadata);
+
                 writer.endObject();
                 writer.endObject(); // <- end data set
                 writer.flush();

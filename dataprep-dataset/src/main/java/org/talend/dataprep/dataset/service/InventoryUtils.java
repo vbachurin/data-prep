@@ -13,12 +13,15 @@
 
 package org.talend.dataprep.dataset.service;
 
+import static java.util.stream.StreamSupport.stream;
+import static org.talend.dataprep.api.folder.FolderEntry.ContentType.DATASET;
+
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -66,9 +69,9 @@ public class InventoryUtils {
         if (metadata == null || folders == null) {
             throw new IllegalArgumentException("To create an inventory, you should provide non null arguments");
         }
-        List<DatasetMetadataInfo> datasets = metadata.stream().map(d -> wrapDataset(d)).collect(Collectors.toList());
+        List<DatasetMetadataInfo> datasets = metadata.stream().map(this::wrapDataset).collect(Collectors.toList());
 
-        List<FolderInfo> folderInfos = folders.stream().map(f -> wrapFolder(f)).collect(Collectors.toList());
+        List<FolderInfo> folderInfos = folders.stream().map(this::wrapFolder).collect(Collectors.toList());
 
         return new Inventory(datasets, folderInfos, Collections.emptyList());
     }
@@ -93,40 +96,41 @@ public class InventoryUtils {
 
         final String prefix = StringUtils.equals(rootPath, path) ? "" : path;
 
+
         Iterable<Folder> folderIterable = folderRepository.allFolder();
-        List<Folder> folders = StreamSupport.stream(folderIterable.spliterator(), false) // @formatter:off
-                .filter(f -> StringUtils.startsWithIgnoreCase(f.getPath(), prefix))
-                .collect(Collectors.toList());
-        // @formatter:on
+        List<Folder> folders;
+        try (final Stream<Folder> stream = stream(folderIterable.spliterator(), false)) {
+            folders = stream.filter(f -> StringUtils.startsWithIgnoreCase(f.getPath(), prefix)).collect(Collectors.toList());
+        }
 
         Set<String> contentIds = new HashSet<>();
         // retrieve data sets contained in folders having path as prefix
         for (Folder folder : folders) {
-            Set<String> entries = StreamSupport
-                    .stream(folderRepository.entries(folder.getPath(), FolderEntry.ContentType.DATASET).spliterator(), false)
-                    .map(FolderEntry::getContentId) // @formatter:off
-                    .collect(Collectors.toSet());// @formatter:on
+            Set<String> entries;
+            try (Stream<FolderEntry> stream = stream(folderRepository.entries(folder.getPath(), DATASET).spliterator(), false)) {
+                entries = stream.map(FolderEntry::getContentId).collect(Collectors.toSet());
+            }
             contentIds.addAll(entries);
         }
 
         if (StringUtils.equalsIgnoreCase(rootPath, path)) {
             // retrieve data sets contained in the root of path
-            Set<String> entries = StreamSupport // @formatter:off
-                    .stream(folderRepository.entries(rootPath, FolderEntry.ContentType.DATASET).spliterator(), false)
+            Set<String> entries = // @formatter:off
+                    stream(folderRepository.entries(rootPath, DATASET).spliterator(), false)
                     .map(FolderEntry::getContentId)
                     .collect(Collectors.toSet()); // @formatter:on
             contentIds.addAll(entries);
         }
 
         // retrieve the data sets metadata from their ids and filter on matching name
-        List<DataSetMetadata> datasets = contentIds.stream().map(s -> dataSetMetadataRepository.get(s))
-                .filter(d -> d != null && d.getName() != null && StringUtils.containsIgnoreCase(d.getName(), name))
+        List<DataSetMetadata> datasets = contentIds.stream().map(dataSetMetadataRepository::get) //
+                .filter(d -> d != null && d.getName() != null && StringUtils.containsIgnoreCase(d.getName(), name)) //
                 .collect(Collectors.toList());
 
         // filter folders by name
-        List<Folder> folderList = StreamSupport.stream(folders.spliterator(), false) // @formatter:off
-                .filter(f -> StringUtils.containsIgnoreCase(f.getName(), name))
-                .collect(Collectors.toList()); // @formatter:on
+        List<Folder> folderList = stream(folders.spliterator(), false) //
+                .filter(f -> StringUtils.containsIgnoreCase(f.getName(), name)) //
+                .collect(Collectors.toList());
 
         result = inventory(datasets, folderList);
         return result;
@@ -139,13 +143,13 @@ public class InventoryUtils {
      * @return the data set with path information
      */
     public DatasetMetadataInfo wrapDataset(DataSetMetadata metadata) {
-        Iterable<FolderEntry> entries = folderRepository.findFolderEntries(metadata.getId(), FolderEntry.ContentType.DATASET);
+        Iterable<FolderEntry> entries = folderRepository.findFolderEntries(metadata.getId(), DATASET);
         FolderEntry entry = null;
         if (entries != null) {
             try {
                 entry = Iterables.find(entries, Predicates.notNull());
             } catch (Exception e) {
-                LOGGER.debug("all entries are null");
+                LOGGER.debug("all entries are null", e);
             }
         }
         return new DatasetMetadataInfo(metadata, entry != null ? entry.getFolderId() : StringUtils.EMPTY);
@@ -158,8 +162,8 @@ public class InventoryUtils {
      * @return the folder with its number of contained data sets and its number of contained preparations
      */
     public FolderInfo wrapFolder(Folder folder) {
-        int nbDatasets = (int) StreamSupport
-                .stream(folderRepository.entries(folder.getPath(), FolderEntry.ContentType.DATASET).spliterator(), false).count();
+        int nbDatasets = (int)
+                stream(folderRepository.entries(folder.getPath(), DATASET).spliterator(), false).count();
         return new FolderInfo(folder, nbDatasets, 0); // 0 because so far folder does not contain preparation
     }
 

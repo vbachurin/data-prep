@@ -53,31 +53,6 @@ public class ReplaceOnValueHelper {
     /** The ends with parameter name. */
     public static final String ENDS_WITH_MODE = "ends_with";
 
-    /**
-     * Build a ReplaceOnValueHelper out of the given json string.
-     *
-     * @param jsonString the json string.
-     * @return a ReplaceOnValueHelper out of the given json string.
-     */
-    public ReplaceOnValueHelper build(String jsonString, boolean strict) {
-        if (StringUtils.isEmpty(jsonString)) {
-            throw new InvalidParameterException(jsonString + " is not a valid json");
-        }
-        try {
-            final ReplaceOnValueHelper replaceOnValueHelper = builder.build().readValue(jsonString, ReplaceOnValueHelper.class);
-            replaceOnValueHelper.setStrict(strict);
-            if (replaceOnValueHelper.isValid()) {
-                return replaceOnValueHelper;
-            } else {
-                throw new IllegalArgumentException();
-            }
-        } catch (IOException e) {
-            // TODO replace this security exception by IllegalArgumentException
-            throw new InvalidParameterException(e.getMessage());
-        }
-    }
-
-
     /** The token. */
     private String token;
 
@@ -109,6 +84,29 @@ public class ReplaceOnValueHelper {
         this.operator = operator;
     }
 
+
+    /**
+     * Build a ReplaceOnValueHelper out of the given json string.
+     *
+     * @param jsonString the json string.
+     * @return a ReplaceOnValueHelper out of the given json string.
+     */
+    public ReplaceOnValueHelper build(String jsonString, boolean strict) {
+        if (StringUtils.isEmpty(jsonString)) {
+            throw new InvalidParameterException(jsonString + " is not a valid json");
+        }
+        try {
+            final ReplaceOnValueHelper replaceOnValueHelper = builder.build().readValue(jsonString, ReplaceOnValueHelper.class);
+            replaceOnValueHelper.setStrict(strict);
+            if (replaceOnValueHelper.isValid()) {
+                return replaceOnValueHelper;
+            } else {
+                throw new IllegalArgumentException();
+            }
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e.getMessage(), e);
+        }
+    }
 
     /**
      * @return the Token
@@ -155,7 +153,7 @@ public class ReplaceOnValueHelper {
         final Boolean regexMode = this.operator.equals(REGEX_MODE);
 
         if (regexMode && pattern == null) {
-            String actualPattern = (strict ? this.token : ".*" + this.token + ".*");
+            String actualPattern = strict ? this.token : ".*" + this.token + ".*";
             try {
                 pattern = Pattern.compile(actualPattern, Pattern.DOTALL);
             } catch (Exception e) {

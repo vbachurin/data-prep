@@ -176,8 +176,8 @@ public class ReplaceOnValue extends ActionMetadata implements ColumnAction, Cell
 
             if (matches) {
                 if (replaceOnValueParameter.getOperator().equals(ReplaceOnValueHelper.REGEX_MODE)) {
-                    final Pattern pattern = (replaceEntireCell ? replaceOnValueParameter.getPattern() : Pattern
-                            .compile(replaceOnValueParameter.getToken()));
+                    final Pattern pattern = replaceEntireCell ? replaceOnValueParameter.getPattern() : Pattern
+                            .compile(replaceOnValueParameter.getToken());
                     try {
                         return pattern.matcher(originalValue).replaceAll(replacement);
                     }catch (IndexOutOfBoundsException e){
