@@ -1,15 +1,15 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
 
 import RecipeBulletService from './bullet/recipe-bullet-service';
 import RecipeService from './recipe-service';
@@ -28,11 +28,11 @@ import RecipeService from './recipe-service';
      */
     angular.module('data-prep.services.recipe',
         [
-            'data-prep.services.preparation',
-            'data-prep.services.transformation',
+            'data-prep.services.filter',
             'data-prep.services.playground',
+            'data-prep.services.preparation',
             'data-prep.services.state',
-            'data-prep.services.filter'
+            'data-prep.services.transformation',
         ])
         .service('RecipeBulletService', RecipeBulletService)
         .service('RecipeService', RecipeService);

@@ -20,7 +20,7 @@ import FilterSearch from './filter-search-directive';
     /**
      * @ngdoc object
      * @name data-prep.filter-search
-     * @description This module contains the controller and directives to manage the filter input with suggestions
+     * @description This module contains the entities to manage the filter search input
      * as the user type in the input.
      * @requires data-prep.services.filter
      */
@@ -28,7 +28,7 @@ import FilterSearch from './filter-search-directive';
         [
             'MassAutoComplete',
             'pascalprecht.translate',
-            'data-prep.services.filter'
+            'data-prep.services.filter',
         ])
         .controller('FilterSearchCtrl', FilterSearchCtrl)
         .directive('filterSearch', FilterSearch);

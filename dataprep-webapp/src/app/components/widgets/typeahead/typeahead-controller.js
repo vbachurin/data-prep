@@ -29,12 +29,12 @@ class TypeaheadCtrl {
         this.searching = true;
         const searchInput = this.searchString;
 
-        this.$q.when(this.search({value: this.searchString}))
+        this.$q.when(this.search({ value: this.searchString }))
             .then(() => {
-                if(searchInput === this.searchString) {
+                if (searchInput === this.searchString) {
                     this.searching = false;
                 }
-            })
+            });
     }
 
     hideResults() {

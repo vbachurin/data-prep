@@ -1,15 +1,15 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
 
 import PlaygroundService from './playground-service';
 import DatagridService from './grid/datagrid-service';
@@ -38,16 +38,16 @@ import PreviewService from './preview/preview-service';
         [
             'ui.router',
             'data-prep.services.dataset',
+            'data-prep.services.export',
             'data-prep.services.filter',
             'data-prep.services.history',
+            'data-prep.services.lookup',
             'data-prep.services.onboarding',
             'data-prep.services.preparation',
             'data-prep.services.recipe',
-            'data-prep.services.statistics',
             'data-prep.services.state',
+            'data-prep.services.statistics',
             'data-prep.services.utils',
-            'data-prep.services.lookup',
-            'data-prep.services.export'
         ])
         .service('PlaygroundService', PlaygroundService)
         .service('DatagridService', DatagridService)

@@ -11,21 +11,21 @@
 
   ============================================================================*/
 
-import {datasetState, DatasetStateService} from './dataset/dataset-state-service';
-import {easterEggsState, EasterEggsStateService} from './easter-eggs/easter-eggs-state-service';
-import {feedbackState, FeedbackStateService} from './feedback/feedback-state-service';
-import {filterState, FilterStateService} from './filter/filter-state-service';
-import {folderState, FolderStateService} from './folder/folder-state-service';
-import {gridState, GridStateService} from './grid/grid-state-service';
-import {inventoryState, InventoryStateService} from './inventory/inventory-state-service';
-import {lookupState, LookupStateService} from './lookup/lookup-state-service';
-import {parametersState, ParametersStateService} from './parameters/parameters-state-service';
-import {playgroundState, PlaygroundStateService} from './playground/playground-state-service';
-import {recipeState, RecipeStateService} from './recipe/recipe-state-service';
-import {statisticsState, StatisticsStateService} from './statistics/statistics-state-service';
-import {suggestionsState, SuggestionsStateService} from './suggestions/suggestions-state-service';
-import {routeState, RouteStateService} from './route/route-state-service';
-import {state, StateService} from './state-service';
+import { datasetState, DatasetStateService } from './dataset/dataset-state-service';
+import { easterEggsState, EasterEggsStateService } from './easter-eggs/easter-eggs-state-service';
+import { feedbackState, FeedbackStateService } from './feedback/feedback-state-service';
+import { filterState, FilterStateService } from './filter/filter-state-service';
+import { folderState, FolderStateService } from './folder/folder-state-service';
+import { gridState, GridStateService } from './grid/grid-state-service';
+import { inventoryState, InventoryStateService } from './inventory/inventory-state-service';
+import { lookupState, LookupStateService } from './lookup/lookup-state-service';
+import { parametersState, ParametersStateService } from './parameters/parameters-state-service';
+import { playgroundState, PlaygroundStateService } from './playground/playground-state-service';
+import { recipeState, RecipeStateService } from './recipe/recipe-state-service';
+import { statisticsState, StatisticsStateService } from './statistics/statistics-state-service';
+import { suggestionsState, SuggestionsStateService } from './suggestions/suggestions-state-service';
+import { routeState, RouteStateService } from './route/route-state-service';
+import { state, StateService } from './state-service';
 
 (() => {
     'use strict';

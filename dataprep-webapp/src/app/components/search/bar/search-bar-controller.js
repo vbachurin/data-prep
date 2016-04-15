@@ -37,8 +37,9 @@ class SearchBarCtrl {
         this.results = null;
 
         if (searchInput) {
-            return this.search({value: searchInput});
+            return this.search({ value: searchInput });
         }
+        return [];
     }
 }
 

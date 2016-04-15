@@ -55,7 +55,10 @@ export default class DatasetHeaderCtrl {
     addFolder() {
         this.folderNameForm.$commitViewValue();
 
-        const pathToCreate = (this.state.inventory.currentFolder.path ? this.state.inventory.currentFolder.path : '') + '/' + this.folderName;
+        const currentFolderPath = this.state.inventory.currentFolder.path ?
+            this.state.inventory.currentFolder.path :
+            '';
+        const pathToCreate = `${currentFolderPath}/${this.folderName}`;
         this.FolderService.create(pathToCreate)
             .then(() => {
                 this.FolderService.getContent(this.state.inventory.currentFolder);

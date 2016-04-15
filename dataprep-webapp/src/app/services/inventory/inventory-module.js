@@ -24,7 +24,7 @@ import InventoryRestService from './rest/inventory-rest-service';
     angular.module('data-prep.services.inventory',
         [
             'data-prep.services.state',
-            'data-prep.services.utils'
+            'data-prep.services.utils',
         ])
         .service('InventoryService', InventoryService)
         .service('InventoryRestService', InventoryRestService);

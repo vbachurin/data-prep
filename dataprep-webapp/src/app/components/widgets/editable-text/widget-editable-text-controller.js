@@ -52,11 +52,13 @@ export default class TalendEditableTextCtrl {
      * @ngdoc method
      * @name validate
      * @methodOf data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
-     * @description Execute the validation callback if the value has changed, and set the edition mode to false
+     * @description Execute the validation callback
+     * when value has changed
+     * then switch to non the edition mode
      */
     validate() {
         if (angular.isUndefined(this.validateOnlyOnChange) || this.editionText !== this.text) {
-            this.onValidate({text: this.editionText});
+            this.onValidate({ text: this.editionText });
         }
         this.editionMode = false;
     }
@@ -68,7 +70,7 @@ export default class TalendEditableTextCtrl {
      * @description Execute the cancel callback and set the edition mode to false
      */
     cancel() {
-        this.onCancel({text: this.editionText});
+        this.onCancel({ text: this.editionText });
         this.editionMode = false;
     }
 }

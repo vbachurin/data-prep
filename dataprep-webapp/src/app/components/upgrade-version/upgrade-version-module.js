@@ -14,7 +14,7 @@
 /**
  * @ngdoc object
  * @name data-prep.upgrade-version
- * @description This module contains the controller and directives to display an upgrade version message.
+ * @description This module contains the entities to display an upgrade version message.
  * @requires data-prep.services.state
  * @requires data-prep.services.folder
  */
@@ -24,6 +24,6 @@ import UpgradeVersionService from './upgrade-version-service';
 
 (() => {
     angular.module('data-prep.upgrade-version', ['data-prep.services.utils', 'ngSanitize'])
-           .component('upgradeVersion', UpgradeVersionComponent)
-           .service('UpgradeVersionService', UpgradeVersionService);
+        .component('upgradeVersion', UpgradeVersionComponent)
+        .service('UpgradeVersionService', UpgradeVersionService);
 })();

@@ -14,16 +14,18 @@
 import DatasetCopyMove from './dataset-copy-move-component';
 
 (() => {
+    'use strict';
 
     /**
      * @ngdoc object
      * @name data-prep.dataset-copy-move
-     * @description This module contains the controller and directives to manage the dataset copy move
+     * @description This module contains the entities to manage the dataset copy/move
      * @requires data-prep.folder-selection
      */
-    angular.module('data-prep.dataset-copy-move', [
+    angular.module('data-prep.dataset-copy-move',
+        [
+            'talend.widget',
             'data-prep.folder-selection',
-            'talend.widget'
         ])
         .component('datasetCopyMove', DatasetCopyMove);
 })();

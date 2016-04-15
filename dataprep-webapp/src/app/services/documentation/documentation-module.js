@@ -13,6 +13,7 @@
 
 import DocumentationService from './documentation-service';
 import DocumentationRestService from './rest/documentation-rest-service';
+
 (() => {
     'use strict';
 
@@ -21,10 +22,7 @@ import DocumentationRestService from './rest/documentation-rest-service';
      * @name data-prep.services.documentation
      * @description This module contains the services to manage the documentation
      */
-    angular.module('data-prep.services.documentation',
-        [
-            'data-prep.services.utils'
-        ])
+    angular.module('data-prep.services.documentation', ['data-prep.services.utils'])
         .service('DocumentationService', DocumentationService)
         .service('DocumentationRestService', DocumentationRestService);
 })();

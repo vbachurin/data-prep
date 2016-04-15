@@ -36,7 +36,7 @@ class DocumentationSearchCtrl {
         this.currentInput = searchInput;
 
         return this.documentationService.search(searchInput)
-            .then((response)=> (this.currentInput === searchInput) && (this.results = response));
+            .then((response) => (this.currentInput === searchInput) && (this.results = response));
     }
 }
 

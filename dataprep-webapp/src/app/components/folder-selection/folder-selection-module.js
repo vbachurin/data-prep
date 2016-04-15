@@ -23,9 +23,7 @@ import FolderSelection from './folder-selection-component';
 import FolderItem from './folder-item/folder-item-component';
 
 (() => {
-    angular.module('data-prep.folder-selection', [
-               'data-prep.services.folder'
-           ])
-           .component('folderItem', FolderItem)
-           .component('folderSelection', FolderSelection);
+    angular.module('data-prep.folder-selection', ['data-prep.services.folder'])
+        .component('folderItem', FolderItem)
+        .component('folderSelection', FolderSelection);
 })();

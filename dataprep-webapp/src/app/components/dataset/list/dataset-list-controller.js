@@ -15,7 +15,6 @@
  * @ngdoc controller
  * @name data-prep.dataset-list.controller:DatasetListCtrl
  * @description Dataset list controller.
- On creation, it fetch dataset list from backend and load playground if 'datasetid' query param is provided
  * @requires data-prep.services.state.constant:state
  * @requires data-prep.services.state.service:StateService
  * @requires data-prep.services.dataset.service:DatasetService
@@ -29,11 +28,11 @@
  * @requires data-prep.services.preparation.service:PreparationService
  */
 export default class DatasetListCtrl {
-    constructor($stateParams, $state,                               //ui-router
-                state, StateService,                                //app state
-                DatasetService, FolderService, PreparationService,  //inventory
-                UploadWorkflowService, UpdateWorkflowService,       //inventory workflow
-                TalendConfirmService, MessageService) {             //utils
+    constructor($stateParams, $state,                               // ui-router
+                state, StateService,                                // app state
+                DatasetService, FolderService, PreparationService,  // inventory
+                UploadWorkflowService, UpdateWorkflowService,       // inventory workflow
+                TalendConfirmService, MessageService) {             // utils
         'ngInject';
 
         this.$stateParams = $stateParams;
@@ -68,11 +67,11 @@ export default class DatasetListCtrl {
                     .split('/')
                     .filter((part) => part)
                     .last()
-                    .value()
+                    .value(),
             };
             this.FolderService
                 .getContent(folderDefinition)
-                .catch(() => this.$state.go('nav.index.datasets', {folderPath: ''}));
+                .catch(() => this.$state.go('nav.index.datasets', { folderPath: '' }));
         }
         else {
             this.FolderService.getContent();
@@ -99,15 +98,15 @@ export default class DatasetListCtrl {
      */
     remove(dataset) {
         this.TalendConfirmService.confirm(
-                {disableEnter: true},
+                { disableEnter: true },
                 ['DELETE_PERMANENTLY', 'NO_UNDONE_CONFIRM'],
-                {type: 'dataset', name: dataset.name}
+                { type: 'dataset', name: dataset.name }
             )
             .then(() => this.DatasetService.delete(dataset))
             .then(() => this.MessageService.success(
                 'REMOVE_SUCCESS_TITLE',
                 'REMOVE_SUCCESS',
-                {type: 'dataset', name: dataset.name}
+                { type: 'dataset', name: dataset.name }
             ))
             .then(() => this.FolderService.getContent(this.state.inventory.currentFolder));
     }
@@ -127,7 +126,10 @@ export default class DatasetListCtrl {
         }
 
         if (this.DatasetService.getDatasetByName(cleanName)) {
-            this.MessageService.error('DATASET_NAME_ALREADY_USED_TITLE', 'DATASET_NAME_ALREADY_USED');
+            this.MessageService.error(
+                'DATASET_NAME_ALREADY_USED_TITLE',
+                'DATASET_NAME_ALREADY_USED'
+            );
             return;
         }
 
@@ -135,9 +137,12 @@ export default class DatasetListCtrl {
         dataset.name = name;
         dataset.renaming = true;
         return this.DatasetService.update(dataset)
-            .then(() => this.MessageService.success('DATASET_RENAME_SUCCESS_TITLE', 'DATASET_RENAME_SUCCESS'))
-            .catch(() => dataset.name = oldName)
-            .finally(() => dataset.renaming = false);
+            .then(() => this.MessageService.success(
+                'DATASET_RENAME_SUCCESS_TITLE',
+                'DATASET_RENAME_SUCCESS'
+            ))
+            .catch(() => { dataset.name = oldName })
+            .finally(() => { dataset.renaming = false });
     }
 
     /**
@@ -161,7 +166,7 @@ export default class DatasetListCtrl {
      * @param {object} folder The target folder
      */
     goToFolder(folder) {
-        this.$state.go('nav.index.datasets', {folderPath: folder.path});
+        this.$state.go('nav.index.datasets', { folderPath: folder.path });
     }
 
     /**
@@ -173,9 +178,10 @@ export default class DatasetListCtrl {
      * @param {string} newName the new last part of the path
      */
     renameFolder(folder, newName) {
-        var path = folder.path;
-        var lastSlashIndex = path.lastIndexOf('/');
-        var newPath = path.substring(0, lastSlashIndex) + '/' + newName;
+        const path = folder.path;
+        const lastSlashIndex = path.lastIndexOf('/');
+        const parentFolder = path.substring(0, lastSlashIndex);
+        const newPath = `${parentFolder}/${newName}`;
 
         this.FolderService.rename(path, newPath)
             .then(() => this.FolderService.getContent(this.state.inventory.currentFolder));
@@ -218,7 +224,7 @@ export default class DatasetListCtrl {
     clone(dataset, destinationFolder, name) {
         return this.DatasetService.clone(dataset, destinationFolder, name)
             .then(() => this.MessageService.success('COPY_SUCCESS_TITLE', 'COPY_SUCCESS'))
-            .then(() => this.datasetCopyVisibility = false)
+            .then(() => { this.datasetCopyVisibility = false })
             .then(() => this.FolderService.getContent(this.state.inventory.currentFolder));
     }
 
@@ -234,7 +240,7 @@ export default class DatasetListCtrl {
     move(dataset, destinationFolder, name) {
         return this.DatasetService.move(dataset, destinationFolder, name)
             .then(() => this.MessageService.success('MOVE_SUCCESS_TITLE', 'MOVE_SUCCESS'))
-            .then(() => this.datasetCopyVisibility = false)
+            .then(() => { this.datasetCopyVisibility = false })
             .then(() => this.FolderService.getContent(this.state.inventory.currentFolder));
     }
 }

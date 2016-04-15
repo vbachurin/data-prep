@@ -26,7 +26,7 @@ import EasterEggsService from './easter-eggs-service';
     angular.module('data-prep.services.easter-eggs',
         [
             'data-prep.services.state',
-            'data-prep.services.utils'
+            'data-prep.services.utils',
         ])
         .service('EasterEggsService', EasterEggsService);
 })();
