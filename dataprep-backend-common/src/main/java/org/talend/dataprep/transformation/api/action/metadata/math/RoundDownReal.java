@@ -26,7 +26,7 @@ import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetad
 public class RoundDownReal extends AbstractRound {
 
     /** The action name.
-     * round_down was taken by RemoveFractionnalPart action, and i don't want to change its id */
+     * round_down was taken by RemoveFractionalPart action, and i don't want to change its id */
     public static final String ACTION_NAME = "round_down_real"; //$NON-NLS-1$
 
     /**

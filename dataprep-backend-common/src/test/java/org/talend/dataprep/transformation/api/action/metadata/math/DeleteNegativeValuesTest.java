@@ -219,6 +219,40 @@ public class DeleteNegativeValuesTest extends AbstractMetadataBaseTest {
     }
 
     @Test
+    public void should_not_delete_because_null_value() {
+        // given
+        final Map<String, String> values = new HashMap<>();
+        values.put("name", "Michael Jordan");
+        values.put("age", null);
+        final DataSetRow row = new DataSetRow(values);
+
+        // when
+        ActionTestWorkbench.test(row, factory.create(action, parameters));
+
+        // then
+        assertFalse(row.isDeleted());
+        assertEquals("Michael Jordan", row.get("name"));
+        values.put("age", null);
+    }
+
+    @Test
+    public void should_not_delete_because_nan() {
+        // given
+        final Map<String, String> values = new HashMap<>();
+        values.put("name", "Michael Jordan");
+        values.put("age", "undefined");
+        final DataSetRow row = new DataSetRow(values);
+
+        // when
+        ActionTestWorkbench.test(row, factory.create(action, parameters));
+
+        // then
+        assertFalse(row.isDeleted());
+        assertEquals("Michael Jordan", row.get("name"));
+        values.put("age", "undefined");
+    }
+
+    @Test
     public void should_delete_even_with_space_between_sign_and_value() {
         // given
         final Map<String, String> values = new HashMap<>();

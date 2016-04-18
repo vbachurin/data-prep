@@ -13,7 +13,6 @@
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
 import java.math.RoundingMode;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
@@ -21,15 +20,13 @@ import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetad
 import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
-import static org.talend.dataprep.transformation.api.action.parameters.ParameterType.INTEGER;
-
 /**
  * Round towards zero. Never increments the digit prior to a discarded fraction (i.e. truncates)
  * 
  * @see RoundingMode#DOWN
  */
-@Component(RemoveFractionnalPart.ACTION_BEAN_PREFIX + RemoveFractionnalPart.ACTION_NAME)
-public class RemoveFractionnalPart extends AbstractRound {
+@Component(RemoveFractionalPart.ACTION_BEAN_PREFIX + RemoveFractionalPart.ACTION_NAME)
+public class RemoveFractionalPart extends AbstractRound {
 
     /** The action name. */
     public static final String ACTION_NAME = "round_down"; //$NON-NLS-1$

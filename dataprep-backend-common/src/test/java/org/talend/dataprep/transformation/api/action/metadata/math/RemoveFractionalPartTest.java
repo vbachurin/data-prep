@@ -19,41 +19,39 @@ import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
 import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
 
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
-import org.talend.dataprep.transformation.api.action.metadata.AbstractMetadataBaseTest;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 
 /**
- * Test class for RemoveFractionnalPart action. Creates one consumer, and test it.
+ * Test class for RemoveFractionalPart action. Creates one consumer, and test it.
  *
- * @see RemoveFractionnalPart
+ * @see RemoveFractionalPart
  */
-public class RemoveFractionnalPartTest extends AbstractMetadataBaseTest {
+public class RemoveFractionalPartTest extends AbstractRoundTest {
 
     /** The action ton test. */
     @Autowired
-    private RemoveFractionnalPart action;
+    private RemoveFractionalPart action;
 
     private Map<String, String> parameters;
 
     @Before
     public void init() throws IOException {
-        parameters = ActionMetadataTestUtils.parseParameters(RemoveFractionnalPartTest.class.getResourceAsStream("removeFractionnalPartAction.json"));
+        parameters = ActionMetadataTestUtils.parseParameters(RemoveFractionalPartTest.class.getResourceAsStream("removeFractionnalPartAction.json"));
     }
 
     @Test
     public void testName() {
-        assertEquals(RemoveFractionnalPart.ACTION_NAME, action.getName());
+        assertEquals(RemoveFractionalPart.ACTION_NAME, action.getName());
     }
 
     @Test
@@ -66,19 +64,6 @@ public class RemoveFractionnalPartTest extends AbstractMetadataBaseTest {
     @Test
     public void testCategory() throws Exception {
         assertThat(action.getCategory(), is(ActionCategory.MATH.getDisplayName()));
-    }
-
-    public void testCommon(String input, String expected) {
-        // given
-        final Map<String, String> values = new HashMap<>();
-        values.put("aNumber", input);
-        final DataSetRow row = new DataSetRow(values);
-
-        // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
-
-        // then
-        assertEquals(expected, row.get("aNumber"));
     }
 
     @Test
@@ -138,5 +123,21 @@ public class RemoveFractionnalPartTest extends AbstractMetadataBaseTest {
         assertFalse(action.acceptColumn(getColumn(Type.STRING)));
         assertFalse(action.acceptColumn(getColumn(Type.DATE)));
         assertFalse(action.acceptColumn(getColumn(Type.BOOLEAN)));
+    }
+
+
+    @Override
+    protected AbstractRound getAction() {
+        return action;
+    }
+
+    @Override
+    protected Map<String, String> getParameters() {
+        return parameters;
+    }
+
+    @Override
+    protected List<String> getExpectedParametersName() {
+        return Arrays.asList("column_id", "row_id", "scope", "filter");
     }
 }

@@ -12,6 +12,8 @@
 //  ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
+import static org.talend.dataprep.transformation.api.action.parameters.ParameterType.INTEGER;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.EnumSet;
@@ -27,8 +29,6 @@ import org.talend.dataprep.transformation.api.action.metadata.category.ActionCat
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
-
-import static org.talend.dataprep.transformation.api.action.parameters.ParameterType.INTEGER;
 
 /**
  * Abstract class for Math operation on {@link Type#NUMERIC} values
@@ -58,13 +58,15 @@ public abstract class AbstractRound extends ActionMetadata implements ColumnActi
         final String precisionAsString = context.getParameters().get(PRECISION);
         
         int precision = 0;
+
         try {
             precision = Integer.parseInt(precisionAsString);
-            if (precision < 0) {
-                precision = 0;
-            }
         } catch (Exception e) {
             // Nothing to do, precision cannot be parsed to integer, in this case we keep 0
+        }
+
+        if (precision < 0) {
+            precision = 0;
         }
 
         final String columnId = context.getColumnId();
