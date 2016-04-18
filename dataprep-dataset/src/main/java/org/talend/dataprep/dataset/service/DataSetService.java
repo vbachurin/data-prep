@@ -15,6 +15,7 @@ package org.talend.dataprep.dataset.service;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
+import static org.talend.dataprep.api.folder.FolderContentType.DATASET;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -242,7 +243,7 @@ public class DataSetService {
         Spliterator<DataSetMetadata> iterator;
         if (StringUtils.isNotEmpty(folder)) {
             // TODO dataset must be a constant somewhere!!
-            Iterable<FolderEntry> entries = folderRepository.entries(folder, FolderEntry.ContentType.DATASET);
+            Iterable<FolderEntry> entries = folderRepository.entries(folder, DATASET);
             final List<DataSetMetadata> metadatas = new ArrayList<>();
             entries.forEach(folderEntry ->
             {
@@ -368,7 +369,7 @@ public class DataSetService {
         queueEvents(id);
 
         // create associated folderEntry
-        FolderEntry folderEntry = new FolderEntry(FolderEntry.ContentType.DATASET, id);
+        FolderEntry folderEntry = new FolderEntry(DATASET, id);
         folderRepository.addFolderEntry(folderEntry, folderPath);
 
         LOG.debug(marker, "Created!");
@@ -503,7 +504,7 @@ public class DataSetService {
                 cloneName = original.getName() + " Copy";
             }
             // first check if the name is already used in the target folder
-            final Iterable<FolderEntry> entries = folderRepository.entries(folderPath, FolderEntry.ContentType.DATASET);
+            final Iterable<FolderEntry> entries = folderRepository.entries(folderPath, DATASET);
             final String newDatasetName = cloneName;
             entries.forEach(folderEntry -> {
                 DataSetMetadata dataSetEntry = dataSetMetadataRepository.get(folderEntry.getContentId());
@@ -538,7 +539,7 @@ public class DataSetService {
             dataSetMetadataRepository.add(target);
 
         // create associated folderEntry
-        FolderEntry folderEntry = new FolderEntry(FolderEntry.ContentType.DATASET, newId);
+        FolderEntry folderEntry = new FolderEntry(DATASET, newId);
         folderRepository.addFolderEntry(folderEntry, folderPath);
 
             LOG.debug(marker, "Cloned!");
@@ -575,7 +576,7 @@ public class DataSetService {
             return;
         }
         // first check if the name is already used in the target folder
-        final Iterable<FolderEntry> entries = folderRepository.entries(newFolderPath, FolderEntry.ContentType.DATASET);
+        final Iterable<FolderEntry> entries = folderRepository.entries(newFolderPath, DATASET);
 
         entries.forEach(folderEntry -> {
             DataSetMetadata dataSetEntry = dataSetMetadataRepository.get(folderEntry.getContentId());
@@ -599,7 +600,7 @@ public class DataSetService {
                 datasetLock.unlock();
             }
         }
-        FolderEntry folderEntry = new FolderEntry(FolderEntry.ContentType.DATASET, dataSetId);
+        FolderEntry folderEntry = new FolderEntry(DATASET, dataSetId);
 
         folderRepository.moveFolderEntry(folderEntry, folderPath, newFolderPath);
     }
@@ -628,7 +629,7 @@ public class DataSetService {
 
         // delete the associated folder entries
         // TODO make this async?
-        for (FolderEntry folderEntry : folderRepository.findFolderEntries(dataSetId, FolderEntry.ContentType.DATASET)) {
+        for (FolderEntry folderEntry : folderRepository.findFolderEntries(dataSetId, DATASET)) {
             folderRepository.removeFolderEntry(folderEntry.getFolderId(), //
                     folderEntry.getContentId(), //
                     folderEntry.getContentType());

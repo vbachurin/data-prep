@@ -14,7 +14,7 @@
 package org.talend.dataprep.dataset.service;
 
 import static java.util.stream.StreamSupport.stream;
-import static org.talend.dataprep.api.folder.FolderEntry.ContentType.DATASET;
+import static org.talend.dataprep.api.folder.FolderContentType.DATASET;
 
 import java.util.Collections;
 import java.util.HashSet;

@@ -130,9 +130,11 @@ public class PreparationAPI extends APIService {
     @Timed
     public String createPreparation(
             @ApiParam(name = "body", value = "The original preparation. You may set all values, service will override values you can't write to.") @RequestBody Preparation preparation) {
+
         if (LOG.isDebugEnabled()) {
             LOG.debug("Creating preparation (pool: {} )...", getConnectionStats());
         }
+
         PreparationCreate preparationCreate = getCommand(PreparationCreate.class, preparation);
         final String preparationId = preparationCreate.execute();
         if (LOG.isDebugEnabled()) {

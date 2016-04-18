@@ -38,6 +38,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.folder.Folder;
+import org.talend.dataprep.api.folder.FolderContentType;
 import org.talend.dataprep.api.folder.FolderEntry;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.DataSetErrorCodes;
@@ -48,7 +49,7 @@ import org.talend.dataprep.folder.store.NotEmptyFolderException;
 import com.google.common.collect.Lists;
 
 @Component("folderRepository#file")
-@ConditionalOnProperty(name = "folder.store", havingValue = "file", matchIfMissing = false)
+@ConditionalOnProperty(name = "folder.store", havingValue = "file")
 public class FileSystemFolderRepository extends FolderRepositoryAdapter {
 
     /**
@@ -231,7 +232,7 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
     }
 
     @Override
-    public void removeFolderEntry(String folderPath, String contentId, FolderEntry.ContentType contentType) {
+    public void removeFolderEntry(String folderPath, String contentId, FolderContentType contentType) {
 
         if (contentType == null) {
             throw new IllegalArgumentException("The content type of the folder entry to be removed cannot be null.");
@@ -247,7 +248,7 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
                             try (InputStream inputStream = Files.newInputStream(pathFile)) {
                                 Properties properties = new Properties();
                                 properties.load(inputStream);
-                                if (contentType.equals(FolderEntry.ContentType.get(properties.getProperty("contentType"))) && //
+                                if (contentType.equals(FolderContentType.fromName(properties.getProperty("contentType"))) && //
                                         StringUtils.equalsIgnoreCase(properties.getProperty("contentId"), //
                                                 contentId)) {
                                     Files.delete(pathFile);
@@ -292,7 +293,7 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
 
                             FolderEntry folderEntry = new FolderEntry();
                             folderEntry.setFolderId(path.getParent().toString());
-                            folderEntry.setContentType(FolderEntry.ContentType.get(properties.getProperty("contentType")));
+                            folderEntry.setContentType(FolderContentType.fromName(properties.getProperty("contentType")));
                             folderEntry.setContentId(properties.getProperty("contentId"));
                             folderEntries.add(folderEntry);
                         }
@@ -317,7 +318,7 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
     }
 
     @Override
-    public Iterable<FolderEntry> entries(String folder, FolderEntry.ContentType contentType) {
+    public Iterable<FolderEntry> entries(String folder, FolderContentType contentType) {
 
         Path path = Paths.get(getRootFolder().toString(), StringUtils.split(folder, PATH_SEPARATOR));
 
@@ -333,7 +334,7 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
                             try (InputStream inputStream = Files.newInputStream(pathFile)) {
                                 Properties properties = new Properties();
                                 properties.load(inputStream);
-                                if (contentType.equals(FolderEntry.ContentType.get(properties.getProperty("contentType")))) {
+                                if (contentType.equals(FolderContentType.fromName(properties.getProperty("contentType")))) {
 
                                     FolderEntry folderEntry = new FolderEntry();
                                     folderEntry.setFolderId(properties.getProperty("folderId"));
@@ -355,7 +356,7 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
     }
 
     @Override
-    public Iterable<FolderEntry> findFolderEntries(String contentId, FolderEntry.ContentType contentType) {
+    public Iterable<FolderEntry> findFolderEntries(String contentId, FolderContentType contentType) {
         Set<FolderEntry> folderEntries = new HashSet<>();
 
         try {
@@ -378,7 +379,7 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
                         Properties properties = new Properties();
                         properties.load(inputStream);
                         if (StringUtils.equals(properties.getProperty("contentId"), contentId) && //
-                                contentType.equals(FolderEntry.ContentType.get(properties.getProperty("contentType")))) {
+                                contentType.equals(FolderContentType.fromName(properties.getProperty("contentType")))) {
                             final FolderEntry entry = new FolderEntry(contentType, contentId);
                             Path parent = file.getParent();
                             String folderId = parent.equals(getRootFolder()) ? "" : pathAsString(parent);

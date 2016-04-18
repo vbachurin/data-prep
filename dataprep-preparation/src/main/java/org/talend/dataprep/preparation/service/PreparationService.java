@@ -352,11 +352,20 @@ public class PreparationService {
         setPreparationHead(preparation, head);
     }
 
+
+    /**
+     * Get all the actions of a preparation at given version.
+     *
+     * @param id the wanted preparation id.
+     * @param version the wanted preparation version.
+     * @return the list of actions.
+     */
     //@formatter:off
     @RequestMapping(value = "/preparations/{id}/actions/{version}", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get all the actions of a preparation at given version.", notes = "Returns the action JSON at version.")
     @Timed
-    public List<Action> getVersionedAction(@ApiParam("id") @PathVariable("id") final String id,
+    public List<Action> getVersionedAction(
+            @ApiParam("id") @PathVariable("id") final String id,
             @ApiParam("version") @PathVariable("version") final String version) {
     //@formatter:on
 

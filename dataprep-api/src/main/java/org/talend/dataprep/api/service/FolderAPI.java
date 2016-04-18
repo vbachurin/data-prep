@@ -25,10 +25,8 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -46,7 +44,6 @@ import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.metrics.VolumeMetered;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.HystrixCommand;
 
 import io.swagger.annotations.ApiOperation;
@@ -54,9 +51,6 @@ import io.swagger.annotations.ApiParam;
 
 @RestController
 public class FolderAPI extends APIService {
-
-    @Autowired
-    private Jackson2ObjectMapperBuilder builder;
 
     @RequestMapping(value = "/api/folders", method = GET)
     @ApiOperation(value = "List children folders of the parameter if null list root children.", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -264,7 +258,6 @@ public class FolderAPI extends APIService {
         }
         HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
         Inventory inventory;
-        ObjectMapper mapper = builder.build();
         HystrixCommand<InputStream> matchingName = getCommand(FolderInventorySearch.class, path, name);
         try (InputStream ios = matchingName.execute()) {
             String jsonMap = IOUtils.toString(ios);

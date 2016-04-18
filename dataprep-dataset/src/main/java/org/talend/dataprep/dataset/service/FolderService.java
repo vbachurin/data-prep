@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.*;
 import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.folder.Folder;
+import org.talend.dataprep.api.folder.FolderContentType;
 import org.talend.dataprep.api.folder.FolderEntry;
 import org.talend.dataprep.api.user.UserData;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
@@ -172,7 +173,7 @@ public class FolderService {
     public void deleteFolderEntry(@RequestParam String path, @PathVariable(value = "id") String contentId, //
             @PathVariable(value = "contentType") String contentType) {
         try {
-            FolderEntry.ContentType checkedContentType = FolderEntry.ContentType.get(contentType);
+            FolderContentType checkedContentType = FolderContentType.fromName(contentType);
             folderRepository.removeFolderEntry(path, contentId, checkedContentType);
         } catch (IllegalArgumentException exc) {
             throw new TDPException(FolderErrorCodes.UNABLE_TO_DELETE_FOLDER_ENTRY, exc);
@@ -205,7 +206,7 @@ public class FolderService {
     @Timed
     public Iterable<FolderEntry> entries(@RequestParam String path, @RequestParam String contentType) {
         try {
-            FolderEntry.ContentType checkedContentType = FolderEntry.ContentType.get(contentType);
+            FolderContentType checkedContentType = FolderContentType.fromName(contentType);
             return folderRepository.entries(path, checkedContentType);
         } catch (IllegalArgumentException exc) {
             throw new TDPException(FolderErrorCodes.UNABLE_TO_LIST_FOLDER_ENTRIES, exc);
@@ -226,7 +227,7 @@ public class FolderService {
 
         Spliterator<DataSetMetadata> iterator;
         if (StringUtils.isNotEmpty(folder)) {
-            Iterable<FolderEntry> entries = folderRepository.entries(folder, FolderEntry.ContentType.DATASET);
+            Iterable<FolderEntry> entries = folderRepository.entries(folder, FolderContentType.DATASET);
             final List<DataSetMetadata> metadatas = new ArrayList<>();
             entries.forEach(folderEntry -> {
                 DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(folderEntry.getContentId());

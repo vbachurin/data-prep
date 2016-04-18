@@ -18,25 +18,25 @@ import static com.jayway.restassured.RestAssured.when;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.talend.dataprep.api.folder.FolderContentType.DATASET;
 
 import java.io.IOException;
 import java.util.List;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
-import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.folder.Folder;
 import org.talend.dataprep.api.folder.FolderContent;
 import org.talend.dataprep.api.folder.FolderEntry;
+import org.talend.dataprep.api.preparation.Preparation;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.response.Response;
-import org.talend.dataprep.api.preparation.Preparation;
 
 /**
  * Unit tests for the folder API.
@@ -104,7 +104,7 @@ public class FolderAPITest extends ApiServiceTestBase {
     public void should_add_entry_in_folder() throws IOException {
         //given
         createFolder("beer");
-        final FolderEntry folderEntry = new FolderEntry(FolderEntry.ContentType.DATASET, "6f8a54051bc454");
+        final FolderEntry folderEntry = new FolderEntry(DATASET, "6f8a54051bc454");
 
         //when
         final FolderEntry createdEntry = createFolderEntry(folderEntry, "/beer");
@@ -120,10 +120,10 @@ public class FolderAPITest extends ApiServiceTestBase {
         //given
         createFolder("beer");
 
-        final FolderEntry firstFolderEntry = new FolderEntry(FolderEntry.ContentType.DATASET, "6f8a54051bc454");
+        final FolderEntry firstFolderEntry = new FolderEntry(DATASET, "6f8a54051bc454");
         final FolderEntry firstCreatedEntry = createFolderEntry(firstFolderEntry, "/beer");
 
-        final FolderEntry secondFolderEntry = new FolderEntry(FolderEntry.ContentType.DATASET, "32ac4646aa98b51");
+        final FolderEntry secondFolderEntry = new FolderEntry(DATASET, "32ac4646aa98b51");
         final FolderEntry secondCreatedEntry = createFolderEntry(secondFolderEntry, "/beer");
 
         final List<FolderEntry> entries = getFolderEntries("/beer");
@@ -157,7 +157,7 @@ public class FolderAPITest extends ApiServiceTestBase {
     public void should_return_conflict_on_non_empty_folder_remove() throws IOException {
         //given
         createFolder("beer");
-        final FolderEntry folderEntry = new FolderEntry(FolderEntry.ContentType.DATASET, "6f8a54051bc454");
+        final FolderEntry folderEntry = new FolderEntry(DATASET, "6f8a54051bc454");
         createFolderEntry(folderEntry, "/beer");
 
         //when
@@ -181,11 +181,11 @@ public class FolderAPITest extends ApiServiceTestBase {
         Thread.sleep(100);
         final String dataSetId3 = createDataset("dataset/dataset.csv", "cccc", "text/csv");
 
-        final FolderEntry folderEntry1 = new FolderEntry(FolderEntry.ContentType.DATASET, dataSetId1);
+        final FolderEntry folderEntry1 = new FolderEntry(DATASET, dataSetId1);
         createFolderEntry(folderEntry1, "/foo");
-        final FolderEntry folderEntry2 = new FolderEntry(FolderEntry.ContentType.DATASET, dataSetId2);
+        final FolderEntry folderEntry2 = new FolderEntry(DATASET, dataSetId2);
         createFolderEntry(folderEntry2, "/foo");
-        final FolderEntry folderEntry3 = new FolderEntry(FolderEntry.ContentType.DATASET, dataSetId3);
+        final FolderEntry folderEntry3 = new FolderEntry(DATASET, dataSetId3);
         createFolderEntry(folderEntry3, "/foo");
 
         final ObjectMapper mapper = builder.build();
@@ -214,11 +214,11 @@ public class FolderAPITest extends ApiServiceTestBase {
         Thread.sleep(100);
         final String dataSetId3 = createDataset("dataset/dataset.csv", "cccc", "text/csv");
 
-        final FolderEntry folderEntry1 = new FolderEntry(FolderEntry.ContentType.DATASET, dataSetId1);
+        final FolderEntry folderEntry1 = new FolderEntry(DATASET, dataSetId1);
         createFolderEntry(folderEntry1, "/foo");
-        final FolderEntry folderEntry2 = new FolderEntry(FolderEntry.ContentType.DATASET, dataSetId2);
+        final FolderEntry folderEntry2 = new FolderEntry(DATASET, dataSetId2);
         createFolderEntry(folderEntry2, "/foo");
-        final FolderEntry folderEntry3 = new FolderEntry(FolderEntry.ContentType.DATASET, dataSetId3);
+        final FolderEntry folderEntry3 = new FolderEntry(DATASET, dataSetId3);
         createFolderEntry(folderEntry3, "/foo");
 
         final ObjectMapper mapper = builder.build();
@@ -247,11 +247,11 @@ public class FolderAPITest extends ApiServiceTestBase {
         Thread.sleep(100);
         final String dataSetId3 = createDataset("dataset/dataset.csv", "bbbb", "text/csv");
 
-        final FolderEntry folderEntry1 = new FolderEntry(FolderEntry.ContentType.DATASET, dataSetId1);
+        final FolderEntry folderEntry1 = new FolderEntry(DATASET, dataSetId1);
         createFolderEntry(folderEntry1, "/foo");
-        final FolderEntry folderEntry2 = new FolderEntry(FolderEntry.ContentType.DATASET, dataSetId2);
+        final FolderEntry folderEntry2 = new FolderEntry(DATASET, dataSetId2);
         createFolderEntry(folderEntry2, "/foo");
-        final FolderEntry folderEntry3 = new FolderEntry(FolderEntry.ContentType.DATASET, dataSetId3);
+        final FolderEntry folderEntry3 = new FolderEntry(DATASET, dataSetId3);
         createFolderEntry(folderEntry3, "/foo");
 
         final ObjectMapper mapper = builder.build();
@@ -280,11 +280,11 @@ public class FolderAPITest extends ApiServiceTestBase {
         Thread.sleep(100);
         final String dataSetId3 = createDataset("dataset/dataset.csv", "bbbb", "text/csv");
 
-        final FolderEntry folderEntry1 = new FolderEntry(FolderEntry.ContentType.DATASET, dataSetId1);
+        final FolderEntry folderEntry1 = new FolderEntry(DATASET, dataSetId1);
         createFolderEntry(folderEntry1, "/foo");
-        final FolderEntry folderEntry2 = new FolderEntry(FolderEntry.ContentType.DATASET, dataSetId2);
+        final FolderEntry folderEntry2 = new FolderEntry(DATASET, dataSetId2);
         createFolderEntry(folderEntry2, "/foo");
-        final FolderEntry folderEntry3 = new FolderEntry(FolderEntry.ContentType.DATASET, dataSetId3);
+        final FolderEntry folderEntry3 = new FolderEntry(DATASET, dataSetId3);
         createFolderEntry(folderEntry3, "/foo");
 
         final ObjectMapper mapper = builder.build();
@@ -378,7 +378,7 @@ public class FolderAPITest extends ApiServiceTestBase {
     protected void removeFolderEntry(final String contentId) {
         final Response response = RestAssured.given() //
                 .queryParam("path", "/beer") //
-                .pathParam("contentType", FolderEntry.ContentType.DATASET) //
+                .pathParam("contentType", DATASET) //
                 .pathParam("id", contentId) //
                 .delete("/api/folders/entries/{contentType}/{id}");
 
@@ -388,7 +388,7 @@ public class FolderAPITest extends ApiServiceTestBase {
     protected List<FolderEntry> getFolderEntries(final String path) throws IOException {
         final Response response = RestAssured.given() //
                 .queryParam("path", path) //
-                .queryParam("contentType", FolderEntry.ContentType.DATASET) //
+                .queryParam("contentType", DATASET) //
                 .get("/api/folders/entries");
 
         Assertions.assertThat(response.getStatusCode()).isEqualTo(200);

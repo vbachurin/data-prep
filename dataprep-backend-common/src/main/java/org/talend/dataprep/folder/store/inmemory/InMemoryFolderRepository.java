@@ -23,6 +23,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.folder.Folder;
+import org.talend.dataprep.api.folder.FolderContentType;
 import org.talend.dataprep.api.folder.FolderEntry;
 import org.talend.dataprep.folder.store.FolderRepository;
 import org.talend.dataprep.folder.store.FolderRepositoryAdapter;
@@ -191,12 +192,12 @@ public class InMemoryFolderRepository extends FolderRepositoryAdapter implements
     }
 
     @Override
-    public Iterable<FolderEntry> entries(String path, FolderEntry.ContentType contentType) {
+    public Iterable<FolderEntry> entries(String path, FolderContentType contentType) {
         return folderEntriesMap.get(cleanPath(path));
     }
 
     @Override
-    public Iterable<FolderEntry> findFolderEntries(String contentId, FolderEntry.ContentType contentType) {
+    public Iterable<FolderEntry> findFolderEntries(String contentId, FolderContentType contentType) {
         List<FolderEntry> entries = new ArrayList<>();
 
         this.folderEntriesMap.values().stream().forEach(folderEntries -> folderEntries.stream().forEach(folderEntry -> {
@@ -242,7 +243,7 @@ public class InMemoryFolderRepository extends FolderRepositoryAdapter implements
     }
 
     @Override
-    public void removeFolderEntry(String givenPath, String contentId, FolderEntry.ContentType contentType) {
+    public void removeFolderEntry(String givenPath, String contentId, FolderContentType contentType) {
         String folderPath = cleanPath(givenPath);
         List<FolderEntry> entries = folderEntriesMap.get(folderPath);
         final FolderEntry entry = new FolderEntry(contentType, contentId);
