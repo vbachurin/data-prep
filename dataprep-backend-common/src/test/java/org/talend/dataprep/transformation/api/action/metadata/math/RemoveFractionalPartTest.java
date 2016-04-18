@@ -32,26 +32,26 @@ import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTest
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 
 /**
- * Test class for RoundCeil action. Creates one consumer, and test it.
+ * Test class for RemoveFractionalPart action. Creates one consumer, and test it.
  *
- * @see RoundCeil
+ * @see RemoveFractionalPart
  */
-public class RoundCeilTest extends AbstractRoundTest {
+public class RemoveFractionalPartTest extends AbstractRoundTest {
 
     /** The action ton test. */
     @Autowired
-    private RoundCeil action;
+    private RemoveFractionalPart action;
 
     private Map<String, String> parameters;
 
     @Before
     public void init() throws IOException {
-        parameters = ActionMetadataTestUtils.parseParameters(RoundCeilTest.class.getResourceAsStream("ceilAction.json"));
+        parameters = ActionMetadataTestUtils.parseParameters(RemoveFractionalPartTest.class.getResourceAsStream("removeFractionnalPartAction.json"));
     }
 
     @Test
     public void testName() {
-        assertEquals(RoundCeil.ACTION_NAME, action.getName());
+        assertEquals(RemoveFractionalPart.ACTION_NAME, action.getName());
     }
 
     @Test
@@ -69,9 +69,9 @@ public class RoundCeilTest extends AbstractRoundTest {
     @Test
     public void testPositive() {
         testCommon("5.0", "5");
-        testCommon("5.1", "6");
-        testCommon("5.5", "6");
-        testCommon("5.8", "6");
+        testCommon("5.1", "5");
+        testCommon("5.5", "5");
+        testCommon("5.8", "5");
     }
 
     @Test
@@ -82,18 +82,11 @@ public class RoundCeilTest extends AbstractRoundTest {
     }
 
     @Test
-    public void testAltFormat() {
-        testCommon("-5 000.2", "-5000");
-        testCommon("5,4", "6");
-        testCommon("1.200,45", "1201");
-    }
-
-    @Test
     public void test_huge_number() {
-        testCommon("1234567890.1", "1234567891");
-        testCommon("891234567897.9", "891234567898");
-        testCommon("891234567899.9", "891234567900");
-        testCommon("999999999999.9", "1000000000000");
+        testCommon("1234567890.1", "1234567890");
+        testCommon("891234567897.9", "891234567897");
+        testCommon("891234567899.9", "891234567899");
+        testCommon("999999999999.9", "999999999999");
     }
 
     @Test
@@ -145,6 +138,6 @@ public class RoundCeilTest extends AbstractRoundTest {
 
     @Override
     protected List<String> getExpectedParametersName() {
-        return Arrays.asList("column_id", "row_id", "scope", "filter", "precision");
+        return Arrays.asList("column_id", "row_id", "scope", "filter");
     }
 }
