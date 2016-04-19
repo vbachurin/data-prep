@@ -32,23 +32,27 @@ import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.metadata.AbstractMetadataBaseTest;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 
 /**
  * Test class for RoundHalfUp action. Creates one consumer, and test it.
  *
  * @see RoundHalfUp
  */
-public class RoundHalfUpTest extends AbstractMetadataBaseTest {
+public class RoundHalfUpTest extends RoundTests {
 
     /** The action ton test. */
     @Autowired
     private RoundHalfUp action;
 
-    private Map<String, String> parameters;
-
     @Before
     public void init() throws IOException {
         parameters = ActionMetadataTestUtils.parseParameters(RoundHalfUpTest.class.getResourceAsStream("roundAction.json"));
+    }
+
+    @Override
+    protected ActionMetadata getAction() {
+        return action;
     }
 
     @Test
@@ -66,19 +70,6 @@ public class RoundHalfUpTest extends AbstractMetadataBaseTest {
     @Test
     public void testCategory() throws Exception {
         assertThat(action.getCategory(), is(ActionCategory.MATH.getDisplayName()));
-    }
-
-    public void testCommon(String input, String expected) {
-        // given
-        final Map<String, String> values = new HashMap<>();
-        values.put("aNumber", input);
-        final DataSetRow row = new DataSetRow(values);
-
-        //when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
-
-        // then
-        assertEquals(expected, row.get("aNumber"));
     }
 
     @Test
