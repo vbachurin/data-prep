@@ -3,7 +3,7 @@
     {
       "action": "round_down",
       "parameters": {
-        "column_id": "aNumber",
+        "column_id": "0000",
         "scope": "column"
       }
     }
