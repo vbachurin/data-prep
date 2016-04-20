@@ -30,7 +30,7 @@ import org.talend.dataprep.folder.store.FolderRepositoryAdapter;
 import org.talend.dataprep.folder.store.NotEmptyFolderException;
 
 @Component("folderRepository#in-memory")
-@ConditionalOnProperty(name = "folder.store", havingValue = "in-memory", matchIfMissing = false)
+@ConditionalOnProperty(name = "folder.store", havingValue = "in-memory")
 public class InMemoryFolderRepository extends FolderRepositoryAdapter implements FolderRepository {
 
     /**
@@ -193,7 +193,11 @@ public class InMemoryFolderRepository extends FolderRepositoryAdapter implements
 
     @Override
     public Iterable<FolderEntry> entries(String path, FolderContentType contentType) {
-        return folderEntriesMap.get(cleanPath(path));
+        List<FolderEntry> folderEntries = folderEntriesMap.get(cleanPath(path));
+        if (folderEntries == null) {
+            folderEntries = new ArrayList<>();
+        }
+        return folderEntries;
     }
 
     @Override

@@ -188,8 +188,6 @@ public class FolderAPITest extends ApiServiceTestBase {
         final FolderEntry folderEntry3 = new FolderEntry(DATASET, dataSetId3);
         createFolderEntry(folderEntry3, "/foo");
 
-        final ObjectMapper mapper = builder.build();
-
         //when
         String list = when() //
                 .get("/api/folders/datasets?sort={sort}&order={order}&folder={folder}", "date", "desc", "foo") //
@@ -220,8 +218,6 @@ public class FolderAPITest extends ApiServiceTestBase {
         createFolderEntry(folderEntry2, "/foo");
         final FolderEntry folderEntry3 = new FolderEntry(DATASET, dataSetId3);
         createFolderEntry(folderEntry3, "/foo");
-
-        final ObjectMapper mapper = builder.build();
 
         //when
         String list = when() //
@@ -254,8 +250,6 @@ public class FolderAPITest extends ApiServiceTestBase {
         final FolderEntry folderEntry3 = new FolderEntry(DATASET, dataSetId3);
         createFolderEntry(folderEntry3, "/foo");
 
-        final ObjectMapper mapper = builder.build();
-
         //when
         String list = when() //
                 .get("/api/folders/datasets?sort={sort}&order={order}&folder={folder}", "name", "asc", "foo") //
@@ -286,8 +280,6 @@ public class FolderAPITest extends ApiServiceTestBase {
         createFolderEntry(folderEntry2, "/foo");
         final FolderEntry folderEntry3 = new FolderEntry(DATASET, dataSetId3);
         createFolderEntry(folderEntry3, "/foo");
-
-        final ObjectMapper mapper = builder.build();
 
         //when
         String list = when() //
@@ -327,7 +319,7 @@ public class FolderAPITest extends ApiServiceTestBase {
         final Response response = RestAssured.given() //
                 .queryParam("pathName", searchQuery).when() //
                 .get("/api/folders/search");
-        final List<Folder> folders = builder.build().readValue(response.asString(), new TypeReference<List<Folder>>() {
+        final List<Folder> folders = mapper.readValue(response.asString(), new TypeReference<List<Folder>>() {
         });
 
         //then
@@ -356,7 +348,7 @@ public class FolderAPITest extends ApiServiceTestBase {
                 .get("/api/folders/all");
 
         Assertions.assertThat(response.getStatusCode()).isEqualTo(200);
-        return builder.build().readValue(response.asString(), new TypeReference<List<Folder>>() {
+        return mapper.readValue(response.asString(), new TypeReference<List<Folder>>() {
         });
     }
 
@@ -367,7 +359,7 @@ public class FolderAPITest extends ApiServiceTestBase {
                 .get("/api/folders");
 
         Assertions.assertThat(response.getStatusCode()).isEqualTo(200);
-        return builder.build().readValue(response.asString(), new TypeReference<List<Folder>>() {
+        return mapper.readValue(response.asString(), new TypeReference<List<Folder>>() {
         });
     }
 
@@ -392,7 +384,7 @@ public class FolderAPITest extends ApiServiceTestBase {
                 .get("/api/folders/entries");
 
         Assertions.assertThat(response.getStatusCode()).isEqualTo(200);
-        return builder.build().readValue(response.asString(), new TypeReference<List<FolderEntry>>() {
+        return mapper.readValue(response.asString(), new TypeReference<List<FolderEntry>>() {
         });
     }
 
@@ -443,11 +435,13 @@ public class FolderAPITest extends ApiServiceTestBase {
         final String preparationId = createPreparationFromFile("t-shirt_100.csv", "nonMatchingPreparation", "text/csv");
 
         // when
-        String inventory = given().queryParam("path", "/").queryParam("name", "Inventory").get("/api/inventory/search")
+        String inventory = given() //
+                .queryParam("path", "/") //
+                .queryParam("name", "Inventory") //
+                .get("/api/inventory/search") //
                 .asString();
 
         // then
-        ObjectMapper mapper = new ObjectMapper();
         JsonNode rootNode = mapper.readTree(inventory);
         JsonNode preparations = rootNode.get("preparations");
         List<Preparation> preparationList = mapper.readValue(preparations.toString(), new TypeReference<List<Preparation>>(){});

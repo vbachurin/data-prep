@@ -56,7 +56,7 @@ public interface PreparationRepository {
      * @see PreparationRepository#getByMatchingName(String, boolean)
      */
     default Collection<Preparation> getByMatchingName(String name, boolean exactMatch) {
-        Collection<Preparation> result = null;
+        Collection<Preparation> result;
         if (StringUtils.isEmpty(name)) {
             result = listAll(Preparation.class);
         } else {

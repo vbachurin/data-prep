@@ -36,7 +36,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.mock.env.MockPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.talend.dataprep.api.Application;
@@ -48,6 +47,7 @@ import org.talend.dataprep.preparation.store.PreparationRepository;
 import org.talend.dataprep.transformation.aggregation.api.AggregationParameters;
 import org.talend.dataprep.transformation.test.TransformationServiceUrlRuntimeUpdater;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.response.Response;
 
@@ -59,7 +59,7 @@ import com.jayway.restassured.response.Response;
 @WebIntegrationTest
 public abstract class ApiServiceTestBase {
 
-    public static final Logger LOGGER = LoggerFactory.getLogger(ApiServiceTestBase.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ApiServiceTestBase.class);
 
     @Value("${local.server.port}")
     protected int port;
@@ -68,7 +68,7 @@ public abstract class ApiServiceTestBase {
     protected ConfigurableEnvironment environment;
 
     @Autowired
-    protected Jackson2ObjectMapperBuilder builder;
+    protected ObjectMapper mapper;
 
     @Autowired
     protected DataSetMetadataRepository dataSetMetadataRepository;
@@ -112,7 +112,7 @@ public abstract class ApiServiceTestBase {
 
     protected AggregationParameters getAggregationParameters(String input) throws IOException {
         InputStream parametersInput = this.getClass().getResourceAsStream(input);
-        return builder.build().readValue(parametersInput, AggregationParameters.class);
+        return mapper.readValue(parametersInput, AggregationParameters.class);
     }
 
     protected String createDataset(final String file, final String name, final String type) throws IOException {

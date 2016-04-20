@@ -16,6 +16,7 @@ package org.talend.dataprep.dataset.service;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 import static org.talend.dataprep.api.folder.FolderContentType.DATASET;
+import static org.talend.dataprep.util.SortAndOrderHelper.getDataSetMetadataComparator;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -262,8 +263,7 @@ public class DataSetService {
             iterator = dataSetMetadataRepository.list().spliterator();
         }
 
-        final Comparator<String> comparisonOrder = getOrderComparator(order);
-        final Comparator<DataSetMetadata> comparator = getDataSetMetadataComparator(sort, comparisonOrder);
+        final Comparator<DataSetMetadata> comparator = getDataSetMetadataComparator(sort, order);
 
         // Return sorted results
         try (Stream<DataSetMetadata> stream = StreamSupport.stream(iterator, false)) {
@@ -299,8 +299,7 @@ public class DataSetService {
 
         Spliterator<DataSetMetadata> iterator = dataSetMetadataRepository.listCompatible(dataSetId).spliterator();
 
-        final Comparator<String> comparisonOrder = getOrderComparator(order);
-        final Comparator<DataSetMetadata> comparator = getDataSetMetadataComparator(sort, comparisonOrder);
+        final Comparator<DataSetMetadata> comparator = getDataSetMetadataComparator(sort, order);
 
         // Return sorted results
         try (Stream<DataSetMetadata> stream = StreamSupport.stream(iterator, false)) {
@@ -1062,52 +1061,5 @@ public class DataSetService {
         try (Stream<DataSetRow> stream = contentStore.sample(dataSetMetadata, sample)) {
             statisticsAnalysis.computeFullStatistics(copy.getMetadata(), stream);
         }
-    }
-
-    /**
-     * Return a dataset metadata comparator from the given parameters.
-     *
-     * @param sort the sort key.
-     * @param comparisonOrder the order comparator to use.
-     * @return a dataset metadata comparator from the given parameters.
-     */
-    private Comparator<DataSetMetadata> getDataSetMetadataComparator(String sort,
-            Comparator<String> comparisonOrder) {
-        // Select comparator for sort (either by name or date)
-        final Comparator<DataSetMetadata> comparator;
-        switch (sort.toUpperCase()) {
-        case "NAME":
-            comparator = Comparator.comparing(dataSetMetadata -> dataSetMetadata.getName().toUpperCase(), comparisonOrder);
-            break;
-        case "DATE":
-            comparator = Comparator.comparing(dataSetMetadata -> String.valueOf(dataSetMetadata.getCreationDate()),
-                    comparisonOrder);
-            break;
-        default:
-            throw new TDPException(CommonErrorCodes.ILLEGAL_ORDER_FOR_LIST, ExceptionContext.build().put("sort", sort));
-        }
-        return comparator;
-    }
-
-    /**
-     * Return an order comparator.
-     *
-     * @param order the order key.
-     * @return an order comparator.
-     */
-    private Comparator<String> getOrderComparator(String order) {
-        // Select order (asc or desc)
-        final Comparator<String> comparisonOrder;
-        switch (order.toUpperCase()) {
-        case "ASC":
-            comparisonOrder = Comparator.naturalOrder();
-            break;
-        case "DESC":
-            comparisonOrder = Comparator.reverseOrder();
-            break;
-        default:
-            throw new TDPException(CommonErrorCodes.ILLEGAL_ORDER_FOR_LIST, ExceptionContext.build().put("order", order));
-        }
-        return comparisonOrder;
     }
 }

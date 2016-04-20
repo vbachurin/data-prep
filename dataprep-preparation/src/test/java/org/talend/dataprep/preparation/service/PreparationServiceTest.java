@@ -19,12 +19,16 @@ import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.talend.dataprep.api.folder.FolderContentType.PREPARATION;
 import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
 import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import javax.annotation.Resource;
 
@@ -41,8 +45,10 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.talend.dataprep.api.folder.FolderEntry;
 import org.talend.dataprep.api.preparation.*;
 import org.talend.dataprep.api.service.info.VersionService;
+import org.talend.dataprep.folder.store.FolderRepository;
 import org.talend.dataprep.preparation.Application;
 import org.talend.dataprep.preparation.store.PreparationRepository;
 import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
@@ -78,6 +84,10 @@ public class PreparationServiceTest {
     @Resource(name = "rootStep")
     private Step rootStep;
 
+    /** Where the folders are stored.*/
+    @Autowired
+    private FolderRepository folderRepository;
+
     @Autowired
     private PreparationUtils preparationUtils;
 
@@ -89,6 +99,7 @@ public class PreparationServiceTest {
     @After
     public void tearDown() throws Exception {
         repository.clear();
+        folderRepository.clear();
     }
 
     @Test
@@ -103,7 +114,7 @@ public class PreparationServiceTest {
     @Test
     public void shouldListAllPreparations() throws Exception {
         // given
-        when().get("/preparations/all").then().statusCode(HttpStatus.OK.value()).body(sameJSONAs("[]"));
+        when().get("/preparations/details").then().statusCode(HttpStatus.OK.value()).body(sameJSONAs("[]"));
 
         final Preparation preparation = new Preparation("1234", rootStep.id(), versionService.version().getVersionId());
         preparation.setCreationDate(0);
@@ -111,7 +122,7 @@ public class PreparationServiceTest {
         repository.add(preparation);
 
         // when
-        final Response response = when().get("/preparations/all");
+        final Response response = when().get("/preparations/details");
 
         // then
         response.then().statusCode(HttpStatus.OK.value())
@@ -127,7 +138,7 @@ public class PreparationServiceTest {
         repository.add(preparation1);
 
         // when
-        final Response responseMultiple = when().get("/preparations/all");
+        final Response responseMultiple = when().get("/preparations/details");
 
         // then
         //@formatter:off
@@ -162,13 +173,96 @@ public class PreparationServiceTest {
         //@formatter:on
     }
 
+    @Test
+    public void shouldListByFolder() throws Exception {
+
+        // given
+        folderRepository.addFolder("/root");
+        List<String> rootPreparations = new ArrayList<>();
+        rootPreparations.add(createPreparationWithAPI("{\"name\": \"prep_1\", \"dataSetId\": \"1234\"}", "/root"));
+
+        folderRepository.addFolder("/root/three_preps");
+        List<String> threePreparations = new ArrayList<>();
+        threePreparations.add(createPreparationWithAPI("{\"name\": \"prep_2\", \"dataSetId\": \"1234\"}", "/root/three_preps"));
+        threePreparations.add(createPreparationWithAPI("{\"name\": \"prep_3\", \"dataSetId\": \"1234\"}", "/root/three_preps"));
+        threePreparations.add(createPreparationWithAPI("{\"name\": \"prep_4\", \"dataSetId\": \"1234\"}", "/root/three_preps"));
+
+        folderRepository.addFolder("/root/three_preps/no_prep");
+        List<String> noPreparations = new ArrayList<>();
+
+        // then
+        checkSearchFolder("/root", rootPreparations);
+        checkSearchFolder("/root/three_preps", threePreparations);
+        checkSearchFolder("/root/three_preps/no_prep", noPreparations);
+    }
+
+    /**
+     * Check that the folder search is correct.
+     *
+     * @param folderPath the folder to search.
+     * @param expectedIds the expected preparations id.
+     * @throws IOException if an error occurs.
+     */
+    private void checkSearchFolder(String folderPath, List<String> expectedIds) throws IOException {
+
+        // when
+        final Response response = given() //
+                .queryParam("folderPath", folderPath) //
+                .queryParam("sort", "DATE") //
+                .queryParam("order", "ASC") //
+                .when().expect().statusCode(200).log().ifError() //
+                .get("/preparations/search");
+
+        // then
+        assertThat(response.getStatusCode(), is(200));
+        final JsonNode rootNode = mapper.reader().readTree(response.asInputStream());
+        assertTrue(rootNode.isArray());
+        assertEquals(expectedIds.size(), rootNode.size());
+        final List<String> actualIds = StreamSupport.stream(rootNode.spliterator(), false).map(n -> n.get("id").asText()).collect(Collectors.toList());
+        assertEquals(expectedIds, actualIds);
+    }
+
+
+    @Test
+    public void shouldSearchByName() throws Exception {
+
+        // given
+        final String tdpId = createPreparation("1234", "talendDataPrep");
+        final String dpId = createPreparation("4567", "dataPrep");
+        final String pId = createPreparation("8901", "prep");
+
+        // when then
+        checkSearchByName("prep", false, Arrays.asList(pId, dpId, tdpId));
+
+    }
+
+    private void checkSearchByName(String name, boolean exactMatch, List<String> expectedIds) throws IOException {
+
+        // when
+        final Response response = given() //
+                .queryParam("name", name) //
+                .queryParam("exactMatch", exactMatch) //
+                .queryParam("sort", "DATE") //
+                .queryParam("order", "ASC") //
+                .when().expect().statusCode(200).log().ifError() //
+                .get("/preparations/search");
+
+        // then
+        assertThat(response.getStatusCode(), is(200));
+        final JsonNode rootNode = mapper.reader().readTree(response.asInputStream());
+        assertTrue(rootNode.isArray());
+        assertEquals(expectedIds.size(), rootNode.size());
+        final List<String> actualIds = StreamSupport.stream(rootNode.spliterator(), false).map(n -> n.get("id").asText()).collect(Collectors.toList());
+        assertEquals(expectedIds.size(), actualIds.stream().filter(id -> expectedIds.contains(id)).count());
+    }
+
     /**
      * See <a href="https://jira.talendforge.org/browse/TDP-1604">TDP-1604</a>
      */
     @Test
     public void listPreparationsShouldBeOrderedByLastModificationDate() throws Exception {
         // given
-        when().get("/preparations/all").then().statusCode(HttpStatus.OK.value()).body(sameJSONAs("[]"));
+        when().get("/preparations/details").then().statusCode(HttpStatus.OK.value()).body(sameJSONAs("[]"));
 
         List<String> preparationIds = new ArrayList<>(5);
         for (int i=0;i<5;i++) {
@@ -182,7 +276,7 @@ public class PreparationServiceTest {
         }
 
         // when
-        final InputStream responseContent = when().get("/preparations/all").asInputStream();
+        final InputStream responseContent = when().get("/preparations/details").asInputStream();
         final List<Preparation> actual = mapper.readValue(responseContent, new TypeReference<List<Preparation>>() {});
 
         // then
@@ -267,7 +361,7 @@ public class PreparationServiceTest {
         final String preparation5 = createPreparation("1598", "prep_5");
 
         // when
-        final String result = when().get("/preparations?dataSetId=" + wantedDataSetId).asString();
+        final String result = when().get("/preparations/search?dataSetId=" + wantedDataSetId).asString();
         final List<String> preparationIds = JsonPath.from(result).get("id");
 
         // then
@@ -301,14 +395,31 @@ public class PreparationServiceTest {
     @Test
     public void create() throws Exception {
         assertThat(repository.listAll(Preparation.class).size(), is(0));
-        String preparationId = given().contentType(ContentType.JSON).body("{\"name\": \"test_name\", \"dataSetId\": \"1234\"}")
-                .when().put("/preparations").asString();
+        String preparationId = createPreparationWithAPI("{\"name\": \"test_name\", \"dataSetId\": \"1234\"}");
         assertThat(repository.listAll(Preparation.class).size(), is(1));
         Preparation preparation = repository.listAll(Preparation.class).iterator().next();
         assertThat(preparation.id(), is(preparationId));
         assertThat(preparation.getName(), is("test_name"));
         assertThat(preparation.getAuthor(), is(System.getProperty("user.name")));
         assertThat(preparation.getAppVersion(), is(versionService.version().getVersionId()));
+    }
+
+    @Test
+    public void createInFolder() throws Exception {
+        // given
+        final String path = "/test/create/preparation";
+        folderRepository.addFolder(path);
+        assertThat(folderRepository.children(path).iterator().hasNext(), is(false));
+
+        // when
+        String preparationId = createPreparationWithAPI("{\"name\": \"another_preparation\", \"dataSetId\": \"75368\"}", path);
+
+        // then
+        final Iterator<FolderEntry> iterator = folderRepository.entries(path, PREPARATION).iterator();
+        assertTrue(iterator.hasNext());
+        final FolderEntry entry = iterator.next();
+        assertEquals(preparationId, entry.getContentId());
+        assertEquals(PREPARATION, entry.getContentType());
     }
 
     @Test
@@ -325,16 +436,23 @@ public class PreparationServiceTest {
 
     @Test
     public void delete() throws Exception {
+        // given
         assertThat(repository.listAll(Preparation.class).size(), is(0));
-        String preparationId = given().contentType(ContentType.JSON).body("{\"name\": \"test_name\", \"dataSetId\": \"1234\"}")
-                .when().put("/preparations").asString();
+        String path="preparation/that/will/be/deleted";
+        folderRepository.addFolder(path);
+        String preparationId = createPreparationWithAPI("{\"name\": \"test_name\", \"dataSetId\": \"1234\"}", path);
         assertThat(repository.listAll(Preparation.class).size(), is(1));
         Preparation preparation = repository.listAll(Preparation.class).iterator().next();
         assertThat(preparation.id(), is(preparationId));
         assertThat(preparation.getName(), is("test_name"));
+        assertTrue(folderRepository.findFolderEntries(preparationId, PREPARATION).iterator().hasNext());
 
+        // when
         when().delete("/preparations/{id}", preparationId).then().statusCode(HttpStatus.OK.value());
+
+        // then
         assertThat(repository.listAll(Preparation.class).size(), is(0));
+        assertFalse(folderRepository.findFolderEntries(preparationId, PREPARATION).iterator().hasNext());
     }
 
     @Test
@@ -822,6 +940,37 @@ public class PreparationServiceTest {
     // -----------------------------------------------------------------------------------------------------------------
     // -----------------------------------------------------UTILS-------------------------------------------------------
     // -----------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Create a preparation by calling the preparation API.
+     *
+     * @param preparationContent preparation content in json.
+     * @return the preparation id.
+     */
+    private String createPreparationWithAPI(String preparationContent) {
+        return createPreparationWithAPI(preparationContent, null);
+    }
+
+    /**
+     * Create a preparation by calling the preparation API.
+     *
+     * @param preparationContent preparation content in json.
+     * @param folderPath the folder path where tp create the preparation (can be null / empty)
+     * @return the preparation id.
+     */
+    private String createPreparationWithAPI(String preparationContent, String folderPath) {
+        final Response response = given() //
+                .contentType(ContentType.JSON) //
+                .body(preparationContent) //
+                .queryParam("folderPath", folderPath) //
+                .when() //
+                .expect().statusCode(200).log().ifError() //
+                .put("/preparations");
+
+        assertThat(response.getStatusCode(), is(200));
+        return response.asString();
+    }
+
     /**
      * Create a new preparation with the given name and creation date to 0.
      *

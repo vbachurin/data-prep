@@ -19,15 +19,21 @@ import static java.util.stream.Collectors.toList;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
+import static org.talend.dataprep.api.folder.FolderContentType.PREPARATION;
 import static org.talend.dataprep.exception.error.PreparationErrorCodes.*;
+import static org.talend.dataprep.util.SortAndOrderHelper.getPreparationComparator;
 
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import javax.annotation.Resource;
 
@@ -37,12 +43,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.talend.daikon.exception.ExceptionContext;
+import org.talend.dataprep.api.folder.FolderEntry;
 import org.talend.dataprep.api.preparation.*;
 import org.talend.dataprep.api.service.info.VersionService;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.exception.error.PreparationErrorCodes;
 import org.talend.dataprep.exception.json.JsonErrorCodeDescription;
+import org.talend.dataprep.folder.store.FolderRepository;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.preparation.store.PreparationRepository;
 import org.talend.dataprep.security.Security;
@@ -59,11 +66,18 @@ import io.swagger.annotations.ApiParam;
 @Api(value = "preparations", basePath = "/preparations", description = "Operations on preparations")
 public class PreparationService {
 
+    /** This class' logger. */
     private static final Logger LOGGER = LoggerFactory.getLogger(PreparationService.class);
 
+    /** Where preparation are stored. */
     @Autowired
     private PreparationRepository preparationRepository;
 
+    /** Where the folders are stored.*/
+    @Autowired
+    private FolderRepository folderRepository;
+
+    /** Action validator. */
     @Autowired
     private ActionMetadataValidation validator;
 
@@ -71,6 +85,7 @@ public class PreparationService {
     @Resource(name = "rootStep")
     private Step rootStep;
 
+    /** Various preparation utilities. */
     @Autowired
     private PreparationUtils preparationUtils;
 
@@ -78,111 +93,278 @@ public class PreparationService {
     @Autowired
     private Security security;
 
+    /** Version service. */
     @Autowired
     private VersionService versionService;
 
+    /** Where all the actions are registered. */
     @Autowired
     private ActionRegistry actionRegistry;
 
+
+    /**
+     * Create a preparation from the http request body.
+     *
+     * @param preparation the preparation to create.
+     * @param folderPath where to store the preparation.
+     * @return the created preparation id.
+     */
+    //@formatter:off
+    @RequestMapping(value = "/preparations", method = PUT, produces = TEXT_PLAIN_VALUE, consumes = APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Create a preparation", notes = "Returns the id of the created preparation.")
+    @Timed
+    public String create(@ApiParam("preparation") @RequestBody final Preparation preparation,
+                         @ApiParam(value = "The folder path to create the entry.") @RequestParam(defaultValue = "/", required = false) String folderPath) {
+    //@formatter:on
+
+        LOGGER.debug("Create new preparation for data set {} in {}", preparation.getDataSetId(), folderPath);
+
+        preparation.setHeadId(rootStep.id());
+        preparation.setAuthor(security.getUserId());
+        preparation.setAppVersion(versionService.version().getVersionId());
+        preparationRepository.add(preparation);
+
+        final String id = preparation.id();
+
+        // create associated folderEntry
+        FolderEntry folderEntry = new FolderEntry(PREPARATION, id);
+        folderRepository.addFolderEntry(folderEntry, folderPath);
+
+        LOGGER.info("New preparation {} created and stored in {} ", preparation, folderPath);
+        return id;
+    }
+
+
+    /**
+     * List all the preparations id.
+     *
+     * @param sort how the preparation should be sorted (default is 'last modification date').
+     * @param order how to apply the sort.
+     * @return the preparations id list.
+     */
     @RequestMapping(value = "/preparations", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List all preparations id", notes = "Returns the list of preparations ids the current user is allowed to see. Creation date is always displayed in UTC time zone. See 'preparations/all' to get all details at once.")
     @Timed
     public List<String> list(
             @ApiParam(value = "Sort key (by name or date).") @RequestParam(defaultValue = "MODIF", required = false) String sort,
             @ApiParam(value = "Order for sort key (desc or asc).") @RequestParam(defaultValue = "DESC", required = false) String order) {
+
         LOGGER.debug("Get list of preparations (summary).");
-        return preparationRepository.listAll(Preparation.class).stream().collect(Collectors.toList()).stream()
-                .sorted(getPreparationComparator(sort, getOrderComparator(order))).map(Preparation::id).collect(toList());
+
+        final List<String> preparations = preparationRepository.listAll(Preparation.class).stream().collect(Collectors.toList()).stream() //
+                .sorted(getPreparationComparator(sort, order)) //
+                .map(Preparation::id).collect(toList());
+
+        LOGGER.info("found {} preparation(s) ID in total", preparations.size());
+        return preparations;
     }
 
-    @RequestMapping(value = "/preparations", method = GET, params = "dataSetId", produces = APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "List all preparations for the given DataSet id", notes = "Returns the list of preparations for the given Dataset id the current user is allowed to see. Creation date is always displayed in UTC time zone. See 'preparations/all' to get all details at once.")
-    @Timed
-    public Collection<PreparationDetails> listByDataSet(@RequestParam("dataSetId") @ApiParam("dataSetId") String dataSetId) {
-        Collection<Preparation> preparations = preparationRepository.getByDataSet(dataSetId);
-        LOGGER.debug("{} preparation(s) use dataset {}.", preparations.size(), dataSetId);
-        return getDetails(preparations);
-    }
 
-    @RequestMapping(value = "/preparations", method = GET, params = "name", produces = APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "List all preparations matching the specified name", notes = "Returns the list of preparations matching the specified name. Creation date is always displayed in UTC time zone. See 'preparations/all' to get all details at once.")
-    @Timed
-    public Collection<PreparationDetails> listByMatchingName(@RequestParam("name") @ApiParam("name") String name,
-            @RequestParam(value = "exactMatch", defaultValue = "true") @ApiParam("exactMatch") boolean exactMatch) {
-        Collection<Preparation> preparations = preparationRepository.getByMatchingName(name, exactMatch);
-
-        String message = exactMatch ? "{} preparation(s) having name that match {}.": "{} preparation(s) having name containing {}.";
-        LOGGER.debug(message, preparations.size(), name);
-        return getDetails(preparations);
-    }
-
-    @RequestMapping(value = "/preparations/all", method = GET, produces = APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "List all preparations", notes = "Returns the list of preparations the current user is allowed to see. Creation date is always displayed in UTC time zone. This operation return all details on the preparations.")
+    /**
+     * List all preparation details.
+     *
+     * @param sort how to sort the preparations.
+     * @param order how to order the sort.
+     * @return the preparation details.
+     */
+    @RequestMapping(value = "/preparations/details", method = GET, produces = APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "List all preparations", notes = "Returns the list of preparations details the current user is allowed to see. Creation date is always displayed in UTC time zone. This operation return all details on the preparations.")
     @Timed
     public Collection<PreparationDetails> listAll(
             @ApiParam(value = "Sort key (by name or date).") @RequestParam(defaultValue = "MODIF", required = false) String sort,
             @ApiParam(value = "Order for sort key (desc or asc).") @RequestParam(defaultValue = "DESC", required = false) String order) {
         LOGGER.debug("Get list of preparations (with details).");
         Collection<Preparation> preparations = preparationRepository.listAll(Preparation.class);
-        preparations = preparations.stream()
-                // sort by last modification date
-                .sorted((p1, p2) -> Long.compare(p2.getLastModificationDate(),p1.getLastModificationDate()))
+        Collection<PreparationDetails> details = preparations.stream() //
+                .sorted(getPreparationComparator(sort, order)) //
+                .map(this::getDetails) //
                 .collect(Collectors.toList());
-        return getDetails(preparations);
+        LOGGER.info("found {} preparation(s) in total", details.size());
+        return details;
     }
 
-    @RequestMapping(value = "/preparations", method = PUT, produces = TEXT_PLAIN_VALUE, consumes = APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Create a preparation", notes = "Returns the id of the created preparation.")
+    /**
+     * <p>Search preparation entry point.</p>
+     *
+     * <p>So far at least one search criteria can be processed at a time among the following ones :
+     *  <ul>
+     *      <li>dataset id</li>
+     *      <li>preparation name & exact match</li>
+     *      <li>folder path</li>
+     *  </ul>
+     * </p>
+     *
+     * @param dataSetId to search all preparations based on this dataset id.
+     * @param folderPath to search all preparations located in this folder.
+     * @param name to search all preparations that match this name.
+     * @param exactMatch if true, the name matching must be exact.
+     * @param sort Sort key (by name, creation date or modification date).
+     * @param order Order for sort key (desc or asc).
+     */
+    //@formatter:off
+    @RequestMapping(value = "/preparations/search", method = GET, produces = APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Search for preparations details", notes = "Returns the list of preparations details that match the search criteria.")
     @Timed
-    public String create(@ApiParam("preparation")
-    @RequestBody
-    final Preparation preparation) {
-        LOGGER.debug("Create new preparation for data set {}", preparation.getDataSetId());
-        preparation.setHeadId(rootStep.id());
-        preparation.setAuthor(security.getUserId());
-        preparation.setAppVersion(versionService.version().getVersionId());
-        preparationRepository.add(preparation);
-        LOGGER.debug("Created new preparation: {}", preparation);
-        return preparation.id();
+    public Collection<PreparationDetails> searchPreparations(
+            @RequestParam(value="dataSetId", required=false) @ApiParam("dataSetId") String dataSetId,
+            @RequestParam(value = "folderPath", required=false) @ApiParam(value="path of the folder where to look for preparations") String folderPath,
+            @RequestParam(value="name", required=false) @ApiParam("name") String name,
+            @RequestParam(value = "exactMatch", defaultValue = "true") @ApiParam("exactMatch") boolean exactMatch,
+            @RequestParam(defaultValue = "MODIF", required = false) @ApiParam(value = "Sort key (by name or date).") String sort,
+            @RequestParam(defaultValue = "DESC", required = false) @ApiParam(value = "Order for sort key (desc or asc).") String order) {
+    //@formatter:on
+
+        //TODO should stream the response à la DataSetRowIterator & DataSetRowStreamSerializer
+
+        final Collection<Preparation> result;
+
+        if (dataSetId != null) {
+            result = searchByDataSet(dataSetId);
+        }
+        else if (folderPath != null ){
+            result = searchByFolder(folderPath);
+        }
+        else {
+            result = searchByName(name, exactMatch);
+        }
+
+        // convert & sort the result
+        return result.stream() //
+                .sorted(getPreparationComparator(sort, order)) //
+                .map(this::getDetails) //
+                .collect(Collectors.toList());
     }
 
+
+    /**
+     * Return the preparations that are based on the given dataset.
+     * @param dataSetId the dataset id.
+     * @return the preparations that are based on the given dataset.
+     */
+    private Collection<Preparation> searchByDataSet(String dataSetId) {
+
+        LOGGER.debug("looking for preparations based on dataset #{}", dataSetId);
+
+        Collection<Preparation> preparations = preparationRepository.getByDataSet(dataSetId);
+
+        LOGGER.info("found {} preparation(s) for dataset {}.", preparations.size(), dataSetId);
+
+        return preparations;
+    }
+
+    /**
+     * List all preparations details in the given folder.
+     *
+     * @param folderPath the folder where to look for preparations.
+     * @return the list of preparations details for the given folder path.
+     */
+    private Collection<Preparation> searchByFolder(String folderPath) {
+
+        LOGGER.debug("looking for preparations in {}", folderPath);
+
+        final Iterable<FolderEntry> entries = folderRepository.entries(folderPath, PREPARATION);
+
+        final List<Preparation> preparations;
+        try (final Stream<FolderEntry> stream = StreamSupport.stream(entries.spliterator(), false)) {
+            preparations = stream //
+                    .map(e -> preparationRepository.get(e.getContentId(), Preparation.class)) //
+                    .collect(Collectors.toList());
+        }
+
+        LOGGER.info("found {} preparation(s) in {}", preparations.size(), folderPath);
+
+        return preparations;
+    }
+
+    /**
+     * List all the preparations that matches the given name.
+     *
+     * @param name the wanted preparation name.
+     * @param exactMatch true if the name must match exactly.
+     * @return all the preparations that matches the given name.
+     */
+    private Collection<Preparation> searchByName(String name,boolean exactMatch) {
+
+        LOGGER.debug("looking for preparations with the name '{}' exact match is ", name, exactMatch);
+
+        Collection<Preparation> preparations = preparationRepository.getByMatchingName(name, exactMatch);
+
+        String message = exactMatch ? "{} preparation(s) having name that match {}.": "{} preparation(s) having name containing {}.";
+        LOGGER.info(message, preparations.size(), name);
+
+        return preparations;
+    }
+
+
+    /**
+     * Delete the preparation that match the given id.
+     * @param id the preparation id to delete.
+     */
     @RequestMapping(value = "/preparations/{id}", method = RequestMethod.DELETE, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Delete a preparation by id", notes = "Delete a preparation content based on provided id. Id should be a UUID returned by the list operation. Not valid or non existing preparation id returns empty content.")
     @Timed
     public void delete(@PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the preparation to delete") String id) {
+
         LOGGER.debug("Deletion of preparation #{} requested.", id);
+
         Preparation preparationToDelete = preparationRepository.get(id, Preparation.class);
         preparationRepository.remove(preparationToDelete);
-        LOGGER.debug("Deletion of preparation #{} done.", id);
+
+        // delete the associated folder entries
+        // TODO make this async?
+        folderRepository.findFolderEntries(id, PREPARATION).forEach(e -> folderRepository.removeFolderEntry(e.getFolderId(), id, PREPARATION));
+
+        LOGGER.info("Deletion of preparation #{} done.", id);
     }
 
+    /**
+     * Update a preparation.
+     *
+     * @param id the preparation id to update.
+     * @param preparation the updated preparation.
+     * @return the updated preparation id.
+     */
+    //@formatter:off
     @RequestMapping(value = "/preparations/{id}", method = PUT, produces = TEXT_PLAIN_VALUE, consumes = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Create a preparation", notes = "Returns the id of the updated preparation.")
     @Timed
-    public String update(@ApiParam("id") @PathVariable("id") String id, //
-            @RequestBody
-    @ApiParam("preparation")
-    final Preparation preparation) {
+    public String update(@ApiParam("id") @PathVariable("id") String id,
+            @RequestBody @ApiParam("preparation") final Preparation preparation) {
+    //@formatter:on
+
         Preparation previousPreparation = preparationRepository.get(id, Preparation.class);
+
         LOGGER.debug("Updating preparation with id {}: {}", preparation.id(), previousPreparation);
+
         Preparation updated = previousPreparation.merge(preparation);
         if (!updated.id().equals(id)) {
             preparationRepository.remove(previousPreparation);
         }
         updated.setAppVersion(versionService.version().getVersionId());
         preparationRepository.add(updated);
-        LOGGER.debug("Updated preparation: {}", updated);
+
+        LOGGER.info("Preparation {} updated -> {}", id, updated);
+
         return updated.id();
     }
 
+    /**
+     * Return a preparation details.
+     *
+     * @param id the wanted preparation id.
+     * @return the preparation details.
+     */
     @RequestMapping(value = "/preparations/{id}", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get preparation details", notes = "Return the details of the preparation with provided id.")
     @Timed
     public PreparationDetails get(@ApiParam("id") @PathVariable("id") String id) {
         LOGGER.debug("Get content of preparation details for #{}.", id);
         final Preparation preparation = preparationRepository.get(id, Preparation.class);
-        return getDetails(preparation);
+        final PreparationDetails details = getDetails(preparation);
+        LOGGER.info("returning details for {} -> {}", id, details);
+        return details;
     }
+
 
     @RequestMapping(value = "/preparations/clone/{id}", method = PUT, produces = TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Clone preparation", notes = "Clone of the preparation with provided id. The new name will the previous one concat with ' Copy', "
@@ -264,7 +446,7 @@ public class PreparationService {
                                                                               // the preparation
         LOGGER.debug("Rewriting history for {} steps.", steps.size());
 
-        // Extract created columns ids diff infos
+        // Extract created columns ids diff info
         final Step stm = getStep(stepToModifyId);
         final List<String> originalCreatedColumns = stm.getDiff().getCreatedColumns();
         final List<String> updatedCreatedColumns = newStep.getDiff().getCreatedColumns();
@@ -300,13 +482,13 @@ public class PreparationService {
      * <li>4. Append each action after the new preparation head</li>
      * </ul>
      */
+    //@formatter:off
     @RequestMapping(value = "/preparations/{id}/actions/{stepId}", method = DELETE)
     @ApiOperation(value = "Delete an action in a preparation", notes = "Delete a step and all following steps from a preparation")
     @Timed
-    public void deleteAction(@PathVariable("id")
-    final String id, //
-            @PathVariable("stepId")
-    final String stepToDeleteId) {
+    public void deleteAction(@PathVariable("id") final String id, @PathVariable("stepId") final String stepToDeleteId) {
+    //@formatter:on
+
         if (rootStep.getId().equals(stepToDeleteId)) {
             throw new TDPException(PREPARATION_ROOT_STEP_CANNOT_BE_DELETED);
         }
@@ -701,16 +883,6 @@ public class PreparationService {
     }
 
     /**
-     * Convenient method to convert &lt;Collection>Preparation&gt; to Collection&lt;PreparationDetails&gt;.
-     *
-     * @param preparations the preparations to cast.
-     * @return the preparations details that match the given preparations.
-     */
-    private Collection<PreparationDetails> getDetails(Collection<Preparation> preparations) {
-        return preparations.stream().map(this::getDetails).collect(Collectors.toList()); // list keeps the order
-    }
-
-    /**
      * Convenient method to convert Preparation to PreparationDetails.
      *
      * @param preparation the preparation to cast.
@@ -720,54 +892,4 @@ public class PreparationService {
         return new PreparationDetails(preparation);
     }
 
-    // ------------------------------------------------------------------------------------------------------------------
-    // -----------------------------------------------------COMPARATORS------------------------------------------------------
-    // ------------------------------------------------------------------------------------------------------------------
-
-    /**
-     * Return a dataset metadata comparator from the given parameters.
-     *
-     * @param sort the sort key.
-     * @param comparisonOrder the order comparator to use.
-     * @return a dataset metadata comparator from the given parameters.
-     */
-    private Comparator<Preparation> getPreparationComparator(String sort, Comparator<String> comparisonOrder) {
-        // Select comparator for sort (either by name or date)
-        final Comparator<Preparation> comparator;
-        switch (sort.toUpperCase()) {
-        case "NAME":
-            comparator = Comparator.comparing(Preparation::getName, comparisonOrder);
-            break;
-        case "DATE":
-            comparator = Comparator.comparing(p -> String.valueOf(p.getCreationDate()), comparisonOrder);
-            break;
-        case "MODIF":
-            comparator = Comparator.comparing(p -> String.valueOf(p.getLastModificationDate()), comparisonOrder);
-            break;
-        default:
-            throw new TDPException(CommonErrorCodes.ILLEGAL_SORT_FOR_LIST, ExceptionContext.build().put("sort", sort));
-        }
-        return comparator;
-    }
-    /**
-     * Return an order comparator.
-     *
-     * @param order the order key.
-     * @return an order comparator.
-     */
-    private Comparator<String> getOrderComparator(String order) {
-        // Select order (asc or desc)
-        final Comparator<String> comparisonOrder;
-        switch (order.toUpperCase()) {
-        case "ASC":
-            comparisonOrder = Comparator.naturalOrder();
-            break;
-        case "DESC":
-            comparisonOrder = Comparator.reverseOrder();
-            break;
-        default:
-            throw new TDPException(CommonErrorCodes.ILLEGAL_ORDER_FOR_LIST, ExceptionContext.build().put("order", order));
-        }
-        return comparisonOrder;
-    }
 }

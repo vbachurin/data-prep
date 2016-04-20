@@ -60,7 +60,7 @@ public interface FolderRepository {
     void renameFolder(String path, String newPath);
 
     /**
-     * add or replace (if already exists) the entry.
+     * Add or replace (if already exists) the entry.
      * @param folderEntry the {@link FolderEntry} to add.
      * @param path where to add this folder entry.
      */

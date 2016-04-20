@@ -384,7 +384,7 @@ public class PreparationAPITest extends ApiServiceTestBase {
         // given
         final String preparationId = createPreparationFromFile("dataset/dataset.csv", "testPreparationContentGet", "text/csv");
         String json = given().get("/api/preparations/{preparation}/details", preparationId).asString();
-        Preparation preparation = builder.build().readerFor(Preparation.class).readValue(json);
+        Preparation preparation = mapper.readerFor(Preparation.class).readValue(json);
         List<String> steps = preparation.getSteps();
 
         assertThat(steps.size(), is(1));
