@@ -162,6 +162,12 @@ export default class ColumnProfileOptionsCtrl {
         }
     }
 
+    /**
+     * @ngdoc method
+     * @name _updateNumericColumns
+     * @methodOf data-prep.column-profile-options.controller:ColumnProfileOptionsCtrl
+     * @description exclude grouping column from filteredNumericColumns
+     */
     _updateNumericColumns() {
         this.filteredNumericColumns = this.group ?
             this.numericColumns.filter((col) => col.id !== this.group.id) :
