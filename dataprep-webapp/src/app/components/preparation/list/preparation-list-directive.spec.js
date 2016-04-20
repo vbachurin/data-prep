@@ -20,6 +20,7 @@ describe('Preparation list directive', function () {
         {
             'id': 'ab136cbf0923a7f11bea713adb74ecf919e05cfa',
             'dataSetId': 'de3cc32a-b624-484e-b8e7-dab9061a009c',
+            'name': 'preparation 1',
             'author': 'anonymousUser',
             'creationDate': 1427447300000,
             'lastModificationDate': 1427447300300,
@@ -54,6 +55,7 @@ describe('Preparation list directive', function () {
         {
             'id': 'fbaa18e82e913e97e5f0e9d40f04413412be1126',
             'dataSetId': '4d0a2718-bec6-4614-ad6c-8b3b326ff6c7',
+            'name': 'preparation 2',
             'author': 'anonymousUser',
             'creationDate': 1427447330000,
             'lastModificationDate': 1427447330693,
@@ -120,5 +122,9 @@ describe('Preparation list directive', function () {
         //then
         expect(element.find('#preparation-inventory-list').length).toBe(1);
         expect(element.find('inventory-item').length).toBe(2);
+
+        const itemTitles = element.find('.inventory-title');
+        expect(itemTitles.eq(0).text()).toBe('preparation 1');
+        expect(itemTitles.eq(1).text()).toBe('preparation 2');
     }));
 });

@@ -11,7 +11,7 @@
 
   ============================================================================*/
 #preparation-inventory-list {
-  .preparation-description {
+  .dataset-name {
     @include ellipsis(250px);
     vertical-align: bottom;
     font-weight: 700;
