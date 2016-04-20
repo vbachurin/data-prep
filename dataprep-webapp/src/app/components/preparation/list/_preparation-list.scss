@@ -11,9 +11,10 @@
 
   ============================================================================*/
 
-.preparation-list {
-  padding: 5px;
-
-  @include flex-row();
-  @include flex-wrap(wrap);
+#preparation-inventory-list {
+  .dataset-name {
+    @include ellipsis(250px);
+    vertical-align: bottom;
+    font-weight: 700;
+  }
 }

@@ -13,17 +13,16 @@
   ~ ============================================================================
   -->
 
-<div class="preparation-list inventory-tile-list">
-    <inventory-tile
-            ng-repeat="preparation in preparationListCtrl.state.inventory.preparations track by preparation.id"
-
-            dataset="preparation.dataset"
-            preparation="preparation"
-            on-click="angular.noop"
-            on-title-click="preparationListCtrl.load(preparation)"
-            on-clone="preparationListCtrl.clone(preparation)"
-            on-favorite="preparation.favorite = !preparation.favorite"
-            on-remove="preparationListCtrl.remove(preparation)"
-            on-rename="preparationListCtrl.rename(preparation, text)"
-    ></inventory-tile>
+<div id="preparation-inventory-list" class="inventory-list">
+    <inventory-item
+            id="preparation_{{$index}}"
+            ng-repeat="preparation in preparationListCtrl.state.inventory.preparations track by $index"
+            item="preparation"
+            type="preparation"
+            details="PREPARATION_DETAILS"
+            open="preparationListCtrl.load"
+            remove="preparationListCtrl.remove"
+            rename="preparationListCtrl.rename"
+            copy="preparationListCtrl.clone">
+    </inventory-item>
 </div>
