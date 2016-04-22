@@ -209,7 +209,7 @@ export default function DatasetService($q, state, StateService, DatasetListServi
      */
     function setDatasetSheet(metadata, sheetName) {
         metadata.sheetName = sheetName;
-        return DatasetRestService.updateMetadata(metadata);
+        return DatasetRestService.setMetadata(metadata);
     }
 
     //--------------------------------------------------------------------------------------------------------------
@@ -250,7 +250,7 @@ export default function DatasetService($q, state, StateService, DatasetListServi
         var originalParameters = extractOriginalParameters(metadata);
         setParameters(metadata, parameters);
 
-        return DatasetRestService.updateMetadata(metadata)
+        return DatasetRestService.setMetadata(metadata)
             .then(function () {
                 metadata.defaultPreparation = originalParameters.defaultPreparation;
                 metadata.preparations = originalParameters.preparations;
