@@ -73,7 +73,7 @@
     padding-left: 10px;
 
     .inventory-title {
-      @include ellipsis(430px);
+      @include ellipsis(400px);
       padding: 3px 0;
       cursor: pointer;
 
