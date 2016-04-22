@@ -17,13 +17,13 @@
 }
 
 .inventory-item {
-  @include flex-basis(70px);
+  @include flex-basis(80px);
   @include flex-grow(0);
   @include flex-shrink(0);
 
   @include flex-row();
   border-bottom: 1px solid #CECECE;
-  height: 70px;
+  height: 80px;
   padding: 10px;
 
   &:hover {
