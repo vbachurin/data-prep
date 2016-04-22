@@ -30,77 +30,31 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import javax.annotation.Resource;
-
 import org.apache.commons.io.IOUtils;
 import org.assertj.core.api.Assertions;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.api.folder.FolderEntry;
 import org.talend.dataprep.api.preparation.*;
-import org.talend.dataprep.api.service.info.VersionService;
-import org.talend.dataprep.folder.store.FolderRepository;
-import org.talend.dataprep.preparation.Application;
-import org.talend.dataprep.preparation.store.PreparationRepository;
+import org.talend.dataprep.preparation.BasePreparationTest;
 import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.path.json.JsonPath;
 import com.jayway.restassured.response.Response;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Application.class)
-@WebAppConfiguration
-@IntegrationTest
-public class PreparationServiceTest {
-
-    @Value("${local.server.port}")
-    public int port;
-
-    @Autowired
-    private PreparationRepository repository;
-
-    @Autowired
-    private ObjectMapper mapper;
-
-    @Autowired
-    private VersionService versionService;
-
-    /** The root step. */
-    @Resource(name = "rootStep")
-    private Step rootStep;
-
-    /** Where the folders are stored.*/
-    @Autowired
-    private FolderRepository folderRepository;
+/**
+ * Unit test for the preparation service.
+ */
+public class PreparationServiceTest extends BasePreparationTest{
 
     @Autowired
     private PreparationUtils preparationUtils;
-
-    @Before
-    public void setUp() {
-        RestAssured.port = port;
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        repository.clear();
-        folderRepository.clear();
-    }
 
     @Test
     public void CORSHeaders() throws Exception {

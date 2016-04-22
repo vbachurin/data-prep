@@ -22,6 +22,7 @@ import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -29,6 +30,8 @@ import javax.annotation.Resource;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.talend.dataprep.api.folder.FolderContentType;
+import org.talend.dataprep.api.folder.FolderEntry;
 import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.preparation.Step;
 import org.talend.dataprep.security.Security;
@@ -125,6 +128,48 @@ public class PreparationAPITest extends ApiServiceTestBase {
 
         // then
         assertFalse( compatibleDatasetList.contains( dataSetId ) );
+    }
+
+    /**
+     * This test does not check the whole content (this is already done by unit tests in lower services) but make sure
+     * the plumbing is ok.
+     */
+    @Test
+    public void shouldListPreparationsInFolder() throws Exception {
+        // given
+        folderRepository.addFolder("/one");
+        folderRepository.addFolder("/two");
+        createPreparationFromFile("dataset/dataset.csv", "yet another preparation", "text/csv", "/");
+        createPreparationFromFile("dataset/dataset.csv", "prep 2", "text/csv", "/");
+        createPreparationFromFile("dataset/dataset.csv", "preparation 3 !", "text/csv", "/");
+
+        // when
+        final Response response = given() //
+                .queryParam("folder", "/") //
+                .when()//
+                .expect().statusCode(200).log().ifError() //
+                .get("api/preparations/search");
+
+        // then
+        assertThat(response.getStatusCode(), is(200));
+        final JsonNode rootNode = mapper.readTree(response.asInputStream());
+
+        final JsonNode folders = rootNode.get("folders");
+        assertNotNull(folders);
+        assertEquals(2, folders.size());
+
+        final JsonNode preparations = rootNode.get("preparations");
+        assertNotNull(preparations);
+        assertEquals(3, preparations.size());
+        for (JsonNode preparation : preparations) {
+            final JsonNode dataset = preparation.get("dataset");
+            assertNotNull(dataset);
+            assertTrue(dataset.has("dataSetId"));
+            assertTrue(dataset.has("dataSetName"));
+            assertTrue(dataset.has("dataSetNbRow"));
+        }
+
+
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -365,6 +410,48 @@ public class PreparationAPITest extends ApiServiceTestBase {
     //------------------------------------------------------------------------------------------------------------------
     //----------------------------------------------------CONTENT------------------------------------------------------
     //-------------------------------------------------------------------------------------------------------------------
+
+
+    @Test
+    public void shouldCreatePreparationInDefaultFolder() throws Exception {
+
+        // given
+        Iterator<FolderEntry> entries = folderRepository.entries("/", FolderContentType.PREPARATION).iterator();
+        assertFalse(entries.hasNext());
+
+        // when
+        final String preparationId = createPreparationFromFile("dataset/dataset.csv", "testCreatePreparation", "text/csv");
+
+        // then
+        entries = folderRepository.entries("/", FolderContentType.PREPARATION).iterator();
+        assertTrue(entries.hasNext());
+        final FolderEntry entry = entries.next();
+        assertThat(entry.getContentId(), is(preparationId));
+        assertThat(entry.getContentType(), is(FolderContentType.PREPARATION));
+        assertFalse(entries.hasNext());
+    }
+
+    @Test
+    public void shouldCreatePreparationInSpecificFolder() throws Exception {
+
+        // given
+        final String path = "/folder-1/sub-folder-2";
+        Iterator<FolderEntry> entries = folderRepository.entries(path, FolderContentType.PREPARATION).iterator();
+        assertFalse(entries.hasNext());
+
+        // when
+        final String preparationId = createPreparationFromFile("dataset/dataset.csv", "testCreatePreparation", "text/csv", path);
+
+        // then
+        entries = folderRepository.entries(path, FolderContentType.PREPARATION).iterator();
+        assertTrue(entries.hasNext());
+        final FolderEntry entry = entries.next();
+        assertThat(entry.getContentId(), is(preparationId));
+        assertThat(entry.getContentType(), is(FolderContentType.PREPARATION));
+        assertFalse(entries.hasNext());
+    }
+
+
     @Test
     public void testPreparationInitialContent() throws Exception {
         // given

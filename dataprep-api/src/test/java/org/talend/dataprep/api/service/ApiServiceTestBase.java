@@ -59,7 +59,7 @@ import com.jayway.restassured.response.Response;
 @WebIntegrationTest
 public abstract class ApiServiceTestBase {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ApiServiceTestBase.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(ApiServiceTestBase.class);
 
     @Value("${local.server.port}")
     protected int port;
@@ -144,13 +144,31 @@ public abstract class ApiServiceTestBase {
 
     protected String createPreparationFromFile(final String file, final String name, final String type) throws IOException {
         final String dataSetId = createDataset(file, "testDataset", type);
-        return createPreparationFromDataset(dataSetId, name);
+        return createPreparationFromDataset(dataSetId, name, "/");
     }
 
+
+    protected String createPreparationFromFile(final String file, final String name, final String type, final String path) throws IOException {
+        final String dataSetId = createDataset(file, "testDataset", type);
+        return createPreparationFromDataset(dataSetId, name, path);
+    }
+
+
     protected String createPreparationFromDataset(final String dataSetId, final String name) throws IOException {
-        final String preparationId = given().contentType(ContentType.JSON)
-                .body("{ \"name\": \"" + name + "\", \"dataSetId\": \"" + dataSetId + "\"}").when().post("/api/preparations")
+        return createPreparationFromDataset(dataSetId, name, "/");
+    }
+
+    protected String createPreparationFromDataset(final String dataSetId, final String name, String path) throws IOException {
+
+        final String preparationId = given() //
+                .contentType(ContentType.JSON) //
+                .body("{ \"name\": \"" + name + "\", \"dataSetId\": \"" + dataSetId + "\"}") //
+                .queryParam("folder", path) //
+                .when() //
+                .expect().statusCode(200).log().ifError() //
+                .post("/api/preparations") //
                 .asString();
+
         assertThat(preparationId, notNullValue());
         assertThat(preparationId, not(""));
 

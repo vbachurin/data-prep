@@ -15,7 +15,9 @@ package org.talend.dataprep.api.service;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
+import static org.talend.daikon.exception.ExceptionContext.build;
 import static org.talend.daikon.exception.ExceptionContext.withBuilder;
+import static org.talend.dataprep.exception.error.CommonErrorCodes.UNABLE_TO_WRITE_JSON;
 import static org.talend.dataprep.exception.error.PreparationErrorCodes.UNABLE_TO_READ_PREPARATION;
 
 import java.io.ByteArrayInputStream;
@@ -35,10 +37,13 @@ import org.springframework.web.bind.annotation.*;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.preparation.AppendStep;
 import org.talend.dataprep.api.preparation.Preparation;
+import org.talend.dataprep.api.service.api.EnrichedPreparation;
 import org.talend.dataprep.api.service.api.PreviewAddParameters;
 import org.talend.dataprep.api.service.api.PreviewDiffParameters;
 import org.talend.dataprep.api.service.api.PreviewUpdateParameters;
 import org.talend.dataprep.api.service.command.dataset.CompatibleDataSetList;
+import org.talend.dataprep.api.service.command.dataset.DataSetGetMetadata;
+import org.talend.dataprep.api.service.command.folder.FoldersList;
 import org.talend.dataprep.api.service.command.preparation.*;
 import org.talend.dataprep.command.preparation.PreparationDetailsGet;
 import org.talend.dataprep.command.preparation.PreparationGetActions;
@@ -48,6 +53,7 @@ import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.http.HttpResponseContext;
 import org.talend.dataprep.metrics.Timed;
 
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.netflix.hystrix.HystrixCommand;
 
@@ -63,9 +69,11 @@ public class PreparationAPI extends APIService {
     public void listPreparations(
             @RequestParam(value = "format", defaultValue = "long") @ApiParam(name = "format", value = "Format of the returned document (can be 'long' or 'short'). Defaults to 'long'.") String format,
             final OutputStream output) {
+
         if (LOG.isDebugEnabled()) {
             LOG.debug("Listing preparations (pool: {} )...", getConnectionStats());
         }
+
         PreparationList.Format listFormat = PreparationList.Format.valueOf(format.toUpperCase());
         HystrixCommand<InputStream> command = getCommand(PreparationList.class, listFormat);
         try (InputStream commandResult = command.execute()) {
@@ -79,6 +87,99 @@ public class PreparationAPI extends APIService {
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
     }
+
+
+    //@formatter:off
+    @RequestMapping(value = "/api/preparations/search", params = "folder", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get all preparations for a given folder.", notes = "Returns the list of preparations for the given folder the current user is allowed to see.")
+    @Timed
+    public void listPreparationsByFolder(
+            @RequestParam(value = "folder", defaultValue = "/") @ApiParam(name = "folder", value = "The folder to search preparations from.") String folder,
+            final OutputStream output) {
+    //@formatter:on
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Listing preparations in folder {} (pool: {} )...", folder, getConnectionStats());
+        }
+
+        int preparationsProcessed;
+        try (final JsonGenerator generator = mapper.getFactory().createGenerator(output)) {
+
+            generator.writeStartObject();
+
+            listAndWriteFoldersToJson(folder, generator);
+            preparationsProcessed = listAndWritePreparationsToJson(folder, generator);
+
+            generator.writeEndObject();
+
+        } catch (IOException e) {
+            throw new TDPException(APIErrorCodes.UNABLE_TO_LIST_FOLDER_ENTRIES, e, build().put("folder", folder));
+        }
+
+        LOG.info("There are {} preparation(s) in {}", preparationsProcessed, folder);
+
+    }
+
+    /**
+     * List preparations from a folder and write them straight in json to the output.
+     *
+     * @param folder the folder to list the preparations.
+     * @param output where to write the json.
+     * @throws IOException if an error occurs.
+     */
+    private int listAndWritePreparationsToJson(String folder, JsonGenerator output) throws IOException {
+
+        output.writeRaw(",");
+        final PreparationListByFolder listPreparations = getCommand(PreparationListByFolder.class, folder);
+        try (InputStream input = listPreparations.execute()) {
+
+            output.writeArrayFieldStart("preparations");
+            List<Preparation> preparations = mapper.readValue(input, new TypeReference<List<Preparation>>(){});
+            for (Preparation preparation : preparations) {
+                enrichAndWritePreparation(preparation, output);
+            }
+            output.writeEndArray();
+            return preparations.size();
+        }
+        catch(Exception e) {
+            throw new TDPException(UNABLE_TO_WRITE_JSON, e);
+        }
+    }
+
+    /**
+     * Enrich preparation with dataset information and write it in json to the output.
+     *
+     * @param preparation the preparation to enrich.
+     * @param output where to write the json.
+     */
+    private void enrichAndWritePreparation(Preparation preparation, JsonGenerator output) {
+
+        final DataSetGetMetadata getMetadata = getCommand(DataSetGetMetadata.class, preparation.getDataSetId());
+        EnrichedPreparation enrichedPreparation = new EnrichedPreparation(preparation, getMetadata.execute());
+
+        try {
+            output.writeObject(enrichedPreparation);
+        } catch (IOException e) {
+            //simply log the error as there may be other preparations that could be processed
+            LOG.error("error writing {} to the http response", enrichedPreparation, e);
+        }
+    }
+
+    /**
+     * Get and write, in json, the list of folders directly to the output.
+     *
+     * @param folderPath the folder to list.
+     * @param output where to write the json.
+     * @throws IOException if an error occurs.
+     */
+    private void listAndWriteFoldersToJson(String folderPath, JsonGenerator output) throws IOException {
+        final FoldersList commandListFolders = getCommand(FoldersList.class, folderPath);
+        output.writeRaw("\"folders\":");
+        try (InputStream folders = commandListFolders.execute()) {
+            output.writeRaw(IOUtils.toString(folders));
+        }
+    }
+
 
     /**
      * Returns a list containing all data sets metadata that are compatible with a preparation identified by
@@ -125,21 +226,24 @@ public class PreparationAPI extends APIService {
         }
     }
 
+    //@formatter:off
     @RequestMapping(value = "/api/preparations", method = POST, consumes = APPLICATION_JSON_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Create a new preparation for preparation content in body.", notes = "Returns the created preparation id.")
     @Timed
     public String createPreparation(
+            @ApiParam(name = "folder", value = "Where to store the preparation.") @RequestParam(value = "folder", defaultValue = "/") String folder,
             @ApiParam(name = "body", value = "The original preparation. You may set all values, service will override values you can't write to.") @RequestBody Preparation preparation) {
+    //@formatter:on
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Creating preparation (pool: {} )...", getConnectionStats());
+            LOG.debug("Creating a preparation in {} (pool: {} )...", folder, getConnectionStats());
         }
 
-        PreparationCreate preparationCreate = getCommand(PreparationCreate.class, preparation);
+        PreparationCreate preparationCreate = getCommand(PreparationCreate.class, preparation, folder);
         final String preparationId = preparationCreate.execute();
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Created preparation (pool: {} )...", getConnectionStats());
-        }
+
+        LOG.info("new preparation {} created in {}", preparationId, folder);
+
         return preparationId;
     }
 

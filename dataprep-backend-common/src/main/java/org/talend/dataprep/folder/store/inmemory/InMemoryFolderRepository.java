@@ -18,6 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -197,7 +198,8 @@ public class InMemoryFolderRepository extends FolderRepositoryAdapter implements
         if (folderEntries == null) {
             folderEntries = new ArrayList<>();
         }
-        return folderEntries;
+
+        return folderEntries.stream().filter(e -> e.getContentType() == contentType).collect(Collectors.toList());
     }
 
     @Override

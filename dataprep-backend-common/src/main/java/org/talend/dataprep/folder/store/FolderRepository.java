@@ -61,6 +61,9 @@ public interface FolderRepository {
 
     /**
      * Add or replace (if already exists) the entry.
+     *
+     * If the path does not exist, it is automatically created.
+     *
      * @param folderEntry the {@link FolderEntry} to add.
      * @param path where to add this folder entry.
      */

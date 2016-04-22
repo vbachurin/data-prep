@@ -88,10 +88,6 @@ public enum DataSetErrorCodes implements ErrorCode {
      */
     DATASET_NAME_ALREADY_USED(BAD_REQUEST.value(), "id", "name", "folder"),
     /**
-     * Error when a folder is not empty
-     */
-    FOLDER_NOT_EMPTY(CONFLICT.value()),
-    /**
      * Error return when the uploaded content is not supported by any
      * {@link org.talend.dataprep.schema.FormatGuesser guesser}.
      */
@@ -105,10 +101,6 @@ public enum DataSetErrorCodes implements ErrorCode {
      * supported encodings.
      */
     UNABLE_TO_LIST_SUPPORTED_ENCODINGS(INTERNAL_SERVER_ERROR.value()),
-    /**
-     * Error thrown when a folder is... not... found !
-     */
-    FOLDER_NOT_FOUND(NOT_FOUND.value(), "path"),
     /**
      * Error thrown when a problem occurred while listing folder children.
      */

@@ -188,9 +188,6 @@ public class DataSetService {
     @Autowired
     private VersionService versionService;
 
-    @Autowired
-    InventoryUtils inventoryUtils;
-
     /**
      * Sort the synchronous analyzers.
      */

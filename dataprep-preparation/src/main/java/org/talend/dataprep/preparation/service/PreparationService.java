@@ -106,7 +106,7 @@ public class PreparationService {
      * Create a preparation from the http request body.
      *
      * @param preparation the preparation to create.
-     * @param folderPath where to store the preparation.
+     * @param folder where to store the preparation.
      * @return the created preparation id.
      */
     //@formatter:off
@@ -114,10 +114,10 @@ public class PreparationService {
     @ApiOperation(value = "Create a preparation", notes = "Returns the id of the created preparation.")
     @Timed
     public String create(@ApiParam("preparation") @RequestBody final Preparation preparation,
-                         @ApiParam(value = "The folder path to create the entry.") @RequestParam(defaultValue = "/", required = false) String folderPath) {
+                         @ApiParam(value = "The folder path to create the entry.") @RequestParam(defaultValue = "/") String folder) {
     //@formatter:on
 
-        LOGGER.debug("Create new preparation for data set {} in {}", preparation.getDataSetId(), folderPath);
+        LOGGER.debug("Create new preparation for data set {} in {}", preparation.getDataSetId(), folder);
 
         preparation.setHeadId(rootStep.id());
         preparation.setAuthor(security.getUserId());
@@ -128,9 +128,9 @@ public class PreparationService {
 
         // create associated folderEntry
         FolderEntry folderEntry = new FolderEntry(PREPARATION, id);
-        folderRepository.addFolderEntry(folderEntry, folderPath);
+        folderRepository.addFolderEntry(folderEntry, folder);
 
-        LOGGER.info("New preparation {} created and stored in {} ", preparation, folderPath);
+        LOGGER.info("New preparation {} created and stored in {} ", preparation, folder);
         return id;
     }
 
@@ -195,7 +195,7 @@ public class PreparationService {
      * </p>
      *
      * @param dataSetId to search all preparations based on this dataset id.
-     * @param folderPath to search all preparations located in this folder.
+     * @param folder to search all preparations located in this folder.
      * @param name to search all preparations that match this name.
      * @param exactMatch if true, the name matching must be exact.
      * @param sort Sort key (by name, creation date or modification date).
@@ -205,9 +205,9 @@ public class PreparationService {
     @RequestMapping(value = "/preparations/search", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Search for preparations details", notes = "Returns the list of preparations details that match the search criteria.")
     @Timed
-    public Collection<PreparationDetails> searchPreparations(
+    public Iterable<PreparationDetails> searchPreparations(
             @RequestParam(value="dataSetId", required=false) @ApiParam("dataSetId") String dataSetId,
-            @RequestParam(value = "folderPath", required=false) @ApiParam(value="path of the folder where to look for preparations") String folderPath,
+            @RequestParam(value = "folder", required=false) @ApiParam(value="path of the folder where to look for preparations") String folder,
             @RequestParam(value="name", required=false) @ApiParam("name") String name,
             @RequestParam(value = "exactMatch", defaultValue = "true") @ApiParam("exactMatch") boolean exactMatch,
             @RequestParam(defaultValue = "MODIF", required = false) @ApiParam(value = "Sort key (by name or date).") String sort,
@@ -221,8 +221,8 @@ public class PreparationService {
         if (dataSetId != null) {
             result = searchByDataSet(dataSetId);
         }
-        else if (folderPath != null ){
-            result = searchByFolder(folderPath);
+        else if (folder != null ){
+            result = searchByFolder(folder);
         }
         else {
             result = searchByName(name, exactMatch);
