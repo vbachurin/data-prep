@@ -519,7 +519,7 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
         List<Map<String, String>> values = getValuesFromFile(fileName, dataSetMetadata);
         logger.debug("values: {}", values);
 
-        Assertions.assertThat(values.get(4).get("0003")).isNotEmpty().isEqualTo("10/26/15");
+        Assertions.assertThat(values.get(4).get("0003")).isNotEmpty().isEqualTo("10/26/2015");
         Assertions.assertThat(values.get(5).get("0003")).isNotEmpty().isEqualTo("MONDAY");
         Assertions.assertThat(values.get(7).get("0003")).isNotEmpty().isEqualTo("8.00");
         Assertions.assertThat(values.get(30).get("0003")).isNotEmpty().isEqualTo("6.00");
@@ -597,6 +597,96 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
         logger.debug("values: {}", values);
 
         Assertions.assertThat( values.get( 3 ).get( "0090" ) ).isEqualTo( "Small" );
+    }
+
+    /**
+     * TDP-1656
+     */
+    @Test
+    public void date_format() throws Exception {
+
+        String fileName = "dates.xlsx";
+
+        FormatGuess formatGuess;
+
+        try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
+            formatGuess = formatGuesser.guess(getRequest(inputStream, UUID.randomUUID().toString()), "UTF-8").getFormatGuess();
+            Assert.assertNotNull(formatGuess);
+            Assert.assertTrue(formatGuess instanceof XlsFormatGuess);
+            Assert.assertEquals(XlsFormatGuess.MEDIA_TYPE, formatGuess.getMediaType());
+        }
+
+        DataSetMetadata dataSetMetadata = metadataBuilder.metadata().id("ff").sheetName("Feuil1").build();
+
+        try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
+
+            List<SchemaParserResult.SheetContent> sheetContents = xlsSchemaParser.parseAllSheets(getRequest(inputStream, "#8"));
+
+            List<ColumnMetadata> columnMetadatas = sheetContents.get(0).getColumnMetadatas();
+
+            logger.debug("columnMetadatas: {}", columnMetadatas);
+
+            Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty();
+
+            dataSetMetadata.getRowMetadata().setColumns(columnMetadatas);
+        }
+
+        List<Map<String, String>> values = getValuesFromFile(fileName, dataSetMetadata);
+
+        logger.debug("values: {}", values);
+
+        Assertions.assertThat(values.get(0)) //
+                .contains(MapEntry.entry("0000", "1/1/2016"), //
+                        MapEntry.entry("0001", "2/10/2016"));
+
+        Assertions.assertThat(values.get(1)) //
+                .contains(MapEntry.entry("0000", "3/31/1972"), //
+                        MapEntry.entry("0001", "3/31/2016"));
+    }
+
+    /**
+     * TDP-1656
+     */
+    @Test
+    public void date_format_with_time() throws Exception {
+
+        String fileName = "dates_test.xlsx";
+
+        FormatGuess formatGuess;
+
+        try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
+            formatGuess = formatGuesser.guess(getRequest(inputStream, UUID.randomUUID().toString()), "UTF-8").getFormatGuess();
+            Assert.assertNotNull(formatGuess);
+            Assert.assertTrue(formatGuess instanceof XlsFormatGuess);
+            Assert.assertEquals(XlsFormatGuess.MEDIA_TYPE, formatGuess.getMediaType());
+        }
+
+        DataSetMetadata dataSetMetadata = metadataBuilder.metadata().id("beer").sheetName("Sheet2").build();
+
+        try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
+
+            List<SchemaParserResult.SheetContent> sheetContents = xlsSchemaParser.parseAllSheets(getRequest(inputStream, "#8"));
+
+            List<ColumnMetadata> columnMetadatas = sheetContents.get(0).getColumnMetadatas();
+
+            logger.debug("columnMetadatas: {}", columnMetadatas);
+
+            Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty();
+
+            dataSetMetadata.getRowMetadata().setColumns(columnMetadatas);
+        }
+
+        List<Map<String, String>> values = getValuesFromFile(fileName, dataSetMetadata);
+
+        logger.debug("values: {}", values);
+
+        Assertions.assertThat(values.get(0)) //
+                .contains(MapEntry.entry("0003", "1/26/2015 18:03"), //
+                        MapEntry.entry("0004", "1/29/2015 0:30"));
+
+        Assertions.assertThat(values.get(1)) //
+                .contains(MapEntry.entry("0003", "12/4/2015 1:01"), //
+                        MapEntry.entry("0004", "1/15/2016 13:56"));
     }
 
 }

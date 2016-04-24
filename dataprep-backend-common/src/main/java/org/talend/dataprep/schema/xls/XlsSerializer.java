@@ -13,7 +13,11 @@
 
 package org.talend.dataprep.schema.xls;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +25,8 @@ import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.openxml4j.opc.OPCPackage;
+import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -252,8 +258,7 @@ public class XlsSerializer implements Serializer {
                             ContentHandler handler = new XSSFSheetXMLHandler(styles, //
                                     strings, //
                                     defaultSheetContentsHandler, //
-                                    // in case we want to do our own date number formatting
-                                    // new CustomDataFormater(),
+                                    new CustomDataFormatter(),
                                     false);
 
                             sheetParser.setContentHandler(handler);
@@ -282,6 +287,23 @@ public class XlsSerializer implements Serializer {
                     LOGGER.error("Unable to close output", e);
                 }
             }
+        }
+    }
+
+    private static class CustomDataFormatter extends DataFormatter {
+
+        @Override
+        public String formatRawCellContents(double value, int formatIndex, String formatString, boolean use1904Windowing) {
+            // TDP-1656 (olamy) for some reasons poi use date format with only 2 digits for years
+            // even the excel data ws using 4 so force the pattern here
+            if (DateUtil.isValidExcelDate(value) && StringUtils.countMatches(formatString, "y") == 2) {
+                formatString = StringUtils.replace(formatString, "yy", "yyyy");
+            }
+            if (DateUtil.isValidExcelDate(value) && StringUtils.countMatches(formatString, "YY") == 2) {
+                formatString = StringUtils.replace(formatString, "YY", "YYYY");
+            }
+            String result = super.formatRawCellContents(value, formatIndex, formatString, use1904Windowing);
+            return result;
         }
     }
 
