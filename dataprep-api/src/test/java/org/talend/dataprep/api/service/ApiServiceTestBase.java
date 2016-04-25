@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -50,6 +49,7 @@ import org.talend.dataprep.transformation.test.TransformationServiceUrlRuntimeUp
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.response.Response;
+import com.jayway.restassured.specification.RequestSpecification;
 
 /**
  * Base test for all API service unit.
@@ -107,6 +107,7 @@ public abstract class ApiServiceTestBase {
         contentStore.clear();
         preparationRepository.clear();
         cache.clear();
+        folderRepository.clear();
     }
 
 
@@ -115,20 +116,16 @@ public abstract class ApiServiceTestBase {
         return mapper.readValue(parametersInput, AggregationParameters.class);
     }
 
-    protected String createDataset(final String file, final String name, final String type) throws IOException {
-        return createDataset( file, name, type, null);
-    }
 
-    protected String createDataset(final String file, final String name, final String type, final String folderPath) throws IOException {
+
+    protected String createDataset(final String file, final String name, final String type) throws IOException {
         final String datasetContent = IOUtils.toString(PreparationAPITest.class.getResourceAsStream(file));
         final Response post = given() //
             .contentType(ContentType.JSON) //
             .body(datasetContent) //
             .queryParam("Content-Type", type) //
             .when() //
-            .post( "/api/datasets?name={name}&folderPath={folderPath}", //
-                   name,  //
-                   StringUtils.isEmpty( folderPath )? "" : folderPath);
+            .post("/api/datasets?name={name}", name);
 
         final int statusCode = post.getStatusCode();
         if(statusCode != 200) {
@@ -144,7 +141,7 @@ public abstract class ApiServiceTestBase {
 
     protected String createPreparationFromFile(final String file, final String name, final String type) throws IOException {
         final String dataSetId = createDataset(file, "testDataset", type);
-        return createPreparationFromDataset(dataSetId, name, "/");
+        return createPreparationFromDataset(dataSetId, name);
     }
 
 
@@ -155,20 +152,27 @@ public abstract class ApiServiceTestBase {
 
 
     protected String createPreparationFromDataset(final String dataSetId, final String name) throws IOException {
-        return createPreparationFromDataset(dataSetId, name, "/");
+        return createPreparationFromDataset(dataSetId, name, null);
     }
 
     protected String createPreparationFromDataset(final String dataSetId, final String name, String path) throws IOException {
 
-        final String preparationId = given() //
+        RequestSpecification request = given() //
                 .contentType(ContentType.JSON) //
-                .body("{ \"name\": \"" + name + "\", \"dataSetId\": \"" + dataSetId + "\"}") //
-                .queryParam("folder", path) //
+                .body("{ \"name\": \"" + name + "\", \"dataSetId\": \"" + dataSetId + "\"}");
+
+        if (path != null) {
+            request = request.queryParam("folder", path);
+        }
+
+        final Response response = request //
                 .when() //
                 .expect().statusCode(200).log().ifError() //
-                .post("/api/preparations") //
-                .asString();
+                .post("/api/preparations");
 
+        assertThat(response.getStatusCode(), is(200));
+
+        final String preparationId = response.asString();
         assertThat(preparationId, notNullValue());
         assertThat(preparationId, not(""));
 

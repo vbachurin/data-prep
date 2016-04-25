@@ -31,7 +31,6 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import org.apache.commons.io.IOUtils;
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -41,7 +40,6 @@ import org.talend.dataprep.preparation.BasePreparationTest;
 import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.restassured.http.ContentType;
@@ -161,7 +159,7 @@ public class PreparationServiceTest extends BasePreparationTest{
 
         // when
         final Response response = given() //
-                .queryParam("folderPath", folderPath) //
+                .queryParam("folder", folderPath) //
                 .queryParam("sort", "DATE") //
                 .queryParam("order", "ASC") //
                 .when().expect().statusCode(200).log().ifError() //
@@ -207,7 +205,7 @@ public class PreparationServiceTest extends BasePreparationTest{
         assertTrue(rootNode.isArray());
         assertEquals(expectedIds.size(), rootNode.size());
         final List<String> actualIds = StreamSupport.stream(rootNode.spliterator(), false).map(n -> n.get("id").asText()).collect(Collectors.toList());
-        assertEquals(expectedIds.size(), actualIds.stream().filter(id -> expectedIds.contains(id)).count());
+        assertEquals(expectedIds.size(), actualIds.stream().filter(expectedIds::contains).count());
     }
 
     /**
@@ -266,40 +264,198 @@ public class PreparationServiceTest extends BasePreparationTest{
         assertThat(preparationDetails, sameJSONAsFile(expected));
     }
 
+
     @Test
-    public void cloning() throws Exception {
-        Preparation preparation = new Preparation("56789", rootStep.id(), versionService.version().getVersionId());
-        preparation.setName("beer");
-        preparation.setCreationDate(1);
-        preparation.setLastModificationDate(6789);
-        repository.add(preparation);
-        String preparationDetails = when().get("/preparations/{id}", preparation.id()).asString();
+    public void cannotCopyUnknownPreparation() throws Exception {
 
-        InputStream expected = PreparationServiceTest.class.getResourceAsStream("preparation_beer.json");
-        assertThat(preparationDetails, sameJSONAsFile(expected));
+        //given
+        String unknownId = "0001";
 
-        ObjectMapper objectMapper = new ObjectMapper() //
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, Boolean.FALSE);
+        // when
+        final Response response = given() //
+                .queryParam("name", "the new preparation") //
+                .queryParam("destination", "new preparation") //
+                .when() //
+                .expect().statusCode(404).log().ifError() //
+                .post("/preparations/{id}/copy", unknownId);
 
-        Preparation result = objectMapper.readerFor(Preparation.class).readValue(preparationDetails);
+        // then
+        assertThat(response.getStatusCode(), is(404));
 
-        Assertions.assertThat(result).isEqualToComparingOnlyGivenFields(preparation, //
-                "name", "lastModificationDate", "creationDate");
+    }
 
-        Response cloneResponse = when().put("/preparations/clone/{id}", preparation.id());
+    @Test
+    public void shouldCopy() throws Exception {
+        // given
+        String from = "/from";
+        String to = "/to";
+        folderRepository.addFolder(from);
+        folderRepository.addFolder(to);
 
-        String cloneId = cloneResponse.asString();
+        String originalId = createPreparationWithAPI("{\"name\": \"test_name\", \"dataSetId\": \"1234\"}", from);
 
-        String preparationDetailsClone = when().get("/preparations/{id}", cloneId).asString();
+        // when
+        final Response response = given() //
+                .queryParam("name", "the new preparation") //
+                .queryParam("destination", to) //
+                .when() //
+                .expect().statusCode(200).log().ifError() //
+                .post("/preparations/{id}/copy", originalId);
+        String copyId = response.asString();
 
-        Preparation clone = objectMapper.readerFor(Preparation.class).readValue(preparationDetailsClone);
+        // then
+        assertThat(response.getStatusCode(), is(200));
+        final Iterator<FolderEntry> iterator = folderRepository.entries(to, PREPARATION).iterator();
+        assertTrue(iterator.hasNext());
+        final FolderEntry copy = iterator.next();
+        assertEquals(copy.getContentId(), copyId);
+        assertEquals("the new preparation", repository.get(copyId, Preparation.class).getName());
+    }
 
-        Assertions.assertThat(clone.getCreationDate()).isGreaterThan(result.getCreationDate());
-        Assertions.assertThat(clone.getLastModificationDate()).isGreaterThan(result.getLastModificationDate());
-        Assertions.assertThat(clone.getName()).isEqualTo(result.getName() + " Copy");
-        Assertions.assertThat(clone.getId()).isNotEqualTo(result.getId());
-        Assertions.assertThat(clone.getDataSetId()).isEqualTo(result.getDataSetId());
+    @Test
+    public void cannotCopyIfAnExistingPreparationAlrdeayExists() throws Exception {
+        // given
+        String folder = "/great_folder";
+        String name = "my preparation";
+        folderRepository.addFolder(folder);
 
+        String originalId = createPreparationWithAPI("{\"name\": \""+ name +"\", \"dataSetId\": \"1234\"}", folder);
+
+        // when
+        final Response response = given() //
+                .queryParam("name", name) //
+                .queryParam("destination", folder) //
+                .when() //
+                .expect().statusCode(409).log().ifError() //
+                .post("/preparations/{id}/copy", originalId);
+
+        // then
+        assertThat(response.getStatusCode(), is(409));
+    }
+
+    @Test
+    public void shouldCopyWithDefaultParameters() throws Exception {
+        // given
+        folderRepository.addFolder("/yet_another_folder");
+
+        String originalId = createPreparationWithAPI("{\"name\": \"prep_1\", \"dataSetId\": \"1234\"}", "/yet_another_folder");
+
+        // when
+        final Response response = given() //
+                .when() //
+                .expect().statusCode(200).log().ifError() //
+                .post("/preparations/{id}/copy", originalId);
+        String copyId = response.asString();
+
+        // then
+        assertThat(response.getStatusCode(), is(200));
+        final Iterator<FolderEntry> iterator = folderRepository.entries("/yet_another_folder", PREPARATION).iterator();
+        boolean found = false;
+        while (iterator.hasNext()) {
+            final FolderEntry entry = iterator.next();
+            if (entry.getContentId().equals(copyId)) {
+                found = true;
+                assertEquals("prep_1 Copy", repository.get(entry.getContentId(), Preparation.class).getName());
+            }
+        }
+        assertTrue(found);
+    }
+
+
+    @Test
+    public void shouldMove() throws Exception {
+        // given
+        String from = "/from";
+        String to = "/to";
+        folderRepository.addFolder(from);
+        folderRepository.addFolder(to);
+
+        String originalId = createPreparationWithAPI("{\"name\": \"test_move\", \"dataSetId\": \"7535\"}", from);
+
+        // when
+        final Response response = given() //
+                .queryParam("folder", from) //
+                .queryParam("destination", to) //
+                .queryParam("newName", "moved preparation") //
+                .when() //
+                .expect().statusCode(200).log().ifError() //
+                .put("/preparations/{id}/move", originalId);
+
+        // then
+        assertThat(response.getStatusCode(), is(200));
+        final Iterator<FolderEntry> iterator = folderRepository.entries(to, PREPARATION).iterator();
+        assertTrue(iterator.hasNext());
+        final FolderEntry copy = iterator.next();
+        assertEquals(copy.getContentId(), originalId);
+        assertEquals("moved preparation", repository.get(originalId, Preparation.class).getName());
+    }
+
+
+    @Test
+    public void cannotMovePreparationThatDoesNotExist() throws Exception {
+
+        String name="super preparation";
+
+        // given
+        String from = "/from";
+        folderRepository.addFolder(from);
+        String preparationId = createPreparationWithAPI("{\"name\": \"another preparation\", \"dataSetId\": \"7535\"}", from);
+
+        String to = "/to";
+        folderRepository.addFolder(to);
+        createPreparationWithAPI("{\"name\": \""+ name +"\", \"dataSetId\": \"7384\"}", to);
+
+        // when
+        final Response response = given() //
+                .queryParam("folder", from) //
+                .queryParam("destination", to) //
+                .queryParam("newName", name) //
+                .when() //
+                .expect().statusCode(409).log().ifError() //
+                .put("/preparations/{id}/move", preparationId);
+
+        // then
+        assertThat(response.getStatusCode(), is(409));
+    }
+
+    @Test
+    public void shouldMoveWithDefaultParameters() throws Exception {
+        // given
+        String from = "/from";
+        String to = "/";
+        folderRepository.addFolder(from);
+        folderRepository.addFolder(to);
+
+        String originalId = createPreparationWithAPI("{\"name\": \"yap\", \"dataSetId\": \"7535\"}", from);
+
+        // when
+        final Response response = given() //
+                .queryParam("folder", from) //
+                .when() //
+                .expect().statusCode(200).log().ifError() //
+                .put("/preparations/{id}/move", originalId);
+
+        // then
+        assertThat(response.getStatusCode(), is(200));
+        final Iterator<FolderEntry> iterator = folderRepository.entries(to, PREPARATION).iterator();
+        assertTrue(iterator.hasNext());
+        final FolderEntry copy = iterator.next();
+        assertEquals(copy.getContentId(), originalId);
+        assertEquals("yap", repository.get(originalId, Preparation.class).getName());
+    }
+
+    @Test
+    public void cannotMovePreparationBecauseTheNameIsAlreadyTaken() throws Exception {
+
+        // when
+        final Response response = given() //
+                .queryParam("newName", "moved preparation") //
+                .when() //
+                .expect().statusCode(404).log().ifError() //
+                .put("/preparations/{id}/move", "ABC123XYZ");
+
+        // then
+        assertThat(response.getStatusCode(), is(404));
     }
 
     @Test
@@ -380,7 +536,7 @@ public class PreparationServiceTest extends BasePreparationTest{
     public void createWithSpecialCharacters() throws Exception {
         assertThat(repository.listAll(Preparation.class).size(), is(0));
         String preparationId = given().contentType(ContentType.JSON)
-                .body("{\"name\": \"éàçè\", \"dataSetId\": \"1234\"}".getBytes("UTF-8")).when().put("/preparations").asString();
+                .body("{\"name\": \"éàçè\", \"dataSetId\": \"1234\"}".getBytes("UTF-8")).when().post("/preparations").asString();
         assertThat(preparationId, is(preparationId));
         assertThat(repository.listAll(Preparation.class).size(), is(1));
         Preparation preparation = repository.listAll(Preparation.class).iterator().next();
@@ -413,7 +569,7 @@ public class PreparationServiceTest extends BasePreparationTest{
     public void update() throws Exception {
         assertThat(repository.listAll(Preparation.class).size(), is(0));
         String preparationId = given().contentType(ContentType.JSON).body("{\"name\": \"test_name\", \"dataSetId\": \"1234\"}")
-                .when().put("/preparations").asString();
+                .when().post("/preparations").asString();
 
         Preparation preparation = repository.listAll(Preparation.class).iterator().next();
         assertThat(preparationId, is(preparation.getId()));
@@ -441,7 +597,7 @@ public class PreparationServiceTest extends BasePreparationTest{
         preparation.setDataSetId("1234");
         preparation.setName("test_name");
         String preparationId = given().contentType(ContentType.JSON).body(mapper.writer().writeValueAsBytes(preparation))
-                .when().put("/preparations").asString();
+                .when().post("/preparations").asString();
 
         // Test preparation details update
         String updatedId = given().contentType(ContentType.JSON)
@@ -916,10 +1072,10 @@ public class PreparationServiceTest extends BasePreparationTest{
         final Response response = given() //
                 .contentType(ContentType.JSON) //
                 .body(preparationContent) //
-                .queryParam("folderPath", folderPath) //
+                .queryParam("folder", folderPath) //
                 .when() //
                 .expect().statusCode(200).log().ifError() //
-                .put("/preparations");
+                .post("/preparations");
 
         assertThat(response.getStatusCode(), is(200));
         return response.asString();

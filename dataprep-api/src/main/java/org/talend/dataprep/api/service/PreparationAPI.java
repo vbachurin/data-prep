@@ -14,10 +14,9 @@
 package org.talend.dataprep.api.service;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
-import static org.talend.daikon.exception.ExceptionContext.build;
 import static org.talend.daikon.exception.ExceptionContext.withBuilder;
-import static org.talend.dataprep.exception.error.CommonErrorCodes.UNABLE_TO_WRITE_JSON;
 import static org.talend.dataprep.exception.error.PreparationErrorCodes.UNABLE_TO_READ_PREPARATION;
 
 import java.io.ByteArrayInputStream;
@@ -37,13 +36,10 @@ import org.springframework.web.bind.annotation.*;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.preparation.AppendStep;
 import org.talend.dataprep.api.preparation.Preparation;
-import org.talend.dataprep.api.service.api.EnrichedPreparation;
 import org.talend.dataprep.api.service.api.PreviewAddParameters;
 import org.talend.dataprep.api.service.api.PreviewDiffParameters;
 import org.talend.dataprep.api.service.api.PreviewUpdateParameters;
 import org.talend.dataprep.api.service.command.dataset.CompatibleDataSetList;
-import org.talend.dataprep.api.service.command.dataset.DataSetGetMetadata;
-import org.talend.dataprep.api.service.command.folder.FoldersList;
 import org.talend.dataprep.api.service.command.preparation.*;
 import org.talend.dataprep.command.preparation.PreparationDetailsGet;
 import org.talend.dataprep.command.preparation.PreparationGetActions;
@@ -53,7 +49,6 @@ import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.http.HttpResponseContext;
 import org.talend.dataprep.metrics.Timed;
 
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.netflix.hystrix.HystrixCommand;
 
@@ -85,98 +80,6 @@ public class PreparationAPI extends APIService {
             }
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
-        }
-    }
-
-
-    //@formatter:off
-    @RequestMapping(value = "/api/preparations/search", params = "folder", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Get all preparations for a given folder.", notes = "Returns the list of preparations for the given folder the current user is allowed to see.")
-    @Timed
-    public void listPreparationsByFolder(
-            @RequestParam(value = "folder", defaultValue = "/") @ApiParam(name = "folder", value = "The folder to search preparations from.") String folder,
-            final OutputStream output) {
-    //@formatter:on
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Listing preparations in folder {} (pool: {} )...", folder, getConnectionStats());
-        }
-
-        int preparationsProcessed;
-        try (final JsonGenerator generator = mapper.getFactory().createGenerator(output)) {
-
-            generator.writeStartObject();
-
-            listAndWriteFoldersToJson(folder, generator);
-            preparationsProcessed = listAndWritePreparationsToJson(folder, generator);
-
-            generator.writeEndObject();
-
-        } catch (IOException e) {
-            throw new TDPException(APIErrorCodes.UNABLE_TO_LIST_FOLDER_ENTRIES, e, build().put("folder", folder));
-        }
-
-        LOG.info("There are {} preparation(s) in {}", preparationsProcessed, folder);
-
-    }
-
-    /**
-     * List preparations from a folder and write them straight in json to the output.
-     *
-     * @param folder the folder to list the preparations.
-     * @param output where to write the json.
-     * @throws IOException if an error occurs.
-     */
-    private int listAndWritePreparationsToJson(String folder, JsonGenerator output) throws IOException {
-
-        output.writeRaw(",");
-        final PreparationListByFolder listPreparations = getCommand(PreparationListByFolder.class, folder);
-        try (InputStream input = listPreparations.execute()) {
-
-            output.writeArrayFieldStart("preparations");
-            List<Preparation> preparations = mapper.readValue(input, new TypeReference<List<Preparation>>(){});
-            for (Preparation preparation : preparations) {
-                enrichAndWritePreparation(preparation, output);
-            }
-            output.writeEndArray();
-            return preparations.size();
-        }
-        catch(Exception e) {
-            throw new TDPException(UNABLE_TO_WRITE_JSON, e);
-        }
-    }
-
-    /**
-     * Enrich preparation with dataset information and write it in json to the output.
-     *
-     * @param preparation the preparation to enrich.
-     * @param output where to write the json.
-     */
-    private void enrichAndWritePreparation(Preparation preparation, JsonGenerator output) {
-
-        final DataSetGetMetadata getMetadata = getCommand(DataSetGetMetadata.class, preparation.getDataSetId());
-        EnrichedPreparation enrichedPreparation = new EnrichedPreparation(preparation, getMetadata.execute());
-
-        try {
-            output.writeObject(enrichedPreparation);
-        } catch (IOException e) {
-            //simply log the error as there may be other preparations that could be processed
-            LOG.error("error writing {} to the http response", enrichedPreparation, e);
-        }
-    }
-
-    /**
-     * Get and write, in json, the list of folders directly to the output.
-     *
-     * @param folderPath the folder to list.
-     * @param output where to write the json.
-     * @throws IOException if an error occurs.
-     */
-    private void listAndWriteFoldersToJson(String folderPath, JsonGenerator output) throws IOException {
-        final FoldersList commandListFolders = getCommand(FoldersList.class, folderPath);
-        output.writeRaw("\"folders\":");
-        try (InputStream folders = commandListFolders.execute()) {
-            output.writeRaw(IOUtils.toString(folders));
         }
     }
 
@@ -227,7 +130,7 @@ public class PreparationAPI extends APIService {
     }
 
     //@formatter:off
-    @RequestMapping(value = "/api/preparations", method = POST, consumes = APPLICATION_JSON_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    @RequestMapping(value = "/api/preparations", method = POST, consumes = APPLICATION_JSON_VALUE, produces = TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Create a new preparation for preparation content in body.", notes = "Returns the created preparation id.")
     @Timed
     public String createPreparation(
@@ -247,7 +150,7 @@ public class PreparationAPI extends APIService {
         return preparationId;
     }
 
-    @RequestMapping(value = "/api/preparations/{id}", method = PUT, consumes = APPLICATION_JSON_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    @RequestMapping(value = "/api/preparations/{id}", method = PUT, consumes = APPLICATION_JSON_VALUE, produces = TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Update a preparation with content in body.", notes = "Returns the updated preparation id.")
     @Timed
     public String updatePreparation(
@@ -264,7 +167,7 @@ public class PreparationAPI extends APIService {
         return preparationId;
     }
 
-    @RequestMapping(value = "/api/preparations/{id}", method = DELETE, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    @RequestMapping(value = "/api/preparations/{id}", method = DELETE, consumes = MediaType.ALL_VALUE, produces = TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Delete a preparation by id", notes = "Delete a preparation content based on provided id. Id should be a UUID returned by the list operation. Not valid or non existing preparation id returns empty content.")
     @Timed
     public String deletePreparation(
@@ -280,22 +183,68 @@ public class PreparationAPI extends APIService {
         return preparationId;
     }
 
-    @RequestMapping(value = "/api/preparations/clone/{id}", method = PUT, produces = MediaType.TEXT_PLAIN_VALUE)
-    @ApiOperation(value = "Clone a preparation by id", notes = "Clone a preparation content based on provided id.")
-    @Timed
-    public String clonePreparation(
-            @ApiParam(name = "id", value = "The id of the preparation to clone.") @PathVariable("id") String id) {
+
+    /**
+     * Copy a preparation from the given id
+     *
+     * @param id the preparation id to copy
+     * @param destination where to copy the preparation to.
+     * @param newName optional new name for the preparation.
+     * @param output the http response.
+     * @return The copied preparation id.
+     */
+    //@formatter:off
+    @RequestMapping(value = "/api/preparations/{id}/copy", method = POST, produces = TEXT_PLAIN_VALUE)
+    @ApiOperation(value = "Copy a preparation", produces = TEXT_PLAIN_VALUE, notes = "Copy a preparation based the provided id.")
+    public String copy(
+            @ApiParam(value = "Id of the preparation to copy") @PathVariable(value = "id") String id,
+            @ApiParam(value = "Optional new name of the copied preparation, if not set the copy will get the original name.") @RequestParam(required = false) String newName,
+            @ApiParam(value = "The destination path to create the entry.") @RequestParam(required = false) String destination,
+            final OutputStream output) {
+    //@formatter:on
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Cloning preparation (pool: {} )...", getConnectionStats());
+            LOG.debug("Copying preparation {} to '{}' with new name '{}' (pool: {} )...", id, destination, newName, getConnectionStats());
         }
-        PreparationClone preparationClone = getCommand(PreparationClone.class, id);
-        String preparationId = preparationClone.execute();
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Cloned preparation (pool: {} )...", getConnectionStats());
-        }
-        return preparationId;
+
+        HystrixCommand<String> copy = getCommand(PreparationCopy.class, id, destination, newName);
+        String copyId = copy.execute();
+
+        LOG.info("Preparation {} copied to {}/{} done --> {}", id, destination, newName, copyId);
+
+        return copyId;
     }
+
+
+    /**
+     * Move a preparation to another folder.
+     *
+     * @param id the preparation id to move.
+     * @param folder where to find the preparation.
+     * @param destination where to move the preparation.
+     * @param newName optional new preparation name.
+     */
+    //@formatter:off
+    @RequestMapping(value = "/api/preparations/{id}/move", method = PUT, produces = TEXT_PLAIN_VALUE)
+    @ApiOperation(value = "Move a Preparation", produces = TEXT_PLAIN_VALUE, notes = "Move a preparation to another folder.")
+    @Timed
+    public void move(@PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the preparation to move") String id,
+                     @ApiParam(value = "The original folder path of the preparation.") @RequestParam(defaultValue = "", required = false) String folder,
+                     @ApiParam(value = "The new folder path of the preparation.") @RequestParam(defaultValue = "/", required = false) String destination,
+                     @ApiParam(value = "The new name of the moved dataset.") @RequestParam(defaultValue = "", required = false) String newName) throws IOException {
+    //@formatter:on
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Moving preparation (pool: {} )...", getConnectionStats());
+        }
+
+        HystrixCommand<Void> move = getCommand(PreparationMove.class, id, folder, destination, newName);
+        move.execute();
+
+        LOG.info("Preparation {} moved from {} to {}/'{}'", id, folder, destination, newName);
+
+    }
+
 
     @RequestMapping(value = "/api/preparations/{id}/details", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get a preparation by id and details.", notes = "Returns the preparation details.")

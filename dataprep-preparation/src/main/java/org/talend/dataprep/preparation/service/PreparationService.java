@@ -16,6 +16,7 @@ package org.talend.dataprep.preparation.service;
 import static java.lang.Integer.MAX_VALUE;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
+import static org.apache.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
@@ -23,11 +24,9 @@ import static org.talend.dataprep.api.folder.FolderContentType.PREPARATION;
 import static org.talend.dataprep.exception.error.PreparationErrorCodes.*;
 import static org.talend.dataprep.util.SortAndOrderHelper.getPreparationComparator;
 
+import java.io.IOException;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -37,6 +36,7 @@ import java.util.stream.StreamSupport;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +50,7 @@ import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.PreparationErrorCodes;
 import org.talend.dataprep.exception.json.JsonErrorCodeDescription;
 import org.talend.dataprep.folder.store.FolderRepository;
+import org.talend.dataprep.http.HttpResponseContext;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.preparation.store.PreparationRepository;
 import org.talend.dataprep.security.Security;
@@ -110,7 +111,7 @@ public class PreparationService {
      * @return the created preparation id.
      */
     //@formatter:off
-    @RequestMapping(value = "/preparations", method = PUT, produces = TEXT_PLAIN_VALUE, consumes = APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/preparations", method = POST, produces = TEXT_PLAIN_VALUE, consumes = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Create a preparation", notes = "Returns the id of the created preparation.")
     @Timed
     public String create(@ApiParam("preparation") @RequestBody final Preparation preparation,
@@ -295,12 +296,157 @@ public class PreparationService {
         return preparations;
     }
 
+    /**
+     * Copy the given preparation to the given name / folder ans returns the new if in the response.
+     *
+     * @param name the name of the copied preparation, if empty, the name is "orginal-preparation-name Copy"
+     * @param destination the folder path where to copy the preparation, if empty, the copy is in the same folder.
+     * @return The new preparation id.
+     */
+    //@formatter:off
+    @RequestMapping(value = "/preparations/{id}/copy", method = POST, produces = TEXT_PLAIN_VALUE)
+    @ApiOperation(value = "Copy a preparation", produces = TEXT_PLAIN_VALUE, notes = "Copy the preparation to the new name / folder and returns the new id.")
+    @Timed
+    public String copy(
+            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the preparation to copy") String preparationId,
+            @ApiParam(value = "The name of the copied preparation.") @RequestParam(defaultValue = "", required = false) String name,
+            @ApiParam(value = "The folder path to create the copy.") @RequestParam(defaultValue = "", required = false) String destination)
+            throws IOException {
+    //@formatter:on
+
+        LOGGER.debug("copy {} to folder {} with {} as new name");
+
+        HttpResponseContext.header(CONTENT_TYPE, TEXT_PLAIN_VALUE);
+
+        Preparation original = preparationRepository.get(preparationId, Preparation.class);
+
+        // if no preparation, there's nothing to copy
+        if (original == null) {
+            throw new TDPException(PREPARATION_DOES_NOT_EXIST, ExceptionContext.build().put("id", preparationId));
+        }
+
+        // if the given folder is blank, let's use the original one (thanks to the preparation ids uniqueness)
+        final String targetFolder;
+        if (StringUtils.isBlank(destination)) {
+            final Iterator<FolderEntry> iterator = folderRepository.findFolderEntries(original.id(), PREPARATION).iterator();
+            if (iterator.hasNext()) {
+                targetFolder = iterator.next().getFolderId();
+            }
+            // this should not happen, but just in case, let's have a safeguard
+            else {
+                targetFolder = "/";
+            }
+        }
+        else {
+            targetFolder = destination;
+        }
+
+        // use a default name if empty (original name + " Copy" )
+        final String newName;
+        if (StringUtils.isEmpty(name)) {
+            newName = original.getName() + " Copy";
+        }
+        else {
+            newName = name;
+        }
+        checkIfPreparationNameIsAvailable(targetFolder, newName);
+
+
+        // copy the Preparation
+        final long now = System.currentTimeMillis();
+        Preparation copy = original; // not particularly needed, just makes the code easier and shorter (less setters to call)
+        copy.setName(newName);
+        copy.setCreationDate(now);
+        copy.setLastModificationDate(now);
+        preparationRepository.add(copy);
+        String newId = copy.getId();
+
+        // add the preparation into the folder
+        FolderEntry folderEntry = new FolderEntry(PREPARATION, newId);
+        folderRepository.addFolderEntry(folderEntry, targetFolder);
+
+        LOGGER.info("preparation {} copied to folder {} with the name {}", preparationId, targetFolder, newName);
+        return newId;
+    }
+
+
+    /**
+     * Check if the name is available in the given folder.
+     *
+     * @param folder where to look for the name.
+     * @param name the wanted preparation name.
+     * @throws TDPException Preparation name already used (409) if there's already a preparation with this name in the folder.
+     */
+    private void checkIfPreparationNameIsAvailable(String folder, String name) {
+
+        // make sure the preparation does not already exist in the target folder
+        final Iterable<FolderEntry> entries = folderRepository.entries(folder, PREPARATION);
+        entries.forEach(folderEntry -> {
+            Preparation preparation = preparationRepository.get(folderEntry.getContentId(), Preparation.class);
+            if (preparation != null && StringUtils.equals(name, preparation.getName())) {
+                final ExceptionContext context = ExceptionContext.build() //
+                        .put("id", folderEntry.getContentId()) //
+                        .put("folder", folder) //
+                        .put("name", name);
+                throw new TDPException(PREPARATION_NAME_ALREADY_USED, context, true);
+            }
+        });
+    }
+
+    /**
+     * Move a preparation to an other folder.
+     *
+     * @param folder The original folder of the preparation.
+     * @param destination The new folder of the preparation.
+     * @param newName The new preparation name.
+     */
+    //@formatter:off
+    @RequestMapping(value = "/preparations/{id}/move", method = PUT, produces = TEXT_PLAIN_VALUE)
+    @ApiOperation(value = "Move a preparation", produces = TEXT_PLAIN_VALUE, notes = "Move a preparation to an other folder.")
+    @Timed
+    public void move(@PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the preparation to move") String preparationId,
+                     @ApiParam(value = "The original folder path of the preparation.") @RequestParam(defaultValue = "", required = false) String folder,
+                     @ApiParam(value = "The new folder path of the preparation.") @RequestParam(defaultValue = "/", required = false) String destination,
+                     @ApiParam(value = "The new name of the moved dataset.") @RequestParam(defaultValue = "", required = false) String newName)
+            throws IOException {
+    //@formatter:on
+
+        LOGGER.debug("moving {} from {} to {} with the new name '{}'", preparationId, folder, destination, newName);
+
+        HttpResponseContext.header(CONTENT_TYPE, TEXT_PLAIN_VALUE);
+
+        // get the preparation to move
+        Preparation original = preparationRepository.get(preparationId, Preparation.class);
+
+        // no preparation found
+        if (original == null) {
+            throw new TDPException(PREPARATION_DOES_NOT_EXIST, ExceptionContext.build().put("id", preparationId));
+        }
+
+        // set the target name
+        final String targetName = StringUtils.isEmpty(newName) ? original.getName() : newName;
+
+        // first check if the name is already used in the target folder
+        checkIfPreparationNameIsAvailable(destination, targetName);
+
+        // rename the dataset only if we received a new name
+        if (!targetName.equals(original.getName())) {
+            original.setName(newName);
+            preparationRepository.add(original);
+        }
+
+        // move the preparation
+        FolderEntry folderEntry = new FolderEntry(PREPARATION, preparationId);
+        folderRepository.moveFolderEntry(folderEntry, folder, destination);
+
+        LOGGER.info("preparation {} moved from {} to {} with the new name {}", preparationId, folder, destination, targetName);
+    }
 
     /**
      * Delete the preparation that match the given id.
      * @param id the preparation id to delete.
      */
-    @RequestMapping(value = "/preparations/{id}", method = RequestMethod.DELETE, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    @RequestMapping(value = "/preparations/{id}", method = RequestMethod.DELETE, consumes = MediaType.ALL_VALUE, produces = TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Delete a preparation by id", notes = "Delete a preparation content based on provided id. Id should be a UUID returned by the list operation. Not valid or non existing preparation id returns empty content.")
     @Timed
     public void delete(@PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the preparation to delete") String id) {
@@ -363,21 +509,6 @@ public class PreparationService {
         final PreparationDetails details = getDetails(preparation);
         LOGGER.info("returning details for {} -> {}", id, details);
         return details;
-    }
-
-
-    @RequestMapping(value = "/preparations/clone/{id}", method = PUT, produces = TEXT_PLAIN_VALUE)
-    @ApiOperation(value = "Clone preparation", notes = "Clone of the preparation with provided id. The new name will the previous one concat with ' Copy', "
-            + "Return the id of the new preparation ")
-    @Timed
-    public String clone(@ApiParam("id") @PathVariable("id") String id) {
-        LOGGER.debug("Clone preparation  #{}.", id);
-        Preparation preparation = preparationRepository.get(id, Preparation.class);
-        preparation.setName(preparation.getName() + " Copy");
-        preparation.setCreationDate(System.currentTimeMillis());
-        preparation.setLastModificationDate(System.currentTimeMillis());
-        preparationRepository.add(preparation);
-        return preparation.getId();
     }
 
     @RequestMapping(value = "/preparations/{id}/steps", method = GET, produces = APPLICATION_JSON_VALUE)

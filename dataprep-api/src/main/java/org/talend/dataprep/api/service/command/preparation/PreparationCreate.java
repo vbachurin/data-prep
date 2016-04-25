@@ -19,7 +19,7 @@ import static org.talend.dataprep.exception.error.APIErrorCodes.UNABLE_TO_CREATE
 
 import java.io.IOException;
 
-import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.ByteArrayEntity;
 import org.elasticsearch.common.lang3.StringUtils;
@@ -53,7 +53,7 @@ public class PreparationCreate extends GenericCommand<String> {
             uri += "?folder="+folder;
         }
 
-        HttpPut preparationCreation = new HttpPut(uri);
+        HttpPost preparationCreation = new HttpPost(uri);
 
         // Serialize preparation using configured serialization
         preparationCreation.setHeader("Content-Type", APPLICATION_JSON_VALUE);
