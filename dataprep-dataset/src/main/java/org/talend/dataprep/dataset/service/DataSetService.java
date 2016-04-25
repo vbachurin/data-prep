@@ -234,31 +234,10 @@ public class DataSetService {
     @ApiOperation(value = "List all data sets", notes = "Returns the list of data sets the current user is allowed to see. Creation date is a Epoch time value (in UTC time zone).")
     @Timed
     public Iterable<DataSetMetadata> list(@ApiParam(value = "Sort key (by name or date).") @RequestParam(defaultValue = "DATE", required = false) String sort,
-                                          @ApiParam(value = "Order for sort key (desc or asc).") @RequestParam(defaultValue = "DESC", required = false) String order,
-                                          @ApiParam(value = "Folder id to search datasets") @RequestParam(defaultValue = "", required = false) String folder) {
+                                          @ApiParam(value = "Order for sort key (desc or asc).") @RequestParam(defaultValue = "DESC", required = false) String order) {
 
 
-        Spliterator<DataSetMetadata> iterator;
-        if (StringUtils.isNotEmpty(folder)) {
-            // TODO dataset must be a constant somewhere!!
-            Iterable<FolderEntry> entries = folderRepository.entries(folder, DATASET);
-            final List<DataSetMetadata> metadatas = new ArrayList<>();
-            entries.forEach(folderEntry ->
-            {
-                DataSetMetadata dataSetMetadata =
-                        dataSetMetadataRepository.get(folderEntry.getContentId());
-                if (dataSetMetadata != null) {
-                    metadatas.add(dataSetMetadataRepository.get(folderEntry.getContentId()));
-                } else {
-                    folderRepository.removeFolderEntry(folderEntry.getFolderId(), //
-                            folderEntry.getContentId(), //
-                            folderEntry.getContentType());
-                }
-            });
-            iterator = metadatas.spliterator();
-        } else {
-            iterator = dataSetMetadataRepository.list().spliterator();
-        }
+        Spliterator<DataSetMetadata> iterator = dataSetMetadataRepository.list().spliterator();
 
         final Comparator<DataSetMetadata> comparator = getDataSetMetadataComparator(sort, order);
 

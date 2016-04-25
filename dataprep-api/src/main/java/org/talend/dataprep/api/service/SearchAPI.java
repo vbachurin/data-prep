@@ -80,6 +80,10 @@ public class SearchAPI extends APIService {
      * @return the number of folders that match the searched name.
      */
     private int searchAndWriteFolders(String name, JsonGenerator output) {
+
+
+
+
         return 0;
     }
 
