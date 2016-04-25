@@ -99,9 +99,8 @@ public class FormatAnalysis implements SynchronousDataSetAnalyzer {
                 Format detectedFormat;
                 try (InputStream content = store.getAsRaw(metadata)) {
                     detectedFormat = detector.detect(content);
-                } catch (Exception e) {
-                    LOG.debug(marker, "Input/Output problem during detection {}", e.getMessage());
-                    detectedFormat = null;
+                } catch (IOException e) {
+                    throw new TDPException(DataSetErrorCodes.UNABLE_TO_READ_DATASET_CONTENT, e);
                 }
 
                 LOG.debug(marker, "using {} to parse the dataset", detectedFormat);

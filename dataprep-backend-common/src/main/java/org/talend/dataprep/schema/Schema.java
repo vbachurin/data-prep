@@ -21,6 +21,9 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * This class represents a schema of a dataset.
+ */
 public class Schema implements Serializable {
 
     /** Serialization UID. */

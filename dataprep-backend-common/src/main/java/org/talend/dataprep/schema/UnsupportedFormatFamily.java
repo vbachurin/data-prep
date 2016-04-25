@@ -16,7 +16,7 @@ package org.talend.dataprep.schema;
 import org.springframework.stereotype.Component;
 
 /**
- * A special implementation of {@link FormatFamily} to serve as fallback and indicates the provided content is not
+ * A special implementation of {@link FormatFamily} to serve as fallback and indicates that the provided content is not
  * supported in data prep.
  */
 @Component(UnsupportedFormatFamily.BEAN_ID)

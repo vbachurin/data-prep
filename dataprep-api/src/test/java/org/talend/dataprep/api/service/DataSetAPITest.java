@@ -811,7 +811,6 @@ public class DataSetAPITest extends ApiServiceTestBase {
     }
 
     @Test
-    @Ignore
     public void testDataSetCreateUnsupportedFormat() throws Exception {
         // given
         final String datasetContent = IOUtils.toString(DataSetAPITest.class.getResourceAsStream("dataset/dataset.ods"));

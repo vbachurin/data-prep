@@ -14,7 +14,7 @@
 package org.talend.dataprep.schema;
 
 /**
- * Represents a accurate format which is a two-part identifier composed of a family format (xls, csv, html, ...) and an
+ * Represents an accurate format which is a two-part identifier composed of a family format (xls, csv, html, ...) and an
  * encoding. This format may or may not be supported by Data prep. Notice that this class is immutable.
  */
 public class Format {
