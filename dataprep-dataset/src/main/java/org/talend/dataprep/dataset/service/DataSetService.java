@@ -15,7 +15,6 @@ package org.talend.dataprep.dataset.service;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
-import static org.talend.dataprep.api.folder.FolderContentType.DATASET;
 import static org.talend.dataprep.util.SortAndOrderHelper.getDataSetMetadataComparator;
 
 import java.io.IOException;
@@ -43,7 +42,6 @@ import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.api.dataset.*;
 import org.talend.dataprep.api.dataset.DataSetGovernance.Certification;
 import org.talend.dataprep.api.dataset.location.SemanticDomain;
-import org.talend.dataprep.api.folder.FolderEntry;
 import org.talend.dataprep.api.service.info.VersionService;
 import org.talend.dataprep.api.user.UserData;
 import org.talend.dataprep.dataset.configuration.EncodingSupport;
@@ -59,7 +57,6 @@ import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.exception.error.DataSetErrorCodes;
 import org.talend.dataprep.exception.json.JsonErrorCodeDescription;
-import org.talend.dataprep.folder.store.FolderRepository;
 import org.talend.dataprep.http.HttpResponseContext;
 import org.talend.dataprep.lock.DistributedLock;
 import org.talend.dataprep.log.Markers;
@@ -168,12 +165,6 @@ public class DataSetService {
     private Security security;
 
     /**
-     * Folder repository.
-     */
-    @Autowired
-    private FolderRepository folderRepository;
-
-    /**
      * Encoding support service.
      */
     @Autowired
@@ -230,7 +221,7 @@ public class DataSetService {
         }
     }
 
-    @RequestMapping(value = "/datasets", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/datasets", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List all data sets", notes = "Returns the list of data sets the current user is allowed to see. Creation date is a Epoch time value (in UTC time zone).")
     @Timed
     public Iterable<DataSetMetadata> list(@ApiParam(value = "Sort key (by name or date).") @RequestParam(defaultValue = "DATE", required = false) String sort,
@@ -264,7 +255,7 @@ public class DataSetService {
      * @return a list containing all data sets that are compatible with the data set with id <tt>dataSetId</tt> and
      * empty list if no data set is compatible.
      */
-    @RequestMapping(value = "/datasets/{id}/compatibledatasets", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/datasets/{id}/compatibledatasets", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List all compatible data sets", notes = "Returns the list of data sets the current user is allowed to see and which are compatible with the specified data set id.")
     @Timed
     public Iterable<DataSetMetadata> listCompatibleDatasets(
@@ -299,16 +290,19 @@ public class DataSetService {
      * @return The new data id.
      * @see #get(boolean, Long, String)
      */
+    //@formatter:off
     @RequestMapping(value = "/datasets", method = POST, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Create a data set", consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.TEXT_PLAIN_VALUE, notes = "Create a new data set based on content provided in POST body. For documentation purposes, body is typed as 'text/plain' but operation accepts binary content too. Returns the id of the newly created data set.")
     @Timed
     @VolumeMetered
     public String create(
             @ApiParam(value = "User readable name of the data set (e.g. 'Finance Report 2015', 'Test Data Set').") @RequestParam(defaultValue = "", required = false) String name,
-            @RequestHeader(CONTENT_TYPE) String contentType, @ApiParam(value = "content") InputStream content,
-            @ApiParam(value = "The folder path to create the entry.") @RequestParam(defaultValue = "/", required = false) String folderPath)
-            throws IOException {
+            @RequestHeader(CONTENT_TYPE) String contentType,
+            @ApiParam(value = "content") InputStream content) throws IOException {
+    //@formatter:on
+
         HttpResponseContext.header(CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE);
+
         final String id = UUID.randomUUID().toString();
         final Marker marker = Markers.dataset(id);
         LOG.debug(marker, "Creating...");
@@ -343,10 +337,6 @@ public class DataSetService {
         // Queue events (format analysis, content indexing for search...)
         queueEvents(id);
 
-        // create associated folderEntry
-        FolderEntry folderEntry = new FolderEntry(DATASET, id);
-        folderRepository.addFolderEntry(folderEntry, folderPath);
-
         LOG.debug(marker, "Created!");
 
         return id;
@@ -361,7 +351,7 @@ public class DataSetService {
      * @param sample    Size of the wanted sample, if missing, the full dataset is returned.
      * @param dataSetId A data set id.
      */
-    @RequestMapping(value = "/datasets/{id}/content", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/datasets/{id}/content", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get a data set by id", notes = "Get a data set content based on provided id. Id should be a UUID returned by the list operation. Not valid or non existing data set id returns empty content.")
     @Timed
     @ResponseBody
@@ -370,7 +360,7 @@ public class DataSetService {
             @RequestParam(required = false) @ApiParam(name = "sample", defaultValue = "0", value = "Size of the wanted sample, if missing, the full dataset is returned") Long sample, //
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the requested data set") String dataSetId) {
 
-        HttpResponseContext.header(CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+        HttpResponseContext.header(CONTENT_TYPE, APPLICATION_JSON_VALUE);
         final Marker marker = Markers.dataset(dataSetId);
         LOG.debug(marker, "Get data set #{}", dataSetId);
 
@@ -422,7 +412,7 @@ public class DataSetService {
      * @param dataSetId A data set id. If <code>null</code> <b>or</b> if no data set with provided id exits, operation
      *                  returns {@link org.apache.commons.httpclient.HttpStatus#SC_NO_CONTENT}
      */
-    @RequestMapping(value = "/datasets/{id}/metadata", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/datasets/{id}/metadata", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get metadata information of a data set by id", notes = "Get metadata information of a data set by id. Not valid or non existing data set id returns empty content.")
     @Timed
     @ResponseBody
@@ -468,15 +458,6 @@ public class DataSetService {
         } finally {
             lock.unlock();
         }
-
-        // delete the associated folder entries
-        // TODO make this async?
-        for (FolderEntry folderEntry : folderRepository.findFolderEntries(dataSetId, DATASET)) {
-            folderRepository.removeFolderEntry(folderEntry.getFolderId(), //
-                    folderEntry.getContentId(), //
-                    folderEntry.getContentType());
-        }
-
     }
 
     @RequestMapping(value = "/datasets/{id}/processcertification", method = PUT, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
@@ -556,7 +537,7 @@ public class DataSetService {
     /**
      * List all dataset related error codes.
      */
-    @RequestMapping(value = "/datasets/errors", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/datasets/errors", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get all dataset related error codes.", notes = "Returns the list of all dataset related error codes.")
     @Timed
     public Iterable<JsonErrorCodeDescription> listErrors() {
@@ -577,7 +558,7 @@ public class DataSetService {
      * @param sheetName the sheet name to preview
      * @param dataSetId A data set id.
      */
-    @RequestMapping(value = "/datasets/{id}/preview", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/datasets/{id}/preview", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get a data preview set by id", notes = "Get a data set preview content based on provided id. Not valid or non existing data set id returns empty content. Data set not in drat status will return a redirect 301")
     @Timed
     @ResponseBody
@@ -662,7 +643,7 @@ public class DataSetService {
      * @param dataSetMetadata The new content for the data set. If empty, existing content will <b>not</b> be replaced.
      *                        For delete operation, look at {@link #delete(String)}.
      */
-    @RequestMapping(value = "/datasets/{id}", method = PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/datasets/{id}", method = PUT, consumes = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Update a data set metadata by id", consumes = "application/json", notes = "Update a data set metadata according to the content of the PUT body. Id should be a UUID returned by the list operation. Not valid or non existing data set id return an error response.")
     @Timed
     public void updateDataSet(
@@ -756,7 +737,7 @@ public class DataSetService {
      * @return a list of the dataset Ids of all the favorites dataset for the current user or an empty list if none
      * found
      */
-    @RequestMapping(value = "/datasets/favorites", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/datasets/favorites", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "return all favorites datasets of the current user", notes = "Returns the list of favorites datasets.")
     @Timed
     public Iterable<String> favorites() {
@@ -879,7 +860,31 @@ public class DataSetService {
         }
     }
 
-    @RequestMapping(value = "/datasets/encodings", method = GET, consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    /**
+     * Search datasets.
+     *
+     * @param name what to searched in datasets.
+     * @return the list of found datasets metadata.
+     */
+    @RequestMapping(value = "/datasets/search", method = GET, produces = APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Search the dataset metadata", notes = "Search the dataset metadata.")
+    @Timed
+    public Iterable<DataSetMetadata> search(@RequestParam @ApiParam(value = "What to search in datasets") final String name) {
+
+        LOG.debug("search datasets metadata for {}", name);
+
+        final Set<DataSetMetadata> found;
+        try (final Stream<DataSetMetadata> stream = StreamSupport.stream(dataSetMetadataRepository.list().spliterator(), false)) {
+            found = stream.filter(m -> StringUtils.containsIgnoreCase(m.getName(), name)).collect(Collectors.toSet());
+        }
+
+        LOG.info("found {} dataset while searching {}", found.size(), name);
+
+        return found;
+    }
+
+
+    @RequestMapping(value = "/datasets/encodings", method = GET, consumes = MediaType.ALL_VALUE, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "list the supported encodings for dataset", notes = "This list can be used by user to change dataset encoding.")
     @Timed
     @PublicAPI

@@ -18,15 +18,20 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.talend.dataprep.exception.error.APIErrorCodes.UNABLE_TO_SEARCH_DATAPREP;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.talend.dataprep.api.folder.Folder;
+import org.talend.dataprep.api.service.command.folder.SearchFolders;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.metrics.Timed;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -45,9 +50,9 @@ public class SearchAPI extends APIService {
      */
     //@formatter:off
     @RequestMapping(value = "/api/search", method = GET, produces = APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "List the inventory of elements contained in a folder matching the given name", produces = APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "List the of elements contained in a folder matching the given name", produces = APPLICATION_JSON_VALUE)
     @Timed
-    public void inventorySearch(
+    public void search(
             @ApiParam(value = "Name") @RequestParam(defaultValue = "", required = false) String name,
             final OutputStream output) {
     //@formatter:on
@@ -57,11 +62,13 @@ public class SearchAPI extends APIService {
         }
 
         final int foldersFound;
+        final int datasetsFound;
         try (final JsonGenerator generator = mapper.getFactory().createGenerator(output)) {
 
             generator.writeStartObject();
 
             foldersFound = searchAndWriteFolders(name, generator);
+            datasetsFound = searchAndWriteDatasets(name, generator);
 
             generator.writeEndObject();
 
@@ -69,22 +76,39 @@ public class SearchAPI extends APIService {
             throw new TDPException(UNABLE_TO_SEARCH_DATAPREP, e);
         }
 
-        LOG.info("Searching dataprep for {} done, found {} folder(s)", name, foldersFound);
+        LOG.info("Searching dataprep for {} done, found {} folder(s), {} dataset(s)", name, datasetsFound, foldersFound);
 
     }
 
     /**
-     * Search for the given name in the folder and write the result straight to output.
+     * Search for the given name in the folders and write the result straight to output in json.
      * @param name the name searched.
      * @param output where to write the json.
      * @return the number of folders that match the searched name.
      */
-    private int searchAndWriteFolders(String name, JsonGenerator output) {
+    private int searchAndWriteFolders(String name, JsonGenerator output) throws IOException {
+        final int foldersFound;
+        final SearchFolders commandListFolders = getCommand(SearchFolders.class, name);
+        try (InputStream input = commandListFolders.execute()) {
+            List<Folder> folders= mapper.readValue(input, new TypeReference<List<Folder>>(){});
+            foldersFound = folders.size();
+            output.writeArrayFieldStart("folders");
+            for (Folder folder : folders) {
+                output.writeObject(folder);
+            }
+            output.writeEndArray();
+        }
+        return foldersFound;
+    }
 
-
-
-
-        return 0;
+    /**
+     * Search for the given name in the datasets and write the result straight to output in json.
+     * @param name the name searched.
+     * @param output where to write the json.
+     * @return the number of datasets that match the searched name.
+     */
+    private int searchAndWriteDatasets(String name, JsonGenerator output) {
+        return -1;
     }
 
 }

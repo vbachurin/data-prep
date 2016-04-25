@@ -14,7 +14,6 @@
 package org.talend.dataprep.api.service.command.folder;
 
 import static org.talend.dataprep.command.Defaults.pipeStream;
-import static org.talend.dataprep.exception.error.APIErrorCodes.UNABLE_TO_LIST_FOLDERS;
 import static org.talend.dataprep.exception.error.CommonErrorCodes.UNEXPECTED_EXCEPTION;
 
 import java.io.InputStream;
@@ -26,7 +25,6 @@ import org.apache.http.client.utils.URIBuilder;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.command.GenericCommand;
 import org.talend.dataprep.exception.TDPException;
 
@@ -37,7 +35,6 @@ public class SearchFolders extends GenericCommand<InputStream> {
     private SearchFolders(String pathName) {
         super(GenericCommand.DATASET_GROUP);
         execute(() -> onExecute(pathName));
-        onError(e -> new TDPException(UNABLE_TO_LIST_FOLDERS, e, ExceptionContext.build()));
         on(HttpStatus.OK).then(pipeStream());
     }
 
