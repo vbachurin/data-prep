@@ -14,23 +14,19 @@
 package org.talend.dataprep.schema.xls;
 
 import static java.util.Locale.ENGLISH;
+import static org.assertj.core.data.MapEntry.entry;
 import static org.junit.Assert.assertThat;
 import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
 import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
+import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.UUID;
+import java.util.*;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.assertj.core.api.Assertions;
-import org.assertj.core.data.MapEntry;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -69,6 +65,9 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
     @Autowired
     private XlsSerializer xlsSerializer;
 
+    @Autowired
+    private ObjectMapper mapper;
+
     private Locale previousLocale;
 
     @Test
@@ -101,17 +100,12 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
         try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
 
             InputStream jsonStream = xlsSerializer.serialize(inputStream, dataSetMetadata);
-
             String json = IOUtils.toString(jsonStream);
 
             logger.debug("json: {}", json);
 
-            ObjectMapper mapper = new ObjectMapper();
-
             CollectionType collectionType = mapper.getTypeFactory().constructCollectionType(ArrayList.class, TreeMap.class);
-
             List<Map<String, String>> values = mapper.readValue(json, collectionType);
-
             logger.debug("values: {}", values);
 
             return values;
@@ -183,10 +177,10 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
         }
 
         try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
-            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser().parse(getRequest(inputStream, "#852"))
+            List<ColumnMetadata> columnsMetadata = formatGuess.getSchemaParser().parse(getRequest(inputStream, "#852"))
                     .getSheetContents().get(0).getColumnMetadatas();
-            logger.debug("columnMetadatas: {}", columnMetadatas);
-            Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize(17);
+            logger.debug("columnsMetadata: {}", columnsMetadata);
+            Assertions.assertThat(columnsMetadata).isNotNull().isNotEmpty().hasSize(17);
         }
 
     }
@@ -227,28 +221,28 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
         Assertions.assertThat(values).isNotEmpty().hasSize(4);
 
         Assertions.assertThat(values.get(0)) //
-                .contains(MapEntry.entry("0000", "Little Creatures"), //
-                        MapEntry.entry("0001", "Australie"), //
-                        MapEntry.entry("0002", "Awesome"), //
-                        MapEntry.entry("0003", "10")); //
+                .contains(entry("0000", "Little Creatures"), //
+                        entry("0001", "Australie"), //
+                        entry("0002", "Awesome"), //
+                        entry("0003", "10")); //
 
         Assertions.assertThat(values.get(1)) //
-                .contains(MapEntry.entry("0000", "Heinekein"), //
-                        MapEntry.entry("0001", "France"), //
-                        MapEntry.entry("0002", "crappy"), //
-                        MapEntry.entry("0003", "")); //
+                .contains(entry("0000", "Heinekein"), //
+                        entry("0001", "France"), //
+                        entry("0002", "crappy"), //
+                        entry("0003", "")); //
 
         Assertions.assertThat(values.get(2)) //
-                .contains(MapEntry.entry("0000", "Foo"), //
-                        MapEntry.entry("0001", "Australie"), //
-                        MapEntry.entry("0002", "10"), //
-                        MapEntry.entry("0003", "6"));
+                .contains(entry("0000", "Foo"), //
+                        entry("0001", "Australie"), //
+                        entry("0002", "10"), //
+                        entry("0003", "6"));
 
         Assertions.assertThat(values.get(3)) //
-                .contains(MapEntry.entry("0000", "Bar"), //
-                        MapEntry.entry("0001", "France"), //
-                        MapEntry.entry("0002", "crappy"), //
-                        MapEntry.entry("0003", "2"));
+                .contains(entry("0000", "Bar"), //
+                        entry("0001", "France"), //
+                        entry("0002", "crappy"), //
+                        entry("0003", "2"));
 
     }
 
@@ -294,16 +288,16 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
         logger.debug("values: {}", values);
 
         Assertions.assertThat(values.get(0)) //
-                .contains(MapEntry.entry("0000", "ILE-DE-FRANCE"), //
-                        MapEntry.entry("0001", "PARIS 8ME"), //
-                        MapEntry.entry("0002", "12"), //
-                        MapEntry.entry("0003", "GEORGE V"));
+                .contains(entry("0000", "ILE-DE-FRANCE"), //
+                        entry("0001", "PARIS 8ME"), //
+                        entry("0002", "12"), //
+                        entry("0003", "GEORGE V"));
 
         Assertions.assertThat(values.get(3)) //
-                .contains(MapEntry.entry("0000", "ILE-DE-FRANCE"), //
-                        MapEntry.entry("0001", "PARIS 8ME"), //
-                        MapEntry.entry("0002", "52"), //
-                        MapEntry.entry("0003", "GAUMONT CHAMPS ELYSEES AMBASSADE"));
+                .contains(entry("0000", "ILE-DE-FRANCE"), //
+                        entry("0001", "PARIS 8ME"), //
+                        entry("0002", "52"), //
+                        entry("0003", "GAUMONT CHAMPS ELYSEES AMBASSADE"));
 
     }
 
@@ -347,15 +341,15 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
         logger.debug("values: {}", values);
 
         Assertions.assertThat(values.get(0)) //
-                .contains(MapEntry.entry("0000", "ALSACE"), //
-                        MapEntry.entry("0001", "BAS-RHIN"), //
-                        MapEntry.entry("0002", "NON"));
+                .contains(entry("0000", "ALSACE"), //
+                        entry("0001", "BAS-RHIN"), //
+                        entry("0002", "NON"));
 
         Assertions.assertThat(values.get(2)) //
-                .contains(MapEntry.entry("0000", "ALSACE"), //
-                        MapEntry.entry("0001", "BAS-RHIN"), //
-                        MapEntry.entry("0002", "OUI"), //
-                        MapEntry.entry("0003", "29 juin 2013"));
+                .contains(entry("0000", "ALSACE"), //
+                        entry("0001", "BAS-RHIN"), //
+                        entry("0002", "OUI"), //
+                        entry("0003", "29 juin 2013"));
 
     }
 
@@ -378,18 +372,18 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
 
             List<SchemaParserResult.SheetContent> sheetContents = xlsSchemaParser.parseAllSheets(getRequest(inputStream, "#8"));
 
-            List<ColumnMetadata> columnMetadatas = sheetContents.stream()
+            List<ColumnMetadata> columnsMetadata = sheetContents.stream()
                     .filter(sheetContent -> "Leads".equals(sheetContent.getName())).findFirst().get().getColumnMetadatas();
 
-            logger.debug("columnMetadatas: {}", columnMetadatas);
+            logger.debug("columnsMetadata: {}", columnsMetadata);
 
-            Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize(6);
+            Assertions.assertThat(columnsMetadata).isNotNull().isNotEmpty().hasSize(6);
 
-            ColumnMetadata columnMetadata = columnMetadatas.get(4);
+            ColumnMetadata columnMetadata = columnsMetadata.get(4);
             Assertions.assertThat(columnMetadata.getHeaderSize()).isEqualTo(1);
             Assertions.assertThat(columnMetadata.getName()).isEqualTo("age");
             Assertions.assertThat(columnMetadata.getType()).isEqualTo(Type.STRING.getName());
-            dataSetMetadata.getRowMetadata().setColumns(columnMetadatas);
+            dataSetMetadata.getRowMetadata().setColumns(columnsMetadata);
         }
 
         List<Map<String, String>> values = getValuesFromFile(fileName, dataSetMetadata);
@@ -399,19 +393,19 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
         Assertions.assertThat(values).isNotEmpty().hasSize(3);
 
         Assertions.assertThat(values.get(0)) //
-                .contains(MapEntry.entry("0000", "301638"), //
-                        MapEntry.entry("0001", "foo@foo.com"), //
-                        MapEntry.entry("0004", "23"));
+                .contains(entry("0000", "301638"), //
+                        entry("0001", "foo@foo.com"), //
+                        entry("0004", "23"));
 
         Assertions.assertThat(values.get(1)) //
-                .contains(MapEntry.entry("0000", "12349383"), //
-                        MapEntry.entry("0001", "beer@gof.org"), //
-                        MapEntry.entry("0004", "23"));
+                .contains(entry("0000", "12349383"), //
+                        entry("0001", "beer@gof.org"), //
+                        entry("0004", "23"));
 
         Assertions.assertThat(values.get(2)) //
-                .contains(MapEntry.entry("0000", "73801093"), //
-                        MapEntry.entry("0001", "wine@go.com"), //
-                        MapEntry.entry("0003", "Jean"));
+                .contains(entry("0000", "73801093"), //
+                        entry("0001", "wine@go.com"), //
+                        entry("0003", "Jean"));
 
     }
 
@@ -493,15 +487,8 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
     public void read_evaluate_formulas() throws Exception {
         String fileName = "000_DTA_DailyTimeLog.xlsm";
         String sheetName = "WEEK SUMMARY";
-        FormatGuess formatGuess;
 
-
-        try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
-            formatGuess = formatGuesser.guess(getRequest(inputStream, UUID.randomUUID().toString()), "UTF-8").getFormatGuess();
-            Assert.assertNotNull(formatGuess);
-            Assert.assertTrue(formatGuess instanceof XlsFormatGuess);
-            Assert.assertEquals(XlsFormatGuess.MEDIA_TYPE, formatGuess.getMediaType());
-        }
+        checkExcelFile(fileName);
 
         DataSetMetadata dataSetMetadata = metadataBuilder.metadata().id("beer").sheetName(sheetName).build();
 
@@ -530,17 +517,9 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
     public void not_fail_on_bad_formulas() throws Exception {
 
         String fileName = "bad_formulas.xlsx";
-
-        FormatGuess formatGuess;
-
         String sheetName = "Sheet1";
 
-        try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
-            formatGuess = formatGuesser.guess(getRequest(inputStream, UUID.randomUUID().toString()), "UTF-8").getFormatGuess();
-            Assert.assertNotNull(formatGuess);
-            Assert.assertTrue(formatGuess instanceof XlsFormatGuess);
-            Assert.assertEquals(XlsFormatGuess.MEDIA_TYPE, formatGuess.getMediaType());
-        }
+        checkExcelFile(fileName);
 
         DataSetMetadata dataSetMetadata = metadataBuilder.metadata().id("beer").sheetName(sheetName).build();
 
@@ -563,12 +542,12 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
         logger.debug("values: {}", values);
 
         Assertions.assertThat(values.get(0)) //
-                .contains(MapEntry.entry("0000", "Zoo"), //
-                        MapEntry.entry("0001", ""));
+                .contains(entry("0000", "Zoo"), //
+                        entry("0001", ""));
 
         Assertions.assertThat(values.get(1)) //
-                .contains(MapEntry.entry("0000", "Boo"), //
-                        MapEntry.entry("0001", ""));
+                .contains(entry("0000", "Boo"), //
+                        entry("0001", ""));
     }
 
     /**
@@ -605,44 +584,24 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
     @Test
     public void date_format() throws Exception {
 
+        // given
         String fileName = "dates.xlsx";
+        checkExcelFile(fileName);
 
-        FormatGuess formatGuess;
-
-        try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
-            formatGuess = formatGuesser.guess(getRequest(inputStream, UUID.randomUUID().toString()), "UTF-8").getFormatGuess();
-            Assert.assertNotNull(formatGuess);
-            Assert.assertTrue(formatGuess instanceof XlsFormatGuess);
-            Assert.assertEquals(XlsFormatGuess.MEDIA_TYPE, formatGuess.getMediaType());
-        }
-
-        DataSetMetadata dataSetMetadata = metadataBuilder.metadata().id("ff").sheetName("Feuil1").build();
-
-        try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
-
-            List<SchemaParserResult.SheetContent> sheetContents = xlsSchemaParser.parseAllSheets(getRequest(inputStream, "#8"));
-
-            List<ColumnMetadata> columnMetadatas = sheetContents.get(0).getColumnMetadatas();
-
-            logger.debug("columnMetadatas: {}", columnMetadatas);
-
-            Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty();
-
-            dataSetMetadata.getRowMetadata().setColumns(columnMetadatas);
-        }
-
+        // when
+        DataSetMetadata dataSetMetadata = getDataSetMetadataFromExcelFile(fileName, "Feuil1");
         List<Map<String, String>> values = getValuesFromFile(fileName, dataSetMetadata);
 
         logger.debug("values: {}", values);
 
-        Assertions.assertThat(values.get(0)) //
-                .contains(MapEntry.entry("0000", "1/1/2016"), //
-                        MapEntry.entry("0001", "2/10/2016"));
-
-        Assertions.assertThat(values.get(1)) //
-                .contains(MapEntry.entry("0000", "3/31/1972"), //
-                        MapEntry.entry("0001", "3/31/2016"));
+        // then
+        Assertions.assertThat(values.get(0)).contains(entry("0000", "1/1/2016"), entry("0001", "2/10/2016"));
+        Assertions.assertThat(values.get(1)).contains(entry("0000", "3/31/1972"), entry("0001", "3/31/2016"));
+        Assertions.assertThat(values.get(2)).contains(entry("0000", "10/10/2003"), entry("0001", "4/6/2016"));
+        Assertions.assertThat(values.get(3)).contains(entry("0000", "02/03/1932"), entry("0001", "03/02/1956"));
+        Assertions.assertThat(values.get(4)).contains(entry("0000", "04/05/2025"), entry("0001", "06/07/2029"));
     }
+
 
     /**
      * TDP-1656
@@ -650,43 +609,59 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
     @Test
     public void date_format_with_time() throws Exception {
 
+        // given
         String fileName = "dates_test.xlsx";
+        checkExcelFile(fileName);
 
+        // when
+        DataSetMetadata dataSetMetadata = getDataSetMetadataFromExcelFile(fileName, "Sheet2");
+        List<Map<String, String>> values = getValuesFromFile(fileName, dataSetMetadata);
+
+        logger.debug("values: {}", values);
+
+        // then
+        Assertions.assertThat(values.get(0)).contains(entry("0003", "1/26/2015 18:03"), entry("0004", "1/29/2015 0:30"));
+        Assertions.assertThat(values.get(1)).contains(entry("0003", "12/4/2015 1:01"), entry("0004", "1/15/2016 13:56"));
+    }
+
+    /**
+     * Return the dataset metadata out of the given file name.
+     *
+     * @param fileName the excel file to open.
+     * @param sheetName name of the excel sheet.
+     * @return the dataset metadata.
+     * @throws IOException s**y happens.
+     */
+    private DataSetMetadata getDataSetMetadataFromExcelFile(String fileName, String sheetName) throws IOException {
+        DataSetMetadata dataSetMetadata = metadataBuilder.metadata().id("ff").sheetName(sheetName).build();
+
+        try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
+
+            List<SchemaParserResult.SheetContent> sheetContents = xlsSchemaParser.parseAllSheets(getRequest(inputStream, "#8"));
+
+            List<ColumnMetadata> columnsMetadata = sheetContents.get(0).getColumnMetadatas();
+
+            logger.debug("columnsMetadata: {}", columnsMetadata);
+
+            Assertions.assertThat(columnsMetadata).isNotNull().isNotEmpty();
+
+            dataSetMetadata.getRowMetadata().setColumns(columnsMetadata);
+        }
+        return dataSetMetadata;
+    }
+
+    /**
+     * Make sure the given file name is recognized as an excel file.
+     * @param fileName the excel file name to open.
+     */
+    private void checkExcelFile(String fileName) throws IOException {
         FormatGuess formatGuess;
-
         try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
             formatGuess = formatGuesser.guess(getRequest(inputStream, UUID.randomUUID().toString()), "UTF-8").getFormatGuess();
             Assert.assertNotNull(formatGuess);
             Assert.assertTrue(formatGuess instanceof XlsFormatGuess);
             Assert.assertEquals(XlsFormatGuess.MEDIA_TYPE, formatGuess.getMediaType());
         }
-
-        DataSetMetadata dataSetMetadata = metadataBuilder.metadata().id("beer").sheetName("Sheet2").build();
-
-        try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
-
-            List<SchemaParserResult.SheetContent> sheetContents = xlsSchemaParser.parseAllSheets(getRequest(inputStream, "#8"));
-
-            List<ColumnMetadata> columnMetadatas = sheetContents.get(0).getColumnMetadatas();
-
-            logger.debug("columnMetadatas: {}", columnMetadatas);
-
-            Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty();
-
-            dataSetMetadata.getRowMetadata().setColumns(columnMetadatas);
-        }
-
-        List<Map<String, String>> values = getValuesFromFile(fileName, dataSetMetadata);
-
-        logger.debug("values: {}", values);
-
-        Assertions.assertThat(values.get(0)) //
-                .contains(MapEntry.entry("0003", "1/26/2015 18:03"), //
-                        MapEntry.entry("0004", "1/29/2015 0:30"));
-
-        Assertions.assertThat(values.get(1)) //
-                .contains(MapEntry.entry("0003", "12/4/2015 1:01"), //
-                        MapEntry.entry("0004", "1/15/2016 13:56"));
     }
 
 }

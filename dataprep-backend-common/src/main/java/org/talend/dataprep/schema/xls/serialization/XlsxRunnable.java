@@ -151,11 +151,11 @@ public class XlsxRunnable implements Runnable {
             if (DateUtil.isValidExcelDate(value) && StringUtils.countMatches(formatString, "y") == 2) {
                 formatString = StringUtils.replace(formatString, "yy", "yyyy");
             }
-            if (DateUtil.isValidExcelDate(value) && StringUtils.countMatches(formatString, "YY") == 2) {
+            if (DateUtil.isValidExcelDate(value) && StringUtils.countMatches(formatString, "Y") == 2) {
                 formatString = StringUtils.replace(formatString, "YY", "YYYY");
             }
-            String result = super.formatRawCellContents(value, formatIndex, formatString, use1904Windowing);
-            return result;
+            return super.formatRawCellContents(value, formatIndex, formatString, use1904Windowing);
+
         }
     }   
 }
