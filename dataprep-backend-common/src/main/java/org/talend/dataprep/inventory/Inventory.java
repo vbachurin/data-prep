@@ -25,7 +25,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * This class permits to group folders, preparations and data sets. It may be useful to list the content of a folder
  * either recursively or not.
  */
-@Deprecated
 public class Inventory implements Serializable {
 
     /** Serialization UID. */

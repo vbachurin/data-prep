@@ -15,14 +15,10 @@ package org.talend.dataprep.folder.store;
 
 import org.apache.commons.lang.StringUtils;
 
-/**
- * Abstract class used to share code between FolderRepository implementations.
- */
 public abstract class FolderRepositoryAdapter implements FolderRepository {
 
-    /** Constant for HOME_FOLDER. */
     protected static final String HOME_FOLDER_KEY = "HOME_FOLDER";
-    /** Constant for path separator. */
+
     protected static final char PATH_SEPARATOR = '/';
 
     /**

@@ -50,6 +50,7 @@ public enum CommonErrorCodes implements ErrorCode {
     UNABLE_TO_PARSE_FILTER(400);
 
 
+
     /** The http status to use. */
     private int httpStatus;
 

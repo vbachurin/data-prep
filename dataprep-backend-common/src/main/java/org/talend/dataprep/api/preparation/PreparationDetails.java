@@ -44,11 +44,4 @@ public class PreparationDetails {
     public Preparation getPreparation() {
         return preparation;
     }
-
-    @Override
-    public String toString() {
-        return "PreparationDetails{" +
-                "preparation=" + preparation +
-                '}';
-    }
 }

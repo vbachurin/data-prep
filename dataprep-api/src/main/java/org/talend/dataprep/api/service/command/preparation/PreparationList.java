@@ -49,12 +49,11 @@ public class PreparationList extends GenericCommand<InputStream> {
 
     private HttpRequestBase onExecute(String sort, String order, Format format) {
         try {
-            URIBuilder uriBuilder;
+            URIBuilder uriBuilder = null;
             if (Format.SHORT.equals(format)){
                 uriBuilder = new URIBuilder(preparationServiceUrl + "/preparations"); //$NON-NLS-1$
-            }
-            else{
-                uriBuilder = new URIBuilder(preparationServiceUrl + "/preparations/details"); //$NON-NLS-1$
+            }else{
+            uriBuilder = new URIBuilder(preparationServiceUrl + "/preparations/all"); //$NON-NLS-1$
             }
 
             if  ( StringUtils.isNotEmpty( sort )) {

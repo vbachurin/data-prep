@@ -13,35 +13,40 @@
 
 package org.talend.dataprep.api.service;
 
+import static org.springframework.http.MediaType.ALL_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
-import static org.talend.daikon.exception.ExceptionContext.build;
-import static org.talend.dataprep.exception.error.CommonErrorCodes.UNABLE_TO_WRITE_JSON;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.talend.dataprep.api.preparation.Preparation;
-import org.talend.dataprep.api.service.api.EnrichedPreparation;
 import org.talend.dataprep.api.service.command.common.HttpResponse;
-import org.talend.dataprep.api.service.command.dataset.DataSetGetMetadata;
 import org.talend.dataprep.api.service.command.folder.*;
-import org.talend.dataprep.api.service.command.preparation.PreparationListByFolder;
+import org.talend.dataprep.api.service.command.preparation.PreparationListByName;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.APIErrorCodes;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.http.HttpResponseContext;
+import org.talend.dataprep.inventory.Inventory;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.metrics.VolumeMetered;
 
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.HystrixCommand;
 
 import io.swagger.annotations.ApiOperation;
@@ -50,8 +55,11 @@ import io.swagger.annotations.ApiParam;
 @RestController
 public class FolderAPI extends APIService {
 
+    @Autowired
+    private Jackson2ObjectMapperBuilder builder;
+
     @RequestMapping(value = "/api/folders", method = GET)
-    @ApiOperation(value = "List children folders of the parameter if null list root children.", produces = APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "List children folders of the parameter if null list root children.", produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
     public void children(@RequestParam(required = false) String path, final OutputStream output) {
         final HystrixCommand<InputStream> foldersList = getCommand(FoldersList.class, path);
@@ -64,8 +72,28 @@ public class FolderAPI extends APIService {
         }
     }
 
+    /**
+     * no javadoc here so see description in @ApiOperation notes.
+     * 
+     * @param pathName
+     * @return
+     */
+    @RequestMapping(value = "/api/folders/search", method = GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Search Folders with parameter as part of the name", produces = MediaType.APPLICATION_JSON_VALUE, notes = "")
+    @Timed
+    public void search(@RequestParam(required = false) String pathName, final OutputStream output) {
+        final HystrixCommand<InputStream> searchFolders = getCommand(SearchFolders.class, pathName);
+        try (InputStream commandResult = searchFolders.execute()){
+            HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
+            IOUtils.copyLarge(commandResult, output);
+            output.flush();
+        } catch (Exception e) {
+            throw new TDPException(APIErrorCodes.UNABLE_TO_LIST_FOLDERS, e);
+        }
+    }
+
     @RequestMapping(value = "/api/folders/all", method = GET)
-    @ApiOperation(value = "List all folders.", produces = APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "List all folders.", produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
     public void allFolder(final OutputStream output) {
         final HystrixCommand<InputStream> foldersList = getCommand(AllFoldersList.class);
@@ -79,7 +107,7 @@ public class FolderAPI extends APIService {
     }
 
     @RequestMapping(value = "/api/folders", method = PUT)
-    @ApiOperation(value = "Add a folder.", produces = APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Add a folder.", produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
     public void addFolder(@RequestParam(required = true) String path, //
             final OutputStream output) {
@@ -95,7 +123,7 @@ public class FolderAPI extends APIService {
 
     /**
      * no javadoc here so see description in @ApiOperation notes.
-     *
+     * 
      * @param path
      * @return
      */
@@ -120,10 +148,9 @@ public class FolderAPI extends APIService {
         }
     }
 
-
     /**
      * no javadoc here so see description in @ApiOperation notes.
-     *
+     * 
      * @param path
      * @param newPath
      */
@@ -145,28 +172,6 @@ public class FolderAPI extends APIService {
             throw new TDPException(APIErrorCodes.UNABLE_TO_RENAME_FOLDER, e);
         }
     }
-
-
-    /**
-     * no javadoc here so see description in @ApiOperation notes.
-     *
-     * @param pathName
-     * @return
-     */
-    @RequestMapping(value = "/api/folders/search", method = GET, produces = APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Search Folders with parameter as part of the name", produces = APPLICATION_JSON_VALUE, notes = "")
-    @Timed
-    public void search(@RequestParam(required = false) String pathName, final OutputStream output) {
-        final HystrixCommand<InputStream> searchFolders = getCommand(SearchFolders.class, pathName);
-        try (InputStream commandResult = searchFolders.execute()){
-            HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
-            IOUtils.copyLarge(commandResult, output);
-            output.flush();
-        } catch (Exception e) {
-            throw new TDPException(APIErrorCodes.UNABLE_TO_LIST_FOLDERS, e);
-        }
-    }
-
 
     /**
      * no javadoc here so see description in @ApiOperation notes.
@@ -198,7 +203,7 @@ public class FolderAPI extends APIService {
      * @return
      */
     @RequestMapping(value = "/api/folders/entries", method = GET)
-    @ApiOperation(value = "List all folder entries of the given content type within the path", produces = APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "List all folder entries of the given content type within the path", produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
     @VolumeMetered
     public void entries(@RequestParam String path, @RequestParam String contentType, final OutputStream output) {
@@ -213,102 +218,84 @@ public class FolderAPI extends APIService {
         }
     }
 
-
     /**
-     * List all the folders and preparations out of the given folder.
+     * no javadoc here so see description in @ApiOperation notes.
      *
-     * @param folder Where to list folders and preparations.
-     * @param output the http response.
+     * @param folder
+     * @param sort
+     * @param order
+     * @return
      */
-    //@formatter:off
-    @RequestMapping(value = "/api/folders/preparations", params = "folder", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Get all preparations for a given folder.", notes = "Returns the list of preparations for the given folder the current user is allowed to see.")
+    @RequestMapping(value = "/api/folders/datasets", method = GET, consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "List all datasets within the folder and sorted by key/date", produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
-    public void listPreparationsByFolder(
-            @RequestParam(value = "folder", defaultValue = "/") @ApiParam(name = "folder", value = "The destination to search preparations from.") String folder,
+    public void datasets(
+            @ApiParam(value = "Folder id to search datasets") @RequestParam(defaultValue = "", required = false) String folder,
+            @ApiParam(value = "Sort key (by name or date), defaults to 'date'.") @RequestParam(defaultValue = "DATE", required = false) String sort,
+            @ApiParam(value = "Order for sort key (desc or asc), defaults to 'desc'.") @RequestParam(defaultValue = "DESC", required = false) String order,
             final OutputStream output) {
-        //@formatter:on
-
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Listing preparations in destination {} (pool: {} )...", folder, getConnectionStats());
+            LOG.debug("Listing datasets (pool: {})...", getConnectionStats());
         }
-
-        int preparationsProcessed;
-        try (final JsonGenerator generator = mapper.getFactory().createGenerator(output)) {
-
-            generator.writeStartObject();
-
-            listAndWriteFoldersToJson(folder, generator);
-            preparationsProcessed = listAndWritePreparationsToJson(folder, generator);
-
-            generator.writeEndObject();
-
+        HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
+        HystrixCommand<InputStream> listCommand = getCommand(FolderDataSetList.class, sort, order, folder);
+        try (InputStream ios = listCommand.execute()) {
+            IOUtils.copyLarge(ios, output);
         } catch (IOException e) {
-            throw new TDPException(APIErrorCodes.UNABLE_TO_LIST_FOLDER_ENTRIES, e, build().put("destination", folder));
+            throw new TDPException(APIErrorCodes.UNABLE_TO_LIST_FOLDER_INVENTORY, e);
         }
-
-        LOG.info("There are {} preparation(s) in {}", preparationsProcessed, folder);
-
     }
 
     /**
-     * List preparations from a destination and write them straight in json to the output.
+     * no javadoc here so see description in @ApiOperation notes.
      *
-     * @param folder the destination to list the preparations.
-     * @param output where to write the json.
-     * @throws IOException if an error occurs.
+     * @param path
+     * @param name
+     * @return
      */
-    private int listAndWritePreparationsToJson(String folder, JsonGenerator output) throws IOException {
+    @RequestMapping(value = "/api/inventory/search", method = GET, consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "List the inventory of elements contained in a folder matching the given name", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Timed
+    public void inventorySearch(
+            @ApiParam(value = "Folder path") @RequestParam(defaultValue = "/", required = false) String path,
+            @ApiParam(value = "Name") @RequestParam(defaultValue = "", required = false) String name, final OutputStream output) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Listing datasets (pool: {})...", getConnectionStats());
+        }
+        HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
+        Inventory inventory;
+        ObjectMapper mapper = builder.build();
+        HystrixCommand<InputStream> matchingName = getCommand(FolderInventorySearch.class, path, name);
+        try (InputStream ios = matchingName.execute()) {
+            String jsonMap = IOUtils.toString(ios);
+            inventory = mapper.readValue(jsonMap, new TypeReference<Inventory>() {
+            });
+        } catch (IOException e) {
+            throw new TDPException(APIErrorCodes.UNABLE_TO_LIST_FOLDER_INVENTORY, e);
+        }
 
-        output.writeRaw(",");
-        final PreparationListByFolder listPreparations = getCommand(PreparationListByFolder.class, folder);
-        try (InputStream input = listPreparations.execute()) {
+        final String rootPath = "/";
 
-            output.writeArrayFieldStart("preparations");
-            List<Preparation> preparations = mapper.readValue(input, new TypeReference<List<Preparation>>(){});
-            for (Preparation preparation : preparations) {
-                enrichAndWritePreparation(preparation, output);
+        if (StringUtils.equals(rootPath, path)) { // preparations are considered to be in the root folder (empty)
+            HystrixCommand<InputStream> command = getCommand(PreparationListByName.class, name, false);
+            try (InputStream ios = command.execute()) {
+                String jsonMap = IOUtils.toString(ios);
+                List<Preparation> preparations = mapper.readValue(jsonMap, new TypeReference<ArrayList<Preparation>>() {});
+                inventory.setPreparations(preparations);
+
+            } catch (IOException e) {
+                throw new TDPException(APIErrorCodes.UNABLE_TO_LIST_FOLDER_INVENTORY, e);
             }
-            output.writeEndArray();
-            return preparations.size();
         }
-        catch(Exception e) {
-            throw new TDPException(UNABLE_TO_WRITE_JSON, e);
-        }
-    }
-
-    /**
-     * Enrich preparation with dataset information and write it in json to the output.
-     *
-     * @param preparation the preparation to enrich.
-     * @param output where to write the json.
-     */
-    private void enrichAndWritePreparation(Preparation preparation, JsonGenerator output) {
-
-        final DataSetGetMetadata getMetadata = getCommand(DataSetGetMetadata.class, preparation.getDataSetId());
-        EnrichedPreparation enrichedPreparation = new EnrichedPreparation(preparation, getMetadata.execute());
-
         try {
-            output.writeObject(enrichedPreparation);
+            mapper.writeValue(output, inventory);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Listed preparations (pool: {} )...", getConnectionStats());
+            }
         } catch (IOException e) {
-            //simply log the error as there may be other preparations that could be processed
-            LOG.error("error writing {} to the http response", enrichedPreparation, e);
+            throw new TDPException(APIErrorCodes.UNABLE_TO_LIST_FOLDER_INVENTORY, e);
         }
-    }
 
-    /**
-     * Get and write, in json, the list of folders directly to the output.
-     *
-     * @param folderPath the destination to list.
-     * @param output where to write the json.
-     * @throws IOException if an error occurs.
-     */
-    private void listAndWriteFoldersToJson(String folderPath, JsonGenerator output) throws IOException {
-        final FoldersList commandListFolders = getCommand(FoldersList.class, folderPath);
-        output.writeRaw("\"folders\":");
-        try (InputStream folders = commandListFolders.execute()) {
-            output.writeRaw(IOUtils.toString(folders));
-        }
     }
 
 }

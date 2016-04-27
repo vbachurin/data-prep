@@ -28,8 +28,7 @@ public enum PreparationErrorCodes implements ErrorCode {
                                                         PREPARATION_STEP_CANNOT_BE_DELETED_IN_SINGLE_MODE(403, "id", "stepId"),
                                                         PREPARATION_ROOT_STEP_CANNOT_BE_DELETED(403, "id", "stepId"),
                                                         UNABLE_TO_SERVE_PREPARATION_CONTENT(400, "id", "version"),
-                                                        UNABLE_TO_READ_PREPARATION(500, "id", "version"),
-                                                        PREPARATION_NAME_ALREADY_USED(409, "id", "name", "folder");
+                                                        UNABLE_TO_READ_PREPARATION(500, "id", "version");
 
     /** The http status to use. */
     private int httpStatus;

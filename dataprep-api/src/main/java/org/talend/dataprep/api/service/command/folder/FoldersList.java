@@ -34,13 +34,13 @@ import org.talend.dataprep.exception.error.CommonErrorCodes;
 public class FoldersList extends GenericCommand<InputStream> {
 
     public FoldersList(String path) {
-        super(GenericCommand.PREPARATION_GROUP);
+        super(GenericCommand.DATASET_GROUP);
         execute(() -> onExecute(path));
         on(HttpStatus.OK).then(pipeStream());
     }
 
     public FoldersList() {
-        super(GenericCommand.PREPARATION_GROUP);
+        super(GenericCommand.DATASET_GROUP);
         execute(() -> onExecute(null));
         on(HttpStatus.OK).then(pipeStream());
     }
@@ -48,7 +48,7 @@ public class FoldersList extends GenericCommand<InputStream> {
     private HttpRequestBase onExecute(String path) {
         try {
 
-            URIBuilder uriBuilder = new URIBuilder(preparationServiceUrl + "/folders" );
+            URIBuilder uriBuilder = new URIBuilder(datasetServiceUrl + "/folders" );
 
             if (StringUtils.isNotEmpty(path)) {
                uriBuilder.addParameter("path", path);

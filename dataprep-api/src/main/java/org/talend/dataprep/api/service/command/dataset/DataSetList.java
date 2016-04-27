@@ -19,6 +19,7 @@ import static org.talend.dataprep.command.Defaults.pipeStream;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.URIBuilder;
@@ -35,10 +36,14 @@ import org.talend.dataprep.exception.error.CommonErrorCodes;
 public class DataSetList extends GenericCommand<InputStream> {
 
     private DataSetList(String sort, String order) {
+        this(sort, order, null);
+    }
+
+    private DataSetList(String sort, String order, String folder) {
         super(GenericCommand.DATASET_GROUP);
 
         try {
-            execute(() -> onExecute( sort, order));
+            execute(() -> onExecute( sort, order, folder));
             onError(e -> new TDPException(APIErrorCodes.UNABLE_TO_LIST_DATASETS, e));
             on(HttpStatus.NO_CONTENT, HttpStatus.ACCEPTED).then(emptyStream());
             on(HttpStatus.OK).then(pipeStream());
@@ -48,12 +53,15 @@ public class DataSetList extends GenericCommand<InputStream> {
         }
     }
 
-    private HttpRequestBase onExecute(String sort, String order) {
+    private HttpRequestBase onExecute(String sort, String order, String folder) {
         try {
 
             URIBuilder uriBuilder = new URIBuilder(datasetServiceUrl + "/datasets");
             uriBuilder.addParameter( "sort", sort );
             uriBuilder.addParameter( "order", order );
+            if  ( StringUtils.isNotEmpty( folder )) {
+                uriBuilder.addParameter( "folder", folder );
+            }
             return new HttpGet( uriBuilder.build() );
         } catch (URISyntaxException e) {
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);

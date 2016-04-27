@@ -47,7 +47,7 @@ public class PreparationListByName extends GenericCommand<InputStream> {
         super(GenericCommand.PREPARATION_GROUP);
         execute(() -> {
             try {
-                URIBuilder uriBuilder = new URIBuilder(preparationServiceUrl + "/preparations/search");
+                URIBuilder uriBuilder = new URIBuilder(preparationServiceUrl + "/preparations");
                 uriBuilder.addParameter("name", name);
                 uriBuilder.addParameter("exactMatch",String.valueOf(exactMatch));
                 return new HttpGet(uriBuilder.build());
