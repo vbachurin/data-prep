@@ -18,18 +18,20 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.folder.Folder;
+import org.talend.dataprep.api.folder.FolderContentType;
 import org.talend.dataprep.api.folder.FolderEntry;
 import org.talend.dataprep.folder.store.FolderRepository;
 import org.talend.dataprep.folder.store.FolderRepositoryAdapter;
 import org.talend.dataprep.folder.store.NotEmptyFolderException;
 
 @Component("folderRepository#in-memory")
-@ConditionalOnProperty(name = "folder.store", havingValue = "in-memory", matchIfMissing = false)
+@ConditionalOnProperty(name = "folder.store", havingValue = "in-memory")
 public class InMemoryFolderRepository extends FolderRepositoryAdapter implements FolderRepository {
 
     /**
@@ -191,12 +193,17 @@ public class InMemoryFolderRepository extends FolderRepositoryAdapter implements
     }
 
     @Override
-    public Iterable<FolderEntry> entries(String path, FolderEntry.ContentType contentType) {
-        return folderEntriesMap.get(cleanPath(path));
+    public Iterable<FolderEntry> entries(String path, FolderContentType contentType) {
+        List<FolderEntry> folderEntries = folderEntriesMap.get(cleanPath(path));
+        if (folderEntries == null) {
+            folderEntries = new ArrayList<>();
+        }
+
+        return folderEntries.stream().filter(e -> e.getContentType() == contentType).collect(Collectors.toList());
     }
 
     @Override
-    public Iterable<FolderEntry> findFolderEntries(String contentId, FolderEntry.ContentType contentType) {
+    public Iterable<FolderEntry> findFolderEntries(String contentId, FolderContentType contentType) {
         List<FolderEntry> entries = new ArrayList<>();
 
         this.folderEntriesMap.values().stream().forEach(folderEntries -> folderEntries.stream().forEach(folderEntry -> {
@@ -242,7 +249,7 @@ public class InMemoryFolderRepository extends FolderRepositoryAdapter implements
     }
 
     @Override
-    public void removeFolderEntry(String givenPath, String contentId, FolderEntry.ContentType contentType) {
+    public void removeFolderEntry(String givenPath, String contentId, FolderContentType contentType) {
         String folderPath = cleanPath(givenPath);
         List<FolderEntry> entries = folderEntriesMap.get(folderPath);
         final FolderEntry entry = new FolderEntry(contentType, contentId);
