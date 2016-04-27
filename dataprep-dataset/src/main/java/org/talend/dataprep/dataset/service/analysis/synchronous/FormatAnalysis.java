@@ -16,10 +16,8 @@ package org.talend.dataprep.dataset.service.analysis.synchronous;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Collections;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -55,11 +53,11 @@ public class FormatAnalysis implements SynchronousDataSetAnalyzer {
 
     /** DataSet Metadata repository. */
     @Autowired
-    DataSetMetadataRepository repository;
+    private DataSetMetadataRepository repository;
 
     /** DataSet content store. */
     @Autowired
-    ContentStoreRouter store;
+    private ContentStoreRouter store;
 
     /**
      * Format guess factory.
@@ -68,15 +66,11 @@ public class FormatAnalysis implements SynchronousDataSetAnalyzer {
     private FormatFamily.Factory formatFamilyFactory;
 
     @Autowired
-    CompositeFormatDetector detector;
+    private CompositeFormatDetector detector;
 
     /** Bean that list supported encodings. */
-    private Set<String> encodings;
-
     @Autowired
-    public void setEncodings(EncodingSupport encodings) {
-        this.encodings = encodings.getSupportedCharsets().stream().map(Charset::name).collect(Collectors.toSet());
-    }
+    private EncodingSupport encodings;
 
     /**
      * @see SynchronousDataSetAnalyzer#analyze(String)
@@ -105,20 +99,7 @@ public class FormatAnalysis implements SynchronousDataSetAnalyzer {
 
                 LOG.debug(marker, "using {} to parse the dataset", detectedFormat);
 
-                TDPException hypotheticalException = null;
-                if (detectedFormat == null
-                        || UnsupportedFormatFamily.class.isAssignableFrom(detectedFormat.getFormatFamily().getClass())) {
-                    hypotheticalException = new TDPException(DataSetErrorCodes.UNSUPPORTED_CONTENT);
-                } else if (!encodings.contains(detectedFormat.getEncoding())) {
-                    hypotheticalException = new TDPException(DataSetErrorCodes.UNSUPPORTED_ENCODING);
-                }
-                if (hypotheticalException != null) {
-                    // Clean up content & metadata (don't keep invalid information)
-                    store.delete(metadata);
-                    repository.remove(dataSetId);
-                    // Throw exception to indicate unsupported content
-                    throw hypotheticalException;
-                }
+                verifyFormat(metadata, detectedFormat);
 
                 internalUpdateMetadata(metadata, detectedFormat);
 
@@ -128,6 +109,31 @@ public class FormatAnalysis implements SynchronousDataSetAnalyzer {
             }
         } finally {
             datasetLock.unlock();
+        }
+    }
+
+    /**
+     * Checks for format validity. Clean up and throw exception if the format is null or unsupported.
+     * 
+     * @param metadata the metadata of the dataset being imported
+     * @param detectedFormat the detected format of the dataset
+     */
+    private void verifyFormat(DataSetMetadata metadata, Format detectedFormat) {
+
+        TDPException hypotheticalException = null;
+        Set<Charset> supportedEncodings = encodings != null ? encodings.getSupportedCharsets() : Collections.emptySet();
+        if (detectedFormat == null
+                || UnsupportedFormatFamily.class.isAssignableFrom(detectedFormat.getFormatFamily().getClass())) {
+            hypotheticalException = new TDPException(DataSetErrorCodes.UNSUPPORTED_CONTENT);
+        } else if (!supportedEncodings.contains(Charset.forName(detectedFormat.getEncoding()))) {
+            hypotheticalException = new TDPException(DataSetErrorCodes.UNSUPPORTED_ENCODING);
+        }
+        if (hypotheticalException != null) {
+            // Clean up content & metadata (don't keep invalid information)
+            store.delete(metadata);
+            repository.remove(metadata.getId());
+            // Throw exception to indicate unsupported content
+            throw hypotheticalException;
         }
     }
 
@@ -162,18 +168,14 @@ public class FormatAnalysis implements SynchronousDataSetAnalyzer {
 
         FormatFamily formatFamily = formatFamilyFactory.getFormatFamily(original.getContent().getFormatGuessId());
 
-        if (!formatFamily.getSchemaGuesser().accept(updated)){
+        if (!formatFamily.getSchemaGuesser().accept(updated)) {
             LOG.debug(marker, "the schema cannot be updated");
             return;
         }
 
         // update the schema
-        try (InputStream content = store.getAsRaw(original)) {
-            Format format = new Format(formatFamily, updated.getEncoding());
-            internalUpdateMetadata(updated, format);
-        } catch (IOException e) {
-            throw new TDPException(DataSetErrorCodes.UNABLE_TO_READ_DATASET_CONTENT, e);
-        }
+        Format format = new Format(formatFamily, updated.getEncoding());
+        internalUpdateMetadata(updated, format);
 
         LOG.debug(marker, "format updated for dataset");
     }

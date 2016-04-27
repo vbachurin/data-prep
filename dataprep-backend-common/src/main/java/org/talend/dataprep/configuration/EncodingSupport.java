@@ -1,22 +1,20 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.configuration;
 
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -42,7 +40,7 @@ public class EncodingSupport {
     private String[] certifiedEncoding;
 
     /** All supported charsets. */
-    private List<Charset> supportedCharsets;
+    private Set<Charset> supportedCharsets;
 
     /**
      * Init the charset lists.
@@ -52,7 +50,8 @@ public class EncodingSupport {
     private void initCharsets() {
         final List<Charset> certifiedCharsets = Arrays.stream(certifiedEncoding).map(Charset::forName)
                 .collect(Collectors.toList());
-        this.supportedCharsets = ListUtils.union(certifiedCharsets, new ArrayList<>(Charset.availableCharsets().values()));
+        this.supportedCharsets = new LinkedHashSet<>(
+                ListUtils.union(certifiedCharsets, new ArrayList<>(Charset.availableCharsets().values())));
     }
 
     /**
@@ -60,7 +59,7 @@ public class EncodingSupport {
      * certified).
      * @see #certifiedEncoding
      */
-    public List<Charset> getSupportedCharsets() {
+    public Set<Charset> getSupportedCharsets() {
         return supportedCharsets;
     }
 

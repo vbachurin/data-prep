@@ -46,7 +46,6 @@ public class CompositeFormatDetectorTest extends AbstractSchemaTestUtils {
         assertTrue(actual.getFormatFamily() instanceof UnsupportedFormatFamily);
     }
 
-
     @Test
     public void should_detect_at_least_a_format() throws IOException {
         Format actual = formatDetector.detect(new ByteArrayInputStream(new byte[1]));

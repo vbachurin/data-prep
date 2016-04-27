@@ -20,17 +20,19 @@ import org.apache.tika.io.TemporaryResources;
 import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.metadata.Metadata;
 
+@FunctionalInterface
 public interface Detector {
 
     /**
      * Reads an input stream and detects its format.
      *
-     * Note that the stream will not close the specified stream before returning. It is to the responsibility of the
-     * caller to close it.
-     * 
+     * The general contract of a detector is to not close the specified stream before returning. It is to the
+     * responsibility of the caller to close it. The detector should leverage the mark/reset feature of the specified
+     * {@see TikaInputStream} in order to let the stream always return the same bytes.
+     *
      * @param metadata the specified TIKA {@link Metadata}
      * @param inputStream the specified input stream
-     * @return either null or the detected format
+     * @return either the detected format or null
      * @throws IOException
      */
     Format detect(Metadata metadata, TikaInputStream inputStream) throws IOException;

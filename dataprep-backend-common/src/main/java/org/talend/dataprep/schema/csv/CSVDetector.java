@@ -15,7 +15,6 @@ package org.talend.dataprep.schema.csv;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
 import org.apache.commons.lang.StringUtils;
@@ -42,7 +41,7 @@ import org.talend.dataprep.schema.FormatUtils;
  *
  */
 @Component
-@Order(value=3)
+@Order(value = 3)
 public class CSVDetector implements Detector {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CSVDetector.class);
@@ -50,7 +49,7 @@ public class CSVDetector implements Detector {
     /**
      * The media type returned by TIKA when a CSV is detected.
      */
-    public static final String TEXT_PLAIN = "text/plain";
+    private static final String TEXT_PLAIN = "text/plain";
 
     /**
      * The TIKA MimeTypes {@link MimeTypes}
@@ -68,6 +67,10 @@ public class CSVDetector implements Detector {
 
     /**
      * Reads an input stream and checks if it has a CSV format.
+     *
+     * The general contract of a detector is to not close the specified stream before returning. It is to the
+     * responsibility of the caller to close it. The detector should leverage the mark/reset feature of the specified
+     * {@see TikaInputStream} in order to let the stream always return the same bytes.
      *
      * @param metadata the specified TIKA {@link Metadata}
      * @param inputStream the specified input stream
@@ -90,9 +93,7 @@ public class CSVDetector implements Detector {
             }
 
             inputStream.reset();
-            String head = FormatUtils.ASCII.decode(ByteBuffer.wrap(buffer, 0, n)).toString();
-            Character c = new Character((char) 0);
-            head = head.replaceAll(c.toString(), "");
+            String head = FormatUtils.readFromBuffer(buffer, 0, n);
 
             try (InputStream stream = TikaInputStream.get(new StringInputStream(head))) {
                 result = detectText(new Metadata(), stream);
