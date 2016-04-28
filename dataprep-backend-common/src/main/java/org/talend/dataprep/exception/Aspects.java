@@ -43,13 +43,18 @@ class Aspects {
         } catch (HystrixRuntimeException hre) {
             // filter out hystrix exception level if possible
             Throwable e = hre;
+            TDPException innerMostTDPException = null;
             while (e.getCause() != null) {
                 e = e.getCause();
                 if (e instanceof TDPException) {
-                    throw e;
+                    innerMostTDPException = (TDPException) e;
                 }
             }
-            throw  new TDPException(CommonErrorCodes.UNEXPECTED_SERVICE_EXCEPTION, hre);
+            if (innerMostTDPException != null){
+                throw innerMostTDPException;
+            }else {
+                throw new TDPException(CommonErrorCodes.UNEXPECTED_SERVICE_EXCEPTION, hre);
+            }
         } catch (Exception e) {
             LOG.error("Unexpected exception occurred in '" + pjp.getSignature().toShortString() + "'", e);
             final ExceptionContext context = ExceptionContext.build();

@@ -31,6 +31,8 @@ import javax.validation.Valid;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang.StringUtils;
+import org.apache.cxf.security.SecurityContext;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.talend.dataprep.api.preparation.Action;
@@ -54,6 +56,7 @@ import com.netflix.hystrix.HystrixCommand;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.talend.dataprep.security.Security;
 
 @RestController
 public class PreparationAPI extends APIService {
@@ -404,6 +407,46 @@ public class PreparationAPI extends APIService {
             LOG.debug("Moved preparation #{} head to step '{}'...", preparationId, headId);
         }
     }
+
+
+    @RequestMapping(value = "/api/preparations/{preparationId}/lock", method = PUT, produces = APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Mark a preparation as locked by a user.", notes = "Does not return any value, client may expect successful operation based on HTTP status code.")
+    @Timed
+    public void lockPreparation(@PathVariable(value = "preparationId")
+                                   @ApiParam(name = "preparationId", value = "Preparation id.")
+                                   final String preparationId) {
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Locking preparation #{}...", preparationId);
+        }
+
+
+        final HystrixCommand<Void> command = getCommand(PreparationLock.class, preparationId);
+        command.execute();
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Locked preparation #{}...", preparationId);
+        }
+    }
+
+    @RequestMapping(value = "/api/preparations/{preparationId}/unlock", method = PUT, produces = APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Mark a preparation as unlocked by a user.", notes = "Does not return any value, client may expect successful operation based on HTTP status code.")
+    @Timed
+    public void unlockPreparation(@PathVariable(value = "preparationId")
+                                @ApiParam(name = "preparationId", value = "Preparation id.")
+                                final String preparationId) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Locking preparation #{}...", preparationId);
+        }
+
+        final HystrixCommand<Void> command = getCommand(PreparationUnlock.class, preparationId);
+        command.execute();
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Locked preparation #{}...", preparationId);
+        }
+    }
+
 
 
     /**

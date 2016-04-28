@@ -1,39 +1,17 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.preparation.service;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jayway.restassured.http.ContentType;
-import com.jayway.restassured.path.json.JsonPath;
-import com.jayway.restassured.response.Response;
-import org.apache.commons.io.IOUtils;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.talend.dataprep.api.folder.Folder;
-import org.talend.dataprep.api.folder.FolderEntry;
-import org.talend.dataprep.api.preparation.*;
-import org.talend.dataprep.preparation.BasePreparationTest;
-import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
@@ -46,10 +24,33 @@ import static org.talend.dataprep.api.folder.FolderContentType.PREPARATION;
 import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
 import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
+import org.apache.commons.io.IOUtils;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.talend.dataprep.api.folder.Folder;
+import org.talend.dataprep.api.folder.FolderEntry;
+import org.talend.dataprep.api.preparation.*;
+import org.talend.dataprep.preparation.BasePreparationTest;
+import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.restassured.http.ContentType;
+import com.jayway.restassured.path.json.JsonPath;
+import com.jayway.restassured.response.Response;
+
 /**
  * Unit test for the preparation service.
  */
-public class PreparationServiceTest extends BasePreparationTest{
+public class PreparationServiceTest extends BasePreparationTest {
 
     @Autowired
     private PreparationUtils preparationUtils;
@@ -68,7 +69,8 @@ public class PreparationServiceTest extends BasePreparationTest{
         // given
         when().get("/preparations/details").then().statusCode(HttpStatus.OK.value()).body(sameJSONAs("[]"));
 
-        final Preparation preparation = new Preparation("#548425458", "1234", rootStep.id(), versionService.version().getVersionId());
+        final Preparation preparation = new Preparation("#548425458", "1234", rootStep.id(),
+                versionService.version().getVersionId());
         preparation.setCreationDate(0);
         preparation.setLastModificationDate(12345);
         repository.add(preparation);
@@ -78,13 +80,14 @@ public class PreparationServiceTest extends BasePreparationTest{
 
         // then
         response.then().statusCode(HttpStatus.OK.value())
-                .body(sameJSONAs("[{\"id\":\"#548425458\"," + "\"dataSetId\":\"1234\","
-                        + "\"author\":null," + "\"name\":null," + "\"creationDate\":0," + "\"lastModificationDate\":12345,"
+                .body(sameJSONAs("[{\"id\":\"#548425458\"," + "\"dataSetId\":\"1234\"," + "\"author\":null," + "\"name\":null,"
+                        + "\"creationDate\":0," + "\"lastModificationDate\":12345,"
                         + "\"steps\":[\"f6e172c33bdacbc69bca9d32b2bd78174712a171\"]," + "\"diff\":[]," + "\"actions\":[],"
                         + "\"metadata\":[]" + "}]"));
 
         // given
-        final Preparation preparation1 = new Preparation("#1438725", "5678", rootStep.id(), versionService.version().getVersionId());
+        final Preparation preparation1 = new Preparation("#1438725", "5678", rootStep.id(),
+                versionService.version().getVersionId());
         preparation1.setCreationDate(500);
         preparation1.setLastModificationDate(456789);
         repository.add(preparation1);
@@ -170,10 +173,10 @@ public class PreparationServiceTest extends BasePreparationTest{
         final JsonNode rootNode = mapper.reader().readTree(response.asInputStream());
         assertTrue(rootNode.isArray());
         assertEquals(expectedIds.size(), rootNode.size());
-        final List<String> actualIds = StreamSupport.stream(rootNode.spliterator(), false).map(n -> n.get("id").asText()).collect(Collectors.toList());
+        final List<String> actualIds = StreamSupport.stream(rootNode.spliterator(), false).map(n -> n.get("id").asText())
+                .collect(Collectors.toList());
         assertEquals(expectedIds, actualIds);
     }
-
 
     @Test
     public void shouldSearchByName() throws Exception {
@@ -204,7 +207,8 @@ public class PreparationServiceTest extends BasePreparationTest{
         final JsonNode rootNode = mapper.reader().readTree(response.asInputStream());
         assertTrue(rootNode.isArray());
         assertEquals(expectedIds.size(), rootNode.size());
-        final List<String> actualIds = StreamSupport.stream(rootNode.spliterator(), false).map(n -> n.get("id").asText()).collect(Collectors.toList());
+        final List<String> actualIds = StreamSupport.stream(rootNode.spliterator(), false).map(n -> n.get("id").asText())
+                .collect(Collectors.toList());
         assertEquals(expectedIds.size(), actualIds.stream().filter(expectedIds::contains).count());
     }
 
@@ -217,10 +221,11 @@ public class PreparationServiceTest extends BasePreparationTest{
         when().get("/preparations/details").then().statusCode(HttpStatus.OK.value()).body(sameJSONAs("[]"));
 
         List<String> preparationIds = new ArrayList<>(5);
-        for (int i=0;i<5;i++) {
+        for (int i = 0; i < 5; i++) {
             final long now = new Date().getTime();
-            Preparation preparation = new Preparation(UUID.randomUUID().toString(), "12345", rootStep.id(), versionService.version().getVersionId());
-            preparation.setName("prep-"+i);
+            Preparation preparation = new Preparation(UUID.randomUUID().toString(), "12345", rootStep.id(),
+                    versionService.version().getVersionId());
+            preparation.setName("prep-" + i);
             preparation.setLastModificationDate(now);
             repository.add(preparation);
             preparationIds.add(0, preparation.id()); // last modified preparation is first
@@ -229,11 +234,12 @@ public class PreparationServiceTest extends BasePreparationTest{
 
         // when
         final InputStream responseContent = when().get("/preparations/details").asInputStream();
-        final List<Preparation> actual = mapper.readValue(responseContent, new TypeReference<List<Preparation>>() {});
+        final List<Preparation> actual = mapper.readValue(responseContent, new TypeReference<List<Preparation>>() {
+        });
 
         // then
         assertEquals(preparationIds.size(), actual.size());
-        for(int i=0; i<actual.size(); i++) {
+        for (int i = 0; i < actual.size(); i++) {
             assertEquals(preparationIds.get(i), actual.get(i).getId());
         }
     }
@@ -241,12 +247,13 @@ public class PreparationServiceTest extends BasePreparationTest{
     @Test
     public void list() throws Exception {
         when().get("/preparations").then().statusCode(HttpStatus.OK.value()).body(sameJSONAs("[]"));
-        final Preparation preparation1 = new Preparation("#18875", "1234", rootStep.id(), versionService.version().getVersionId());
+        final Preparation preparation1 = new Preparation("#18875", "1234", rootStep.id(),
+                versionService.version().getVersionId());
         preparation1.setCreationDate(0);
         repository.add(preparation1);
-        when().get("/preparations").then().statusCode(HttpStatus.OK.value())
-                .body(sameJSONAs("[\"#18875\"]"));
-        final Preparation preparation2 = new Preparation("#483275", "5678", rootStep.id(), versionService.version().getVersionId());
+        when().get("/preparations").then().statusCode(HttpStatus.OK.value()).body(sameJSONAs("[\"#18875\"]"));
+        final Preparation preparation2 = new Preparation("#483275", "5678", rootStep.id(),
+                versionService.version().getVersionId());
         preparation2.setCreationDate(0);
         repository.add(preparation2);
         List<String> list = when().get("/preparations").jsonPath().getList("");
@@ -255,7 +262,8 @@ public class PreparationServiceTest extends BasePreparationTest{
 
     @Test
     public void get() throws Exception {
-        Preparation preparation = new Preparation("8b6281c5e99c41313a83777c3ab43b06adda9e5c", "1234", rootStep.id(), versionService.version().getVersionId());
+        Preparation preparation = new Preparation("8b6281c5e99c41313a83777c3ab43b06adda9e5c", "1234", rootStep.id(),
+                versionService.version().getVersionId());
         preparation.setCreationDate(0);
         preparation.setLastModificationDate(12345);
         repository.add(preparation);
@@ -264,11 +272,10 @@ public class PreparationServiceTest extends BasePreparationTest{
         assertThat(preparationDetails, sameJSONAsFile(expected));
     }
 
-
     @Test
     public void cannotCopyUnknownPreparation() throws Exception {
 
-        //given
+        // given
         String unknownId = "0001";
 
         // when
@@ -319,7 +326,7 @@ public class PreparationServiceTest extends BasePreparationTest{
         String name = "my preparation";
         folderRepository.addFolder(folder);
 
-        String originalId = createPreparationWithAPI("{\"name\": \""+ name +"\", \"dataSetId\": \"1234\"}", folder);
+        String originalId = createPreparationWithAPI("{\"name\": \"" + name + "\", \"dataSetId\": \"1234\"}", folder);
 
         // when
         final Response response = given() //
@@ -362,7 +369,6 @@ public class PreparationServiceTest extends BasePreparationTest{
         assertTrue(found);
     }
 
-
     @Test
     public void shouldMove() throws Exception {
         // given
@@ -391,11 +397,10 @@ public class PreparationServiceTest extends BasePreparationTest{
         assertEquals("moved preparation", repository.get(originalId, Preparation.class).getName());
     }
 
-
     @Test
     public void cannotMovePreparationThatDoesNotExist() throws Exception {
 
-        String name="super preparation";
+        String name = "super preparation";
 
         // given
         String from = "/from";
@@ -404,7 +409,7 @@ public class PreparationServiceTest extends BasePreparationTest{
 
         String to = "/to";
         folderRepository.addFolder(to);
-        createPreparationWithAPI("{\"name\": \""+ name +"\", \"dataSetId\": \"7384\"}", to);
+        createPreparationWithAPI("{\"name\": \"" + name + "\", \"dataSetId\": \"7384\"}", to);
 
         // when
         final Response response = given() //
@@ -503,7 +508,7 @@ public class PreparationServiceTest extends BasePreparationTest{
     }
 
     @Test
-    public void locateUnknownPreparationShouldSend404 () throws Exception {
+    public void locateUnknownPreparationShouldSend404() throws Exception {
         // when
         final Response response = given() //
                 .when() //
@@ -513,7 +518,6 @@ public class PreparationServiceTest extends BasePreparationTest{
         // then
         assertThat(response.getStatusCode(), is(404));
     }
-
 
     @Test
     public void shouldListErrors() throws Exception {
@@ -584,7 +588,7 @@ public class PreparationServiceTest extends BasePreparationTest{
         final Response response = given() //
                 .param("from", referenceId) //
                 .when() //
-                //.expect().statusCode(409).log().ifError() //
+                // .expect().statusCode(409).log().ifError() //
                 .put("/preparations/{id}/steps/copy", preparationId);
 
         // then
@@ -611,6 +615,66 @@ public class PreparationServiceTest extends BasePreparationTest{
         assertEquals(expected, actual);
     }
 
+    @Test
+    public void shouldLockAFreshlyLockedPreparation() throws Exception {
+
+        // given
+        final String preparationId = createPreparation("154753", "preparation");
+        Preparation expected = repository.get(preparationId, Preparation.class);
+
+        // when
+        final Response response = given() //
+                .when() //
+                .expect().statusCode(200).log().ifError() //
+                .put("/preparations/{id}/lock", preparationId);
+
+        // then
+        assertThat(response.getStatusCode(), is(200));
+    }
+
+    @Test
+    public void shouldLockAlreadyLockedPreparation() throws Exception {
+
+        // given
+        final String preparationId = createPreparation("154753", "preparation");
+        Preparation expected = repository.get(preparationId, Preparation.class);
+
+        // when
+        given() //
+                .when() //
+                .expect().statusCode(200).log().ifError() //
+                .put("/preparations/{id}/lock", preparationId);
+
+        final Response response = given() //
+                .when() //
+                .expect().statusCode(200).log().ifError() //
+                .put("/preparations/{id}/lock", preparationId);
+
+        // then
+        assertThat(response.getStatusCode(), is(200));
+    }
+
+    @Test
+    public void shouldUnlockAPreviouslyLockedPreparation() throws Exception {
+
+        // given
+        final String preparationId = createPreparation("154753", "preparation");
+        Preparation expected = repository.get(preparationId, Preparation.class);
+
+        // when
+        given() //
+                .when() //
+                .expect().statusCode(200).log().ifError() //
+                .put("/preparations/{id}/lock", preparationId);
+
+        final Response response = given() //
+                .when() //
+                .expect().statusCode(200).log().ifError() //
+                .put("/preparations/{id}/unlock", preparationId);
+
+        // then
+        assertThat(response.getStatusCode(), is(200));
+    }
 
     // ------------------------------------------------------------------------------------------------------------------
     // -----------------------------------------------------LIFECYCLE----------------------------------------------------
@@ -661,7 +725,7 @@ public class PreparationServiceTest extends BasePreparationTest{
     public void delete() throws Exception {
         // given
         assertThat(repository.listAll(Preparation.class).size(), is(0));
-        String path="preparation/that/will/be/deleted";
+        String path = "preparation/that/will/be/deleted";
         folderRepository.addFolder(path);
         String preparationId = createPreparationWithAPI("{\"name\": \"test_name\", \"dataSetId\": \"1234\"}", path);
         assertThat(repository.listAll(Preparation.class).size(), is(1));
@@ -691,8 +755,8 @@ public class PreparationServiceTest extends BasePreparationTest{
 
         // Test preparation details update
         String updatedId = given().contentType(ContentType.JSON)
-                .body("{\"name\": \"test_name_updated\", \"dataSetId\": \"1234\"}")
-                .when().put("/preparations/{id}", preparationId).asString();
+                .body("{\"name\": \"test_name_updated\", \"dataSetId\": \"1234\"}").when()
+                .put("/preparations/{id}", preparationId).asString();
 
         // Preparation id should not change (name is not part of preparation id).
         assertThat(updatedId, is(preparationId));
@@ -709,8 +773,8 @@ public class PreparationServiceTest extends BasePreparationTest{
         Preparation preparation = new Preparation("#123", versionService.version().getVersionId());
         preparation.setDataSetId("1234");
         preparation.setName("test_name");
-        String preparationId = given().contentType(ContentType.JSON).body(mapper.writer().writeValueAsBytes(preparation))
-                .when().post("/preparations").asString();
+        String preparationId = given().contentType(ContentType.JSON).body(mapper.writer().writeValueAsBytes(preparation)).when()
+                .post("/preparations").asString();
 
         // Test preparation details update
         String updatedId = given().contentType(ContentType.JSON)
@@ -1172,7 +1236,8 @@ public class PreparationServiceTest extends BasePreparationTest{
      * @return The preparation id
      */
     private String createPreparation(final String datasetId, final String name) {
-        final Preparation preparation = new Preparation(UUID.randomUUID().toString(), datasetId, rootStep.id(), versionService.version().getVersionId());
+        final Preparation preparation = new Preparation(UUID.randomUUID().toString(), datasetId, rootStep.id(),
+                versionService.version().getVersionId());
         preparation.setName(name);
         preparation.setCreationDate(0);
         repository.add(preparation);
