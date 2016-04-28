@@ -1,5 +1,6 @@
 $base-border-radius: 3px !default;
 $base-background-color: white !default;
+$responsive-sm-screen-width: 1200px !default;
 
 $navigation-background-top: rgba(85, 89, 100, 0.8);
 $navigation-background-bottom: rgb(85, 89, 100);
@@ -9,11 +10,16 @@ $navigation-color: white;
 $navigation-height: 50px;
 $navigation-item-space: 10px;
 
+%flex-center {
+  @include display(flex);
+  @include align-items(center);
+  @include justify-content(center);
+}
 
 #playground-header {
-  display: table;
+  @include display(flex);
+  @include justify-content(space-between);
   height: $navigation-height;
-  min-height: $navigation-height;
   width: 100vw;
 
   @include background(linear-gradient($navigation-background-top, $navigation-background-bottom) left repeat);
@@ -21,17 +27,80 @@ $navigation-item-space: 10px;
   color: $navigation-color;
 
   > ul {
-    > * {
-      display: table-cell;
-      line-height: $navigation-height - $navigation-border-height;
+    @extend %flex-center;
+    > li {
+      @extend %flex-center;
+      height: $navigation-height;
+    }
+  }
+
+  > ul,
+  #playground-help-nav .dropdown-menu {
+    > li {
+      @extend %flex-center;
+      height: $navigation-height;
       padding-left: $navigation-item-space;
       padding-right: $navigation-item-space;
-      vertical-align: middle;
       border-right: 1px solid grey;
+    }
+  }
 
-      input {
-        display: inline-block;
-        margin: 0;
+  #playground-help-nav {
+    ul > li {
+      &:last-child {
+        border-right: 0;
+      }
+    }
+
+    @media (max-width: ($responsive-sm-screen-width - 1)) {
+      .dropdown-menu {
+        &.show-menu {
+          @include display(flex);
+        }
+
+        > li {
+          .icon {
+            color: $navigation-background-bottom;
+            @include filter(none);
+
+            &:hover {
+              color: lighten($navigation-background-bottom, 10%);
+            }
+          }
+        }
+      }
+    }
+
+    @media (min-width: $responsive-sm-screen-width) {
+      ul > li {
+
+        &:first-child {
+          padding-left: 0;
+        }
+
+        &:last-child {
+          padding-right: 0;
+        }
+      }
+
+      .dropdown {
+
+        &-action {
+          display: none;
+        }
+
+        &-menu {
+          @include display(inline-flex);
+          position: relative;
+          background: none;
+          border: none;
+          box-shadow: none;
+          z-index: 0;
+
+          &::before {
+            content: none;
+          }
+        }
       }
     }
   }
@@ -51,7 +120,6 @@ $navigation-item-space: 10px;
   }
 
   #playground-left-header {
-    float: left;
 
     .file-lines-count {
       color: $dark-green;
@@ -76,7 +144,6 @@ $navigation-item-space: 10px;
   }
 
   #playground-right-header {
-    float: right;
 
     #preview {
 
