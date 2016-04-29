@@ -14,6 +14,7 @@
 package org.talend.dataprep.transformation.api.action.metadata.common;
 
 import static com.google.common.collect.Sets.newHashSet;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -38,7 +39,7 @@ public class ActionMetadataUtilsTest extends AbstractMetadataBaseTest {
                 .build();
 
         ActionMetadataUtils.checkInvalidValue(columnMetadata, "1");
-        Assert.assertTrue(ActionMetadataUtils.getAnalyzerCache().get(Type.INTEGER.getName()) != null);
+        assertTrue(ActionMetadataUtils.getAnalyzerCache().get(Type.INTEGER.getName()) != null);
 
     }
 
@@ -51,7 +52,7 @@ public class ActionMetadataUtilsTest extends AbstractMetadataBaseTest {
                 .build();
 
         ActionMetadataUtils.checkInvalidValue(columnMetadata, "1");
-        Assert.assertTrue(ActionMetadataUtils.getAnalyzerCache().get(Type.DOUBLE.getName()) != null);
+        assertTrue(ActionMetadataUtils.getAnalyzerCache().get(Type.DOUBLE.getName()) != null);
 
     }
 
@@ -64,7 +65,7 @@ public class ActionMetadataUtilsTest extends AbstractMetadataBaseTest {
                 .build();
 
         ActionMetadataUtils.checkInvalidValue(columnMetadata, "1");
-        Assert.assertTrue(ActionMetadataUtils.getAnalyzerCache().get(Type.BOOLEAN.getName()) != null);
+        assertTrue(ActionMetadataUtils.getAnalyzerCache().get(Type.BOOLEAN.getName()) != null);
 
     }
 
@@ -77,7 +78,7 @@ public class ActionMetadataUtilsTest extends AbstractMetadataBaseTest {
                 .build();
 
         ActionMetadataUtils.checkInvalidValue(columnMetadata, "1");
-        Assert.assertTrue(ActionMetadataUtils.getAnalyzerCache().get(Type.DATE.getName()) != null);
+        assertTrue(ActionMetadataUtils.getAnalyzerCache().get(Type.DATE.getName()) != null);
 
     }
 
@@ -90,8 +91,21 @@ public class ActionMetadataUtilsTest extends AbstractMetadataBaseTest {
                 .build();
 
         ActionMetadataUtils.checkInvalidValue(columnMetadata, "Toto");
-        Assert.assertTrue(ActionMetadataUtils.getAnalyzerCache().get("CITY") != null);
+        assertTrue(ActionMetadataUtils.getAnalyzerCache().get("CITY") != null);
 
     }
+
+    @Test
+    public void should_analyzer_with_no_type_validity() {
+        ColumnMetadata columnMetadata = ColumnMetadata.Builder.column() //
+                .type(Type.STRING) //
+                .computedId("0001") //
+                .build();
+        columnMetadata.setType("");
+
+        ActionMetadataUtils.checkInvalidValue(columnMetadata, "Toto");
+        assertTrue(ActionMetadataUtils.getAnalyzerCache().isEmpty());
+    }
+
 
 }

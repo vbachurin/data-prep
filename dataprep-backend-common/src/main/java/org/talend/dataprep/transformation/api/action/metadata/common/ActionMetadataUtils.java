@@ -77,7 +77,15 @@ public class ActionMetadataUtils implements ApplicationContextAware {
             } else {
                 // perform a data type only (no domain set).
                 Analyzer<Analyzers.Result> analyzer = analyzerService.build(colMetadata, AnalyzerService.Analysis.QUALITY);
-                updatedInvalidValues = retrieveInvalids(analyzer, value);
+                try {
+                    updatedInvalidValues = retrieveInvalids(analyzer, value);
+                } finally {
+                    try {
+                        analyzer.close();
+                    } catch (Exception e) {
+                        LOGGER.warn("Unable to close analyzer.", e);
+                    }
+                }
             }
         }
         // update invalid values of column metadata to prevent unnecessary future analysis
