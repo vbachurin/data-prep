@@ -42,7 +42,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.talend.daikon.exception.json.JsonErrorCode;
-import org.talend.dataprep.api.dataset.*;
+import org.talend.dataprep.api.dataset.DataSet;
+import org.talend.dataprep.api.dataset.DataSetGovernance;
+import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.api.dataset.DataSetMoveRequest;
 import org.talend.dataprep.api.folder.FolderContent;
 import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.exception.error.DataSetErrorCodes;
@@ -808,7 +811,6 @@ public class DataSetAPITest extends ApiServiceTestBase {
     }
 
     @Test
-    @Ignore
     public void testDataSetCreateUnsupportedFormat() throws Exception {
         // given
         final String datasetContent = IOUtils.toString(DataSetAPITest.class.getResourceAsStream("dataset/dataset.ods"));

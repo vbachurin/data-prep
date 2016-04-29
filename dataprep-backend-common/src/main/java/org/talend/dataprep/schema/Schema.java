@@ -21,7 +21,10 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class SchemaParserResult implements Serializable {
+/**
+ * This class represents a schema of a dataset.
+ */
+public class Schema implements Serializable {
 
     /** Serialization UID. */
     private static final long serialVersionUID = 1L;
@@ -35,13 +38,13 @@ public class SchemaParserResult implements Serializable {
     @JsonProperty("sheetName")
     private String sheetName;
 
-    private SchemaParserResult(boolean draft, List<SheetContent> sheetContents, String sheetName) {
+    private Schema(boolean draft, List<SheetContent> sheetContents, String sheetName) {
         this.draft = draft;
         this.sheetContents = sheetContents;
         this.sheetName = sheetName;
     }
 
-    private SchemaParserResult() {
+    private Schema() {
         //
     }
 
@@ -144,7 +147,7 @@ public class SchemaParserResult implements Serializable {
 
         private String sheetName;
 
-        public static SchemaParserResult.Builder parserResult() {
+        public static Schema.Builder parserResult() {
             return new Builder();
         }
 
@@ -169,15 +172,15 @@ public class SchemaParserResult implements Serializable {
             return this;
         }
 
-        public Builder copy(SchemaParserResult original) {
+        public Builder copy(Schema original) {
             this.draft = original.draft();
             this.sheetContents = original.getSheetContents();
             this.sheetName = original.getSheetName();
             return this;
         }
 
-        public SchemaParserResult build() {
-            return new SchemaParserResult(this.draft, this.sheetContents, this.sheetName);
+        public Schema build() {
+            return new Schema(this.draft, this.sheetContents, this.sheetName);
         }
     }
 }

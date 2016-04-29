@@ -1,36 +1,32 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.schema.xls;
 
 import static java.util.Locale.ENGLISH;
+import static org.assertj.core.data.MapEntry.entry;
 import static org.junit.Assert.assertThat;
 import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
 import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
+import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.UUID;
+import java.util.*;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.assertj.core.api.Assertions;
-import org.assertj.core.data.MapEntry;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -38,30 +34,28 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadataBuilder;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.schema.AbstractSchemaTestUtils;
-import org.talend.dataprep.schema.FormatGuess;
-import org.talend.dataprep.schema.FormatGuesser;
-import org.talend.dataprep.schema.SchemaParserResult;
-import org.talend.dataprep.schema.unsupported.UnsupportedFormatGuess;
+import org.talend.dataprep.schema.CompositeFormatDetector;
+import org.talend.dataprep.schema.Format;
+import org.talend.dataprep.schema.Schema;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
 
-public class XlsFormatTest extends AbstractSchemaTestUtils {
+public class XlsSerializerTest extends AbstractSchemaTestUtils {
 
-    private final static Logger logger = LoggerFactory.getLogger(XlsFormatTest.class);
+    private final static Logger logger = LoggerFactory.getLogger(XlsSerializerTest.class);
 
     @Autowired
     private DataSetMetadataBuilder metadataBuilder;
 
-    @Qualifier("formatGuesser#xls")
+    /** The format guesser to test. */
     @Autowired
-    private FormatGuesser formatGuesser;
+    CompositeFormatDetector formatDetector;
 
     @Autowired
     private XlsSchemaParser xlsSchemaParser;
@@ -69,16 +63,10 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
     @Autowired
     private XlsSerializer xlsSerializer;
 
-    private Locale previousLocale;
+    @Autowired
+    private ObjectMapper mapper;
 
-    @Test
-    public void read_bad_xls_file() throws Exception {
-        try (InputStream inputStream = this.getClass().getResourceAsStream("fake.xls")) {
-            FormatGuess formatGuess = formatGuesser.guess(getRequest(inputStream, "#1"), "UTF-8").getFormatGuess();
-            Assert.assertNotNull(formatGuess);
-            Assert.assertTrue(formatGuess instanceof UnsupportedFormatGuess);
-        }
-    }
+    private Locale previousLocale;
 
     @Before
     public void setUp() throws Exception {
@@ -91,75 +79,52 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
         Locale.setDefault(previousLocale);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void read_null_xls_file() throws Exception {
-        formatGuesser.guess(null, "UTF-8").getFormatGuess();
-    }
-
     private List<Map<String, String>> getValuesFromFile(String fileName, DataSetMetadata dataSetMetadata) throws Exception {
 
         try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
 
             InputStream jsonStream = xlsSerializer.serialize(inputStream, dataSetMetadata);
-
             String json = IOUtils.toString(jsonStream);
 
             logger.debug("json: {}", json);
 
-            ObjectMapper mapper = new ObjectMapper();
-
             CollectionType collectionType = mapper.getTypeFactory().constructCollectionType(ArrayList.class, TreeMap.class);
-
             List<Map<String, String>> values = mapper.readValue(json, collectionType);
-
             logger.debug("values: {}", values);
 
             return values;
         }
-
     }
 
-    @Test
-    public void read_simple_xls_old_format_file() throws Exception {
-        assert_on_simple_file("test.xls", false);
-
-    }
-
-    @Test
-    public void read_simple_xls_new_format_file() throws Exception {
-        assert_on_simple_file("test_new.xlsx", true);
+    private Format assertFormat(String fileName) throws Exception {
+        final Format format;
+        try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
+            format = formatDetector.detect(inputStream);
+            Assert.assertNotNull(format);
+            Assert.assertTrue(format.getFormatFamily() instanceof XlsFormatFamily);
+            Assert.assertEquals(XlsFormatFamily.MEDIA_TYPE, format.getFormatFamily().getMediaType());
+        }
+        return format;
     }
 
     public void assert_on_simple_file(String fileName, boolean newFormat) throws Exception {
 
-        FormatGuess formatGuess;
-
-        try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
-            formatGuess = formatGuesser.guess(getRequest(inputStream, "#2"), "UTF-8").getFormatGuess();
-            Assert.assertNotNull(formatGuess);
-            Assert.assertTrue(formatGuess instanceof XlsFormatGuess);
-            Assert.assertEquals(XlsFormatGuess.MEDIA_TYPE, formatGuess.getMediaType());
-        }
+        assertFormat(fileName);
 
         try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
 
-            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser().parse(getRequest(inputStream, "#456"))
-                    .getSheetContents().get(0).getColumnMetadatas();
+            List<ColumnMetadata> columnMetadatas = xlsSchemaParser.parse(getRequest(inputStream, "#456")).getSheetContents()
+                    .get(0).getColumnMetadatas();
 
-            logger.debug("columnMetadatas: {}", columnMetadatas);
             Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize(4);
 
             ColumnMetadata columnMetadataFound = columnMetadatas.stream()
                     .filter(columnMetadata -> StringUtils.equals(columnMetadata.getName(), "country")).findFirst().get();
 
-            logger.debug("columnMetadataFound: {}", columnMetadataFound);
-
             Assertions.assertThat(columnMetadataFound.getType()).isEqualTo(Type.STRING.getName());
 
             columnMetadataFound = columnMetadatas.stream()
                     .filter(columnMetadata -> StringUtils.equals(columnMetadata.getName(), "note")).findFirst().get();
-
-            logger.debug("columnMetadataFound: {}", columnMetadataFound);
 
             Assertions.assertThat(columnMetadataFound.getType())
                     .isEqualTo(newFormat ? Type.STRING.getName() : Type.NUMERIC.getName());
@@ -173,20 +138,20 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
 
         String fileName = "state_table.xls";
 
-        FormatGuess formatGuess;
+        Format format;
 
         try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
-            formatGuess = formatGuesser.guess(getRequest(inputStream, "#3"), "UTF-8").getFormatGuess();
-            Assert.assertNotNull(formatGuess);
-            Assert.assertTrue(formatGuess instanceof XlsFormatGuess);
-            Assert.assertEquals(XlsFormatGuess.MEDIA_TYPE, formatGuess.getMediaType());
+            format = formatDetector.detect(inputStream);
+            Assert.assertNotNull(format);
+            Assert.assertTrue(format.getFormatFamily() instanceof XlsFormatFamily);
+            Assert.assertEquals(XlsFormatFamily.MEDIA_TYPE, format.getFormatFamily().getMediaType());
         }
 
         try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
-            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser().parse(getRequest(inputStream, "#852"))
-                    .getSheetContents().get(0).getColumnMetadatas();
-            logger.debug("columnMetadatas: {}", columnMetadatas);
-            Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize(17);
+            List<ColumnMetadata> columnsMetadata = xlsSchemaParser.parse(getRequest(inputStream, "#852")).getSheetContents()
+                    .get(0).getColumnMetadatas();
+            logger.debug("columnsMetadata: {}", columnsMetadata);
+            Assertions.assertThat(columnsMetadata).isNotNull().isNotEmpty().hasSize(17);
         }
 
     }
@@ -196,17 +161,15 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
 
         String fileName = "test.xls";
 
-        FormatGuess formatGuess;
+        Format format;
 
         DataSetMetadata dataSetMetadata = metadataBuilder.metadata().id("beer").build();
 
-        try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
-            formatGuess = formatGuesser.guess(getRequest(inputStream, "#4"), "UTF-8").getFormatGuess();
-        }
+        assertFormat(fileName);
 
         try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
 
-            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser() //
+            List<ColumnMetadata> columnMetadatas = xlsSchemaParser //
                     .parse(getRequest(inputStream, "#123")) //
                     .getSheetContents().get(0).getColumnMetadatas();
 
@@ -227,28 +190,28 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
         Assertions.assertThat(values).isNotEmpty().hasSize(4);
 
         Assertions.assertThat(values.get(0)) //
-                .contains(MapEntry.entry("0000", "Little Creatures"), //
-                        MapEntry.entry("0001", "Australie"), //
-                        MapEntry.entry("0002", "Awesome"), //
-                        MapEntry.entry("0003", "10")); //
+                .contains(entry("0000", "Little Creatures"), //
+                        entry("0001", "Australie"), //
+                        entry("0002", "Awesome"), //
+                        entry("0003", "10")); //
 
         Assertions.assertThat(values.get(1)) //
-                .contains(MapEntry.entry("0000", "Heinekein"), //
-                        MapEntry.entry("0001", "France"), //
-                        MapEntry.entry("0002", "crappy"), //
-                        MapEntry.entry("0003", "")); //
+                .contains(entry("0000", "Heinekein"), //
+                        entry("0001", "France"), //
+                        entry("0002", "crappy"), //
+                        entry("0003", "")); //
 
         Assertions.assertThat(values.get(2)) //
-                .contains(MapEntry.entry("0000", "Foo"), //
-                        MapEntry.entry("0001", "Australie"), //
-                        MapEntry.entry("0002", "10"), //
-                        MapEntry.entry("0003", "6"));
+                .contains(entry("0000", "Foo"), //
+                        entry("0001", "Australie"), //
+                        entry("0002", "10"), //
+                        entry("0003", "6"));
 
         Assertions.assertThat(values.get(3)) //
-                .contains(MapEntry.entry("0000", "Bar"), //
-                        MapEntry.entry("0001", "France"), //
-                        MapEntry.entry("0002", "crappy"), //
-                        MapEntry.entry("0003", "2"));
+                .contains(entry("0000", "Bar"), //
+                        entry("0001", "France"), //
+                        entry("0002", "crappy"), //
+                        entry("0003", "2"));
 
     }
 
@@ -257,20 +220,13 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
 
         String fileName = "EXPLOITATION-ListeEtabActifs_Adresse2012.xlsx";
 
-        FormatGuess formatGuess;
-
         DataSetMetadata dataSetMetadata = metadataBuilder.metadata().id("beer").build();
 
-        try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
-            formatGuess = formatGuesser.guess(getRequest(inputStream, "#5"), "UTF-8").getFormatGuess();
-            Assert.assertNotNull(formatGuess);
-            Assert.assertTrue(formatGuess instanceof XlsFormatGuess);
-            Assert.assertEquals(XlsFormatGuess.MEDIA_TYPE, formatGuess.getMediaType());
-        }
+        assertFormat(fileName);
 
         try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
 
-            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser() //
+            List<ColumnMetadata> columnMetadatas = xlsSchemaParser //
                     .parse(getRequest(inputStream, "#7563")) //
                     .getSheetContents().get(0).getColumnMetadatas();
 
@@ -294,16 +250,16 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
         logger.debug("values: {}", values);
 
         Assertions.assertThat(values.get(0)) //
-                .contains(MapEntry.entry("0000", "ILE-DE-FRANCE"), //
-                        MapEntry.entry("0001", "PARIS 8ME"), //
-                        MapEntry.entry("0002", "12"), //
-                        MapEntry.entry("0003", "GEORGE V"));
+                .contains(entry("0000", "ILE-DE-FRANCE"), //
+                        entry("0001", "PARIS 8ME"), //
+                        entry("0002", "12"), //
+                        entry("0003", "GEORGE V"));
 
         Assertions.assertThat(values.get(3)) //
-                .contains(MapEntry.entry("0000", "ILE-DE-FRANCE"), //
-                        MapEntry.entry("0001", "PARIS 8ME"), //
-                        MapEntry.entry("0002", "52"), //
-                        MapEntry.entry("0003", "GAUMONT CHAMPS ELYSEES AMBASSADE"));
+                .contains(entry("0000", "ILE-DE-FRANCE"), //
+                        entry("0001", "PARIS 8ME"), //
+                        entry("0002", "52"), //
+                        entry("0003", "GAUMONT CHAMPS ELYSEES AMBASSADE"));
 
     }
 
@@ -312,20 +268,13 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
 
         String fileName = "liste-musees-de-france-2012.xls";
 
-        FormatGuess formatGuess;
-
         DataSetMetadata dataSetMetadata = metadataBuilder.metadata().id("beer").build();
 
-        try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
-            formatGuess = formatGuesser.guess(getRequest(inputStream, "#6"), "UTF-8").getFormatGuess();
-            Assert.assertNotNull(formatGuess);
-            Assert.assertTrue(formatGuess instanceof XlsFormatGuess);
-            Assert.assertEquals(XlsFormatGuess.MEDIA_TYPE, formatGuess.getMediaType());
-        }
+        assertFormat(fileName);
 
         try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
-            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser().parse(getRequest(inputStream, "#951"))
-                    .getSheetContents().get(0).getColumnMetadatas();
+            List<ColumnMetadata> columnMetadatas = xlsSchemaParser.parse(getRequest(inputStream, "#951")).getSheetContents()
+                    .get(0).getColumnMetadatas();
 
             logger.debug("columnMetadatas: {}", columnMetadatas);
             Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize(13);
@@ -347,15 +296,15 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
         logger.debug("values: {}", values);
 
         Assertions.assertThat(values.get(0)) //
-                .contains(MapEntry.entry("0000", "ALSACE"), //
-                        MapEntry.entry("0001", "BAS-RHIN"), //
-                        MapEntry.entry("0002", "NON"));
+                .contains(entry("0000", "ALSACE"), //
+                        entry("0001", "BAS-RHIN"), //
+                        entry("0002", "NON"));
 
         Assertions.assertThat(values.get(2)) //
-                .contains(MapEntry.entry("0000", "ALSACE"), //
-                        MapEntry.entry("0001", "BAS-RHIN"), //
-                        MapEntry.entry("0002", "OUI"), //
-                        MapEntry.entry("0003", "29 juin 2013"));
+                .contains(entry("0000", "ALSACE"), //
+                        entry("0001", "BAS-RHIN"), //
+                        entry("0002", "OUI"), //
+                        entry("0003", "29 juin 2013"));
 
     }
 
@@ -363,33 +312,26 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
     public void test_second_sheet_parsing() throws Exception {
         String fileName = "Talend_Desk-Tableau-Bord-011214.xls";
 
-        FormatGuess formatGuess;
-
-        try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
-            formatGuess = formatGuesser.guess(getRequest(inputStream, "#7"), "UTF-8").getFormatGuess();
-            Assert.assertNotNull(formatGuess);
-            Assert.assertTrue(formatGuess instanceof XlsFormatGuess);
-            Assert.assertEquals(XlsFormatGuess.MEDIA_TYPE, formatGuess.getMediaType());
-        }
+        assertFormat(fileName);
 
         DataSetMetadata dataSetMetadata = metadataBuilder.metadata().id("beer").sheetName("Leads").build();
 
         try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
 
-            List<SchemaParserResult.SheetContent> sheetContents = xlsSchemaParser.parseAllSheets(getRequest(inputStream, "#8"));
+            List<Schema.SheetContent> sheetContents = xlsSchemaParser.parseAllSheets(getRequest(inputStream, "#8"));
 
-            List<ColumnMetadata> columnMetadatas = sheetContents.stream()
+            List<ColumnMetadata> columnsMetadata = sheetContents.stream()
                     .filter(sheetContent -> "Leads".equals(sheetContent.getName())).findFirst().get().getColumnMetadatas();
 
-            logger.debug("columnMetadatas: {}", columnMetadatas);
+            logger.debug("columnsMetadata: {}", columnsMetadata);
 
-            Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize(6);
+            Assertions.assertThat(columnsMetadata).isNotNull().isNotEmpty().hasSize(6);
 
-            ColumnMetadata columnMetadata = columnMetadatas.get(4);
+            ColumnMetadata columnMetadata = columnsMetadata.get(4);
             Assertions.assertThat(columnMetadata.getHeaderSize()).isEqualTo(1);
             Assertions.assertThat(columnMetadata.getName()).isEqualTo("age");
             Assertions.assertThat(columnMetadata.getType()).isEqualTo(Type.STRING.getName());
-            dataSetMetadata.getRowMetadata().setColumns(columnMetadatas);
+            dataSetMetadata.getRowMetadata().setColumns(columnsMetadata);
         }
 
         List<Map<String, String>> values = getValuesFromFile(fileName, dataSetMetadata);
@@ -399,19 +341,19 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
         Assertions.assertThat(values).isNotEmpty().hasSize(3);
 
         Assertions.assertThat(values.get(0)) //
-                .contains(MapEntry.entry("0000", "301638"), //
-                        MapEntry.entry("0001", "foo@foo.com"), //
-                        MapEntry.entry("0004", "23"));
+                .contains(entry("0000", "301638"), //
+                        entry("0001", "foo@foo.com"), //
+                        entry("0004", "23"));
 
         Assertions.assertThat(values.get(1)) //
-                .contains(MapEntry.entry("0000", "12349383"), //
-                        MapEntry.entry("0001", "beer@gof.org"), //
-                        MapEntry.entry("0004", "23"));
+                .contains(entry("0000", "12349383"), //
+                        entry("0001", "beer@gof.org"), //
+                        entry("0004", "23"));
 
         Assertions.assertThat(values.get(2)) //
-                .contains(MapEntry.entry("0000", "73801093"), //
-                        MapEntry.entry("0001", "wine@go.com"), //
-                        MapEntry.entry("0003", "Jean"));
+                .contains(entry("0000", "73801093"), //
+                        entry("0001", "wine@go.com"), //
+                        entry("0003", "Jean"));
 
     }
 
@@ -429,16 +371,10 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
     public void testGeneralNumberFormat_TDP_222() throws Exception {
         final DataSetMetadata metadata = metadataBuilder.metadata().id("1234")
                 .row(column().name("id").id(0).type(Type.INTEGER), column().name("value1").id(1).type(Type.INTEGER)).build();
-        FormatGuess formatGuess;
-        try (InputStream inputStream = this.getClass().getResourceAsStream("excel_numbers.xls")) {
-            formatGuess = formatGuesser.guess(getRequest(inputStream, "#9"), "UTF-8").getFormatGuess();
-            Assert.assertNotNull(formatGuess);
-            Assert.assertTrue(formatGuess instanceof XlsFormatGuess);
-            Assert.assertEquals(XlsFormatGuess.MEDIA_TYPE, formatGuess.getMediaType());
-        }
+        Format format = assertFormat("excel_numbers.xls");
         // Test number serialization in XLS type guess
         InputStream input = this.getClass().getResourceAsStream("excel_numbers.xls");
-        final String result = IOUtils.toString(formatGuess.getSerializer().serialize(input, metadata));
+        final String result = IOUtils.toString(format.getFormatFamily().getSerializer().serialize(input, metadata));
         final String expected = "[{\"0000\":\"1\",\"0001\":\"123\"},{\"0000\":\"2\",\"0001\":\"123.1\"},{\"0000\":\"3\",\"0001\":\"209.9\"}]";
         assertThat(result, sameJSONAs(expected));
     }
@@ -448,18 +384,11 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
 
         String fileName = "customersDate.xls";
 
-        FormatGuess formatGuess;
+        assertFormat(fileName);
 
         try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
-            formatGuess = formatGuesser.guess(getRequest(inputStream, "#10"), "UTF-8").getFormatGuess();
-            Assert.assertNotNull(formatGuess);
-            Assert.assertTrue(formatGuess instanceof XlsFormatGuess);
-            Assert.assertEquals(XlsFormatGuess.MEDIA_TYPE, formatGuess.getMediaType());
-        }
-
-        try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
-            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser().parse(getRequest(inputStream, "#0267"))
-                    .getSheetContents().get(0).getColumnMetadatas();
+            List<ColumnMetadata> columnMetadatas = xlsSchemaParser.parse(getRequest(inputStream, "#0267")).getSheetContents()
+                    .get(0).getColumnMetadatas();
             logger.debug("columnMetadatas: {}", columnMetadatas);
             Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize(10);
 
@@ -470,43 +399,19 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
             Assertions.assertThat(columnMetadataDate.getType()).isEqualTo("date");
 
         }
-
-    }
-
-    @Test
-    public void read_xls_that_can_be_parsed_as_csv_TDP_375() throws Exception {
-
-        String fileName = "TDP-375_xsl_read_as_csv.xls";
-
-        FormatGuess formatGuess;
-
-        try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
-            formatGuess = formatGuesser.guess(getRequest(inputStream, "#11"), "UTF-8").getFormatGuess();
-            Assert.assertNotNull(formatGuess);
-            Assert.assertTrue(formatGuess instanceof XlsFormatGuess);
-            Assert.assertEquals(XlsFormatGuess.MEDIA_TYPE, formatGuess.getMediaType());
-        }
-
     }
 
     @Test
     public void read_evaluate_formulas() throws Exception {
         String fileName = "000_DTA_DailyTimeLog.xlsm";
         String sheetName = "WEEK SUMMARY";
-        FormatGuess formatGuess;
 
-
-        try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
-            formatGuess = formatGuesser.guess(getRequest(inputStream, UUID.randomUUID().toString()), "UTF-8").getFormatGuess();
-            Assert.assertNotNull(formatGuess);
-            Assert.assertTrue(formatGuess instanceof XlsFormatGuess);
-            Assert.assertEquals(XlsFormatGuess.MEDIA_TYPE, formatGuess.getMediaType());
-        }
+        checkExcelFile(fileName);
 
         DataSetMetadata dataSetMetadata = metadataBuilder.metadata().id("beer").sheetName(sheetName).build();
 
         try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
-            List<SchemaParserResult.SheetContent> sheetContents = xlsSchemaParser.parseAllSheets(getRequest(inputStream, "#8"));
+            List<Schema.SheetContent> sheetContents = xlsSchemaParser.parseAllSheets(getRequest(inputStream, "#8"));
             List<ColumnMetadata> columnMetadatas = sheetContents.stream()
                     .filter(sheetContent -> sheetName.equals(sheetContent.getName())).findFirst().get().getColumnMetadatas();
             logger.debug("columnMetadatas: {}", columnMetadatas);
@@ -519,7 +424,7 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
         List<Map<String, String>> values = getValuesFromFile(fileName, dataSetMetadata);
         logger.debug("values: {}", values);
 
-        Assertions.assertThat(values.get(4).get("0003")).isNotEmpty().isEqualTo("10/26/15");
+        Assertions.assertThat(values.get(4).get("0003")).isNotEmpty().isEqualTo("10/26/2015");
         Assertions.assertThat(values.get(5).get("0003")).isNotEmpty().isEqualTo("MONDAY");
         Assertions.assertThat(values.get(7).get("0003")).isNotEmpty().isEqualTo("8.00");
         Assertions.assertThat(values.get(30).get("0003")).isNotEmpty().isEqualTo("6.00");
@@ -530,23 +435,15 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
     public void not_fail_on_bad_formulas() throws Exception {
 
         String fileName = "bad_formulas.xlsx";
-
-        FormatGuess formatGuess;
-
         String sheetName = "Sheet1";
 
-        try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
-            formatGuess = formatGuesser.guess(getRequest(inputStream, UUID.randomUUID().toString()), "UTF-8").getFormatGuess();
-            Assert.assertNotNull(formatGuess);
-            Assert.assertTrue(formatGuess instanceof XlsFormatGuess);
-            Assert.assertEquals(XlsFormatGuess.MEDIA_TYPE, formatGuess.getMediaType());
-        }
+        checkExcelFile(fileName);
 
         DataSetMetadata dataSetMetadata = metadataBuilder.metadata().id("beer").sheetName(sheetName).build();
 
         try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
 
-            List<SchemaParserResult.SheetContent> sheetContents = xlsSchemaParser.parseAllSheets(getRequest(inputStream, "#8"));
+            List<Schema.SheetContent> sheetContents = xlsSchemaParser.parseAllSheets(getRequest(inputStream, "#8"));
 
             List<ColumnMetadata> columnMetadatas = sheetContents.stream()
                     .filter(sheetContent -> sheetName.equals(sheetContent.getName())).findFirst().get().getColumnMetadatas();
@@ -563,12 +460,12 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
         logger.debug("values: {}", values);
 
         Assertions.assertThat(values.get(0)) //
-                .contains(MapEntry.entry("0000", "Zoo"), //
-                        MapEntry.entry("0001", ""));
+                .contains(entry("0000", "Zoo"), //
+                        entry("0001", ""));
 
         Assertions.assertThat(values.get(1)) //
-                .contains(MapEntry.entry("0000", "Boo"), //
-                        MapEntry.entry("0001", ""));
+                .contains(entry("0000", "Boo"), //
+                        entry("0001", ""));
     }
 
     /**
@@ -596,7 +493,93 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
 
         logger.debug("values: {}", values);
 
-        Assertions.assertThat( values.get( 3 ).get( "0090" ) ).isEqualTo( "Small" );
+        Assertions.assertThat(values.get(3).get("0090")).isEqualTo("Small");
+    }
+
+    /**
+     * TDP-1656
+     */
+    @Test
+    public void date_format() throws Exception {
+
+        // given
+        String fileName = "dates.xlsx";
+        checkExcelFile(fileName);
+
+        // when
+        DataSetMetadata dataSetMetadata = getDataSetMetadataFromExcelFile(fileName, "Feuil1");
+        List<Map<String, String>> values = getValuesFromFile(fileName, dataSetMetadata);
+
+        logger.debug("values: {}", values);
+
+        // then
+        Assertions.assertThat(values.get(0)).contains(entry("0000", "1/1/2016"), entry("0001", "2/10/2016"));
+        Assertions.assertThat(values.get(1)).contains(entry("0000", "3/31/1972"), entry("0001", "3/31/2016"));
+        Assertions.assertThat(values.get(2)).contains(entry("0000", "10/10/2003"), entry("0001", "4/6/2016"));
+        Assertions.assertThat(values.get(3)).contains(entry("0000", "02/03/1932"), entry("0001", "03/02/1956"));
+        Assertions.assertThat(values.get(4)).contains(entry("0000", "04/05/2025"), entry("0001", "06/07/2029"));
+    }
+
+    /**
+     * TDP-1656
+     */
+    @Test
+    public void date_format_with_time() throws Exception {
+
+        // given
+        String fileName = "dates_test.xlsx";
+        checkExcelFile(fileName);
+
+        // when
+        DataSetMetadata dataSetMetadata = getDataSetMetadataFromExcelFile(fileName, "Sheet2");
+        List<Map<String, String>> values = getValuesFromFile(fileName, dataSetMetadata);
+
+        logger.debug("values: {}", values);
+
+        // then
+        Assertions.assertThat(values.get(0)).contains(entry("0003", "1/26/2015 18:03"), entry("0004", "1/29/2015 0:30"));
+        Assertions.assertThat(values.get(1)).contains(entry("0003", "12/4/2015 1:01"), entry("0004", "1/15/2016 13:56"));
+    }
+
+    /**
+     * Return the dataset metadata out of the given file name.
+     *
+     * @param fileName the excel file to open.
+     * @param sheetName name of the excel sheet.
+     * @return the dataset metadata.
+     * @throws IOException s**y happens.
+     */
+    private DataSetMetadata getDataSetMetadataFromExcelFile(String fileName, String sheetName) throws IOException {
+        DataSetMetadata dataSetMetadata = metadataBuilder.metadata().id("ff").sheetName(sheetName).build();
+
+        try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
+
+            List<Schema.SheetContent> sheetContents = xlsSchemaParser.parseAllSheets(getRequest(inputStream, "#8"));
+
+            List<ColumnMetadata> columnsMetadata = sheetContents.get(0).getColumnMetadatas();
+
+            logger.debug("columnsMetadata: {}", columnsMetadata);
+
+            Assertions.assertThat(columnsMetadata).isNotNull().isNotEmpty();
+
+            dataSetMetadata.getRowMetadata().setColumns(columnsMetadata);
+        }
+        return dataSetMetadata;
+    }
+
+    /**
+     * Make sure the given file name is recognized as an excel file.
+     * 
+     * @param fileName the excel file name to open.
+     */
+    private void checkExcelFile(String fileName) throws IOException {
+        Format format;
+        try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
+            format = formatDetector.detect(inputStream);
+            Assert.assertNotNull(format);
+            Assert.assertTrue(format.getFormatFamily() instanceof XlsFormatFamily);
+            Assert.assertEquals(XlsFormatFamily.MEDIA_TYPE, format.getFormatFamily().getMediaType());
+        }
     }
 
 }
