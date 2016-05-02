@@ -182,6 +182,7 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
                     if (!response.columns[0].statistics.frequencyTable.length) {
                         return $q.reject();
                     }
+                    StateService.updateDatasetQuality(response);
                     StateService.updateDatasetRecord(response.records);
                     return response;
                 });
