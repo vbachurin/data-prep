@@ -12,13 +12,10 @@
 //  ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
-import java.util.List;
-
 import org.apache.commons.lang.math.NumberUtils;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
-import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 /**
  * Abstract Action for basic math action without parameter

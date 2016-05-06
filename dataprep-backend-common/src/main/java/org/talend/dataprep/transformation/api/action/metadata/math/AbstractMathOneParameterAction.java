@@ -23,12 +23,12 @@ import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
+import org.talend.dataprep.parameters.Parameter;
+import org.talend.dataprep.parameters.ParameterType;
+import org.talend.dataprep.parameters.SelectParameter;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.metadata.common.OtherColumnParameters;
-import org.talend.dataprep.transformation.api.action.parameters.Parameter;
-import org.talend.dataprep.transformation.api.action.parameters.ParameterType;
-import org.talend.dataprep.transformation.api.action.parameters.SelectParameter;
 
 /**
  * Abstract Action for basic math action with one parameter (constant or an other column)
@@ -39,13 +39,13 @@ public abstract class AbstractMathOneParameterAction extends AbstractMathAction 
     public List<Parameter> getParameters() {
         List<Parameter> parameters = super.getParameters();
 
-        parameters.add(SelectParameter.Builder.builder() //
+        parameters.add( SelectParameter.Builder.builder() //
                 .name(MODE_PARAMETER) //
                 .item(CONSTANT_MODE, new Parameter(CONSTANT_VALUE, ParameterType.STRING, StringUtils.EMPTY)) //
                 .item(OTHER_COLUMN_MODE,
-                        new Parameter(SELECTED_COLUMN_PARAMETER, ParameterType.COLUMN, //
-                                StringUtils.EMPTY, false, false, //
-                                getMessagesBundle())) //
+                        new Parameter( SELECTED_COLUMN_PARAMETER, ParameterType.COLUMN, //
+                                       StringUtils.EMPTY, false, false, //
+                                       StringUtils.EMPTY, getMessagesBundle())) //
                 .defaultValue(CONSTANT_MODE) //
                 .build());
 

@@ -12,8 +12,6 @@
 //  ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
-import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.RowMetadata;
@@ -22,7 +20,6 @@ import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
-import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 /**
  * Abstract Action for math operations
