@@ -1,15 +1,15 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
 
 /**
  * @ngdoc service
@@ -35,9 +35,9 @@ export default function DatagridColumnService($rootScope, $compile, $log, $trans
     var colIndexName = 'tdpId';
 
     /**
-    * contains a backup of the columnsMetadata to find which has been moved after a reorder
-    * @type {Array}
-    */
+     * contains a backup of the columnsMetadata to find which has been moved after a reorder
+     * @type {Array}
+     */
     var originalColumns = [];
 
     var gridHeaderPreviewTemplate =
@@ -52,7 +52,7 @@ export default function DatagridColumnService($rootScope, $compile, $log, $trans
         renewAllColumns: renewAllColumns,
         createColumns: createColumns,
         columnsOrderChanged: columnsOrderChanged,
-        _findMoveCols: _findMoveCols
+        _findMovedCols: _findMovedCols
     };
 
     //------------------------------------------------------------------------------------------------------
@@ -140,22 +140,31 @@ export default function DatagridColumnService($rootScope, $compile, $log, $trans
      * @param {object[]} originals the optional original columns if null the field will be used originalColumns
      * @description method trigger on columns reorder
      */
-    function columnsOrderChanged(columnsMetadata, originals){
-        let result = _findMoveCols(originals?originals:originalColumns, columnsMetadata);
-        
+    function columnsOrderChanged(columnsMetadata, originals) {
+
+        const original = originals ? originals : originalColumns;
+        //the user started reordering but has abandoned his action at the end
+        if (_.map(original, 'tdpColMetadata.id').join() === _.map(columnsMetadata, 'tdpColMetadata.id').join()) {
+            return;
+        }
+
+        let result = _findMovedCols(original, columnsMetadata);
+
         PlaygroundService.appendStep('reorder',
-                                          {
-                                              selected_column:result.target,
-                                              scope:'dataset',
-                                              column_id:result.selected,
-                                              column_name:result.name,
-                                              dataset_action_display_type: 'column'
-                                          });
+            {
+                selected_column: result.target,
+                scope: 'dataset',
+                column_id: result.selected,
+                column_name: result.name,
+                dataset_action_display_type: 'column',
+            });
 
     }
 
     /**
-     *
+     * @ngdoc method
+     * @name _findMovedCols
+     * @methodOf data-prep.datagrid.service:DatagridColumnService
      * @param originalCols
      * @param newCols
      * @returns Object with fields :
@@ -167,31 +176,31 @@ export default function DatagridColumnService($rootScope, $compile, $log, $trans
      * @description find which columnMetadata has been moved between the two arrays during a reorder columsn.
      * We iterate on array and so some comparaisons.
      */
-    function _findMoveCols(originalCols, newCols){
+    function _findMovedCols(originalCols, newCols) {
         let result = {};
         let index = 0;
         let movedIndex = 0;
         let movedCol = null;
         _.forEach(originalCols, (col) => {
-            if (!movedCol && col.id){
+            if (!movedCol && col.id) {
                 // move forward case
-                if (col.id != newCols[index].id && originalCols[index+1].id==newCols[index].id){
-                    movedCol=col;
+                if (col.id !== newCols[index].id && originalCols[index + 1].id === newCols[index].id) {
+                    movedCol = col;
                     movedIndex = index;
                     // find new index of movedCol
                     result.selected = movedCol.id;
                     result.name = _.get(movedCol, 'tdpColMetadata.name');
                     index = 0;
                     _.forEach(newCols, (col) => {
-                        if (col.id && col.id==movedCol.id){
-                        result.target = originalCols[index].id;
+                        if (col.id && col.id == movedCol.id) {
+                            result.target = originalCols[index].id;
                         }
                         index++;
                     });
                     return result;
-                // move backward case    
-                } else if (col.id != newCols[index].id && col.id==newCols[index+1].id ) {
-                    movedCol=col;
+                    // move backward case
+                } else if (col.id !== newCols[index].id && col.id === newCols[index + 1].id) {
+                    movedCol = col;
                     movedIndex = index;
                     result.selected = newCols[movedIndex].id;
                     result.name = _.get(newCols[movedIndex], 'tdpColMetadata.name');
@@ -200,7 +209,7 @@ export default function DatagridColumnService($rootScope, $compile, $log, $trans
                 }
 
             }
-           index++;
+            index++;
         });
         return result;
     }

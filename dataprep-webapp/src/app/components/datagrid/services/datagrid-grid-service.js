@@ -25,7 +25,7 @@
  */
 export default class DatagridGridService {
 
-    constructor($timeout, state, StateService, DatagridService, PlaygroundService,
+    constructor($timeout, state, StateService, DatagridService,
         DatagridStyleService, DatagridColumnService, DatagridSizeService, DatagridExternalService, DatagridTooltipService) {
         'ngInject';
 
@@ -36,7 +36,6 @@ export default class DatagridGridService {
         this.state = state;
         this.StateService = StateService;
         this.DatagridService = DatagridService;
-        this.PlaygroundService = PlaygroundService;
         this.DatagridColumnService = DatagridColumnService;
 
         this.gridServices = [
@@ -93,7 +92,7 @@ export default class DatagridGridService {
         });
 
         this.grid.onColumnsReordered.subscribe((e, args) => {
-            this.DatagridColumnService.columnsOrderChanged(args.grid.getColumns());
+            this.$timeout(() => this.DatagridColumnService.columnsOrderChanged(args.grid.getColumns()));
         });
     }
 

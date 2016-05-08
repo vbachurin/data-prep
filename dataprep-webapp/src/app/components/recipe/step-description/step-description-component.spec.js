@@ -196,5 +196,36 @@ describe('Step Description Component', () => {
             //then
             expect(element.eq(0).text().trim().replace(/\s+/g, ' ')).toBe('done with dataset customers_100_with_pb. Join has been set between id and id. The columns firstname, lastname and 2 other(s) have been added.');
         });
+        it('should show the reorder details', ()=> {
+            //given
+            scope.step = {
+                column: { id: '0', name: 'col1' },
+                transformation: {
+                    stepId: '13a24e8765ef4',
+                    name: 'reorder',
+                    label: 'Split',
+                    category: 'split',
+                    parameters: [{ name: 'pattern', type: 'string' }],
+                    items: [],
+                },
+                actionParameters: {
+                    action: 'split',
+                    parameters: {
+                        selected_column: "0003",
+                        column_id: '0000',
+                        scope: 'dataset',
+                        column_name: 'name',
+                        dataset_action_display_type: 'column',
+                    }
+                },
+            };
+
+            //when
+            createElement();
+            scope.$digest();
+
+            //then
+            expect(element.eq(0).text().trim().replace(/\s+/g, ' ')).toBe('on column COL1');
+        });
     });
 });
