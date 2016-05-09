@@ -15,6 +15,7 @@ package org.talend.dataprep.transformation.format;
 
 import java.util.Arrays;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.format.export.ExportFormat;
 import org.talend.dataprep.parameters.Parameter;
@@ -36,16 +37,16 @@ public class CSVFormat extends ExportFormat {
     public CSVFormat() {
         //@formatter:off
         super("CSV", "text/csv", ".csv", true, false,
-                Arrays.asList(SelectParameter.Builder.builder().name("CHOOSE_SEPARATOR")
-                        .item(";", "SEPARATOR_PIPE")
-                        .item("\u0009", "SEPARATOR_TAB")
-                        .item(" ", "SEPARATOR_SPACE")
-                        .item(",", "SEPARATOR_COMMA")
-                        .defaultValue(";")
+                Arrays.asList(SelectParameter.Builder.builder().name("csvSeparator") //
+                        .item(";", "semiColon") //
+                        .item("\u0009", "tabulation") //
+                        .item(" ", "space") //
+                        .item(",", "comma") //
+                        .defaultValue(";") //
+                        .canBeBlank(true) //
+                        .radio(true) //
                         .build(),
-                new Parameter("fileName",
-                        ParameterType.STRING,
-                        "")
+                new Parameter("fileName", ParameterType.STRING, StringUtils.EMPTY, false, false) //
         ));
         //@formatter:on
     }

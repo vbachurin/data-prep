@@ -21,6 +21,7 @@ import org.talend.dataprep.parameters.Parameterizable;
 import org.talend.dataprep.parameters.Parameter;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.talend.dataprep.util.MessagesBundleContext;
 
 /**
  * Models a type of format.
@@ -146,6 +147,10 @@ public abstract class ExportFormat extends Parameterizable {
      */
     public String getName() {
         return name;
+    }
+
+    public String getTitle() {
+        return MessagesBundleContext.get().getString("export." + name + ".title");
     }
 
 }

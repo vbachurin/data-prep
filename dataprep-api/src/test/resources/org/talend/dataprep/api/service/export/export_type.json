@@ -7,46 +7,48 @@
     "defaultExport": "false",
     "enabled": true,
     "disableReason": "",
+    "title": "Export to CSV",
     "parameters": [
       {
-        "name": "CHOOSE_SEPARATOR",
+        "name": "csvSeparator",
         "type": "select",
         "implicit": false,
-        "canBeBlank": false,
+        "canBeBlank": true,
         "placeHolder": "",
         "configuration": {
           "values": [
             {
               "value": ";",
-              "label": "SEPARATOR_PIPE"
+              "label": "Semi colon"
             },
             {
               "value": "\t",
-              "label": "SEPARATOR_TAB"
+              "label": "Tabulation"
             },
             {
               "value": " ",
-              "label": "SEPARATOR_SPACE"
+              "label": "Space"
             },
             {
               "value": ",",
-              "label": "SEPARATOR_COMMA"
+              "label": "Comma"
             }
           ],
           "multiple": false
         },
-        "description": "parameter.CHOOSE_SEPARATOR.desc",
-        "label": "parameter.CHOOSE_SEPARATOR.label",
+        "radio": true,
+        "description": "Select character to use as a delimiter",
+        "label": "Select character to use as a delimiter",
         "default": ";"
       },
       {
         "name": "fileName",
         "type": "string",
         "implicit": false,
-        "canBeBlank": true,
+        "canBeBlank": false,
         "placeHolder": "",
-        "description": "parameter.fileName.desc",
-        "label": "parameter.fileName.label",
+        "description": "Name of the generated export file",
+        "label": "Name of the generated export file",
         "default": ""
       }
     ]
@@ -59,6 +61,7 @@
     "defaultExport": "true",
     "enabled": true,
     "disableReason": "",
+    "title": "Export to XLSX",
     "parameters": [
       {
         "name": "fileName",
@@ -66,8 +69,8 @@
         "implicit": false,
         "canBeBlank": false,
         "placeHolder": "",
-        "description": "parameter.fileName.desc",
-        "label": "parameter.fileName.label",
+        "description": "Name of the generated export file",
+        "label": "Name of the generated export file",
         "default": ""
       }
     ]

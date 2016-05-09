@@ -6,6 +6,7 @@
   "defaultExport": "true",
   "enabled": true,
   "disableReason": "",
+  "title": "Export to XLSX",
   "parameters": [
     {
       "name": "fileName",
@@ -13,8 +14,8 @@
       "implicit": false,
       "canBeBlank": false,
       "placeHolder": "",
-      "description": "parameter.fileName.desc",
-      "label": "parameter.fileName.label",
+      "description": "Name of the generated export file",
+      "label": "Name of the generated export file",
       "default": ""
     }
   ]

@@ -41,6 +41,7 @@ public class ExportFormatSerializer extends JsonSerializer<ExportFormat> {
         gen.writeStringField("defaultExport", Boolean.toString(value.isDefaultExport()));
         gen.writeBooleanField("enabled", value.isEnabled());
         gen.writeStringField("disableReason", value.getDisableReason());
+        gen.writeStringField("title", value.getTitle());
 
         if (!value.getParameters().isEmpty()) {
             gen.writeFieldName("parameters");

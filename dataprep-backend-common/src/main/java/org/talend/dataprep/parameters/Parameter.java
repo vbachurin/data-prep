@@ -186,7 +186,7 @@ public class Parameter implements Serializable {
     }
 
     @JsonIgnore
-    private MessagesBundle getMessagesBundle() {
+    protected MessagesBundle getMessagesBundle() {
         if (this.messagesBundle == null) {
             this.messagesBundle = MessagesBundleContext.get();
         }

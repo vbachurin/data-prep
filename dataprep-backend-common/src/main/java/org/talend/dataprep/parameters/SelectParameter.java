@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.talend.dataprep.i18n.MessagesBundle;
 import org.talend.dataprep.util.MessagesBundleContext;
 
@@ -35,6 +36,8 @@ public class SelectParameter extends Parameter implements Serializable {
     /** Serialization UID. */
     private static final long serialVersionUID = 1L;
 
+    private final boolean isRadio;
+
     /** The select items. */
     @JsonIgnore // will be part of the Parameter#configuration
     private List<Item> items;
@@ -45,19 +48,27 @@ public class SelectParameter extends Parameter implements Serializable {
 
     /**
      * Private constructor to ensure the use of builder.
-     *
-     * @param name The parameter name.
+     *  @param name The parameter name.
      * @param defaultValue The parameter default value.
      * @param implicit True if the parameter is implicit.
      * @param canBeBlank True if the parameter can be blank.
      * @param items List of items for this select parameter.
      * @param multiple True if multiple selection is allowed.
+     * @param isRadio <code>true</code> if the rendering code should prefer radio buttons instead of drop down list.
      */
     private SelectParameter(String name, String defaultValue, boolean implicit, boolean canBeBlank, List<Item> items,
-            boolean multiple) {
+                            boolean multiple, boolean isRadio) {
         super(name, ParameterType.SELECT, defaultValue, implicit, canBeBlank);
+        this.isRadio = isRadio;
         setItems(items);
         setMultiple(multiple);
+    }
+
+    /**
+     * @return <code>true</code> if the rendering code should prefer radio buttons instead of drop down list.
+     */
+    public boolean isRadio() {
+        return isRadio;
     }
 
     /**
@@ -146,7 +157,9 @@ public class SelectParameter extends Parameter implements Serializable {
         }
 
         public String getLabel() {
-            return label;
+            final String lookupKey = "parameter." + label + ".label";
+            final String translatedLabel = MessagesBundleContext.get().getString(lookupKey);
+            return lookupKey.equals(translatedLabel) ? label : translatedLabel;
         }
 
         public void setLabel(String label) {
@@ -158,7 +171,7 @@ public class SelectParameter extends Parameter implements Serializable {
 
             private List<Parameter> inlineParameters;
 
-            public static SelectParameter.Item.Builder builder() {
+            public static Builder builder() {
                 return new Builder();
             }
 
@@ -201,10 +214,13 @@ public class SelectParameter extends Parameter implements Serializable {
         /** True if the selection is multiple. */
         private boolean multiple = false;
 
+        /** True if rendering should prefer radio buttons to render parameters choices */
+        private boolean isRadio = false;
+
         /**
          * @return A SelectParameter builder.
          */
-        public static SelectParameter.Builder builder() {
+        public static Builder builder() {
             return new Builder();
         }
 
@@ -214,7 +230,7 @@ public class SelectParameter extends Parameter implements Serializable {
          * @param name the name of the select parameter.
          * @return the builder to carry on building the column.
          */
-        public SelectParameter.Builder name(String name) {
+        public Builder name(String name) {
             this.name = name;
             return this;
         }
@@ -225,7 +241,7 @@ public class SelectParameter extends Parameter implements Serializable {
          * @param defaultValue the default value of the select parameter.
          * @return the builder to carry on building the column.
          */
-        public SelectParameter.Builder defaultValue(String defaultValue) {
+        public Builder defaultValue(String defaultValue) {
             this.defaultValue = defaultValue;
             return this;
         }
@@ -236,7 +252,7 @@ public class SelectParameter extends Parameter implements Serializable {
          * @param implicit true if the parameter is implicit.
          * @return the builder to carry on building the column.
          */
-        public SelectParameter.Builder implicit(boolean implicit) {
+        public Builder implicit(boolean implicit) {
             this.implicit = implicit;
             return this;
         }
@@ -247,7 +263,7 @@ public class SelectParameter extends Parameter implements Serializable {
          * @param canBeBlank true if the parameter is implicit.
          * @return the builder to carry on building the column.
          */
-        public SelectParameter.Builder canBeBlank(boolean canBeBlank) {
+        public Builder canBeBlank(boolean canBeBlank) {
             this.canBeBlank = canBeBlank;
             return this;
         }
@@ -259,7 +275,7 @@ public class SelectParameter extends Parameter implements Serializable {
          * @param parameter the item optional parameter.
          * @return the builder to carry on building the column.
          */
-        public SelectParameter.Builder item(String value, Parameter... parameter) {
+        public Builder item(String value, Parameter... parameter) {
             this.items.add(new Item(value, Arrays.asList(parameter)));
             return this;
         }
@@ -271,7 +287,7 @@ public class SelectParameter extends Parameter implements Serializable {
          * @return the builder to carry on building the column.
          * @see Item#setLabel(String) to override default translated label.
          */
-        public SelectParameter.Builder item(String value) {
+        public Builder item(String value) {
             this.items.add(new Item(value, emptyList()));
             return this;
         }
@@ -283,7 +299,7 @@ public class SelectParameter extends Parameter implements Serializable {
          * @param label the item label
          * @return the builder to carry on building the column.
          */
-        public SelectParameter.Builder item(String value, String label) {
+        public Builder item(String value, String label) {
             final Item item = new Item(value, emptyList());
             item.setLabel(label);
             this.items.add(item);
@@ -296,8 +312,13 @@ public class SelectParameter extends Parameter implements Serializable {
          * @param items the item name.
          * @return the builder to carry on building the column.
          */
-        public SelectParameter.Builder items(List<Item> items) {
+        public Builder items(List<Item> items) {
             this.items.addAll(items);
+            return this;
+        }
+
+        public Builder radio(boolean isRadio) {
+            this.isRadio = isRadio;
             return this;
         }
 
@@ -307,9 +328,8 @@ public class SelectParameter extends Parameter implements Serializable {
          * @return the built column metadata.
          */
         public SelectParameter build() {
-            return new SelectParameter(name, defaultValue, implicit, canBeBlank, items, multiple);
+            return new SelectParameter(name, defaultValue, implicit, canBeBlank, items, multiple, isRadio);
         }
-
     }
 
 }

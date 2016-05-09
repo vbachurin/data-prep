@@ -32,7 +32,7 @@ public class JsonFormat extends ExportFormat {
      * Default constructor.
      */
     public JsonFormat() {
-        super(JSON, "application/json", ".json", false, false, Collections.<Parameter> emptyList());
+        super(JSON, "application/json", ".json", false, false, Collections.emptyList());
     }
 
     @Override

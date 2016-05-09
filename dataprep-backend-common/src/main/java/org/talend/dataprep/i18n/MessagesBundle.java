@@ -46,11 +46,12 @@ public class MessagesBundle {
      * 
      * @param code A i18n key.
      * @return The i18n message associated with <code>code</code>. Returns <code>null</code> if <code>code</code> is
-     * <code>null</code>.
+     * <code>null</code>. Returns <code>code</code> as is if message does not exist.
      * @see LocaleContextHolder#getLocale()
+     * @see I18N#getResourceBundle()
      */
     public String getString(String code) {
-        return getString(code, new String[0]);
+        return getString(code, new Object[0]);
     }
 
     /**

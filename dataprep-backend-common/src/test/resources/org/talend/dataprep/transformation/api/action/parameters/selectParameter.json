@@ -33,6 +33,7 @@
     ],
     "multiple": false
   },
+  "radio": false,
   "description": "The column to which you want to apply this action",
   "label": "Column",
   "default": ""
