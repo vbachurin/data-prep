@@ -20,11 +20,11 @@ describe('Step Description Component', () => {
 
     beforeEach(angular.mock.module('pascalprecht.translate', ($translateProvider) => {
         $translateProvider.translations('en', {
-            'RECIPE_ITEM_ON_COL': 'on column <b>{{columnName}}</b>',
-            'RECIPE_ITEM_ON_CELL': 'on cell',
-            'RECIPE_ITEM_ON_LINE': 'on line <b>#{{rowId}}</b>',
+            'RECIPE_ITEM_ON_COL': '{{index}}. {{label}} on column <b>{{columnName}}</b>',
+            'RECIPE_ITEM_ON_CELL': '{{index}}. {{label}} on cell',
+            'RECIPE_ITEM_ON_LINE': '{{index}}. {{label}} on line <b>#{{rowId}}</b>',
 
-            'LOOKUP_STEP_DESCRIPTION': 'done with dataset <span class=\"recipe-column-name\">{{lookupDsName}}</span>. Join has been set between <span class=\"recipe-column-name\">{{mainColName}}</span> and <span class=\"recipe-column-name\">{{lookupColName}}. </span>',
+            'LOOKUP_STEP_DESCRIPTION': '{{index}}. {{label}} done with dataset <span class=\"recipe-column-name\">{{lookupDsName}}</span>. Join has been set between <span class=\"recipe-column-name\">{{mainColName}}</span> and <span class=\"recipe-column-name\">{{lookupColName}}. </span>',
             'ONLY_1_ADDED_COL': 'The column <span class=\"recipe-column-name\">{{firstCol}}</span> has been added.',
             'ONLY_2_ADDED_COLS': 'The columns <span class=\"recipe-column-name\">{{firstCol}}</span> and <span class=\"recipe-column-name\">{{secondCol}}</span> have been added.',
             'MORE_THEN_2_ADDED_COLS': 'The columns <span class=\"recipe-column-name\">{{firstCol}}</span>, <span class=\"recipe-column-name\">{{secondCol}}</span> and <span class=\"recipe-column-name\" title=\"{{restOfCols}}\">{{restOfColsNbr}}</span> other(s) have been added.',
@@ -36,7 +36,7 @@ describe('Step Description Component', () => {
         scope = $rootScope.$new();
 
         createElement = () => {
-            element = angular.element('<step-description step="step"></step-description>');
+            element = angular.element('<step-description index="index" step="step"></step-description>');
             $compile(element)(scope);
             scope.$digest();
         };
@@ -64,13 +64,14 @@ describe('Step Description Component', () => {
                     },
                 },
             };
+            scope.index = 2;
 
             //when
             createElement();
             scope.$digest();
 
             //then
-            expect(element.eq(0).text().trim().replace(/\s+/g, ' ')).toBe('on column COL1');
+            expect(element.eq(0).text().trim().replace(/\s+/g, ' ')).toBe('3. Split on column COL1');
         });
     });
 
@@ -99,13 +100,14 @@ describe('Step Description Component', () => {
                 },
                 inactive: true,
             };
+            scope.index = 6;
 
             //when
             createElement();
             scope.$digest();
 
             //then
-            expect(element.eq(0).text().trim().replace(/\s+/g, ' ')).toBe('on cell');
+            expect(element.eq(0).text().trim().replace(/\s+/g, ' ')).toBe('7. Replace value on cell');
         });
     });
 
@@ -132,13 +134,14 @@ describe('Step Description Component', () => {
                 },
                 inactive: true,
             };
+            scope.index = 6;
 
             //when
             createElement();
             scope.$digest();
 
             //then
-            expect(element.eq(0).text().trim().replace(/\s+/g, ' ')).toBe('on line #125');
+            expect(element.eq(0).text().trim().replace(/\s+/g, ' ')).toBe('7. Delete Line on line #125');
         });
     });
 
@@ -188,13 +191,14 @@ describe('Step Description Component', () => {
                     },
                 },
             };
+            scope.index = 1;
 
             //when
             createElement();
             scope.$digest();
 
             //then
-            expect(element.eq(0).text().trim().replace(/\s+/g, ' ')).toBe('done with dataset customers_100_with_pb. Join has been set between id and id. The columns firstname, lastname and 2 other(s) have been added.');
+            expect(element.eq(0).text().trim().replace(/\s+/g, ' ')).toBe('2. Lookup done with dataset customers_100_with_pb. Join has been set between id and id. The columns firstname, lastname and 2 other(s) have been added.');
         });
         it('should show the reorder details', ()=> {
             //given
@@ -219,13 +223,14 @@ describe('Step Description Component', () => {
                     }
                 },
             };
+            scope.index = 3;
 
             //when
             createElement();
             scope.$digest();
 
             //then
-            expect(element.eq(0).text().trim().replace(/\s+/g, ' ')).toBe('on column COL1');
+            expect(element.eq(0).text().trim().replace(/\s+/g, ' ')).toBe('4. Split on column COL1');
         });
     });
 });

@@ -175,11 +175,12 @@ describe('Recipe directive', function () {
         {
             'column': {
                 'id': '0000',
-                'name': 'id'
+                'name': 'id',
             },
             transformation: {
                 parameters: [],
-                label: 'Lookup'
+                label: 'Lookup',
+                name: 'lookup',
             },
             'actionParameters': {
                 'action': 'lookup',
@@ -191,29 +192,16 @@ describe('Recipe directive', function () {
                     'lookup_ds_url': 'http://172.17.0.30:8080/datasets/14d116a0-b180-4c5f-ba25-46807fc61e42/content?metadata=true',
                     'lookup_join_on': '0000',
                     'lookup_join_on_name': 'id',
-                    'dataset_action_display_type': 'lookup',
                     'lookup_selected_cols': [
                         {
                             'name': 'firstname',
                             'id': '0001'
-                        },
-                        {
-                            'name': 'lastname',
-                            'id': '0002'
-                        },
-                        {
-                            'name': 'state',
-                            'id': '0003'
-                        },
-                        {
-                            'name': 'registration',
-                            'id': '0004'
                         }
                     ],
                     'column_name': 'id',
-                    'scope': 'dataset'
-                }
-            }
+                    'scope': 'dataset',
+                },
+            },
         }
     ];
     var recipeWithDiff = [
@@ -713,11 +701,12 @@ describe('Recipe directive', function () {
 
     beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
-            'RECIPE_ITEM_ON_COL': 'on column {{columnName}}',
-            'RECIPE_ITEM_ON_CELL': 'on cell',
-            'RECIPE_ITEM_ON_LINE': '#{{rowId}}',
+            'RECIPE_ITEM_ON_COL': '{{index}}. {{label}} on column {{columnName}}',
+            'RECIPE_ITEM_ON_CELL': '{{index}}. {{label}} on cell',
+            'RECIPE_ITEM_ON_LINE': '{{index}}. {{label}} #{{rowId}}',
             'RECIPE_LOOKUP_MADE_ON_COL':'made on the column',
-            'RECIPE_LOOKUP_OF_DS':'done with dataset ',
+            'LOOKUP_STEP_DESCRIPTION': '{{index}}. {{label}} done with dataset <span class=\"recipe-column-name\">{{lookupDsName}}</span>. Join has been set between <span class=\"recipe-column-name\">{{mainColName}}</span> and <span class=\"recipe-column-name\">{{lookupColName}}. </span>',
+            'ONLY_1_ADDED_COL': 'The column <span class=\"recipe-column-name\">{{firstCol}}</span> has been added.',
             'RECIPE_LOOKUP_JOIN_COLS': 'Join has been set between',
             'AND': 'and',
             'OTHER': 'other',
@@ -758,11 +747,12 @@ describe('Recipe directive', function () {
     it('should render recipe Lookup entry', inject(function (RecipeService) {
         //when
         RecipeService.getRecipe().push(recipe[recipe.length - 1]);
+
         scope.$digest();
 
         //then
         expect(element.find('>.recipe >ul sc-accordion-item ').length).toBe(1);
-        expect(element.find('>.recipe >ul sc-accordion-item trigger').eq(0).text().trim().replace(/\s+/g, ' ')).toBe('1. Lookup');
+        expect(element.find('>.recipe >ul sc-accordion-item trigger').eq(0).text().trim().replace(/\s+/g, ' ')).toBe('1. Lookup done with dataset customers_100_with_pb. Join has been set between id and id. The column firstname has been added.');
     }));
 
     it('should render early preview step', inject(function (RecipeService) {

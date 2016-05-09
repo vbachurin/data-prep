@@ -23,15 +23,15 @@ class StepDescriptionCtrl {
     $onChanges() {
         switch (this.step.actionParameters.parameters.scope) {
             case 'column':
-                this.stepDescription = this.$translate.instant('RECIPE_ITEM_ON_COL', { columnName: this.step.column.name.toUpperCase() });
+                this.stepDescription = this.$translate.instant('RECIPE_ITEM_ON_COL', { index : (this.index + 1), label : this.step.transformation.label, columnName: this.step.column.name.toUpperCase() });
                 break;
 
             case 'cell':
-                this.stepDescription = this.$translate.instant('RECIPE_ITEM_ON_CELL');
+                this.stepDescription = this.$translate.instant('RECIPE_ITEM_ON_CELL', { index : (this.index + 1), label : this.step.transformation.label});
                 break;
 
             case 'line':
-                this.stepDescription = this.$translate.instant('RECIPE_ITEM_ON_LINE', { rowId: this.step.row.id });
+                this.stepDescription = this.$translate.instant('RECIPE_ITEM_ON_LINE', { index : (this.index + 1), label : this.step.transformation.label, rowId: this.step.row.id });
                 break;
 
             case 'dataset':
@@ -40,7 +40,7 @@ class StepDescriptionCtrl {
                     this._updateLookupDescription(lookupStepDetails);
                 }
                 if (this.step.transformation.name === 'reorder') {
-                    this.stepDescription = this.$translate.instant('RECIPE_ITEM_ON_COL', { columnName: this.step.column.name.toUpperCase() });
+                    this.stepDescription = this.$translate.instant('RECIPE_ITEM_ON_COL', { index : (this.index + 1), label : this.step.transformation.label, columnName: this.step.column.name.toUpperCase() });
                 }
                 break;
         }
@@ -55,9 +55,11 @@ class StepDescriptionCtrl {
      */
     _updateLookupDescription(lookupStepDetails) {
         this.stepDescription = this.$translate.instant('LOOKUP_STEP_DESCRIPTION', {
+            index : (this.index + 1),
+            label : this.step.transformation.label,
             lookupDsName: this.step.actionParameters.parameters.lookup_ds_name,
             mainColName: this.step.column.name,
-            lookupColName: this.step.actionParameters.parameters.lookup_join_on_name,
+            lookupColName: this.step.actionParameters.parameters.lookup_join_on_name
         });
 
         switch (lookupStepDetails.initialColsNbr) {
@@ -92,6 +94,7 @@ class StepDescriptionCtrl {
             restOfCols: allAddedCols.join(', '),
         };
     }
+
 }
 
 export default StepDescriptionCtrl;

@@ -18,11 +18,11 @@ describe('Step Description controller', () => {
 
     beforeEach(angular.mock.module('pascalprecht.translate', ($translateProvider) => {
         $translateProvider.translations('en', {
-            'RECIPE_ITEM_ON_COL': 'on column <b>{{columnName}}</b>',
-            'RECIPE_ITEM_ON_CELL': 'on cell',
-            'RECIPE_ITEM_ON_LINE': '<b>#{{rowId}}</b>',
+            'RECIPE_ITEM_ON_COL': '{{index}}. {{label}} on column <b>{{columnName}}</b>',
+            'RECIPE_ITEM_ON_CELL': '{{index}}. {{label}} on cell',
+            'RECIPE_ITEM_ON_LINE': '{{index}}. {{label}} <b>#{{rowId}}</b>',
 
-            'LOOKUP_STEP_DESCRIPTION': 'done with dataset <span class=\"recipe-column-name\">{{lookupDsName}}</span>. Join has been set between <span class=\"recipe-column-name\">{{mainColName}}</span> and <span class=\"recipe-column-name\">{{lookupColName}}. </span>',
+            'LOOKUP_STEP_DESCRIPTION': '{{index}}. {{label}} done with dataset <span class=\"recipe-column-name\">{{lookupDsName}}</span>. Join has been set between <span class=\"recipe-column-name\">{{mainColName}}</span> and <span class=\"recipe-column-name\">{{lookupColName}}. </span>',
             'ONLY_1_ADDED_COL': 'The column <span class=\"recipe-column-name\">{{firstCol}}</span> has been added.',
             'ONLY_2_ADDED_COLS': 'The columns <span class=\"recipe-column-name\">{{firstCol}}</span> and <span class=\"recipe-column-name\">{{secondCol}}</span> have been added.',
             'MORE_THEN_2_ADDED_COLS': 'The columns <span class=\"recipe-column-name\">{{firstCol}}</span>, <span class=\"recipe-column-name\">{{secondCol}}</span> and <span class=\"recipe-column-name\" title=\"{{restOfCols}}\">{{restOfColsNbr}}</span> other(s) have been added.',
@@ -60,13 +60,14 @@ describe('Step Description controller', () => {
                     }
                 },
             };
+            ctrl.index = 5;
 
             //when
             ctrl.$onChanges();
             scope.$digest();
 
             //then
-            expect(ctrl.stepDescription).toBe('on column <b>COL1</b>');
+            expect(ctrl.stepDescription).toBe('6. Split on column <b>COL1</b>');
 
         });
 
@@ -96,13 +97,14 @@ describe('Step Description controller', () => {
                 },
                 inactive: true,
             };
+            ctrl.index = 2;
 
             //when
             ctrl.$onChanges();
             scope.$digest();
 
             //then
-            expect(ctrl.stepDescription).toBe('on cell');
+            expect(ctrl.stepDescription).toBe('3. Replace value on cell');
 
         });
 
@@ -130,13 +132,14 @@ describe('Step Description controller', () => {
                 },
                 inactive: true,
             };
+            ctrl.index = 0;
 
             //when
             ctrl.$onChanges();
             scope.$digest();
 
             //then
-            expect(ctrl.stepDescription).toBe('<b>#125</b>');
+            expect(ctrl.stepDescription).toBe('1. Delete Line <b>#125</b>');
 
         });
 
@@ -177,13 +180,14 @@ describe('Step Description controller', () => {
                             },
                         },
                     };
+                    ctrl.index = 10;
 
                     //when
                     ctrl.$onChanges();
                     scope.$digest();
 
                     //then
-                    expect(ctrl.stepDescription).toBe('done with dataset <span class="recipe-column-name">customers_100_with_pb</span>. Join has been set between <span class="recipe-column-name">id</span> and <span class="recipe-column-name">id. </span>The column <span class="recipe-column-name">firstname</span> has been added.');
+                    expect(ctrl.stepDescription).toBe('11. Lookup done with dataset <span class="recipe-column-name">customers_100_with_pb</span>. Join has been set between <span class="recipe-column-name">id</span> and <span class="recipe-column-name">id. </span>The column <span class="recipe-column-name">firstname</span> has been added.');
                 });
 
                 it('should translate description with 2 columns', () => {
@@ -225,13 +229,14 @@ describe('Step Description controller', () => {
                             },
                         },
                     };
+                    ctrl.index = 1;
 
                     //when
                     ctrl.$onChanges();
                     scope.$digest();
 
                     //then
-                    expect(ctrl.stepDescription).toBe('done with dataset <span class="recipe-column-name">customers_100_with_pb</span>. Join has been set between <span class="recipe-column-name">id</span> and <span class="recipe-column-name">id. </span>The columns <span class="recipe-column-name">firstname</span> and <span class="recipe-column-name">lastname</span> have been added.');
+                    expect(ctrl.stepDescription).toBe('2. Lookup done with dataset <span class="recipe-column-name">customers_100_with_pb</span>. Join has been set between <span class="recipe-column-name">id</span> and <span class="recipe-column-name">id. </span>The columns <span class="recipe-column-name">firstname</span> and <span class="recipe-column-name">lastname</span> have been added.');
                 });
 
                 it('should translate description with more than 2 columns', () => {
@@ -281,13 +286,14 @@ describe('Step Description controller', () => {
                             },
                         },
                     };
+                    ctrl.index = 2;
 
                     //when
                     ctrl.$onChanges();
                     scope.$digest();
 
                     //then
-                    expect(ctrl.stepDescription).toBe('done with dataset <span class="recipe-column-name">customers_100_with_pb</span>. Join has been set between <span class="recipe-column-name">id</span> and <span class="recipe-column-name">id. </span>The columns <span class="recipe-column-name">firstname</span>, <span class="recipe-column-name">lastname</span> and <span class="recipe-column-name" title="state, registration">2</span> other(s) have been added.');
+                    expect(ctrl.stepDescription).toBe('3. Lookup done with dataset <span class="recipe-column-name">customers_100_with_pb</span>. Join has been set between <span class="recipe-column-name">id</span> and <span class="recipe-column-name">id. </span>The columns <span class="recipe-column-name">firstname</span>, <span class="recipe-column-name">lastname</span> and <span class="recipe-column-name" title="state, registration">2</span> other(s) have been added.');
                 })
             });
 
@@ -317,13 +323,14 @@ describe('Step Description controller', () => {
                             }
                         },
                     };
+                    ctrl.index = 0;
 
                     //when
                     ctrl.$onChanges();
                     scope.$digest();
 
                     //then
-                    expect(ctrl.stepDescription).toBe('on column <b>COL1</b>');
+                    expect(ctrl.stepDescription).toBe('1. Split on column <b>COL1</b>');
 
                 });
             });

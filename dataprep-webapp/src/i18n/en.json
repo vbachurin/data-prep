@@ -76,9 +76,9 @@
   "PREPARATION_MOVING_SUCCESS": "The preparation has been moved.",
 
   "_comment": "Datagrid transformations",
-  "RECIPE_ITEM_ON_COL": "on column <b>{{columnName}}</b>",
-  "RECIPE_ITEM_ON_CELL": "on cell",
-  "RECIPE_ITEM_ON_LINE": "<b>#{{rowId}}</b>",
+  "RECIPE_ITEM_ON_COL": "{{index}}. {{label}} on column <b>{{columnName}}</b>",
+  "RECIPE_ITEM_ON_CELL": "{{index}}. {{label}} on cell",
+  "RECIPE_ITEM_ON_LINE": "{{index}}. {{label}} <b>#{{rowId}}</b>",
   "NO_TRANSFORMATION": "No transformation available.",
 
   "_comment": "Datagrid",
@@ -300,7 +300,7 @@
   "LOOKUP_STEPS_3": "3. Place your mouse over the \"Confirm\" button to preview the result.<br/>",
   "LOOKUP_DESC_TITLE": "ADD DATA FROM LOOKUP",
   "LOOKUP_UPDATE_DESC_TITLE": "UPDATE LOOKUP",
-  "LOOKUP_STEP_DESCRIPTION": "done with dataset <span class=\"recipe-column-name\">{{lookupDsName}}</span>. Join has been set between <span class=\"recipe-column-name\">{{mainColName}}</span> and <span class=\"recipe-column-name\">{{lookupColName}}. </span>",
+  "LOOKUP_STEP_DESCRIPTION": "{{index}}. {{label}} done with dataset <span class=\"recipe-column-name\">{{lookupDsName}}</span>. Join has been set between <span class=\"recipe-column-name\">{{mainColName}}</span> and <span class=\"recipe-column-name\">{{lookupColName}}. </span>",
   "ADD_TO_LOOKUP": "Add to Dataset",
   "ADD_LOOKUP_DATASET_TITLE": "Add a dataset to Lookup",
   "ADD_LOOKUP_DATASET_MODAL_TITLE": "Select dataset(s) to add to lookup",
