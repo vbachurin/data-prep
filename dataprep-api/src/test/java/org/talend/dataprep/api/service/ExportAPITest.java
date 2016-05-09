@@ -180,10 +180,34 @@ public class ExportAPITest extends ApiServiceTestBase {
         final String preparationId = createPreparationFromFile("export/export_dataset.csv", "testExport", "text/csv");
 
         final String expectedExport = IOUtils
-                .toString(this.getClass().getResourceAsStream("export/expected_export_semicolon_separator.csv"));
+                .toString(this.getClass().getResourceAsStream("export/expected_export_space_separator.csv"));
 
         // when
         final String export = given() //
+                .formParam("exportType", "CSV") //
+                .formParam(ExportFormat.PREFIX + "csvSeparator", " ") //
+                .formParam("preparationId", preparationId) //
+                .formParam("stepId", "head") //
+                .when() //
+                .expect().statusCode(200).log().ifError() //
+                .get("/api/export").asString();
+
+        // then
+        assertEquals(expectedExport, export);
+    }
+
+    @Test
+    public void testExportCsvWithSeparatorChange() throws Exception {
+        // given
+        final String preparationId = createPreparationFromFile("export/export_dataset.csv", "testExport", "text/csv");
+
+        final String expectedSemiColonExport = IOUtils
+                .toString(this.getClass().getResourceAsStream("export/expected_export_semicolon_separator.csv"));
+        final String expectedSpaceExport = IOUtils
+                .toString(this.getClass().getResourceAsStream("export/expected_export_space_separator.csv"));
+
+        // when
+        final String export1 = given() //
                 .formParam("exportType", "CSV") //
                 .formParam(ExportFormat.PREFIX + "csvSeparator", ";") //
                 .formParam("preparationId", preparationId) //
@@ -193,7 +217,20 @@ public class ExportAPITest extends ApiServiceTestBase {
                 .get("/api/export").asString();
 
         // then
-        assertEquals(expectedExport, export);
+        assertEquals(expectedSemiColonExport, export1);
+
+        // when
+        final String export2 = given() //
+                .formParam("exportType", "CSV") //
+                .formParam(ExportFormat.PREFIX + "csvSeparator", " ") //
+                .formParam("preparationId", preparationId) //
+                .formParam("stepId", "head") //
+                .when() //
+                .expect().statusCode(200).log().ifError() //
+                .get("/api/export").asString();
+
+        // then
+        assertEquals(expectedSpaceExport, export2);
     }
 
     @Test

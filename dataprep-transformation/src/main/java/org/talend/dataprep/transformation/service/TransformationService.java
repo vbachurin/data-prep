@@ -22,10 +22,7 @@ import static org.talend.dataprep.transformation.api.action.metadata.category.Sc
 import static org.talend.dataprep.transformation.api.action.metadata.category.ScopeCategory.LINE;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -209,7 +206,12 @@ public class TransformationService extends BaseTransformationService {
         // compute the cache key
         TransformationCacheKey key;
         try {
-            key = new TransformationCacheKey(preparationId, dataSet.getMetadata(), formatName, version, sample);
+            final String parameters = optionalParams.entrySet().stream() //
+                    .sorted((e1, e2) -> e1.getKey().compareTo(e2.getKey())) //
+                    .map(Map.Entry::getValue) //
+                    .reduce((s1, s2) -> s1 + s2) //
+                    .orElse(StringUtils.EMPTY);
+            key = new TransformationCacheKey(preparationId, dataSet.getMetadata(), formatName, parameters, version, sample);
         } catch (IOException e) {
             LOG.warn("cannot generate transformation cache key for {}. Cache will not be used.", dataSet.getMetadata(), e);
             internalTransform(preparationId, dataSet, output, formatName, stepId, name, optionalParams);
