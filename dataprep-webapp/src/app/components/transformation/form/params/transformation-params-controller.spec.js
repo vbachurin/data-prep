@@ -43,6 +43,7 @@ describe('Transform params controller', function () {
         expect(ctrl.getParameterType({type: 'date'})).toEqual('date');
         expect(ctrl.getParameterType({type: 'column'})).toEqual('column');
         expect(ctrl.getParameterType({type: 'regex'})).toEqual('regex');
+        expect(ctrl.getParameterType({type: 'hidden'})).toEqual('hidden');
         expect(ctrl.getParameterType({type: 'toto'})).toEqual('simple');
     });
 });

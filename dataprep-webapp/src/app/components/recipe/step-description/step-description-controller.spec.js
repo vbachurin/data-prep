@@ -140,154 +140,193 @@ describe('Step Description controller', () => {
 
         });
 
-        describe('on lookup ', () => {
-            it('should translate description with 1 column', () => {
-                //given
-                const ctrl = createController();
+        describe('translate description on scope: dataset, ', () => {
+            describe('on lookup action', () => {
+                it('should translate description with 1 column', () => {
+                    //given
+                    const ctrl = createController();
 
-                ctrl.step = {
-                    'column': {
-                        'id': '0000',
-                        'name': 'id',
-                    },
-                    transformation: {
-                        parameters: [],
-                        label: 'Lookup',
-                        name: 'lookup',
-                    },
-                    'actionParameters': {
-                        'action': 'lookup',
-                        'parameters': {
-                            'column_id': '0000',
-                            'filter': '',
-                            'lookup_ds_name': 'customers_100_with_pb',
-                            'lookup_ds_id': '14d116a0-b180-4c5f-ba25-46807fc61e42',
-                            'lookup_ds_url': 'http://172.17.0.30:8080/datasets/14d116a0-b180-4c5f-ba25-46807fc61e42/content?metadata=true',
-                            'lookup_join_on': '0000',
-                            'lookup_join_on_name': 'id',
-                            'lookup_selected_cols': [
-                                {
-                                    'name': 'firstname',
-                                    'id': '0001'
-                                }
-                            ],
-                            'column_name': 'id',
-                            'scope': 'dataset',
+                    ctrl.step = {
+                        'column': {
+                            'id': '0000',
+                            'name': 'id',
                         },
-                    },
-                };
+                        transformation: {
+                            parameters: [],
+                            label: 'Lookup',
+                            name: 'lookup',
+                        },
+                        'actionParameters': {
+                            'action': 'lookup',
+                            'parameters': {
+                                'column_id': '0000',
+                                'filter': '',
+                                'lookup_ds_name': 'customers_100_with_pb',
+                                'lookup_ds_id': '14d116a0-b180-4c5f-ba25-46807fc61e42',
+                                'lookup_ds_url': 'http://172.17.0.30:8080/datasets/14d116a0-b180-4c5f-ba25-46807fc61e42/content?metadata=true',
+                                'lookup_join_on': '0000',
+                                'lookup_join_on_name': 'id',
+                                'lookup_selected_cols': [
+                                    {
+                                        'name': 'firstname',
+                                        'id': '0001'
+                                    }
+                                ],
+                                'column_name': 'id',
+                                'scope': 'dataset',
+                            },
+                        },
+                    };
 
-                //when
-                ctrl.$onChanges();
-                scope.$digest();
+                    //when
+                    ctrl.$onChanges();
+                    scope.$digest();
 
-                //then
-                expect(ctrl.stepDescription).toBe('done with dataset <span class="recipe-column-name">customers_100_with_pb</span>. Join has been set between <span class="recipe-column-name">id</span> and <span class="recipe-column-name">id. </span>The column <span class="recipe-column-name">firstname</span> has been added.');
+                    //then
+                    expect(ctrl.stepDescription).toBe('done with dataset <span class="recipe-column-name">customers_100_with_pb</span>. Join has been set between <span class="recipe-column-name">id</span> and <span class="recipe-column-name">id. </span>The column <span class="recipe-column-name">firstname</span> has been added.');
+                });
+
+                it('should translate description with 2 columns', () => {
+                    //given
+                    const ctrl = createController();
+
+                    ctrl.step = {
+                        'column': {
+                            'id': '0000',
+                            'name': 'id',
+                        },
+                        transformation: {
+                            parameters: [],
+                            label: 'Lookup',
+                            name: 'lookup',
+                        },
+                        'actionParameters': {
+                            'action': 'lookup',
+                            'parameters': {
+                                'column_id': '0000',
+                                'filter': '',
+                                'lookup_ds_name': 'customers_100_with_pb',
+                                'lookup_ds_id': '14d116a0-b180-4c5f-ba25-46807fc61e42',
+                                'lookup_ds_url': 'http://172.17.0.30:8080/datasets/14d116a0-b180-4c5f-ba25-46807fc61e42/content?metadata=true',
+                                'lookup_join_on': '0000',
+                                'lookup_join_on_name': 'id',
+                                'lookup_selected_cols': [
+                                    {
+                                        'name': 'firstname',
+                                        'id': '0001'
+                                    },
+                                    {
+                                        'name': 'lastname',
+                                        'id': '0002'
+                                    }
+                                ],
+                                'column_name': 'id',
+                                'scope': 'dataset',
+                            },
+                        },
+                    };
+
+                    //when
+                    ctrl.$onChanges();
+                    scope.$digest();
+
+                    //then
+                    expect(ctrl.stepDescription).toBe('done with dataset <span class="recipe-column-name">customers_100_with_pb</span>. Join has been set between <span class="recipe-column-name">id</span> and <span class="recipe-column-name">id. </span>The columns <span class="recipe-column-name">firstname</span> and <span class="recipe-column-name">lastname</span> have been added.');
+                });
+
+                it('should translate description with more than 2 columns', () => {
+                    //given
+                    const ctrl = createController();
+
+                    ctrl.step = {
+                        'column': {
+                            'id': '0000',
+                            'name': 'id',
+                        },
+                        transformation: {
+                            parameters: [],
+                            label: 'Lookup',
+                            name: 'lookup',
+                        },
+                        'actionParameters': {
+                            'action': 'lookup',
+                            'parameters': {
+                                'column_id': '0000',
+                                'filter': '',
+                                'lookup_ds_name': 'customers_100_with_pb',
+                                'lookup_ds_id': '14d116a0-b180-4c5f-ba25-46807fc61e42',
+                                'lookup_ds_url': 'http://172.17.0.30:8080/datasets/14d116a0-b180-4c5f-ba25-46807fc61e42/content?metadata=true',
+                                'lookup_join_on': '0000',
+                                'lookup_join_on_name': 'id',
+                                'lookup_selected_cols': [
+                                    {
+                                        'name': 'firstname',
+                                        'id': '0001'
+                                    },
+                                    {
+                                        'name': 'lastname',
+                                        'id': '0002'
+                                    },
+                                    {
+                                        'name': 'state',
+                                        'id': '0003'
+                                    },
+                                    {
+                                        'name': 'registration',
+                                        'id': '0004'
+                                    }
+                                ],
+                                'column_name': 'id',
+                                'scope': 'dataset',
+                            },
+                        },
+                    };
+
+                    //when
+                    ctrl.$onChanges();
+                    scope.$digest();
+
+                    //then
+                    expect(ctrl.stepDescription).toBe('done with dataset <span class="recipe-column-name">customers_100_with_pb</span>. Join has been set between <span class="recipe-column-name">id</span> and <span class="recipe-column-name">id. </span>The columns <span class="recipe-column-name">firstname</span>, <span class="recipe-column-name">lastname</span> and <span class="recipe-column-name" title="state, registration">2</span> other(s) have been added.');
+                })
             });
 
-            it('should translate description with 2 columns', () => {
-                //given
-                const ctrl = createController();
+            describe('on reorder action', () => {
+                it('should translate description for reordering step', () => {
+                    //given
+                    const ctrl = createController();
 
-                ctrl.step = {
-                    'column': {
-                        'id': '0000',
-                        'name': 'id',
-                    },
-                    transformation: {
-                        parameters: [],
-                        label: 'Lookup',
-                        name: 'lookup',
-                    },
-                    'actionParameters': {
-                        'action': 'lookup',
-                        'parameters': {
-                            'column_id': '0000',
-                            'filter': '',
-                            'lookup_ds_name': 'customers_100_with_pb',
-                            'lookup_ds_id': '14d116a0-b180-4c5f-ba25-46807fc61e42',
-                            'lookup_ds_url': 'http://172.17.0.30:8080/datasets/14d116a0-b180-4c5f-ba25-46807fc61e42/content?metadata=true',
-                            'lookup_join_on': '0000',
-                            'lookup_join_on_name': 'id',
-                            'lookup_selected_cols': [
-                                {
-                                    'name': 'firstname',
-                                    'id': '0001'
-                                },
-                                {
-                                    'name': 'lastname',
-                                    'id': '0002'
-                                }
-                            ],
-                            'column_name': 'id',
-                            'scope': 'dataset',
+                    ctrl.step = {
+                        column: { id: '0', name: 'col1' },
+                        transformation: {
+                            stepId: '13a24e8765ef4',
+                            name: 'reorder',
+                            label: 'Split',
+                            category: 'split',
+                            parameters: [{ name: 'pattern', type: 'string' }],
+                            items: [],
                         },
-                    },
-                };
+                        actionParameters: {
+                            action: 'split',
+                            parameters: {
+                                selected_column: "0003",
+                                column_id: '0000',
+                                scope: 'dataset',
+                                column_name: 'name',
+                                dataset_action_display_type: 'column',
+                            }
+                        },
+                    };
 
-                //when
-                ctrl.$onChanges();
-                scope.$digest();
+                    //when
+                    ctrl.$onChanges();
+                    scope.$digest();
 
-                //then
-                expect(ctrl.stepDescription).toBe('done with dataset <span class="recipe-column-name">customers_100_with_pb</span>. Join has been set between <span class="recipe-column-name">id</span> and <span class="recipe-column-name">id. </span>The columns <span class="recipe-column-name">firstname</span> and <span class="recipe-column-name">lastname</span> have been added.');
+                    //then
+                    expect(ctrl.stepDescription).toBe('on column <b>COL1</b>');
+
+                });
             });
-
-            it('should translate description with more than 2 columns', () => {
-                //given
-                const ctrl = createController();
-
-                ctrl.step = {
-                    'column': {
-                        'id': '0000',
-                        'name': 'id',
-                    },
-                    transformation: {
-                        parameters: [],
-                        label: 'Lookup',
-                        name: 'lookup',
-                    },
-                    'actionParameters': {
-                        'action': 'lookup',
-                        'parameters': {
-                            'column_id': '0000',
-                            'filter': '',
-                            'lookup_ds_name': 'customers_100_with_pb',
-                            'lookup_ds_id': '14d116a0-b180-4c5f-ba25-46807fc61e42',
-                            'lookup_ds_url': 'http://172.17.0.30:8080/datasets/14d116a0-b180-4c5f-ba25-46807fc61e42/content?metadata=true',
-                            'lookup_join_on': '0000',
-                            'lookup_join_on_name': 'id',
-                            'lookup_selected_cols': [
-                                {
-                                    'name': 'firstname',
-                                    'id': '0001'
-                                },
-                                {
-                                    'name': 'lastname',
-                                    'id': '0002'
-                                },
-                                {
-                                    'name': 'state',
-                                    'id': '0003'
-                                },
-                                {
-                                    'name': 'registration',
-                                    'id': '0004'
-                                }
-                            ],
-                            'column_name': 'id',
-                            'scope': 'dataset',
-                        },
-                    },
-                };
-
-                //when
-                ctrl.$onChanges();
-                scope.$digest();
-
-                //then
-                expect(ctrl.stepDescription).toBe('done with dataset <span class="recipe-column-name">customers_100_with_pb</span>. Join has been set between <span class="recipe-column-name">id</span> and <span class="recipe-column-name">id. </span>The columns <span class="recipe-column-name">firstname</span>, <span class="recipe-column-name">lastname</span> and <span class="recipe-column-name" title="state, registration">2</span> other(s) have been added.');
-            })
         });
     });
 });
