@@ -2296,7 +2296,7 @@
   },
   {
     "name": "floor",
-    "category": "math",
+    "category": "numbers",
     "dynamic": false,
     "description": "Round value to the largest integer (3.14 -> 4)",
     "label": "Round Value using Floor mode",
@@ -2395,7 +2395,7 @@
   },
   {
     "name": "round",
-    "category": "math",
+    "category": "numbers",
     "dynamic": false,
     "description": "Round value to the closest integer (3.14 -> 3)",
     "label": "Round Value using HalfUp mode",
@@ -2608,7 +2608,7 @@
   },
   {
     "name": "round_down",
-    "category": "math",
+    "category": "numbers",
     "dynamic": false,
     "description": "Round towards zero. (3.74 -> 3) and (-3.74 -> -3)",
     "label": "Remove Fractional Part",
@@ -2654,7 +2654,7 @@
   },
   {
     "name": "round_down_real",
-    "category": "math",
+    "category": "numbers",
     "dynamic": false,
     "description": "Round towards zero. (3.74 -> 3) and (-3.74 -> -3)",
     "label": "Round value using Down mode",
@@ -2707,7 +2707,7 @@
   },
   {
     "name": "ceil",
-    "category": "math",
+    "category": "numbers",
     "dynamic": false,
     "description": "Round value to the smallest integer (3.74 -> 3)",
     "label": "Round Value using Ceil mode",
@@ -3307,7 +3307,7 @@
     ]
   },
   {
-    "category": "math",
+    "category": "numbers",
     "name": "change_number_format"
   },
   {
@@ -3317,7 +3317,7 @@
     "name": "testfailedaction"
   },
   {
-    "category": "math",
+    "category": "numbers",
     "name": "compare_numbers"
   },
   {
@@ -3648,5 +3648,654 @@
     "label": "Swap columns",
     "docUrl": "",
     "dynamic": false
+  },
+  {
+    "name": "max_numbers",
+    "category": "math",
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": "",
+        "description": "The column to which you want to apply this action",
+        "label": "Column"
+      },
+      {
+        "name": "row_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": "",
+        "description": "The row to which you want to apply this action",
+        "label": "Row"
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": "",
+        "description": "The transformation scope (CELL | LINE | COLUMN | DATASET)",
+        "label": "Scope"
+      },
+      {
+        "name": "filter",
+        "type": "filter",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": "",
+        "description": "An optional filter to apply action on matching values only.",
+        "label": "Filter"
+      },
+      {
+        "name": "mode",
+        "type": "select",
+        "implicit": false,
+        "canBeBlank": false,
+        "configuration": {
+          "values": [
+            {
+              "value": "constant_mode",
+              "label": "No other column",
+              "parameters": [
+                {
+                  "name": "constant_value",
+                  "type": "string",
+                  "implicit": false,
+                  "canBeBlank": true,
+                  "default": "",
+                  "description": "Value to compare with",
+                  "label": "Constant"
+                }
+              ]
+            },
+            {
+              "value": "other_column_mode",
+              "label": "Another column",
+              "parameters": [
+                {
+                  "name": "selected_column",
+                  "type": "column",
+                  "implicit": false,
+                  "canBeBlank": false,
+                  "default": "",
+                  "description": "Combine the current column with this one",
+                  "label": "Column"
+                }
+              ]
+            }
+          ],
+          "multiple": false
+        },
+        "default": "constant_mode",
+        "description": "Select if you want to use a constant value or another column",
+        "label": "Use with"
+      }
+    ],
+    "description": "Max with another column or a constant",
+    "label": "Max",
+    "docUrl": "",
+    "actionScope": [],
+    "dynamic": false
+  },
+  {
+    "name": "min_numbers",
+    "category": "math",
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": "",
+        "description": "The column to which you want to apply this action",
+        "label": "Column"
+      },
+      {
+        "name": "row_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": "",
+        "description": "The row to which you want to apply this action",
+        "label": "Row"
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": "",
+        "description": "The transformation scope (CELL | LINE | COLUMN | DATASET)",
+        "label": "Scope"
+      },
+      {
+        "name": "filter",
+        "type": "filter",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": "",
+        "description": "An optional filter to apply action on matching values only.",
+        "label": "Filter"
+      },
+      {
+        "name": "mode",
+        "type": "select",
+        "implicit": false,
+        "canBeBlank": false,
+        "configuration": {
+          "values": [
+            {
+              "value": "constant_mode",
+              "label": "No other column",
+              "parameters": [
+                {
+                  "name": "constant_value",
+                  "type": "string",
+                  "implicit": false,
+                  "canBeBlank": true,
+                  "default": "",
+                  "description": "Value to compare with",
+                  "label": "Constant"
+                }
+              ]
+            },
+            {
+              "value": "other_column_mode",
+              "label": "Another column",
+              "parameters": [
+                {
+                  "name": "selected_column",
+                  "type": "column",
+                  "implicit": false,
+                  "canBeBlank": false,
+                  "default": "",
+                  "description": "Combine the current column with this one",
+                  "label": "Column"
+                }
+              ]
+            }
+          ],
+          "multiple": false
+        },
+        "default": "constant_mode",
+        "description": "Select if you want to use a constant value or another column",
+        "label": "Use with"
+      }
+    ],
+    "description": "Min with another column or a constant",
+    "label": "Min",
+    "docUrl": "",
+    "actionScope": [],
+    "dynamic": false
+  },
+  {
+    "name": "pow_numbers",
+    "category": "math",
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": "",
+        "description": "The column to which you want to apply this action",
+        "label": "Column"
+      },
+      {
+        "name": "row_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": "",
+        "description": "The row to which you want to apply this action",
+        "label": "Row"
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": "",
+        "description": "The transformation scope (CELL | LINE | COLUMN | DATASET)",
+        "label": "Scope"
+      },
+      {
+        "name": "filter",
+        "type": "filter",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": "",
+        "description": "An optional filter to apply action on matching values only.",
+        "label": "Filter"
+      },
+      {
+        "name": "mode",
+        "type": "select",
+        "implicit": false,
+        "canBeBlank": false,
+        "configuration": {
+          "values": [
+            {
+              "value": "constant_mode",
+              "label": "No other column",
+              "parameters": [
+                {
+                  "name": "constant_value",
+                  "type": "string",
+                  "implicit": false,
+                  "canBeBlank": true,
+                  "default": "",
+                  "description": "Value to compare with",
+                  "label": "Constant"
+                }
+              ]
+            },
+            {
+              "value": "other_column_mode",
+              "label": "Another column",
+              "parameters": [
+                {
+                  "name": "selected_column",
+                  "type": "column",
+                  "implicit": false,
+                  "canBeBlank": false,
+                  "default": "",
+                  "description": "Combine the current column with this one",
+                  "label": "Column"
+                }
+              ]
+            }
+          ],
+          "multiple": false
+        },
+        "default": "constant_mode",
+        "description": "Select if you want to use a constant value or another column",
+        "label": "Use with"
+      }
+    ],
+    "description": "Power with another column or a constant",
+    "label": "Power",
+    "docUrl": "",
+    "actionScope": [],
+    "dynamic": false
+  },
+  {
+    "name": "negate_numbers",
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": "",
+        "label": "Column",
+        "description": "The column to which you want to apply this action"
+      },
+      {
+        "name": "row_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": "",
+        "label": "Row",
+        "description": "The row to which you want to apply this action"
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": "",
+        "label": "Scope",
+        "description": "The transformation scope (CELL | LINE | COLUMN | DATASET)"
+      },
+      {
+        "name": "filter",
+        "type": "filter",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": "",
+        "label": "Filter",
+        "description": "An optional filter to apply action on matching values only."
+      }
+    ],
+    "category": "math",
+    "label": "Negate",
+    "docUrl": "",
+    "actionScope": [],
+    "description": "Negate a column number",
+    "dynamic": false
+  },
+  {
+    "name": "square_root_numbers",
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": "",
+        "description": "The column to which you want to apply this action",
+        "label": "Column"
+      },
+      {
+        "name": "row_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": "",
+        "description": "The row to which you want to apply this action",
+        "label": "Row"
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": "",
+        "description": "The transformation scope (CELL | LINE | COLUMN | DATASET)",
+        "label": "Scope"
+      },
+      {
+        "name": "filter",
+        "type": "filter",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": "",
+        "description": "An optional filter to apply action on matching values only.",
+        "label": "Filter"
+      }
+    ],
+    "category": "math",
+    "description": "Square root of a column number",
+    "label": "Square root",
+    "docUrl": "",
+    "actionScope": [],
+    "dynamic": false
+  },
+  {
+    "name": "exponential_numbers",
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": "",
+        "description": "The column to which you want to apply this action",
+        "label": "Column"
+      },
+      {
+        "name": "row_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": "",
+        "description": "The row to which you want to apply this action",
+        "label": "Row"
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": "",
+        "description": "The transformation scope (CELL | LINE | COLUMN | DATASET)",
+        "label": "Scope"
+      },
+      {
+        "name": "filter",
+        "type": "filter",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": "",
+        "description": "An optional filter to apply action on matching values only.",
+        "label": "Filter"
+      }
+    ],
+    "category": "math",
+    "description": "Exponential of a column number",
+    "label": "Exponential",
+    "docUrl": "",
+    "actionScope": [],
+    "dynamic": false
+  },
+  {
+    "name": "logarithm_numbers",
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": "",
+        "label": "Column",
+        "description": "The column to which you want to apply this action"
+      },
+      {
+        "name": "row_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": "",
+        "label": "Row",
+        "description": "The row to which you want to apply this action"
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": "",
+        "label": "Scope",
+        "description": "The transformation scope (CELL | LINE | COLUMN | DATASET)"
+      },
+      {
+        "name": "filter",
+        "type": "filter",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": "",
+        "label": "Filter",
+        "description": "An optional filter to apply action on matching values only."
+      }
+    ],
+    "category": "math",
+    "label": "Base 10 Logarithm",
+    "docUrl": "",
+    "actionScope": [],
+    "description": "Compute the base 10 logarithm from a column",
+    "dynamic": false
+  },
+  {
+    "name": "natural_logarithm_numbers",
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": "",
+        "label": "Column",
+        "description": "The column to which you want to apply this action"
+      },
+      {
+        "name": "row_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": "",
+        "label": "Row",
+        "description": "The row to which you want to apply this action"
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": "",
+        "label": "Scope",
+        "description": "The transformation scope (CELL | LINE | COLUMN | DATASET)"
+      },
+      {
+        "name": "filter",
+        "type": "filter",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": "",
+        "label": "Filter",
+        "description": "An optional filter to apply action on matching values only."
+      }
+    ],
+    "category": "math",
+    "label": "Natural Logarithm",
+    "docUrl": "",
+    "actionScope": [],
+    "description": "Compute the natural logarithm from a column",
+    "dynamic": false
+  },
+  {
+    "name": "cos_numbers",
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": "",
+        "description": "The column to which you want to apply this action",
+        "label": "Column"
+      },
+      {
+        "name": "row_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": "",
+        "description": "The row to which you want to apply this action",
+        "label": "Row"
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": "",
+        "description": "The transformation scope (CELL | LINE | COLUMN | DATASET)",
+        "label": "Scope"
+      },
+      {
+        "name": "filter",
+        "type": "filter",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": "",
+        "description": "An optional filter to apply action on matching values only.",
+        "label": "Filter"
+      }
+    ],
+    "category": "math",
+    "description": "Compute the trigonometric Cosine from a column",
+    "dynamic": false,
+    "label": "Cosine",
+    "actionScope": [],
+    "docUrl": ""
+  },
+  {
+    "name": "sin_numbers",
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": "",
+        "label": "Column",
+        "description": "The column to which you want to apply this action"
+      },
+      {
+        "name": "row_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": "",
+        "label": "Row",
+        "description": "The row to which you want to apply this action"
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": "",
+        "label": "Scope",
+        "description": "The transformation scope (CELL | LINE | COLUMN | DATASET)"
+      },
+      {
+        "name": "filter",
+        "type": "filter",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": "",
+        "label": "Filter",
+        "description": "An optional filter to apply action on matching values only."
+      }
+    ],
+    "category": "math",
+    "label": "Sine",
+    "docUrl": "",
+    "actionScope": [],
+    "dynamic": false,
+    "description": "Compute the trigonometric Sine from a column"
+  },
+  {
+    "name": "tan_numbers",
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": "",
+        "description": "The column to which you want to apply this action",
+        "label": "Column"
+      },
+      {
+        "name": "row_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": "",
+        "description": "The row to which you want to apply this action",
+        "label": "Row"
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": "",
+        "description": "The transformation scope (CELL | LINE | COLUMN | DATASET)",
+        "label": "Scope"
+      },
+      {
+        "name": "filter",
+        "type": "filter",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": "",
+        "description": "An optional filter to apply action on matching values only.",
+        "label": "Filter"
+      }
+    ],
+    "category": "math",
+    "dynamic": false,
+    "description": "Compute the trigonometric Tangent from a column",
+    "label": "Tangent",
+    "docUrl": "",
+    "actionScope": []
   }
 ]
