@@ -52,7 +52,6 @@ export default function DatagridColumnService($rootScope, $compile, $log, $trans
         renewAllColumns: renewAllColumns,
         createColumns: createColumns,
         columnsOrderChanged: columnsOrderChanged,
-        _findMovedCols: _findMovedCols
     };
 
     //------------------------------------------------------------------------------------------------------
