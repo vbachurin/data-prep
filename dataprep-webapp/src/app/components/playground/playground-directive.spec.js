@@ -74,6 +74,10 @@ describe('Playground directive', () => {
         };
     }));
 
+    beforeEach(inject((StorageService) => {
+        spyOn(StorageService, 'getExportParams').and.returnValue({});
+    }));
+
     afterEach(() => {
         scope.$destroy();
         element.remove();

@@ -204,7 +204,6 @@ export function PlaygroundStateService(RecipeStateService, recipeState,
         playgroundState.preparation = null;
         playgroundState.nameEditionMode = false;
         playgroundState.lookupData = null;
-        playgroundState.exportParameters = null;
         playgroundState.isFetchingStats = false;
 
         RecipeStateService.reset();

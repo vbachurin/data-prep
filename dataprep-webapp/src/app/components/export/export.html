@@ -13,11 +13,11 @@
   ~ ============================================================================
   -->
 
-<talend-button-dropdown button-text="{{'EXPORT' | translate }}" button-action="exportCtrl.export()">
+<talend-button-dropdown button-text="{{'EXPORT' | translate }}" button-action="exportCtrl.launchExport()">
     <ul>
-        <li ng-repeat="exportType in exportCtrl.exportService.exportTypes track by exportType.id"
+        <li ng-repeat="exportType in exportCtrl.ExportService.exportTypes track by exportType.id"
             ng-class="{'disabled' : !exportType.enabled}"
-            ng-click="exportCtrl.changeTypeAndExport(exportType)">
+            ng-click="exportCtrl.selectType(exportType)">
             {{exportType.id}}<span ng-if="!exportType.enabled"> - {{exportType.disableReason}}</span>
         </li>
     </ul>
@@ -26,40 +26,18 @@
 <talend-modal fullscreen="false"
               state="exportCtrl.showModal"
               close-button="true">
-    <div class="modal-title" translate-once="EXPORT_CSV" ng-if="exportCtrl.exportService.currentExportType.id === 'CSV'"></div>
-    <div class="modal-title" translate-once="EXPORT_XLS" ng-if="exportCtrl.exportService.currentExportType.id === 'XLSX'"></div>
+    <div class="modal-title">{{exportCtrl.nextSelectedType.title}}</div>
     <br/>
-    <form ng-submit="exportCtrl.saveEditionAndExport()">
-        <div class="export-parameter"
-             ng-repeat="parameter in exportCtrl.exportService.currentExportType.parameters track by $index">
-            <p>{{ parameter.labelKey | translate }}</p>
+    <form name="exportCtrl.exportForm" ng-submit="exportCtrl.exportForm.$valid && exportCtrl.saveAndExport()">
 
-            <div ng-if="parameter.type == 'radio'">
-            <span class="parameter-span">
-                <input ng-model="exportCtrl.exportService.currentExportParameters['exportParameters.' + parameter.name]"
-                       type="radio"
-                       value="{{parameter.defaultValue.value}}"/>{{ parameter.defaultValue.labelKey | translate }}( {{parameter.defaultValue.value}} )
-            </span>
-            <span class="parameter-span" ng-repeat="parameterValue in parameter.values track by $index">
-                <input ng-model="exportCtrl.exportService.currentExportParameters['exportParameters.' + parameter.name]"
-                       type="radio"
-                       value="{{parameterValue.value}}">{{ parameterValue.labelKey | translate }}( {{parameterValue.value}} )
-            </span>
-            </div>
-            <div ng-if="parameter.type == 'text'">
-                <input ng-model="exportCtrl.exportService.currentExportParameters['exportParameters.' + parameter.name]"
-                       ng-model-options="{debounce: { 'default': 200, 'blur': 0 }}"
-                       type="text"
-                       value="{{parameter.defaultValue.value}}"/>
-            </div>
-        </div>
+        <transform-params parameters="exportCtrl.nextSelectedType.parameters"></transform-params>
 
         <div class="modal-buttons">
             <button class="talend-modal-close btn-secondary modal-secondary-button"
                     type="button"
-                    ng-click="exportCtrl.cancelCurrentParameters()"
                     translate-once="CANCEL"></button>
             <button class="talend-modal-close btn-primary modal-primary-button"
+                    ng-disabled="exportCtrl.exportForm.$invalid"
                     translate-once="EXPORT"></button>
         </div>
     </form>
@@ -68,11 +46,10 @@
 <form id="exportForm" export-form>
     <input type="hidden" name="preparationId" value="{{ exportCtrl.state.playground.preparation.id }}"/>
     <input type="hidden" name="stepId" value="{{ exportCtrl.stepId }}"/>
-    <input type="hidden" name="datasetId" value="{{ exportCtrl.datasetId }}"/>
+    <input type="hidden" name="datasetId" value="{{ exportCtrl.state.playground.dataset.id }}"/>
 
-    <input ng-repeat="(key, value) in exportCtrl.state.playground.exportParameters track by $index"
+    <input ng-repeat="(key, value) in exportCtrl.exportParams track by $index"
            name="{{key}}"
            value="{{value}}"
            type="hidden"/>
-
 </form>

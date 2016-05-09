@@ -20,10 +20,10 @@ import Export from './export-directive';
     angular.module('data-prep.export',
         [
             'talend.widget',
-            'data-prep.services.utils',
-            'data-prep.services.playground',
             'data-prep.services.export',
+            'data-prep.services.recipe',
             'data-prep.services.state',
+            'data-prep.services.utils',
         ])
         .controller('ExportCtrl', ExportCtrl)
         .directive('export', Export);

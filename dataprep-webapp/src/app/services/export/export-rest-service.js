@@ -33,6 +33,6 @@ export default class ExportRestService {
      * @returns {Promise}  The GET call promise
      */
     exportTypes() {
-        return this.$http.get(this.url + '/formats');
+        return this.$http.get(this.url + '/formats').then(resp => resp.data);
     }
 }

@@ -21,8 +21,13 @@ import ExportService from './export-service';
      * @ngdoc object
      * @name data-prep.services.export
      * @description This module contains the services for export
+     * @requires data-prep.services.transformation
+     * @requires data-prep.services.utils
      */
-    angular.module('data-prep.services.export', ['data-prep.services.utils'])
+    angular.module('data-prep.services.export', [
+            'data-prep.services.transformation',
+            'data-prep.services.utils'
+        ])
         .service('ExportRestService', ExportRestService)
         .service('ExportService', ExportService);
 })();

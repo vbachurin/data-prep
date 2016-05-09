@@ -1,103 +1,110 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
 
-describe('Export controller', function() {
+describe('Export controller', () => {
     'use strict';
 
-    var scope, createController, form;
+    let scope, createController, form, stateMock, exportTypes;
 
-    var exportTypes = [
-        {
-            'mimeType': 'text/csv',
-            'extension': '.csv',
-            'id': 'CSV',
-            'needParameters': 'true',
-            'defaultExport': 'false',
-            'enabled': true,
-            'parameters': [{
-                'name': 'csvSeparator',
-                'labelKey': 'CHOOSE_SEPARATOR',
-                'type': 'radio',
-                'defaultValue': {'value': ';', 'labelKey': 'SEPARATOR_SEMI_COLON'},
-                'values': [
-                    {'value': '&#09;', 'labelKey': 'SEPARATOR_TAB'},
-                    {'value': ' ', 'labelKey': 'SEPARATOR_SPACE'},
-                    {'value': ',', 'labelKey': 'SEPARATOR_COMMA'}
+    const currentParameters = { exportType: 'XLSX' };
+
+    beforeEach(angular.mock.module('data-prep.export', ($provide) => {
+        exportTypes = [
+            {
+                'mimeType': 'text/csv',
+                'extension': '.csv',
+                'id': 'CSV',
+                'needParameters': 'true',
+                'defaultExport': 'false',
+                'enabled': true,
+                'parameters': [
+                    {
+                        'name': 'csvSeparator',
+                        'labelKey': 'CHOOSE_SEPARATOR',
+                        'type': 'select',
+                        'default': ';',
+                        'values': [
+                            { 'value': '&#09;', 'labelKey': 'SEPARATOR_TAB' },
+                            { 'value': ' ', 'labelKey': 'SEPARATOR_SPACE' },
+                            { 'value': ',', 'labelKey': 'SEPARATOR_COMMA' },
+                        ],
+                    },
+                    {
+                        'name': 'fileName',
+                        'labelKey': 'EXPORT_FILENAME"',
+                        'type': 'text',
+                        'default': ';',
+                    },
                 ]
-            },{
-                'name': 'fileName',
-                'labelKey': 'EXPORT_FILENAME"',
-                'type': 'text',
-                'defaultValue': {'value': ';', 'labelKey': 'EXPORT_FILENAME_DEFAULT'}
-            }]
-        },
-        {
-            'mimeType': 'application/tde',
-            'extension': '.tde',
-            'id': 'TABLEAU',
-            'needParameters': 'false',
-            'defaultExport': 'false',
-            'enabled': true
-        },
-        {
-            'mimeType': 'application/vnd.ms-excel',
-            'extension': '.xlsx',
-            'id': 'XLSX',
-            'needParameters': 'false',
-            'defaultExport': 'true',
-            'enabled': true
-        }
-    ];
-    var currentParameters = {exportType: 'XLSX'};
+            },
+            {
+                'mimeType': 'application/tde',
+                'extension': '.tde',
+                'id': 'TABLEAU',
+                'needParameters': 'false',
+                'defaultExport': 'false',
+                'enabled': true,
+            },
+            {
+                'mimeType': 'application/vnd.ms-excel',
+                'extension': '.xlsx',
+                'id': 'XLSX',
+                'needParameters': 'false',
+                'defaultExport': 'true',
+                'enabled': true,
+            },
+        ];
 
-    var stateMock;
-
-    beforeEach(angular.mock.module('data-prep.export', function($provide) {
         stateMock = {
             playground: {
-                preparation : {name: 'prepname'},
-                exportParameters : { exportType: 'CSV', 'exportParameters.csvSeparator': ';' , 'exportParameters.fileName': 'prepname' }
-            }
+                preparation: { name: 'prepname' },
+                exportParameters: {
+                    exportType: 'CSV',
+                    'exportParameters.csvSeparator': ';',
+                    'exportParameters.fileName': 'prepname',
+                },
+            },
         };
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(inject(function ($rootScope, $controller, $q, ExportService) {
-        form = {submit : function() {}};
+    beforeEach(inject(($rootScope, $controller, $q, ExportService, StorageService) => {
+        form = {
+            submit: () => {
+            }
+        };
         scope = $rootScope.$new();
 
-        createController = function () {
-            var ctrl = $controller('ExportCtrl', {
-                $scope: scope
-            });
+        createController = () => {
+            const ctrl = $controller('ExportCtrl', { $scope: scope });
             ctrl.form = form; //simulate init by directive
             return ctrl;
         };
 
-        spyOn(ExportService, 'getParameters').and.returnValue(currentParameters);
-        spyOn(ExportService, 'setParameters').and.returnValue();
+        spyOn(StorageService, 'getExportParams').and.returnValue(currentParameters);
+        spyOn(StorageService, 'saveExportParams').and.returnValue();
         spyOn(form, 'submit').and.returnValue();
     }));
 
-    describe('property binding', function() {
-        it('should bind stepId getter to RecipeService', inject(function(RecipeService) {
+    describe('property binding', () => {
+        it('should bind stepId getter to RecipeService', inject((RecipeService) => {
             //given
-            var ctrl = createController();
+            const ctrl = createController();
             expect(ctrl.stepId).toBeFalsy();
 
             //when
             RecipeService.getRecipe().push({
-                transformation : {
+                transformation: {
                     stepId: '48da64513c43a548e678bc99'
                 }
             });
@@ -105,195 +112,147 @@ describe('Export controller', function() {
             //then
             expect(ctrl.stepId).toBe('48da64513c43a548e678bc99');
         }));
-
-        it('should bind datasetId getter to PlaygroundService', function() {
-            //given
-            var ctrl = createController();
-            expect(ctrl.datasetId).toBeFalsy();
-
-            //when
-            stateMock.playground.dataset = {
-                id: '48da64513c43a548e678bc99'
-            };
-
-            //then
-            expect(ctrl.datasetId).toBe('48da64513c43a548e678bc99');
-        });
-
-        it('should bind exportTypes getter to ExportService', inject(function(ExportService) {
-            //given
-            var ctrl = createController();
-            var newTypes = [];
-            expect(ctrl.exportTypes).not.toBe(newTypes);
-
-            //when
-            ExportService.exportTypes = newTypes;
-
-            //then
-            expect(ctrl.exportTypes).toBe(newTypes);
-        }));
     });
 
-    describe('on new type selection', function() {
-        it('should update parameters (type)', function() {
+    describe('selectType', () => {
+        it('should init parameters (type)', () => {
             //given
-            var ctrl = createController();
-            scope.$apply();
+            const ctrl = createController();
+            const csvType = exportTypes[0];
 
-            var csvType = exportTypes[0];
-            var csvParams = { exportType: 'CSV', 'exportParameters.csvSeparator': ';' , 'exportParameters.fileName': 'prepname' }; //with separator default value
-
-            expect(ctrl.exportService.currentExportType).not.toBe(csvType);
-            expect(ctrl.exportService.currentExportParameters).not.toEqual(csvParams);
+            expect(ctrl.nextSelectedType).not.toBe(csvType);
 
             //when
-            ctrl.changeTypeAndExport(csvType);
+            ctrl.selectType(csvType);
 
             //then
-            expect(ctrl.exportService.currentExportType).toBe(csvType);
-            expect(ctrl.exportService.currentExportParameters).toEqual(csvParams);
+            expect(ctrl.nextSelectedType).toBe(csvType);
+            expect(ctrl.nextSelectedType.parameters[1].value).toBe('prepname');
         });
 
-        it('should update parameters (type + fileName)', function() {
+        it('should show modal', () => {
             //given
-            var ctrl = createController();
-            scope.$apply();
+            const ctrl = createController();
+            const csvType = exportTypes[0];
 
-            stateMock.playground.exportParameters = null;
-            stateMock.playground.preparation = null;
-            stateMock.playground.dataset = {
-                name: '48da64513c43a548e678bc99'
-            };
-
-            var csvType = exportTypes[0];
-            var csvParams = { exportType: 'CSV', 'exportParameters.csvSeparator': ';' , 'exportParameters.fileName': '48da64513c43a548e678bc99' }; //with separator default value
-
-            expect(ctrl.exportService.currentExportType).not.toBe(csvType);
-            expect(ctrl.exportService.currentExportParameters).not.toEqual(csvParams);
+            expect(ctrl.showModal).not.toBe(true);
 
             //when
-            ctrl.changeTypeAndExport(csvType);
-
-            //then
-            expect(ctrl.exportService.currentExportType).toBe(csvType);
-            expect(ctrl.exportService.currentExportParameters).toEqual(csvParams);
-        });
-
-        it('should show modal on type with parameters', function() {
-            //given
-            var ctrl = createController();
-            scope.$apply();
-            expect(ctrl.showModal).toBeFalsy();
-
-            var csvType = exportTypes[0];
-
-            //when
-            ctrl.changeTypeAndExport(csvType);
+            ctrl.selectType(csvType);
 
             //then
             expect(ctrl.showModal).toBe(true);
-            expect(form.submit).not.toHaveBeenCalled();
-        });
-
-        it('should do nothing when export type is not enable', function() {
-            //given
-            var ctrl = createController();
-            scope.$apply();
-            expect(ctrl.showModal).toBeFalsy();
-
-            var oldType = exportTypes[0];
-            ctrl.exportService.currentExportType = oldType;
-            var disabledType = {
-                'mimeType': 'application/tde',
-                'extension': '.tde',
-                'id': 'TABLEAU',
-                'needParameters': 'false',
-                'defaultExport': 'false',
-                'enabled': false,
-                'parameters': [{
-                    'name': 'fileName',
-                    'labelKey': 'EXPORT_FILENAME"',
-                    'type': 'text',
-                    'defaultValue': {'value': ';', 'labelKey': 'EXPORT_FILENAME_DEFAULT'}
-                }]
-            };
-
-            //when
-            ctrl.changeTypeAndExport(disabledType);
-
-            //then
-            expect(ctrl.showModal).toBeFalsy();
-            expect(ctrl.exportService.currentExportType).toBe(oldType);
-            expect(form.submit).not.toHaveBeenCalled();
         });
     });
 
-    describe('on parameters validation', function() {
-        it('should save current export parameters', inject(function(ExportService) {
+    describe('saveAndExport', () => {
+        it('should set action in form', inject((RestURLs, $timeout) => {
             //given
-            var ctrl = createController();
-            ctrl.exportService.currentExportType = exportTypes[0];
+            const ctrl = createController();
+            ctrl.nextSelectedType = exportTypes[0];
+
+            expect(form.action).toBeFalsy();
 
             //when
-            ctrl.saveEditionAndExport();
-
-            //then
-            expect(ExportService.setParameters).toHaveBeenCalledWith(exportTypes[0]);
-        }));
-
-        it('should launch export after a $timeout', inject(function($timeout) {
-            //given
-            var ctrl = createController();
-            var parameters = {exportType: 'CSV', 'exportParameters.csvSeparator': ','};
-            ctrl.exportService.currentExportParameters = parameters;
-
-            //when
-            ctrl.saveEditionAndExport();
-            $timeout.flush();
-
-            //then
-            expect(form.submit).toHaveBeenCalled();
-        }));
-    });
-
-    describe('on export', function() {
-        it('should set action in form', inject(function(RestURLs, $timeout) {
-            //given
-            var ctrl = createController();
-            ctrl.exportService.currentExportType = exportTypes[0];
-
-            //when
-            ctrl.export();
+            ctrl.saveAndExport();
             $timeout.flush();
 
             //then
             expect(form.action).toBe(RestURLs.exportUrl);
         }));
 
-        it('should submit form', inject(function($timeout) {
+        it('should submit form', inject(($timeout) => {
             //given
-            var ctrl = createController();
-            ctrl.exportService.currentExportType = exportTypes[0];
+            const ctrl = createController();
+            ctrl.nextSelectedType = exportTypes[0];
 
             //when
-            ctrl.export();
+            ctrl.saveAndExport();
             $timeout.flush();
 
             //then
             expect(form.submit).toHaveBeenCalled();
         }));
 
-        it('should cancel parameters', inject(function() {
+        it('should extract selected parameters', () => {
             //given
-            var ctrl = createController();
-            spyOn(ctrl.exportService, 'getType').and.returnValue(exportTypes[0]);
+            const ctrl = createController();
+            ctrl.nextSelectedType = exportTypes[0];
+            ctrl.nextSelectedType.parameters[1].value = 'my prep';
 
             //when
-            ctrl.cancelCurrentParameters ();
+            ctrl.saveAndExport();
 
             //then
-            expect(ctrl.exportService.currentExportType).toBe(exportTypes[0]);
-            expect(ctrl.exportService.currentExportParameters).toEqual({ exportType: 'CSV', 'exportParameters.csvSeparator': ';' , 'exportParameters.fileName': 'prepname' });
+            expect(ctrl.exportParams).toEqual({
+                exportType: 'CSV',
+                'exportParameters.csvSeparator': ';',
+                'exportParameters.fileName': 'my prep'
+            });
+        });
+
+        it('should save selected parameters', inject((StorageService) => {
+            //given
+            const ctrl = createController();
+            ctrl.nextSelectedType = exportTypes[0];
+            ctrl.nextSelectedType.parameters[1].value = 'my prep';
+
+            //when
+            ctrl.saveAndExport();
+
+            //then
+            expect(StorageService.saveExportParams).toHaveBeenCalledWith({
+                exportType: 'CSV',
+                'exportParameters.csvSeparator': ';',
+                'exportParameters.fileName': 'my prep'
+            });
+        }));
+    });
+
+    describe('launchExport', () => {
+        it('should extract selected parameters', () => {
+            //given
+            const ctrl = createController();
+            ctrl.selectedType = exportTypes[0];
+            ctrl.selectedType.parameters[1].value = 'my prep';
+
+            //when
+            ctrl.launchExport();
+
+            //then
+            expect(ctrl.exportParams).toEqual({
+                exportType: 'CSV',
+                'exportParameters.csvSeparator': ';',
+                'exportParameters.fileName': 'my prep'
+            });
+        });
+
+        it('should set action in form', inject((RestURLs, $timeout) => {
+            //given
+            const ctrl = createController();
+            ctrl.selectedType = exportTypes[0];
+
+            expect(form.action).toBeFalsy();
+
+            //when
+            ctrl.launchExport();
+            $timeout.flush();
+
+            //then
+            expect(form.action).toBe(RestURLs.exportUrl);
+        }));
+
+        it('should submit form', inject(($timeout) => {
+            //given
+            const ctrl = createController();
+            ctrl.selectedType = exportTypes[0];
+
+            //when
+            ctrl.launchExport();
+            $timeout.flush();
+
+            //then
+            expect(form.submit).toHaveBeenCalled();
         }));
     });
 });

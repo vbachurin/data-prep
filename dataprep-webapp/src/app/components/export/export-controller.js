@@ -1,119 +1,114 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
 
 /**
  * @ngdoc controller
  * @name data-prep.export.controller:ExportCtrl
  * @description Export controller.
- * @requires data-prep.services.preparation.service:PreparationService
- * @requires data-prep.services.recipe.service:RecipeService
+ * @requires data-prep.services.state.constant:state
  * @requires data-prep.services.utils.service:RestURLs
+ * @requires data-prep.services.recipe.service:RecipeService
  * @requires data-prep.services.export.service:ExportService
+ * @requires data-prep.services.utils.service:StorageService
  */
-export default function ExportCtrl($timeout, state, PreparationService, RecipeService, RestURLs, ExportService) {
-    'ngInject';
+export default class ExportCtrl {
+    constructor($timeout, state, RestURLs, RecipeService, ExportService, StorageService) {
+        'ngInject';
 
-    var vm = this;
-    vm.state = state;
-    vm.preparationService = PreparationService;
-    vm.recipeService = RecipeService;
-    vm.exportService = ExportService;
+        this.$timeout = $timeout;
+        this.state = state;
+        this.RestURLs = RestURLs;
+        this.ExportService = ExportService;
+        this.StorageService = StorageService;
+        this.RecipeService = RecipeService;
 
-
-    /**
-     * @ngdoc method
-     * @name cancelCurrentParameters
-     * @methodOf data-prep.export.controller:ExportCtrl
-     * @description cancel current export parameters with the saved one from localStorage
-     */
-    vm.cancelCurrentParameters = function cancelCurrentParameters() {
-        vm.exportService.currentExportType = vm.exportService.getType(vm.exportService.getParameters().id);
-        vm.exportService.currentExportParameters = _.extend({}, vm.state.playground.exportParameters);
-    };
+        this.exportParams = StorageService.getExportParams();
+        this.selectedType = ExportService.getType(this.exportParams.exportType);
+    }
 
     /**
      * @ngdoc method
-     * @name changeTypeAndExport
+     * @name selectType
      * @methodOf data-prep.export.controller:ExportCtrl
-     * @param {object} exportType The export type
-     * @description Change the export type and launch the export.
-     * If the export type has parameters, we init the form and display a modal
+     * @param {object} type The selected type
+     * @description Init parameters and display the params modal
      */
-    vm.changeTypeAndExport = function (exportType) {
-        if (!exportType.enabled) {
-            // Export type is not available, no need to go further.
-            return;
-        }
-        vm.exportService.currentExportType = exportType;
-        if (vm.state.playground.exportParameters) {
-            vm.exportService.currentExportParameters = _.extend({}, vm.state.playground.exportParameters);
-            vm.exportService.currentExportParameters.exportType = vm.exportService.currentExportType.id;
-        } else {
-            updateExportParameters();
-        }
-        vm.showModal = true;
-    };
+    selectType(type) {
+        this._initExportParameters(type);
+        this.nextSelectedType = type;
+        this.showModal = true;
+    }
 
     /**
      * @ngdoc method
-     * @name saveEditionAndExport
+     * @name saveType
      * @methodOf data-prep.export.controller:ExportCtrl
-     * @description Save the currently edited export parameters and launch the export
+     * @description Init parameters and display the params modal
      */
-    vm.saveEditionAndExport = function saveEditionAndExport() {
-        vm.exportService.setParameters(vm.exportService.currentExportType);
-        vm.export();
-    };
+    saveAndExport() {
+        this.selectedType = this.nextSelectedType;
+        const params = this._extractParameters(this.selectedType);
+        this.StorageService.saveExportParams(params);
+        this.launchExport();
+    }
 
     /**
      * @ngdoc method
-     * @name export
+     * @name launchExport
      * @methodOf data-prep.export.controller:ExportCtrl
-     * @description Launch the export (with new name if rename)
+     * @description Save the current parameters and launch an export
      */
-    vm.export = function () {
-        if (!vm.exportService.currentExportParameters) {
-            updateExportParameters();
-        }
+    launchExport() {
+        this.exportParams = this._extractParameters(this.selectedType);
 
-        vm.state.playground.exportParameters = _.extend({}, vm.exportService.currentExportParameters);
-
-        $timeout(function () {
-            vm.form.action = RestURLs.exportUrl;
-            vm.form.submit();
+        this.$timeout(() => {
+            this.form.action = this.RestURLs.exportUrl;
+            this.form.submit();
         }, 0, false);
-    };
+    }
 
     /**
      * @ngdoc method
-     * @name updateExportParameters
+     * @name _initExportParameters
      * @methodOf data-prep.export.controller:ExportCtrl
-     * @description Update export parameters
+     * @param {object} exportType The type to init
+     * @description Change the fileName of the type parameters to fit the current prep/dataset
      */
-    function updateExportParameters() {
-        vm.exportService.currentExportParameters = {exportType: vm.exportService.currentExportType.id};
-        _.forEach(vm.exportService.currentExportType.parameters, function (param) {
-            vm.exportService.currentExportParameters['exportParameters.' + param.name] = param.defaultValue.value;
-            //hack for fileName as we don't know it with exportTypes parameters
-            //so if empty use the dataset.name
-            if (param.name === 'fileName') {
-                if (vm.state.playground.preparation && vm.state.playground.preparation.name) {
-                    vm.exportService.currentExportParameters['exportParameters.' + param.name] = vm.state.playground.preparation.name;
-                } else {
-                    vm.exportService.currentExportParameters['exportParameters.' + param.name] = vm.state.playground.dataset.name;
-                }
-            }
+    _initExportParameters(exportType) {
+        _.chain(exportType.parameters)
+            .filter({ name: 'fileName' })
+            .forEach((param) => {
+                param.value = this.state.playground.preparation ?
+                    this.state.playground.preparation.name :
+                    this.state.playground.dataset.name;
+            })
+            .value();
+    }
+
+    /**
+     * @ngdoc method
+     * @name _extractParameters
+     * @methodOf data-prep.export.controller:ExportCtrl
+     * @param {object} exportType The type to extract
+     * @description Extract the parameters of the selected type
+     */
+    _extractParameters(exportType) {
+        const parameters = { exportType: exportType.id };
+        _.forEach(exportType.parameters, (param) => {
+            parameters['exportParameters.' + param.name] = param.value ? param.value : param.default;
         });
+
+        return parameters;
     }
 }
 
@@ -129,40 +124,7 @@ Object.defineProperty(ExportCtrl.prototype,
         enumerable: true,
         configurable: false,
         get: function () {
-            var step = this.recipeService.getLastActiveStep();
+            var step = this.RecipeService.getLastActiveStep();
             return step ? step.transformation.stepId : '';
-        }
-    });
-
-/**
- * @ngdoc property
- * @name datasetId
- * @propertyOf data-prep.export.controller:ExportCtrl
- * @description The current dataset id
- * It is bound to {@link data-prep.services.state.constant:state state} property
- */
-Object.defineProperty(ExportCtrl.prototype,
-    'datasetId', {
-        enumerable: true,
-        configurable: false,
-        get: function () {
-            var dataset = this.state.playground.dataset;
-            return dataset ? dataset.id : '';
-        }
-    });
-
-/**
- * @ngdoc property
- * @name exportTypes
- * @propertyOf data-prep.export.controller:ExportCtrl
- * @description The export types list
- * It is bound to {@link data-prep.services.export.service:ExportService ExportService} property
- */
-Object.defineProperty(ExportCtrl.prototype,
-    'exportTypes', {
-        enumerable: true,
-        configurable: false,
-        get: function () {
-            return this.exportService.exportTypes;
         }
     });

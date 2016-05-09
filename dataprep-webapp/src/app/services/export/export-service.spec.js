@@ -1,171 +1,170 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
 
-describe('Export service', function() {
+describe('Export service', () => {
     'use strict';
 
-    var EXPORT_PARAMS_KEY = 'org.talend.dataprep.export.params';
-
-    var exportTypes = [
+    const exportTypes = [
         {
             'mimeType': 'text/csv',
             'extension': '.csv',
             'id': 'CSV',
             'needParameters': 'true',
             'defaultExport': 'false',
-            'parameters': [{
-                'name': 'csvSeparator',
-                'labelKey': 'CHOOSE_SEPARATOR',
-                'type': 'radio',
-                'defaultValue': {'value': ';', 'labelKey': 'SEPARATOR_SEMI_COLON'},
-                'values': [
-                    {'value': '&#09;', 'labelKey': 'SEPARATOR_TAB'},
-                    {'value': ' ', 'labelKey': 'SEPARATOR_SPACE'},
-                    {'value': ',', 'labelKey': 'SEPARATOR_COMMA'}
-                ]
-            }]
+            'enabled': true,
+            'disableReason': '',
+            'title': 'Export to CSV',
+            'parameters': [
+                {
+                    'name': 'csvSeparator',
+                    'type': 'select',
+                    'implicit': false,
+                    'canBeBlank': false,
+                    'placeHolder': '',
+                    'configuration': {
+                        'values': [{ 'value': ';', 'label': 'Semi colon' }, {
+                            'value': '\t',
+                            'label': 'Tabulation'
+                        }, { 'value': ' ', 'label': 'Space' }, { 'value': ',', 'label': 'Comma' }], 'multiple': false
+                    },
+                    'description': 'Select character to use as a delimiter',
+                    'label': 'Select character to use as a delimiter',
+                    'default': ';',
+                },
+                {
+                    'name': 'fileName',
+                    'type': 'string',
+                    'implicit': false,
+                    'canBeBlank': false,
+                    'placeHolder': '',
+                    'description': 'Name of the generated export file',
+                    'label': 'Name of the generated export file',
+                    'default': '',
+                },
+            ],
         },
         {
             'mimeType': 'application/tde',
             'extension': '.tde',
             'id': 'TABLEAU',
             'needParameters': 'false',
-            'defaultExport': 'false'
+            'defaultExport': 'false',
+            'parameters': [
+                {
+                    'name': 'fileName',
+                    'type': 'string',
+                    'implicit': false,
+                    'canBeBlank': false,
+                    'placeHolder': '',
+                    'description': 'Name of the generated export file',
+                    'label': 'Name of the generated export file',
+                    'default': '',
+                }
+            ],
         },
         {
             'mimeType': 'application/vnd.ms-excel',
             'extension': '.xlsx',
             'id': 'XLSX',
-            'needParameters': 'false',
-            'defaultExport': 'true'
-        }
+            'needParameters': 'true',
+            'defaultExport': 'true',
+            'enabled': true,
+            'disableReason': '',
+            'title': 'Export to XLSX',
+            'parameters': [
+                {
+                    'name': 'fileName',
+                    'type': 'string',
+                    'implicit': false,
+                    'canBeBlank': false,
+                    'placeHolder': '',
+                    'description': 'Name of the generated export file',
+                    'label': 'Name of the generated export file',
+                    'default': '',
+                }
+            ],
+        },
     ];
 
     beforeEach(angular.mock.module('data-prep.services.export'));
 
-    beforeEach(inject(function($q, ExportRestService) {
-        spyOn(ExportRestService, 'exportTypes').and.returnValue($q.when({data: exportTypes}));
+    beforeEach(inject(($q, ExportRestService, TransformationService, StorageService) => {
+        spyOn(ExportRestService, 'exportTypes').and.returnValue($q.when(exportTypes));
+        spyOn(TransformationService, 'resetParamValue').and.returnValue();
+        spyOn(StorageService, 'saveExportParams').and.returnValue();
     }));
 
-    afterEach(inject(function($window) {
-        $window.localStorage.removeItem(EXPORT_PARAMS_KEY);
-    }));
-
-    it('should get parameters from localStorage', inject(function($window, ExportService) {
-        //given
-        var expectedParameters = {exportType: 'XLSX'};
-        $window.localStorage.setItem(EXPORT_PARAMS_KEY, JSON.stringify(expectedParameters));
-
-        //when
-        var parameters = ExportService.getParameters();
-
-        //then
-        expect(parameters).toEqual(expectedParameters);
-    }));
-
-    it('should return null when no parameters are in localStorage', inject(function($window, ExportService) {
-        //given
-        $window.localStorage.removeItem(EXPORT_PARAMS_KEY);
-
-        //when
-        var parameters = ExportService.getParameters();
-
-        //then
-        expect(parameters).toBe(null);
-    }));
-
-    it('should save parameters in localStorage', inject(function($window, ExportService) {
-        //given
-        $window.localStorage.removeItem(EXPORT_PARAMS_KEY);
-        var parameters = {exportType: 'XLSX'};
-        var parametersAsString = JSON.stringify(parameters);
-
-        //when
-        ExportService.setParameters(parameters);
-
-        //then
-        expect($window.localStorage.getItem(EXPORT_PARAMS_KEY)).toBe(parametersAsString);
-    }));
-
-    it('should return type with provided id', inject(function(ExportService) {
-        //given
+    it('should return type with provided id', inject((ExportService) => {
+        // given
         ExportService.exportTypes = exportTypes;
-        var xlsType = exportTypes[2];
+        const xlsType = exportTypes[2];
 
-        //when
-        var type = ExportService.getType('XLSX');
+        // when
+        const type = ExportService.getType('XLSX');
 
-        //then
+        // then
         expect(type).toBe(xlsType);
     }));
 
-    it('should refresh export types list from REST call', inject(function($rootScope, ExportService) {
-        //given
+    it('should refresh export types list from REST call', inject(($rootScope, ExportService) => {
+        // given
         ExportService.exportTypes = [];
 
-        //when
+        // when
         ExportService.refreshTypes();
         $rootScope.$digest();
 
-        //then
+        // then
         expect(ExportService.exportTypes).toBe(exportTypes);
     }));
 
-    it('should save default type parameters in localStorage when there are no saved params yet', inject(function($rootScope, $window, ExportService) {
-        //given
-        $window.localStorage.removeItem(EXPORT_PARAMS_KEY);
-        var defaultParameters = {'mimeType': 'application/vnd.ms-excel','extension':'.xlsx','id':'XLSX','needParameters':'false','defaultExport':'true'};
-        var defaultParametersAsString = JSON.stringify(defaultParameters);
+    it('should save default type parameters in localStorage when there are no saved params yet', inject(($rootScope, StorageService, ExportService) => {
+        // given
+        spyOn(StorageService, 'getExportParams').and.returnValue();
+        expect(StorageService.saveExportParams).not.toHaveBeenCalled();
 
-        //when
+        // when
         ExportService.refreshTypes();
         $rootScope.$digest();
 
-        //then
-        expect($window.localStorage.getItem(EXPORT_PARAMS_KEY)).toBe(defaultParametersAsString);
+        // then
+        expect(StorageService.saveExportParams).toHaveBeenCalledWith({ exportType: 'XLSX' });
     }));
 
-    it('should NOT save default type parameters in localStorage when there are already saved params', inject(function($rootScope, $window, ExportService) {
-        //given
-        var parameters = {exportType: 'custom'};
-        var parametersAsString = JSON.stringify(parameters);
-        $window.localStorage.setItem(EXPORT_PARAMS_KEY, parametersAsString);
+    it('should NOT save default type parameters in localStorage when there are already saved params', inject(($rootScope, StorageService, ExportService) => {
+        // given
+        spyOn(StorageService, 'getExportParams').and.returnValue({});
+        expect(StorageService.saveExportParams).not.toHaveBeenCalled();
 
-        //when
+        // when
         ExportService.refreshTypes();
         $rootScope.$digest();
 
-        //then
-        expect($window.localStorage.getItem(EXPORT_PARAMS_KEY)).toBe(parametersAsString);
+        // then
+        expect(StorageService.saveExportParams).not.toHaveBeenCalled();
     }));
 
-    it('should reset parameters', inject(function($window, ExportService) {
-        //given
-        var expectedParameters = {id: 'XLSX'};
-        $window.localStorage.setItem(EXPORT_PARAMS_KEY, JSON.stringify(expectedParameters));
+    it('should reset parameters', inject((ExportService, TransformationService) => {
+        // given
         ExportService.exportTypes = exportTypes;
+        expect(TransformationService.resetParamValue).not.toHaveBeenCalled();
 
-        //when
+        // when
         ExportService.reset();
 
-        //then
-        expect(ExportService.currentExportType).toEqual({
-            'mimeType': 'application/vnd.ms-excel',
-            'extension': '.xlsx',
-            'id': 'XLSX',
-            'needParameters': 'false',
-            'defaultExport': 'true'
-        });
-        expect(ExportService.currentExportParameters).toBeFalsy();
+        // then
+        expect(TransformationService.resetParamValue).toHaveBeenCalledWith(exportTypes[0].parameters);
+        expect(TransformationService.resetParamValue).toHaveBeenCalledWith(exportTypes[1].parameters);
+        expect(TransformationService.resetParamValue).toHaveBeenCalledWith(exportTypes[2].parameters);
     }));
 });

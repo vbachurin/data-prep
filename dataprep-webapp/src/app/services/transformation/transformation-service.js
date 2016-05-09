@@ -239,14 +239,18 @@ export default function TransformationService(TransformationRestService, Convert
 
         function executeOnSimpleParams(simpleParamsToInit) {
             _.forEach(simpleParamsToInit, function (param) {
-                param.value = param.initialValue;
+                param.value = angular.isDefined(param.initialValue) ?
+                    param.initialValue :
+                    param.default;
             });
         }
 
         switch (type) {
             case choiceType:
                 _.forEach(params, function (choice) {
-                    choice.selectedValue = choice.initialValue;
+                    choice.selectedValue = angular.isDefined(choice.initialValue) ?
+                        choice.initialValue :
+                        choice.default;
 
                     _.forEach(choice.values, function (choiceItem) {
                         executeOnSimpleParams(choiceItem.parameters);

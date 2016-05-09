@@ -1,22 +1,22 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
 
-describe('Export directive', function () {
+describe('Export directive', () => {
     'use strict';
 
-    var scope, element, ctrl;
+    let scope, element, ctrl, stateMock;
 
-    var exportTypes = [
+    const exportTypes = [
         {
             'mimeType': 'text/csv',
             'extension': '.csv',
@@ -27,11 +27,11 @@ describe('Export directive', function () {
                 'name': 'csvSeparator',
                 'labelKey': 'CHOOSE_SEPARATOR',
                 'type': 'radio',
-                'defaultValue': {'value': ';', 'labelKey': 'SEPARATOR_SEMI_COLON'},
+                'defaultValue': { 'value': ';', 'labelKey': 'SEPARATOR_SEMI_COLON' },
                 'values': [
-                    {'value': '&#09;', 'labelKey': 'SEPARATOR_TAB'},
-                    {'value': ' ', 'labelKey': 'SEPARATOR_SPACE'},
-                    {'value': ',', 'labelKey': 'SEPARATOR_COMMA'}
+                    { 'value': '&#09;', 'labelKey': 'SEPARATOR_TAB' },
+                    { 'value': ' ', 'labelKey': 'SEPARATOR_SPACE' },
+                    { 'value': ',', 'labelKey': 'SEPARATOR_COMMA' }
                 ]
             }]
         },
@@ -52,21 +52,27 @@ describe('Export directive', function () {
             'defaultExport': 'true'
         }
     ];
-    var csvParameters = {exportType: 'CSV', 'exportParameters.csvSeparator': ';'};
-    var csvType = exportTypes[0];
+    const csvParameters = { exportType: 'CSV', 'exportParameters.csvSeparator': ';' };
+    const csvType = exportTypes[0];
 
-    var stateMock;
-
-    beforeEach(angular.mock.module('data-prep.export', function($provide) {
-        stateMock = {playground: {exportParameters : { exportType: 'CSV', 'exportParameters.csvSeparator': ';' , 'exportParameters.fileName': 'prepname' }}};
+    beforeEach(angular.mock.module('data-prep.export', ($provide) => {
+        stateMock = {
+            playground: {
+                exportParameters: {
+                    exportType: 'CSV',
+                    'exportParameters.csvSeparator': ';',
+                    'exportParameters.fileName': 'prepname'
+                }
+            }
+        };
         $provide.constant('state', stateMock);
     }));
     beforeEach(angular.mock.module('htmlTemplates'));
 
-    beforeEach(inject(function ($rootScope, $compile, $q, ExportService) {
+    beforeEach(inject(($rootScope, $compile, $q, ExportService, StorageService) => {
         spyOn(ExportService, 'refreshTypes').and.returnValue($q.when(exportTypes));
-        spyOn(ExportService, 'getParameters').and.returnValue(csvParameters);
         spyOn(ExportService, 'getType').and.returnValue(csvType);
+        spyOn(StorageService, 'getExportParams').and.returnValue(csvParameters);
 
         scope = $rootScope.$new();
         element = angular.element('<export></export>');
@@ -76,98 +82,98 @@ describe('Export directive', function () {
         ctrl = element.controller('export');
     }));
 
-    afterEach(inject(function (state) {
+    afterEach(() => {
         scope.$destroy();
         element.remove();
-
-        state.playground.dataset = null;
-    }));
-
-    it('should bind preparationId form value to controller', function () {
-        //given
-        var input = element.find('#exportForm').eq(0)[0].preparationId;
-        expect(input.value).toBeFalsy();
-
-        //when
-        stateMock.playground.preparation = {id: '48da64513c43a548e678bc99'};
-        scope.$digest();
-
-        //then
-        expect(input.value).toBe('48da64513c43a548e678bc99');
     });
 
-    it('should bind stepId form value to controller', inject(function (RecipeService) {
-        //given
-        var input = element.find('#exportForm').eq(0)[0].stepId;
-        expect(input.value).toBeFalsy();
+    describe('form', () => {
+        it('should inject preparation id input', () => {
+            //given
+            const input = element.find('#exportForm').eq(0)[0].preparationId;
+            expect(input.value).toBeFalsy();
 
-        //when
-        RecipeService.getRecipe().push({
-            transformation: {
-                stepId: '48da64513c43a548e678bc99'
-            }
+            //when
+            stateMock.playground.preparation = { id: '48da64513c43a548e678bc99' };
+            scope.$digest();
+
+            //then
+            expect(input.value).toBe('48da64513c43a548e678bc99');
         });
-        scope.$digest();
 
-        //then
-        expect(input.value).toBe('48da64513c43a548e678bc99');
-    }));
+        it('should inject step id input', inject((RecipeService) => {
+            //given
+            const input = element.find('#exportForm').eq(0)[0].stepId;
+            expect(input.value).toBeFalsy();
 
-    it('should bind datasetId form value to controller', inject(function (state) {
-        //given
-        var input = element.find('#exportForm').eq(0)[0].datasetId;
-        expect(input.value).toBeFalsy();
+            //when
+            RecipeService.getRecipe().push({
+                transformation: {
+                    stepId: '48da64513c43a548e678bc99'
+                }
+            });
+            scope.$digest();
 
-        //when
-        state.playground.dataset = {
-            id: '48da64513c43a548e678bc99'
-        };
-        scope.$digest();
+            //then
+            expect(input.value).toBe('48da64513c43a548e678bc99');
+        }));
 
-        //then
-        expect(input.value).toBe('48da64513c43a548e678bc99');
-    }));
+        it('should inject dataset id input', inject((state) => {
+            //given
+            const input = element.find('#exportForm').eq(0)[0].datasetId;
+            expect(input.value).toBeFalsy();
 
-    it('should add current export type in form', function () {
-        //given
-        var input = element.find('#exportForm').eq(0)[0].exportType;
+            //when
+            state.playground.dataset = { id: '48da64513c43a548e678bc99' };
+            scope.$digest();
 
-        //then
-        expect(input.value).toBe('CSV');
+            //then
+            expect(input.value).toBe('48da64513c43a548e678bc99');
+        }));
+
+        it('should inject export type input', () => {
+            //given
+            const input = element.find('#exportForm').eq(0)[0].exportType;
+
+            //then
+            expect(input.value).toBe('CSV');
+        });
+
+        it('should inject export type parameters in form', () => {
+            //given
+            const input = element.find('#exportForm').eq(0)[0]['exportParameters.csvSeparator'];
+
+            //then
+            expect(input.value).toBe(';');
+        });
+
+        it('should set form in controller', inject(() => {
+            //then
+            expect(ctrl.form).toBeDefined();
+        }));
     });
 
-    it('should add current export type parameters in form', function () {
-        //given
-        var input = element.find('#exportForm').eq(0)[0]['exportParameters.csvSeparator'];
+    describe('disabled export', () => {
+        it('should have disabled style', inject((ExportService) => {
+            //given
+            ExportService.exportTypes = exportTypes;
 
-        //then
-        expect(input.value).toBe(';');
+            //when
+            scope.$digest();
+
+            //then
+            expect(element.find('.dropdown-menu').find('li').eq(1).hasClass('disabled')).toBe(true);
+        }));
+
+        it('should have disabled message', inject((ExportService) => {
+            //given
+            ExportService.exportTypes = exportTypes;
+
+            //when
+            scope.$digest();
+
+            //then
+            expect(element.find('.dropdown-menu').find('li').eq(1).text().trim()).toBe('TABLEAU - Reason only valid in unit test');
+        }));
     });
-
-    it('should set form in controller', inject(function () {
-        //then
-        expect(ctrl.form).toBeDefined();
-    }));
-
-    it('should have disabled style for disabled export', inject(function (ExportService) {
-        //given
-        ExportService.exportTypes = exportTypes;
-
-        //when
-        scope.$digest();
-
-        //then
-        expect(element.find('.dropdown-menu').find('li').eq(1).hasClass('disabled')).toBe(true);
-    }));
-
-    it('should have disabled message for disabled export', inject(function (ExportService) {
-         //given
-        ExportService.exportTypes = exportTypes;
-
-        //when
-        scope.$digest();
-
-        //then
-        expect(element.find('.dropdown-menu').find('li').eq(1).text().trim()).toBe('TABLEAU - Reason only valid in unit test');
-    }));
 });
