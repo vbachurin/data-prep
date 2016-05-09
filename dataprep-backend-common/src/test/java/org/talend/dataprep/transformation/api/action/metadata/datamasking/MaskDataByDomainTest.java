@@ -117,7 +117,7 @@ public class MaskDataByDomainTest extends AbstractMetadataBaseTest {
         colMeta.setDomain(MaskableCategoryEnum.EMAIL.name());
 
         final Map<String, String> expectedValues = new HashMap<>();
-        expectedValues.put("0000", "bla bla");
+        expectedValues.put("0000", "XXXXXXX");
 
         // when
         ActionTestWorkbench.test(row, factory.create(action, parameters));
