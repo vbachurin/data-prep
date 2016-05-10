@@ -10,7 +10,9 @@ public class BasicNode implements Node, RuntimeNode {
 
     @Override
     public void receive(DataSetRow row, RowMetadata metadata) {
-        link.exec().emit(row, metadata);
+        if (link != null) {
+            link.exec().emit(row, metadata);
+        }
     }
 
     @Override
@@ -25,7 +27,9 @@ public class BasicNode implements Node, RuntimeNode {
 
     @Override
     public void signal(Signal signal) {
-        link.exec().signal(signal);
+        if (link != null) {
+            link.exec().signal(signal);
+        }
     }
 
     @Override

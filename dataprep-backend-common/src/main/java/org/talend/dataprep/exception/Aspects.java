@@ -20,11 +20,12 @@ import org.elasticsearch.common.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
+import org.talend.dataprep.util.AspectHelper;
 
 import com.netflix.hystrix.exception.HystrixRuntimeException;
+
 import io.swagger.annotations.ApiOperation;
 
 @Configuration
@@ -34,10 +35,10 @@ class Aspects {
 
     private static final Logger LOG = LoggerFactory.getLogger(Aspects.class);
 
-    @Around("execution(* *(..)) && @annotation(requestMapping) && @annotation(apiOperation)")
-    public Object exception(ProceedingJoinPoint pjp, RequestMapping requestMapping, ApiOperation apiOperation) throws Throwable {
+    @Around("@annotation(org.springframework.web.bind.annotation.RequestMapping) && @annotation(io.swagger.annotations.ApiOperation)")
+    public Object exception(ProceedingJoinPoint pjp) throws Throwable {
         try {
-            return pjp.proceed(pjp.getArgs());
+            return pjp.proceed();
         } catch (TDPException e) {
             throw e; // Let TDPException pass through (to be processed in correct HTTP code by controller advice).
         } catch (HystrixRuntimeException hre) {
@@ -50,14 +51,15 @@ class Aspects {
                     innerMostTDPException = (TDPException) e;
                 }
             }
-            if (innerMostTDPException != null){
+            if (innerMostTDPException != null) {
                 throw innerMostTDPException;
-            }else {
+            } else {
                 throw new TDPException(CommonErrorCodes.UNEXPECTED_SERVICE_EXCEPTION, hre);
             }
         } catch (Exception e) {
             LOG.error("Unexpected exception occurred in '" + pjp.getSignature().toShortString() + "'", e);
             final ExceptionContext context = ExceptionContext.build();
+            final ApiOperation apiOperation = AspectHelper.getAnnotation(pjp, ApiOperation.class);
             if (apiOperation != null && !StringUtils.isEmpty(apiOperation.value())) {
                 // Build message as a "Unable to " + <api operation description> (with first character as lower case).
                 String messageSuffix = apiOperation.value();

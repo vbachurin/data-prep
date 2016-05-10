@@ -120,16 +120,14 @@ public class StatisticsAdapter {
      * @param filter A {@link Predicate predicate} to filter columns to adapt.
      */
     private void genericAdapt(List<ColumnMetadata> columns, List<Analyzers.Result> results, Predicate<ColumnMetadata> filter) {
-        for (int i = 0; i < results.size(); ++i) {
-            final ColumnMetadata currentColumn = columns.get(i);
-            if (!filter.test(currentColumn)) {
-                // Column needs to be filtered out
-                continue;
+        final Iterator<Analyzers.Result> resultIterator = results.iterator();
+        columns.stream().filter(filter).forEach(c -> {
+            if (resultIterator.hasNext()) {
+                final Analyzers.Result result = resultIterator.next();
+                injectDataTypeAnalysis(c, result);
+                adaptCommonAnalysis(c, result);
             }
-            final Analyzers.Result result = results.get(i);
-            injectDataTypeAnalysis(currentColumn, result);
-            adaptCommonAnalysis(currentColumn, result);
-        }
+        });
     }
 
     /**
@@ -311,11 +309,16 @@ public class StatisticsAdapter {
 
     private void injectQuantile(final ColumnMetadata column, final Analyzers.Result result) {
         if (result.exist(QuantileStatistics.class)) {
-            final QuantileStatistics quantileStatistics = result.get(QuantileStatistics.class);
-            final Quantiles quantiles = column.getStatistics().getQuantiles();
-            quantiles.setLowerQuantile(quantileStatistics.getLowerQuartile());
-            quantiles.setMedian(quantileStatistics.getMedian());
-            quantiles.setUpperQuantile(quantileStatistics.getUpperQuartile());
+            try {
+                final QuantileStatistics quantileStatistics = result.get(QuantileStatistics.class);
+                final Quantiles quantiles = column.getStatistics().getQuantiles();
+                quantiles.setLowerQuantile(quantileStatistics.getLowerQuartile());
+                quantiles.setMedian(quantileStatistics.getMedian());
+                quantiles.setUpperQuantile(quantileStatistics.getUpperQuartile());
+            } catch (Exception e) {
+                LOGGER.warn("Unable to inject quantile information in column {}.", column.getName());
+                LOGGER.debug("Unable to inject quantile information in column {}.", e);
+            }
         }
     }
 

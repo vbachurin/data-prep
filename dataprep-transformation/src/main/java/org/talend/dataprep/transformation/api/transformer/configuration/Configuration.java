@@ -16,51 +16,84 @@ package org.talend.dataprep.transformation.api.transformer.configuration;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.Map;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import org.apache.commons.lang.StringUtils;
+import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.format.export.ExportFormat;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.format.JsonFormat;
+import org.talend.dataprep.transformation.pipeline.Node;
+import org.talend.dataprep.transformation.pipeline.node.BasicNode;
 
 /**
  * Full configuration for a transformation.
  */
 public class Configuration {
 
-    public enum Volume {
-        LARGE,
-        SMALL
-    }
-    
-    /** The format format {@link ExportFormat} */
+    private final Predicate<DataSetRow> filter;
+
+    private final Predicate<DataSetRow> outFilter;
+
+    private final Supplier<Node> monitorSupplier;
+
+    private final String stepId;
+
+    /**
+     * The format format {@link ExportFormat}
+     */
     private final String format;
 
-    /** The actions in JSON string format */
+    /**
+     * The actions in JSON string format
+     */
     private final String actions;
 
-    /** The arguments for format */
+    /**
+     * The arguments for format
+     */
     private final Map<String, String> arguments;
 
-    /** Where to write the transformed content. */
+    /**
+     * Where to write the transformed content.
+     */
     private final OutputStream output;
 
+    private final boolean allowMetadataChange;
+
+    private final boolean globalStatistics;
     private final Volume dataVolume;
 
-    /** List of transformation context, one per action. */
+    /**
+     * List of transformation context, one per action.
+     */
     private TransformationContext transformationContext;
 
     /**
      * Constructor for the transformer configuration.
      */
     protected Configuration(final OutputStream output, //
-            final String format, //
-            final String actions, //
-            final Map<String, String> arguments, //
-            final Volume dataVolume) {
+                            final Predicate<DataSetRow> filter, //
+                            final Predicate<DataSetRow> outFilter, //
+                            final Supplier<Node> monitorSupplier, //
+                            final String format, //
+                            final String actions, //
+                            final Map<String, String> arguments, //
+                            final String stepId, //
+                            boolean allowMetadataChange, //
+                            boolean globalStatistics, //
+                            final Volume dataVolume) {
         this.output = output;
+        this.filter = filter;
+        this.outFilter = outFilter;
+        this.monitorSupplier = monitorSupplier;
         this.format = format;
         this.actions = actions;
         this.arguments = arguments;
+        this.stepId = stepId;
+        this.allowMetadataChange = allowMetadataChange;
+        this.globalStatistics = globalStatistics;
         this.dataVolume = dataVolume;
         this.transformationContext = new TransformationContext();
     }
@@ -70,6 +103,14 @@ public class Configuration {
      */
     public static Builder builder() {
         return new Builder();
+    }
+
+    public Supplier<Node> getMonitor() {
+        return monitorSupplier;
+    }
+
+    public String stepId() {
+        return stepId;
     }
 
     /**
@@ -111,6 +152,27 @@ public class Configuration {
         return dataVolume;
     }
 
+    public boolean isAllowMetadataChange() {
+        return allowMetadataChange;
+    }
+
+    public Predicate<DataSetRow> getFilter() {
+        return filter;
+    }
+
+    public Predicate<DataSetRow> getOutFilter() {
+        return outFilter;
+    }
+
+    public boolean isGlobalStatistics() {
+        return globalStatistics;
+    }
+
+    public enum Volume {
+        LARGE,
+        SMALL
+    }
+
     /**
      * Builder pattern used to simplify code writing.
      */
@@ -131,11 +193,32 @@ public class Configuration {
          */
         private Map<String, String> arguments = Collections.emptyMap();
 
-        /** Where to write the transformed content. */
+        /**
+         * Where to write the transformed content.
+         */
         private OutputStream output;
 
-        /** Gives hint on the amount of data the transformer may expect */
+        /**
+         * Gives hint on the amount of data the transformer may expect
+         */
         private Volume dataVolume = Volume.SMALL;
+
+        private String stepId;
+
+        private boolean allowMetadataChange = true;
+
+        private Supplier<Node> monitorSupplier = BasicNode::new;
+
+        private Predicate<DataSetRow> filter = r -> true;
+
+        private Predicate<DataSetRow> outFilter = r -> true;
+
+        private boolean globalStatistics = true;
+
+        public Builder monitor(Supplier<Node> monitorSupplier) {
+            this.monitorSupplier = monitorSupplier;
+            return this;
+        }
 
         /**
          * @param output where to write the transformed dataset.
@@ -150,7 +233,7 @@ public class Configuration {
          * @return a new {@link Configuration} from the mapper setup.
          */
         public Configuration build() {
-            return new Configuration(output, format, actions, arguments, dataVolume);
+            return new Configuration(output, filter, outFilter, monitorSupplier, format, actions, arguments, stepId, allowMetadataChange, globalStatistics, dataVolume);
         }
 
         /**
@@ -186,10 +269,33 @@ public class Configuration {
             return this;
         }
 
+        public Builder stepId(final String stepId) {
+            this.stepId = stepId;
+            return this;
+        }
+
         public Builder volume(Volume dataVolume) {
             this.dataVolume = dataVolume;
             return this;
         }
 
+        public Builder allowMetadataChange(boolean allowMetadataChange) {
+            this.allowMetadataChange = allowMetadataChange;
+            return this;
+        }
+
+        public Builder globalStatistics(boolean globalStatistics) {
+            this.globalStatistics = globalStatistics;
+            return this;
+        }
+
+        public Builder inFilter(Predicate<DataSetRow> filter) {
+            this.filter = filter;
+            return this;
+        }
+
+        public Builder outFilter(Predicate<DataSetRow> outFilter) {
+            return null;
+        }
     }
 }

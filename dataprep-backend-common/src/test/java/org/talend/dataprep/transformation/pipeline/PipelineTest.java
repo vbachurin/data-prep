@@ -303,32 +303,12 @@ public class PipelineTest {
         assertEquals(null, output.getMetadata());
     }
 
-    @Test(expected = UnsupportedOperationException.class)
-    public void terminalNodeLink() throws Exception {
-        Node terminalNode = new TerminalNode();
-        terminalNode.setLink(null);
-    }
-
-    @Test
-    public void terminalNode() throws Exception {
-        Node terminalNode = new TerminalNode();
-        assertEquals(terminalNode.getLink(), NullLink.INSTANCE);
-    }
-
-    @Test(expected = TDPException.class)
-    public void testOutputAfterTerminalNode() throws Exception {
-        // When
-        // It is illegal to continue pipeline after a TerminalNode
-        NodeBuilder.source().to(NullNode.INSTANCE).to(output).build();
-    }
-
     @Test
     public void testVisitorAndToString() throws Exception {
         final Node node = NodeBuilder.source() //
                 .to(new BasicNode()) //
                 .toMany(new BasicNode()) //
                 .to(new ActionNode(new Action(), new ActionContext(new TransformationContext()))) //
-                .to(new InlineAnalysisNode(c -> NullAnalyzer.INSTANCE, c -> true, new StatisticsAdapter())) //
                 .to(new DelayedAnalysisNode(c -> NullAnalyzer.INSTANCE, c -> true, new StatisticsAdapter())) //
                 .to(output) //
                 .build();
@@ -340,7 +320,7 @@ public class PipelineTest {
 
         // Then
         final Class[] expectedClasses = { Pipeline.class, SourceNode.class, BasicLink.class, BasicNode.class, CloneLink.class,
-                ActionNode.class, InlineAnalysisNode.class, DelayedAnalysisNode.class };
+                ActionNode.class, DelayedAnalysisNode.class };
         Assert.assertThat(visitor.traversedClasses, CoreMatchers.hasItems(expectedClasses));
         Assert.assertNotNull(pipeline.toString());
     }
@@ -366,7 +346,7 @@ public class PipelineTest {
         assertEquals(2, wasDestroyed.get());
     }
 
-    private static class TestOutput extends TerminalNode {
+    private static class TestOutput extends BasicNode {
 
         private DataSetRow row;
 
@@ -420,12 +400,6 @@ public class PipelineTest {
         public void visitCompile(CompileNode compileNode) {
             traversedClasses.add(compileNode.getClass());
             super.visitCompile(compileNode);
-        }
-
-        @Override
-        public void visitInlineAnalysis(InlineAnalysisNode inlineAnalysisNode) {
-            traversedClasses.add(inlineAnalysisNode.getClass());
-            super.visitInlineAnalysis(inlineAnalysisNode);
         }
 
         @Override

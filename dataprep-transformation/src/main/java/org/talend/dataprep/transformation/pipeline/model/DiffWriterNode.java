@@ -14,9 +14,9 @@ import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
 import org.talend.dataprep.transformation.pipeline.Monitored;
 import org.talend.dataprep.transformation.pipeline.Signal;
 import org.talend.dataprep.transformation.pipeline.Visitor;
-import org.talend.dataprep.transformation.pipeline.node.TerminalNode;
+import org.talend.dataprep.transformation.pipeline.node.BasicNode;
 
-public class DiffWriterNode extends TerminalNode implements Monitored {
+public class DiffWriterNode extends BasicNode implements Monitored {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DiffWriterNode.class);
 

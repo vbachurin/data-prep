@@ -58,6 +58,7 @@ import org.talend.dataprep.lock.store.LockedResource;
 import org.talend.dataprep.lock.store.LockedResourceRepository;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.preparation.store.PreparationRepository;
+import org.talend.dataprep.security.PublicAPI;
 import org.talend.dataprep.security.Security;
 import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
 import org.talend.dataprep.transformation.api.action.validation.ActionMetadataValidation;
@@ -964,6 +965,10 @@ public class PreparationService {
         final String userId = security.getUserId();
 
         Preparation preparation = preparationRepository.get(preparationId, Preparation.class);
+        if (preparation == null) {
+            LOGGER.warn("Preparation #{} does not exist.", preparationId);
+            return;
+        }
 
         LockedResource lockedResource = lockedResourceRepository.tryLock(preparation, userId);
         if (lockedResourceRepository.lockOwned(lockedResource, userId)) {

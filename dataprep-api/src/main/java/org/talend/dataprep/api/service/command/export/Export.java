@@ -22,12 +22,15 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.service.api.ExportParameters;
+import org.talend.dataprep.api.org.talend.dataprep.api.export.ExportParameters;
 import org.talend.dataprep.command.GenericCommand;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.APIErrorCodes;
@@ -40,69 +43,28 @@ import org.talend.dataprep.exception.error.APIErrorCodes;
 public class Export extends GenericCommand<InputStream> {
 
     /**
-     * Default constructor.
-     * @param input the export parameters.
-     * @param exportName the name of the export
+     * @param parameters the export parameters.
      */
     // private constructor to ensure the IoC
-    private Export(final ExportParameters input, String exportName) {
+    private Export(final ExportParameters parameters) {
         super(TRANSFORM_GROUP);
-        execute(() -> onExecute(input, exportName));
+        execute(() -> onExecute(parameters));
         on(HttpStatus.OK).then(pipeStream());
     }
 
     /**
-     * @param input the export parameters.
+     * @param parameters the export parameters.
      * @return the request to perform.
      */
-    private HttpRequestBase onExecute(ExportParameters input, String exportName) {
+    private HttpRequestBase onExecute(ExportParameters parameters) {
         try {
-
-            URIBuilder builder;
-
-            // if there's a preparation
-            if (StringUtils.isNotBlank(input.getPreparationId())) {
-                String baseUri = transformationServiceUrl //
-                        + "/apply/preparation/" + input.getPreparationId() + "/dataset/" + input.getDatasetId() + '/' + input.getExportType();
-
-                builder = new URIBuilder(baseUri) //
-                        .addParameter("stepId", input.getStepId()) //
-                        .addParameter("name", exportName);
-            }
-            // dataset only
-            else {
-                String baseUri = transformationServiceUrl //
-                        + "/export/dataset/" + input.getDatasetId() + '/' + input.getExportType();
-                builder = new URIBuilder(baseUri) //
-                        .addParameter("name", exportName);
-            }
-
-            updateBuilderParameters(input.getArguments(), builder);
-            return new HttpGet(builder.build());
-
-        } catch (URISyntaxException e) {
+            final String parametersAsString = objectMapper.writerFor(ExportParameters.class).writeValueAsString(parameters);
+            final HttpPost post = new HttpPost(transformationServiceUrl + "/apply");
+            post.setEntity(new StringEntity(parametersAsString, ContentType.APPLICATION_JSON));
+            return post;
+        } catch (Exception e) {
             throw new TDPException(APIErrorCodes.UNABLE_TO_EXPORT_CONTENT, e);
         }
     }
 
-    /**
-     * Add optional/additional parameters.
-     *
-     * @param arguments the parameters arguments.
-     * @param builder the uri builder.
-     */
-    private void updateBuilderParameters(Map<String, String> arguments, URIBuilder builder) {
-
-        if (arguments == null) {
-            return;
-        }
-
-        for (Map.Entry<String, String> entry : arguments.entrySet()) {
-            // skip the mandatory export name that's already taken cared of
-            if (StringUtils.equals(PREFIX + "fileName", entry.getKey())) {
-                continue;
-            }
-            builder.addParameter(entry.getKey(), entry.getValue());
-        }
-    }
 }

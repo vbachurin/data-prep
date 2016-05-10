@@ -30,6 +30,9 @@ public enum TransformationErrorCodes implements ErrorCode {
     // 400
     BAD_LOOKUP_PARAMETER(BAD_REQUEST),
     UNABLE_TO_USE_EXPORT(BAD_REQUEST, "format"),
+    EXPORT_IN_PROGRESS(BAD_REQUEST),
+    // 403
+    INSUFFICIENT_ROLE(FORBIDDEN),
     // 404
     UNKNOWN_DYNAMIC_ACTION(NOT_FOUND, "value"),
     // 415
@@ -40,7 +43,6 @@ public enum TransformationErrorCodes implements ErrorCode {
     UNEXPECTED_EXCEPTION(INTERNAL_SERVER_ERROR),
     UNABLE_TO_READ_LOOKUP_DATASET(INTERNAL_SERVER_ERROR),
     UNABLE_TO_PERFORM_PREVIEW(INTERNAL_SERVER_ERROR);
-
     /** The http status to use. */
     private int httpStatus;
 

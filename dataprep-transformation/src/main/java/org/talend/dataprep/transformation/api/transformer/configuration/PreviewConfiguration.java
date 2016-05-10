@@ -36,8 +36,8 @@ public class PreviewConfiguration extends Configuration {
     private final TransformationContext context = new TransformationContext();
 
     protected PreviewConfiguration(Configuration configuration, String previewActions, List<Long> indexes) {
-        super(configuration.output(), configuration.formatId(), configuration.getActions(), configuration.getArguments(),
-                configuration.volume());
+        super(configuration.output(), configuration.getFilter(), configuration.getOutFilter(), configuration.getMonitor(), configuration.formatId(), configuration.getActions(), configuration.getArguments(),
+                configuration.stepId(), configuration.isAllowMetadataChange(), configuration.isGlobalStatistics(), configuration.volume());
         this.previewActions = previewActions;
         this.indexes = indexes;
     }

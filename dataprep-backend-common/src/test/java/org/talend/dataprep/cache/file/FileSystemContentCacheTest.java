@@ -16,6 +16,7 @@ package org.talend.dataprep.cache.file;
 import static org.hamcrest.CoreMatchers.is;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -88,6 +89,19 @@ public class FileSystemContentCacheTest {
         Assert.assertThat(cache.has(key), is(false));
     }
 
+    @Test
+    public void testPermanentEntry() throws Exception {
+        ContentCacheKey key = new DummyCacheKey("tutu");
+        // Put a content in cache...
+        addCacheEntry(key, "content, yes again", ContentCache.TimeToLive.PERMANENT);
+        Assert.assertThat(cache.has(key), is(true));
+        Assert.assertThat(IOUtils.toString(cache.get(key)), is("content, yes again"));
+        // ... evict() it...
+        cache.evict(key);
+        // ... has() must immediately return false
+        Assert.assertThat(cache.has(key), is(false));
+        Assert.assertThat(cache.get(key), is((InputStream) null));
+    }
 
     @Test
     public void testJanitorShouldNotCleanAnything() throws Exception {

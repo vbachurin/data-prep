@@ -25,9 +25,9 @@ import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.transformer.json.NullAnalyzer;
 import org.talend.dataprep.transformation.pipeline.Pipeline;
-import org.talend.dataprep.transformation.pipeline.node.TerminalNode;
-import org.talend.dataquality.common.inference.Analyzer;
-import org.talend.dataquality.common.inference.Analyzers;
+import org.talend.dataprep.transformation.pipeline.node.BasicNode;
+import org.talend.datascience.common.inference.Analyzer;
+import org.talend.datascience.common.inference.Analyzers;
 
 public class ActionTestWorkbench {
 
@@ -78,7 +78,7 @@ public class ActionTestWorkbench {
         rowMetadata.setColumns(outputNode.getMetadata().getColumns());
     }
 
-    private static class TestOutputNode extends TerminalNode {
+    private static class TestOutputNode extends BasicNode {
 
         private RowMetadata metadata;
 

@@ -9,7 +9,7 @@ import org.talend.dataprep.transformation.pipeline.link.NullLink;
  * Equivalent for a /dev/null for a Node: has a {@link NullLink} and do nothing on
  * {@link #receive(DataSetRow, RowMetadata)}.
  */
-public class NullNode extends TerminalNode {
+public class NullNode extends BasicNode {
 
     public static final Node INSTANCE = new NullNode();
 

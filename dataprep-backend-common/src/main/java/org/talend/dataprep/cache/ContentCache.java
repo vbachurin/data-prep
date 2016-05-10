@@ -102,7 +102,11 @@ public interface ContentCache {
         /**
          * A very short expiration time (using ContentCache.EVICTION_PERIOD). Useful for tests on eviction.
          */
-        IMMEDIATE(ContentCache.EVICTION_PERIOD + 500L);
+        IMMEDIATE(ContentCache.EVICTION_PERIOD + 500L),
+        /**
+         * A infinite expiration time (it is up to caller to evict the cache entry).
+         */
+        PERMANENT(-1);
 
         private final long time;
 

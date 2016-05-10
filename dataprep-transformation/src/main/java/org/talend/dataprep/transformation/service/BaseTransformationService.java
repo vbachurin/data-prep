@@ -13,9 +13,11 @@
 
 package org.talend.dataprep.transformation.service;
 
+import static org.talend.daikon.exception.ExceptionContext.build;
 import static org.talend.dataprep.exception.error.PreparationErrorCodes.UNABLE_TO_READ_PREPARATION;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -30,8 +32,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.api.dataset.DataSet;
+import org.talend.dataprep.api.filter.FilterService;
+import org.talend.dataprep.api.preparation.Preparation;
+import org.talend.dataprep.command.preparation.PreparationDetailsGet;
 import org.talend.dataprep.command.preparation.PreparationGetActions;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.error.PreparationErrorCodes;
 import org.talend.dataprep.exception.error.TransformationErrorCodes;
 import org.talend.dataprep.format.export.ExportFormat;
 import org.talend.dataprep.http.HttpResponseContext;
@@ -51,7 +57,7 @@ public abstract class BaseTransformationService {
 
     /** The transformer factory. */
     @Autowired
-    private TransformerFactory factory;
+    protected TransformerFactory factory;
 
     /** The format registration service. */
     @Autowired
@@ -75,7 +81,9 @@ public abstract class BaseTransformationService {
 
     /** Spring application context. */
     @Autowired
-    private ApplicationContext applicationContext;
+    protected ApplicationContext applicationContext;
+    @Autowired
+    protected FilterService filterService;
 
     /**
      * Transformation business logic.
@@ -94,6 +102,23 @@ public abstract class BaseTransformationService {
         final ExportFormat format = getFormat(formatName);
 
         // get the actions to apply (no preparation ==> dataset export ==> no actions)
+        final String actions = getActions(preparationId, stepId);
+
+        setExportHeaders(exportName, format);
+
+        Configuration configuration = Configuration.builder() //
+                .format(format.getName()) //
+                .args(arguments) //
+                .output(response) //
+                .actions(actions) //
+                .stepId(stepId) //
+                .build();
+
+        factory.get(configuration).transform(dataSet, configuration);
+
+    }
+
+    protected String getActions(String preparationId, String stepId) {
         String actions;
         if (StringUtils.isBlank(preparationId)) {
             actions = "{\"actions\": []}";
@@ -106,18 +131,7 @@ public abstract class BaseTransformationService {
                 throw new TDPException(UNABLE_TO_READ_PREPARATION, e, context);
             }
         }
-
-        setExportHeaders(exportName, format);
-
-        Configuration configuration = Configuration.builder() //
-                .format(format.getName()) //
-                .args(arguments) //
-                .output(response) //
-                .actions(actions) //
-                .build();
-
-        factory.get(configuration).transform(dataSet, configuration);
-
+        return actions;
     }
 
     /**
@@ -138,7 +152,7 @@ public abstract class BaseTransformationService {
      * @return the format that matches the given name.
      */
     protected ExportFormat getFormat(String formatName) {
-        final ExportFormat format = formatRegistrationService.getByName(formatName);
+        final ExportFormat format = formatRegistrationService.getByName(formatName.toUpperCase());
         if (format == null) {
             LOG.error("Export format {} not supported", formatName);
             throw new TDPException(TransformationErrorCodes.OUTPUT_TYPE_NOT_SUPPORTED);
@@ -158,4 +172,18 @@ public abstract class BaseTransformationService {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
+    /**
+     * @param preparationId the wanted preparation id.
+     * @return the preparation out of its id.
+     */
+    protected Preparation getPreparation(String preparationId) {
+
+        final PreparationDetailsGet preparationDetailsGet = applicationContext.getBean(PreparationDetailsGet.class, preparationId);
+        try (InputStream details = preparationDetailsGet.execute()) {
+            return mapper.readerFor(Preparation.class).readValue(details);
+        } catch (IOException e) {
+            throw new TDPException(UNABLE_TO_READ_PREPARATION, e, build().put("id", preparationId));
+        }
+
+    }
 }

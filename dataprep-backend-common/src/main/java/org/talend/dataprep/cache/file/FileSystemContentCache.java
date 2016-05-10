@@ -97,7 +97,11 @@ public class FileSystemContentCache implements ContentCache {
     private Path computeEntryPath(ContentCacheKey key, TimeToLive timeToLive) {
         String path = location + key.getKey();
         if (timeToLive != null) {
-            path += '.' + String.valueOf(System.currentTimeMillis() + timeToLive.getTime());
+            if (timeToLive.getTime() > 0) {
+                path += '.' + String.valueOf(System.currentTimeMillis() + timeToLive.getTime());
+            } else {
+                // Leave path as it is (don't add timestamp).
+            }
         }
         return Paths.get(path);
     }
@@ -108,6 +112,9 @@ public class FileSystemContentCache implements ContentCache {
         final File[] files = path.getParent().toFile().listFiles();
         if (files != null) {
             for (File file : files) {
+                if(Paths.get(file.toURI()).equals(path.toAbsolutePath())) {
+                    return true;
+                }
                 final String fileName = file.getName();
                 final String suffix = StringUtils.substringAfterLast(fileName, ".");
                 if (isLiveEntry(suffix)) {
@@ -126,18 +133,19 @@ public class FileSystemContentCache implements ContentCache {
         final File[] files = path.getParent().toFile().listFiles();
         if (files != null) {
             for (File file : files) {
-
                 if (!StringUtils.startsWith(file.getName(), key.getKey())) {
                     continue;
                 }
-
-                final String suffix = StringUtils.substringAfterLast(file.getName(), ".");
-                if (isLiveEntry(suffix)) {
-                    try {
+                try {
+                    if(Paths.get(file.toURI()).equals(path.toAbsolutePath())) {
                         return Files.newInputStream(file.toPath());
-                    } catch (IOException e) {
-                        throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
                     }
+                    final String suffix = StringUtils.substringAfterLast(file.getName(), ".");
+                    if (isLiveEntry(suffix)) {
+                            return Files.newInputStream(file.toPath());
+                    }
+                } catch (IOException e) {
+                    throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
                 }
             }
         }
@@ -232,17 +240,24 @@ public class FileSystemContentCache implements ContentCache {
                     if (suffix.startsWith("nfs")) {
                         return FileVisitResult.CONTINUE;
                     }
-                    final long time = Long.parseLong(StringUtils.isEmpty(suffix) ? "0" : suffix);
-                    if (time < start) {
-                        try {
-                            Files.delete(file);
-                            deletedCount.incrementAndGet();
-                        } catch (NoSuchFileException e) {
-                            LOGGER.debug("Ignored delete issue for '{}'.", file.getFileName(), e);
-                        } catch (IOException e) {
-                            LOGGER.warn("Unable to delete '{}'.", file.getFileName());
-                            LOGGER.debug("Unable to delete '{}'.", file.getFileName(), e);
+                    if (StringUtils.isEmpty(suffix)) {
+                        return FileVisitResult.CONTINUE;
+                    }
+                    try {
+                        final long time = Long.parseLong(suffix);
+                        if (time < start) {
+                            try {
+                                Files.delete(file);
+                                deletedCount.incrementAndGet();
+                            } catch (NoSuchFileException e) {
+                                LOGGER.debug("Ignored delete issue for '{}'.", file.getFileName(), e);
+                            } catch (IOException e) {
+                                LOGGER.warn("Unable to delete '{}'.", file.getFileName());
+                                LOGGER.debug("Unable to delete '{}'.", file.getFileName(), e);
+                            }
                         }
+                    } catch (NumberFormatException e) {
+                        LOGGER.debug("Ignore file '{}'", file);
                     }
                     totalCount.incrementAndGet();
                     return super.visitFile(file, attrs);

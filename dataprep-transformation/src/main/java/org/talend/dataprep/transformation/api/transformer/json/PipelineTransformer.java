@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.dataset.statistics.StatisticsAdapter;
+import org.talend.dataprep.cache.ContentCache;
 import org.talend.dataprep.quality.AnalyzerService;
 import org.talend.dataprep.transformation.api.action.ActionParser;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
@@ -37,6 +38,9 @@ public class PipelineTransformer implements Transformer {
     @Autowired
     StatisticsAdapter adapter;
 
+    @Autowired
+    ContentCache contentCache;
+
     @Override
     public void transform(DataSet input, Configuration configuration) {
         final RowMetadata rowMetadata = input.getMetadata().getRowMetadata();
@@ -53,9 +57,14 @@ public class PipelineTransformer implements Transformer {
                         return analyzerService.full(columns);
                     }
                 })
-                .withOutput(() -> new WriterNode(writer))
+                .withMonitor(configuration.getMonitor())
+                .withFilter(configuration.getFilter())
+                .withFilterOut(configuration.getOutFilter())
+                .withOutput(() -> new WriterNode(writer, contentCache, configuration.stepId()))
                 .withContext(configuration.getTransformationContext())
                 .withStatisticsAdapter(adapter)
+                .withGlobalStatistics(configuration.isGlobalStatistics())
+                .allowMetadataChange(configuration.isAllowMetadataChange())
                 .build();
         try {
             LOGGER.debug("Before transformation: {}", pipeline);

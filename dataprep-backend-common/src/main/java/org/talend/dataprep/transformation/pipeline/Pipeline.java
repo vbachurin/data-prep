@@ -107,7 +107,17 @@ public class Pipeline implements Node, RuntimeNode {
 
         private StatisticsAdapter adapter;
 
+        private Supplier<Node> monitorSupplier = BasicNode::new;
+
         private Supplier<Node> outputSupplier = () -> NullNode.INSTANCE;
+
+        private boolean allowMetadataChange;
+
+        private Predicate<DataSetRow> inFilter;
+
+        private Predicate<DataSetRow> outFilter;
+
+        private boolean needGlobalStatistics = true;
 
         public static Builder builder() {
             return new Builder();
@@ -148,8 +158,28 @@ public class Pipeline implements Node, RuntimeNode {
             return this;
         }
 
+        public Builder withMonitor(Supplier<Node> monitorSupplier) {
+            this.monitorSupplier = monitorSupplier;
+            return this;
+        }
+
         public Builder withOutput(Supplier<Node> outputSupplier) {
             this.outputSupplier = outputSupplier;
+            return this;
+        }
+
+        public Builder withGlobalStatistics(boolean needGlobalStatistics) {
+            this.needGlobalStatistics = needGlobalStatistics;
+            return this;
+        }
+
+        public Builder allowMetadataChange(boolean allowMetadataChange) {
+            this.allowMetadataChange = allowMetadataChange;
+            return this;
+        }
+
+        public Builder withFilter(Predicate<DataSetRow> filter) {
+            this.inFilter = filter;
             return this;
         }
 
@@ -207,32 +237,56 @@ public class Pipeline implements Node, RuntimeNode {
             return analysisResult;
         }
 
-        public Pipeline build() {
-            final ActionAnalysis analysis = analyzeActions();
-            final NodeBuilder current = NodeBuilder.source();
-            // Apply actions
-            for (Action action : actions) {
-                current.to(new CompileNode(action, context.create(action.getRowAction())));
+        public Builder withFilterOut(Predicate<DataSetRow> outFilter) {
+            this.outFilter = outFilter;
+            return this;
+        }
+
+        private void addReservoirStatistics(Action action, ActionAnalysis analysis, NodeBuilder builder) {
+            if (allowMetadataChange) {
+                if (actionToMetadata.get(action).getBehavior().contains(ActionMetadata.Behavior.NEED_STATISTICS)) {
+                    if (actionRegistry != null) {
+                        builder.to(new ReservoirNode(inlineAnalyzer, analysis.filter, adapter));
+                    } else {
+                        builder.to(new ReservoirNode(inlineAnalyzer, c -> true, adapter));
+                    }
+                }
                 if (action.getParameters().containsKey(ImplicitParameters.FILTER.getKey())) {
                     // action has a filter, to cover cases where filters are on invalid values
                     final String filterAsString = action.getParameters().get(ImplicitParameters.FILTER.getKey());
-                    // TODO Perform static analysis of filter to discover if filter holds conditions that needs up-to-date
-                    // statistics
                     if (StringUtils.contains(filterAsString, "valid") || StringUtils.contains(filterAsString, "invalid")) {
                         // TODO Perform static analysis of filter to discover which column is the filter on.
-                        current.to(new InlineAnalysisNode(inlineAnalyzer, c -> true, adapter));
+                        builder.to(new ReservoirNode(inlineAnalyzer, c -> true, adapter));
                     }
                 }
+            }
+        }
+
+        public Pipeline build() {
+            final ActionAnalysis analysis = analyzeActions();
+            final NodeBuilder current;
+            if (inFilter != null) {
+                current = NodeBuilder.filteredSource(inFilter);
+            } else {
+                current = NodeBuilder.source();
+            }
+            // Apply actions
+            for (Action action : actions) {
+                addReservoirStatistics(action, analysis, current);
+                current.to(new CompileNode(action, context.create(action.getRowAction())));
                 current.to(new ActionNode(action, context.in(action.getRowAction())));
             }
             // Analyze (delayed)
-            if (analysis.needDelayedAnalysis) {
-                current.to(new InlineAnalysisNode(inlineAnalyzer, analysis.filter, adapter));
-                current.to(new DelayedAnalysisNode(delayedAnalyzer, analysis.filter, adapter));
+            if (analysis.needDelayedAnalysis && needGlobalStatistics) {
+                current.to(new ReservoirNode(delayedAnalyzer, analysis.filter , adapter));
             }
             // Output
+            if (outFilter != null) {
+                current.to(new FilteredNode(outFilter));
+            }
             current.to(new CleanUpNode(context));
             current.to(outputSupplier.get());
+            current.to(monitorSupplier.get());
             // Finally build pipeline
             return new Pipeline(current.build());
         }

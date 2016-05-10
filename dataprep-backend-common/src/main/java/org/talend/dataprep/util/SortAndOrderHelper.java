@@ -19,6 +19,7 @@ import static org.talend.dataprep.exception.error.CommonErrorCodes.ILLEGAL_SORT_
 
 import java.util.Comparator;
 
+import org.apache.commons.lang.StringUtils;
 import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.folder.Folder;
@@ -134,25 +135,36 @@ public class SortAndOrderHelper {
         Sort sort;
         try {
             sort = Sort.valueOf(sortKey.toUpperCase());
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             throw new TDPException(CommonErrorCodes.ILLEGAL_ORDER_FOR_LIST, build().put("sort", sortKey));
         }
 
         // Select comparator for sort (either by name or date)
         final Comparator<Preparation> comparator;
         switch (sort) {
-            case NAME:
-                comparator = Comparator.comparing(Preparation::getName, comparisonOrder);
-                break;
-            case DATE:
-                comparator = Comparator.comparing(p -> String.valueOf(p.getCreationDate()), comparisonOrder);
-                break;
-            case MODIF:
-                comparator = Comparator.comparing(p -> String.valueOf(p.getLastModificationDate()), comparisonOrder);
-                break;
-            default:
-                throw new TDPException(ILLEGAL_SORT_FOR_LIST, ExceptionContext.build().put("sort", sort));
+        case NAME:
+            comparator = Comparator.comparing(Preparation::getName, comparisonOrder);
+            break;
+        case DATE:
+            comparator = Comparator.comparing(p -> {
+                if (p != null) {
+                    return String.valueOf(p.getCreationDate());
+                } else {
+                    return StringUtils.EMPTY;
+                }
+            }, comparisonOrder);
+            break;
+        case MODIF:
+            comparator = Comparator.comparing(p -> {
+                if (p != null) {
+                    return String.valueOf(p.getLastModificationDate());
+                } else {
+                    return StringUtils.EMPTY;
+                }
+            }, comparisonOrder);
+            break;
+        default:
+            throw new TDPException(ILLEGAL_SORT_FOR_LIST, ExceptionContext.build().put("sort", sort));
         }
         return comparator;
     }

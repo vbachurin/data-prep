@@ -13,15 +13,21 @@
 
 package org.talend.dataprep.configuration;
 
+import java.io.IOException;
 import java.util.Collections;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import org.elasticsearch.index.mapper.object.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.convert.converter.Converter;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.preparation.PreparationActions;
 import org.talend.dataprep.api.preparation.Step;
 import org.talend.dataprep.api.service.info.VersionService;
+import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.error.CommonErrorCodes;
 
 /**
  * Provide instance for root/initial content with current application version.
@@ -32,6 +38,21 @@ public class BaseContent {
     /** The version service. */
     @Autowired
     private VersionService versionService;
+
+    @Bean
+    public Converter<String, JsonNode> jsonNodeConverter() {
+        return new Converter<String, JsonNode>() {
+            @Override
+            public JsonNode convert(String source) {
+                com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+                try {
+                    return mapper.readTree(source);
+                } catch (IOException e) {
+                    throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
+                }
+            }
+        };
+    }
 
     /**
      * @return the preparation root content (no actions).
