@@ -17,7 +17,7 @@ import StepDescriptionCtrl from './step-description-controller';
 const StepDescription = {
     bindings: {
         index: '<',
-        step: '<'
+        step: '<',
     },
     controller: StepDescriptionCtrl,
     template: '<span ng-bind-html="$ctrl.stepDescription"></span>',

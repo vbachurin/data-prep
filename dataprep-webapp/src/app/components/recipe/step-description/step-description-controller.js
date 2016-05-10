@@ -23,24 +23,38 @@ class StepDescriptionCtrl {
     $onChanges() {
         switch (this.step.actionParameters.parameters.scope) {
             case 'column':
-                this.stepDescription = this.$translate.instant('RECIPE_ITEM_ON_COL', { index : (this.index + 1), label : this.step.transformation.label, columnName: this.step.column.name.toUpperCase() });
-                break;
-
-            case 'cell':
-                this.stepDescription = this.$translate.instant('RECIPE_ITEM_ON_CELL', { index : (this.index + 1), label : this.step.transformation.label});
+                this.stepDescription = this.$translate.instant('RECIPE_ITEM_ON_COL', {
+                    index: (this.index + 1),
+                    label: this.step.transformation.label,
+                    columnName: this.step.column.name.toUpperCase(),
+                });
                 break;
 
             case 'line':
-                this.stepDescription = this.$translate.instant('RECIPE_ITEM_ON_LINE', { index : (this.index + 1), label : this.step.transformation.label, rowId: this.step.row.id });
+                this.stepDescription = this.$translate.instant('RECIPE_ITEM_ON_LINE', {
+                    index: (this.index + 1),
+                    label: this.step.transformation.label,
+                    rowId: this.step.row.id,
+                });
+                break;
+
+            case 'cell':
+                this.stepDescription = this.$translate.instant('RECIPE_ITEM_ON_CELL', {
+                    index: (this.index + 1),
+                    label: this.step.transformation.label,
+                });
                 break;
 
             case 'dataset':
                 if (this.step.transformation.name === 'lookup') {
-                    const lookupStepDetails = this._getAddedColumnsInLookup(this.step);
-                    this._updateLookupDescription(lookupStepDetails);
+                    this.stepDescription = this._getLookupDetails(this.step);
                 }
                 if (this.step.transformation.name === 'reorder') {
-                    this.stepDescription = this.$translate.instant('RECIPE_ITEM_ON_COL', { index : (this.index + 1), label : this.step.transformation.label, columnName: this.step.column.name.toUpperCase() });
+                    this.stepDescription = this.$translate.instant('RECIPE_ITEM_ON_COL', {
+                        index: (this.index + 1),
+                        label: this.step.transformation.label,
+                        columnName: this.step.column.name.toUpperCase(),
+                    });
                 }
                 break;
         }
@@ -48,32 +62,35 @@ class StepDescriptionCtrl {
 
     /**
      * @ngdoc method
-     * @name _updateLookupDescription
-     * @methodOf data-prep.step-description.controller:_updateLookupDescription
-     * @param {object} lookupStepDetails The new step
+     * @name _getLookupDetails
+     * @methodOf data-prep.step-description.controller:StepDescriptionCtrl
+     * @param {object} step The step
      * @description creates the lookup step description
      */
-    _updateLookupDescription(lookupStepDetails) {
-        this.stepDescription = this.$translate.instant('LOOKUP_STEP_DESCRIPTION', {
-            index : (this.index + 1),
-            label : this.step.transformation.label,
+    _getLookupDetails(step) {
+        let description = this.$translate.instant('LOOKUP_STEP_DESCRIPTION', {
+            index: (this.index + 1),
+            label: this.step.transformation.label,
             lookupDsName: this.step.actionParameters.parameters.lookup_ds_name,
             mainColName: this.step.column.name,
-            lookupColName: this.step.actionParameters.parameters.lookup_join_on_name
+            lookupColName: this.step.actionParameters.parameters.lookup_join_on_name,
         });
 
+        const lookupStepDetails = this._getAddedColumnsInLookup(step);
         switch (lookupStepDetails.initialColsNbr) {
             case 1:
-                this.stepDescription += this.$translate.instant('ONLY_1_ADDED_COL', lookupStepDetails);
+                description += this.$translate.instant('ONLY_1_ADDED_COL', lookupStepDetails);
                 break;
 
             case 2:
-                this.stepDescription += this.$translate.instant('ONLY_2_ADDED_COLS', lookupStepDetails);
+                description += this.$translate.instant('ONLY_2_ADDED_COLS', lookupStepDetails);
                 break;
 
             default:
-                this.stepDescription += this.$translate.instant('MORE_THEN_2_ADDED_COLS', lookupStepDetails);
+                description += this.$translate.instant('MORE_THEN_2_ADDED_COLS', lookupStepDetails);
         }
+
+        return description;
     }
 
     /**

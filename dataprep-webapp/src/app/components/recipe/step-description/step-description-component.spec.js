@@ -45,6 +45,7 @@ describe('Step Description Component', () => {
     describe('on column scope', () => {
         it('should render the column name', () => {
             //given
+            scope.index = 2;
             scope.step = {
                 column: { id: '0', name: 'col1' },
                 transformation: {
@@ -64,7 +65,6 @@ describe('Step Description Component', () => {
                     },
                 },
             };
-            scope.index = 2;
 
             //when
             createElement();
@@ -78,6 +78,7 @@ describe('Step Description Component', () => {
     describe('on cell scope', () => {
         it('should render cell action', () => {
             //given
+            scope.index = 6;
             scope.step = {
                 column: { id: '1', name: 'col2' },
                 transformation: {
@@ -100,7 +101,6 @@ describe('Step Description Component', () => {
                 },
                 inactive: true,
             };
-            scope.index = 6;
 
             //when
             createElement();
@@ -114,6 +114,7 @@ describe('Step Description Component', () => {
     describe('on line scope', () => {
         it('should render the row number', () => {
             //given
+            scope.index = 6;
             scope.step = {
                 column: { id: undefined, name: undefined },
                 row: { id: 125 },
@@ -134,7 +135,7 @@ describe('Step Description Component', () => {
                 },
                 inactive: true,
             };
-            scope.index = 6;
+
 
             //when
             createElement();
@@ -146,8 +147,9 @@ describe('Step Description Component', () => {
     });
 
     describe('on dataset scope', () => {
-        it('should show the lookup details', ()=> {
+        it('should show the lookup details', () => {
             //given
+            scope.index = 1;
             scope.step = {
                 'column': {
                     'id': '0000',
@@ -191,7 +193,6 @@ describe('Step Description Component', () => {
                     },
                 },
             };
-            scope.index = 1;
 
             //when
             createElement();
@@ -199,38 +200,6 @@ describe('Step Description Component', () => {
 
             //then
             expect(element.eq(0).text().trim().replace(/\s+/g, ' ')).toBe('2. Lookup done with dataset customers_100_with_pb. Join has been set between id and id. The columns firstname, lastname and 2 other(s) have been added.');
-        });
-        it('should show the reorder details', ()=> {
-            //given
-            scope.step = {
-                column: { id: '0', name: 'col1' },
-                transformation: {
-                    stepId: '13a24e8765ef4',
-                    name: 'reorder',
-                    label: 'Split',
-                    category: 'split',
-                    parameters: [{ name: 'pattern', type: 'string' }],
-                    items: [],
-                },
-                actionParameters: {
-                    action: 'split',
-                    parameters: {
-                        selected_column: "0003",
-                        column_id: '0000',
-                        scope: 'dataset',
-                        column_name: 'name',
-                        dataset_action_display_type: 'column',
-                    }
-                },
-            };
-            scope.index = 3;
-
-            //when
-            createElement();
-            scope.$digest();
-
-            //then
-            expect(element.eq(0).text().trim().replace(/\s+/g, ' ')).toBe('4. Split on column COL1');
         });
     });
 });

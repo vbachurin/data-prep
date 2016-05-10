@@ -40,7 +40,7 @@ describe('Step Description controller', () => {
         it('should translate description on scope: column', () => {
             //given
             const ctrl = createController();
-
+            ctrl.index = 5;
             ctrl.step = {
                 column: { id: '0', name: 'col1' },
                 transformation: {
@@ -60,7 +60,6 @@ describe('Step Description controller', () => {
                     }
                 },
             };
-            ctrl.index = 5;
 
             //when
             ctrl.$onChanges();
@@ -74,7 +73,7 @@ describe('Step Description controller', () => {
         it('should translate description on scope: cell', () => {
             //given
             const ctrl = createController();
-
+            ctrl.index = 2;
             ctrl.step = {
                 column: { id: '1', name: 'col2' },
                 transformation: {
@@ -97,7 +96,6 @@ describe('Step Description controller', () => {
                 },
                 inactive: true,
             };
-            ctrl.index = 2;
 
             //when
             ctrl.$onChanges();
@@ -111,7 +109,7 @@ describe('Step Description controller', () => {
         it('should translate description on scope: line', () => {
             //given
             const ctrl = createController();
-
+            ctrl.index = 0;
             ctrl.step = {
                 column: { id: undefined, name: undefined },
                 row: { id: 125 },
@@ -132,7 +130,6 @@ describe('Step Description controller', () => {
                 },
                 inactive: true,
             };
-            ctrl.index = 0;
 
             //when
             ctrl.$onChanges();
@@ -148,7 +145,7 @@ describe('Step Description controller', () => {
                 it('should translate description with 1 column', () => {
                     //given
                     const ctrl = createController();
-
+                    ctrl.index = 10;
                     ctrl.step = {
                         'column': {
                             'id': '0000',
@@ -180,7 +177,6 @@ describe('Step Description controller', () => {
                             },
                         },
                     };
-                    ctrl.index = 10;
 
                     //when
                     ctrl.$onChanges();
@@ -193,7 +189,7 @@ describe('Step Description controller', () => {
                 it('should translate description with 2 columns', () => {
                     //given
                     const ctrl = createController();
-
+                    ctrl.index = 1;
                     ctrl.step = {
                         'column': {
                             'id': '0000',
@@ -229,7 +225,6 @@ describe('Step Description controller', () => {
                             },
                         },
                     };
-                    ctrl.index = 1;
 
                     //when
                     ctrl.$onChanges();
@@ -242,7 +237,7 @@ describe('Step Description controller', () => {
                 it('should translate description with more than 2 columns', () => {
                     //given
                     const ctrl = createController();
-
+                    ctrl.index = 2;
                     ctrl.step = {
                         'column': {
                             'id': '0000',
@@ -286,7 +281,6 @@ describe('Step Description controller', () => {
                             },
                         },
                     };
-                    ctrl.index = 2;
 
                     //when
                     ctrl.$onChanges();
@@ -301,7 +295,7 @@ describe('Step Description controller', () => {
                 it('should translate description for reordering step', () => {
                     //given
                     const ctrl = createController();
-
+                    ctrl.index = 0;
                     ctrl.step = {
                         column: { id: '0', name: 'col1' },
                         transformation: {
@@ -323,7 +317,6 @@ describe('Step Description controller', () => {
                             }
                         },
                     };
-                    ctrl.index = 0;
 
                     //when
                     ctrl.$onChanges();
