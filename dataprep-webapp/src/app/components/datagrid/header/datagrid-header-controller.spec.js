@@ -1,48 +1,48 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
 
-describe('Datagrid header controller', function () {
+describe('Datagrid header controller', () => {
     'use strict';
 
-    var createController, scope;
-    var column = {
+    let createController, scope;
+    const column = {
         id: '0001',
         name: 'Original name',
-        type: 'string'
+        type: 'string',
     };
 
-    var transformationsMock = function () {
-        var transformations = [
+    const transformationsMock = () => {
+        const transformations = [
             {
                 'name': 'uppercase',
                 'category': 'case',
                 'actionScope': [],
                 'items': null,
-                'parameters': null
+                'parameters': null,
             },
             {
                 'name': 'rename',
                 'category': 'column_metadata',
                 'actionScope': ['column_metadata'],
                 'items': null,
-                'parameters': null
+                'parameters': null,
             },
             {
                 'name': 'lowercase',
                 'category': 'case',
                 'actionScope': [],
                 'items': null,
-                'parameters': null
+                'parameters': null,
             },
             {
                 'name': 'withParam',
@@ -54,9 +54,9 @@ describe('Datagrid header controller', function () {
                         'name': 'param',
                         'type': 'string',
                         'default': '.',
-                        'inputType': 'text'
+                        'inputType': 'text',
                     }
-                ]
+                ],
             },
             {
                 'name': 'split',
@@ -67,9 +67,7 @@ describe('Datagrid header controller', function () {
                     {
                         'name': 'mode',
                         'values': [
-                            {
-                                'name': 'noparam'
-                            },
+                            { 'name': 'noparam' },
                             {
                                 'name': 'regex',
                                 'parameters': [
@@ -77,9 +75,9 @@ describe('Datagrid header controller', function () {
                                         'name': 'regexp',
                                         'type': 'string',
                                         'default': '.',
-                                        'inputType': 'text'
+                                        'inputType': 'text',
                                     }
-                                ]
+                                ],
                             },
                             {
                                 'name': 'index',
@@ -88,9 +86,9 @@ describe('Datagrid header controller', function () {
                                         'name': 'index',
                                         'type': 'integer',
                                         'default': '5',
-                                        'inputType': 'number'
+                                        'inputType': 'number',
                                     }
-                                ]
+                                ],
                             },
                             {
                                 'name': 'threeParams',
@@ -112,26 +110,26 @@ describe('Datagrid header controller', function () {
                                         'type': 'double',
                                         'default': '5',
                                         'inputType': 'number'
-                                    }
+                                    },
                                 ]
                             }
                         ]
                     }
-                ]
-            }
+                ],
+            },
         ];
         return {
-            allTransformations : transformations
+            allTransformations: transformations
         };
     };
 
     beforeEach(angular.mock.module('data-prep.datagrid-header'));
 
-    beforeEach(inject(function ($rootScope, $controller) {
+    beforeEach(inject(($rootScope, $controller) => {
         scope = $rootScope.$new();
 
-        createController = function () {
-            let ctrlFn = $controller('DatagridHeaderCtrl', {
+        createController = () => {
+            const ctrlFn = $controller('DatagridHeaderCtrl', {
                 $scope: scope
             }, true);
 
@@ -142,18 +140,18 @@ describe('Datagrid header controller', function () {
         };
     }));
 
-    describe('with transformation list success', function () {
-        beforeEach(inject(function ($q, TransformationCacheService) {
+    describe('with transformation list success', () => {
+        beforeEach(inject(($q, TransformationCacheService) => {
             spyOn(TransformationCacheService, 'getColumnTransformations').and.returnValue($q.when(transformationsMock()));
         }));
 
-        it('should filter and init only "column_metadata" category', inject(function ($rootScope, TransformationCacheService) {
+        it('should filter and init only "column_metadata" category', inject((TransformationCacheService) => {
             //given
-            var ctrl = createController();
+            const ctrl = createController();
 
             //when
             ctrl.initTransformations();
-            $rootScope.$digest();
+            scope.$digest();
 
             //then
             expect(TransformationCacheService.getColumnTransformations).toHaveBeenCalledWith(column, true);
@@ -162,34 +160,34 @@ describe('Datagrid header controller', function () {
             expect(ctrl.transformations[1].name).toBe('split');
         }));
 
-        it('should not get transformations if transformations are already initiated', inject(function ($rootScope, TransformationCacheService) {
+        it('should not get transformations if transformations are already initiated', inject((TransformationCacheService) => {
             //given
             let ctrl = createController();
             ctrl.initTransformations();
-            $rootScope.$digest();
+            scope.$digest();
 
             //when
             ctrl.initTransformations();
-            $rootScope.$digest();
+            scope.$digest();
 
             //then
             expect(TransformationCacheService.getColumnTransformations.calls.count()).toBe(1);
         }));
 
-        it('should retrieve transformation list when a column changes', inject(function ($rootScope, TransformationCacheService) {
+        it('should retrieve transformation list when a column changes', inject((TransformationCacheService) => {
             //given
             let ctrl = createController();
             ctrl.initTransformations();
-            $rootScope.$digest();
+            scope.$digest();
 
-            //when
             ctrl.column = {
                 id: '0001',
                 name: 'New name',
                 type: 'string'
             };
-            $rootScope.$digest();
+            scope.$digest();
 
+            //when
             ctrl.initTransformations();
 
             //then
@@ -197,14 +195,14 @@ describe('Datagrid header controller', function () {
         }));
     });
 
-    describe('with transformation list error', function () {
-        beforeEach(inject(function ($q, TransformationCacheService) {
+    describe('with transformation list error', () => {
+        beforeEach(inject(($q, TransformationCacheService) => {
             spyOn(TransformationCacheService, 'getColumnTransformations').and.returnValue($q.reject('server error'));
         }));
 
-        it('should change inProgress and error flags', inject(function ($rootScope) {
+        it('should change inProgress and error flags', () => {
             //given
-            var ctrl = createController();
+            const ctrl = createController();
             expect(ctrl.transformationsRetrieveError).toBeFalsy();
             expect(ctrl.initTransformationsInProgress).toBeFalsy();
 
@@ -214,23 +212,23 @@ describe('Datagrid header controller', function () {
             ctrl.initTransformations();
             expect(ctrl.initTransformationsInProgress).toBeTruthy();
             expect(ctrl.transformationsRetrieveError).toBeFalsy();
-            $rootScope.$digest();
+            scope.$digest();
 
             //then
             expect(ctrl.transformationsRetrieveError).toBeTruthy();
             expect(ctrl.initTransformationsInProgress).toBeFalsy();
-        }));
+        });
     });
 
-    describe('update column name', function () {
+    describe('update column name', () => {
 
-        beforeEach(inject(function ($q, PlaygroundService) {
+        beforeEach(inject(($q, PlaygroundService) => {
             spyOn(PlaygroundService, 'appendStep').and.returnValue($q.when(true));
         }));
 
-        it('should update column name', inject(function (PlaygroundService) {
+        it('should update column name', inject((PlaygroundService) => {
             //given
-            var ctrl = createController();
+            const ctrl = createController();
             ctrl.newName = 'new name';
 
             //when
@@ -245,9 +243,9 @@ describe('Datagrid header controller', function () {
             });
         }));
 
-        it('should turn off edition mode after name update', function () {
+        it('should turn off edition mode after name update', () => {
             //given
-            var ctrl = createController();
+            const ctrl = createController();
             ctrl.newName = 'new name';
             ctrl.isEditMode = true;
 
@@ -259,47 +257,47 @@ describe('Datagrid header controller', function () {
             expect(ctrl.isEditMode).toBe(false);
         });
 
-        it('should return true when name has changed and is not empty', function () {
+        it('should return true when name has changed and is not empty', () => {
             //given
-            var ctrl = createController();
+            const ctrl = createController();
             ctrl.newName = 'new name';
 
             //when
-            var hasChanged = ctrl.nameHasChanged();
+            const hasChanged = ctrl.nameHasChanged();
 
             //then
             expect(hasChanged).toBe(true);
         });
 
-        it('should return false when name is unchanged', function () {
+        it('should return false when name is unchanged', () => {
             //given
-            var ctrl = createController();
+            const ctrl = createController();
             ctrl.setEditMode(true);
             ctrl.newName = 'Original name';
 
             //when
-            var hasChanged = ctrl.nameHasChanged();
+            const hasChanged = ctrl.nameHasChanged();
 
             //then
             expect(hasChanged).toBeFalsy();
         });
 
-        it('should return false when name is falsy', function () {
+        it('should return false when name is falsy', () => {
             //given
-            var ctrl = createController();
+            const ctrl = createController();
             ctrl.setEditMode(true);
             ctrl.newName = '';
 
             //when
-            var hasChanged = ctrl.nameHasChanged();
+            const hasChanged = ctrl.nameHasChanged();
 
             //then
             expect(hasChanged).toBeFalsy();
         });
 
-        it('should update edition mode to true', function () {
+        it('should update edition mode to true', () => {
             //given
-            var ctrl = createController();
+            const ctrl = createController();
             expect(ctrl.isEditMode).toBeFalsy();
 
             //when
@@ -309,9 +307,9 @@ describe('Datagrid header controller', function () {
             expect(ctrl.isEditMode).toBeTruthy();
         });
 
-        it('should update edition mode to false', function () {
+        it('should update edition mode to false', () => {
             //given
-            var ctrl = createController();
+            const ctrl = createController();
             ctrl.isEditMode = true;
 
             //when
@@ -321,9 +319,9 @@ describe('Datagrid header controller', function () {
             expect(ctrl.isEditMode).toBe(false);
         });
 
-        it('should reset name when edition mode is set to true', function () {
+        it('should reset name when edition mode is set to true', () => {
             //given
-            var ctrl = createController();
+            const ctrl = createController();
             ctrl.newName = 'new name';
 
             //when
@@ -333,5 +331,4 @@ describe('Datagrid header controller', function () {
             expect(ctrl.newName).toBe('Original name');
         });
     });
-
 });

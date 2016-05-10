@@ -1,15 +1,15 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
 
 /**
  * @ngdoc controller
@@ -24,14 +24,14 @@
  * @requires data-prep.services.transformation.service:ColumnSuggestionService
  */
 export default function DatagridHeaderCtrl($scope, state, TransformationCacheService, ConverterService, PlaygroundService,
-                            FilterService, TransformationApplicationService, ColumnSuggestionService) {
+                                           FilterService, TransformationApplicationService, ColumnSuggestionService) {
     'ngInject';
 
-    var ACTION_SCOPE = 'column_metadata';
-    var RENAME_ACTION = 'rename_column';
-    var originalName;
+    const ACTION_SCOPE = 'column_metadata';
+    const RENAME_ACTION = 'rename_column';
+    let originalName;
 
-    var vm = this;
+    const vm = this;
     vm.converterService = ConverterService;
     vm.filterService = FilterService;
     vm.transformationApplicationService = TransformationApplicationService;
@@ -75,15 +75,14 @@ export default function DatagridHeaderCtrl($scope, state, TransformationCacheSer
             vm.initTransformationsInProgress = true;
 
             TransformationCacheService.getColumnTransformations(vm.column, true)
-                .then(function(columnTransformations) {
-                    vm.transformations = _.filter(columnTransformations.allTransformations, function(menu) {
-                        return (menu.actionScope.indexOf(ACTION_SCOPE) !== -1);
-                    });
+                .then((columnTransformations) => {
+                    vm.transformations = _.filter(
+                        columnTransformations.allTransformations,
+                        (menu) => (menu.actionScope.indexOf(ACTION_SCOPE) !== -1)
+                    );
                 })
-                .catch(function() {
-                    vm.transformationsRetrieveError = true;
-                })
-                .finally(function() {
+                .catch(() => { vm.transformationsRetrieveError = true })
+                .finally(() => {
                     transformationsMustBeRetrieved = false;
                     vm.initTransformationsInProgress = false;
                 });
@@ -97,7 +96,7 @@ export default function DatagridHeaderCtrl($scope, state, TransformationCacheSer
      * @description update the new column name
      */
     vm.updateColumnName = function updateColumnName() {
-        var params = {
+        const params = {
             new_column_name: vm.newName,
             scope: 'column',
             column_id: vm.column.id,
@@ -105,7 +104,7 @@ export default function DatagridHeaderCtrl($scope, state, TransformationCacheSer
         };
 
         PlaygroundService.appendStep(RENAME_ACTION, params)
-            .then(function() {
+            .then(() => {
                 vm.setEditMode(false);
                 originalName = vm.newName;
             });
@@ -153,9 +152,9 @@ export default function DatagridHeaderCtrl($scope, state, TransformationCacheSer
      * e.g. its name
      */
     $scope.$watch(
+        () => vm.column,
         () => {
-            return vm.column;
-        },
-        () => transformationsMustBeRetrieved = true
+            transformationsMustBeRetrieved = true
+        }
     );
 }
