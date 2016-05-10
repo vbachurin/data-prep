@@ -34,7 +34,7 @@ export default function DatasetXlsPreviewCtrl($timeout, $state, state, DatasetSh
      * @description [PRIVATE] Initialize the grid and set it in the service. The service will provide the data in it.
      * This is called at controller creation
      */
-    var initGrid = function () {
+    vm.initGrid = function () {
         var options = {
             enableColumnReorder: false,
             editable: false,
@@ -72,8 +72,6 @@ export default function DatasetXlsPreviewCtrl($timeout, $state, state, DatasetSh
                 $state.go('playground.dataset', {datasetid: vm.metadata.id});
             });
     };
-
-    $timeout(initGrid);
 }
 
 /**

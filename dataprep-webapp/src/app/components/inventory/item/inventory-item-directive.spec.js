@@ -99,7 +99,7 @@ describe('InventoryItem directive', () => {
         element.remove();
     });
 
-    describe('dataset', () => {
+    describe('dataset icon', () => {
 
         beforeEach(inject(($rootScope, $compile) => {
             scope = $rootScope.$new();
@@ -110,16 +110,6 @@ describe('InventoryItem directive', () => {
                     'item="dataset" ' +
                     'details="DATASET_DETAILS" ' +
                     'type="dataset" ' +
-                    'related-inventories="preparations" ' +
-                    'related-inventories-type="preparation" ' +
-                    'open-related-inventory="openRelatedInventory" ' +
-                    'open="open" ' +
-                    'process-certification="processCertif" ' +
-                    'copy="copy" ' +
-                    'rename="rename" ' +
-                    'remove="remove" ' +
-                    'toggle-favorite="toggleFavorite" ' +
-                    'update="update" ' +
                     '></inventory-item>');
                 $compile(element)(scope);
                 scope.$digest();

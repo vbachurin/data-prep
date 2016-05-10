@@ -11,13 +11,13 @@
 
  ============================================================================*/
 
-describe('Import controller', function () {
+describe('Import controller', () => {
     'use strict';
 
     var ctrl, createController, scope, StateMock;
     var dataset = {id: 'ec4834d9bc2af8', name: 'Customers (50 lines)', draft: false};
 
-    beforeEach(angular.mock.module('data-prep.import', function ($provide) {
+    beforeEach(angular.mock.module('data-prep.import', ($provide) => {
         StateMock = {
             inventory: {
                 currentFolder: {id : '', path: '', name: 'Home'},
@@ -28,118 +28,118 @@ describe('Import controller', function () {
             }, import: {
                 importTypes:[
                     {
-                        "locationType":"hdfs",
-                        "contentType":"application/vnd.remote-ds.hdfs",
-                        "parameters":[
+                        'locationType':'hdfs',
+                        'contentType':'application/vnd.remote-ds.hdfs',
+                        'parameters':[
                             {
-                                "name":"name",
-                                "type":"string",
-                                "implicit":false,
-                                "canBeBlank":false,
-                                "format":"",
-                                "default":"",
-                                "description":"Name",
-                                "label":"Enter the dataset name:"
+                                'name':'name',
+                                'type':'string',
+                                'implicit':false,
+                                'canBeBlank':false,
+                                'format':'',
+                                'default':'',
+                                'description':'Name',
+                                'label':'Enter the dataset name:'
                             },
                             {
-                                "name":"url",
-                                "type":"string",
-                                "implicit":false,
-                                "canBeBlank":false,
-                                "format":"hdfs://host:port/file",
-                                "default":"",
-                                "description":"URL",
-                                "label":"Enter the dataset URL:"
+                                'name':'url',
+                                'type':'string',
+                                'implicit':false,
+                                'canBeBlank':false,
+                                'format':'hdfs://host:port/file',
+                                'default':'',
+                                'description':'URL',
+                                'label':'Enter the dataset URL:'
                             }
                         ],
-                        "defaultImport":false,
-                        "label":"From HDFS",
-                        "title":"Add HDFS dataset"
+                        'defaultImport':false,
+                        'label':'From HDFS',
+                        'title':'Add HDFS dataset'
                     },
                     {
-                        "locationType":"http",
-                        "contentType":"application/vnd.remote-ds.http",
-                        "parameters":[
+                        'locationType':'http',
+                        'contentType':'application/vnd.remote-ds.http',
+                        'parameters':[
                             {
-                                "name":"name",
-                                "type":"string",
-                                "implicit":false,
-                                "canBeBlank":false,
-                                "format":"",
-                                "default":"",
-                                "description":"Name",
-                                "label":"Enter the dataset name:"
+                                'name':'name',
+                                'type':'string',
+                                'implicit':false,
+                                'canBeBlank':false,
+                                'format':'',
+                                'default':'',
+                                'description':'Name',
+                                'label':'Enter the dataset name:'
                             },
                             {
-                                "name":"url",
-                                "type":"string",
-                                "implicit":false,
-                                "canBeBlank":false,
-                                "format":"http://",
-                                "default":"",
-                                "description":"URL",
-                                "label":"Enter the dataset URL:"
+                                'name':'url',
+                                'type':'string',
+                                'implicit':false,
+                                'canBeBlank':false,
+                                'format':'http://',
+                                'default':'',
+                                'description':'URL',
+                                'label':'Enter the dataset URL:'
                             }
                         ],
-                        "defaultImport":false,
-                        "label":"From HTTP",
-                        "title":"Add HTTP dataset"
+                        'defaultImport':false,
+                        'label':'From HTTP',
+                        'title':'Add HTTP dataset'
                     },
                     {
-                        "locationType":"local",
-                        "contentType":"text/plain",
-                        "parameters":[
+                        'locationType':'local',
+                        'contentType':'text/plain',
+                        'parameters':[
                             {
-                                "name":"datasetFile",
-                                "type":"file",
-                                "implicit":false,
-                                "canBeBlank":false,
-                                "format":"*.csv",
-                                "default":"",
-                                "description":"File",
-                                "label":"File"
+                                'name':'datasetFile',
+                                'type':'file',
+                                'implicit':false,
+                                'canBeBlank':false,
+                                'format':'*.csv',
+                                'default':'',
+                                'description':'File',
+                                'label':'File'
                             }
                         ],
-                        "defaultImport":true,
-                        "label":"Local File",
-                        "title":"Add local file dataset"
+                        'defaultImport':true,
+                        'label':'Local File',
+                        'title':'Add local file dataset'
                     },{
-                        "locationType": "job",
-                        "contentType": "application/vnd.remote-ds.job",
-                        "parameters": [
+                        'locationType': 'job',
+                        'contentType': 'application/vnd.remote-ds.job',
+                        'parameters': [
                             {
-                                "name": "name",
-                                "type": "string",
-                                "implicit": false,
-                                "canBeBlank": false,
-                                "format": "",
-                                "description": "Name",
-                                "label": "Enter the dataset name:",
-                                "default": ""
+                                'name': 'name',
+                                'type': 'string',
+                                'implicit': false,
+                                'canBeBlank': false,
+                                'format': '',
+                                'description': 'Name',
+                                'label': 'Enter the dataset name:',
+                                'default': ''
                             },
                             {
-                                "name": "jobId",
-                                "type": "select",
-                                "implicit": false,
-                                "canBeBlank": false,
-                                "format": "",
-                                "configuration": {
-                                    "values": [
+                                'name': 'jobId',
+                                'type': 'select',
+                                'implicit': false,
+                                'canBeBlank': false,
+                                'format': '',
+                                'configuration': {
+                                    'values': [
                                         {
-                                            "value": "1",
-                                            "label": "TestInput"
+                                            'value': '1',
+                                            'label': 'TestInput'
                                         }
                                     ],
-                                    "multiple": false
+                                    'multiple': false
                                 },
-                                "description": "Talend Job",
-                                "label": "Select the Talend Job:",
-                                "default": ""
+                                'description': 'Talend Job',
+                                'label': 'Select the Talend Job:',
+                                'default': ''
                             }
                         ],
-                        "defaultImport": false,
-                        "label": "From Talend Job",
-                        "title": "Add Talend Job dataset"
+                        'defaultImport': false,
+                        'label': 'From Talend Job',
+                        'title': 'Add Talend Job dataset'
                     }
                 ]
             }
@@ -147,10 +147,10 @@ describe('Import controller', function () {
         $provide.constant('state', StateMock);
     }));
 
-    beforeEach(inject(function ($rootScope, $componentController) {
+    beforeEach(inject(($rootScope, $componentController) => {
         scope = $rootScope.$new();
 
-        createController = function () {
+        createController = () => {
             return $componentController(
                 'import',
                 {$scope: scope}
@@ -158,15 +158,15 @@ describe('Import controller', function () {
         };
     }));
 
-    afterEach(inject(function() {
+    afterEach(inject(() => {
         dataset.error = false;
         dataset.progress = false;
     }));
 
-    describe('start default import type', function () {
+    describe('start default import type', () => {
 
-        it('should call the first import type if no defaultImportType', function () {
-            //Given
+        it('should call the first import type if no defaultImportType', () => {
+            //given
             StateMock.import.importTypes[2].defaultImport = false;
 
             //when
@@ -174,13 +174,13 @@ describe('Import controller', function () {
             spyOn(ctrl, 'startImport');
             ctrl.startDefaultImport();
 
-            ////then
+            //then
             expect(ctrl.startImport).toHaveBeenCalledWith(StateMock.import.importTypes[0]);
         });
 
-        it('should call the default import type', inject(function () {
+        it('should call the default import type', inject(() => {
 
-            //Given
+            //given
             StateMock.import.importTypes[2].defaultImport = true;
 
             //when
@@ -188,52 +188,54 @@ describe('Import controller', function () {
             spyOn(ctrl, 'startImport');
             ctrl.startDefaultImport();
 
-            ////then
+            //then
             expect(ctrl.startImport).toHaveBeenCalledWith(StateMock.import.importTypes[2]);
 
         }));
     });
 
-    describe('start import', function () {
+    describe('start import', () => {
 
-        it('should start import from local file', function () {
+        it('should start import from local file', () => {
             //when
             ctrl = createController();
             ctrl.startImport(StateMock.import.importTypes[2]);
 
-            ////then
+            //then
+            expect(ctrl.currentInputType).toEqual(StateMock.import.importTypes[2]);
             expect(ctrl.showModal).toBe(false);
         });
 
-        it('should start import from remote', inject(function () {
+        it('should start import from remote', inject( () => {
             //when
             ctrl = createController();
             ctrl.startImport(StateMock.import.importTypes[0]);
 
-            ////then
+            //then
+            expect(ctrl.currentInputType).toEqual(StateMock.import.importTypes[0]);
             expect(ctrl.showModal).toBe(true);
 
         }));
     });
 
 
-    describe('import', function () {
-        var uploadDefer;
-        beforeEach(inject(function (StateService, $q, DatasetService, UploadWorkflowService) {
+    describe('import', () => {
+        let uploadDefer;
+        beforeEach(inject((StateService, $q, DatasetService, UploadWorkflowService) => {
 
             ctrl = createController();
             ctrl.datasetFile = [{name: 'my dataset.csv'}];
             ctrl.datasetName = 'my cool dataset';
 
             uploadDefer = $q.defer();
-            uploadDefer.promise.progress = function (callback) {
+            uploadDefer.promise.progress = (callback) => {
                 uploadDefer.progressCb = callback;
                 return uploadDefer.promise;
             };
 
             spyOn(DatasetService, 'getDatasetById').and.returnValue($q.when(dataset));
             spyOn(UploadWorkflowService, 'openDataset').and.returnValue();
-            spyOn(DatasetService, 'createDatasetInfo').and.callFake(function() {
+            spyOn(DatasetService, 'createDatasetInfo').and.callFake(() => {
                 return dataset;
             });
             spyOn(DatasetService, 'create').and.returnValue(uploadDefer.promise);
@@ -245,9 +247,9 @@ describe('Import controller', function () {
             ctrl.currentInputType = StateMock.import.importTypes[0];
         }));
 
-        it('should show dataset name popup when name already exists', inject(function (DatasetService) {
-            //Given
-            var dataset = {
+        it('should show dataset name popup when name already exists', inject( (DatasetService) => {
+            //given
+            const dataset = {
                 name: 'my dataset'
             };
             spyOn(DatasetService, 'getDatasetByName').and.returnValue(dataset);
@@ -256,12 +258,12 @@ describe('Import controller', function () {
             //when
             ctrl.import(StateMock.import.importTypes[0]);
 
-            ////then
+            //then
             expect(ctrl.datasetNameModal).toBe(true);
         }));
 
-        it('should create dataset if unique', inject(function (DatasetService) {
-            //Given
+        it('should create dataset if unique', inject((DatasetService) => {
+            //given
             spyOn(DatasetService, 'getDatasetByName').and.returnValue(null);
             expect(ctrl.datasetNameModal).toBeFalsy();
 
@@ -269,33 +271,33 @@ describe('Import controller', function () {
             //when
             ctrl.import(StateMock.import.importTypes[0]);
 
-            ////then
+            //then
             expect(ctrl.datasetNameModal).toBeFalsy();
 
-            var paramsExpected = { name: 'my dataset', url: '', type: 'hdfs' };
+            const paramsExpected = { name: 'my dataset', url: '', type: 'hdfs' };
             expect(DatasetService.create).toHaveBeenCalledWith(paramsExpected, 'application/vnd.remote-ds.hdfs', {name: 'my dataset.csv'});
 
         }));
     });
 
-    describe('upload dataset name', function () {
-        var uploadDefer;
+    describe('upload dataset name', () => {
+        let uploadDefer;
 
-        beforeEach(inject(function (StateService, $q, DatasetService, UploadWorkflowService) {
+        beforeEach(inject((StateService, $q, DatasetService, UploadWorkflowService) => {
 
             ctrl = createController();
             ctrl.datasetFile = [{name: 'my dataset.csv'}];
             ctrl.datasetName = 'my cool dataset';
 
             uploadDefer = $q.defer();
-            uploadDefer.promise.progress = function (callback) {
+            uploadDefer.promise.progress = (callback) => {
                 uploadDefer.progressCb = callback;
                 return uploadDefer.promise;
             };
 
             spyOn(DatasetService, 'getDatasetById').and.returnValue($q.when(dataset));
             spyOn(UploadWorkflowService, 'openDataset').and.returnValue();
-            spyOn(DatasetService, 'createDatasetInfo').and.callFake(function() {
+            spyOn(DatasetService, 'createDatasetInfo').and.callFake(() => {
                 return dataset;
             });
             spyOn(DatasetService, 'create').and.returnValue(uploadDefer.promise);
@@ -305,9 +307,9 @@ describe('Import controller', function () {
             spyOn(StateService, 'finishUploadingDataset').and.returnValue();
 
         }));
-        describe('with unique name', function () {
+        describe('with unique name', () => {
 
-            beforeEach(inject(function ($q, $rootScope, DatasetService) {
+            beforeEach(inject( ($q, $rootScope, DatasetService) => {
                 spyOn(DatasetService, 'getDatasetByName').and.returnValue(null);
 
                 spyOn($rootScope, '$emit').and.returnValue();
@@ -315,7 +317,7 @@ describe('Import controller', function () {
                 ctrl.currentInputType = StateMock.import.importTypes[0];
             }));
 
-            it('should create dataset if name is unique', inject(function (StateService, $q, $rootScope, DatasetService, UploadWorkflowService) {
+            it('should create dataset if name is unique', inject((StateService, $q, $rootScope, DatasetService, UploadWorkflowService) => {
                 //given
                 ctrl.uploadDatasetName();
                 expect(StateService.startUploadingDataset).toHaveBeenCalled();
@@ -324,7 +326,7 @@ describe('Import controller', function () {
                 uploadDefer.resolve({data: dataset.id});
                 scope.$digest();
 
-                var paramsExpected = { name: 'my cool dataset', url: '', type: 'hdfs' };
+                const paramsExpected = { name: 'my cool dataset', url: '', type: 'hdfs' };
                 //then
                 expect(DatasetService.create).toHaveBeenCalledWith(paramsExpected, 'application/vnd.remote-ds.hdfs', {name: 'my dataset.csv'});
                 expect(DatasetService.getDatasetById).toHaveBeenCalledWith(dataset.id);
@@ -332,13 +334,13 @@ describe('Import controller', function () {
                 expect(StateService.finishUploadingDataset).toHaveBeenCalled();
             }));
 
-            it('should update progress on create', inject(function (state, StateService, DatasetService) {
+            it('should update progress on create', inject((state, StateService, DatasetService) => {
                 //given
                 ctrl.uploadDatasetName();
                 expect(StateService.startUploadingDataset).toHaveBeenCalled();
                 expect(dataset.progress).toBeFalsy();
 
-                var event = {
+                let event = {
                     loaded: 140,
                     total: 200
                 };
@@ -352,7 +354,7 @@ describe('Import controller', function () {
                 expect(dataset.progress).toBe(70);
             }));
 
-            it('should set error flag and show error toast', inject(function (StateService, DatasetService) {
+            it('should set error flag and show error toast', inject((StateService, DatasetService) => {
                 //given
                 ctrl.uploadDatasetName();
                 expect(StateService.startUploadingDataset).toHaveBeenCalled();
@@ -368,13 +370,13 @@ describe('Import controller', function () {
             }));
         });
 
-        describe('with existing name', function () {
-            var dataset = {
+        describe('with existing name', () => {
+            const dataset = {
                 name: 'my cool dataset'
             };
-            var confirmDefer;
+            let confirmDefer;
 
-            beforeEach(inject(function ($rootScope, $q, StateService, DatasetService, UpdateWorkflowService, TalendConfirmService) {
+            beforeEach(inject(($rootScope, $q, StateService, DatasetService, UpdateWorkflowService, TalendConfirmService) => {
                 confirmDefer = $q.defer();
 
                 spyOn(StateService, 'resetPlayground').and.returnValue();
@@ -388,7 +390,7 @@ describe('Import controller', function () {
 
             }));
 
-            it('should do nothing on confirm modal dismiss', inject(function (TalendConfirmService, DatasetService) {
+            it('should do nothing on confirm modal dismiss', inject((TalendConfirmService, DatasetService) => {
                 //given
                 ctrl.uploadDatasetName();
 
@@ -403,7 +405,7 @@ describe('Import controller', function () {
                 expect(DatasetService.update).not.toHaveBeenCalled();
             }));
 
-            it('should create dataset with modified name', inject(function ($rootScope, TalendConfirmService, DatasetService) {
+            it('should create dataset with modified name', inject( ($rootScope, TalendConfirmService, DatasetService) => {
                 //given
                 ctrl.uploadDatasetName();
 
@@ -420,7 +422,7 @@ describe('Import controller', function () {
                 expect(ctrl.datasetName).toBe('');
             }));
 
-            it('should update existing dataset', inject(function (UpdateWorkflowService) {
+            it('should update existing dataset', inject((UpdateWorkflowService) => {
                 //given
                 ctrl.uploadDatasetName();
 

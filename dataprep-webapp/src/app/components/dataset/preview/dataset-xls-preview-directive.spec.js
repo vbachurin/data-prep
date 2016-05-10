@@ -34,6 +34,18 @@ describe('Dataset upload list directive', function() {
         element.remove();
     });
 
+    it('should init grid ', inject(($timeout) => {
+        //when
+        createElement();
+        let ctrl = element.controller('dataset-xls-preview');
+        spyOn(ctrl, 'initGrid');
+        scope.$digest();
+        $timeout.flush(100);
+
+        //then
+        expect(ctrl.initGrid).toHaveBeenCalled();
+    }));
+
     it('should init metadata name input', inject(function(DatasetSheetPreviewService) {
         //given
         createElement();

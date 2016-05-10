@@ -19,38 +19,38 @@ describe('Import directive', () => {
     beforeEach(angular.mock.module('data-prep.import'));
     beforeEach(angular.mock.module('htmlTemplates'));
 
-    beforeEach(angular.mock.module('data-prep.import', function ($provide) {
+    beforeEach(angular.mock.module('data-prep.import', ($provide) => {
         StateMock = {
             import: {
                 importTypes:[
                     {
-                        "locationType":"hdfs",
-                        "contentType":"application/vnd.remote-ds.hdfs",
-                        "parameters":[
+                        'locationType':'hdfs',
+                        'contentType':'application/vnd.remote-ds.hdfs',
+                        'parameters':[
                             {
-                                "name":"name",
-                                "type":"string",
-                                "implicit":false,
-                                "canBeBlank":false,
-                                "format":"",
-                                "default":"",
-                                "description":"Name",
-                                "label":"Enter the dataset name:"
+                                'name': 'name',
+                                'type': 'string',
+                                'implicit': false,
+                                'canBeBlank': false,
+                                'format': '',
+                                'default': '',
+                                'description': 'Name',
+                                'label': 'Enter the dataset name:'
                             },
                             {
-                                "name":"url",
-                                "type":"string",
-                                "implicit":false,
-                                "canBeBlank":false,
-                                "format":"hdfs://host:port/file",
-                                "default":"",
-                                "description":"URL",
-                                "label":"Enter the dataset URL:"
+                                'name': 'url',
+                                'type': 'string',
+                                'implicit': false,
+                                'canBeBlank': false,
+                                'format': 'hdfs://host:port/file',
+                                'default': '',
+                                'description': 'URL',
+                                'label': 'Enter the dataset URL:'
                             }
                         ],
-                        "defaultImport":false,
-                        "label":"From HDFS",
-                        "title":"Add HDFS dataset"
+                        'defaultImport': false,
+                        'label': 'From HDFS',
+                        'title': 'Add HDFS dataset'
                     }
                 ]
             }
@@ -94,6 +94,17 @@ describe('Import directive', () => {
 
         expect(angular.element('body').find('talend-modal').length).toBe(2);
 
-        expect(element.find('dataset-xls-preview').length).toBe(1);
+    }));
+
+    it('should render import types list', inject( () => {
+        //when
+        createElement();
+        ctrl.showModal = false;
+        ctrl.datasetNameModal = false;
+        scope.$digest();
+
+        //then
+        expect(element.find('talend-button-dropdown li').length).toBe(1);
+        expect(element.find('talend-button-dropdown li').text().trim()).toBe('From HDFS');
     }));
 });

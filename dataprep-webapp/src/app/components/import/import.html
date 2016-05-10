@@ -3,7 +3,7 @@
                             button-text="{{'IMPORT_DATASET' | translate }}"
                             button-action="$ctrl.startDefaultImport()">
         <ul>
-            <li ng-repeat="importType in $ctrl.importTypes" ng-click="$ctrl.startImport(importType)">
+            <li ng-repeat="importType in $ctrl.importTypes track by importType.locationType" ng-click="$ctrl.startImport(importType)">
                 {{importType.label}}
             </li>
         </ul>
@@ -61,5 +61,3 @@
         </div>
     </form>
 </talend-modal>
-
-<dataset-xls-preview></dataset-xls-preview>

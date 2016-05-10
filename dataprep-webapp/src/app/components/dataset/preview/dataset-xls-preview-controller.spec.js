@@ -114,19 +114,6 @@ describe('Dataset xls preview controller', () => {
         }));
     });
 
-    describe('init', () => {
-        it('should set grid in service', inject((DatasetSheetPreviewService) => {
-            //given
-            expect(DatasetSheetPreviewService.grid).toBeFalsy();
-
-            //when
-            createController();
-
-            //then
-            expect(DatasetSheetPreviewService.grid).toBeTruthy();
-        }));
-    });
-
     describe('select sheet', () => {
         it('should load the selected sheet preview', inject((DatasetSheetPreviewService) => {
             //given
