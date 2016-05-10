@@ -56,7 +56,11 @@ public enum ParameterType {
     /**
      * This kind of parameter allow users to pass a user local file.
      */
-    FILE;
+    FILE,
+    /**
+     * This kind of parameter allow users to create a "hidden" field (for a password).
+     */
+    PASSWORD;
     public String asString() {
         return this.name().toLowerCase();
     }
