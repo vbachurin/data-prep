@@ -53,8 +53,8 @@ public class FolderAPI extends APIService {
     @RequestMapping(value = "/api/folders", method = GET)
     @ApiOperation(value = "List children folders of the parameter if null list root children.", produces = APPLICATION_JSON_VALUE)
     @Timed
-    public void children(@RequestParam(required = false) String path, final OutputStream output) {
-        final HystrixCommand<InputStream> foldersList = getCommand(FoldersList.class, path);
+    public void children(@RequestParam final String parentId, final OutputStream output) {
+        final HystrixCommand<InputStream> foldersList = getCommand(FolderChildrenList.class, parentId);
         try (InputStream commandResult = foldersList.execute()){
             HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
             IOUtils.copyLarge(commandResult, output);
@@ -64,26 +64,39 @@ public class FolderAPI extends APIService {
         }
     }
 
-    @RequestMapping(value = "/api/folders/all", method = GET)
-    @ApiOperation(value = "List all folders.", produces = APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/api/folders/tree", method = GET)
+    @ApiOperation(value = "List all folders", produces = APPLICATION_JSON_VALUE)
     @Timed
-    public void allFolder(final OutputStream output) {
-        final HystrixCommand<InputStream> foldersList = getCommand(AllFoldersList.class);
+    public void getTree(final OutputStream output) {
+        final HystrixCommand<InputStream> foldersList = getCommand(FolderTree.class);
+        try (InputStream commandResult = foldersList.execute()){
+            HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
+            IOUtils.copyLarge(commandResult, output);
+            output.flush();
+        } catch (IOException e) {
+            throw new TDPException(APIErrorCodes.UNABLE_TO_LIST_FOLDERS, e);
+        }
+    }
+
+    @RequestMapping(value = "/api/folders/{id}", method = GET, produces = APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get folder by id", produces = APPLICATION_JSON_VALUE, notes = "Get a folder by id")
+    @Timed
+    public void getFolderAndHierarchyById(@PathVariable(value = "id") final String id, final OutputStream output) {
+        final HystrixCommand<InputStream> foldersList = getCommand(GetFolder.class, id);
         try (InputStream commandResult = foldersList.execute()){
             HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
             IOUtils.copyLarge(commandResult, output);
             output.flush();
         } catch (Exception e) {
-            throw new TDPException(APIErrorCodes.UNABLE_TO_LIST_FOLDERS, e);
+            throw new TDPException(APIErrorCodes.UNABLE_TO_GET_FOLDERS, e);
         }
     }
 
     @RequestMapping(value = "/api/folders", method = PUT)
     @ApiOperation(value = "Add a folder.", produces = APPLICATION_JSON_VALUE)
     @Timed
-    public void addFolder(@RequestParam(required = true) String path, //
-            final OutputStream output) {
-        final HystrixCommand<InputStream> createChildFolder = getCommand(CreateChildFolder.class, path);
+    public void addFolder(@RequestParam final String parentId, @RequestParam final String path, final OutputStream output) {
+        final HystrixCommand<InputStream> createChildFolder = getCommand(CreateChildFolder.class, parentId, path);
         try (InputStream commandResult = createChildFolder.execute()){
             HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
             IOUtils.copyLarge(commandResult, output);
@@ -93,19 +106,13 @@ public class FolderAPI extends APIService {
         }
     }
 
-    /**
-     * no javadoc here so see description in @ApiOperation notes.
-     *
-     * @param path
-     * @return
-     */
-    @RequestMapping(value = "/api/folders", method = DELETE)
+    @RequestMapping(value = "/api/folders/{id}", method = DELETE)
     @ApiOperation(value = "Remove a Folder")
     @Timed
-    public void removeFolder(@RequestParam String path, final OutputStream output) {
+    public void removeFolder(@PathVariable final String id, final OutputStream output) {
         try {
-            final HystrixCommand<HttpResponse> removeFolder = getCommand(RemoveFolder.class, path);
-            HttpResponse result = removeFolder.execute();
+            final HystrixCommand<HttpResponse> removeFolder = getCommand(RemoveFolder.class, id);
+            final HttpResponse result = removeFolder.execute();
             try {
                 HttpResponseContext.status(HttpStatus.valueOf(result.getStatusCode()));
                 HttpResponseContext.header("Content-Type", result.getContentType());
@@ -120,26 +127,17 @@ public class FolderAPI extends APIService {
         }
     }
 
-
-    /**
-     * no javadoc here so see description in @ApiOperation notes.
-     *
-     * @param path
-     * @param newPath
-     */
-    @RequestMapping(value = "/api/folders/rename", method = PUT)
+    @RequestMapping(value = "/api/folders/{id}/name", method = PUT)
     @ApiOperation(value = "Rename a Folder")
     @Timed
-    public void renameFolder(@RequestParam String path, @RequestParam String newPath) {
+    public void renameFolder(@PathVariable final String id, @RequestBody final String newName) {
 
-        if (StringUtils.isEmpty(path) //
-                || StringUtils.isEmpty(newPath) //
-                || StringUtils.containsOnly(path, "/")) {
-
+        if (StringUtils.isEmpty(id) || StringUtils.isEmpty(newName)) {
             throw new TDPException(APIErrorCodes.UNABLE_TO_RENAME_FOLDER);
         }
+
         try {
-            final HystrixCommand<Void> renameFolder = getCommand(RenameFolder.class, path, newPath);
+            final HystrixCommand<Void> renameFolder = getCommand(RenameFolder.class, id, newName);
             renameFolder.execute();
         } catch (Exception e) {
             throw new TDPException(APIErrorCodes.UNABLE_TO_RENAME_FOLDER, e);
@@ -150,17 +148,17 @@ public class FolderAPI extends APIService {
     /**
      * no javadoc here so see description in @ApiOperation notes.
      *
-     * @param pathName The folder to search.
+     * @param name The folder to search.
      * @param strict Strict mode means searched name is the full name.
      * @return
      */
     @RequestMapping(value = "/api/folders/search", method = GET, produces = APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Search Folders with parameter as part of the name", produces = APPLICATION_JSON_VALUE, notes = "")
+    @ApiOperation(value = "Search Folders with parameter as part of the name", produces = APPLICATION_JSON_VALUE)
     @Timed
-    public void search(@RequestParam(required = false) final String pathName,
+    public void search(@RequestParam final String name,
                        @RequestParam(required = false) final boolean strict,
                        final OutputStream output) {
-        final HystrixCommand<InputStream> searchFolders = getCommand(SearchFolders.class, pathName, strict);
+        final HystrixCommand<InputStream> searchFolders = getCommand(SearchFolders.class, name, strict);
         try (InputStream commandResult = searchFolders.execute()){
             HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
             IOUtils.copyLarge(commandResult, output);
@@ -172,18 +170,17 @@ public class FolderAPI extends APIService {
 
 
     /**
-     * no javadoc here so see description in @ApiOperation notes.
-     * 
-     * @param contentId
-     * @param contentType
-     * @return
+     * TODO This is not used : should remove ?
+     * The folder entry deletion is directly done in DELETE /preparations/{id}
      */
     @RequestMapping(value = "/api/folders/entries/{contentType}/{id}", method = DELETE)
     @ApiOperation(value = "Remove a Folder Entry")
     @Timed
-    public void deleteFolderEntry(@PathVariable(value = "id") String contentId,
-            @PathVariable(value = "contentType") String contentType, //
-            @RequestParam String path) {
+    @Deprecated
+    public void deleteFolderEntry( //
+            @PathVariable(value = "contentType") final String contentType, //
+            @PathVariable(value = "id") final String contentId, //
+            @RequestParam final String path) {
         try {
             final HystrixCommand<Void> removeFolderEntry = getCommand(RemoveFolderEntry.class, path, contentType,
                     contentId);
@@ -193,17 +190,15 @@ public class FolderAPI extends APIService {
         }
     }
 
+
     /**
-     * no javadoc here so see description in @ApiOperation notes.
-     * 
-     * @param path
-     * @param contentType
-     * @return
+     * TODO Vincent check if really used or not
      */
     @RequestMapping(value = "/api/folders/entries", method = GET)
     @ApiOperation(value = "List all folder entries of the given content type within the path", produces = APPLICATION_JSON_VALUE)
     @Timed
     @VolumeMetered
+    @Deprecated
     public void entries(@RequestParam String path, @RequestParam String contentType, final OutputStream output) {
         final HystrixCommand<InputStream> listFolderEntries = getCommand(FolderEntriesList.class, path,
                 contentType);
@@ -218,24 +213,24 @@ public class FolderAPI extends APIService {
 
 
     /**
-     * List all the folders and preparations out of the given folder.
+     * List all the folders and preparations out of the given id.
      *
-     * @param folder Where to list folders and preparations.
+     * @param id Where to list folders and preparations.
      * @param output the http response.
      */
     //@formatter:off
-    @RequestMapping(value = "/api/folders/preparations", params = "folder", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Get all preparations for a given folder.", notes = "Returns the list of preparations for the given folder the current user is allowed to see.")
+    @RequestMapping(value = "/api/folders/{id}/preparations", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get all preparations for a given id.", notes = "Returns the list of preparations for the given id the current user is allowed to see.")
     @Timed
     public void listPreparationsByFolder(
-            @RequestParam(value = "folder", defaultValue = "/") @ApiParam(name = "folder", value = "The destination to search preparations from.") String folder,
-            @ApiParam(value = "Sort key (by name or date), defaults to 'date'.") @RequestParam(defaultValue = "DATE") String sort,
-            @ApiParam(value = "Order for sort key (desc or asc), defaults to 'desc'.") @RequestParam(defaultValue = "DESC") String order,
+            @PathVariable @ApiParam(name = "id", value = "The destination to search preparations from.") final String id, //
+            @ApiParam(value = "Sort key (by name or date), defaults to 'date'.") @RequestParam(defaultValue = "DATE") final String sort, //
+            @ApiParam(value = "Order for sort key (desc or asc), defaults to 'desc'.") @RequestParam(defaultValue = "DESC") final String order, //
             final OutputStream output) {
     //@formatter:on
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Listing preparations in destination {} (pool: {} )...", folder, getConnectionStats());
+            LOG.debug("Listing preparations in destination {} (pool: {} )...", id, getConnectionStats());
         }
 
         int preparationsProcessed;
@@ -243,16 +238,17 @@ public class FolderAPI extends APIService {
 
             generator.writeStartObject();
 
-            listAndWriteFoldersToJson(folder, sort, order, generator);
-            preparationsProcessed = listAndWritePreparationsToJson(folder, sort, order, generator);
+            listAndWriteFoldersToJson(id, sort, order, generator);
+            preparationsProcessed = listAndWritePreparationsToJson(id, sort, order, generator);
 
             generator.writeEndObject();
 
-        } catch (IOException e) {
-            throw new TDPException(APIErrorCodes.UNABLE_TO_LIST_FOLDER_ENTRIES, e, build().put("destination", folder));
+        }
+        catch (IOException e) {
+            throw new TDPException(APIErrorCodes.UNABLE_TO_LIST_FOLDER_ENTRIES, e, build().put("destination", id));
         }
 
-        LOG.info("There are {} preparation(s) in '{}'", preparationsProcessed, folder);
+        LOG.info("There are {} preparation(s) in '{}'", preparationsProcessed, id);
 
     }
 
@@ -265,14 +261,14 @@ public class FolderAPI extends APIService {
      * @param output where to write the json.
      * @throws IOException if an error occurs.
      */
-    private int listAndWritePreparationsToJson(String folder, String sort, String order, JsonGenerator output) throws IOException {
+    private int listAndWritePreparationsToJson(final String folder, final String sort, final String order, final JsonGenerator output) throws IOException {
 
         output.writeRaw(",");
         final PreparationListByFolder listPreparations = getCommand(PreparationListByFolder.class, folder, sort, order);
         try (InputStream input = listPreparations.execute()) {
 
             output.writeArrayFieldStart("preparations");
-            List<Preparation> preparations = mapper.readValue(input, new TypeReference<List<Preparation>>(){});
+            final List<Preparation> preparations = mapper.readValue(input, new TypeReference<List<Preparation>>(){});
             for (Preparation preparation : preparations) {
                 enrichAndWritePreparation(preparation, output);
             }
@@ -290,10 +286,10 @@ public class FolderAPI extends APIService {
      * @param preparation the preparation to enrich.
      * @param output where to write the json.
      */
-    private void enrichAndWritePreparation(Preparation preparation, JsonGenerator output) {
+    private void enrichAndWritePreparation(final Preparation preparation, final JsonGenerator output) {
 
         final DataSetGetMetadata getMetadata = getCommand(DataSetGetMetadata.class, preparation.getDataSetId());
-        EnrichedPreparation enrichedPreparation = new EnrichedPreparation(preparation, getMetadata.execute());
+        final EnrichedPreparation enrichedPreparation = new EnrichedPreparation(preparation, getMetadata.execute());
 
         try {
             output.writeObject(enrichedPreparation);
@@ -306,18 +302,17 @@ public class FolderAPI extends APIService {
     /**
      * Get and write, in json, the list of folders directly to the output.
      *
-     * @param folderPath the destination to list.
+     * @param folderId the destination to list.
      * @param sort how to sort the preparations.
      * @param order the order to apply to the sort.
      * @param output where to write the json.
      * @throws IOException if an error occurs.
      */
-    private void listAndWriteFoldersToJson(String folderPath, String sort, String order, JsonGenerator output) throws IOException {
-        final FoldersList commandListFolders = getCommand(FoldersList.class, folderPath, sort, order);
-        output.writeRaw("\"folders\":");
+    private void listAndWriteFoldersToJson(final String folderId, final String sort, final String order, final JsonGenerator output) throws IOException {
+        final FolderChildrenList commandListFolders = getCommand(FolderChildrenList.class, folderId, sort, order);
         try (InputStream folders = commandListFolders.execute()) {
+            output.writeRaw("\"folders\":");
             output.writeRaw(IOUtils.toString(folders));
         }
     }
-
 }

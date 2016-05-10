@@ -16,11 +16,14 @@ package org.talend.dataprep.api.service.command.folder;
 import static org.talend.dataprep.command.Defaults.asNull;
 import static org.talend.dataprep.exception.error.APIErrorCodes.UNABLE_TO_DELETE_FOLDER;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.BasicHttpEntity;
+import org.apache.http.entity.StringEntity;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -32,23 +35,23 @@ import org.talend.dataprep.exception.error.CommonErrorCodes;
 @Component
 @Scope("request")
 public class RenameFolder
-    extends GenericCommand<Void> {
+        extends GenericCommand<Void> {
 
-    public RenameFolder(String path, String newPath) {
+    public RenameFolder(final String id, final String newName) {
         super(GenericCommand.DATASET_GROUP);
-        execute(() -> onExecute(path, newPath));
+        execute(() -> onExecute(id, newName));
         onError(e -> new TDPException(UNABLE_TO_DELETE_FOLDER, e, ExceptionContext.build()));
         on(HttpStatus.OK).then(asNull());
     }
 
-    private HttpRequestBase onExecute( String path, String newPath) {
+    private HttpRequestBase onExecute(final String id, final String newName) {
         try {
-
-            URIBuilder uriBuilder = new URIBuilder(preparationServiceUrl + "/folders/rename");
-            uriBuilder.addParameter("path", path);
-            uriBuilder.addParameter( "newPath", newPath );
-            return new HttpPut(uriBuilder.build());
-        } catch (URISyntaxException e) {
+            final URIBuilder uriBuilder = new URIBuilder(preparationServiceUrl + "/folders/" + id + "/name");
+            uriBuilder.addParameter("newName", newName);
+            final HttpPut put = new HttpPut(uriBuilder.build());
+            put.setEntity(new StringEntity(newName));
+            return put;
+        } catch (UnsupportedEncodingException | URISyntaxException e) {
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
     }

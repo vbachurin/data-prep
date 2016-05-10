@@ -31,8 +31,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.mock.env.MockPropertySource;
+import org.talend.dataprep.api.folder.Folder;
 import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
+import org.talend.dataprep.folder.store.FolderRepository;
 import org.talend.dataprep.transformation.TransformationBaseTest;
 import org.talend.dataprep.transformation.test.TransformationServiceUrlRuntimeUpdater;
 
@@ -45,7 +47,7 @@ import com.jayway.restassured.response.Response;
  */
 public abstract class TransformationServiceBaseTests extends TransformationBaseTest {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TransformationServiceBaseTests.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(TransformationServiceBaseTests.class);
 
     @Value("${local.server.port}")
     protected int port;
@@ -58,6 +60,11 @@ public abstract class TransformationServiceBaseTests extends TransformationBaseT
 
     @Autowired
     protected DataSetMetadataRepository dataSetMetadataRepository;
+
+    @Autowired
+    protected FolderRepository folderRepository;
+
+    protected Folder home;
 
     /** The dataprep ready to use jackson object mapper. */
     @Autowired
@@ -74,6 +81,8 @@ public abstract class TransformationServiceBaseTests extends TransformationBaseT
         environment.getPropertySources().addFirst(connectionInformation);
 
         urlUpdater.setUp();
+
+        home = folderRepository.getHome();
     }
 
     @After
@@ -111,10 +120,10 @@ public abstract class TransformationServiceBaseTests extends TransformationBaseT
     protected String createEmptyPreparationFromDataset(final String dataSetId, final String name) throws IOException {
         final Response post = given() //
                 .contentType(ContentType.JSON)//
+                .accept(ContentType.ANY) //
                 .body("{ \"name\": \"" + name + "\", \"dataSetId\": \"" + dataSetId + "\"}")//
                 .when()//
-                .expect().statusCode(200).log().ifError() //
-                .post("/preparations");
+                .post("/preparations?folder="+ home.getId());
 
         assertThat(post.getStatusCode(), is(200));
 

@@ -29,26 +29,28 @@ import org.talend.dataprep.command.GenericCommand;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 
+/**
+ * TODO This is not used : should remove ?
+ */
 @Component
 @Scope("request")
+@Deprecated
 public class RemoveFolderEntry
     extends GenericCommand<Void> {
 
-    public RemoveFolderEntry(String path, String contentType, String contentId) {
+    public RemoveFolderEntry(final String folderId, final String contentType, final String contentId) {
         super(GenericCommand.DATASET_GROUP);
-        execute(() -> onExecute(path, contentId, contentType));
+        execute(() -> onExecute(folderId, contentType, contentId));
         onError(e -> new TDPException(UNABLE_TO_DELETE_FOLDER_ENTRY, e, ExceptionContext.build()));
         on(HttpStatus.OK).then(asNull());
     }
 
-    private HttpRequestBase onExecute( String path, String contentId, String contentType ) {
+    private HttpRequestBase onExecute(final String folderId, final String contentType, final String contentId) {
         try {
-
-            URIBuilder uriBuilder = new URIBuilder(preparationServiceUrl + "/folders/entries/" //
+            final URIBuilder uriBuilder = new URIBuilder(preparationServiceUrl + "/folders/entries/" //
                                                        + contentType //
                                                        + '/' + contentId);
-
-            uriBuilder.addParameter( "path", path );
+            uriBuilder.addParameter("folderId", folderId);
             return new HttpDelete(uriBuilder.build());
 
         } catch (URISyntaxException e) {

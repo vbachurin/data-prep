@@ -38,6 +38,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.mock.env.MockPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.talend.dataprep.api.Application;
+import org.talend.dataprep.api.folder.Folder;
 import org.talend.dataprep.cache.ContentCache;
 import org.talend.dataprep.dataset.store.content.DataSetContentStore;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
@@ -89,16 +90,20 @@ public abstract class ApiServiceTestBase {
     @Autowired
     TransformationServiceUrlRuntimeUpdater transformationUrlUpdater;
 
+    protected Folder home;
+
     @Before
     public void setUp() {
         // Overrides connection information with random port value
-        MockPropertySource connectionInformation = new MockPropertySource()
+        MockPropertySource connectionInformation = new MockPropertySource("tac properties")
                 .withProperty("dataset.service.url", "http://localhost:" + port)
                 .withProperty("transformation.service.url", "http://localhost:" + port)
                 .withProperty("preparation.service.url", "http://localhost:" + port);
+
         environment.getPropertySources().addFirst(connectionInformation);
 
         transformationUrlUpdater.setUp();
+        home = folderRepository.getHome();
     }
 
     @After
@@ -145,24 +150,24 @@ public abstract class ApiServiceTestBase {
     }
 
 
-    protected String createPreparationFromFile(final String file, final String name, final String type, final String path) throws IOException {
+    protected String createPreparationFromFile(final String file, final String name, final String type, final String folderId) throws IOException {
         final String dataSetId = createDataset(file, "testDataset-"+ System.currentTimeMillis(), type);
-        return createPreparationFromDataset(dataSetId, name, path);
+        return createPreparationFromDataset(dataSetId, name, folderId);
     }
 
 
     protected String createPreparationFromDataset(final String dataSetId, final String name) throws IOException {
-        return createPreparationFromDataset(dataSetId, name, null);
+        return createPreparationFromDataset(dataSetId, name, home.getId());
     }
 
-    protected String createPreparationFromDataset(final String dataSetId, final String name, String path) throws IOException {
+    protected String createPreparationFromDataset(final String dataSetId, final String name, final String folderId) throws IOException {
 
         RequestSpecification request = given() //
                 .contentType(ContentType.JSON) //
                 .body("{ \"name\": \"" + name + "\", \"dataSetId\": \"" + dataSetId + "\"}");
 
-        if (path != null) {
-            request = request.queryParam("folder", path);
+        if (folderId != null) {
+            request = request.queryParam("folder", folderId);
         }
 
         final Response response = request //

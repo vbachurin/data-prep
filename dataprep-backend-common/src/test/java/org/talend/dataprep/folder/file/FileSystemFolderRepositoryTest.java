@@ -13,6 +13,8 @@
 
 package org.talend.dataprep.folder.file;
 
+import java.util.Base64;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -43,5 +45,13 @@ public class FileSystemFolderRepositoryTest extends AbstractFolderTest {
     @Override
     protected FolderRepository getFolderRepository() {
         return folderRepository;
+    }
+
+    /**
+     * @see AbstractFolderTest#pathToId(String)
+     */
+    @Override
+    protected String pathToId(String path) {
+        return Base64.getEncoder().encodeToString(path.getBytes());
     }
 }

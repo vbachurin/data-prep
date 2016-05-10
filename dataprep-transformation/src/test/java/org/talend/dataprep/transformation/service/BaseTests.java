@@ -86,6 +86,9 @@ public class BaseTests extends TransformationServiceBaseTests {
 
     @Test
     public void checkHeadersFromCache() throws Exception {
+
+        LOGGER.debug("toto");
+
         // given
         final String datasetId = createDataset("input_dataset.csv", "testHeadersFromCache", "text/csv");
         final String preparationId = createEmptyPreparationFromDataset(datasetId, "myPrep");

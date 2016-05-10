@@ -13,6 +13,10 @@
 
 package org.talend.dataprep.security;
 
+import java.util.Set;
+
+import org.talend.dataprep.api.user.UserGroup;
+
 public interface Security {
 
     /**
@@ -25,4 +29,9 @@ public interface Security {
      * @return an authentication token.
      */
     String getAuthenticationToken();
+
+    /**
+     * @return the user groups.
+     */
+    Set<UserGroup> getGroups();
 }

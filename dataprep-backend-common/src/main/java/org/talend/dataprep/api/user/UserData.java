@@ -19,7 +19,6 @@ import java.util.Set;
 
 import org.springframework.data.annotation.Id;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
@@ -30,10 +29,10 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 public class UserData implements Serializable {
 
     /** Serialization UID. */
-    private static final long serialVersionUID = 1L;
+    protected static final long serialVersionUID = 1L;
 
     /** Favorites datasets. */
-    @JsonProperty(value = "favoritedDS", required = false)
+    @JsonProperty(value = "favoritedDS")
     private Set<String> favoritesDatasets = new HashSet<>();
 
     /** User id. */
@@ -46,13 +45,19 @@ public class UserData implements Serializable {
     private String appVersion;
 
     /**
+     * Default empty constructor.
+     */
+    public UserData() {
+        // needed for json de/serialization
+    }
+
+    /**
      * Constructor.
      * 
      * @param userId the used id.
      * @param appVersion the application version.
      */
-    @JsonCreator
-    public UserData(@JsonProperty("userId") String userId, @JsonProperty("app-version") String appVersion) {
+    public UserData(String userId, String appVersion) {
         this.userId = userId;
         this.appVersion = appVersion;
     }
@@ -91,6 +96,20 @@ public class UserData implements Serializable {
      */
     public String getUserId() {
         return this.userId;
+    }
+
+    /**
+     * @param userId the userId to set.
+     */
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    /**
+     * @param appVersion the appVersion to set.
+     */
+    public void setAppVersion(String appVersion) {
+        this.appVersion = appVersion;
     }
 
     /**

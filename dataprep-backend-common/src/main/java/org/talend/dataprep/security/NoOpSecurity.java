@@ -13,8 +13,13 @@
 
 package org.talend.dataprep.security;
 
+import static java.util.Collections.emptySet;
+
+import java.util.Set;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
+import org.talend.dataprep.api.user.UserGroup;
 
 @Component
 @ConditionalOnProperty(name = "security.mode", havingValue = "none", matchIfMissing = true)
@@ -35,5 +40,13 @@ public class NoOpSecurity implements Security {
     public String getAuthenticationToken() {
         // no token in the Free Desktop edition
         return null;
+    }
+
+    /**
+     * @see Security#getGroups()
+     */
+    @Override
+    public Set<UserGroup> getGroups() {
+        return emptySet();
     }
 }

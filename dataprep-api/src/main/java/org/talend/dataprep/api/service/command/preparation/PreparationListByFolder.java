@@ -44,11 +44,11 @@ public class PreparationListByFolder extends GenericCommand<InputStream> {
      * @param sort how to sort the preparations.
      * @param order the order to apply to the sort.
      */
-    private PreparationListByFolder(String folder, String sort, String order) {
+    private PreparationListByFolder(final String folder, final String sort, final String order) {
         super(GenericCommand.PREPARATION_GROUP);
         execute(() -> {
             try {
-                URIBuilder uriBuilder = new URIBuilder(preparationServiceUrl + "/preparations/search");
+                final URIBuilder uriBuilder = new URIBuilder(preparationServiceUrl + "/preparations/search");
                 uriBuilder.addParameter("folder", folder);
                 uriBuilder.addParameter("sort", sort);
                 uriBuilder.addParameter("order", order);

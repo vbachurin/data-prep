@@ -16,8 +16,7 @@ package org.talend.dataprep.api.folder;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class
-FolderEntry implements Serializable {
+public class FolderEntry implements Serializable {
 
     /** Serialization UID. */
     private static final long serialVersionUID = 1L;

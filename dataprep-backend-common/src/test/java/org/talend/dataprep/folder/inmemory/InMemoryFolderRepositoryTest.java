@@ -38,4 +38,14 @@ public class InMemoryFolderRepositoryTest extends AbstractFolderTest {
     protected FolderRepository getFolderRepository() {
         return folderRepository;
     }
+
+    /**
+     * @see AbstractFolderTest#pathToId(String)
+     */
+    @Override
+    protected String pathToId(String path) {
+        return path;
+    }
+
+
 }

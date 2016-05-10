@@ -13,12 +13,6 @@
 
 package org.talend.dataprep.api.service.command.folder;
 
-import static org.talend.dataprep.command.Defaults.pipeStream;
-import static org.talend.dataprep.exception.error.APIErrorCodes.UNABLE_TO_LIST_FOLDERS;
-
-import java.io.InputStream;
-import java.net.URISyntaxException;
-
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.URIBuilder;
@@ -30,26 +24,30 @@ import org.talend.dataprep.command.GenericCommand;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 
+import java.io.InputStream;
+import java.net.URISyntaxException;
+
+import static org.talend.dataprep.command.Defaults.pipeStream;
+import static org.talend.dataprep.exception.error.APIErrorCodes.UNABLE_TO_GET_FOLDERS;
+import static org.talend.dataprep.exception.error.APIErrorCodes.UNABLE_TO_LIST_FOLDERS;
+
 @Component
 @Scope("request")
-public class AllFoldersList
+public class GetFolder
     extends GenericCommand<InputStream> {
 
-    public AllFoldersList() {
-        super(GenericCommand.DATASET_GROUP);
-        execute(() -> onExecute());
-        onError(e -> new TDPException(UNABLE_TO_LIST_FOLDERS, e, ExceptionContext.build()));
+    public GetFolder(final String id) {
+        super(GenericCommand.PREPARATION_GROUP);
+        execute(() -> onExecute(id));
         on(HttpStatus.OK).then(pipeStream());
     }
 
-    private HttpRequestBase onExecute() {
+    private HttpRequestBase onExecute(final String id) {
         try {
-
-            URIBuilder uriBuilder = new URIBuilder(preparationServiceUrl + "/folders/all" );
-
+            URIBuilder uriBuilder = new URIBuilder(preparationServiceUrl + "/folders/" + id );
             return new HttpGet(uriBuilder.build());
-
-        } catch (URISyntaxException e) {
+        }
+        catch (URISyntaxException e) {
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
     }

@@ -17,8 +17,10 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.talend.dataprep.command.Defaults.asString;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 import org.apache.http.client.HttpClient;
@@ -38,6 +40,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.context.WebApplicationContext;
+import org.talend.dataprep.api.user.UserGroup;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.security.Security;
@@ -265,6 +268,14 @@ public class GenericCommandTest {
         @Override
         public String getAuthenticationToken() {
             return "#1234";
+        }
+
+        /**
+         * @return the user groups.
+         */
+        @Override
+        public Set<UserGroup> getGroups() {
+            return Collections.emptySet();
         }
     }
 }

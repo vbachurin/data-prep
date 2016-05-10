@@ -55,7 +55,7 @@ public enum FolderContentType {
         if (type.isPresent()) {
             return type.get();
         } else {
-            throw new IllegalArgumentException("Unknown Folder entry content type.");
+            throw new IllegalArgumentException("Unknown Folder entry content type : '" + name +'\'');
         }
 
     }

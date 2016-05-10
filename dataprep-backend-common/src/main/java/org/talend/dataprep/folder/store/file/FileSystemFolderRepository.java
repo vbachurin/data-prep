@@ -13,11 +13,14 @@
 
 package org.talend.dataprep.folder.store.file;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static java.nio.file.FileVisitResult.CONTINUE;
 import static java.nio.file.FileVisitResult.TERMINATE;
 import static java.util.Collections.emptyList;
+import static org.apache.commons.lang.StringUtils.split;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.talend.daikon.exception.ExceptionContext.build;
+import static org.talend.dataprep.api.folder.FolderBuilder.folder;
 import static org.talend.dataprep.exception.error.DataSetErrorCodes.*;
 
 import java.io.IOException;
@@ -47,8 +50,6 @@ import org.talend.dataprep.exception.error.DataSetErrorCodes;
 import org.talend.dataprep.folder.store.FolderRepository;
 import org.talend.dataprep.folder.store.FolderRepositoryAdapter;
 import org.talend.dataprep.folder.store.NotEmptyFolderException;
-
-import com.google.common.collect.Lists;
 import org.talend.dataprep.util.StringsHelper;
 
 /**
@@ -89,11 +90,28 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
     }
 
     /**
+     * @see FolderRepository#getHome()
+     */
+    @Override
+    public Folder getHome() {
+        final Path path = getRootFolder();
+        final Folder home = folder().path("/").id(pathToId("/")).name(HOME_FOLDER_KEY).ownerId(security.getUserId()).build();
+        final FolderInfo folderInfo = FolderInfo.create(path);
+        if (folderInfo != null) {
+            home.setLastModificationDate(folderInfo.getLastModificationDate());
+            home.setCreationDate(folderInfo.getCreationDate());
+        }
+        return home;
+    }
+
+
+    /**
      * @see FolderRepository#exists(String)
      */
     @Override
-    public boolean exists(String path) {
-        final Path folderPath = Paths.get(getRootFolder().toString(), StringUtils.split(cleanPath(path), PATH_SEPARATOR));
+    public boolean exists(String folderId) {
+        final String path = idToPath(folderId);
+        final Path folderPath = Paths.get(getRootFolder().toString(), split(cleanPath(path), PATH_SEPARATOR));
         return Files.exists(folderPath);
     }
 
@@ -101,11 +119,12 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
      * @see FolderRepository#children(String)
      */
     @Override
-    public Iterable<Folder> children(String parentPath) {
+    public Iterable<Folder> children(String parentId) {
+        final String parentPath = idToPath(parentId);
         try {
             Path folderPath;
             if (StringUtils.isNotEmpty(parentPath)) {
-                folderPath = Paths.get(getRootFolder().toString(), StringUtils.split(parentPath, PATH_SEPARATOR));
+                folderPath = Paths.get(getRootFolder().toString(), split(parentPath, PATH_SEPARATOR));
             } else {
                 folderPath = getRootFolder();
             }
@@ -118,15 +137,17 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
                 childrenStream.forEach(path -> { //
                     if (Files.isDirectory(path)) {
                         String pathStr = pathAsString(path);
-                        try {
-                            BasicFileAttributes attr = Files.readAttributes(path, BasicFileAttributes.class);
-                            Folder child = new Folder(pathStr, extractName(pathStr));
-                            child.setLastModificationDate(attr.lastModifiedTime().to(TimeUnit.MILLISECONDS));
-                            child.setCreationDate(attr.creationTime().to(TimeUnit.MILLISECONDS));
-                            children.add(child);
-                        } catch (IOException e) {
-                            throw new TDPException(UNABLE_TO_LIST_FOLDER_CHILDREN, e, build().put("path", parentPath));
-                        }
+                        final Folder child = folder() //
+                                .path(pathStr) //
+                                .id(pathToId(pathStr)) //
+                                .parentId(parentId) //
+                                .name(extractName(pathStr)) //
+                                .ownerId(security.getUserId()) //
+                                .build();
+                        final FolderInfo folderInfo = FolderInfo.create(path);
+                        child.setLastModificationDate(folderInfo.getLastModificationDate());
+                        child.setCreationDate(folderInfo.getCreationDate());
+                        children.add(child);
                     }
                 });
                 return children;
@@ -146,8 +167,7 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
         // take care of the root folder case to prevent IllegalArgumentException
         if (getRootFolder().getNameCount() == path.getNameCount()) {
             return PATH_SEPARATOR.toString();
-        }
-        else {
+        } else {
             relativePath = path.subpath(getRootFolder().getNameCount(), path.getNameCount());
         }
 
@@ -157,75 +177,134 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
     }
 
     /**
-     * @see FolderRepository#addFolder(String)
+     * @see FolderRepository#addFolder(String, String)
      */
     @Override
-    public Folder addFolder(String givenPath) {
+    public Folder addFolder(String parentId, String givenPath) {
+
+        // parent path must be set and exists
+        String parentPath = cleanPath(idToPath(parentId));
+        if (StringUtils.isBlank(parentPath) || !exists(parentId)) {
+            throw new TDPException(UNABLE_TO_ADD_FOLDER, build().put("path", parentPath + '/' + givenPath));
+        }
+
+        // new path must not be empty nor /
+        String fullPathToCreate = cleanPath(givenPath);
+        if (StringUtils.isBlank(fullPathToCreate) || PATH_SEPARATOR.toString().equals(parentId)) {
+            throw new TDPException(UNABLE_TO_ADD_FOLDER, build().put("path", parentPath + '/' + givenPath));
+        }
+
         try {
 
-            String path = givenPath;
-            if (!StringUtils.startsWith(path, "/")) {
-                path = "/" + path;
+            // get parent folder
+            Path parent = toPath(parentPath);
+            final String[] pathToCreate = split(fullPathToCreate, PATH_SEPARATOR);
+
+            FolderInfo lastFolderInfoCreated = FolderInfo.create(parent);
+            for (String toCreate : pathToCreate) {
+
+                // create the actual directory
+                Path currentPath = Paths.get(parent.toString(), toCreate);
+                if (!Files.exists(currentPath)) {
+                    Files.createDirectories(currentPath);
+                }
+
+                // create the folder info
+                lastFolderInfoCreated = FolderInfo.create(currentPath);
+
+                // update the parent
+                parent = currentPath;
             }
 
-            List<String> pathParts = Lists.newArrayList(StringUtils.split(path, PATH_SEPARATOR));
+            // get the latest path created
+            String lastCreatedPath = pathFromHomeFolder(parent);
+            String lastParentPath = getParentPath(lastCreatedPath);
 
-            Path pathToCreate = Paths.get(getRootFolder().toString(), pathParts.toArray(new String[pathParts.size()]));
-
-            if (!Files.exists(pathToCreate)) {
-                Files.createDirectories(pathToCreate);
-            }
-            FileInfo fileInfo = FileInfo.create(pathToCreate);
-            return fileInfo != null
-                    ? new Folder(path, extractName(path), fileInfo.getCreationDate(), fileInfo.getLastModificationDate())
-                    : new Folder(path, extractName(path));
+            return folder() //
+                    .path(lastCreatedPath) //
+                    .id(pathToId(lastCreatedPath)) //
+                    .name(extractName(fullPathToCreate)) //
+                    .ownerId(security.getUserId()) //
+                    .parentId(pathToId(lastParentPath)) //
+                    .creationDate(lastFolderInfoCreated.getCreationDate()) //
+                    .lastModificationDate(lastFolderInfoCreated.getLastModificationDate()) //
+                    .build();
 
         } catch (IOException e) {
             throw new TDPException(UNABLE_TO_ADD_FOLDER, e, build().put("path", givenPath));
         }
     }
 
+    private String pathFromHomeFolder(Path path) {
+        final Path rootFolder = getRootFolder();
+        return StringUtils.replaceOnce(path.toString(), rootFolder.toString(), "");
+    }
+
+    private Path toPath(String path) {
+        return Paths.get(getRootFolder().toString(), split(path, PATH_SEPARATOR));
+    }
+
+    @Override
+    public Folder getFolderById(String folderId) {
+        final String path = idToPath(folderId);
+        final Path folderPath = Paths.get(getRootFolder().toString(), split(path, PATH_SEPARATOR));
+        final String pathStr = pathAsString(folderPath);
+        final Folder folder = folder() //
+                .path(pathStr) //
+                .id(pathToId(pathStr)) //
+                .parentId(pathToId(getParentPath(pathStr))) //
+                .name(extractName(pathStr)) //
+                .ownerId(security.getUserId()) //
+                .build();
+        FolderInfo folderInfo = FolderInfo.create(folderPath);
+        folder.setLastModificationDate(folderInfo.getLastModificationDate());
+        folder.setCreationDate(folderInfo.getCreationDate());
+        return folder;
+    }
+
     /**
      * @see FolderRepository#renameFolder(String, String)
      */
     @Override
-    public void renameFolder(String path, String newPath) {
-        if (StringUtils.isEmpty(path) //
-                || StringUtils.isEmpty(newPath) //
-                || StringUtils.containsOnly(path, "/")) {
-            throw new IllegalArgumentException("path cannot be empty");
+    public Folder renameFolder(String folderId, String newName) {
+
+        final Folder folder = getFolderById(folderId);
+
+        if (folder == null) {
+            throw new IllegalArgumentException("Cannot rename a folder that cannot be found");
         }
 
-        String originalPath = path;
-        if (!StringUtils.startsWith(originalPath, "/")) {
-            originalPath = "/" + originalPath;
+        if (StringUtils.containsOnly(folder.getPath(), "/")) {
+            throw new IllegalArgumentException("Cannot rename home folder");
         }
 
-        List<String> pathParts = Lists.newArrayList(StringUtils.split(originalPath, PATH_SEPARATOR));
+        final String newPath = StringUtils.replaceOnce(folder.getPath(), cleanPath(folder.getName()), cleanPath(newName));
 
+        List<String> pathParts = newArrayList(split(folder.getPath(), PATH_SEPARATOR));
         Path folderPath = Paths.get(getRootFolder().toString(), pathParts.toArray(new String[pathParts.size()]));
 
-        pathParts = Lists.newArrayList(StringUtils.split(newPath, PATH_SEPARATOR));
-
+        pathParts = newArrayList(split(newPath, PATH_SEPARATOR));
         Path newFolderPath = Paths.get(getRootFolder().toString(), pathParts.toArray(new String[pathParts.size()]));
 
         try {
             FileUtils.moveDirectory(folderPath.toFile(), newFolderPath.toFile());
         } catch (IOException e) {
-            throw new TDPException(UNABLE_TO_RENAME_FOLDER, e, build().put("path", path));
+            throw new TDPException(UNABLE_TO_RENAME_FOLDER, e, build().put("path", folder.getPath()));
         }
 
+        return getFolderById(pathToId(pathFromHomeFolder(newFolderPath)));
     }
 
     /**
      * @see FolderRepository#addFolderEntry(FolderEntry, String)
      */
     @Override
-    public FolderEntry addFolderEntry(FolderEntry folderEntry, String entryPath) {
+    public FolderEntry addFolderEntry(FolderEntry folderEntry, String folderId) {
+        final String folderPath = idToPath(folderId);
 
         // we store the FolderEntry bean content as properties the file name is the name
         try {
-            List<String> pathParts = Lists.newArrayList(StringUtils.split(entryPath, PATH_SEPARATOR));
+            List<String> pathParts = newArrayList(split(folderPath, PATH_SEPARATOR));
             pathParts.add(buildFileName(folderEntry));
             Path path = Paths.get(getRootFolder().toString(), pathParts.toArray(new String[pathParts.size()]));
             // we delete it if exists
@@ -238,20 +317,20 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
             }
 
             path = Files.createFile(path);
-            folderEntry.setFolderId(cleanPath(entryPath));
+            folderEntry.setFolderId(folderId);
 
             // use java Properties to save the files
             Properties properties = new Properties();
-            properties.setProperty("contentType", folderEntry.getContentType().toString());
-            properties.setProperty("contentId", folderEntry.getContentId());
-            properties.setProperty("folderId", folderEntry.getFolderId());
+            properties.setProperty(CONTENT_TYPE, folderEntry.getContentType().toString());
+            properties.setProperty(CONTENT_ID, folderEntry.getContentId());
+            properties.setProperty(FOLDER_ID, folderEntry.getFolderId());
             try (OutputStream outputStream = Files.newOutputStream(path)) {
                 properties.store(outputStream, "saved");
             }
 
             return folderEntry;
         } catch (IOException e) {
-            throw new TDPException(UNABLE_TO_ADD_FOLDER_ENTRY, e, build().put("path", entryPath));
+            throw new TDPException(UNABLE_TO_ADD_FOLDER_ENTRY, e, build().put("path", folderPath));
         }
     }
 
@@ -259,14 +338,16 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
      * @see FolderRepository#removeFolderEntry(String, String, FolderContentType)
      */
     @Override
-    public void removeFolderEntry(String folderPath, String contentId, FolderContentType contentType) {
+    public void removeFolderEntry(String folderId, String contentId, FolderContentType contentType) {
 
         if (contentType == null) {
             throw new IllegalArgumentException("The content type of the folder entry to be removed cannot be null.");
         }
 
+        final String folderPath = idToPath(folderId);
+
         try {
-            List<String> pathParts = Lists.newArrayList(StringUtils.split(folderPath, PATH_SEPARATOR));
+            List<String> pathParts = newArrayList(split(folderPath, PATH_SEPARATOR));
             Path path = Paths.get(getRootFolder().toString(), pathParts.toArray(new String[pathParts.size()]));
 
             try (Stream<Path> paths = Files.list(path)) {
@@ -275,8 +356,8 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
                             try (InputStream inputStream = Files.newInputStream(pathFile)) {
                                 Properties properties = new Properties();
                                 properties.load(inputStream);
-                                if (contentType.equals(FolderContentType.fromName(properties.getProperty("contentType"))) && //
-                                        StringUtils.equalsIgnoreCase(properties.getProperty("contentId"), //
+                                if (contentType.equals(FolderContentType.fromName(properties.getProperty(CONTENT_TYPE))) && //
+                                        StringUtils.equalsIgnoreCase(properties.getProperty(CONTENT_ID), //
                                                 contentId)) {
                                     Files.delete(pathFile);
                                 }
@@ -294,9 +375,10 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
      * @see FolderRepository#removeFolder(String)
      */
     @Override
-    public void removeFolder(String folder) throws NotEmptyFolderException {
+    public void removeFolder(String folderId) throws NotEmptyFolderException {
 
-        final Path path = Paths.get(getRootFolder().toString(), StringUtils.split(folder, PATH_SEPARATOR));
+        final String folderPath = idToPath(folderId);
+        final Path path = Paths.get(getRootFolder().toString(), split(folderPath, PATH_SEPARATOR));
         final List<FolderEntry> folderEntries = new ArrayList<>();
 
         final FoldersConsumer foldersConsumer = new FoldersConsumer() {
@@ -322,9 +404,9 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
                             properties.load(inputStream);
 
                             FolderEntry folderEntry = new FolderEntry();
-                            folderEntry.setFolderId(path.getParent().toString());
-                            folderEntry.setContentType(FolderContentType.fromName(properties.getProperty("contentType")));
-                            folderEntry.setContentId(properties.getProperty("contentId"));
+                            folderEntry.setFolderId(pathToId(path.getParent().toString()));
+                            folderEntry.setContentType(FolderContentType.fromName(properties.getProperty(CONTENT_TYPE)));
+                            folderEntry.setContentId(properties.getProperty(CONTENT_ID));
                             folderEntries.add(folderEntry);
                         }
                     } catch (IOException e) {
@@ -349,10 +431,12 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
 
     /**
      * @see FolderRepository#entries(String, FolderContentType)
-     */    @Override
-    public Iterable<FolderEntry> entries(String folder, FolderContentType contentType) {
+     */
+    @Override
+    public Iterable<FolderEntry> entries(String folderId, FolderContentType contentType) {
+        final String folderPath = idToPath(folderId);
 
-        Path path = Paths.get(getRootFolder().toString(), StringUtils.split(folder, PATH_SEPARATOR));
+        Path path = Paths.get(getRootFolder().toString(), split(folderPath, PATH_SEPARATOR));
 
         if (Files.notExists(path)) {
             return emptyList();
@@ -366,12 +450,11 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
                             try (InputStream inputStream = Files.newInputStream(pathFile)) {
                                 Properties properties = new Properties();
                                 properties.load(inputStream);
-                                if (contentType.equals(FolderContentType.fromName(properties.getProperty("contentType")))) {
-
+                                if (contentType.equals(FolderContentType.fromName(properties.getProperty(CONTENT_TYPE)))) {
                                     FolderEntry folderEntry = new FolderEntry();
-                                    folderEntry.setFolderId(properties.getProperty("folderId"));
+                                    folderEntry.setFolderId(properties.getProperty(FOLDER_ID));
                                     folderEntry.setContentType(contentType);
-                                    folderEntry.setContentId(properties.getProperty("contentId"));
+                                    folderEntry.setContentId(properties.getProperty(CONTENT_ID));
                                     folderEntries.add(folderEntry);
                                 }
                             } catch (IOException e) {
@@ -413,12 +496,12 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
                     try (InputStream inputStream = Files.newInputStream(file)) {
                         Properties properties = new Properties();
                         properties.load(inputStream);
-                        if (StringUtils.equals(properties.getProperty("contentId"), contentId) && //
-                                contentType.equals(FolderContentType.fromName(properties.getProperty("contentType")))) {
+                        if (StringUtils.equals(properties.getProperty(CONTENT_ID), contentId) && //
+                                contentType.equals(FolderContentType.fromName(properties.getProperty(CONTENT_TYPE)))) {
                             final FolderEntry entry = new FolderEntry(contentType, contentId);
                             Path parent = file.getParent();
-                            String folderId = parent.equals(getRootFolder()) ? "" : pathAsString(parent);
-                            entry.setFolderId(folderId);
+                            String folderPath = parent.equals(getRootFolder()) ? "/" : pathAsString(parent);
+                            entry.setFolderId(pathToId(folderPath));
                             folderEntries.add(entry);
                         }
                     }
@@ -455,42 +538,6 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
         }
     }
 
-    /**
-     * @see FolderRepository#allFolder()
-     */
-    @Override
-    public Iterable<Folder> allFolder() {
-
-        Set<Folder> folders = new HashSet<>();
-
-        FoldersConsumer foldersConsumer = new FoldersConsumer() {
-
-            @Override
-            public Collection<Folder> getFolders() {
-                return folders;
-            }
-
-            @Override
-            public Collection<FolderEntry> getFolderEntries() {
-                return emptyList();
-            }
-
-            @Override
-            public void accept(Path path) {
-                if (Files.isDirectory(path)) {
-                    FileInfo fileInfo = FileInfo.create(path);
-                    String pathStr = pathAsString(path);
-                    Folder folder = fileInfo != null ? new Folder(pathStr, extractName(pathStr), fileInfo.getCreationDate(),
-                            fileInfo.getLastModificationDate()) : new Folder(pathStr, extractName(pathStr));
-                    folders.add(folder);
-                }
-            }
-        };
-
-        visitFolders(foldersConsumer, getRootFolder());
-
-        return folders;
-    }
 
     /**
      * @see FolderRepository#searchFolders(String, boolean)
@@ -517,10 +564,10 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
                     String pathStr = pathAsString(path);
                     String pathName = extractName(pathStr);
                     if (StringsHelper.match(pathName, queryString, strict)) {
-                        FileInfo fileInfo = FileInfo.create(path);
-                        Folder folder = fileInfo != null
-                                ? new Folder(pathStr, pathName, fileInfo.getCreationDate(), fileInfo.getLastModificationDate())
-                                : new Folder(pathStr, pathName);
+                        FolderInfo folderInfo = FolderInfo.create(path);
+                        Folder folder = folderInfo != null
+                                ? folder().path(pathStr).id(pathToId(pathStr)).name(pathName).ownerId(security.getUserId()).creationDate(folderInfo.getCreationDate()).lastModificationDate(folderInfo.getLastModificationDate()).build()
+                                : folder().path(pathStr).id(pathToId(pathStr)).name(pathName).ownerId(security.getUserId()).build();
                         folders.add(folder);
                     }
                 }
@@ -580,25 +627,26 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
      * @see FolderRepository#copyFolderEntry(FolderEntry, String)
      */
     @Override
-    public void copyFolderEntry(FolderEntry folderEntry, String destinationPath) {
+    public void copyFolderEntry(FolderEntry folderEntry, String destinationId) {
         FolderEntry cloned = new FolderEntry(folderEntry.getContentType(), folderEntry.getContentId());
-        String targetPath = cleanPath(destinationPath);
-        cloned.setFolderId(targetPath);
-        addFolderEntry(cloned, targetPath);
+        cloned.setFolderId(destinationId);
+        addFolderEntry(cloned, destinationId);
     }
 
     /**
      * @see FolderRepository#moveFolderEntry(FolderEntry, String, String)
      */
     @Override
-    public void moveFolderEntry(FolderEntry folderEntry, String sourcePath, String destinationPath) {
-        Path path = Paths.get(getRootFolder().toString(), StringUtils.split(destinationPath, PATH_SEPARATOR));
+    public void moveFolderEntry(FolderEntry folderEntry, String fromId, String toId) {
+        final String fromPath = idToPath(fromId);
+        final String toPath = idToPath(toId);
+        Path path = Paths.get(getRootFolder().toString(), split(toPath, PATH_SEPARATOR));
 
         if (Files.notExists(path)) {
             throw new IllegalArgumentException("destinationPath doesn't exists");
         }
 
-        Path entry = Paths.get(getRootFolder().toString(), StringUtils.split(sourcePath, PATH_SEPARATOR));
+        Path entry = Paths.get(getRootFolder().toString(), split(fromPath, PATH_SEPARATOR));
         Path originFile = Paths.get(entry.toString(), buildFileName(folderEntry));
 
         if (Files.notExists(originFile)) {
@@ -622,8 +670,7 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
         FolderLocator locator = new FolderLocator(contentId, type);
         try {
             Files.walkFileTree(getRootFolder(), locator);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
 
@@ -638,6 +685,7 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
     public long size() {
         return foldersNumber(getRootFolder());
     }
+
 
     /**
      * @param path the path to number folders from.
@@ -667,18 +715,28 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
         }
     }
 
-    private static class FileInfo {
+    private static class FolderInfo {
 
         /**
          * This class' logger.
          */
-        private static final Logger LOG = getLogger(FileInfo.class);
-
+        private static final Logger LOG = getLogger(FolderInfo.class);
+        /**
+         * Folder last modification date.
+         */
         private final long lastModificationDate;
-
+        /**
+         * Folder creation date.
+         */
         private final long creationDate;
 
-        FileInfo(long lastModificationDate, long creationDate) {
+        /**
+         * Constructor.
+         *
+         * @param lastModificationDate the folder last modification date.
+         * @param creationDate         the folder creation date.
+         */
+        FolderInfo(long lastModificationDate, long creationDate) {
             this.lastModificationDate = lastModificationDate;
             this.creationDate = creationDate;
         }
@@ -691,8 +749,8 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
             return creationDate;
         }
 
-        public static FileInfo create(Path path) {
-            FileInfo result = null;
+        public static FolderInfo create(Path path) {
+            FolderInfo result = null;
             BasicFileAttributes attributes = null;
             try {
                 attributes = Files.readAttributes(path, BasicFileAttributes.class);
@@ -700,13 +758,20 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
                 LOG.debug("cannot read file attributes {}", path, e);
             }
             if (attributes != null) {
-                result = new FileInfo(attributes.creationTime().to(TimeUnit.MILLISECONDS),
+                result = new FolderInfo(attributes.creationTime().to(TimeUnit.MILLISECONDS),
                         attributes.lastModifiedTime().to(TimeUnit.MILLISECONDS));
             }
 
             return result;
         }
 
+        @Override
+        public String toString() {
+            return "FolderInfo{" +
+                    "lastModificationDate=" + lastModificationDate +
+                    ", creationDate=" + creationDate +
+                    '}';
+        }
     }
 
     private class FolderLocator implements FileVisitor<Path> {
@@ -715,7 +780,7 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
         private FolderContentType wantedContentType;
         private Folder result;
 
-        public FolderLocator(String wantedContentId, FolderContentType wantedContentType) {
+        FolderLocator(String wantedContentId, FolderContentType wantedContentType) {
             this.wantedContentId = wantedContentId;
             this.wantedContentType = wantedContentType;
             result = null;
@@ -731,13 +796,21 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
             try (InputStream inputStream = Files.newInputStream(file)) {
                 Properties properties = new Properties();
                 properties.load(inputStream);
-                if (StringUtils.equals(properties.getProperty("contentId"), wantedContentId) && //
-                        wantedContentType.equals(FolderContentType.fromName(properties.getProperty("contentType")))) {
+                if (StringUtils.equals(properties.getProperty(CONTENT_ID), wantedContentId) && //
+                        wantedContentType.equals(FolderContentType.fromName(properties.getProperty(CONTENT_TYPE)))) {
 
                     final Path parent = file.getParent();
                     String parentPath = pathAsString(parent);
-                    FileInfo fileInfo = FileInfo.create(parent);
-                    result =  new Folder(parentPath, extractName(parentPath), fileInfo.getCreationDate(), fileInfo.getLastModificationDate());
+                    FolderInfo folderInfo = FolderInfo.create(parent);
+                    result = folder() //
+                            .path(parentPath) //
+                            .id(pathToId(parentPath)) //
+                            .parentId(pathToId(getParentPath(parentPath))) //
+                            .name(extractName(parentPath)) //
+                            .ownerId(security.getUserId()) //
+                            .creationDate(folderInfo.getCreationDate()) //
+                            .lastModificationDate(folderInfo.getLastModificationDate()) //
+                            .build();
                     return TERMINATE;
                 }
             }
@@ -761,4 +834,5 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
             return result;
         }
     }
+
 }

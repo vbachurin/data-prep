@@ -14,91 +14,86 @@
 package org.talend.dataprep.api.service;
 
 import static com.jayway.restassured.RestAssured.given;
+import static java.util.stream.Collectors.toList;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 import static org.talend.dataprep.api.folder.FolderContentType.DATASET;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
+import java.util.stream.StreamSupport;
 
-import org.assertj.core.api.Assertions;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.talend.dataprep.api.folder.Folder;
 import org.talend.dataprep.api.folder.FolderEntry;
+import org.talend.dataprep.api.folder.FolderInfo;
+import org.talend.dataprep.api.folder.FolderTreeNode;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.response.Response;
 
 /**
  * Unit tests for the folder API.
  */
 public class FolderAPITest extends ApiServiceTestBase {
+    private Folder home;
 
     @Before
     public void cleanupFolder() throws Exception {
         folderRepository.clear();
+        home = folderRepository.getHome();
     }
 
     @Test
     public void should_create_folder_in_root() throws IOException {
         //given
-        final List<Folder> originalFolders = getFolderContent("/");
+        final List<Folder> originalFolders = getFolderChildren(home.getId());
         assertThat(originalFolders, hasSize(0));
 
         //when
-        createFolder("beer");
+        createFolder("beer", home.getId());
 
         //then
-        final List<Folder> folders = getFolderContent("/");
+        final List<Folder> folders = getFolderChildren(home.getId());
         assertThat(folders, hasSize(1));
         assertThat(folders.get(0).getName(), is("beer"));
-        assertThat(folders.get(0).getPath(), is("beer"));
+        assertThat(folders.get(0).getPath(), is("/beer"));
     }
 
     @Test
     public void should_create_nested_folder() throws IOException {
         //given
-        createFolder("beer");
-        final List<Folder> originalFolders = getFolderContent("/beer");
+        createFolder("beer", home.getId());
+        final Folder beer = getFolder(home.getId(), "beer");
+        final List<Folder> originalFolders = getFolderChildren(beer.getId());
         assertThat(originalFolders, hasSize(0));
 
         //when
-        createFolder("/beer/alcohol");
+        createFolder("/beer/alcohol", home.getId());
 
         //then
-        final List<Folder> folders = getFolderContent("/beer");
+        final List<Folder> folders = getFolderChildren(beer.getId());
         assertThat(folders, hasSize(1));
         assertThat(folders.get(0).getName(), is("alcohol"));
-        assertThat(folders.get(0).getPath(), is("beer/alcohol"));
+        assertThat(folders.get(0).getPath(), is("/beer/alcohol"));
     }
 
+    //TODO Ignored because deprecated
     @Test
-    public void should_fetch_all_folders() throws IOException {
-        //given
-        List<String> folders = Arrays.asList("drink", "/drink/beer", "/drink/wine", "/drink/wine/bordeaux");
-        folders.forEach(f -> createFolder(f));
-
-        //when
-        final List<Folder> actual = getAllFolders();
-
-        //then
-        assertThat(folders, hasSize(4));
-        containsInAnyOrder(actual, folders);
-    }
-
-    @Test
+    @Ignore
     public void should_add_entry_in_folder() throws IOException {
         //given
-        createFolder("beer");
+        createFolder("beer", home.getId());
+        final Folder beerFolder = getFolder(home.getId(), "beer");
         final FolderEntry folderEntry = new FolderEntry(DATASET, "6f8a54051bc454");
 
         //when
-        final FolderEntry createdEntry = createFolderEntry(folderEntry, "/beer");
+        final FolderEntry createdEntry = createFolderEntry(folderEntry, beerFolder.getId());
 
         //then
         final List<FolderEntry> entries = getFolderEntries("/beer");
@@ -106,16 +101,19 @@ public class FolderAPITest extends ApiServiceTestBase {
         assertThat(entries, contains(createdEntry));
     }
 
+    //TODO Ignored because deprecated
     @Test
+    @Ignore
     public void should_remove_entry_from_folder() throws IOException {
         //given
-        createFolder("beer");
+        createFolder("beer", home.getId());
+        final Folder beerFolder = getFolder(home.getId(), "beer");
 
         final FolderEntry firstFolderEntry = new FolderEntry(DATASET, "6f8a54051bc454");
-        final FolderEntry firstCreatedEntry = createFolderEntry(firstFolderEntry, "/beer");
+        final FolderEntry firstCreatedEntry = createFolderEntry(firstFolderEntry, beerFolder.getId());
 
         final FolderEntry secondFolderEntry = new FolderEntry(DATASET, "32ac4646aa98b51");
-        final FolderEntry secondCreatedEntry = createFolderEntry(secondFolderEntry, "/beer");
+        final FolderEntry secondCreatedEntry = createFolderEntry(secondFolderEntry, beerFolder.getId());
 
         final List<FolderEntry> entries = getFolderEntries("/beer");
         assertThat(entries, hasSize(2));
@@ -133,30 +131,32 @@ public class FolderAPITest extends ApiServiceTestBase {
     @Test
     public void should_remove_empty_folder() throws IOException {
         //given
-        createFolder("beer");
+        createFolder("beer", home.getId());
+        final Folder beer = getFolder(home.getId(), "beer");
 
         //when
-        final Response response = removeFolder("/beer");
+        final Response response = removeFolder(beer.getId());
 
         //then
         assertThat(response.getStatusCode(), is(200));
-        final List<Folder> folders = getFolderContent("/");
+        final List<Folder> folders = getFolderChildren(home.getId());
         assertThat(folders, is(empty()));
     }
 
     @Test
     public void should_return_conflict_on_non_empty_folder_remove() throws IOException {
         //given
-        createFolder("beer");
+        createFolder("beer", home.getId());
+        final Folder beer = getFolder(home.getId(), "beer");
         final FolderEntry folderEntry = new FolderEntry(DATASET, "6f8a54051bc454");
-        createFolderEntry(folderEntry, "/beer");
+        createFolderEntry(folderEntry, beer.getId());
 
         //when
-        final Response response = removeFolder("/beer");
+        final Response response = removeFolder(beer.getId());
 
         //then
         assertThat(response.getStatusCode(), is(409));
-        final List<Folder> folders = getFolderContent("/");
+        final List<Folder> folders = getFolderChildren(home.getId());
         assertThat(folders, hasSize(1));
     }
 
@@ -167,18 +167,17 @@ public class FolderAPITest extends ApiServiceTestBase {
     @Test
     public void shouldListPreparationsInFolder() throws Exception {
         // given
-        folderRepository.addFolder("/one");
-        folderRepository.addFolder("/two");
-        createPreparationFromFile("dataset/dataset.csv", "yet another preparation", "text/csv", "/");
-        createPreparationFromFile("dataset/dataset.csv", "prep 2", "text/csv", "/");
-        createPreparationFromFile("dataset/dataset.csv", "preparation 3 !", "text/csv", "/");
+        folderRepository.addFolder(home.getId(), "/one");
+        folderRepository.addFolder(home.getId(), "/two");
+        createPreparationFromFile("dataset/dataset.csv", "yet another preparation", "text/csv", home.getId());
+        createPreparationFromFile("dataset/dataset.csv", "prep 2", "text/csv", home.getId());
+        createPreparationFromFile("dataset/dataset.csv", "preparation 3 !", "text/csv", home.getId());
 
         // when
         final Response response = given() //
-                .queryParam("folder", "/") //
                 .when()//
                 .expect().statusCode(200).log().ifError() //
-                .get("/api/folders/preparations");
+                .get("/api/folders/{id}/preparations", home.getId());
 
         // then
         assertThat(response.getStatusCode(), is(200));
@@ -201,21 +200,41 @@ public class FolderAPITest extends ApiServiceTestBase {
     }
 
     @Test
+    public void should_rename_folder() throws IOException {
+        //given
+        createFolder("beer", home.getId());
+        final Folder beer = getFolder(home.getId(), "beer");
+
+        final String name = "new beer";
+
+        //when
+        final Response response = given() //
+                .body(name) //
+                .when() //
+                .put("/api/folders/{id}/name", beer.getId());
+
+        //then
+        assertThat(response.getStatusCode(), is(200));
+        final Folder updatedBeer = getFolder(home.getId(), name);
+        assertNotNull(updatedBeer);
+    }
+
+    @Test
     public void search_folders() throws Exception {
         // given
         final boolean strict = true;
         final boolean nonStrict = false;
-        createFolder("foo");
-        createFolder("bar");
-        createFolder("foo/beer");
-        createFolder("foo/wine");
-        createFolder("foo/wine/toto");
-        createFolder("foo/wine/titi");
-        createFolder("foo/wine/thetiti");
-        createFolder("foo/wine/yupTITI");
-        createFolder("foo/wine/yeahTITI");
-        createFolder("foo/wine/Goodwine");
-        createFolder("foo/wine/verygoodWInE");
+        createFolder("foo", home.getId());
+        createFolder("bar", home.getId());
+        createFolder("foo/beer", home.getId());
+        createFolder("foo/wine", home.getId());
+        createFolder("foo/wine/toto", home.getId());
+        createFolder("foo/wine/titi", home.getId());
+        createFolder("foo/wine/thetiti", home.getId());
+        createFolder("foo/wine/yupTITI", home.getId());
+        createFolder("foo/wine/yeahTITI", home.getId());
+        createFolder("foo/wine/Goodwine", home.getId());
+        createFolder("foo/wine/verygoodWInE", home.getId());
 
         assertOnSearch("foo", nonStrict, 1);
         assertOnSearch("wine", nonStrict, 3);
@@ -225,11 +244,118 @@ public class FolderAPITest extends ApiServiceTestBase {
         assertOnSearch("titi", strict, 1);
         assertOnSearch("good", strict, 0);
     }
+    @Test
+    public void shouldReturnEntireFolderTree() throws Exception {
+        // given
+        //                        HOME
+        //              ___________|____________
+        //              |                       |
+        //             first                  second
+        //          ____|____                   |
+        //          |        |                  |
+        //first child 1   first child 2     second child
+        //                                      |
+        //                                      |
+        //                                  second child child
+
+        createFolder("first", home.getId());
+        createFolder("second", home.getId());
+
+        final Folder firstFolder = getFolder(home.getId(), "first");
+        final Folder secondFolder = getFolder(home.getId(), "second");
+        createFolder( "first child one", firstFolder.getId());
+        createFolder("first child two", firstFolder.getId());
+        createFolder("second child", secondFolder.getId());
+
+        final Folder secondChildFolder = getFolder(secondFolder.getId(), "second child");
+        createFolder("second child child", secondChildFolder.getId());
+
+        // when
+        final Response response = given() //
+                .expect().statusCode(200).log().ifError()//
+                .when() //
+                .get("/folders/tree");
+
+        // then
+        final FolderTreeNode tree = mapper.readValue(response.asString(), new TypeReference<FolderTreeNode>() {
+        });
+        assertTree(tree, "/", new String[]{"/first", "/second"});
+
+        final FolderTreeNode firstFolderNode = getChild(tree, "first");
+        final FolderTreeNode secondFolderNode = getChild(tree, "second");
+        assertTree(firstFolderNode, "/first", new String[]{"/first/first child one", "/first/first child two"});
+        assertTree(secondFolderNode, "/second", new String[]{"/second/second child"});
+
+        final FolderTreeNode secondChildFolderNode = getChild(secondFolderNode, "second child");
+        assertTree(secondChildFolderNode, "/second/second child", new String[]{"/second/second child/second child child"});
+    }
+
+    @Test
+    public void shouldFolderMetadataWithHierarchy() throws Exception {
+        // given
+        //                        HOME
+        //              ___________|____________
+        //              |                       |
+        //             first                  second
+        //          ____|____                   |
+        //          |        |                  |
+        //first child 1   first child 2     second child
+        //                                      |
+        //                                      |
+        //                                  second child child
+
+        createFolder("first", home.getId());
+        createFolder("second", home.getId());
+
+        final Folder firstFolder = getFolder(home.getId(), "first");
+        final Folder secondFolder = getFolder(home.getId(), "second");
+        createFolder( "first child one", firstFolder.getId());
+        createFolder("first child two", firstFolder.getId());
+        createFolder("second child", secondFolder.getId());
+
+        final Folder secondChildFolder = getFolder(secondFolder.getId(), "second child");
+        createFolder("second child child", secondChildFolder.getId());
+
+        final Folder firstChildTwo = getFolder(firstFolder.getId(), "first child two");
+
+        // when
+        final Response response = given() //
+                .expect().statusCode(200).log().ifError()//
+                .when() //
+                .get("/folders/{id}", firstChildTwo.getId());
+
+        // then
+        final FolderInfo infos = mapper.readValue(response.asString(), new TypeReference<FolderInfo>() {
+        });
+        final List<Folder> hierarchy = StreamSupport.stream(infos.getHierarchy().spliterator(), false).collect(toList());
+        assertThat(infos.getFolder(), equalTo(firstChildTwo));
+        assertThat(hierarchy, hasSize(2));
+        assertThat(hierarchy.get(0).getId(), equalTo(home.getId()));
+        assertThat(hierarchy.get(1).getId(), equalTo(firstFolder.getId()));
+    }
+
+    private void assertTree(final FolderTreeNode node, final String nodePath, final String[] expectedChildrenPaths) {
+        assertThat(node.getFolder().getPath(), is(nodePath));
+        assertThat(node.getChildren(), hasSize(expectedChildrenPaths.length));
+        final List<String> actualChildrenPaths = node.getChildren()
+                .stream()
+                .map((folderTreeNode -> folderTreeNode.getFolder().getPath()))
+                .collect(toList());
+        assertThat(actualChildrenPaths, containsInAnyOrder(expectedChildrenPaths));
+    }
+
+    private FolderTreeNode getChild(final FolderTreeNode tree, final String childName) {
+        return tree.getChildren()
+                .stream()
+                .filter((child) -> child.getFolder().getName().equals(childName))
+                .findFirst()
+                .orElse(null);
+    }
 
     private void assertOnSearch(final String searchQuery, final boolean strict, final int expectedSize) throws Exception {
         //when
-        final Response response = RestAssured.given() //
-                .queryParam("pathName", searchQuery) //
+        final Response response = given() //
+                .queryParam("name", searchQuery) //
                 .queryParam("strict", strict) //
                 .when() //
                 .get("/api/folders/search");
@@ -237,69 +363,66 @@ public class FolderAPITest extends ApiServiceTestBase {
         });
 
         //then
-        Assertions.assertThat(folders).hasSize(expectedSize);
+        assertThat(folders, hasSize(expectedSize));
     }
 
-    private void createFolder(final String path) {
-        final Response response = RestAssured.given() //
+    private void createFolder(final String path, final String parentId) {
+        final Response response = given() //
+                .queryParam("parentId", parentId) //
                 .queryParam("path", path) //
                 .when() //
                 .put("/api/folders");
 
-        Assertions.assertThat(response.getStatusCode()).isEqualTo(200);
+        assertThat(response.getStatusCode(), is(200));
     }
 
-    private Response removeFolder(final String path) {
-        return RestAssured.given() //
-                .queryParam("path", path) //
+    private Response removeFolder(final String id) throws UnsupportedEncodingException {
+        return given() //
                 .when() //
-                .delete("/api/folders");
+                .delete("/api/folders/" + id);
     }
 
-    private List<Folder> getAllFolders() throws IOException {
-        final Response response = RestAssured.given() //
-                .when() //
-                .get("/api/folders/all");
-
-        Assertions.assertThat(response.getStatusCode()).isEqualTo(200);
-        return mapper.readValue(response.asString(), new TypeReference<List<Folder>>() {
-        });
-    }
-
-    private List<Folder> getFolderContent(final String path) throws IOException {
-        final Response response = RestAssured.given() //
-                .queryParam("path", path) //
+    private List<Folder> getFolderChildren(final String id) throws IOException {
+        final Response response = given() //
+                .queryParam("parentId", id) //
                 .when() //
                 .get("/api/folders");
 
-        Assertions.assertThat(response.getStatusCode()).isEqualTo(200);
+        assertThat(response.getStatusCode(), is(200));
         return mapper.readValue(response.asString(), new TypeReference<List<Folder>>() {
         });
     }
 
-    private FolderEntry createFolderEntry(final FolderEntry folderEntry, String path) throws JsonProcessingException {
-        return folderRepository.addFolderEntry(folderEntry, path);
+    private FolderEntry createFolderEntry(final FolderEntry folderEntry, String folderId) throws JsonProcessingException {
+        return folderRepository.addFolderEntry(folderEntry, folderId);
     }
 
     private void removeFolderEntry(final String contentId) {
-        final Response response = RestAssured.given() //
+        final Response response = given() //
                 .queryParam("path", "/beer") //
                 .pathParam("contentType", DATASET) //
                 .pathParam("id", contentId) //
                 .delete("/api/folders/entries/{contentType}/{id}");
 
-        Assertions.assertThat(response.getStatusCode()).isEqualTo(200);
+        assertThat(response.getStatusCode(), is(200));
     }
 
     private List<FolderEntry> getFolderEntries(final String path) throws IOException {
-        final Response response = RestAssured.given() //
+        final Response response = given() //
                 .queryParam("path", path) //
                 .queryParam("contentType", DATASET) //
                 .get("/api/folders/entries");
 
-        Assertions.assertThat(response.getStatusCode()).isEqualTo(200);
+        assertThat(response.getStatusCode(), is(200));
         return mapper.readValue(response.asString(), new TypeReference<List<FolderEntry>>() {
         });
     }
 
+    private Folder getFolder(final String parentId, final String name) throws IOException {
+        return getFolderChildren(parentId) //
+                .stream() //
+                .filter((folder) -> folder.getName().equals(name)) //
+                .findFirst() //
+                .orElse(null);
+    }
 }

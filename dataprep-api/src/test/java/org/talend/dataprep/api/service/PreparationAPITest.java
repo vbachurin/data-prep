@@ -31,6 +31,7 @@ import javax.annotation.Resource;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.talend.dataprep.api.folder.Folder;
 import org.talend.dataprep.api.folder.FolderEntry;
 import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.preparation.Step;
@@ -44,7 +45,9 @@ import com.jayway.restassured.response.Response;
 
 public class PreparationAPITest extends ApiServiceTestBase {
 
-    /** The root step. */
+    /**
+     * The root step.
+     */
     @Resource(name = "rootStep")
     private Step rootStep;
 
@@ -103,8 +106,8 @@ public class PreparationAPITest extends ApiServiceTestBase {
     @Test
     public void testListCompatibleDataSets() throws Exception {
         // given
-        final String dataSetId = createDataset( "dataset/dataset.csv", "compatible1", "text/csv" );
-        final String dataSetId2 = createDataset( "dataset/dataset.csv", "compatible2", "text/csv" );
+        final String dataSetId = createDataset("dataset/dataset.csv", "compatible1", "text/csv");
+        final String dataSetId2 = createDataset("dataset/dataset.csv", "compatible2", "text/csv");
         final String dataSetId3 = createDataset("t-shirt_100.csv", "incompatible", "text/csv");
         final String preparationId = createPreparationFromDataset(dataSetId, "testPreparation");
 
@@ -113,28 +116,28 @@ public class PreparationAPITest extends ApiServiceTestBase {
         final String compatibleDatasetList = when().get("/api/preparations/{id}/basedatasets", preparationId).asString();
 
         // then
-        assertTrue( compatibleDatasetList.contains( dataSetId2 ) );
-        assertFalse( compatibleDatasetList.contains( dataSetId3 ) );
+        assertTrue(compatibleDatasetList.contains(dataSetId2));
+        assertFalse(compatibleDatasetList.contains(dataSetId3));
     }
 
     @Test
     public void testListCompatibleDataSetsWhenUniqueDatasetInRepository() throws Exception {
         // given
-        final String dataSetId = createDataset( "dataset/dataset.csv", "unique", "text/csv" );
+        final String dataSetId = createDataset("dataset/dataset.csv", "unique", "text/csv");
         final String preparationId = createPreparationFromDataset(dataSetId, "testPreparation");
 
         // when
         final String compatibleDatasetList = when().get("/api/preparations/{id}/basedatasets", preparationId).asString();
 
         // then
-        assertFalse( compatibleDatasetList.contains( dataSetId ) );
+        assertFalse(compatibleDatasetList.contains(dataSetId));
     }
 
 
     @Test
     public void shouldCopyPreparation() throws Exception {
         // given
-        folderRepository.addFolder("/destination");
+        folderRepository.addFolder(home.getId(), "/destination");
         final String id = createPreparationFromFile("dataset/dataset.csv", "super preparation", "text/csv", "/from");
 
         // when
@@ -177,17 +180,15 @@ public class PreparationAPITest extends ApiServiceTestBase {
     @Test
     public void shouldMovePreparation() throws Exception {
         // given
-        String source = "/source";
-        folderRepository.addFolder(source);
-        final String id = createPreparationFromFile("dataset/dataset.csv", "great_preparation", "text/csv", source);
+        final Folder source = folderRepository.addFolder(home.getId(), "source");
+        final String id = createPreparationFromFile("dataset/dataset.csv", "great_preparation", "text/csv", source.getId());
 
-        String destination = "/destination";
-        folderRepository.addFolder(destination);
+        final Folder destination = folderRepository.addFolder(home.getId(), "destination");
 
         // when
         final Response response = given() //
-                .queryParam("folder", source) //
-                .queryParam("destination", destination) //
+                .queryParam("folder", source.getId()) //
+                .queryParam("destination", destination.getId()) //
                 .queryParam("newName", "NEW great preparation") //
                 .when()//
                 .expect().statusCode(200).log().ifError() //
@@ -197,7 +198,7 @@ public class PreparationAPITest extends ApiServiceTestBase {
         assertEquals(200, response.getStatusCode());
 
         // check the folder entry
-        final Iterator<FolderEntry> iterator = folderRepository.entries(destination, PREPARATION).iterator();
+        final Iterator<FolderEntry> iterator = folderRepository.entries(destination.getId(), PREPARATION).iterator();
         assertTrue(iterator.hasNext());
         final FolderEntry entry = iterator.next();
         assertEquals(entry.getContentId(), id);
@@ -312,7 +313,7 @@ public class PreparationAPITest extends ApiServiceTestBase {
         //then
         request.then()//
                 .statusCode(400)//
-                .body("code", is("TDP_ALL_MISSING_ACTION_SCOPE")) ;
+                .body("code", is("TDP_ALL_MISSING_ACTION_SCOPE"));
     }
 
     @Test
@@ -388,7 +389,7 @@ public class PreparationAPITest extends ApiServiceTestBase {
         // then
         request.then()//
                 .statusCode(400)//
-                .body("code", is("TDP_ALL_MISSING_ACTION_SCOPE")) ;
+                .body("code", is("TDP_ALL_MISSING_ACTION_SCOPE"));
     }
 
     @Test

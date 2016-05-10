@@ -22,6 +22,8 @@
     </appenders>
     <loggers>
         <!-- interesting debug log for this unit test -->
+        <logger name="org.talend.dataprep" level="info"/>
+        <!--logger name="org.springframework.data.mongodb" level="trace"/-->
         <root level="fatal" includeLocation="true">
             <appender-ref ref="console"/>
         </root>

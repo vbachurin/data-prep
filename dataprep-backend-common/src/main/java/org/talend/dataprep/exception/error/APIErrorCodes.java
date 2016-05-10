@@ -53,6 +53,7 @@ public enum APIErrorCodes implements ErrorCode {
                                                 UNABLE_TO_SET_FAVORITE_DATASET(400, "id"),
                                                 DATASET_STILL_IN_USE(409, "dataSetId", "preparations"),
                                                 UNABLE_TO_UPDATE_COLUMN(400, "id"),
+                                                UNABLE_TO_GET_FOLDERS(400),
                                                 UNABLE_TO_LIST_FOLDERS(400),
                                                 UNABLE_TO_CREATE_FOLDER(400),
                                                 UNABLE_TO_DELETE_FOLDER(400),

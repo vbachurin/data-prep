@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
+import org.talend.dataprep.api.folder.Folder;
 import org.talend.dataprep.api.preparation.Preparation;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -34,7 +35,6 @@ public class SearchAPITest extends ApiServiceTestBase {
     @Test
     public void shouldReturnMatchingPreparationsWhenPerformingInventory() throws IOException {
         // given
-        folderRepository.addFolder("/");
         final String preparationId = createPreparationFromFile("t-shirt_100.csv", "testInventoryOfPreparations", "text/csv", "/");
 
         // when
@@ -56,7 +56,6 @@ public class SearchAPITest extends ApiServiceTestBase {
     @Test
     public void shouldReturnMatchingPreparationsWithSpaceWhenPerformingInventory() throws IOException {
         // given
-        folderRepository.addFolder("/");
         final String preparationId = createPreparationFromFile("t-shirt_100.csv", "testInventory OfPreparations", "text/csv", "/");
 
         // when
@@ -98,19 +97,19 @@ public class SearchAPITest extends ApiServiceTestBase {
     @Test
     public void shouldSearch() throws Exception {
         // given
-        folderRepository.addFolder("/beer");
-        folderRepository.addFolder("/beer/Queue de charrue");
-        folderRepository.addFolder("/beer/Saint Feuillien");
+        Folder beerFolder = folderRepository.addFolder(home.getId(), "/beer");
+        folderRepository.addFolder(home.getId(), "/beer/Queue de charrue");
+        folderRepository.addFolder(home.getId(), "/beer/Saint Feuillien");
 
-        folderRepository.addFolder("/whisky");
-        folderRepository.addFolder("/whisky/McCallan Sherry Oak");
-        folderRepository.addFolder("/whisky/McCallan Fine Oak");
-        folderRepository.addFolder("/whisky/McCallan 1824 Collection");
+        Folder whiskyFolder = folderRepository.addFolder(home.getId(), "/whisky");
+        folderRepository.addFolder(home.getId(), "/whisky/McCallan Sherry Oak");
+        folderRepository.addFolder(home.getId(), "/whisky/McCallan Fine Oak");
+        folderRepository.addFolder(home.getId(), "/whisky/McCallan 1824 Collection");
 
-        folderRepository.addFolder("/menu");
-        folderRepository.addFolder("/menu/menu A");
-        folderRepository.addFolder("/menu/menu B");
-        folderRepository.addFolder("/menu/menu C");
+        Folder menuFolder = folderRepository.addFolder(home.getId(), "/menu");
+        folderRepository.addFolder(home.getId(), "/menu/menu A");
+        folderRepository.addFolder(home.getId(), "/menu/menu B");
+        folderRepository.addFolder(home.getId(), "/menu/menu C");
 
 
         final String datasetId1 = createDataset("dataset/dataset.csv", "MacCallan collection", "text/csv");
@@ -118,10 +117,10 @@ public class SearchAPITest extends ApiServiceTestBase {
         createDataset("dataset/dataset.csv", "Saint Feuillien", "text/csv");
         createDataset("dataset/dataset.csv", "menu bis", "text/csv");
 
-        final String preparationId1 = createPreparationFromFile("dataset/dataset.csv", "cleanup MacCallan", "text/csv", "/whisky");
-        final String preparationId2 = createPreparationFromFile("dataset/dataset.csv", "menu", "text/csv", "/menu");
-        createPreparationFromFile("dataset/dataset.csv", "cleanup Queue 2 charrue", "text/csv", "/beer");
-        createPreparationFromFile("dataset/dataset.csv", "cleanup menu", "text/csv", "/menu");
+        final String preparationId1 = createPreparationFromFile("dataset/dataset.csv", "cleanup MacCallan", "text/csv", whiskyFolder.getId());
+        final String preparationId2 = createPreparationFromFile("dataset/dataset.csv", "menu", "text/csv", menuFolder.getId());
+        createPreparationFromFile("dataset/dataset.csv", "cleanup Queue 2 charrue", "text/csv", beerFolder.getId());
+        createPreparationFromFile("dataset/dataset.csv", "cleanup menu", "text/csv", menuFolder.getId());
 
         final boolean nonStrict = false;
         final boolean strict = true;
@@ -129,13 +128,13 @@ public class SearchAPITest extends ApiServiceTestBase {
         // when / then
         assertSearch("callan",
                 nonStrict,
-                new String[] { "whisky/McCallan Sherry Oak", "whisky/McCallan Fine Oak", "whisky/McCallan 1824 Collection" },
+                new String[] { "/whisky/McCallan Sherry Oak", "/whisky/McCallan Fine Oak", "/whisky/McCallan 1824 Collection" },
                 new String[] { datasetId1 },
                 new String[] { preparationId1 });
 
         assertSearch("menu",
                 strict,
-                new String[] { "menu" },
+                new String[] { "/menu" },
                 new String[] { datasetId2 },
                 new String[] { preparationId2 });
     }

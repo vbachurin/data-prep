@@ -17,6 +17,7 @@ import static org.junit.Assert.assertNull;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.UUID;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,8 +59,11 @@ public class FileSystemUserDataRepositoryTest extends AbstractUserDataRepository
     private FileSystemUserDataRepository repository;
 
     @Override
-    protected UserData getUserData(String... values) {
-        return new UserData(values[0], values[1]);
+    protected UserData getRandomUserData() {
+        UserData userData = new UserData();
+        userData.setUserId(UUID.randomUUID().toString());
+        userData.setAppVersion("12.3");
+        return userData;
     }
 
     @Override

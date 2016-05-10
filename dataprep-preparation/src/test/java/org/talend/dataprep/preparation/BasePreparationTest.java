@@ -28,6 +28,7 @@ import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.talend.dataprep.api.folder.Folder;
 import org.talend.dataprep.api.preparation.Step;
 import org.talend.dataprep.api.service.info.VersionService;
 import org.talend.dataprep.folder.store.FolderRepository;
@@ -67,9 +68,13 @@ public abstract class BasePreparationTest {
     @Autowired
     protected FolderRepository folderRepository;
 
+    /** the HOME folder */
+    protected Folder home;
+
     @Before
     public void setUp() {
         RestAssured.port = port;
+        home = folderRepository.getHome();
     }
 
     @After
@@ -84,22 +89,22 @@ public abstract class BasePreparationTest {
      * @param preparationContent preparation content in json.
      * @return the preparation id.
      */
-    protected String createPreparationWithAPI(String preparationContent) {
-        return createPreparationWithAPI(preparationContent, null);
+    protected String createPreparationWithAPI(final String preparationContent) {
+        return createPreparationWithAPI(preparationContent, home.getId());
     }
 
     /**
      * Create a preparation by calling the preparation API.
      *
      * @param preparationContent preparation content in json.
-     * @param folderPath the folder path where tp create the preparation (can be null / empty)
+     * @param folderId the folder id where tp create the preparation (can be null / empty)
      * @return the preparation id.
      */
-    protected String createPreparationWithAPI(String preparationContent, String folderPath) {
+    protected String createPreparationWithAPI(final String preparationContent, final String folderId) {
         final Response response = given() //
                 .contentType(ContentType.JSON) //
                 .body(preparationContent) //
-                .queryParam("folder", folderPath) //
+                .queryParam("folder", folderId) //
                 .when() //
                 .expect().statusCode(200).log().ifError() //
                 .post("/preparations");

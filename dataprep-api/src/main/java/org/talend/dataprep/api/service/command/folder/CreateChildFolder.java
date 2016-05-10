@@ -34,17 +34,24 @@ import org.talend.dataprep.exception.error.CommonErrorCodes;
 @Scope("request")
 public class CreateChildFolder extends GenericCommand<InputStream> {
 
-    public CreateChildFolder(String path) {
-        super(GenericCommand.DATASET_GROUP);
-        execute(() -> onExecute(path));
+    /**
+     * Create a folder
+     *
+     * @param parentId the parent folder id.
+     * @param path the folder relative path to create
+     */
+    public CreateChildFolder(final String parentId, final String path) {
+        super(GenericCommand.PREPARATION_GROUP);
+        execute(() -> onExecute(parentId, path));
         onError(e -> new TDPException(UNABLE_TO_CREATE_FOLDER, e, ExceptionContext.build()));
         on(HttpStatus.OK).then(pipeStream());
     }
 
-    private HttpRequestBase onExecute( String path) {
+    private HttpRequestBase onExecute(final String parentId, final String path) {
         try {
 
             URIBuilder uriBuilder = new URIBuilder(preparationServiceUrl + "/folders");
+            uriBuilder.addParameter("parentId", parentId);
             uriBuilder.addParameter("path", path);
             return new HttpPut(uriBuilder.build());
         } catch (URISyntaxException e) {

@@ -134,7 +134,7 @@ public class PreparationAPI extends APIService {
     @ApiOperation(value = "Create a new preparation for preparation content in body.", notes = "Returns the created preparation id.")
     @Timed
     public String createPreparation(
-            @ApiParam(name = "folder", value = "Where to store the preparation.") @RequestParam(value = "folder", defaultValue = "/") String folder,
+            @ApiParam(name = "folder", value = "Where to store the preparation.") @RequestParam(value = "folder") String folder,
             @ApiParam(name = "body", value = "The original preparation. You may set all values, service will override values you can't write to.") @RequestBody Preparation preparation) {
     //@formatter:on
 
@@ -230,7 +230,7 @@ public class PreparationAPI extends APIService {
     @Timed
     public void move(@PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the preparation to move") String id,
                      @ApiParam(value = "The original folder path of the preparation.") @RequestParam(defaultValue = "", required = false) String folder,
-                     @ApiParam(value = "The new folder path of the preparation.") @RequestParam(defaultValue = "/", required = false) String destination,
+                     @ApiParam(value = "The new folder path of the preparation.") @RequestParam() String destination,
                      @ApiParam(value = "The new name of the moved dataset.") @RequestParam(defaultValue = "", required = false) String newName) throws IOException {
     //@formatter:on
 

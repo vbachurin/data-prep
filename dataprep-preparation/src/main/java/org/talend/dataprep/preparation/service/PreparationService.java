@@ -121,7 +121,7 @@ public class PreparationService {
     @ApiOperation(value = "Create a preparation", notes = "Returns the id of the created preparation.")
     @Timed
     public String create(@ApiParam("preparation") @RequestBody final Preparation preparation,
-                         @ApiParam(value = "The folder path to create the entry.") @RequestParam(defaultValue = "/") String folder) {
+                         @ApiParam(value = "The folder path to create the entry.") @RequestParam() String folder) {
     //@formatter:on
 
         LOGGER.debug("Create new preparation for data set {} in {}", preparation.getDataSetId(), folder);
@@ -322,7 +322,7 @@ public class PreparationService {
     public String copy(
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the preparation to copy") String preparationId,
             @ApiParam(value = "The name of the copied preparation.") @RequestParam(required = false) String name,
-            @ApiParam(value = "The folder path to create the copy.") @RequestParam(defaultValue = "/") String destination)
+            @ApiParam(value = "The folder path to create the copy.") @RequestParam() String destination)
             throws IOException {
     //@formatter:on
 
@@ -400,8 +400,8 @@ public class PreparationService {
     @ApiOperation(value = "Move a preparation", produces = TEXT_PLAIN_VALUE, notes = "Move a preparation to an other folder.")
     @Timed
     public void move(@PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the preparation to move") String preparationId,
-                     @ApiParam(value = "The original folder path of the preparation.") @RequestParam(defaultValue = "", required = false) String folder,
-                     @ApiParam(value = "The new folder path of the preparation.") @RequestParam(defaultValue = "/", required = false) String destination,
+                     @ApiParam(value = "The original folder path of the preparation.") @RequestParam String folder,
+                     @ApiParam(value = "The new folder path of the preparation.") @RequestParam String destination,
                      @ApiParam(value = "The new name of the moved dataset.") @RequestParam(defaultValue = "", required = false) String newName)
             throws IOException {
     //@formatter:on

@@ -14,32 +14,60 @@
 package org.talend.dataprep.api.folder;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 import org.springframework.data.annotation.AccessType;
+import org.springframework.data.annotation.Transient;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * Model a folder.
+ */
 public class Folder implements Serializable {
 
     /** Serialization UID. */
     private static final long serialVersionUID = 1L;
 
-    /**
-     * repository path as /foo/bar/beer
-     */
+    /** Id needed subclass implementation. */
+    private String id;
+
+    /** Folder path as "/foo/bar/beer". */
     @AccessType(AccessType.Type.PROPERTY)
     @JsonProperty("path")
     private String path;
 
+    /** The folder name (e.g. /marketing/q1 => q1). */
     private String name;
 
+    /** The folder owner id. */
+    private String ownerId;
+
+    /** Id of the parent. */
+    private String parentId;
+
+    /** The folder creation date. */
     private long creationDate;
 
+    /** The folder last modification date. */
     private long lastModificationDate;
 
     /** Number of preparations held in this folder. */
     private long nbPreparations;
+
+    /** This folder owner. */
+    @Transient // no saved in the database but computed when needed
+    private Owner owner;
+
+    /** True if this folder is shared by another user. */
+    @Transient // no saved in the database but computed when needed
+    private boolean sharedFolder = false;
+
+    /** What role has the current user on this folder. */
+    @Transient // no saved in the database but computed when needed
+    private Set<String> roles = new HashSet<>();
 
     /**
      * Default empty constructor.
@@ -50,58 +78,58 @@ public class Folder implements Serializable {
     }
 
     /**
-     * Constructor with path and name.
-     * 
-     * @param path the folder path.
-     * @param name the folder name.
+     * @return the Path
      */
-    public Folder(String path, String name) {
-        this();
-        this.path = path;
-        this.name = name;
-    }
-
-    /**
-     * Constructor with path and name.
-     * 
-     * @param path the folder path.
-     * @param name the folder name.
-     */
-    public Folder(String path, String name, long creationDate, long lastModificationDate) {
-        this.path = path;
-        this.name = name;
-        this.creationDate = creationDate;
-        this.lastModificationDate = lastModificationDate;
-    }
-
     public String getPath() {
         return path;
     }
 
+    /**
+     * @param path the path to set.
+     */
     public void setPath(String path) {
         this.path = path;
     }
 
+    /**
+     * @return the Name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * @param name the name to set.
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+
+    /**
+     * @return the CreationDate
+     */
     public long getCreationDate() {
         return creationDate;
     }
 
+    /**
+     * @param creationDate the creationDate to set.
+     */
     public void setCreationDate(long creationDate) {
         this.creationDate = creationDate;
     }
 
+    /**
+     * @return the LastModificationDate
+     */
     public long getLastModificationDate() {
         return lastModificationDate;
     }
 
+    /**
+     * @param lastModificationDate the lastModificationDate to set.
+     */
     public void setLastModificationDate(long lastModificationDate) {
         this.lastModificationDate = lastModificationDate;
     }
@@ -121,6 +149,90 @@ public class Folder implements Serializable {
     }
 
     /**
+     * @return the Id
+     */
+    public String getId() {
+        return id;
+    }
+
+    /**
+     * @param id the id to set.
+     */
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    /**
+     * @return the ParentId
+     */
+    public String getParentId() {
+        return parentId;
+    }
+
+    /**
+     * @param parentId the parentId to set.
+     */
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
+    }
+
+    /**
+     * @return the Owner
+     */
+    public Owner getOwner() {
+        return owner;
+    }
+
+    /**
+     * @param owner the owner to set.
+     */
+    public void setOwner(Owner owner) {
+        this.owner = owner;
+    }
+
+    /**
+     * @return the OwnerId
+     */
+    public String getOwnerId() {
+        return ownerId;
+    }
+
+    /**
+     * @param ownerId the ownerId to set.
+     */
+    public void setOwnerId(String ownerId) {
+        this.ownerId = ownerId;
+    }
+
+    /**
+     * @return the SharedFolder
+     */
+    public boolean isSharedFolder() {
+        return sharedFolder;
+    }
+
+    /**
+     * @param sharedFolder the sharedFolder to set.
+     */
+    public void setSharedFolder(boolean sharedFolder) {
+        this.sharedFolder = sharedFolder;
+    }
+
+    /**
+     * @return the Roles
+     */
+    public Set<String> getRoles() {
+        return roles;
+    }
+
+    /**
+     * @param roles the roles to set.
+     */
+    public void setRoles(Set<String> roles) {
+        this.roles = roles;
+    }
+
+    /**
      * @see Object#equals(Object)
      */
     @Override
@@ -132,11 +244,17 @@ public class Folder implements Serializable {
             return false;
         }
         Folder folder = (Folder) o;
-        return creationDate == folder.creationDate //
+        return creationDate == folder.creationDate // NOSONAR generated code
                 && lastModificationDate == folder.lastModificationDate //
                 && nbPreparations == folder.nbPreparations //
                 && Objects.equals(path, folder.path) //
-                && Objects.equals(name, folder.name);
+                && Objects.equals(id, folder.id) //
+                && Objects.equals(parentId, folder.parentId) //
+                && Objects.equals(name, folder.name) //
+                && Objects.equals(ownerId, folder.ownerId) //
+                && Objects.equals(owner, folder.owner) //
+                && Objects.equals(roles, folder.roles) //
+                && Objects.equals(sharedFolder, folder.sharedFolder);
     }
 
     /**
@@ -144,7 +262,7 @@ public class Folder implements Serializable {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(path, name, creationDate, lastModificationDate, nbPreparations);
+        return Objects.hash(path, id, name, ownerId, owner, creationDate, lastModificationDate, nbPreparations, roles, sharedFolder);
     }
 
     /**
@@ -154,10 +272,16 @@ public class Folder implements Serializable {
     public String toString() {
         return "Folder{" + //
                 "path='" + path + '\'' + //
+                ", id='" + id + '\'' + //
                 ", name='" + name + '\'' + //
+                ", ownerId=" + ownerId + //
+                ", owner=" + owner + //
+                ", parentId=" + parentId + //
+                ", roles=" + roles + //
+                ", sharedFolder=" + sharedFolder + //
+                ", nbPreparations=" + nbPreparations + //
                 ", creationDate=" + creationDate + //
                 ", lastModificationDate=" + lastModificationDate + //
-                ", nbPreparations=" + nbPreparations + //
                 '}';
     }
 }

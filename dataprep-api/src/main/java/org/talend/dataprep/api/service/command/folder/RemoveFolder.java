@@ -38,9 +38,14 @@ import org.talend.dataprep.exception.error.CommonErrorCodes;
 @Scope("request")
 public class RemoveFolder extends GenericCommand<HttpResponse> {
 
-    public RemoveFolder(String path) {
+    /**
+     * Remove a folder
+     *
+     * @param id the folder id to remove.
+     */
+    public RemoveFolder(final String id) {
         super(GenericCommand.DATASET_GROUP);
-        execute(() -> onExecute(path));
+        execute(() -> onExecute(id));
         onError(e -> new TDPException(UNABLE_TO_DELETE_FOLDER, e, ExceptionContext.build()));
         on(OK, CONFLICT).then((httpRequestBase, httpResponse) -> {
             try {
@@ -58,11 +63,9 @@ public class RemoveFolder extends GenericCommand<HttpResponse> {
         });
     }
 
-    private HttpRequestBase onExecute(String path) {
+    private HttpRequestBase onExecute(final String id) {
         try {
-
-            URIBuilder uriBuilder = new URIBuilder(preparationServiceUrl + "/folders");
-            uriBuilder.addParameter("path", path);
+            final URIBuilder uriBuilder = new URIBuilder(preparationServiceUrl + "/folders/" + id);
             return new HttpDelete(uriBuilder.build());
         } catch (URISyntaxException e) {
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);

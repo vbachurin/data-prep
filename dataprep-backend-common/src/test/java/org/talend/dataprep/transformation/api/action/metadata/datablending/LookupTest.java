@@ -34,7 +34,6 @@ import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.mock.env.MockPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -42,12 +41,12 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadataBuilder;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.test.MockTestApplication;
 import org.talend.dataprep.test.ServerConfiguration;
 import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionFactory;
-import org.talend.dataprep.parameters.Parameter;
 
 /**
  * Unit test for the Lookup action.
@@ -75,10 +74,6 @@ public class LookupTest {
 
     @Autowired
     protected ConfigurableEnvironment environment;
-
-    /** DataPrep ready jackson builder. */
-    @Autowired
-    private Jackson2ObjectMapperBuilder builder;
 
     /** The action to test. */
     private Lookup action;

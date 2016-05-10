@@ -13,6 +13,7 @@
 
 package org.talend.dataprep.preparation.service;
 
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
@@ -22,19 +23,14 @@ import static org.talend.dataprep.exception.error.FolderErrorCodes.FOLDER_NOT_EM
 import static org.talend.dataprep.exception.error.FolderErrorCodes.FOLDER_NOT_FOUND;
 import static org.talend.dataprep.util.SortAndOrderHelper.getFolderComparator;
 
-import java.util.stream.Collectors;
+import java.util.List;
 import java.util.stream.StreamSupport;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.talend.dataprep.api.folder.Folder;
-import org.talend.dataprep.api.folder.FolderContentType;
-import org.talend.dataprep.api.folder.FolderEntry;
+import org.springframework.web.bind.annotation.*;
+import org.talend.dataprep.api.folder.*;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.FolderErrorCodes;
 import org.talend.dataprep.folder.store.FolderRepository;
@@ -63,127 +59,136 @@ public class FolderService {
 
 
     /**
-     * List direct sub folders for the given path.
+     * List direct sub folders for the given id.
      *
-     * @param path the current folder where to look for children.
-     * @return direct sub folders for the given path.
+     * @param id the current folder where to look for children.
+     * @return direct sub folders for the given id.
      */
     //@formatter:off
-    @RequestMapping(value = "/folders", method = GET, produces = APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/folders/{id}/children", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Folder children", produces = APPLICATION_JSON_VALUE, notes = "List all child folders of the one as parameter")
     @Timed
-    public Iterable<Folder> children(@RequestParam(defaultValue = "/") String path,
+    public Iterable<Folder> children(@PathVariable String id,
                                      @RequestParam(defaultValue = "MODIF") @ApiParam(value = "Sort key (by name or date).") String sort,
                                      @RequestParam(defaultValue = "DESC") @ApiParam(value = "Order for sort key (desc or asc).") String order) {
-    //@formatter:on/
+    //@formatter:on
 
-        if (!folderRepository.exists(path)) {
-            throw new TDPException(FOLDER_NOT_FOUND, build().put("path", path));
+        if (!folderRepository.exists(id)) {
+            throw new TDPException(FOLDER_NOT_FOUND, build().put("id", id));
         }
 
-        Iterable<Folder> children = folderRepository.children(path);
+        Iterable<Folder> children = folderRepository.children(id);
 
         // update the number of preparations in each children
         children.forEach(f -> {
-            final long count = stream(folderRepository.entries(f.getPath(), PREPARATION).spliterator(), false).count();
+            final long count = stream(folderRepository.entries(f.getId(), PREPARATION).spliterator(), false).count();
             f.setNbPreparations(count);
         });
 
         // sort the folders
         children = StreamSupport.stream(children.spliterator(), false) //
                 .sorted(getFolderComparator(sort, order)) //
-                .collect(Collectors.toList());
+                .collect(toList());
 
-        LOGGER.info("found {} children for {}", stream(children.spliterator(), false).count(), path);
+        LOGGER.info("found {} children for {}", stream(children.spliterator(), false).count(), id);
         return children;
     }
 
     /**
-     * @return All folders.
+     * Get a folder metadata with its hierarchy
+     *
+     * @param id the folder id.
+     * @return the folder metadata with its hierarchy.
      */
-    @RequestMapping(value = "/folders/all", method = GET, produces = APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "All Folders", produces = APPLICATION_JSON_VALUE, notes = "List all existing folders")
+    @RequestMapping(value = "/folders/{id}", method = GET, produces = APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get folder by id", produces = APPLICATION_JSON_VALUE, notes = "GET a folder by id")
     @Timed
-    public Iterable<Folder> allFolder() {
-        return folderRepository.allFolder();
+    public FolderInfo getFolderAndHierarchyById(@PathVariable(value = "id") final String id) {
+        final Folder folder = folderRepository.getFolderById(id);
+        final List<Folder> hierarchy = folderRepository.getHierarchy(folder);
+
+        return new FolderInfo(folder, hierarchy);
     }
 
     /**
      * Search for folders.
      *
-     * @param pathName the folder name to search.
+     * @param name the folder name to search.
      * @param strict strict mode means the name is the full name.
      * @return the folders whose part of their name match the given path.
      */
     @RequestMapping(value = "/folders/search", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Search Folders with parameter as part of the name", produces = APPLICATION_JSON_VALUE)
     @Timed
-    public Iterable<Folder> search(@RequestParam(required = false) final String pathName,
+    public Iterable<Folder> search(@RequestParam final String name,
                                    @RequestParam(required = false) final boolean strict) {
-        return folderRepository.searchFolders(pathName, strict);
+        return folderRepository.searchFolders(name, strict);
     }
 
     /**
      * Add a folder.
      *
-     * @param path where to add the folder.
+     * @param parentId where to add the folder.
      * @return the created folder.
      */
     @RequestMapping(value = "/folders", method = PUT, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Create a Folder", produces = APPLICATION_JSON_VALUE, notes = "Create a folder")
     @Timed
-    public Folder addFolder(@RequestParam String path) {
-        return folderRepository.addFolder(path);
+    public Folder addFolder(@RequestParam String parentId, @RequestParam String path) {
+        return folderRepository.addFolder(parentId, path);
     }
 
     /**
      * Remove the folder. Throws an exception if the folder, or one of its sub folders, contains an entry.
      *
-     * @param path the path that points to the folder to remove.
+     * @param id the id that points to the folder to remove.
      */
-    @RequestMapping(value = "/folders", method = DELETE)
+    @RequestMapping(value = "/folders/{id}", method = DELETE)
     @ApiOperation(value = "Remove a Folder", produces = APPLICATION_JSON_VALUE, notes = "Remove the folder")
     @Timed
-    public void removeFolder(@RequestParam String path) {
+    public void removeFolder(@PathVariable String id) {
         try {
-            folderRepository.removeFolder(path);
+            folderRepository.removeFolder(id);
         } catch (NotEmptyFolderException e) {
             throw new TDPException(FOLDER_NOT_EMPTY, e);
         }
     }
 
     /**
-     * Rename the folder to the new path.
+     * Rename the folder to the new id.
      *
-     * @param path where to look for the folder.
-     * @param newPath the new folder path.
+     * @param id where to look for the folder.
+     * @param newName the new folder id.
      */
-    @RequestMapping(value = "/folders/rename", method = PUT)
+    @RequestMapping(value = "/folders/{id}/name", method = PUT)
     @ApiOperation(value = "Rename a Folder", produces = APPLICATION_JSON_VALUE)
     @Timed
-    public void renameFolder(@RequestParam String path, @RequestParam String newPath) {
-        folderRepository.renameFolder(path, newPath);
+    public void renameFolder(@PathVariable String id, @RequestBody String newName) {
+        folderRepository.renameFolder(id, newName);
     }
 
     /**
      * Remove a folder entry.
+     * TODO This is not used : should remove ?
      *
-     * @param path where to look for the entry.
+     * @param folderId where to look for the entry.
      * @param contentId the content id.
      * @param contentType the entry content type.
      */
+    @Deprecated
     //@formatter:off
     @RequestMapping(value = "/folders/entries/{contentType}/{id}", method = DELETE)
     @ApiOperation(value = "Remove a FolderEntry", notes = "Delete the folder entry")
     @Timed
     public void deleteFolderEntry(
-            @RequestParam String path, @PathVariable(value = "id") String contentId, //
-            @PathVariable(value = "contentType") String contentType) {
+            @PathVariable(value = "contentType") final String contentType, //
+            @PathVariable(value = "id") final String contentId, //
+            @RequestParam final String folderId) {
     //@formatter:on
 
         try {
             FolderContentType checkedContentType = FolderContentType.fromName(contentType);
-            folderRepository.removeFolderEntry(path, contentId, checkedContentType);
+            folderRepository.removeFolderEntry(folderId, contentId, checkedContentType);
         } catch (IllegalArgumentException exc) {
             throw new TDPException(FolderErrorCodes.UNABLE_TO_DELETE_FOLDER_ENTRY, exc);
         }
@@ -199,6 +204,7 @@ public class FolderService {
     @RequestMapping(value = "/folders/entries", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List folder entries", produces = APPLICATION_JSON_VALUE, notes = "List all folder entries of the given content type")
     @Timed
+    @Deprecated
     public Iterable<FolderEntry> entries(@RequestParam String path, @RequestParam String contentType) {
         try {
             FolderContentType checkedContentType = FolderContentType.fromName(contentType);
@@ -206,5 +212,21 @@ public class FolderService {
         } catch (IllegalArgumentException exc) {
             throw new TDPException(FolderErrorCodes.UNABLE_TO_LIST_FOLDER_ENTRIES, exc);
         }
+    }
+
+    @RequestMapping(value = "/folders/tree", method = GET)
+    @ApiOperation(value = "List all folders", produces = APPLICATION_JSON_VALUE)
+    @Timed
+    public FolderTreeNode getTree() {
+        final Folder home = folderRepository.getHome();
+        return getTree(home);
+    }
+
+    private FolderTreeNode getTree(final Folder root) {
+        final Iterable<Folder> children = folderRepository.children(root.getId());
+        final List<FolderTreeNode> childrenSubtrees = StreamSupport.stream(children.spliterator(), false)
+                .map(this::getTree)
+                .collect(toList());
+        return new FolderTreeNode(root, childrenSubtrees);
     }
 }

@@ -36,7 +36,10 @@ public abstract class AbstractUserDataRepositoryTest<U extends UserData> {
 
     protected abstract UserDataRepository<U> getUserRepository();
 
-    protected abstract U getUserData(String... values);
+    /**
+     * @return a random user data.
+     */
+    protected abstract U getRandomUserData();
 
     @Before
     public void cleanBefore() {
@@ -47,7 +50,7 @@ public abstract class AbstractUserDataRepositoryTest<U extends UserData> {
     @Test
     public void shouldGetWhatWasAdded() throws JsonProcessingException {
 
-        U expected = getUserData("123", "first", "last", "1.0-SNAPSHOT");
+        U expected = getRandomUserData();
         expected.addFavoriteDataset("dataset#987654");
         expected.addFavoriteDataset("dataset#lkj-sfdgs-63563-sfgsfg'");
 
@@ -61,7 +64,7 @@ public abstract class AbstractUserDataRepositoryTest<U extends UserData> {
     @Test
     public void saveTwiceShouldUpdateUserData() {
 
-        U expected = getUserData("123", "first", "last", "1.0-SNAPSHOT");
+        U expected = getRandomUserData();
         expected.addFavoriteDataset("dataset#987654");
         expected.addFavoriteDataset("dataset#lkj-sfdgs-63563-sfgsfg'");
 
@@ -85,7 +88,7 @@ public abstract class AbstractUserDataRepositoryTest<U extends UserData> {
 
     @Test
     public void removeShouldRemoveFile() {
-        U userData = getUserData("123", "first", "last", "1.0-SNAPSHOT");
+        U userData = getRandomUserData();
         userData.addFavoriteDataset("dataset#1");
         userData.addFavoriteDataset("dataset#2");
 
@@ -100,7 +103,7 @@ public abstract class AbstractUserDataRepositoryTest<U extends UserData> {
 
         int count = 24;
         for (int i = 0; i < count; i++) {
-            U userData = getUserData(String.valueOf(i), "first", "last", "1.0-SNAPSHOT");
+            U userData = getRandomUserData();
             userData.addFavoriteDataset("dataset#" + i);
             userData.addFavoriteDataset("dataset#" + i + 1);
             getUserRepository().save(userData);
