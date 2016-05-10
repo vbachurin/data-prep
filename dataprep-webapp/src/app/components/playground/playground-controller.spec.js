@@ -435,38 +435,39 @@ describe('Playground controller', () => {
             it('should reset and redirect with NOT implicit preparation', inject(($timeout, $state, StateService) => {
                 //given
                 preparation.draft = false;
-                expect(StateService.resetPlayground).not.toHaveBeenCalled();
+                spyOn(ctrl, 'close').and.returnValue();
 
                 //when
                 ctrl.beforeClose();
+
+                //then
+                expect(ctrl.close).toHaveBeenCalled();
+            }));
+
+            it('should reset and redirect with params', inject(($timeout, $state, StateService) => {
+                //given
+                expect(StateService.resetPlayground).not.toHaveBeenCalled();
+
+                //when
+                ctrl.close();
                 $timeout.flush();
+
                 //then
                 expect(StateService.resetPlayground).toHaveBeenCalled();
                 expect($state.go).toHaveBeenCalledWith('nav.index.preparations', undefined);
             }));
 
-            it('should reset and redirect with params', inject(($state) => {
-                //given
-                preparation.draft = false;
-                stateMock.route.previous = 'nav.index.datasets';
-                stateMock.route.previousOptions = {folderPath: 'test'};
-
-                //when
-                ctrl.beforeClose();
-
-                //then
-                expect($state.go).toHaveBeenCalledWith('nav.index.datasets', {folderPath: 'test'});
-            }));
-
             it('should show preparation save/discard modal with implicit preparation', () => {
                 //given
                 expect(ctrl.showNameValidation).toBeFalsy();
+                spyOn(ctrl, 'close').and.returnValue();
 
                 //when
                 ctrl.beforeClose();
 
                 //then
                 expect(ctrl.showNameValidation).toBe(true);
+                expect(ctrl.close).not.toHaveBeenCalled();
             });
         });
 

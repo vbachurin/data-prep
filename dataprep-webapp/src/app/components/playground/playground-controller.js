@@ -81,7 +81,9 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
      */
     vm.applySteps = function applySteps(preparationId) {
         return PlaygroundService.copySteps(preparationId)
-            .then(() => { vm.displayPreparationPicker = false });
+            .then(() => {
+                vm.displayPreparationPicker = false
+            });
     };
 
     //--------------------------------------------------------------------------------------------------------------
@@ -151,7 +153,7 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
             vm.showNameValidation = true;
         }
         else {
-            close();
+            vm.close();
         }
     };
 
@@ -162,7 +164,7 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
      * @description Discard implicit preparation save. This trigger a preparation delete.
      */
     vm.discardSaveOnClose = function discardSaveOnClose() {
-        PreparationService.delete(state.playground.preparation).then(close);
+        PreparationService.delete(state.playground.preparation).then(vm.close);
     };
 
     /**
@@ -178,13 +180,13 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
         const prepId = state.playground.preparation.id;
         const destinationPath = vm.destinationFolder.path;
         const cleanName = vm.state.playground.preparationName.trim();
-        if(destinationPath) {
+        if (destinationPath) {
             operation = PreparationService.move(prepId, '', destinationPath, cleanName)
         }
         else {
             operation = PreparationService.setName(prepId, cleanName);
         }
-        return operation.then(close);
+        return operation.then(vm.close);
     };
 
     /**
@@ -193,10 +195,10 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
      * @methodOf data-prep.playground.controller:PlaygroundCtrl
      * @description Playground close callback. It reset the playground and redirect to the previous page
      */
-    function close() {
+    vm.close = function close() {
         $timeout(StateService.resetPlayground, 500, false);
         $state.go(state.route.previous, state.route.previousOptions);
-    }
+    };
 
     //--------------------------------------------------------------------------------------------------------------
     //------------------------------------------DATASET PARAMS------------------------------------------------------
@@ -321,6 +323,7 @@ Object.defineProperty(PlaygroundCtrl.prototype,
             const firstStep = this.recipeService.getRecipe()[0];
             return firstStep && !firstStep.inactive;
         },
-        set: () => {}
+        set: () => {
+        }
     });
 
