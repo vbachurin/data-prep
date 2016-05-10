@@ -45,7 +45,6 @@ export function PlaygroundStateService(RecipeStateService, recipeState,
         setNameEditionMode: setNameEditionMode,
         setData: setData,
         updateDatasetRecord: updateDatasetRecord,
-        updateDatasetQuality: updateDatasetQuality,
         updateDatasetStatistics: updateDatasetStatistics,
 
         //parameters
@@ -135,20 +134,12 @@ export function PlaygroundStateService(RecipeStateService, recipeState,
         _.forEach(playgroundState.data.metadata.columns, function (col) {
             var correspondingColumn = _.find(metadata.columns, {id: col.id});
             col.statistics = correspondingColumn.statistics;
+            col.quality = correspondingColumn.quality;
         });
     }
 
     function updateDatasetRecord(records) {
         playgroundState.dataset.records = records;
-    }
-
-    function updateDatasetQuality(metadata) {
-        if (metadata) {
-            _.forEach(playgroundState.data.metadata.columns, function (col) {
-                var correspondingColumn = _.find(metadata.columns, {id: col.id});
-                col.quality = correspondingColumn.quality;
-            });
-        }
     }
 
     function setIsFetchingStats(value) {

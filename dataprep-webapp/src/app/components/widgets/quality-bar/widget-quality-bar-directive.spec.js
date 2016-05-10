@@ -1,31 +1,29 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
 
-describe('Quality bar directive', function() {
+describe('Quality bar directive', () => {
     'use strict';
 
-    var scope, element, createElement, controller;
+    let scope, element, createElement, controller;
 
     beforeEach(angular.mock.module('talend.widget'));
     beforeEach(angular.mock.module('htmlTemplates'));
 
-    beforeEach(inject(function ($rootScope) {
+    beforeEach(inject(($rootScope, $compile) => {
         scope = $rootScope.$new();
-    }));
 
-    beforeEach(inject(function($compile) {
-        createElement = function () {
-            var html = '<quality-bar quality="quality" has-menu="hasMenu" is-trusted="isTrusted" enter-animation="enterAnimation"></quality-bar>';
+        createElement = () => {
+            const html = '<quality-bar quality="quality" has-menu="hasMenu" is-trusted="isTrusted" enter-animation="enterAnimation"></quality-bar>';
             element = $compile(html)(scope);
             scope.$digest();
 
@@ -33,13 +31,13 @@ describe('Quality bar directive', function() {
         };
     }));
 
-    afterEach(function () {
+    afterEach(() => {
         scope.$destroy();
         element.remove();
     });
 
-    describe('with enter animation', function() {
-        it(' should enable transition', inject(function($rootScope) {
+    describe('with enter animation', () => {
+        it(' should enable transition', () => {
             //given
             scope.quality = {
                 valid: 10,
@@ -50,13 +48,13 @@ describe('Quality bar directive', function() {
             createElement();
 
             //when
-            $rootScope.$digest();
+            scope.$digest();
 
             //then
             expect(controller.blockTransition).toBe(false);
-        }));
+        });
 
-        it(' should reset the width object', inject(function($rootScope) {
+        it(' should reset the width object', () => {
             //given
             scope.quality = {
                 valid: 10,
@@ -67,7 +65,7 @@ describe('Quality bar directive', function() {
             createElement();
 
             //when
-            $rootScope.$digest();
+            scope.$digest();
 
             //then
             expect(controller.width).toEqual({
@@ -75,10 +73,10 @@ describe('Quality bar directive', function() {
                 empty: 0,
                 valid: 0
             });
-        }));
+        });
 
 
-        it(' compute percentage and width after a 300ms timeout', inject(function($rootScope, $timeout) {
+        it(' compute percentage and width after a 300ms timeout', inject(($timeout) => {
             //given
             scope.quality = {
                 valid: 10,
@@ -89,19 +87,19 @@ describe('Quality bar directive', function() {
             createElement();
 
             //when
-            $rootScope.$digest();
+            scope.$digest();
             $timeout.flush(300);
 
             //then
-            expect(controller.percent).toEqual({invalid: 20, empty: 70, valid: 10});
-            expect(controller.width).toEqual({invalid: 20, empty: 70, valid: 10});
+            expect(controller.percent).toEqual({ invalid: 20, empty: 70, valid: 10 });
+            expect(controller.width).toEqual({ invalid: 20, empty: 70, valid: 10 });
         }));
     });
 
-    describe('without enter animation', function() {
-        beforeEach(inject(function($compile) {
-            createElement = function () {
-                var html = '<quality-bar quality="quality" has-menu="hasMenu" enter-animation="false"></quality-bar>';
+    describe('without enter animation', () => {
+        beforeEach(inject(($compile) => {
+            createElement = () => {
+                const html = '<quality-bar quality="quality" has-menu="hasMenu" enter-animation="false"></quality-bar>';
                 element = $compile(html)(scope);
                 scope.$digest();
 
@@ -109,7 +107,7 @@ describe('Quality bar directive', function() {
             };
         }));
 
-        it(' should not enable transition', inject(function($rootScope) {
+        it(' should not enable transition', () => {
             //given
             scope.quality = {
                 valid: 10,
@@ -119,13 +117,13 @@ describe('Quality bar directive', function() {
             createElement();
 
             //when
-            $rootScope.$digest();
+            scope.$digest();
 
             //then
             expect(controller.blockTransition).toBe(true);
-        }));
+        });
 
-        it('compute percentage and width with no animation', inject(function($rootScope) {
+        it('compute percentage and width with no animation', () => {
             //given
             scope.quality = {
                 valid: 10,
@@ -135,18 +133,18 @@ describe('Quality bar directive', function() {
             createElement();
 
             //when
-            $rootScope.$digest();
+            scope.$digest();
 
             //then
-            expect(controller.percent).toEqual({invalid: 20, empty: 70, valid: 10});
-            expect(controller.width).toEqual({invalid: 20, empty: 70, valid: 10});
-        }));
+            expect(controller.percent).toEqual({ invalid: 20, empty: 70, valid: 10 });
+            expect(controller.width).toEqual({ invalid: 20, empty: 70, valid: 10 });
+        });
     });
 
-    describe('without menu', function(){
-        beforeEach(inject(function($compile) {
-            createElement = function () {
-                var html = '<quality-bar quality="quality" has-menu="hasMenu" is-trusted="true" enter-animation="false"></quality-bar>';
+    describe('without menu', () => {
+        beforeEach(inject(($compile) => {
+            createElement = () => {
+                const html = '<quality-bar quality="quality" has-menu="hasMenu" is-trusted="true" enter-animation="false"></quality-bar>';
                 element = $compile(html)(scope);
                 scope.$digest();
 
@@ -154,7 +152,7 @@ describe('Quality bar directive', function() {
             };
         }));
 
-        it('should render only the 3 partitions', inject(function($timeout, $rootScope) {
+        it('should render only the 3 partitions', inject(($timeout) => {
             //given
             scope.quality = {
                 valid: 10,
@@ -165,17 +163,17 @@ describe('Quality bar directive', function() {
             createElement();
 
             //when
-            $rootScope.$digest();
+            scope.$digest();
             $timeout.flush(300);
 
             //then
             expect(element.find('.valid-partition').eq(0)[0].hasAttribute('talend-dropdown')).toBe(false);
         }));
     });
-    describe('with valid menu', function(){
-        beforeEach(inject(function($compile) {
-            createElement = function () {
-                var html = '<quality-bar quality="quality" has-menu="hasMenu" is-trusted="true" enter-animation="false">' +
+    describe('with valid menu', () => {
+        beforeEach(inject(($compile) => {
+            createElement = () => {
+                const html = '<quality-bar quality="quality" has-menu="hasMenu" is-trusted="true" enter-animation="false">' +
                     '<valid-menu-items><li class="column-action">valid</li></valid-menu-items>' +
                     '<empty-menu-items><li class="column-action">empty</li></empty-menu-items>' +
                     '<invalid-menu-items><li class="column-action">invalid</li></invalid-menu-items>' +
@@ -187,7 +185,7 @@ describe('Quality bar directive', function() {
             };
         }));
 
-        it('should render menu and its content', inject(function($timeout, $rootScope) {
+        it('should render menu and its content', () => {
             //given
             scope.quality = {
                 valid: 10,
@@ -198,7 +196,8 @@ describe('Quality bar directive', function() {
             createElement();
 
             //when
-            $rootScope.$digest();
+            scope.$digest();
+
             //then
             expect(element.find('.valid-partition').eq(0)[0].hasAttribute('talend-dropdown')).toBe(true);
             expect(element.find('.valid-partition .dropdown-container .dropdown-menu .column-action').text()).toBe('valid');
@@ -208,12 +207,12 @@ describe('Quality bar directive', function() {
 
             expect(element.find('.invalid-partition').eq(0)[0].hasAttribute('talend-dropdown')).toBe(true);
             expect(element.find('.invalid-partition .dropdown-container .dropdown-menu .column-action').text()).toBe('invalid');
-        }));
+        });
     });
 
-    describe('with no trusted statistics', function(){
+    describe('with no trusted statistics', () => {
 
-        it('should not render its content', inject(function ($rootScope) {
+        it('should not render its content', () => {
             //given
             scope.quality = {
                 valid: 10,
@@ -224,10 +223,10 @@ describe('Quality bar directive', function() {
             createElement();
 
             //when
-            $rootScope.$digest();
+            scope.$digest();
 
             //then
             expect(element.find('.quality-bar').children().length).toBe(0);
-        }));
+        });
     });
 });

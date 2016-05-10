@@ -16,7 +16,7 @@ describe('Playground state service', () => {
 
     let recipeStateMock, gridStateMock, filterStateMock, parametersStateMock;
 
-    beforeEach(angular.mock.module('data-prep.services.state', function ($provide) {
+    beforeEach(angular.mock.module('data-prep.services.state', ($provide) => {
         recipeStateMock = {};
         gridStateMock = {};
         filterStateMock = {};
@@ -27,7 +27,7 @@ describe('Playground state service', () => {
         $provide.constant('parametersState', parametersStateMock);
     }));
 
-    beforeEach(inject(function (GridStateService, RecipeStateService, FilterStateService, LookupStateService, SuggestionsStateService, ParametersStateService) {
+    beforeEach(inject((GridStateService, RecipeStateService, FilterStateService, LookupStateService, SuggestionsStateService, ParametersStateService) => {
         spyOn(GridStateService, 'setData').and.returnValue();
         spyOn(GridStateService, 'setFilter').and.returnValue();
         spyOn(GridStateService, 'reset').and.returnValue();
@@ -201,6 +201,34 @@ describe('Playground state service', () => {
             expect(playgroundState.data.metadata.columns[0].statistics).toBe(newMetadata.columns[0].statistics);
             expect(playgroundState.data.metadata.columns[1].statistics).toBe(newMetadata.columns[1].statistics);
             expect(playgroundState.data.metadata.columns[2].statistics).toBe(newMetadata.columns[2].statistics);
+        }));
+
+        it('should update columns quality infos', inject((playgroundState, PlaygroundStateService) => {
+            //given
+            playgroundState.data = {
+                metadata: {
+                    columns: [
+                        {id: '0000', statistics: {}},
+                        {id: '0001', statistics: {}},
+                        {id: '0002', statistics: {}}
+                    ]
+                }
+            };
+            const newMetadata = {
+                columns: [
+                    {id: '0000', quality: {valid: 253, invalid: 3, empty: 0}},
+                    {id: '0001', quality: {valid: 7, invalid: 25, empty: 18}},
+                    {id: '0002', quality: {valid: 10, invalid: 0, empty: 110}},
+                ],
+            };
+
+            //when
+            PlaygroundStateService.updateDatasetStatistics(newMetadata);
+
+            //then
+            expect(playgroundState.data.metadata.columns[0].quality).toBe(newMetadata.columns[0].quality);
+            expect(playgroundState.data.metadata.columns[1].quality).toBe(newMetadata.columns[1].quality);
+            expect(playgroundState.data.metadata.columns[2].quality).toBe(newMetadata.columns[2].quality);
         }));
 
         it('should update dataset records number', inject((playgroundState, PlaygroundStateService) => {

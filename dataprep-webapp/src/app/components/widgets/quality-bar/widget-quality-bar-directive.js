@@ -36,9 +36,9 @@ export default function QualityBar($timeout) {
         templateUrl: 'app/components/widgets/quality-bar/quality-bar.html',
         scope: {
             enterAnimation: '@',
-            quality: '=',
-            isTrusted: '=',
-            hasMenu: '='
+            quality: '<',
+            isTrusted: '<',
+            hasMenu: '<'
         },
         transclude: {
             'valid-quality-bar-menu': '?validMenuItems',
