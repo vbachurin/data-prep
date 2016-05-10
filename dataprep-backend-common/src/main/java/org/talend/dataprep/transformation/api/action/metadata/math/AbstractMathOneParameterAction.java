@@ -61,7 +61,7 @@ public abstract class AbstractMathOneParameterAction extends AbstractMathAction 
 
         Map<String, String> parameters = context.getParameters();
 
-        String mode = parameters.get( OtherColumnParameters.MODE_PARAMETER);
+        String mode = parameters.get(OtherColumnParameters.MODE_PARAMETER);
 
         String parameterValue;
         switch (mode) {
