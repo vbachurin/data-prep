@@ -84,8 +84,8 @@ export default function TalendDropdown($window, $timeout) {
                 //Hide current dropdown menu
                 function hideMenu() {
                     resetMenuPosition();
-                    menu.removeClass('show-menu');
                     windowElement.off('scroll', positionMenu);
+                    windowElement.off('resize', resetMenuPosition);
                 }
 
                 //Show current dropdown menu and set focus on it
@@ -94,6 +94,7 @@ export default function TalendDropdown($window, $timeout) {
                     positionMenu();
                     ctrl.onOpen();
                     windowElement.on('scroll', positionMenu);
+                    windowElement.on('resize', resetMenuPosition);
 
                     setFocusOn(menu);
                 }
@@ -116,9 +117,9 @@ export default function TalendDropdown($window, $timeout) {
                 }
 
                 function resetMenuPosition() {
+                    menu.removeClass('show-menu');
                     menu.removeClass('top');
                     menu.removeClass('right');
-                    menu.removeClass('show-menu');
                     menu.css('top', 'auto');
                     menu.css('left', 'auto');
                     menu.css('right', 'auto');
@@ -182,11 +183,6 @@ export default function TalendDropdown($window, $timeout) {
                     }
                 });
 
-                windowElement.bind('resize', function(){
-                    resetMenuPosition();
-                    scope.$digest();
-                });
-
                 //Click : hide/show menu on left click
                 action.click(toggleMenu);
 
@@ -226,6 +222,7 @@ export default function TalendDropdown($window, $timeout) {
                 scope.$on('$destroy', function () {
                     body.off('mousedown', hideMenu);
                     windowElement.off('scroll', positionMenu);
+                    windowElement.off('resize', resetMenuPosition);
                 });
             }
         }

@@ -1,0 +1,46 @@
+$navigation-height: 50px;
+
+#playground-right-header {
+  #playground-lookup-icon {
+    > img {
+      vertical-align: middle;
+      min-width: 42px;
+      max-width: 42px;
+    }
+
+    &.pressed {
+      @include background(linear-gradient(#4D4D50, #6E6D71) left repeat);
+    }
+  }
+
+  #playground-close-container {
+    padding: 0;
+
+    #playground-close {
+      width: $navigation-height;
+      height: $navigation-height;
+      cursor: pointer;
+      position: relative;
+      margin: 0;
+
+      &:after,
+      &:before {
+        @include position(absolute, $navigation-height/4 0 0 $navigation-height/2-2px);
+        @include transform(rotate(45deg));
+        @include size(0.15em 1.5em);
+        background: $light-gray;
+        content: '';
+        display: block;
+      }
+
+      &:hover:after,
+      &:hover:before {
+        background: darken($light-gray, 10%);
+      }
+
+      &:before {
+        @include transform(rotate(-45deg));
+      }
+    }
+  }
+}

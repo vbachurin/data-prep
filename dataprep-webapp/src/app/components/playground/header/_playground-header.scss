@@ -1,71 +1,58 @@
-$base-border-radius: 3px !default;
-$base-background-color: white !default;
 $responsive-sm-screen-width: 1200px !default;
 
 $navigation-background-top: rgba(85, 89, 100, 0.8);
 $navigation-background-bottom: rgb(85, 89, 100);
 $navigation-border: #333;
-$navigation-border-height: 1px;
 $navigation-color: white;
 $navigation-height: 50px;
 $navigation-item-space: 10px;
 
-%flex-center {
-  @include display(flex);
-  @include align-items(center);
-  @include justify-content(center);
+.playground-header-wrapper {
+  position: relative;
 }
 
 #playground-header {
   @include display(flex);
   @include justify-content(space-between);
+  @include background(linear-gradient($navigation-background-top, $navigation-background-bottom) left repeat);
+
+  border-bottom: 1px solid darken($navigation-border, 10);
+  color: $navigation-color;
   height: $navigation-height;
   width: 100vw;
 
-  @include background(linear-gradient($navigation-background-top, $navigation-background-bottom) left repeat);
-  border-bottom: 1px solid darken($navigation-border, 10);
-  color: $navigation-color;
-
   > ul {
-    @extend %flex-center;
-    > li {
-      @extend %flex-center;
-      height: $navigation-height;
-    }
+    @include flex-row-center();
   }
 
   > ul,
   #playground-help-nav .dropdown-menu {
     > li {
-      @extend %flex-center;
+      @include flex-row-center();
       height: $navigation-height;
       padding-left: $navigation-item-space;
       padding-right: $navigation-item-space;
       border-right: 1px solid grey;
-    }
-  }
 
-  #playground-help-nav {
-    ul > li {
       &:last-child {
         border-right: 0;
       }
     }
+  }
 
+  #playground-help-nav {
     @media (max-width: ($responsive-sm-screen-width - 1)) {
       .dropdown-menu {
         &.show-menu {
           @include display(flex);
         }
 
-        > li {
-          .icon {
-            color: $navigation-background-bottom;
-            @include filter(none);
+        > li .icon {
+          @include filter(none);
+          color: $navigation-background-bottom;
 
-            &:hover {
-              color: lighten($navigation-background-bottom, 10%);
-            }
+          &:hover {
+            color: lighten($navigation-background-bottom, 10%);
           }
         }
       }
@@ -73,7 +60,6 @@ $navigation-item-space: 10px;
 
     @media (min-width: $responsive-sm-screen-width) {
       ul > li {
-
         &:first-child {
           padding-left: 0;
         }
@@ -84,7 +70,6 @@ $navigation-item-space: 10px;
       }
 
       .dropdown {
-
         &-action {
           display: none;
         }
@@ -106,9 +91,9 @@ $navigation-item-space: 10px;
   }
 
   .icon {
-    padding: 8px 0;
-    color: darken($white, 10%);
     @include filter(drop-shadow(0px 1px 1px #1f2024));
+    color: darken($white, 10%);
+    padding: 8px 0;
 
     &:hover {
       color: $white;
@@ -118,89 +103,20 @@ $navigation-item-space: 10px;
       @include background(linear-gradient(#4D4D50, #6E6D71) left repeat);
     }
   }
+}
 
-  #playground-left-header {
+#preview {
+  @include flex-row-center();
 
-    .file-lines-count {
-      color: $dark-green;
-      @include ellipsis(300px);
-      vertical-align: top;
-    }
+  background: rgba(255, 255, 255, 0.9);
+  height: $navigation-height;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
 
-    .playground-dataset-name {
-      @include ellipsis(300px);
-      &.preview-mode {
-        @include ellipsis(150px);
-      }
-      vertical-align: top;
-    }
-
-    #playground-gear-icon {
-      margin-left: 5px;
-      padding: 8px 8px 12px;
-      font-size: 0.6em;
-      vertical-align: top;
-    }
-  }
-
-  #playground-right-header {
-
-    #preview {
-
-      #previewBadge {
-        line-height: 36px;
-        height: 36px;
-        padding: 0 5px;
-        border-radius: 5px;
-        background: rgba(255, 255, 255, 0.5);
-
-        .previewBadgeElement {
-          padding: 0 5px;
-          vertical-align: middle;
-        }
-      }
-    }
-
-    #playground-lookup-icon {
-      > img {
-        vertical-align: middle;
-        width: 90%;
-      }
-
-
-    }
-
-    #playground-close-container {
-      padding: 0;
-
-      #playground-close {
-        width: $navigation-height;
-        height: $navigation-height;
-        line-height: $navigation-height - 1px;
-        cursor: pointer;
-        position: relative;
-        padding: 0;
-        margin: 0;
-
-        &:after,
-        &:before {
-          @include position(absolute, $navigation-height/4 0 0 $navigation-height/2-2px);
-          @include transform(rotate(45deg));
-          @include size(0.15em 1.5em);
-          background: $light-gray;
-          content: '';
-          display: block;
-        }
-
-        &:hover:after,
-        &:hover:before {
-          background: darken($light-gray, 10%);
-        }
-
-        &:before {
-          @include transform(rotate(-45deg));
-        }
-      }
-    }
+  .preview-text {
+    color: $dark-gray;
+    margin: 0 10px;
   }
 }

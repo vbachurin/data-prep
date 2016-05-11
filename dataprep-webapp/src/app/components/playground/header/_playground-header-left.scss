@@ -1,0 +1,23 @@
+#playground-left-header {
+
+  .playground-dataset-name {
+    @include ellipsis(300px);
+
+    &.preview-mode {
+      @include ellipsis(150px);
+    }
+  }
+
+  .playground-dataset-limit {
+    @include ellipsis(300px);
+    margin: 0 5px;
+  }
+
+  .file-lines-count {
+    color: $dark-green;
+  }
+
+  #playground-gear-icon {
+    font-size: 0.6em;
+  }
+}
