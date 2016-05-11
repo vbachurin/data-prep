@@ -33,4 +33,15 @@ export default class ImportRestService {
     importTypes() {
         return this.$http.get(this.url + '/imports');
     }
+
+    /**
+     * @ngdoc method
+     * @name importParameters
+     * @methodOf data-prep.services.import.service:ImportRestService
+     * @description Fetch the available import parameters
+     * @returns {Promise}  The GET call promise
+     */
+    importParameters(locationType) {
+        return this.$http.get(this.url + '/imports/'+ locationType + '/parameters' );
+    }
 }

@@ -18,12 +18,19 @@
  * @requires data-prep.dataset-preview.controller:DatasetXlsPreviewCtrl
  * @restrict E
  */
-export default function DatasetXlsPreview() {
+export default function DatasetXlsPreview($timeout) {
+    'ngInject';
+
     return {
         restrict: 'E',
         templateUrl: 'app/components/dataset/preview/dataset-xls-preview.html',
         bindToController: true,
         controllerAs: 'previewCtrl',
-        controller: 'DatasetXlsPreviewCtrl'
+        controller: 'DatasetXlsPreviewCtrl',
+        link: function (scope, iElement, iAttrs, ctrl) {
+            $timeout(() => {
+                ctrl.initGrid();
+            }, 100);
+        }
     };
 }

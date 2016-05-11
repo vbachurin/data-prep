@@ -21,25 +21,18 @@ import Import from './import-component';
      * @name data-prep.import
      * @description import component.
      * @requires talend.widget
-     * @requires data-prep.dataset-upload-list
-     * @requires data-prep.dataset-header
-     * @requires data-prep.dataset-list
-     * @requires data-prep.playground
-     * @requires data-prep.preparation-list
      * @requires data-prep.services.dataset
-     * @requires data-prep.services.utils
      * @requires data-prep.services.datasetWorkflowService
      * @requires data-prep.services.state
-     * @requires data-prep.folder
-     * @requires data-prep.services.folder
+     * @requires data-prep.services.import
      */
     angular.module('data-prep.import',
         [
             'talend.widget',
-            'data-prep.folder',
             'data-prep.services.dataset',
             'data-prep.services.datasetWorkflowService',
             'data-prep.services.state',
+            'data-prep.services.import',
         ])
         .component('import', Import);
 })();

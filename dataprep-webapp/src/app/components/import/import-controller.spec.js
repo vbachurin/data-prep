@@ -196,23 +196,46 @@ describe('Import controller', function () {
 
     describe('start import', function () {
 
-        it('should start import from local file', function () {
-            //when
+        it('should start import from local file', () => {
+            //given
             ctrl = createController();
+
+            //when
             ctrl.startImport(StateMock.import.importTypes[2]);
 
             ////then
             expect(ctrl.showModal).toBe(false);
         });
 
-        it('should start import from remote', inject(function () {
-            //when
+        it('should start import from remote', inject( () => {
+            //given
             ctrl = createController();
+
+            //when
             ctrl.startImport(StateMock.import.importTypes[0]);
 
             ////then
             expect(ctrl.showModal).toBe(true);
 
+        }));
+
+
+        it('should start import from remote with dynamic parameters', inject((ImportRestService, $q) => {
+            //given
+            ctrl = createController();
+            StateMock.import.importTypes[0].dynamic = true;
+            spyOn(ImportRestService, 'importParameters').and.returnValue($q.when({data: {name: 'url'}}));
+
+            //when
+            ctrl.startImport(StateMock.import.importTypes[0]);
+
+            //then
+            expect(ctrl.isFetchingParameters).toEqual(true);
+            expect(ImportRestService.importParameters).toHaveBeenCalledWith('hdfs');
+
+            scope.$digest();
+            expect(ctrl.currentInputType.parameters).toEqual({name: 'url'});
+            expect(ctrl.isFetchingParameters).toEqual(false);
         }));
     });
 
