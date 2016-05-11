@@ -98,7 +98,7 @@ describe('DatasetList component', () => {
         iconSrc = icon.find('img')[0].src;
         certificationIcon = icon.find('.pin')[0].src;
         expect(strEndsWith(iconSrc, '/assets/images/inventory/xls_file.png')).toBe(true);
-        expect(strEndsWith(certificationIcon, '/assets/images/certification-pending.png')).toBe(true);
+        expect(strEndsWith(certificationIcon, '/assets/images/inventory/certification-pending.png')).toBe(true);
         expect(element.find('.inventory-title').eq(1).text().indexOf('Customers')).toBe(0);
         expect(element.find('.inventory-description').eq(1).text()).toBe('owned by anonymousUser, created ' + momentize('143702021974') + ', contains  lines');
 
@@ -106,7 +106,7 @@ describe('DatasetList component', () => {
         iconSrc = icon.find('img')[0].src;
         certificationIcon = icon.find('.pin')[0].src;
         expect(strEndsWith(iconSrc, '/assets/images/inventory/generic_file.png')).toBe(true);
-        expect(strEndsWith(certificationIcon, '/assets/images/certification-certified.png')).toBe(true);
+        expect(strEndsWith(certificationIcon, '/assets/images/inventory/certification-certified.png')).toBe(true);
         expect(element.find('.inventory-title').eq(2).text().indexOf('Customers 2')).toBe(0);
         expect(element.find('.inventory-description').eq(2).text()).toBe('owned by anonymousUser, created ' + momentize('14370202197') + ', contains  lines');
     }));

@@ -13,17 +13,19 @@
   ~ ============================================================================
   -->
 
-<div id="playground-header">
-    <ul id="playground-left-header" insertion-playground-left-header>
-        <li id="dataset-header-details">
+<div class="playground-header-wrapper">
+    <div id="playground-header">
+        <ul id="playground-left-header" insertion-playground-left-header>
+            <li id="dataset-header-details">
             <span class="playground-dataset-name"
                   ng-class="{'preview-mode': $ctrl.preview}"
                   title="{{$ctrl.dataset.name}}"
                   ng-bind="$ctrl.dataset.name"></span>
 
             <span ng-if="$ctrl.displayNbLines"
+                  class="playground-dataset-limit"
                   ng-switch="!!$ctrl.dataset.limit">
-                <span class="playground-dataset-name">-</span>
+                -
                 <span class="file-lines-count"
                       ng-switch-when="false"
                       translate="FILE_DETAILS_LINES"
@@ -34,71 +36,71 @@
                       translate-value-records="{{::$ctrl.dataset.limit}}"></span>
             </span>
 
-            <a id="playground-gear-icon"
-               class="icon"
-               data-icon="L"
-               ng-click="$ctrl.onParameters()"
-               ng-class="{pressed: $ctrl.parametersVisible}"
-               translate-once-title="DATAGRID_PARAMETERS_GEAR"></a>
-        </li>
-    </ul>
+                <a id="playground-gear-icon"
+                   class="icon"
+                   data-icon="L"
+                   ng-click="$ctrl.onParameters()"
+                   ng-class="{pressed: $ctrl.parametersVisible}"
+                   translate-once-title="DATAGRID_PARAMETERS_GEAR"></a>
+            </li>
+        </ul>
 
-    <ul id="playground-right-header">
-        <li translate-once-title="CHOOSE_PREPARATION_TO_APPLY">
-            <a id="playground-preparation-picker-icon"
-               class="icon"
-               data-icon="c"
-               ng-if="$ctrl.preparationPicker"
-               ng-click="$ctrl.onPreparationPicker()"></a>
-        </li>
-        <li id="preview" ng-if="$ctrl.preview">
-            <div id="previewBadge">
-                <img src="assets/images/eye.svg" alt="Blue Square" height="24px" class="previewBadgeElement"/>
-                <span class="previewBadgeElement">Preview</span>
-            </div>
-        </li>
-        <li>
-            <a id="playground-lookup-icon"
-               class="icon"
-               ng-click="$ctrl.onLookup()"
-               ng-class="{pressed: $ctrl.lookupVisible}">
-                <img src="assets/images/lookup/lookup-button.png">
-            </a>
-        </li>
-        <li><export></export></li>
-        <li id="playground-help-nav">
-            <talend-dropdown>
-                <div class="dropdown-container">
-                    <div class="dropdown-action">
-                        <span translate-once="HELP"></span>
+        <ul id="playground-right-header">
+            <li translate-once-title="CHOOSE_PREPARATION_TO_APPLY">
+                <a id="playground-preparation-picker-icon"
+                   class="icon"
+                   data-icon="c"
+                   ng-if="$ctrl.preparationPicker"
+                   ng-click="$ctrl.onPreparationPicker()"></a>
+            </li>
+            <li>
+                <a id="playground-lookup-icon"
+                   class="icon"
+                   ng-click="$ctrl.onLookup()"
+                   ng-class="{pressed: $ctrl.lookup}">
+                    <img src="assets/images/header/lookup.png">
+                </a>
+            </li>
+            <li><export></export></li>
+            <li id="playground-help-nav">
+                <talend-dropdown>
+                    <div class="dropdown-container">
+                        <div class="dropdown-action">
+                            <span translate-once="HELP"></span>
+                        </div>
+                        <ul class="dropdown-menu">
+                            <li class="nav-link" translate-once-title="ONBOARDING">
+                                <a id="playground-onboarding-icon"
+                                   class="icon"
+                                   data-icon="y"
+                                   ng-click="$ctrl.onOnboarding()"></a>
+                            </li>
+                            <li class="nav-link" translate-once-title="FEEDBACK_TOOLTIP">
+                                <a id="playground-feedback-icon"
+                                   class="icon"
+                                   data-icon="H"
+                                   ng-click="$ctrl.onFeedback()"></a>
+                            </li>
+                            <li class="nav-link" translate-once-title="ONLINE_HELP_TOOLTIP">
+                                <a id="playground-online-help-icon"
+                                   class="icon"
+                                   data-icon="l"
+                                   href="https://help.talend.com/pages/viewpage.action?pageId=266307043&utm_medium=dpdesktop&utm_source=header"
+                                   target="_blank">
+                                </a>
+                            </li>
+                        </ul>
                     </div>
-                    <ul class="dropdown-menu">
-                        <li class="nav-link" translate-once-title="ONBOARDING">
-                            <a id="playground-onboarding-icon"
-                               class="icon"
-                               data-icon="y"
-                               ng-click="$ctrl.onOnboarding()"></a>
-                        </li>
-                        <li class="nav-link" translate-once-title="FEEDBACK_TOOLTIP">
-                            <a id="playground-feedback-icon"
-                               class="icon"
-                               data-icon="H"
-                               ng-click="$ctrl.onFeedback()"></a>
-                        </li>
-                        <li class="nav-link" translate-once-title="ONLINE_HELP_TOOLTIP">
-                            <a id="playground-online-help-icon"
-                               class="icon"
-                               data-icon="l"
-                               href="https://help.talend.com/pages/viewpage.action?pageId=266307043&utm_medium=dpdesktop&utm_source=header"
-                               target="_blank">
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </talend-dropdown>
-        </li>
-        <li><documentation-search></documentation-search></li>
-        <li id="help-history"><history-control></history-control></li>
-        <li id="playground-close-container"><label id="playground-close" ng-click="$ctrl.onClose()"></label></li>
-    </ul>
+                </talend-dropdown>
+            </li>
+            <li><documentation-search></documentation-search></li>
+            <li id="help-history"><history-control></history-control></li>
+            <li id="playground-close-container"><label id="playground-close" ng-click="$ctrl.onClose()"></label></li>
+        </ul>
+    </div>
+
+    <div id="preview" ng-if="$ctrl.preview">
+        <img src="assets/images/header/eye.svg" alt="preview-icon" height="24px"/>
+        <span class="preview-text">Preview</span>
+    </div>
 </div>

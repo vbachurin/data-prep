@@ -46,7 +46,9 @@ typeahead {
     top: 35px;
     right: 0;
 
-    @include animation(fadeIn 1.0s ease-in, slide .5s ease);
+    &.ng-enter {
+      @include animation(fadeIn 0.25s ease-in, slide 0.25s ease);
+    }
 
     .highlighted {
       font-weight: 900;
@@ -62,7 +64,7 @@ typeahead {
     }
 
     .inventory-item {
-      width: 500px;
+      min-width: 500px;
     }
   }
 
