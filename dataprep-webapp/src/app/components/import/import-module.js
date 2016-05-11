@@ -24,6 +24,7 @@ import Import from './import-component';
      * @requires data-prep.services.dataset
      * @requires data-prep.services.datasetWorkflowService
      * @requires data-prep.services.state
+     * @requires data-prep.services.import
      */
     angular.module('data-prep.import',
         [
@@ -31,6 +32,7 @@ import Import from './import-component';
             'data-prep.services.dataset',
             'data-prep.services.datasetWorkflowService',
             'data-prep.services.state',
+            'data-prep.services.import',
         ])
         .component('import', Import);
 })();

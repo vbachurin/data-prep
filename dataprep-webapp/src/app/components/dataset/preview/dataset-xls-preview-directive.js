@@ -19,6 +19,8 @@
  * @restrict E
  */
 export default function DatasetXlsPreview($timeout) {
+    'ngInject';
+
     return {
         restrict: 'E',
         templateUrl: 'app/components/dataset/preview/dataset-xls-preview.html',

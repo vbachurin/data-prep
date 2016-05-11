@@ -156,4 +156,23 @@ describe('Import REST Service', function () {
         //then
         expect(types).toEqual(importTypes);
     }));
+
+    it('should get all import parameters', inject(($rootScope, RestURLs, ImportRestService) => {
+        //given
+        let params = null;
+        $httpBackend
+            .expectGET(RestURLs.exportUrl+ '/imports/http/parameters')
+            .respond(200, {name: 'url'});
+
+        //when
+        ImportRestService.importParameters('http')
+            .then((response) => {
+                params = response.data;
+            });
+        $httpBackend.flush();
+        $rootScope.$digest();
+
+        //then
+        expect(params).toEqual({name: 'url'});
+    }));
 });
