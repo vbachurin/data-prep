@@ -36,6 +36,11 @@ public class HdfsLocation extends AbstractUrlLocation implements DataSetLocation
     /** Name of the http location. */
     public static final String NAME = "hdfs";
 
+    @Override
+    public boolean isDynamic() {
+        return false;
+    }
+
     /**
      * @see DataSetLocation#getLocationType()
      */
