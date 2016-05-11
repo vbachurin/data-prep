@@ -13,13 +13,20 @@ public class Import {
 
     private final List<Parameter> parameters;
 
+    private final boolean dynamic;
+
     private final boolean defaultImport;
 
-    public Import(String locationType, String contentType, List<Parameter> parameters, boolean defaultImport) {
+    public Import(String locationType, String contentType, List<Parameter> parameters, boolean dynamic, boolean defaultImport) {
         this.locationType = locationType;
         this.contentType = contentType;
         this.parameters = parameters;
+        this.dynamic = dynamic;
         this.defaultImport = defaultImport;
+    }
+
+    public boolean isDynamic() {
+        return dynamic;
     }
 
     public boolean isDefaultImport() {

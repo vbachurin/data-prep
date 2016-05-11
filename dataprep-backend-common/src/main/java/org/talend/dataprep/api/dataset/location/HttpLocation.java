@@ -35,6 +35,11 @@ public class HttpLocation extends AbstractUrlLocation implements DataSetLocation
     /** DataSet media type for remote http datasets. */
     public static final String MEDIA_TYPE = "application/vnd.remote-ds.http";
 
+    @Override
+    public boolean isDynamic() {
+        return false;
+    }
+
     /**
      * @see DataSetLocation#getLocationType()
      */

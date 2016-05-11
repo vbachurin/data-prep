@@ -445,6 +445,26 @@ public class DataSetAPI extends APIService {
         }
     }
 
+    @RequestMapping(value = "/api/datasets/imports/{import}/parameters", method = GET, produces = APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "List supported imports for a dataset.", notes = "Returns the supported import types.")
+    @Timed
+    @PublicAPI
+    public void listImportParameters(@PathVariable("import") final String importType, final OutputStream output) {
+
+        // Get dataset metadata
+        HystrixCommand<InputStream> retrieveImportParameters = getCommand(DataSetGetImportParameters.class, importType);
+
+        try (InputStream content = retrieveImportParameters.execute()) {
+            IOUtils.copyLarge(content, output);
+            output.flush();
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Listing import parameters (pool: {}) done.", getConnectionStats());
+            }
+        } catch (IOException e) {
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
+        }
+    }
+
     @RequestMapping(value = "/api/datasets/imports", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List supported imports for a dataset.", notes = "Returns the supported import types.")
     @Timed

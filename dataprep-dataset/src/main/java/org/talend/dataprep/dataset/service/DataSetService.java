@@ -67,6 +67,7 @@ import org.talend.dataprep.lock.DistributedLock;
 import org.talend.dataprep.log.Markers;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.metrics.VolumeMetered;
+import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.schema.DraftValidator;
 import org.talend.dataprep.schema.FormatFamily;
 import org.talend.dataprep.schema.Schema;
@@ -1001,6 +1002,22 @@ public class DataSetService {
         return encodings.getSupportedCharsets().stream().map(Charset::displayName).collect(Collectors.toList());
     }
 
+    @RequestMapping(value = "/datasets/imports/{import}/parameters", method = GET, consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get the import parameters", notes = "This list can be used by user to change dataset encoding.")
+    @Timed
+    @PublicAPI
+    public List<Parameter> getImportParameters(@PathVariable("import") final String importType) {
+        if (StringUtils.isEmpty(importType)) {
+            return Collections.emptyList();
+        }
+        for (DataSetLocation location : locations) {
+            if (importType.equals(location.getLocationType())) {
+                return location.getParameters();
+            }
+        }
+        return Collections.emptyList();
+    }
+
     @RequestMapping(value = "/datasets/imports", method = GET, consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "list the supported encodings for dataset", notes = "This list can be used by user to change dataset encoding.")
     @Timed
@@ -1008,10 +1025,22 @@ public class DataSetService {
     public List<Import> listSupportedImports() {
         return locations.stream() //
                 .filter(l -> enabledImports.contains(l.getLocationType())) //
-                .map(l -> new Import(l.getLocationType(), //
-                        l.getAcceptedContentType(), //
-                        l.getParameters(), //
-                        LocalStoreLocation.NAME.equals(l.getLocationType()))) //
+                .map(l -> { //
+                    final boolean defaultImport = LocalStoreLocation.NAME.equals(l.getLocationType());
+                    if (l.isDynamic()) {
+                        return new Import(l.getLocationType(), //
+                                l.getAcceptedContentType(), //
+                                Collections.emptyList(), //
+                                l.isDynamic(), //
+                                defaultImport);
+                    } else {
+                        return new Import(l.getLocationType(), //
+                                l.getAcceptedContentType(), //
+                                l.getParameters(), //
+                                l.isDynamic(), //
+                                defaultImport);
+                    }
+                }) //
                 .sorted((i1, i2) -> { //
                     int i1Value = i1.isDefaultImport() ? 1 : -1;
                     int i2Value = i2.isDefaultImport() ? 1 : -1;
