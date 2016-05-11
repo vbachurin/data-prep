@@ -1,56 +1,56 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
 
-describe('Transformation choice params directive', function () {
+describe('Transformation choice params directive', () => {
     'use strict';
-    var scope, createElement;
+    let scope, createElement;
 
     beforeEach(angular.mock.module('data-prep.transformation-form'));
     beforeEach(angular.mock.module('htmlTemplates'));
 
-    beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
+    beforeEach(angular.mock.module('pascalprecht.translate', ($translateProvider) => {
         $translateProvider.translations('en', {
             'COLON': ': '
         });
         $translateProvider.preferredLanguage('en');
     }));
 
-    beforeEach(inject(function($rootScope, $compile) {
+    beforeEach(inject(($rootScope, $compile) => {
         scope = $rootScope.$new();
 
-        createElement = function() {
-            var element = angular.element('<transform-choice-param parameter="parameter"></transform-choice-param>');
+        createElement = () => {
+            const element = angular.element('<transform-choice-param parameter="parameter"></transform-choice-param>');
             $compile(element)(scope);
             scope.$digest();
             return element;
         };
     }));
 
-    it('should render an action with simple choice', function() {
+    it('should render a simple select', () => {
         //given
         scope.parameter = {
             name: 'myChoice',
             label: 'my choice',
             configuration: {
                 values: [
-                    {value: 'noParamChoice1', label: 'noParamChoice1'},
-                    {value: 'noParamChoice2', label: 'noParamChoice2_label'}
-                ]
-            }
+                    { value: 'noParamChoice1', label: 'noParamChoice1' },
+                    { value: 'noParamChoice2', label: 'noParamChoice2_label' },
+                ],
+            },
         };
 
         //when
-        var element = createElement();
+        const element = createElement();
 
         //then
         expect(element.find('.param-name').text().trim()).toBe('my choice:');
@@ -63,35 +63,63 @@ describe('Transformation choice params directive', function () {
         expect(element.find('.param-input').eq(0).find('option').eq(1).attr('value')).toBe('string:noParamChoice2');
     });
 
-    it('should render an action with choice containing parameters', function() {
+    it('should render a simple radio', () => {
+        //given
+        scope.parameter = {
+            name: 'myChoice',
+            label: 'my choice',
+            radio: true,
+            configuration: {
+                values: [
+                    { value: 'noParamChoice1', label: 'noParamChoice1' },
+                    { value: 'noParamChoice2', label: 'noParamChoice2_label' }
+                ],
+            },
+        };
+
+        //when
+        const element = createElement();
+
+        //then
+        expect(element.find('.param-name').text().trim()).toBe('my choice:');
+        expect(element.find('.param-input').length).toBe(1);
+        expect(element.find('.param-input').eq(0).find('> div').length).toBe(2);
+        expect(element.find('.param-input').eq(0).find('> div').eq(0).find('input[type="radio"]').attr('value')).toBe('noParamChoice1');
+        expect(element.find('.param-input').eq(0).find('> div').eq(0).text().trim()).toBe('noParamChoice1');
+        expect(element.find('.param-input').eq(0).find('> div').eq(1).find('input[type="radio"]').attr('value')).toBe('noParamChoice2');
+        expect(element.find('.param-input').eq(0).find('> div').eq(1).text().trim()).toBe('noParamChoice2_label');
+    });
+
+    it('should render a choice containing parameters', () => {
         //given
         scope.parameter = {
             name: 'my choice',
             configuration: {
                 values: [
-                    {value: 'noParamChoice'},
-                    {value: 'twoParams',
+                    { value: 'noParamChoice' },
+                    {
+                        value: 'twoParams',
                         parameters: [
                             {
                                 name: 'param1',
                                 label: 'Param 1',
                                 type: 'string',
                                 'inputType': 'text',
-                                default: '.'
+                                default: '.',
                             },
                             {
                                 name: 'param2',
                                 label: 'Param 2',
                                 type: 'float',
                                 'inputType': 'number',
-                                default: '5'
+                                default: '5',
                             }
-                        ]
+                        ],
                     }
                 ]
             }
         };
-        var element = createElement();
+        const element = createElement();
 
         //when
         scope.parameter.value = scope.parameter.configuration.values[0].value;

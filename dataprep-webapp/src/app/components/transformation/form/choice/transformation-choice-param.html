@@ -18,11 +18,20 @@
         <div class="param-name"
              data-prep-tooltip="{{::choiceParamCtrl.parameter.description}}">{{::choiceParamCtrl.parameter.label}}{{:: 'COLON' | translate}}</div>
 
-        <div class="param-input">
-            <select ng-model="choiceParamCtrl.parameter.value"
+        <div class="param-input" ng-switch="!!choiceParamCtrl.parameter.radio">
+            <select ng-switch-when="false"
+                    ng-model="choiceParamCtrl.parameter.value"
                     ng-options="option.value as option.label for option in choiceParamCtrl.parameter.configuration.values"
-                    can-be-blank="{{::choiceParamCtrl.parameter.canBeBlank}}"
-                    ></select>
+                    can-be-blank="{{::choiceParamCtrl.parameter.canBeBlank}}"></select>
+
+            <div ng-switch-when="true"
+                   ng-repeat="option in choiceParamCtrl.parameter.configuration.values track by option.value">
+                <input type="radio"
+                       ng-value="option.value"
+                       ng-model="choiceParamCtrl.parameter.value">
+                {{::option.label}}
+            </div>
+
         </div>
     </div>
 </div>
