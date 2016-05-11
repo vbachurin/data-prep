@@ -26,7 +26,8 @@ export default function ImportCtrl($document,
                                    state, StateService,
                                    UploadWorkflowService, UpdateWorkflowService,
                                    DatasetService,
-                                   TalendConfirmService) {
+                                   TalendConfirmService,
+                                   ImportRestService) {
     'ngInject';
     var vm = this;
     vm.state = state;
@@ -48,6 +49,15 @@ export default function ImportCtrl($document,
      * @type {boolean}
      */
     vm.showModal = false;
+
+    /**
+     * @ngdoc property
+     * @name showModal
+     * @propertyOf data-prep.import.controller:ImportCtrl
+     * @description Display/Hide the import parameters modal
+     * @type {boolean}
+     */
+    vm.isFetchingParameters = false;
 
     //--------------------------------------------------------------------------------------------------------------
     //-----------------------------------------------------Import---------------------------------------------------
@@ -102,6 +112,17 @@ export default function ImportCtrl($document,
                 break;
             default:
                 vm.showModal = true;
+                if(vm.currentInputType.dynamic){
+                    vm.isFetchingParameters = true;
+                    ImportRestService.importParameters(vm.currentInputType.locationType)
+                        .then((response) => {
+                            vm.currentInputType.parameters = response.data;
+                        })
+                        .finally( () => {
+                            vm.isFetchingParameters = false;
+                        });
+                }
+
         }
     };
 

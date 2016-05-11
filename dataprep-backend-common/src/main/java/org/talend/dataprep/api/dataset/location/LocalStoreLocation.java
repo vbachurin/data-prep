@@ -33,6 +33,11 @@ public class LocalStoreLocation implements DataSetLocation {
     /** Name of this store. */
     public static final String NAME = "local";
 
+    @Override
+    public boolean isDynamic() {
+        return false;
+    }
+
     /**
      * @see DataSetLocation#getLocationType()
      */

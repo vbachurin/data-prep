@@ -18,16 +18,22 @@ import java.util.List;
 
 import org.talend.dataprep.api.dataset.location.LocalStoreLocation;
 import org.talend.dataprep.parameters.Parameter;
+import org.talend.dataprep.schema.FormatFamily;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import org.talend.dataprep.schema.FormatFamily;
 
 /**
  * Information about the dataset location.
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type", defaultImpl = LocalStoreLocation.class)
 public interface DataSetLocation extends Serializable {
+
+    /**
+     * @return <code>true</code> if the parameters for this location requires a call to backend service (in case
+     * building the parameters need a long running task), <code>false</code> otherwise.
+     */
+    boolean isDynamic();
 
     /** Return the location name (e.g local, http...). */
     @JsonIgnore

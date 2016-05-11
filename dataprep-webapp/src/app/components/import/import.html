@@ -22,21 +22,31 @@
               state="$ctrl.showModal"
               close-button="true"
               disable-enter="true">
-    <div class="modal-title">{{$ctrl.currentInputType.title}}</div>
-    <br/>
-    <form name="$ctrl.datasetForm" ng-submit="$ctrl.datasetForm.$valid && $ctrl.import($ctrl.currentInputType)">
+    <div ng-show="$ctrl.isFetchingParameters === false">
+        <div class="modal-title">{{$ctrl.currentInputType.title}}</div>
+        <br/>
+        <form name="$ctrl.datasetForm" ng-submit="$ctrl.datasetForm.$valid && $ctrl.import($ctrl.currentInputType)">
 
-        <transform-params parameters="$ctrl.currentInputType.parameters"></transform-params>
+            <transform-params parameters="$ctrl.currentInputType.parameters"></transform-params>
 
-        <div class="modal-buttons">
-            <button class="talend-modal-close btn-secondary modal-secondary-button"
-                    type="button"
-                    translate-once="CANCEL"></button>
-            <button class="talend-modal-close btn-primary modal-primary-button"
-                    ng-disabled="$ctrl.datasetForm.$invalid"
-                    translate-once="OK"></button>
+            <div class="modal-buttons">
+                <button class="talend-modal-close btn-secondary modal-secondary-button"
+                        type="button"
+                        translate-once="CANCEL"></button>
+                <button class="talend-modal-close btn-primary modal-primary-button"
+                        ng-disabled="$ctrl.datasetForm.$invalid"
+                        translate-once="OK"></button>
+            </div>
+        </form>
+    </div>
+    <div id="import-ghost"
+         ng-show="$ctrl.isFetchingParameters === true"
+         class="loading-container">
+        <div class="loading-msg">
+            <span class="wait-icon continuous-rotate" ><i data-icon="c" class="icon"></i></span>
+            <span class="wait-text" translate-once="IMPORT_WAIT"></span>
         </div>
-    </form>
+    </div>
 </talend-modal>
 
 <talend-modal fullscreen="false"
