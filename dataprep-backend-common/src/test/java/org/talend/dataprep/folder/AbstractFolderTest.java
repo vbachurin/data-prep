@@ -474,12 +474,12 @@ public abstract class AbstractFolderTest {
     @Test
     public void shouldFindFolder() throws Exception {
         // given
-        getFolderRepository().addFolder("foo");
-        getFolderRepository().addFolder("foo/bar");
+        getFolderRepository().addFolder("/foo");
+        getFolderRepository().addFolder("/foo/bar");
 
         // then
-        assertTrue(getFolderRepository().exists("foo"));
-        assertTrue(getFolderRepository().exists("foo/bar"));
+        assertTrue(getFolderRepository().exists("/foo"));
+        assertTrue(getFolderRepository().exists("/foo/bar"));
     }
 
     @Test
@@ -525,12 +525,12 @@ public abstract class AbstractFolderTest {
     @Test
     public void shouldNotFindFolder() throws Exception {
         // given
-        getFolderRepository().addFolder("foo");
-        getFolderRepository().addFolder("foo/bar");
+        getFolderRepository().addFolder("/foo");
+        getFolderRepository().addFolder("/foo/bar");
 
         // then
-        assertFalse(getFolderRepository().exists("totototo"));
-        assertFalse(getFolderRepository().exists("titititi/totototo"));
+        assertFalse(getFolderRepository().exists("/totototo"));
+        assertFalse(getFolderRepository().exists("/titititi/totototo"));
     }
 
     private void assertChildrenSize(String folder, int childrenNumber) {
