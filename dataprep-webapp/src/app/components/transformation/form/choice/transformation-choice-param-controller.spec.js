@@ -30,6 +30,23 @@ describe('Transform choice params controller', function () {
         };
     }));
 
+    it('should Not initialize parameter value', function() {
+        //given
+        parameter = {
+            name: 'mode',
+            type: 'select',
+            configuration: {
+                values: []
+            }
+        };
+
+        //when
+        var ctrl = createController();
+
+        //then
+        expect(ctrl.parameter.value).toEqual(undefined);
+    });
+
     it('should init choice default value', function() {
         //given
         parameter = {
@@ -91,4 +108,5 @@ describe('Transform choice params controller', function () {
         //then
         expect(ctrl.parameter.value).toEqual('index');
     });
+
 });
