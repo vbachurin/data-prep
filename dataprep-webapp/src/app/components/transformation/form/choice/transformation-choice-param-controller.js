@@ -27,7 +27,7 @@ export default function TransformChoiceParamCtrl() {
      */
     var initParamValues = function () {
 
-        if (!vm.parameter.value) {
+        if (!vm.parameter.value && (vm.parameter.configuration.values.length > 0)) {
             // init with the default value
             if (vm.parameter.default) {
                 var defaultValue = _.find(vm.parameter.configuration.values, {value: vm.parameter.default});
@@ -38,7 +38,6 @@ export default function TransformChoiceParamCtrl() {
                 vm.parameter.value = vm.parameter.configuration.values[0].value;
             }
         }
-
     };
 
     initParamValues();
