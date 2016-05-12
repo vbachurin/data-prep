@@ -64,7 +64,7 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
     //--------------------------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
-     * @name showPicker
+     * @name showPreparationPicker
      * @methodOf data-prep.playground.controller:PlaygroundCtrl
      * @description Toggle preparation picker modal
      */

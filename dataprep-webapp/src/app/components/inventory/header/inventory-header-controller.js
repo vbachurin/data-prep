@@ -18,7 +18,6 @@
  * @description Inventory list header controller.
  */
 export default class InventoryHeaderCtrl {
-    constructor() {}
 
     /**
      * @ngdoc method
