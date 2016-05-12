@@ -14,10 +14,16 @@
 describe('Navbar directive', function() {
     'use strict';
 
-    var scope, createElement, element;
+    var scope, createElement, element, stateMock;
 
-    beforeEach(angular.mock.module('data-prep.navbar'));
     beforeEach(angular.mock.module('htmlTemplates'));
+
+    beforeEach(angular.mock.module('data-prep.navbar', ($provide) => {
+        stateMock = {
+            ee: false
+        };
+        $provide.constant('state', stateMock);
+    }));
 
     beforeEach(inject(function($rootScope, $compile) {
         scope = $rootScope.$new();
@@ -59,5 +65,24 @@ describe('Navbar directive', function() {
 
         //then
         expect(element.find('.navigation-items[insertion-home-right-header]').length).toBe(1);
+    });
+
+
+    it('should render feedback form', function() {
+        //when
+        stateMock.ee = undefined;
+        createElement();
+
+        //then
+        expect(element.find('#message-icon').length).toBe(1);
+    });
+
+    it('should not render feedback form', function() {
+        //when
+        stateMock.ee = true;
+        createElement();
+
+        //then
+        expect(element.find('#message-icon').length).toBe(0);
     });
 });

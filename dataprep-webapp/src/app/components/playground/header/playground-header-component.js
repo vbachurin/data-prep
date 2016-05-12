@@ -32,6 +32,7 @@
  * @param {boolean} preview A preview is in progress
  * @param {boolean} lookupVisible A lookup is in progress
  * @param {boolean} parametersVisible Dataset parameters window is visible
+ * @param {boolean} feedbackVisible feedback form is visible
  * @param {function} onParameters Callback on gear icon click
  * @param {function} onLookup Callback on lookup icon click
  * @param {function} onOnboarding Callback on onboarding icon click
@@ -48,6 +49,7 @@ const PlaygroundHeader = {
         preview: '<',
         lookupVisible: '<',
         parametersVisible: '<',
+        feedbackVisible: '<',
         onParameters: '&',
         onLookup: '&',
         onOnboarding: '&',
