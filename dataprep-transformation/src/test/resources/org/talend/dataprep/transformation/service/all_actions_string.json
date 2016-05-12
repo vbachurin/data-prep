@@ -4299,5 +4299,9 @@
   {
     "name": "mask_data_by_domain",
     "category": "data masking"
+  },
+  {
+    "name": "modify_date",
+    "category": "dates"
   }
 ]
