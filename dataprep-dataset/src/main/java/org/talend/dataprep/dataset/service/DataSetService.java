@@ -359,6 +359,9 @@ public class DataSetService {
 
             LOG.debug(marker, "Created!");
             return id;
+        } catch (TDPException e) {
+            dataSetMetadataRepository.remove(id);
+            throw e;
         } catch (Exception e) {
             dataSetMetadataRepository.remove(id);
             throw new TDPException(DataSetErrorCodes.UNABLE_CREATE_DATASET, e);

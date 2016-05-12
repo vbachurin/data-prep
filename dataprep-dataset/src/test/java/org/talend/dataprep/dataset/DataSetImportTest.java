@@ -194,11 +194,15 @@ public class DataSetImportTest extends DataSetBaseTest {
 
     @Test
     public void testImportFailure() throws Exception {
-        System.setProperty("DataSetImportTest.FailingAnalyzer", "true");
-        final int statusCode = given().body(IOUtils.toString(DataSetImportTest.class.getResourceAsStream("tagada.csv")))
-                .queryParam("Content-Type", "text/csv").when().post("/datasets").statusCode();
-        assertEquals(500, statusCode);
-        assertEquals(0, dataSetMetadataRepository.size());
+        try {
+            System.setProperty("DataSetImportTest.FailingAnalyzer", "true");
+            final int statusCode = given().body(IOUtils.toString(DataSetImportTest.class.getResourceAsStream("tagada.csv")))
+                    .queryParam("Content-Type", "text/csv").when().post("/datasets").statusCode();
+            assertEquals(500, statusCode);
+            assertEquals(0, dataSetMetadataRepository.size());
+        } finally {
+            System.setProperty("DataSetImportTest.FailingAnalyzer", "false");
+        }
     }
 
     /**
@@ -215,6 +219,9 @@ public class DataSetImportTest extends DataSetBaseTest {
 
         @Override
         public void analyze(String dataSetId) {
+            if (StringUtils.isEmpty(dataSetId)) {
+                throw new IllegalArgumentException("Data set id cannot be null or empty.");
+            }
             if (Boolean.getBoolean("DataSetImportTest.FailingAnalyzer")) {
                 throw new RuntimeException("On purpose thrown exception.");
             }
