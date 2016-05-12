@@ -63,9 +63,8 @@ public class HtmlSerializer implements Serializer {
         return () -> {
             try {
 
-                Map<String, String> parameters = dataSetMetadata.getContent().getParameters();
-                String valuesSelector = parameters.get(HtmlSchemaParser.VALUES_SELECTOR_KEY);
-                ValuesContentHandler valuesContentHandler = new ValuesContentHandler(valuesSelector);
+                List<ColumnMetadata> columns = dataSetMetadata.getRowMetadata().getColumns();
+                SimpleValuesContentHandler valuesContentHandler = new SimpleValuesContentHandler(columns.size());
 
                 HtmlParser htmlParser = new HtmlParser();
                 Metadata metadata = new Metadata();
@@ -74,7 +73,6 @@ public class HtmlSerializer implements Serializer {
 
                 JsonGenerator generator = new JsonFactory().createGenerator(jsonOutput);
                 generator.writeStartArray(); // start the record
-                List<ColumnMetadata> columns = dataSetMetadata.getRowMetadata().getColumns();
 
                 for (List<String> values : valuesContentHandler.getValues()) {
 
@@ -88,14 +86,16 @@ public class HtmlSerializer implements Serializer {
                     int idx = 0;
 
                     for (String value : values) {
-                        ColumnMetadata columnMetadata = columns.get(idx);
-                        generator.writeFieldName(columnMetadata.getId());
-                        if (value != null) {
-                            generator.writeString(value);
-                        } else {
-                            generator.writeNull();
+                        if(idx < columns.size()) {
+                            ColumnMetadata columnMetadata = columns.get(idx);
+                            generator.writeFieldName(columnMetadata.getId());
+                            if (value != null) {
+                                generator.writeString(value);
+                            } else {
+                                generator.writeNull();
+                            }
+                            idx++;
                         }
-                        idx++;
                     }
                     generator.writeEndObject();
                 }
