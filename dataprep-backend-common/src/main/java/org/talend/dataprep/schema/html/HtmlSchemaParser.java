@@ -39,15 +39,6 @@ public class HtmlSchemaParser implements SchemaParser {
     /** This class' logger. */
     private static final Logger LOGGER = LoggerFactory.getLogger(HtmlSchemaParser.class);
 
-    /** HTML header selector parameter key. */
-    public static final String HEADER_SELECTOR_KEY = "html.HEADER_SELECTOR_KEY";
-
-    /** HTML value selector parameter key. */
-    public static final String VALUES_SELECTOR_KEY = "html.VALUES_SELECTOR_KEY";
-
-    /** List of patterns to use to parse datasets out of html. */
-    private Pattern pattern = new Pattern("html body table tr th", "html body table tr td");
-
     /**
      * @see SchemaParser#parse(Request)
      */
@@ -55,13 +46,7 @@ public class HtmlSchemaParser implements SchemaParser {
     public Schema parse(Request request) {
 
         try {
-            Map<String, String> parameters = new HashMap<>(2);
-            parameters.put(HEADER_SELECTOR_KEY, pattern.getHeaderSelector());
-            parameters.put(VALUES_SELECTOR_KEY, pattern.getValuesSelector());
-            request.getMetadata().getContent().setParameters(parameters);
-            final String headerSelector = pattern.getHeaderSelector();
-
-            HeadersContentHandler headersContentHandler = new HeadersContentHandler(headerSelector, false);
+            SimpleHeadersContentHandler headersContentHandler = new SimpleHeadersContentHandler();
 
             InputStream inputStream = request.getContent();
             HtmlParser htmlParser = new HtmlParser();
@@ -70,18 +55,18 @@ public class HtmlSchemaParser implements SchemaParser {
 
             htmlParser.parse(inputStream, headersContentHandler, metadata, new ParseContext());
 
-            List<ColumnMetadata> columnMetadatas = new ArrayList<>(headersContentHandler.getHeaderValues().size());
+            List<ColumnMetadata> columns = new ArrayList<>(headersContentHandler.getHeaderValues().size());
 
             for (String headerValue : headersContentHandler.getHeaderValues()) {
-                columnMetadatas.add(ColumnMetadata.Builder.column() //
+                columns.add(ColumnMetadata.Builder.column() //
                         .type(Type.STRING) // ATM not doing any complicated type calculation
                         .name(headerValue) //
-                        .id(columnMetadatas.size()) //
+                        .id(columns.size()) //
                         .build());
             }
 
             Schema.SheetContent sheetContent = new Schema.SheetContent();
-            sheetContent.setColumnMetadatas(columnMetadatas);
+            sheetContent.setColumnMetadatas(columns);
 
             return Schema.Builder.parserResult() //
                     .sheetContents(Collections.singletonList(sheetContent)) //
@@ -95,48 +80,4 @@ public class HtmlSchemaParser implements SchemaParser {
 
     }
 
-    /**
-     * Class used to setup a HeadersContentHandler.
-     */
-    static class Pattern {
-
-        /** CSS like selector to get the header out of the html. */
-        private String headerSelector;
-
-        /** CSS like selector to get the values out of the html. */
-        private String valuesSelector;
-
-        /**
-         * Constructor.
-         *
-         * @param headerSelector selector to get the header out of the html.
-         * @param valuesSelector selector to get the values out of the html.
-         */
-        public Pattern(String headerSelector, String valuesSelector) {
-            this.headerSelector = headerSelector;
-            this.valuesSelector = valuesSelector;
-        }
-
-        /**
-         * @return the css like selector used to get the headers.
-         */
-        public String getHeaderSelector() {
-            return headerSelector;
-        }
-
-        /**
-         * @return the css like selector used to get the values.
-         */
-        public String getValuesSelector() {
-            return valuesSelector;
-        }
-
-        /**
-         * @see Object#toString()
-         */
-        @Override
-        public String toString() {
-            return "Pattern{" + "headerSelector='" + headerSelector + '\'' + ", valuesSelector='" + valuesSelector + '\'' + '}';
-        }
-    }
 }

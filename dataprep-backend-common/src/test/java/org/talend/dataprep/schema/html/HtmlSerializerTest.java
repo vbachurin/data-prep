@@ -35,10 +35,6 @@ public class HtmlSerializerTest extends AbstractSchemaTestUtils {
 
     private final static Logger logger = LoggerFactory.getLogger(HtmlSchemaParserTest.class);
 
-    private static final String HEADER_SELECTOR = "html body table tr th";
-
-    private static final String VALUES_SELECTOR = "html body table tr td";
-
     @Autowired
     private HtmlSchemaParser htmlSchemaGuesser;
 
@@ -61,10 +57,6 @@ public class HtmlSerializerTest extends AbstractSchemaTestUtils {
             request = getRequest(inputStream, "#2");
             request.getMetadata().setEncoding("UTF-16");
 
-            Map<String, String> parameters = new HashMap<>(2);
-            parameters.put(HtmlSchemaParser.HEADER_SELECTOR_KEY, HEADER_SELECTOR);
-            parameters.put(HtmlSchemaParser.VALUES_SELECTOR_KEY, VALUES_SELECTOR);
-            request.getMetadata().getContent().setParameters(parameters);
             result = htmlSchemaGuesser.parse(request);
         }
 
