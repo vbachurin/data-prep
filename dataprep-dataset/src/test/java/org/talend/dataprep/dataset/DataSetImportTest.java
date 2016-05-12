@@ -18,6 +18,7 @@ import static com.jayway.restassured.RestAssured.when;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
@@ -52,12 +53,14 @@ public class DataSetImportTest extends DataSetBaseTest {
     public static void enter() {
         // Set pause in analysis
         System.setProperty("DataSetImportTest.PausedAnalyzer", "1"); //$NON-NLS-1$ //$NON-NLS-2$
+        System.setProperty("DataSetImportTest.FailingAnalyzer", "false");
     }
 
     @AfterClass
     public static void leave() {
         // Set pause in analysis
         System.setProperty("DataSetImportTest.PausedAnalyzer", "0"); //$NON-NLS-1$ //$NON-NLS-2$
+        System.setProperty("DataSetImportTest.FailingAnalyzer", "false");
     }
 
     /**
@@ -189,8 +192,37 @@ public class DataSetImportTest extends DataSetBaseTest {
         assertThat(statusCode, is(200));
     }
 
+    @Test
+    public void testImportFailure() throws Exception {
+        System.setProperty("DataSetImportTest.FailingAnalyzer", "true");
+        final int statusCode = given().body(IOUtils.toString(DataSetImportTest.class.getResourceAsStream("tagada.csv")))
+                .queryParam("Content-Type", "text/csv").when().post("/datasets").statusCode();
+        assertEquals(500, statusCode);
+        assertEquals(0, dataSetMetadataRepository.size());
+    }
+
     /**
      * A special (for tests) implementation of {@link SynchronousDataSetAnalyzer} that allows test code to intentionally
+     * fail import process for test purposes.
+     */
+    @Component
+    public static class FailingAnalyzer implements SynchronousDataSetAnalyzer {
+
+        @Override
+        public int order() {
+            return Integer.MAX_VALUE - 2;
+        }
+
+        @Override
+        public void analyze(String dataSetId) {
+            if (Boolean.getBoolean("DataSetImportTest.FailingAnalyzer")) {
+                throw new RuntimeException("On purpose thrown exception.");
+            }
+        }
+    }
+
+    /**
+     * A special (for tests) implementation of Ë{@link SynchronousDataSetAnalyzer} that allows test code to intentionally
      * slow down import process for test purposes.
      */
     @Component

@@ -327,38 +327,43 @@ public class DataSetService {
         checkIfNameIsAvailable(id, name);
 
         // get the location out of the content type and the request body
-        DataSetLocation location;
         try {
-            location = datasetLocator.getDataSetLocation(contentType, content);
-        } catch (IOException e) {
-            throw new TDPException(DataSetErrorCodes.UNABLE_TO_READ_DATASET_LOCATION, e);
+            DataSetLocation location;
+            try {
+                location = datasetLocator.getDataSetLocation(contentType, content);
+            } catch (IOException e) {
+                throw new TDPException(DataSetErrorCodes.UNABLE_TO_READ_DATASET_LOCATION, e);
+            }
+
+            DataSetMetadata dataSetMetadata = metadataBuilder.metadata() //
+                    .id(id) //
+                    .name(name) //
+                    .author(security.getUserId()) //
+                    .location(location) //
+                    .created(System.currentTimeMillis()) //
+                    .build();
+
+            dataSetMetadata.getLifecycle().importing(true); // Indicate data set is being imported
+
+            // Save data set content
+            LOG.debug(marker, "Storing content...");
+            contentStore.storeAsRaw(dataSetMetadata, content);
+            LOG.debug(marker, "Content stored.");
+
+            // Create the new data set
+            dataSetMetadataRepository.add(dataSetMetadata);
+            LOG.debug(marker, "dataset metadata stored {}", dataSetMetadata);
+
+            // Queue events (format analysis, content indexing for search...)
+            queueEvents(id);
+
+            LOG.debug(marker, "Created!");
+            return id;
+        } catch (Exception e) {
+            dataSetMetadataRepository.remove(id);
+            throw new TDPException(DataSetErrorCodes.UNABLE_CREATE_DATASET, e);
         }
 
-        DataSetMetadata dataSetMetadata = metadataBuilder.metadata() //
-                .id(id) //
-                .name(name) //
-                .author(security.getUserId()) //
-                .location(location) //
-                .created(System.currentTimeMillis()) //
-                .build();
-
-        dataSetMetadata.getLifecycle().importing(true); // Indicate data set is being imported
-
-        // Save data set content
-        LOG.debug(marker, "Storing content...");
-        contentStore.storeAsRaw(dataSetMetadata, content);
-        LOG.debug(marker, "Content stored.");
-
-        // Create the new data set
-        dataSetMetadataRepository.add(dataSetMetadata);
-        LOG.debug(marker, "dataset metadata stored {}", dataSetMetadata);
-
-        // Queue events (format analysis, content indexing for search...)
-        queueEvents(id);
-
-        LOG.debug(marker, "Created!");
-
-        return id;
     }
 
     /**
