@@ -26,6 +26,8 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
@@ -48,6 +50,8 @@ public class MaskDataByDomainTest extends AbstractMetadataBaseTest {
     private MaskDataByDomain action;
 
     private Map<String, String> parameters;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MaskDataByDomainTest.class);
 
     @Before
     public void init() throws IOException {
@@ -97,7 +101,7 @@ public class MaskDataByDomainTest extends AbstractMetadataBaseTest {
 
         // then
         int realValueAsInteger = Integer.parseInt((String) row.values().get("0000"));
-        System.out.println(realValueAsInteger);
+        LOGGER.info("Row value: {}", realValueAsInteger);
         assertTrue(realValueAsInteger >= 10 && realValueAsInteger <= 14);
     }
 
