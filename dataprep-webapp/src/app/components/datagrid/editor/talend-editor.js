@@ -148,6 +148,11 @@ export default function TalendEditor(validationFn, translatedMsg) {
             else {
                 $container.removeClass('bottom');
             }
+
+            if(cellBox.left + $input.width() > args.gridPosition.right) {
+                $container.css('right', 0);
+                $container.css('position', 'absolute');
+            }
         };
 
         /*********** Initialization ***********/
