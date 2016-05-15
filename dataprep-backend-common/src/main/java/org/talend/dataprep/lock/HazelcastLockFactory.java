@@ -25,7 +25,7 @@ import com.hazelcast.core.ILock;
  * implementation.
  */
 @Component
-@Profile("standalone")
+@Profile({"ami", "standalone"})
 public class HazelcastLockFactory implements LockFactory {
 
     /** The Hazel cast instance. */

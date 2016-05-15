@@ -29,7 +29,7 @@ import com.hazelcast.core.HazelcastInstance;
  * in its own JVM, serving multiple concurrent requests thus the need for a distributed lock system.
  */
 @Configuration
-@Profile("standalone")
+@Profile({"standalone", "ami"})
 @SuppressWarnings("InsufficientBranchCoverage")
 public class HazelcastSetup {
 
