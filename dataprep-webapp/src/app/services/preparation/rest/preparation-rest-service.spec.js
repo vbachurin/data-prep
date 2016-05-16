@@ -109,15 +109,16 @@ describe('Preparation REST Service', () => {
     describe('preparation lifecycle', () => {
         it('should create a new preparation', inject(($rootScope, RestURLs, PreparationRestService) => {
             //given
+            const folderId = 'L215L3BlcnNvbmFsL2ZvbGRlcg==';
             const datasetId = '8ec053b1-7870-4bc6-af54-523be91dc774';
             const name = 'The new preparation';
 
             $httpBackend
-                .expectPOST(RestURLs.preparationUrl, { dataSetId: datasetId, name: name })
+                .expectPOST(`${RestURLs.preparationUrl}?folder=${folderId}`, { dataSetId: datasetId, name: name })
                 .respond(200, 'fbaa18e82e913e97e5f0e9d40f04413412be1126');
 
             //when
-            PreparationRestService.create(datasetId, name);
+            PreparationRestService.create(datasetId, name, folderId);
             $httpBackend.flush();
             $rootScope.$digest();
         }));
@@ -153,14 +154,14 @@ describe('Preparation REST Service', () => {
         it('should copy the preparation', inject(($rootScope, RestURLs, PreparationRestService) => {
             //given
             const preparationId = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
-            const folderPath = '/toto/tata';
+            const folderId = 'L215L3BlcnNvbmFsL2ZvbGRlcg==';
             const name = 'jso_prep';
             $httpBackend
-                .expectPOST(`${RestURLs.preparationUrl}/${preparationId}/copy?destination=${encodeURIComponent(folderPath)}&newName=${encodeURIComponent(name)}`)
+                .expectPOST(`${RestURLs.preparationUrl}/${preparationId}/copy?destination=${encodeURIComponent(folderId)}&newName=${encodeURIComponent(name)}`)
                 .respond(200);
 
             //when
-            PreparationRestService.copy(preparationId, folderPath, name);
+            PreparationRestService.copy(preparationId, folderId, name);
             $httpBackend.flush();
             $rootScope.$digest();
         }));
@@ -168,15 +169,15 @@ describe('Preparation REST Service', () => {
         it('should move the preparation', inject(($rootScope, RestURLs, PreparationRestService) => {
             //given
             const preparationId = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
-            const folderPath = '/toto/tata';
-            const destinationPath = '/toto/tata';
+            const folderId = 'LW==';
+            const destinationId = 'L215L3BlcnNvbmFsL2ZvbGRlcg==';
             const name = 'jso_prep';
             $httpBackend
-                .expectPUT(`${RestURLs.preparationUrl}/${preparationId}/move?folder=${encodeURIComponent(folderPath)}&destination=${encodeURIComponent(destinationPath)}&newName=${encodeURIComponent(name)}`)
+                .expectPUT(`${RestURLs.preparationUrl}/${preparationId}/move?folder=${encodeURIComponent(folderId)}&destination=${encodeURIComponent(destinationId)}&newName=${encodeURIComponent(name)}`)
                 .respond(200);
 
             //when
-            PreparationRestService.move(preparationId, folderPath, destinationPath, name);
+            PreparationRestService.move(preparationId, folderId, destinationId, name);
             $httpBackend.flush();
             $rootScope.$digest();
         }));

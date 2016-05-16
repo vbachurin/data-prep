@@ -14,7 +14,9 @@
 describe('Playground controller', () => {
     'use strict';
 
-    let createController, scope, stateMock;
+    let createController;
+    let scope;
+    let stateMock;
     const datasets = [
         {
             'id': 'de3cc32a-b624-484e-b8e7-dab9061a009c',
@@ -64,6 +66,7 @@ describe('Playground controller', () => {
                 preparationName: '',
             },
             inventory: {
+                homeFolderId: 'LW==',
                 currentFolder: { path: 'test' },
             },
         };
@@ -495,7 +498,7 @@ describe('Playground controller', () => {
         describe('save preparation', () => {
             it('should change preparation name when destination is home', inject((PreparationService) => {
                 //given
-                ctrl.destinationFolder = { path: '' };
+                ctrl.destinationFolder = { id: 'LW==', path: '' };
                 stateMock.playground.preparation = { id: '541da3f5c64' };
                 stateMock.playground.preparationName = '  my preparation ';
 
@@ -510,7 +513,7 @@ describe('Playground controller', () => {
 
             it('should move preparation when destination has changed', inject((PreparationService) => {
                 //given
-                ctrl.destinationFolder = { path: '/my/folder' };
+                ctrl.destinationFolder = { id: 'L215L2ZvbGRlcg==', path: '/my/folder' };
                 stateMock.playground.preparation = { id: '541da3f5c64' };
                 stateMock.playground.preparationName = '  my preparation ';
 
@@ -520,7 +523,7 @@ describe('Playground controller', () => {
                 ctrl.confirmSaveOnClose();
 
                 //then
-                expect(PreparationService.move).toHaveBeenCalledWith('541da3f5c64', '', '/my/folder', 'my preparation');
+                expect(PreparationService.move).toHaveBeenCalledWith('541da3f5c64', 'LW==', 'L215L2ZvbGRlcg==', 'my preparation');
             }));
 
             it('should reset and redirect to previous route', inject(($timeout, $state, StateService) => {

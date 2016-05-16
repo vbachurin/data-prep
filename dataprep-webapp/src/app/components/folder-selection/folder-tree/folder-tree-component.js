@@ -11,13 +11,14 @@
 
  ============================================================================*/
 
-const FolderItem = {
+const FolderTreeComponent = {
     bindings: {
-        item: '=',
+        node: '<',
+        level: '<',
         onToggle: '&',
-        onSelect: '&'
+        onSelect: '&',
     },
-    templateUrl: 'app/components/folder-selection/folder-item/folder-item.html'
+    templateUrl: 'app/components/folder-selection/folder-tree/folder-tree.html'
 };
 
-export default FolderItem;
+export default FolderTreeComponent;

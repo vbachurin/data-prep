@@ -19,6 +19,7 @@ describe('InventoryItem directive', () => {
     }
 
     let scope,  createElement, element, ctrl;
+    
     const dataset = {
         'id': '12ce6c32-bf80-41c8-92e5-66d70f22ec1f',
         'name': 'US States',
@@ -47,7 +48,6 @@ describe('InventoryItem directive', () => {
         'name': 'US States',
         'type': 'application/vnd.remote-ds.job'
     };
-
 
     const preparation = {
         'id': '12ce6c32-bf80-41c8-92e5-66d70f22ec1f',
@@ -107,11 +107,12 @@ describe('InventoryItem directive', () => {
             createElement = (newDataSet) => {
                 scope.dataset = newDataSet;
 
-                element = angular.element('<inventory-item ' +
-                    'item="dataset" ' +
-                    'details="DATASET_DETAILS" ' +
-                    'type="dataset" ' +
-                    '></inventory-item>');
+                element = angular.element(`
+                    <inventory-item 
+                        item="dataset"
+                        details="DATASET_DETAILS"
+                        type="dataset"></inventory-item>
+                `);
                 $compile(element)(scope);
                 scope.$digest();
                 ctrl = element.controller('inventoryItem');
@@ -119,44 +120,43 @@ describe('InventoryItem directive', () => {
             };
         }));
 
-        describe('select correct icon', () => {
-            it('should select CSV icon', () => {
-                //when
-                createElement(csv_dataset);
+        it('should select CSV icon', () => {
+            // when
+            createElement(csv_dataset);
 
-                //then
-                const icon = element.find('.inventory-icon').eq(0);
-                const iconSrc = icon.find('img')[0].src;
-                expect(strEndsWith(iconSrc, '/assets/images/inventory/csv_file.png')).toBe(true);
-            });
-            it('should select XLS icon', () => {
-                //when
-                createElement(xls_dataset);
+            // then
+            const icon = element.find('.inventory-icon').eq(0);
+            const iconSrc = icon.find('img')[0].src;
+            expect(strEndsWith(iconSrc, '/assets/images/inventory/csv_file.png')).toBe(true);
+        });
+        
+        it('should select XLS icon', () => {
+            // when
+            createElement(xls_dataset);
 
-                //then
-                const icon = element.find('.inventory-icon').eq(0);
-                const iconSrc = icon.find('img')[0].src;
-                expect(strEndsWith(iconSrc, '/assets/images/inventory/xls_file.png')).toBe(true);
-            });
+            // then
+            const icon = element.find('.inventory-icon').eq(0);
+            const iconSrc = icon.find('img')[0].src;
+            expect(strEndsWith(iconSrc, '/assets/images/inventory/xls_file.png')).toBe(true);
+        });
 
-            it('should select JOB icon', () => {
-                //when
+        it('should select JOB icon', () => {
+            // when
+            createElement(job_dataset);
+
+            // then
+            const icon = element.find('.inventory-icon').eq(0);
+            const iconSrc = icon.find('img')[0].src;
+            expect(strEndsWith(iconSrc, '/assets/images/inventory/job_file.png')).toBe(true);
+        });
+
+        it('should not display update for job dattaset', () => {
+                // when
                 createElement(job_dataset);
 
-                //then
-                const icon = element.find('.inventory-icon').eq(0);
-                const iconSrc = icon.find('img')[0].src;
-                expect(strEndsWith(iconSrc, '/assets/images/inventory/job_file.png')).toBe(true);
-            });
-
-            it('should not display update for job dattaset', () => {
-                //when
-                createElement(job_dataset);
-
-                //then
+                // then
                 expect(element.find('talend-file-selector').length).toBe(0);
             });
-        })
     });
 
     describe('dataset', () => {
@@ -201,81 +201,81 @@ describe('InventoryItem directive', () => {
 
         describe('display inventory components', () => {
             it('should display inventory icon without certification pin', () => {
-                //when
+                // when
                 createElement();
 
-                //then
+                // then
                 const icon = element.find('.inventory-icon').eq(0);
                 const certificationIcon = icon.find('.pin');
                 expect(certificationIcon.length).toBe(0);
             });
             it('should display inventory icon with certification pin', () => {
-                //when
+                // when
                 scope.dataset = certifiedDataset;
                 createElement();
 
-                //then
+                // then
                 const icon = element.find('.inventory-icon').eq(0);
                 const certificationIcon = icon.find('.pin');
                 expect(certificationIcon.length).toBe(1);
             });
 
             it('should display inventory icon tooltip', () => {
-                //when
+                // when
                 createElement();
 
-                //then
+                // then
                 const title = element.find('.inventory-icon').eq(0).attr('title').trim();
                 expect(title).toBe('Open ' + ctrl.type + ' "' + dataset.name + '"');
             });
             it('should display related inventory icon tooltip', () => {
-                //given
+                // given
                 scope.preparations = dataset.preparations;
 
-                //when
+                // when
                 createElement();
 
-                //then
+                // then
                 const title = element.find('.inventory-icon').eq(0).attr('title').trim();
                 expect(title).toBe('Open ' + ctrl.relatedInventoriesType + ' "' + dataset.preparations[0].name + '"');
             });
 
             it('should display inventory details', inject(($filter) => {
-                //given
+                // given
                 const momentize = $filter('TDPMoment');
 
-                //when
+                // when
                 createElement();
 
-                //then
+                // then
                 expect(element.find('.inventory-description').eq(0).text()).toBe('owned by anonymousUser, created ' + momentize('1437020219741') + ', contains  lines');
             }));
 
 
             it('should display inventory title', () => {
-                //when
+                // when
                 createElement();
 
-                //then
+                // then
                 const title = element.find('talend-editable-text').eq(0).text().trim();
                 expect(title).toBe(dataset.name);
             });
 
             it('should NOT display bottle icon: no related inventories', () => {
-                //when
+                // when
                 createElement();
 
-                //then
+                // then
                 expect(element.find('.inventory-actions-related-item').length).toBe(0);
             });
             it('should display bottle icon: at least 1 related inventory', () => {
-                //given
+                // given
                 scope.preparations = dataset.preparations;
 
-                //when
+                // when
                 createElement();
 
-                //then
+                // then
                 expect(element.find('.inventory-actions-related-item').length).toBe(1);
                 const menuItems = element.find('.inventory-actions-related-item-menu > li');
                 expect(menuItems.length).toBe(3);
@@ -284,104 +284,104 @@ describe('InventoryItem directive', () => {
             });
 
             it('should display update icon', () => {
-                //when
+                // when
                 createElement();
 
-                //then
+                // then
                 const icon = element.find('talend-file-selector').attr('button-data-icon');
                 expect(icon).toBe('E');
             });
             it('should display update icon tooltip', () => {
-                //when
+                // when
                 createElement();
 
-                //then
+                // then
                 const title = element.find('talend-file-selector').attr('button-title');
                 expect(title).toBe('REPLACE_FILE_CONTENT');
             });
 
             it('should display 2 dividers', () => {
-                //when
+                // when
                 createElement();
 
-                //then
+                // then
                 expect(element.find('.divider').length).toBe(2);
             });
 
             it('should display copy icon', () => {
-                //when
+                // when
                 createElement();
 
-                //then
+                // then
                 const icon = element.find('a').eq(0).attr('data-icon');
                 expect(icon).toBe('B');
             });
             it('should display copy icon tooltip', () => {
-                //when
+                // when
                 createElement();
 
-                //then
+                // then
                 const title = element.find('a').eq(0).attr('title');
                 expect(title.indexOf(dataset.name) >= 0).toBeTruthy();
             });
 
             it('should display remove icon', () => {
-                //when
+                // when
                 createElement();
 
-                //then
+                // then
                 const icon = element.find('a').eq(1).attr('data-icon');
                 expect(icon).toBe('e');
             });
             it('should display remove icon tooltip', () => {
-                //when
+                // when
                 createElement();
 
-                //then
+                // then
                 const title = element.find('a').eq(1).attr('title');
                 expect(title.indexOf(dataset.name) >= 0).toBeTruthy();
             });
 
             it('should display certify icon', () => {
-                //when
+                // when
                 createElement();
 
-                //then
+                // then
                 const icon = element.find('a').eq(2).attr('data-icon');
                 expect(icon).toBe('n');
             });
             it('should display certify icon tooltip', () => {
-                //when
+                // when
                 createElement();
 
-                //then
+                // then
                 const title = element.find('a').eq(2).attr('title');
                 expect(title.indexOf(dataset.name) >= 0).toBeTruthy();
             });
 
             it('should display favorite icon', () => {
-                //when
+                // when
                 createElement();
 
-                //then
+                // then
                 const icon = element.find('a').eq(3).attr('data-icon');
                 expect(icon).toBe('f');
              });
 
             it('should NOT display favorite icon', () => {
-                //when
+                // when
                 scope.toggleFavorite = null;
                 createElement();
 
-                //then
+                // then
                 expect(element.find('.favorite').length).toBe(0);
             });
 
             it('should display favorite icon tooltip', () => {
-                //when
+                // when
                 createElement();
 
-                //then
+                // then
                 const title = element.find('a').eq(3).attr('title');
                 expect(title.indexOf(dataset.name) >= 0).toBeTruthy();
             });
@@ -400,155 +400,155 @@ describe('InventoryItem directive', () => {
             }));
 
             it('should open inventory item on file icon click', () => {
-                //given
+                // given
                 createElement();
                 const icon = element.find('.inventory-icon');
 
-                //when
+                // when
                 icon.click();
 
-                //then
+                // then
                 expect(ctrl.open).toHaveBeenCalledWith(dataset);
             });
             it('should open the related inventory item on file icon click', () => {
-                //given
+                // given
                 scope.preparations = [{}, {}];
                 createElement();
                 const icon = element.find('.inventory-icon');
 
-                //when
+                // when
                 icon.click();
 
-                //then
+                // then
                 expect(ctrl.openRelatedInventory).toHaveBeenCalledWith(scope.preparations[0]);
             });
 
             it('should open inventory item on inventory title click', () => {
-                //given
+                // given
                 createElement();
                 const title = element.find('.inventory-title');
 
-                //when
+                // when
                 title.click();
 
-                //then
+                // then
                 expect(ctrl.open).toHaveBeenCalledWith(dataset);
             });
             it('should open the related inventory item on inventory title click', () => {
-                //given
+                // given
                 scope.preparations = [{}, {}];
                 createElement();
                 const title = element.find('.inventory-title');
 
-                //when
+                // when
                 title.click();
 
-                //then
+                // then
                 expect(ctrl.openRelatedInventory).toHaveBeenCalledWith(scope.preparations[0]);
             });
 
             it('should open inventory item on element dblclick', () => {
-                //given
+                // given
                 createElement();
                 const inventory = element.find('.inventory-item');
 
-                //when
+                // when
                 inventory.dblclick();
 
-                //then
+                // then
                 expect(ctrl.open).toHaveBeenCalledWith(dataset);
             });
             it('should open the related inventory item on element dblclick', () => {
-                //given
+                // given
                 scope.preparations = [{}, {}];
                 createElement();
                 const inventory = element.find('.inventory-item');
 
-                //when
+                // when
                 inventory.dblclick();
 
-                //then
+                // then
                 expect(ctrl.openRelatedInventory).toHaveBeenCalledWith(scope.preparations[0]);
             });
             it('should open related inventory item on bottle click', () => {
-                //given
+                // given
                 scope.preparations = [{}, {}];
                 createElement();
                 const bottle = element.find('.inventory-actions-related-item .button-dropdown-main').eq(0);
 
-                //when
+                // when
                 bottle.click();
 
-                //then
+                // then
                 expect(ctrl.openRelatedInventory).toHaveBeenCalledWith(scope.preparations[0]);
             });
             it('should open new inventory item and not the related inventory', () => {
-                //given
+                // given
                 scope.preparations = [{}, {}];
                 createElement();
                 const newPreparation = element.find('.inventory-actions-related-item-menu > li').eq(0);
 
-                //when
+                // when
                 newPreparation.click();
 
-                //then
+                // then
                 expect(ctrl.open).toHaveBeenCalledWith(dataset);
             });
             it('should open 2nd related inventory item', () => {
-                //given
+                // given
                 scope.preparations = [{}, {}];
                 createElement();
                 const secRelatedInv = element.find('.inventory-actions-related-item-menu > li').eq(2);
 
-                //when
+                // when
                 secRelatedInv.click();
 
-                //then
+                // then
                 expect(ctrl.openRelatedInventory).toHaveBeenCalledWith(scope.preparations[1]);
             });
 
             it('should copy/clone inventory item on clone button click', () => {
-                //given
+                // given
                 createElement();
                 const cloneBtn = element.find('a').eq(0);
 
-                //when
+                // when
                 cloneBtn.click();
 
-                //then
+                // then
                 expect(ctrl.copy).toHaveBeenCalled();
             });
             it('should remove inventory item on basket button click', () => {
-                //given
+                // given
                 createElement();
                 const basketBtn = element.find('a').eq(1);
 
-                //when
+                // when
                 basketBtn.click();
 
-                //then
+                // then
                 expect(ctrl.remove).toHaveBeenCalled();
             });
             it('should certify inventory item on certification button click', () => {
-                //given
+                // given
                 createElement();
                 const certificationBtn = element.find('a').eq(2);
 
-                //when
+                // when
                 certificationBtn.click();
 
-                //then
+                // then
                 expect(ctrl.processCertification).toHaveBeenCalled();
             });
             it('should favorite inventory item on favorite button click', () => {
-                //given
+                // given
                 createElement();
                 const favoriteBtn = element.find('a').eq(3);
 
-                //when
+                // when
                 favoriteBtn.click();
 
-                //then
+                // then
                 expect(ctrl.toggleFavorite).toHaveBeenCalled();
             });
         });
@@ -603,28 +603,24 @@ describe('InventoryItem directive', () => {
             scope = $rootScope.$new();
 
             scope.folder = folder;
-
-            scope.rename = () => {
-            };
-            scope.open = () => {
-            };
-
-            scope.remove = () => {
-            };
             scope.preparations = [];
+
+            scope.rename = () => {};
+            scope.open = () => {};
+            scope.remove = () => {};
+            
             createElement = () => {
-                element = angular.element('<inventory-item ' +
-                    'item="folder" ' +
-                    'details="FOLDER_DETAILS" ' +
-                    'type="folder" ' +
-                    'open="open" ' +
-                    'rename="rename" ' +
-                    'remove="remove" ' +
-                    '></inventory-item>');
+                element = angular.element(`
+                    <inventory-item 
+                        item="folder"
+                        details="FOLDER_DETAILS"
+                        type="folder"
+                        open="open"
+                        rename="rename"
+                        remove="remove"></inventory-item>
+                `);
                 $compile(element)(scope);
                 scope.$digest();
-                ctrl = element.controller('inventoryItem');
-                return element;
             };
         }));
 
@@ -654,19 +650,41 @@ describe('InventoryItem directive', () => {
         }));
 
         it('display inventory components', () => {
-            //given
+            // given
             scope.doc = {name: 'What is a recipe ?'};
             scope.details = 'This is a recipe';
 
-            //when
+            // when
             createElement();
 
-            //then
+            // then
             const icon = element.find('.inventory-icon').eq(0);
             const iconSrc = icon.find('.documentation-icon-div');
             expect(iconSrc.length).toBe(1);
             expect(element.find('.inventory-title').eq(0).text().indexOf('What is a recipe ?')).toBe(0);
             expect(element.find('.inventory-description').eq(0).text()).toBe('This is a recipe');
+        });
+    });
+    
+    describe('insertion points', () => {
+        beforeEach(inject(($rootScope, $compile) => {
+            scope = $rootScope.$new();
+            
+            createElement = () => {
+                element = angular.element('<inventory-item item="folder" type="folder"></inventory-item>');
+                $compile(element)(scope);
+                scope.$digest();
+                return element;
+            };
+        }));
+
+        it('should render insertion playground left header attribute', () => {
+            // when
+            createElement();
+            
+            // then
+            const actions = element.find('.inventory-actions').eq(0);
+            expect(actions[0].hasAttribute('insertion-inventory-actions')).toBe(true);
         });
     });
 });

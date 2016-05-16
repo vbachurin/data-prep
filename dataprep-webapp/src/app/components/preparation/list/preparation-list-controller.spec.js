@@ -19,7 +19,7 @@ describe('Preparation list controller', () => {
     beforeEach(angular.mock.module('data-prep.preparation-list', ($provide) => {
         stateMock = {
             inventory: {
-                folder: { metadata: { path: '/my/path' } }
+                folder: { metadata: { id: 'L215L2ZvbGRlcg==', path: '/my/folder' } }
             }
         };
         $provide.constant('state', stateMock);
@@ -38,7 +38,7 @@ describe('Preparation list controller', () => {
         spyOn(PreparationService, 'move').and.returnValue($q.when());
         spyOn(PreparationService, 'delete').and.returnValue($q.when());
         spyOn(PreparationService, 'setName').and.returnValue($q.when());
-        spyOn(FolderService, 'refreshContent').and.returnValue($q.when());
+        spyOn(FolderService, 'refresh').and.returnValue($q.when());
         spyOn(FolderService, 'remove').and.returnValue($q.when());
         spyOn(FolderService, 'rename').and.returnValue($q.when());
         spyOn(StateService, 'setPreviousRoute').and.returnValue();
@@ -121,7 +121,7 @@ describe('Preparation list controller', () => {
             scope.$digest();
 
             //then
-            expect(FolderService.refreshContent).toHaveBeenCalledWith('/my/path'); //path from state
+            expect(FolderService.refresh).toHaveBeenCalledWith('L215L2ZvbGRlcg=='); //current folder from state
         }));
 
         it('should show success message on dialog confirm', inject(($q, TalendConfirmService, MessageService) => {
@@ -174,7 +174,7 @@ describe('Preparation list controller', () => {
             scope.$digest();
 
             //then
-            expect(FolderService.refreshContent).toHaveBeenCalledWith('/my/path'); //path from state
+            expect(FolderService.refresh).toHaveBeenCalledWith('L215L2ZvbGRlcg=='); //current folder from state
         }));
 
         it('should show success message', inject((MessageService) => {
@@ -244,7 +244,7 @@ describe('Preparation list controller', () => {
             //given
             const ctrl = createController();
             const preparation = { id: 'foo_beer' };
-            const folder = { path: '/copy/path' };
+            const folder = { id: 'L2NvcHkvcGF0aA==',  path: '/copy/path' };
             const name = 'new name';
 
             //when
@@ -252,14 +252,14 @@ describe('Preparation list controller', () => {
             scope.$digest();
 
             //then
-            expect(PreparationService.copy).toHaveBeenCalledWith(preparation.id, '/copy/path', 'new name');
+            expect(PreparationService.copy).toHaveBeenCalledWith(preparation.id, 'L2NvcHkvcGF0aA==', 'new name');
         }));
 
         it('should refresh folder content', inject(($q, TalendConfirmService, FolderService) => {
             //given
             const ctrl = createController();
             const preparation = { id: 'foo_beer' };
-            const folder = { path: '/copy/path' };
+            const folder = { id: 'L2NvcHkvcGF0aA==', path: '/copy/path' };
             const name = 'new name';
 
             //when
@@ -267,14 +267,14 @@ describe('Preparation list controller', () => {
             scope.$digest();
 
             //then
-            expect(FolderService.refreshContent).toHaveBeenCalledWith('/my/path'); //path from state
+            expect(FolderService.refresh).toHaveBeenCalledWith('L215L2ZvbGRlcg=='); // current folder from state
         }));
 
         it('should show message', inject((MessageService) => {
             //given
             const ctrl = createController();
             const preparation = { id: 'foo_beer' };
-            const folder = { path: '/copy/path' };
+            const folder = { id: 'L2NvcHkvcGF0aA==', path: '/copy/path' };
             const name = 'new name';
 
             expect(MessageService.success).not.toHaveBeenCalled();
@@ -293,7 +293,7 @@ describe('Preparation list controller', () => {
             //given
             const ctrl = createController();
             const preparation = { id: '3567e18ff9147da98c53' };
-            const folder = { path: '/copy/path' };
+            const folder = { id: 'L2NvcHkvcGF0aA==', path: '/copy/path' };
             const name = 'new name';
 
             //when
@@ -303,8 +303,8 @@ describe('Preparation list controller', () => {
             //then
             expect(PreparationService.move).toHaveBeenCalledWith(
                 '3567e18ff9147da98c53', // preparation id
-                '/my/path',             // current folder from state
-                '/copy/path',           // destination
+                'L215L2ZvbGRlcg==',     // current folder from state
+                'L2NvcHkvcGF0aA==',     // destination
                 'new name'              // new name
             );
         }));
@@ -313,7 +313,7 @@ describe('Preparation list controller', () => {
             //given
             const ctrl = createController();
             const preparation = { id: '3567e18ff9147da98c53' };
-            const folder = { path: '/copy/path' };
+            const folder = { id: 'L2NvcHkvcGF0aA==', path: '/copy/path' };
             const name = 'new name';
 
             //when
@@ -321,14 +321,14 @@ describe('Preparation list controller', () => {
             scope.$digest();
 
             //then
-            expect(FolderService.refreshContent).toHaveBeenCalledWith('/my/path'); //path from state
+            expect(FolderService.refresh).toHaveBeenCalledWith('L215L2ZvbGRlcg=='); //current folder from state
         }));
 
         it('should show message', inject((MessageService) => {
             //given
             const ctrl = createController();
             const preparation = { id: '3567e18ff9147da98c53' };
-            const folder = { path: '/copy/path' };
+            const folder = { id: 'L2NvcHkvcGF0aA==', path: '/copy/path' };
             const name = 'new name';
 
             //when
@@ -343,7 +343,7 @@ describe('Preparation list controller', () => {
     describe('go to folder', () => {
         it('should redirect to folder route', inject(($state) => {
             // given
-            const folder = { path: '/my/new/folder' };
+            const folder = { id: 'L2NvcHkvcGF0aA==', path: '/my/new/folder' };
             const ctrl = createController();
 
             expect($state.go).not.toHaveBeenCalled();
@@ -352,14 +352,14 @@ describe('Preparation list controller', () => {
             ctrl.goToFolder(folder);
 
             // then
-            expect($state.go).toHaveBeenCalledWith('nav.index.preparations', { folderPath: folder.path });
+            expect($state.go).toHaveBeenCalledWith('nav.index.preparations', { folderId: folder.id });
         }));
     });
 
     describe('rename folder', () => {
         it('should call service', inject((FolderService) => {
             // given
-            const folder = { path: '/my/folder' };
+            const folder = { id: 'L2NvcHkvcGF0aA==', path: '/copy/path' };
             const ctrl = createController();
 
             expect(FolderService.rename).not.toHaveBeenCalled();
@@ -368,29 +368,29 @@ describe('Preparation list controller', () => {
             ctrl.renameFolder(folder, 'newFolder');
 
             // then
-            expect(FolderService.rename).toHaveBeenCalledWith('/my/folder', '/my/newFolder');
+            expect(FolderService.rename).toHaveBeenCalledWith('L2NvcHkvcGF0aA==', 'newFolder');
         }));
 
         it('should refresh folder content', inject((FolderService) => {
             // given
-            const folder = { path: '/my/folder' };
+            const folder = { id: 'L2NvcHkvcGF0aA==', path: '/copy/path' };
             const ctrl = createController();
 
-            expect(FolderService.refreshContent).not.toHaveBeenCalled();
+            expect(FolderService.refresh).not.toHaveBeenCalled();
 
             // when
             ctrl.renameFolder(folder, 'newFolder');
             scope.$digest();
 
             // then
-            expect(FolderService.refreshContent).toHaveBeenCalledWith('/my/path'); //path from state
+            expect(FolderService.refresh).toHaveBeenCalledWith('L215L2ZvbGRlcg=='); //current folder from state
         }));
     });
 
     describe('remove folder', () => {
         it('should call service', inject((FolderService) => {
             // given
-            const folder = { path: '/my/folder' };
+            const folder = { id: 'L2NvcHkvcGF0aA==', path: '/copy/path' };
             const ctrl = createController();
 
             expect(FolderService.remove).not.toHaveBeenCalled();
@@ -399,22 +399,22 @@ describe('Preparation list controller', () => {
             ctrl.removeFolder(folder);
 
             // then
-            expect(FolderService.remove).toHaveBeenCalledWith('/my/folder');
+            expect(FolderService.remove).toHaveBeenCalledWith('L2NvcHkvcGF0aA==');
         }));
 
         it('should refresh folder content', inject((FolderService) => {
             // given
-            const folder = { path: '/my/folder' };
+            const folder = { id: 'L2NvcHkvcGF0aA==', path: '/copy/path' };
             const ctrl = createController();
 
-            expect(FolderService.refreshContent).not.toHaveBeenCalled();
+            expect(FolderService.refresh).not.toHaveBeenCalled();
 
             // when
             ctrl.removeFolder(folder);
             scope.$digest();
 
             // then
-            expect(FolderService.refreshContent).toHaveBeenCalledWith('/my/path'); //path from state
+            expect(FolderService.refresh).toHaveBeenCalledWith('L215L2ZvbGRlcg=='); //current folder from state
         }));
     });
 });

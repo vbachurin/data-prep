@@ -14,7 +14,8 @@
 describe('Inventory state service', () => {
     'use strict';
 
-    let datasets, preparations;
+    let datasets;
+    let preparations;
 
     beforeEach(angular.mock.module('data-prep.services.state'));
 
@@ -172,95 +173,42 @@ describe('Inventory state service', () => {
         it('should set folder metadata', inject((inventoryState, InventoryStateService) => {
             //given
             inventoryState.folder = {};
-            const folderPath = '/toto/tata/jso';
+            const folderMetadata = {
+                id: 'L215L3BlcnNvbmFsL2ZvbGRlcg=='
+            };
 
             //when
-            InventoryStateService.setFolder(folderPath);
+            InventoryStateService.setFolder(folderMetadata);
 
             //then
-            expect(inventoryState.folder.metadata).toEqual({
-                name: 'jso',
-                path: folderPath,
-            });
-        }));
-
-        it('should set root folder metadata with empty path', inject((inventoryState, InventoryStateService) => {
-            //given
-            inventoryState.folder = {};
-
-            //when
-            InventoryStateService.setFolder('');
-
-            //then
-            expect(inventoryState.folder.metadata).toEqual({
-                name: 'Home',
-                path: '',
-            });
-        }));
-
-        it('should set root folder metadata with "/" path', inject((inventoryState, InventoryStateService) => {
-            //given
-            inventoryState.folder = {};
-
-            //when
-            InventoryStateService.setFolder('/');
-
-            //then
-            expect(inventoryState.folder.metadata).toEqual({
-                name: 'Home',
-                path: '',
-            });
+            expect(inventoryState.folder.metadata).toBe(folderMetadata);
         }));
 
         it('should set content', inject((inventoryState, InventoryStateService) => {
             //given
             inventoryState.folder = {};
-            const folderPath = '/toto/tata/jso';
             const content = {
                 folders: [],
                 preparations: [],
             };
 
             //when
-            InventoryStateService.setFolder(folderPath, content);
+            InventoryStateService.setFolder(undefined, content);
 
             //then
             expect(inventoryState.folder.content).toBe(content);
         }));
 
-        it('should set folder stack', inject((inventoryState, InventoryStateService) => {
+        it('should set user\'s home folder id', inject((inventoryState, InventoryStateService) => {
             //given
-            inventoryState.folder = {};
-            const folderPath = '/toto/tata/jso';
+            expect(inventoryState.homeFolderId).toBe('Lw==');
+            const homeId = 'L215L3BlcnNvbmFsL2ZvbGRlcg==';
 
             //when
-            InventoryStateService.setFolder(folderPath);
+            InventoryStateService.setHomeFolderId(homeId);
 
             //then
-            expect(inventoryState.foldersStack[0]).toEqual({ name: 'Home', path: '' });
-            expect(inventoryState.foldersStack[1]).toEqual({ name: 'toto', path: '/toto' });
-            expect(inventoryState.foldersStack[2]).toEqual({ name: 'tata', path: '/toto/tata' });
-            expect(inventoryState.foldersStack[3]).toEqual({ name: 'jso', path: '/toto/tata/jso' });
-        }));
-
-        it('should set menuChildren', inject((inventoryState, InventoryStateService) => {
-            //given
-            inventoryState.menuChildren = [];
-            const menuChildren = [
-                {
-                    'id': 'lookups/simple_lookup',
-                    'path': 'lookups/simple_lookup',
-                    'name': 'simple_lookup',
-                    'creationDate': 1448880158000,
-                    'modificationDate': 1448880158000
-                }
-            ];
-
-            //when
-            InventoryStateService.setMenuChildren(menuChildren);
-
-            //then
-            expect(inventoryState.menuChildren).toBe(menuChildren);
+            expect(inventoryState.homeFolderId).toBe(homeId);
         }));
     });
 

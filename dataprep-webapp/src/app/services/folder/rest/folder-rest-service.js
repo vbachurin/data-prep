@@ -27,7 +27,8 @@ export default function FolderRestService($http, RestURLs) {
         getContent: getContent,
         rename: rename,
         remove: remove,
-        search: search
+        tree: tree,
+        getById: getById,
     };
 
     /**
@@ -35,13 +36,11 @@ export default function FolderRestService($http, RestURLs) {
      * @name children
      * @methodOf data-prep.services.folder.service:FolderRestService
      * @description Get a folder's children
-     * @param {string} folderPath The folder path
+     * @param {string} parentId The parent id
      * @returns {Promise} The GET promise
      */
-    function children(folderPath) {
-        const url = folderPath ?
-            `${RestURLs.folderUrl}?path=${encodeURIComponent(folderPath)}` :
-            RestURLs.folderUrl;
+    function children(parentId) {
+        const url = `${RestURLs.folderUrl}?parentId=${encodeURIComponent(parentId)}`;
         return $http.get(url).then((res) => res.data);
     }
 
@@ -50,11 +49,12 @@ export default function FolderRestService($http, RestURLs) {
      * @name create
      * @methodOf data-prep.services.folder.service:FolderRestService
      * @description Create a folder
-     * @param {string} folderPath The folder path to create
+     * @param {string} parentId The parent id
+     * @param {string} path The relative path to create (from parent)
      * @returns {Promise} The PUT promise
      */
-    function create(folderPath) {
-        return $http.put(RestURLs.folderUrl + '?path=' + encodeURIComponent(folderPath));
+    function create(parentId, path) {
+        return $http.put(`${RestURLs.folderUrl}?parentId=${encodeURIComponent(parentId)}&path=${encodeURIComponent(path)}`);
     }
 
     /**
@@ -62,19 +62,23 @@ export default function FolderRestService($http, RestURLs) {
      * @name getContent
      * @methodOf data-prep.services.folder.service:FolderRestService
      * @description List the preparations and folders contained in the specified folder
-     * @param {string} folderPath The folder path to list
+     * @param {string} folderId The folder id to list
      * @param {string} sortType Sort by specified type
      * @param {string} sortOrder Sort in specified order
      * @returns {Promise} The GET promise
      */
-    function getContent(folderPath, sortType, sortOrder) {
-        let url = `${RestURLs.folderUrl}/preparations?folder=${encodeURIComponent(folderPath || '/')}`;
+    function getContent(folderId, sortType, sortOrder) {
+        let url = `${RestURLs.folderUrl}/${encodeURIComponent(folderId)}/preparations`;
 
+        const options = [];
         if (sortType) {
-            url += '&sort=' + sortType;
+            options.push(`sort=${sortType}`);
         }
         if (sortOrder) {
-            url += '&order=' + sortOrder;
+            options.push(`order=${sortOrder}`);
+        }
+        if(options.length) {
+            url = `${url}?${options.join('&')}`;
         }
 
         return $http.get(url).then((result) => result.data);
@@ -85,11 +89,11 @@ export default function FolderRestService($http, RestURLs) {
      * @name remove
      * @methodOf data-prep.services.folder.service:FolderRestService
      * @description Remove a folder
-     * @param {string} folderPath the path to remove
+     * @param {string} folderId the folder id to remove
      * @returns {Promise} The DELETE promise
      */
-    function remove(folderPath) {
-        return $http.delete(RestURLs.folderUrl + '?path=' + encodeURIComponent(folderPath));
+    function remove(folderId) {
+        return $http.delete(`${RestURLs.folderUrl}/${encodeURIComponent(folderId)}`);
     }
 
     /**
@@ -97,26 +101,34 @@ export default function FolderRestService($http, RestURLs) {
      * @name rename
      * @methodOf data-prep.services.folder.service:FolderRestService
      * @description Rename a folder
-     * @param {string} folderPath The folder path to rename
-     * @param {string} newPath The new path
+     * @param {string} folderId The folder id to rename
+     * @param {string} newName The new name
      * @returns {Promise} The PUT promise
      */
-    function rename(folderPath, newPath) {
-        return $http.put(RestURLs.folderUrl + '/rename?path=' + encodeURIComponent(folderPath) + '&newPath=' + encodeURIComponent(newPath));
+    function rename(folderId, newName) {
+        return $http.put(`${RestURLs.folderUrl}/${encodeURIComponent(folderId)}/name`, newName);
     }
 
     /**
      * @ngdoc method
-     * @name search
+     * @name tree
      * @methodOf data-prep.services.folder.service:FolderRestService
-     * @description Search folders with a part of the name
-     * @param {string} query The part of the name to search
+     * @description Get the whole folder tree
      * @returns {Promise} The GET promise
      */
-    function search(query) {
-        const url = query ?
-            `${RestURLs.folderUrl}/search?pathName=${encodeURIComponent(query)}`:
-            `${RestURLs.folderUrl}/search`;
-        return $http.get(url).then((res) => res.data);
+    function tree() {
+        return $http.get(`${RestURLs.folderUrl}/tree`).then((res) => res.data); 
+    }
+
+    /**
+     * @ngdoc method
+     * @name getById
+     * @methodOf data-prep.services.folder.service:FolderRestService
+     * @description Get the folder metadata with its hierarchy
+     * @param {string} id the folder id
+     * @returns {Promise} The GET promise
+     */
+    function getById(id) {
+        return $http.get(`${RestURLs.folderUrl}/${id}`).then((res) => res.data);
     }
 }

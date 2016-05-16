@@ -42,7 +42,7 @@ export default class PreparationHeaderCtrl {
         this.StateService.setPreparationsSort(sortType);
         this.StorageService.setPreparationsSort(sortType.id);
 
-        return this.FolderService.refreshContent(this.state.inventory.folder.metadata.path)
+        return this.FolderService.refresh(this.state.inventory.folder.metadata.id)
             .catch(() => {
                 this.StateService.setPreparationsSort(oldSort);
                 this.StorageService.setPreparationsSort(oldSort.id);
@@ -62,7 +62,7 @@ export default class PreparationHeaderCtrl {
         this.StateService.setPreparationsOrder(order);
         this.StorageService.setPreparationsOrder(order.id);
 
-        return this.FolderService.refreshContent(this.state.inventory.folder.metadata.path)
+        return this.FolderService.refresh(this.state.inventory.folder.metadata.id)
             .catch(() => {
                 this.StateService.setPreparationsOrder(oldOrder);
                 this.StorageService.setPreparationsOrder(oldOrder.id);
@@ -77,9 +77,8 @@ export default class PreparationHeaderCtrl {
      * @param {string} folderName The new folder name
      */
     createFolder(folderName) {
-        const currentFolderPath = this.state.inventory.folder.metadata.path;
-        const pathToCreate = `${currentFolderPath}/${folderName}`;
-        return this.FolderService.create(pathToCreate)
-            .then(() => { this.FolderService.refreshContent(this.state.inventory.folder.metadata.path) });
+        const currentFolderId = this.state.inventory.folder.metadata.id;
+        return this.FolderService.create(currentFolderId, folderName)
+            .then(() => { this.FolderService.refresh(this.state.inventory.folder.metadata.id) });
     }
 }

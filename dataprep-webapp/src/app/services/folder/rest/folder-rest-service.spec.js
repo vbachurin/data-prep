@@ -24,28 +24,16 @@ describe('Folder Rest Service', () => {
     }));
 
     describe('children', () => {
-        it('should call get root\'s children when there is no provided path', inject(($rootScope, FolderRestService, RestURLs) => {
-            //given
-            $httpBackend
-                .expectGET(RestURLs.folderUrl)
-                .respond(200);
-
-            //when
-            FolderRestService.children();
-            $httpBackend.flush();
-            $rootScope.$digest();
-        }));
-
         it('should call get folder\'s children', inject(($rootScope, FolderRestService, RestURLs) => {
             //given
-            const path = '/foo/bar';
+            const folderId = 'L215L2ZvbGRlcg==';
 
             $httpBackend
-                .expectGET(RestURLs.folderUrl + '?path=' + encodeURIComponent(path))
+                .expectGET(`${RestURLs.folderUrl}?parentId=${encodeURIComponent(folderId)}`)
                 .respond(200);
 
             //when
-            FolderRestService.children(path);
+            FolderRestService.children(folderId);
             $httpBackend.flush();
             $rootScope.$digest();
         }));
@@ -54,58 +42,47 @@ describe('Folder Rest Service', () => {
     describe('create', () => {
         it('should call create folder', inject(($rootScope, FolderRestService, RestURLs) => {
             //given
-            const path = '/foo/bar';
+            const parentId = 'L215L2ZvbGRlcg==';
+            const path = 'toto';
 
             $httpBackend
-                .expectPUT(RestURLs.folderUrl + '?path=' + encodeURIComponent(path))
+                .expectPUT(`${RestURLs.folderUrl}?parentId=${encodeURIComponent(parentId)}&path=${path}`)
                 .respond(200);
 
             //when
-            FolderRestService.create(path);
+            FolderRestService.create(parentId, path);
             $httpBackend.flush();
             $rootScope.$digest();
         }));
     });
 
     describe('content', () => {
-        it('should get root folder content when there is no provided path', inject(($rootScope, FolderRestService, RestURLs) => {
-            //given
-            $httpBackend
-                .expectGET(RestURLs.folderUrl + '/preparations?folder=%2F')
-                .respond(200);
-
-            //when
-            FolderRestService.getContent();
-            $httpBackend.flush();
-            $rootScope.$digest();
-        }));
-
         it('should get folder content', inject(($rootScope, FolderRestService, RestURLs) => {
             //given
-            const folderPath = 'toto';
+            const folderId = 'L215L2ZvbGRlcg==';
 
             $httpBackend
-                .expectGET(RestURLs.folderUrl + '/preparations?folder=toto')
+                .expectGET(`${RestURLs.folderUrl}/${encodeURIComponent(folderId)}/preparations`)
                 .respond(200);
 
             //when
-            FolderRestService.getContent(folderPath);
+            FolderRestService.getContent(folderId);
             $httpBackend.flush();
             $rootScope.$digest();
         }));
 
         it('should get folder content with sort and order', inject(($rootScope, FolderRestService, RestURLs) => {
             //given
-            const folderPath = 'toto';
+            const folderId = 'L215L2ZvbGRlcg==';
             const sort = 'name';
             const order = 'asc';
 
             $httpBackend
-                .expectGET(RestURLs.folderUrl + '/preparations?folder=toto&sort=name&order=asc')
+                .expectGET(`${RestURLs.folderUrl}/${encodeURIComponent(folderId)}/preparations?sort=name&order=asc`)
                 .respond(200);
 
             //when
-            FolderRestService.getContent(folderPath, sort, order);
+            FolderRestService.getContent(folderId, sort, order);
             $httpBackend.flush();
             $rootScope.$digest();
         }));
@@ -114,13 +91,13 @@ describe('Folder Rest Service', () => {
     describe('remove', () => {
         it('should call remove', inject(($rootScope, FolderRestService, RestURLs) => {
             //given
-            const folderPath = 'the beer';
+            const folderId = 'L215L2ZvbGRlcg==';
             $httpBackend
-                .expectDELETE(RestURLs.folderUrl + '?path=' + encodeURIComponent(folderPath))
+                .expectDELETE(`${RestURLs.folderUrl}/${encodeURIComponent(folderId)}`)
                 .respond(200);
 
             //when
-            FolderRestService.remove(folderPath);
+            FolderRestService.remove(folderId);
             $httpBackend.flush();
             $rootScope.$digest();
         }));
@@ -129,39 +106,13 @@ describe('Folder Rest Service', () => {
     describe('rename', () => {
         it('should call rename', inject(($rootScope, FolderRestService, RestURLs) => {
             //given
+            const folderId = 'L215L2ZvbGRlcg==';
             $httpBackend
-                .expectPUT(RestURLs.folderUrl + '/rename?path=foo&newPath=beer')
+                .expectPUT(`${RestURLs.folderUrl}/${encodeURIComponent(folderId)}/name`, 'beer')
                 .respond(200);
 
             //when
-            FolderRestService.rename('foo', 'beer');
-            $httpBackend.flush();
-            $rootScope.$digest();
-        }));
-    });
-
-    describe('search', () => {
-        it('should search with no folder name', inject(($rootScope, FolderRestService, RestURLs) => {
-            //given
-            $httpBackend
-                .expectGET(RestURLs.folderUrl + '/search')
-                .respond(200);
-
-            //when
-            FolderRestService.search();
-            $httpBackend.flush();
-            $rootScope.$digest();
-        }));
-
-        it('should call search with the provided folder path', inject(($rootScope, FolderRestService, RestURLs) => {
-            //given
-            const path = '/foo/bar';
-            $httpBackend
-                .expectGET(RestURLs.folderUrl + '/search?pathName=' + encodeURIComponent(path))
-                .respond(200);
-
-            //when
-            FolderRestService.search(path);
+            FolderRestService.rename(folderId, 'beer');
             $httpBackend.flush();
             $rootScope.$digest();
         }));

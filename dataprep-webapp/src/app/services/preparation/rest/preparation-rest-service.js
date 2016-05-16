@@ -96,13 +96,14 @@ export default function PreparationRestService($http, RestURLs) {
      * @methodOf data-prep.services.preparation.service:PreparationRestService
      * @param {string} datasetId The dataset id
      * @param {string} name The preparation name
+     * @param {string} folderId The destination folder id
      * @description Create a new preparation
      * @returns {promise} The POST promise
      */
-    function create(datasetId, name) {
+    function create(datasetId, name, folderId) {
         const request = {
             method: 'POST',
-            url: RestURLs.preparationUrl,
+            url: `${RestURLs.preparationUrl}?folder=${folderId}`,
             data: {
                 name: name,
                 dataSetId: datasetId,
@@ -117,15 +118,15 @@ export default function PreparationRestService($http, RestURLs) {
      * @name copy
      * @methodOf data-prep.services.preparation.service:PreparationRestService
      * @param {string} preparationId The preparation id
-     * @param {string} folderPath The destination folder path
+     * @param {string} folderId The destination folder id
      * @param {string} name The preparation name
      * @description Copy the preparation
      * @returns {promise} The POST promise
      */
-    function copy(preparationId, folderPath, name) {
+    function copy(preparationId, folderId, name) {
         const request = {
             method: 'POST',
-            url: `${RestURLs.preparationUrl}/${preparationId}/copy?destination=${encodeURIComponent(folderPath)}&newName=${encodeURIComponent(name)}`,
+            url: `${RestURLs.preparationUrl}/${preparationId}/copy?destination=${encodeURIComponent(folderId)}&newName=${encodeURIComponent(name)}`,
         };
         return $http(request).then((resp) => resp.data);
     }
@@ -135,15 +136,15 @@ export default function PreparationRestService($http, RestURLs) {
      * @name move
      * @methodOf data-prep.services.preparation.service:PreparationRestService
      * @param {string} preparationId The preparation id
-     * @param {string} fromPath The origin folder path
-     * @param {string} folderPath The destination folder path
+     * @param {string} fromFolderId The origin folder path
+     * @param {string} toFolderId The destination folder path
      * @param {string} name The preparation name
      * @description Move the preparation
      * @returns {promise} The PUT promise
      */
-    function move(preparationId, fromPath, folderPath, name) {
-        const origin = encodeURIComponent(fromPath);
-        const destination = encodeURIComponent(folderPath);
+    function move(preparationId, fromFolderId, toFolderId, name) {
+        const origin = encodeURIComponent(fromFolderId);
+        const destination = encodeURIComponent(toFolderId);
         const newName = encodeURIComponent(name);
         const request = {
             method: 'PUT',

@@ -178,10 +178,10 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
         let operation;
 
         const prepId = state.playground.preparation.id;
-        const destinationPath = vm.destinationFolder.path;
+        const destinationId = vm.destinationFolder.id;
         const cleanName = vm.state.playground.preparationName.trim();
-        if (destinationPath) {
-            operation = PreparationService.move(prepId, '', destinationPath, cleanName)
+        if(destinationId !== state.inventory.homeFolderId) {
+            operation = PreparationService.move(prepId, state.inventory.homeFolderId, destinationId, cleanName)
         }
         else {
             operation = PreparationService.setName(prepId, cleanName);

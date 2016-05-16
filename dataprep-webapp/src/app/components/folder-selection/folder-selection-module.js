@@ -20,10 +20,12 @@
  */
 
 import FolderSelection from './folder-selection-component';
-import FolderItem from './folder-item/folder-item-component';
+import FolderTreeComponent from './folder-tree/folder-tree-component';
+import FolderTreeNodeComponent from './folder-tree-node/folder-tree-node-component';
 
 (() => {
     angular.module('data-prep.folder-selection', ['data-prep.services.folder'])
-        .component('folderItem', FolderItem)
+        .component('folderTreeNode', FolderTreeNodeComponent)
+        .component('folderTree', FolderTreeComponent)
         .component('folderSelection', FolderSelection);
 })();

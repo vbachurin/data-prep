@@ -1,0 +1,29 @@
+<!--
+  ~ ============================================================================
+  ~
+  ~  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+  ~
+  ~  This source code is available under agreement available at
+  ~  https://github.com/Talend/data-prep/blob/master/LICENSE
+  ~
+  ~  You should have received a copy of the agreement
+  ~  along with this program; if not, write to Talend SA
+  ~  9 rue Pages 92150 Suresnes, France
+  ~
+  ~ ============================================================================
+  -->
+
+<folder-tree-node name="$ctrl.node.folder.name"
+                  level="$ctrl.level"
+                  is-opened="$ctrl.node.folder.opened"
+                  has-children="$ctrl.node.children.length"
+                  is-selected="$ctrl.node.folder.selected"
+                  on-toggle="$ctrl.onToggle({node: $ctrl.node})"
+                  on-select="$ctrl.onSelect({node: $ctrl.node})"></folder-tree-node>
+
+<folder-tree ng-if="$ctrl.node.children.length && $ctrl.node.folder.opened"
+             ng-repeat="child in $ctrl.node.children track by child.folder.id"
+             node="child"
+             level="$ctrl.level + 1"
+             on-toggle="$ctrl.onToggle({node: node})"
+             on-select="$ctrl.onSelect({node: node})"></folder-tree>

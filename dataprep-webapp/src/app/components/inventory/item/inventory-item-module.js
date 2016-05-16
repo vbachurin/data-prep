@@ -12,7 +12,7 @@
   ============================================================================*/
 
 import InventoryItemCtrl from './inventory-item-controller';
-import InventoryItem from './inventory-item-directive';
+import InventoryItemComponent from './inventory-item-component';
 
 (() => {
     'use strict';
@@ -32,5 +32,5 @@ import InventoryItem from './inventory-item-directive';
             'data-prep.services.utils'
         ])
         .controller('InventoryItemCtrl', InventoryItemCtrl)
-        .directive('inventoryItem', InventoryItem);
+        .component('inventoryItem', InventoryItemComponent);
 })();

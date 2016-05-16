@@ -11,18 +11,17 @@
 
  ============================================================================*/
 
-import FolderCtrl from './folder-controller';
-import Folder from './folder-directive';
+const FolderTreeNodeComponent = {
+    bindings: {
+        name: '<',
+        level: '<',
+        isOpened: '<',
+        hasChildren: '<',
+        isSelected: '<',
+        onToggle: '&',
+        onSelect: '&',
+    },
+    templateUrl: 'app/components/folder-selection/folder-tree-node/folder-tree-node.html'
+};
 
-(() => {
-    'use strict';
-
-    angular.module('data-prep.folder',
-        [
-            'data-prep.services.state',
-            'data-prep.services.folder',
-            'ui.router',
-        ])
-        .controller('FolderCtrl', FolderCtrl)
-        .directive('folder', Folder);
-})();
+export default FolderTreeNodeComponent;

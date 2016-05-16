@@ -124,9 +124,11 @@ export function StateService(RouteStateService, routeState, //
         setDatasetsOrder: InventoryStateService.setDatasetsOrder,
         setPreparationsSort: InventoryStateService.setPreparationsSort,
         setPreparationsOrder: InventoryStateService.setPreparationsOrder,
+        setHomeFolderId: InventoryStateService.setHomeFolderId,
 
         setFolder: InventoryStateService.setFolder,
-        setMenuChildren: InventoryStateService.setMenuChildren,
+        setBreadcrumb: InventoryStateService.setBreadcrumb,
+        setBreadcrumbChildren: InventoryStateService.setBreadcrumbChildren,
 
         //feedback
         showFeedback: FeedbackStateService.show,

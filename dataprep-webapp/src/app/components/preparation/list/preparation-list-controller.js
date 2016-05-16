@@ -60,7 +60,7 @@ export default class PreparationListCtrl {
             })
             .then(() => this.PreparationService.delete(preparation))
             .then(() => {
-                this.FolderService.refreshContent(this.state.inventory.folder.metadata.path)
+                this.FolderService.refresh(this.state.inventory.folder.metadata.id)
             })
             .then(() => {
                 this.MessageService.success(
@@ -84,7 +84,7 @@ export default class PreparationListCtrl {
         if (cleanName) {
             return this.PreparationService.setName(preparation.id, newName)
                 .then(() => {
-                    this.FolderService.refreshContent(this.state.inventory.folder.metadata.path)
+                    this.FolderService.refresh(this.state.inventory.folder.metadata.id)
                 })
                 .then(() => {
                     this.MessageService.success(
@@ -117,7 +117,7 @@ export default class PreparationListCtrl {
      * @description Trigger backend call to clone preparation
      */
     copy(preparation, destination, name) {
-        return this.PreparationService.copy(preparation.id, destination.path, name)
+        return this.PreparationService.copy(preparation.id, destination.id, name)
             .then(() => {
                 this.MessageService.success(
                     'PREPARATION_COPYING_SUCCESS_TITLE',
@@ -125,7 +125,7 @@ export default class PreparationListCtrl {
                 );
             })
             .then(() => {
-                this.FolderService.refreshContent(this.state.inventory.folder.metadata.path)
+                this.FolderService.refresh(this.state.inventory.folder.metadata.id)
             })
             .then(() => {
                 this.copyMoveModal = false
@@ -142,8 +142,8 @@ export default class PreparationListCtrl {
      * @description Trigger backend call to clone preparation
      */
     move(preparation, destination, name) {
-        const currentPath = this.state.inventory.folder.metadata.path;
-        return this.PreparationService.move( preparation.id, currentPath, destination.path, name)
+        const currentId = this.state.inventory.folder.metadata.id;
+        return this.PreparationService.move(preparation.id, currentId, destination.id, name)
             .then(() => {
                 this.MessageService.success(
                     'PREPARATION_MOVING_SUCCESS_TITLE',
@@ -151,7 +151,7 @@ export default class PreparationListCtrl {
                 );
             })
             .then(() => {
-                this.FolderService.refreshContent(currentPath)
+                this.FolderService.refresh(currentId)
             })
             .then(() => {
                 this.copyMoveModal = false
@@ -169,7 +169,7 @@ export default class PreparationListCtrl {
      * @param {object} folder The target folder
      */
     goToFolder(folder) {
-        this.$state.go('nav.index.preparations', { folderPath: folder.path });
+        this.$state.go('nav.index.preparations', { folderId: folder.id });
     }
 
     /**
@@ -178,17 +178,12 @@ export default class PreparationListCtrl {
      * @methodOf data-prep.preparation.controller:PreparationListCtrl
      * @description Rename a folder
      * @param {object} folder the folder to rename
-     * @param {string} newName the new last part of the path
+     * @param {string} newName the new name
      */
     renameFolder(folder, newName) {
-        const path = folder.path;
-        const lastSlashIndex = path.lastIndexOf('/');
-        const parentFolder = path.substring(0, lastSlashIndex);
-        const newPath = `${parentFolder}/${newName}`;
-
-        this.FolderService.rename(path, newPath)
+        this.FolderService.rename(folder.id, newName)
             .then(() => {
-                this.FolderService.refreshContent(this.state.inventory.folder.metadata.path)
+                this.FolderService.refresh(this.state.inventory.folder.metadata.id)
             });
     }
 
@@ -200,9 +195,9 @@ export default class PreparationListCtrl {
      * @param {object} folder The folder to remove
      */
     removeFolder(folder) {
-        this.FolderService.remove(folder.path)
+        this.FolderService.remove(folder.id)
             .then(() => {
-                this.FolderService.refreshContent(this.state.inventory.folder.metadata.path)
+                this.FolderService.refresh(this.state.inventory.folder.metadata.id)
             });
     }
 }

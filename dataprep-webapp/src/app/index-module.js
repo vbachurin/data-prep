@@ -83,22 +83,23 @@
                                     DatasetService.init(),
                                     PreparationService.refreshPreparations(),
                                 ]);
-                            },
                         },
-                    })
-                    .state('nav.index.preparations', {
-                        url: '/preparations/{folderPath:.*}',
-                        views: {
-                            'home-content-header': {template: '<preparation-header></preparation-header>'},
-                            'home-content': {template: '<preparation-list></preparation-list>'},
+                    },
+                })
+                .state('nav.index.preparations', {
+                    url: '/preparations/{folderId:.*}',
+                    views: {
+                        'home-content-header': { template: '<preparation-header></preparation-header>' },
+                        'home-content': { template: '<preparation-list></preparation-list>' },
+                    },
+                    resolve: {
+                        inventory: ($stateParams, FolderService) => {
+                            'ngInject';
+                            const folderId = $stateParams.folderId || undefined;
+                            return FolderService.init(folderId);
                         },
-                        resolve: {
-                            inventory: ($stateParams, FolderService) => {
-                                'ngInject';
-                                return FolderService.init($stateParams.folderPath);
-                            },
-                        },
-                    })
+                    },
+                })
 
                     .state('playground', {
                         url: '/playground',

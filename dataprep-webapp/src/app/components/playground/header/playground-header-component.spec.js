@@ -139,7 +139,7 @@ describe('Playground header component', () => {
             expect(element.find('#playground-left-header').eq(0)[0].hasAttribute('insertion-playground-left-header')).toBe(true);
         });
 
-        it('should dataset parameters toggle button looks inactive by default', function () {
+        it('should dataset parameters toggle button looks inactive by default', () => {
             //given
             createElement();
 
@@ -150,7 +150,7 @@ describe('Playground header component', () => {
             expect(playgroundGearIcon.hasClass('pressed')).toBe(false);
         });
 
-        it('should dataset parameters toggle button looks active when its panel is shown', function () {
+        it('should dataset parameters toggle button looks active when its panel is shown', () => {
             //given
             scope.parametersVisible = true;
             createElement();
@@ -163,7 +163,7 @@ describe('Playground header component', () => {
             expect(playgroundGearIcon.hasClass('pressed')).toBe(true);
         });
 
-        it('should call parameters callback', function () {
+        it('should call parameters callback', () => {
             //given
             scope.onParameters = jasmine.createSpy('onParameters');
             createElement();
@@ -176,8 +176,8 @@ describe('Playground header component', () => {
         });
     });
 
-    describe('right header', function() {
-        it('should lookup toggle button looks inactive by default', function () {
+    describe('right header', () => {
+        it('should lookup toggle button looks inactive by default', () => {
             //given
             createElement();
 
@@ -188,7 +188,7 @@ describe('Playground header component', () => {
             expect(playgroundLookupIcon.hasClass('pressed')).toBe(false);
         });
 
-        it('should lookup toggle button looks active when its panel is shown', function () {
+        it('should lookup toggle button looks active when its panel is shown', () => {
             //given
             scope.lookupVisible = true;
             createElement();
@@ -201,7 +201,7 @@ describe('Playground header component', () => {
             expect(playgroundLookupIcon.hasClass('pressed')).toBe(true);
         });
 
-        it('should call lookup callback', function () {
+        it('should call lookup callback', () => {
             //given
             scope.onLookup = jasmine.createSpy('onLookup');
             createElement();

@@ -11,65 +11,53 @@
 
   ============================================================================*/
 
-// Folders
-
-.breadcrumb {
+breadcrumb {
   @include display(flex);
   @include align-items(center);
   @include flex-wrap(nowrap);
-  //margin: 8px 0px 15px 0px;
-  //text-align: left;
+}
 
-  > ul {
-    @include display(flex);
-    @include align-items(center);
-    @include flex-wrap(nowrap);
-  }
+.breadcrumb-item {
+  @include flex-grow(0);
+  @include flex-shrink(0);
 
-  .folder-name {
+  @include display(flex);
+  @include align-items(center);
+
+  .name {
     @include ellipsis(300px);
-    color: initial;
+    cursor: pointer;
     text-transform: uppercase;
 
     &:hover {
-      color: $dark-blue;
+      color: $wave-dark;
       text-decoration: underline;
     }
   }
 
-  .folder-item {
-    @include display(flex);
-    @include align-items(center);
-    margin-right: 10px;
-
-    .sc-dropdown-trigger {
-      padding: 0;
-    }
-
-    &:after {
-      border-color: $dark-gray;
-      border-style: solid;
-      border-width: 2px 2px 0 0;
-      height: 14px;
-      width: 14px;
-      transform: rotate(45deg);
-      content: '';
-      display: block;
-      margin: auto;
-    }
-
-    &:last-child:after {
-      border: none;
-    }
+  &:after {
+    border-color: $discrete-dark;
+    border-style: solid;
+    border-width: 2px 2px 0 0;
+    height: 1em;
+    width: 1em;
+    transform: rotate(45deg);
+    content: '';
+    display: block;
+    margin: 0 1em;
   }
 
-  .folder-item-child {
+  &:last-child:after {
+    border: none;
+  }
+
+  .breadcrumb-item-child {
     cursor: pointer;
     text-transform: uppercase;
     min-width: 50px;
 
     &:hover {
-      background-color: $light-gray;
+      background-color: $discrete-light;
     }
   }
 
@@ -77,4 +65,3 @@
     opacity: 0.4;
   }
 }
-

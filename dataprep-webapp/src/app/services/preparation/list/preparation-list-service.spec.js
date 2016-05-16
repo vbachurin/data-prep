@@ -14,7 +14,8 @@
 describe('Preparation list service', () => {
     'use strict';
 
-    let preparations, stateMock;
+    let preparations;
+    let stateMock;
     const createdPreparationId = '54d85af494e1518bec54546';
 
     function initPreparations() {
@@ -138,12 +139,12 @@ describe('Preparation list service', () => {
         initPreparations();
 
         spyOn(PreparationRestService, 'create').and.returnValue($q.when({data: createdPreparationId}));
-        spyOn(PreparationRestService, 'update').and.returnValue($q.when(true));
-        spyOn(PreparationRestService, 'delete').and.returnValue($q.when(true));
-        spyOn(PreparationRestService, 'copy').and.returnValue($q.when(true));
-        spyOn(PreparationRestService, 'move').and.returnValue($q.when(true));
-        spyOn(PreparationRestService, 'updateStep').and.returnValue($q.when(true));
-        spyOn(PreparationRestService, 'appendStep').and.returnValue($q.when(true));
+        spyOn(PreparationRestService, 'update').and.returnValue($q.when());
+        spyOn(PreparationRestService, 'delete').and.returnValue($q.when());
+        spyOn(PreparationRestService, 'copy').and.returnValue($q.when());
+        spyOn(PreparationRestService, 'move').and.returnValue($q.when());
+        spyOn(PreparationRestService, 'updateStep').and.returnValue($q.when());
+        spyOn(PreparationRestService, 'appendStep').and.returnValue($q.when());
 
         spyOn(StateService, 'setPreparations').and.returnValue();
         spyOn(StateService, 'removePreparation').and.returnValue();
@@ -230,10 +231,10 @@ describe('Preparation list service', () => {
             stateMock.inventory.preparations = preparations;
 
             //when
-            PreparationListService.create('84ab54cd867f4645a', 'my preparation');
+            PreparationListService.create('84ab54cd867f4645a', 'my preparation', 'L215L3BlcnNvbmFsL2ZvbGRlcg==');
 
             //then
-            expect(PreparationRestService.create).toHaveBeenCalledWith('84ab54cd867f4645a', 'my preparation');
+            expect(PreparationRestService.create).toHaveBeenCalledWith('84ab54cd867f4645a', 'my preparation', 'L215L3BlcnNvbmFsL2ZvbGRlcg==');
         }));
 
         it('should return created preparation id', inject(($rootScope, PreparationListService) => {
@@ -245,7 +246,7 @@ describe('Preparation list service', () => {
             stateMock.inventory.preparations = preparations;
 
             //when
-            PreparationListService.create(datasetId, 'my preparation')
+            PreparationListService.create(datasetId, 'my preparation', 'L215L3BlcnNvbmFsL2ZvbGRlcg==')
                 .then((prep) => result = prep);
             stateMock.inventory.preparations.push(createdPreparation); //simulate the preparation refresh after creation
             $rootScope.$digest();
@@ -259,7 +260,7 @@ describe('Preparation list service', () => {
             stateMock.inventory.preparations = preparations;
 
             //when
-            PreparationListService.create('84ab54cd867f4645a', 'my preparation');
+            PreparationListService.create('84ab54cd867f4645a', 'my preparation', 'L215L3BlcnNvbmFsL2ZvbGRlcg==');
             $rootScope.$digest();
 
             //then

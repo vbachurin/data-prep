@@ -33,7 +33,7 @@ describe('Preparation Header controller', () => {
                 preparationsSort: sortList[0],
                 preparationsOrder: orderList[0],
                 folder: {
-                    metadata: { path: '/my/folder' }
+                    metadata: { id: 'L215L2ZvbGRlcg==', path: '/my/folder' }
                 },
             }
         };
@@ -57,7 +57,7 @@ describe('Preparation Header controller', () => {
             const ctrl = createController();
             const sortType = sortList[1];
 
-            spyOn(FolderService, 'refreshContent').and.returnValue($q.when());
+            spyOn(FolderService, 'refresh').and.returnValue($q.when());
             expect(StateService.setPreparationsSort).not.toHaveBeenCalled();
 
             //when
@@ -72,7 +72,7 @@ describe('Preparation Header controller', () => {
             const ctrl = createController();
             const sortType = sortList[1];
 
-            spyOn(FolderService, 'refreshContent').and.returnValue($q.when());
+            spyOn(FolderService, 'refresh').and.returnValue($q.when());
             expect(StorageService.setPreparationsSort).not.toHaveBeenCalled();
 
             //when
@@ -87,13 +87,13 @@ describe('Preparation Header controller', () => {
             const ctrl = createController();
             const sortType = sortList[1];
 
-            spyOn(FolderService, 'refreshContent').and.returnValue($q.when());
+            spyOn(FolderService, 'refresh').and.returnValue($q.when());
 
             //when
             ctrl.updateSortBy(sortType);
 
             //then
-            expect(FolderService.refreshContent).toHaveBeenCalledWith('/my/folder');
+            expect(FolderService.refresh).toHaveBeenCalledWith('L215L2ZvbGRlcg==');
         }));
 
         it('should set back old sort in state when folder refresh fails', inject(($q, StateService, FolderService) => {
@@ -102,7 +102,7 @@ describe('Preparation Header controller', () => {
             const sortType = sortList[1];
             const oldSortType = stateMock.inventory.preparationsSort;
 
-            spyOn(FolderService, 'refreshContent').and.returnValue($q.reject());
+            spyOn(FolderService, 'refresh').and.returnValue($q.reject());
             expect(StateService.setPreparationsSort).not.toHaveBeenCalledWith(oldSortType);
 
             //when
@@ -120,7 +120,7 @@ describe('Preparation Header controller', () => {
             const sortType = sortList[1];
             const oldSortType = stateMock.inventory.preparationsSort;
 
-            spyOn(FolderService, 'refreshContent').and.returnValue($q.reject());
+            spyOn(FolderService, 'refresh').and.returnValue($q.reject());
             expect(StorageService.setPreparationsSort).not.toHaveBeenCalledWith(oldSortType.id);
 
             //when
@@ -139,7 +139,7 @@ describe('Preparation Header controller', () => {
             const ctrl = createController();
             const sortOrder = orderList[1];
 
-            spyOn(FolderService, 'refreshContent').and.returnValue($q.when());
+            spyOn(FolderService, 'refresh').and.returnValue($q.when());
             expect(StateService.setPreparationsOrder).not.toHaveBeenCalled();
 
             //when
@@ -154,7 +154,7 @@ describe('Preparation Header controller', () => {
             const ctrl = createController();
             const sortOrder = orderList[1];
 
-            spyOn(FolderService, 'refreshContent').and.returnValue($q.when());
+            spyOn(FolderService, 'refresh').and.returnValue($q.when());
             expect(StorageService.setPreparationsOrder).not.toHaveBeenCalled();
 
             //when
@@ -169,13 +169,13 @@ describe('Preparation Header controller', () => {
             const ctrl = createController();
             const sortOrder = orderList[1];
 
-            spyOn(FolderService, 'refreshContent').and.returnValue($q.when());
+            spyOn(FolderService, 'refresh').and.returnValue($q.when());
 
             //when
             ctrl.updateSortOrder(sortOrder);
 
             //then
-            expect(FolderService.refreshContent).toHaveBeenCalledWith('/my/folder');
+            expect(FolderService.refresh).toHaveBeenCalledWith('L215L2ZvbGRlcg==');
         }));
 
         it('should set back old sort order in state when folder refresh fails', inject(($q, StateService, FolderService) => {
@@ -184,7 +184,7 @@ describe('Preparation Header controller', () => {
             const sortOrder = orderList[1];
             const oldSortOrder = stateMock.inventory.preparationsOrder;
 
-            spyOn(FolderService, 'refreshContent').and.returnValue($q.reject());
+            spyOn(FolderService, 'refresh').and.returnValue($q.reject());
             expect(StateService.setPreparationsOrder).not.toHaveBeenCalledWith(oldSortOrder);
 
             //when
@@ -202,7 +202,7 @@ describe('Preparation Header controller', () => {
             const sortOrder = orderList[1];
             const oldSortOrder = stateMock.inventory.preparationsOrder;
 
-            spyOn(FolderService, 'refreshContent').and.returnValue($q.reject());
+            spyOn(FolderService, 'refresh').and.returnValue($q.reject());
             expect(StorageService.setPreparationsOrder).not.toHaveBeenCalledWith(oldSortOrder.id);
 
             //when
@@ -216,7 +216,7 @@ describe('Preparation Header controller', () => {
     });
 
     describe('create folder', () => {
-        it('should call create service with absolute folder path', inject(($q, FolderService) => {
+        it('should call create service', inject(($q, FolderService) => {
             //given
             const ctrl = createController();
             spyOn(FolderService, 'create').and.returnValue($q.when());
@@ -225,21 +225,21 @@ describe('Preparation Header controller', () => {
             ctrl.createFolder('toto');
 
             //then
-            expect(FolderService.create).toHaveBeenCalledWith('/my/folder/toto');
+            expect(FolderService.create).toHaveBeenCalledWith('L215L2ZvbGRlcg==', 'toto');
         }));
 
         it('should refresh folder content', inject(($q, FolderService) => {
             //given
             const ctrl = createController();
             spyOn(FolderService, 'create').and.returnValue($q.when());
-            spyOn(FolderService, 'refreshContent').and.returnValue($q.when());
+            spyOn(FolderService, 'refresh').and.returnValue($q.when());
 
             //when
             ctrl.createFolder('toto');
             scope.$digest();
 
             //then
-            expect(FolderService.refreshContent).toHaveBeenCalledWith('/my/folder');
+            expect(FolderService.refresh).toHaveBeenCalledWith('L215L2ZvbGRlcg==');
         }));
     });
 });

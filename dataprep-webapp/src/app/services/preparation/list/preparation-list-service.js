@@ -86,12 +86,13 @@ export default function PreparationListService(PreparationRestService, StateServ
      * @methodOf data-prep.services.preparation.service:PreparationListService
      * @param {string} datasetId The dataset id
      * @param {string} name The preparation name
+     * @param {string} folderId The destination folder id
      * @description Create a new preparation
      * @returns {promise} The POST promise
      */
-    function create(datasetId, name) {
+    function create(datasetId, name, folderId) {
         let createdPreparationId;
-        return PreparationRestService.create(datasetId, name)
+        return PreparationRestService.create(datasetId, name, folderId)
             .then((response) => createdPreparationId = response.data)
             .then(refreshPreparations)
             .then((preparations) => _.find(preparations, { id: createdPreparationId }));

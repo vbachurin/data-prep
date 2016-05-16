@@ -32,7 +32,7 @@ public class CORSConfiguration {
                 // Add CORS header for all path in application
                 registry.addMapping("/**") //
                         .allowedOrigins("*") //
-                        .allowedMethods("POST", "GET", "OPTIONS", "DELETE", "PUT") //
+                        .allowedMethods("POST", "GET", "OPTIONS", "DELETE", "PUT", "PATCH") //
                         .maxAge(3600) //
                         .allowedHeaders("x-requested-with", "Content-Type", "accept", "Authorization")
                         .exposedHeaders("Authorization")

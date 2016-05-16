@@ -13,70 +13,61 @@
   ~ ============================================================================
   -->
 
-<div class="inventory-item" ng-dblclick="inventoryItemCtrl.openInventoryItem()">
+<div class="inventory-item" ng-dblclick="$ctrl.openInventoryItem()">
+    <!-- Type icon -->
     <div class="inventory-icon"
-         title="{{inventoryItemCtrl.open ? ('OPEN_ACTION' | translate: inventoryItemCtrl.getTooltipContent()) : ''}}"
-         ng-switch="inventoryItemCtrl.type"
-         ng-click="inventoryItemCtrl.openInventoryItem()">
+         title="{{$ctrl.open ? ('OPEN_ACTION' | translate: $ctrl.getTooltipContent()) : ''}}"
+         ng-switch="$ctrl.type"
+         ng-click="$ctrl.openInventoryItem()">
 
-        <div ng-switch-when="dataset" ng-switch="inventoryItemCtrl.item.type">
+        <div ng-switch-when="dataset" ng-switch="$ctrl.item.type">
             <img src="/assets/images/inventory/csv_file.png" ng-switch-when="text/csv"/>
             <img src="/assets/images/inventory/xls_file.png" ng-switch-when="application/vnd.ms-excel"/>
             <img src="/assets/images/inventory/job_file.png" ng-switch-when="application/vnd.remote-ds.job"/>
             <img src="/assets/images/inventory/generic_file.png" ng-switch-default/>
-            <img ng-src="/assets/images/inventory/certification-{{inventoryItemCtrl.item.certificationStep | lowercase}}.png"
+            <img ng-src="/assets/images/inventory/certification-{{$ctrl.item.certificationStep | lowercase}}.png"
                  class="pin"
-                 ng-if="inventoryItemCtrl.item.certificationStep!='NONE'"/>
+                 ng-if="$ctrl.item.certificationStep!='NONE'"/>
         </div>
         <div class="preparation-icon-div" ng-switch-when="preparation" data-icon="c"></div>
         <div class="documentation-icon-div" ng-switch-when="documentation" data-icon="l"></div>
         <div ng-switch-when="folder"><img src="assets/images/folder/folder-icon.png"/></div>
     </div>
 
+    <!-- Descriptions -->
     <div class="inventory-text">
-        <talend-editable-text ng-if="inventoryItemCtrl.open && inventoryItemCtrl.rename"
-                              text="inventoryItemCtrl.item.name"
+        <talend-editable-text ng-if="$ctrl.open && $ctrl.rename"
+                              text="$ctrl.item.name"
                               text-class="inventory-title"
-                              text-title="{{'OPEN_ACTION' | translate: inventoryItemCtrl.getTooltipContent()}}"
-                              on-text-click="inventoryItemCtrl.openInventoryItem()"
-                              on-validate="inventoryItemCtrl.rename(inventoryItemCtrl.item, text)"
+                              text-title="{{'OPEN_ACTION' | translate: $ctrl.getTooltipContent()}}"
+                              on-text-click="$ctrl.openInventoryItem()"
+                              on-validate="$ctrl.rename($ctrl.item, text)"
                               validate-only-on-change>
         </talend-editable-text>
-        <span ng-if="!inventoryItemCtrl.open || !inventoryItemCtrl.rename"
+        <span ng-if="!$ctrl.open || !$ctrl.rename"
               class="inventory-title"
-              ng-bind-html="inventoryItemCtrl.item.name"
-              title="{{inventoryItemCtrl.item.tooltipName}}"></span>
+              ng-bind-html="$ctrl.item.name"
+              title="{{$ctrl.item.tooltipName}}"></span>
         <div class="inventory-description"
-             ng-bind-html="inventoryItemCtrl.details | translate:inventoryItemCtrl.item">
+             ng-bind-html="$ctrl.details | translate:$ctrl.item">
         </div>
     </div>
 
-    <!-- Draft actions icons -->
-    <div ng-if="inventoryItemCtrl.item.draft"
-         class="inventory-actions">
-        <a  ng-if="inventoryItemCtrl.remove"
-            data-icon="e"
-            class="btn-icon"
-            translate-once-title="DELETE_ACTION"
-            translate-values="{type: inventoryItemCtrl.type, name: inventoryItemCtrl.item.name}"
-            ng-click="inventoryItemCtrl.remove(inventoryItemCtrl.item)"></a>
-    </div>
-
-    <!-- Not draft actions icons -->
-    <div ng-if="!inventoryItemCtrl.item.draft" class="inventory-actions">
-        <talend-button-dropdown class="inventory-actions-related-item btn-icon"
+    <!-- Action Icons -->
+    <div class="inventory-actions" insertion-inventory-actions item="$ctrl.item" type="$ctrl.type">
+        <talend-button-dropdown ng-if="!$ctrl.item.draft && $ctrl.relatedInventories.length"
+                                class="inventory-actions-related-item btn-icon"
+                                button-action="$ctrl.openRelatedInventoryItem($ctrl.relatedInventories[0])"
                                 button-icon="c"
-                                button-action="inventoryItemCtrl.openRelatedInventoryItem(inventoryItemCtrl.relatedInventories[0])"
-                                ng-if="inventoryItemCtrl.relatedInventories.length"
-                                title="{{'OPEN_ACTION' | translate:inventoryItemCtrl.getTooltipContent()}}">
+                                title="{{'OPEN_ACTION' | translate:$ctrl.getTooltipContent()}}">
             <ul class="inventory-actions-related-item-menu"
-                ng-if="inventoryItemCtrl.relatedInventories.length">
-                <li ng-click="inventoryItemCtrl.open(inventoryItemCtrl.item)">
+                ng-if="$ctrl.relatedInventories.length">
+                <li ng-click="$ctrl.open($ctrl.item)">
                     <span data-icon="K" >&nbsp;</span>
                     <span class="dropdown-container-middle" translate-once="CREATE_NEW_PREP"></span>
                 </li>
-                <li ng-repeat="relatedItem in inventoryItemCtrl.relatedInventories track by $index"
-                    ng-click="inventoryItemCtrl.openRelatedInventoryItem(relatedItem)">
+                <li ng-repeat="relatedItem in $ctrl.relatedInventories track by $index"
+                    ng-click="$ctrl.openRelatedInventoryItem(relatedItem)">
                         <span class="inventory-actions-related-item-name" title="{{relatedItem.name}}">{{relatedItem.name}}</span>
                         <span >&nbsp;-&nbsp;</span>
                         <span translate-once="REL_INV_MODIFIED"></span>
@@ -88,48 +79,56 @@
         </talend-button-dropdown>
 
         <talend-file-selector
-                ng-if="inventoryItemCtrl.update && inventoryItemCtrl.item.type !== 'application/vnd.remote-ds.job'"
+                ng-if="!$ctrl.item.draft &&
+                        $ctrl.update &&
+                        $ctrl.item.type !== 'application/vnd.remote-ds.job'"
                 button-data-icon="E"
                 button-title="REPLACE_FILE_CONTENT"
-                file-model="inventoryItemCtrl.fileModel"
-                on-file-change="inventoryItemCtrl.update(inventoryItemCtrl.item)">
+                file-model="$ctrl.fileModel"
+                on-file-change="$ctrl.update($ctrl.item)">
         </talend-file-selector>
 
-        <div ng-if="((inventoryItemCtrl.update && inventoryItemCtrl.item.type !== 'application/vnd.remote-ds.job') ||
-                    (inventoryItemCtrl.relatedInventories)) && (inventoryItemCtrl.copy || inventoryItemCtrl.remove)"
+        <div ng-if="!$ctrl.item.draft &&
+                    (($ctrl.update && $ctrl.item.type !== 'application/vnd.remote-ds.job') || ($ctrl.relatedInventories)) &&
+                    ($ctrl.copy || $ctrl.remove)"
              class="divider">
         </div>
 
-        <a ng-if="inventoryItemCtrl.copy"
+        <a ng-if="!$ctrl.item.draft && $ctrl.copy"
            data-icon="B"
            class="btn-icon"
-           translate-once-title="{{inventoryItemCtrl.type === 'preparation' ? 'COPY_MOVE_ACTION' : 'COPY_TO_ACTION'}}"
-           translate-values="{type: inventoryItemCtrl.type, name: inventoryItemCtrl.item.name}"
-           ng-click="inventoryItemCtrl.copy(inventoryItemCtrl.item)"></a>
+           translate-once-title="{{$ctrl.type === 'preparation' ? 'COPY_MOVE_ACTION' : 'COPY_TO_ACTION'}}"
+           translate-values="{type: $ctrl.type, name: $ctrl.item.name}"
+           ng-click="$ctrl.copy($ctrl.item)"></a>
 
-        <a ng-if="inventoryItemCtrl.remove"
+        <a ng-if="$ctrl.remove"
            data-icon="e"
            class="btn-icon"
            translate-once-title="DELETE_ACTION"
-           translate-values="{type: inventoryItemCtrl.type, name: inventoryItemCtrl.item.name}"
-           ng-click="inventoryItemCtrl.remove(inventoryItemCtrl.item)"></a>
+           translate-values="{type: $ctrl.type, name: $ctrl.item.name}"
+           ng-click="$ctrl.remove($ctrl.item)"></a>
 
-        <div ng-if="(inventoryItemCtrl.copy || inventoryItemCtrl.remove) && (inventoryItemCtrl.processCertification || inventoryItemCtrl.toggleFavorite)"
+        <div ng-if="!$ctrl.item.draft &&
+                    ($ctrl.copy || $ctrl.remove) &&
+                    ($ctrl.processCertification || $ctrl.toggleFavorite)"
              class="divider">
         </div>
-        <a ng-if="inventoryItemCtrl.processCertification"
+
+        <a ng-if="!$ctrl.item.draft && $ctrl.processCertification"
            data-icon="n"
            class="btn-icon"
            translate-once-title="CERTIFY_ACTION"
-           translate-values="{type: inventoryItemCtrl.type, name: inventoryItemCtrl.item.name}"
-           ng-click="inventoryItemCtrl.processCertification(inventoryItemCtrl.item)"></a>
+           translate-values="{type: $ctrl.type, name: $ctrl.item.name}"
+           ng-click="$ctrl.processCertification($ctrl.item)"></a>
 
-        <a ng-if="inventoryItemCtrl.toggleFavorite && (inventoryItemCtrl.item.favorite !== undefined)"
+        <a ng-if="!$ctrl.item.draft &&
+                    $ctrl.toggleFavorite &&
+                    ($ctrl.item.favorite !== undefined)"
            data-icon="f"
            class="btn-icon favorite"
            translate-once-title="FAVORITE_ACTION"
-           translate-values="{type: inventoryItemCtrl.type, name: inventoryItemCtrl.item.name}"
-           ng-class="{'favorite-true':inventoryItemCtrl.item.favorite}"
-           ng-click="inventoryItemCtrl.toggleFavorite(inventoryItemCtrl.item)"></a>
+           translate-values="{type: $ctrl.type, name: $ctrl.item.name}"
+           ng-class="{'favorite-true':$ctrl.item.favorite}"
+           ng-click="$ctrl.toggleFavorite($ctrl.item)"></a>
     </div>
 </div>

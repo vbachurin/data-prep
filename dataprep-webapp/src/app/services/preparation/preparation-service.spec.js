@@ -15,6 +15,7 @@ describe('Preparation Service', () => {
     beforeEach(angular.mock.module('data-prep.services.preparation', ($provide) => {
         stateMock = {
             inventory: {
+                homeFolderId: 'LW==',
                 preparations: null
             }
         };
@@ -109,7 +110,7 @@ describe('Preparation Service', () => {
                 $rootScope.$digest();
 
                 //then
-                expect(PreparationListService.create).toHaveBeenCalledWith(datasetId, name);
+                expect(PreparationListService.create).toHaveBeenCalledWith(datasetId, name, stateMock.inventory.homeFolderId);
             }));
 
             it('should save aggregations for preparation from dataset aggregations', inject(($rootScope, PreparationService, StorageService) => {

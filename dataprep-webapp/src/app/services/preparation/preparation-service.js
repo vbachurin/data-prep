@@ -91,7 +91,7 @@ export default function PreparationService($q, $state, $stateParams, state, Stat
      * @returns {promise} The POST promise
      */
     function create(datasetId, name) {
-        return PreparationListService.create(datasetId, name)
+        return PreparationListService.create(datasetId, name, state.inventory.homeFolderId)
             .then((preparation) => {
                 //get all dataset aggregations per columns from localStorage and save them for the new preparation
                 StorageService.savePreparationAggregationsFromDataset(datasetId, preparation.id);

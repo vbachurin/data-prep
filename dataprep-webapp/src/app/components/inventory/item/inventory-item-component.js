@@ -1,20 +1,20 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
 
 /**
- * @ngdoc directive
- * @name data-prep.inventoryItem.directive:InventoryItem
- * @description This directive display an inventory item
+ * @ngdoc component
+ * @name data-prep.inventoryItem.component:InventoryItem
+ * @description This component display an inventory item
  * @restrict E
  *
  * @usage
@@ -50,28 +50,25 @@
  * @param {string}      type of the inventory item
  * @param {function}    update the inventory item with the given fileModel
  */
-export default function InventoryItem() {
-    return {
-        restrict: 'E',
-        templateUrl: 'app/components/inventory/item/inventory-item.html',
-        bindToController: true,
-        controllerAs: 'inventoryItemCtrl',
-        controller: 'InventoryItemCtrl',
-        scope: {
-            copy : '=',
-            details : '@',
-            fileModel : '=',
-            item : '=',
-            open : '=',
-            openRelatedInventory : '=',
-            processCertification : '=',
-            remove : '=',
-            rename : '=',
-            relatedInventories : '=',
-            relatedInventoriesType : '@',
-            toggleFavorite : '=',
-            type : '@',
-            update : '='
-        }
-    };
-}
+const InventoryItemcomponent = {
+    templateUrl: 'app/components/inventory/item/inventory-item.html',
+    controller: 'InventoryItemCtrl',
+    bindings: {
+        copy: '=',
+        details: '@',
+        fileModel: '=',
+        item: '=',
+        open: '=',
+        openRelatedInventory: '=',
+        processCertification: '=',
+        remove: '=',
+        rename: '=',
+        relatedInventories: '=',
+        relatedInventoriesType: '@',
+        toggleFavorite: '=',
+        type: '@',
+        update: '='
+    }
+};
+
+export default InventoryItemcomponent; 

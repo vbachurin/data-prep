@@ -23,8 +23,9 @@ const orderList = [
     { id: 'desc', name: 'DESC_ORDER' }
 ];
 
-const ROOT_FOLDER = {
-    path: '',
+const HOME_FOLDER = {
+    id: 'Lw==',
+    path: '/',
     name: 'Home'
 };
 
@@ -38,16 +39,17 @@ export const inventoryState = {
     datasetsOrder: orderList[1],
     preparationsSort: sortList[1],
     preparationsOrder: orderList[1],
-
+    
+    homeFolderId: HOME_FOLDER.id,
     folder: {
-        metadata: ROOT_FOLDER,
+        metadata: HOME_FOLDER,
         content: {
             folders: [],
             preparations: [],
         },
     },
-    folderStack: [],
-    menuChildren: [],
+    breadcrumb: [],
+    breadcrumbChildren: {},
 };
 
 
@@ -60,8 +62,10 @@ export function InventoryStateService() {
         removeDataset: removeDataset,
         setDatasetName: setDatasetName,
 
+        setHomeFolderId: setHomeFolderId,
         setFolder: setFolder,
-        setMenuChildren: setMenuChildren,
+        setBreadcrumb: setBreadcrumb, 
+        setBreadcrumbChildren: setBreadcrumbChildren,
 
         setDatasetsSort: setDatasetsSort,
         setDatasetsOrder: setDatasetsOrder,
@@ -178,34 +182,45 @@ export function InventoryStateService() {
 
     /**
      * @ngdoc method
-     * @name setFolder
+     * @name setHomeFolderId
      * @methodOf data-prep.services.state.service:InventoryStateService
-     * @param {string} path The folder path
-     * @param {object} content The folder content
+     * @param {string} homeFolderId The home folder id
      */
-    function setFolder(path, content) {
-        const pathParts = path
-            .split('/')
-            .filter((name) => name);
-        const metadata = pathParts.length ?
-            { name: pathParts[pathParts.length - 1], path: path } :
-            ROOT_FOLDER;
-
-        inventoryState.folder = { metadata, content };
-        inventoryState.foldersStack = pathParts.reduce((accu, name) => {
-            const path = `${accu[accu.length - 1].path}/${name}`;
-            return accu.concat([{ path, name }]);
-        }, [ROOT_FOLDER]);
+    function setHomeFolderId(homeFolderId) {
+        inventoryState.homeFolderId = homeFolderId;
     }
 
     /**
      * @ngdoc method
-     * @name setMenuChildren
+     * @name setFolder
      * @methodOf data-prep.services.state.service:InventoryStateService
-     * @param {array} children The current children of the current menu entry
+     * @param {string} metadata The folder metadata
+     * @param {object} content The folder content
      */
-    function setMenuChildren(children) {
-        inventoryState.menuChildren = children;
+    function setFolder(metadata, content) {
+        inventoryState.folder = { metadata, content };
+    }
+
+    /**
+     * @ngdoc method
+     * @name setBreadcrumb
+     * @methodOf data-prep.services.state.service:InventoryStateService
+     * @param {array} folders The folders in breadcrumb
+     */
+    function setBreadcrumb(folders) {
+        inventoryState.breadcrumb = folders;
+        inventoryState.breadcrumbChildren = {};
+    }
+
+    /**
+     * @ngdoc method
+     * @name setBreadcrumbChildren
+     * @methodOf data-prep.services.state.service:InventoryStateService
+     * @param {object} parentId The parent folder id
+     * @param {array} children The children folders
+     */
+    function setBreadcrumbChildren(parentId, children) {
+        inventoryState.breadcrumbChildren[parentId] = children;
     }
 
     /**

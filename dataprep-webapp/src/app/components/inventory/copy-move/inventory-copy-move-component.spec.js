@@ -40,7 +40,7 @@ describe('InventoryCopyMove component', () => {
     }));
 
     beforeEach(inject(($q, FolderService) => {
-        spyOn(FolderService, 'children').and.returnValue($q.when({data: []}));
+        spyOn(FolderService, 'tree').and.returnValue($q.when({ folder: { id: '1' }, children: [] }));
     }));
 
     afterEach(() => {

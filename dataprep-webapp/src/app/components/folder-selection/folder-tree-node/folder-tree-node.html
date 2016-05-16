@@ -1,0 +1,39 @@
+<!--
+  ~ ============================================================================
+  ~
+  ~  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+  ~
+  ~  This source code is available under agreement available at
+  ~  https://github.com/Talend/data-prep/blob/master/LICENSE
+  ~
+  ~  You should have received a copy of the agreement
+  ~  along with this program; if not, write to Talend SA
+  ~  9 rue Pages 92150 Suresnes, France
+  ~
+  ~ ============================================================================
+  -->
+
+<div class="folder-tree-node"
+     style="padding-left:{{$ctrl.level * 20}}px"
+     ng-class="{'folder-selected': $ctrl.isSelected}"
+     ng-dblclick="$ctrl.onToggle()" >
+
+    <div class="caret">
+        <span ng-if="$ctrl.hasChildren"
+              ng-switch="!!$ctrl.isOpened"
+              ng-click="$ctrl.onToggle()">
+            <i data-icon="J" ng-switch-when="true" class="caret-down"></i>
+            <i data-icon="I" ng-switch-when="false" class="caret-right"></i>
+        </span>
+        <i ng-if="! $ctrl.hasChildren" class="empty-caret"></i>
+    </div>
+
+    <div class="folder-icon"
+         ng-click="$ctrl.onSelect()"
+         ng-switch="!!$ctrl.isOpened">
+        <img class="icon-img" ng-switch-when="true" src="assets/images/folder/folder_open_small-icon.png"/>
+        <img class="icon-img" ng-switch-when="false" src="assets/images/folder/folder_close_small-icon.png"/>
+    </div>
+
+    <div class="folder-name" ng-click="$ctrl.onSelect()">{{$ctrl.name}}</div>
+</div>

@@ -1,0 +1,29 @@
+.folder-tree-node {
+  @include display(flex);
+  @include align-items(center);
+  @include flex-wrap(nowrap);
+  cursor: pointer;
+
+  &.folder-selected {
+    background-color: $light-gray;
+  }
+
+  .caret,
+  .folder-icon {
+    @include flex-basis(30px);
+    @include flex-grow(0);
+    text-align: center;
+  }
+
+  .folder-name {
+    @include flex-grow(1);
+    text-transform: uppercase;
+    padding-left: 10px;
+  }
+
+  .caret-down:before,
+  .caret-right:before {
+    color: grey;
+    font-size: 1.2em;
+  }
+}

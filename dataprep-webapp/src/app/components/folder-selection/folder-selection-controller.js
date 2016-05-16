@@ -10,13 +10,13 @@
  9 rue Pages 92150 Suresnes, France
 
  ============================================================================*/
+
 class FolderSelectionCtrl {
     constructor($translate, FolderService) {
         'ngInject';
 
         this.$translate = $translate;
         this.folderService = FolderService;
-        this.folderItems = [];
         this.tree = [];
         this.searchFolderQuery = '';
     }
@@ -28,7 +28,8 @@ class FolderSelectionCtrl {
      * @description initializes the folders tree on controller creation
      **/
     $onInit() {
-        this._initTree();
+        this.folderService.tree()
+            .then((tree) => this._initTree(tree));
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -36,140 +37,64 @@ class FolderSelectionCtrl {
     //------------------------------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
-     * @name $onInit
-     * @description initializes the folders tree
+     * @name _initTree
+     * @description Adapt the folder tree
      **/
-    _initTree() {
-        const rootFolder = {
-            path: '',
-            level: 0,
-            childrenFetched: true,
-            display: true,
-            collapsed: false,
-            name: this.$translate.instant('HOME_FOLDER'),
-            originalFolder: {
-                path: '',
-                name: this.$translate.instant('HOME_FOLDER')
-            }
-        };
-        this.tree = [rootFolder];
+    _initTree(tree) {
+        this.tree = tree;
+ 
         if (this.selectedFolder) {
-            let path = this.selectedFolder.path;
-            let pathParts = path === '/' ? [''] : path.split('/').filter((part) => part);
-            this._locateFolder(this.tree[0], pathParts, '');
+            const id = this.selectedFolder.id;
+            const hierarchy = this._locate([], this.tree, (tree) => tree.folder.id === id);
+            
+            if(hierarchy) {
+                hierarchy.forEach((node) => { node.folder.opened = true; });
+                this.selectedFolder = hierarchy.pop().folder;
+                this.selectedFolder.selected = true;
+            }
+            else {
+                this.selectedFolder = this.tree.folder; // home folder
+                this.selectedFolder.selected = true;
+            }
         }
         else {
-            this._locateFolder(this.tree[0], [''], '');
+            this.selectedFolder = this.tree.folder; // home folder
+            this.selectedFolder.selected = true;
         }
-
-        this.folderItems = this.tree;
     }
+    
 
-    /**
-     * @ngdoc method
-     * @name _locateFolder
-     * @description locates a dataset into the folders tree
-     * @param {object} currentFolder where the dataset exists
-     * @param {Array} childPathParts different path parts
-     * @param {string} currentFolderPath current path
-     **/
-    _locateFolder(currentFolder, childPathParts, currentFolderPath) {
-        const childName = childPathParts.shift();
-        const nextFolderPath = currentFolderPath + '/' + childName;
-        this._getChildrenIntoTree(currentFolder)
-            .then((children) => {
-                const nextFolder = _.find(children, {name: childName});
-                if (nextFolder) {
-                    if (childPathParts.length) {
-                        nextFolder.collapsed = false;
-                        nextFolder.childrenFetched = true;
-                        this._locateFolder(nextFolder, childPathParts, nextFolderPath);
-                    }
-                    else {
-                        nextFolder.selected = true;
-                        this.selectedFolder = nextFolder;
-                    }
+    _locate(accu, node, predicate) {
+        const nextAccu = accu.concat(node);
+        if(predicate(node)) {
+            return nextAccu;
+        }
+        
+        if(node.children.length) {
+            for(let childKey in node.children) {
+                const child = node.children[childKey];
+                const pathToFolder = this._locate(accu, child, predicate);
+                if(pathToFolder) {
+                    return nextAccu.concat(pathToFolder);
                 }
-                else {
-                    currentFolder.selected = true;
-                    this.selectedFolder = currentFolder;
-                }
-            });
-    }
-
-
-    //------------------------------------------------------------------------------------------------------------------
-    //---------------------------------------------- TREE POPULATION ---------------------------------------------------
-    //------------------------------------------------------------------------------------------------------------------
-    /**
-     * @ngdoc method
-     * @name _getChildrenIntoTree
-     * @description fetches the children of a given folder
-     * @param {object} currentFolder the given folder
-     **/
-    _getChildrenIntoTree(currentFolder) {
-        return this.folderService.children(currentFolder.path)
-            .then((children) => this._adaptFolderToItem(children, currentFolder.level + 1))
-            .then((children) => {
-                this._insertFolderChildren(currentFolder, children);
-                return children;
-            });
-    }
-
-    /**
-     * @ngdoc method
-     * @name _adaptFolderToItem
-     * @description adapts the children with the right labels
-     * @param {Array} folders the children recently fetched from the server
-     * @param {Number} level of the parent
-     **/
-    _adaptFolderToItem(folders, level) {
-        return _.map(folders, (child) => {
-            return {
-                originalFolder: child,
-                name: child.name,
-                path: child.path,
-                level: level,
-                collapsed: true,
-                childrenFetched: false,
-                display: true
-            };
-        });
-    }
-
-    /**
-     * @ngdoc method
-     * @name _insertFolderChildren
-     * @description inserts children at the right position of the tree
-     * @param {Object} parentFolder the children parent
-     * @param {Array} children to insert
-     **/
-    _insertFolderChildren(parentFolder, children) {
-        if (!children.length) {
-            parentFolder.hasNoChildren = true;
-            return;
+            }
         }
-        const currentIndex = _.findIndex(this.tree, parentFolder);
-        this.tree.splice(currentIndex + 1, 0, ...children);
     }
 
-    /**
-     * @ngdoc method
-     * @name _getChildren
-     * @description extracts the children of a given folder from the tree
-     * @param {Object} parent whose children will be extracted
-     **/
-    _getChildren(parent) {
-        const parentIndex = _.findIndex(this.tree, parent);
-        const followingFolders = this.tree.slice(parentIndex + 1);
-        let siblingIndex = _.findIndex(followingFolders, (followingFolder) => followingFolder.level <= parent.level);
-        if (siblingIndex === -1) {
-            siblingIndex = this.tree.length - 1;
+    _search(accu, node, name) {
+        let nextAccu = accu;
+        if(node.folder.name.toLowerCase().indexOf(name.toLowerCase()) > -1) {
+            nextAccu = nextAccu.concat(node);
         }
 
-        return this.tree.slice(parentIndex + 1, parentIndex + siblingIndex + 1)
+        if(node.children.length) {
+            for(let childKey in node.children) {
+                const child = node.children[childKey];
+                nextAccu = this._search(nextAccu, child, name);
+            }
+        }
+        return nextAccu;
     }
-
 
     //------------------------------------------------------------------------------------------------------------------
     //-------------------------------------------- ACTIONS ON FOLDERS --------------------------------------------------
@@ -179,67 +104,24 @@ class FolderSelectionCtrl {
      * @name toggle
      * @methodOf data-prep.folder-selection.controller:FolderSelectionCtrl
      * @description show/hides the children of a given folder in the tree
-     * @param {Object} folder whose children will be displayed/hidden
+     * @param {Object} treeNode The node to toggle
      **/
-    toggle(folder) {
-        if (folder.collapsed) {
-            if (folder.childrenFetched) {
-                this._displayChildren(folder);
-            }
-            else {
-                this._getChildrenIntoTree(folder);
-                folder.childrenFetched = true;
-            }
-        }
-        else {
-            this._hideChildren(folder);
-        }
-        folder.collapsed = !folder.collapsed;
+    toggle(treeNode) {
+        treeNode.folder.opened = !treeNode.folder.opened;
     }
 
     /**
      * @ngdoc method
      * @name chooseFolder
      * @methodOf data-prep.folder-selection.controller:FolderSelectionCtrl
-     * @description selects a folder as destination of the move/copy
-     * @param {Object} folder to be selected
+     * @description selects a folder
+     * @param {Object} folder to select
      **/
     chooseFolder(folder) {
         this.selectedFolder.selected = false;
         this.selectedFolder = folder;
         this.selectedFolder.selected = true;
     }
-
-    /**
-     * @ngdoc method
-     * @name _displayChildren
-     * @description shows the children of a given folder in the tree
-     * @param {Object} parent folders-to-display parent
-     **/
-    _displayChildren(parent) {
-        _.chain(this._getChildren(parent))
-            .filter((child) => child.level === parent.level + 1)
-            .forEach((child) => {
-                child.display = true;
-                if (!child.collapsed) {
-                    this._displayChildren(child);
-                }
-            })
-            .value();
-    }
-
-    /**
-     * @ngdoc method
-     * @name _hideChildren
-     * @description hides the children of a given folder in the tree
-     * @param {Object} parent folders-to-hide parent
-     **/
-    _hideChildren(parent) {
-        _.forEach(this._getChildren(parent), (child) => {
-            child.display = false;
-        });
-    }
-
 
     //------------------------------------------------------------------------------------------------------------------
     //------------------------------------------------ SEARCH FOLDERS --------------------------------------------------
@@ -250,57 +132,19 @@ class FolderSelectionCtrl {
      * @methodOf data-prep.folder-selection.controller:FolderSelectionCtrl
      * @description decides to show the folders tree or the search result
      **/
-    populateSearchResult() {
+    performSearch() {
         if (this.searchFolderQuery) {
-            this._searchFolders()
-                .then((result) => {
-                    this.folderItems = result;
-                    this.selectedFolder = _.find(this.folderItems, {selected: true});
-                });
+            this.lastTreeSelection = this.lastTreeSelection || this.selectedFolder; //save tree selection
+            this.searchItems = this._search([], this.tree, this.searchFolderQuery);
+            if(this.searchItems.length) {
+                this.chooseFolder(this.searchItems[0].folder);
+            }
         }
         else {
-            this.folderItems = this.tree;
-            this.selectedFolder = _.find(this.folderItems, {selected: true});
+            this.searchItems = null;                    // reset search result
+            this.chooseFolder(this.lastTreeSelection);  // reset last tree selection as selected node
+            this.lastTreeSelection = null;
         }
-    }
-
-    /**
-     * @ngdoc method
-     * @name _searchFolders
-     * @description searches for folders corresponding to a given text query
-     **/
-    _searchFolders() {
-        //Add the root folder if it matches the filter
-        return this.folderService.search(this.searchFolderQuery)
-            .then((response) => {
-                let searchResult = [];
-                const homePosition = this.$translate.instant('HOME_FOLDER').toLowerCase().indexOf(this.searchFolderQuery.toLowerCase());
-                if (homePosition > -1) {
-                    const rootFolder = {
-                        path: '',
-                        display: true,
-                        hasNoChildren: true,
-                        name: this.$translate.instant('HOME_FOLDER'),
-                        originalFolder: {
-                            name: this.$translate.instant('HOME_FOLDER'),
-                            path: ''
-                        }
-                    };
-                    searchResult.push(rootFolder);
-                }
-                const items = this._adaptFolderToItem(response, 0)
-                    .map((folder) => {
-                        folder.hasNoChildren = true;
-                        folder.name = folder.originalFolder.path;
-                        return folder;
-                    });
-                searchResult = searchResult.concat(items);
-
-                if (searchResult.length > 0) {
-                    searchResult[0].selected = true;
-                }
-                return searchResult;
-            });
     }
 }
 

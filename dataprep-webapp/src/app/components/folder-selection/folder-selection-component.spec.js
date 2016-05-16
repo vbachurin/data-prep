@@ -13,65 +13,77 @@
 
 describe('folder selection component', () => {
 
+    let createElement;
+    let scope;
+    let element;
+    let tree;
+
     beforeEach(angular.mock.module('data-prep.folder-selection'));
     beforeEach(angular.mock.module('htmlTemplates'));
 
-    var createElement, scope, element;
-
-    var folders = [// the json objects are in a tree way
-        {
-            id: '',
-            path: '',
-            level: 0,
-            alreadyToggled: true,
-            display: true,
-            collapsed: false,
-            name: 'Home',
-        },
-        {
-            name: '1-folder1',
-            path: '1-folder1',
-            level: 1,
-            display: true,
-        },
-        {
-            path: '1-folder1/2-folder11',
-            name: '2-folder11',
-            level: 2,
-            display: true,
-        },
-        {
-            path: '1-folder1/2-folder12',
-            name: '2-folder12',
-            level: 2,
-            display: true,
-        },
-        {
-            path: '1-folder1/2-folder13',
-            name: '2-folder13',
-            level: 2,
-            display: true,
-        },
-        {
-            name: '1-folder2',
-            path: '1-folder2',
-            level: 1,
-            display: false,
-        },
-    ];
-
     beforeEach(inject(($rootScope, $compile) => {
-        scope = $rootScope.$new();
+        scope = $rootScope.$new(true);
 
         createElement = () => {
-            element = angular.element(`<folder-selection ng-model="destinationFolder"></folder-selection>`);
+            element = angular.element(`<folder-selection ng-model="selectedFolder"></folder-selection>`);
             $compile(element)(scope);
             scope.$digest();
         };
     }));
 
     beforeEach(inject(($q, FolderService) => {
-        spyOn(FolderService, 'children').and.returnValue($q.when([]));
+        tree = {
+            folder: {                                           // HOME
+                id: '1',
+                name: 'HOME',
+                path: '/',
+            },
+            children: [
+                {
+                    folder: {                                   // /folder1
+                        id: '2',
+                        name: 'folder1',
+                        path: '/folder1',
+                    },
+                    children: [
+                        {
+                            folder: {                           // /folder1/subfolder1
+                                id: '4',
+                                name: 'subfolder1',
+                                path: '/folder1/subfolder1',
+                            },
+                            children: [],
+                        },
+                        {
+                            folder: {                           // /folder1/subfolder2
+                                id: '5',
+                                name: 'subfolder2',
+                                path: '/folder1/subfolder2',
+                            },
+                            children: [],
+                        },
+                    ]
+                },
+                {
+                    folder: {                                   // /folder2
+                        id: '3',
+                        name: 'folder2',
+                        path: '/folder2',
+                    },
+                    children: [
+                        {
+                            folder: {                           // /folder2/subfolder3
+                                id: '6',
+                                name: 'subfolder3',
+                                path: '/folder2/subfolder3',
+                            },
+                            children: [],
+                        }
+                    ]
+                },
+            ],
+        };
+        spyOn(FolderService, 'tree').and.returnValue($q.when(tree));
     }));
 
     afterEach(() => {
@@ -79,26 +91,46 @@ describe('folder selection component', () => {
         element.remove();
     });
 
-    describe('display folder selection content', () => {
-        it('should render input search', () => {
-            //when
-            createElement();
+    it('should render input search', () => {
+        //when
+        createElement();
 
-            //then
-            expect(element.find('input').length).toBe(1);
-        });
+        //then
+        expect(element.find('input').length).toBe(1);
+    });
 
-        it('should render folders tree', () => {
-            //given
-            createElement();
-            const ctrl = element.controller('folderSelection');
-            ctrl.folderItems = folders;
+    it('should render folder tree', () => {
+        //given
+        scope.selectedFolder = { id: '5' };
+        
+        //when
+        createElement();
 
-            //when
-            scope.$digest();
+        //then
+        expect(element.find('.folder-tree-node').length).toBe(5);
+        expect(element.find('.folder-tree-node').eq(3).hasClass('folder-selected')).toBe(true);
+        expect(element.find('.folder-tree-node').eq(0).text().trim()).toBe('HOME');
+        expect(element.find('.folder-tree-node').eq(1).text().trim()).toBe('folder1');
+        expect(element.find('.folder-tree-node').eq(2).text().trim()).toBe('subfolder1');
+        expect(element.find('.folder-tree-node').eq(3).text().trim()).toBe('subfolder2');
+        expect(element.find('.folder-tree-node').eq(4).text().trim()).toBe('folder2');
+    });
+    
+    it('should render search items', () => {
+        //given
+        scope.selectedFolder = { id: '5' };
+        createElement();
+        
+        const ctrl = element.controller('folderSelection');
+        ctrl.searchFolderQuery = 'folder1';
+        
+        //when
+        ctrl.performSearch();
+        scope.$digest();
 
-            //then
-            expect(element.find('folder-item').length).toBe(5);
-        });
+        //then
+        expect(element.find('.folder-tree-node').length).toBe(2);
+        expect(element.find('.folder-tree-node').eq(0).text().trim()).toBe('/folder1');
+        expect(element.find('.folder-tree-node').eq(1).text().trim()).toBe('/folder1/subfolder1');
     });
 });

@@ -21,15 +21,26 @@
            translate-once-placeholder="FIND_FOLDER"
            ng-model="$ctrl.searchFolderQuery"
            ng-model-options="{debounce: { default: 300, blur: 0 }}"
-           ng-change="$ctrl.populateSearchResult()"
+           ng-change="$ctrl.performSearch()"
            talend-search-input>
     
-    <ul class="folders">
-        <folder-item
-                ng-repeat="item in $ctrl.folderItems track by item.path"
-                item="item"
-                ng-if="item.display"
-                on-toggle="$ctrl.toggle(folder)"
-                on-select="$ctrl.chooseFolder(folder)"></folder-item>
-    </ul>
+    <div class="folders"
+         ng-switch="!!$ctrl.searchFolderQuery">
+
+        <folder-tree ng-switch-when="false"
+                     node="$ctrl.tree"
+                     level="0"
+                     on-toggle="$ctrl.toggle(node)"
+                     on-select="$ctrl.chooseFolder(node.folder)"></folder-tree>
+
+        <folder-tree-node ng-switch-when="true"
+                          ng-repeat="node in $ctrl.searchItems track by node.folder.id"
+                          name="node.folder.path"
+                          level="0"
+                          is-opened="false"
+                          has-children="false"
+                          is-selected="node.folder.selected"
+                          on-toggle="$ctrl.onToggle(node)"
+                          on-select="$ctrl.onSelect(node)"></folder-tree-node>
+    </div>
 </div>
