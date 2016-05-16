@@ -19,7 +19,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.assertj.core.api.Assertions;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.core.IsNull;
 import org.junit.Test;
+import org.mockito.Matchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
@@ -28,17 +31,22 @@ import org.talend.dataprep.schema.AbstractSchemaTestUtils;
 import org.talend.dataprep.schema.SchemaParser;
 import org.talend.dataprep.schema.Schema;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
  * Unit test for the XLSSchemaParser class.
- * 
+ *
  * @see XlsSchemaParser
  */
 public class XlsSchemaParserTest extends AbstractSchemaTestUtils {
 
-    /** The parser to test. */
+    /**
+     * The parser to test.
+     */
     @Autowired
     private XlsSchemaParser parser;
 
@@ -62,16 +70,14 @@ public class XlsSchemaParserTest extends AbstractSchemaTestUtils {
     @Test
     public void shouldParseFileWithEmptyColumn() throws Exception {
         checkColumnsName("empty_column.xlsx", "First Name", "Last Name", "Company", "Email Address", "col_5", //
-                         "Current Product", //
-                         "Product to send"); //
+                "Current Product", //
+                "Product to send"); //
     }
-
-
 
     /**
      * Load the excel file and check the parsed columns name against the given ones.
      *
-     * @param sourceFileName the excel file name to load.
+     * @param sourceFileName   the excel file name to load.
      * @param expectedColsName the expected columns name.
      * @throws IOException if an error occurs while reading the excel file.
      */
@@ -84,7 +90,7 @@ public class XlsSchemaParserTest extends AbstractSchemaTestUtils {
             List<ColumnMetadata> columns = result.getSheetContents().get(0).getColumnMetadatas();
             final List<String> actual = columns.stream().map(ColumnMetadata::getName).collect(Collectors.toList());
 
-            Assertions.assertThat( actual ).containsExactly( expectedColsName );
+            Assertions.assertThat(actual).containsExactly(expectedColsName);
         }
     }
 
@@ -101,6 +107,42 @@ public class XlsSchemaParserTest extends AbstractSchemaTestUtils {
             Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize(17);
         }
 
+    }
+
+    @Test
+    public void parse_should_extract_single_sheet_xls() throws Exception {
+        // given
+        final String fileName = "simple.xls";
+        SchemaParser.Request request;
+        try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
+            request = getRequest(inputStream, "My Dataset");
+
+            // when
+            final Schema schema = parser.parse(request);
+
+            // then
+            assertThat(schema.getSheetContents(), is(notNullValue()));
+            assertThat(schema.draft(), is(false));
+            assertThat(schema.getSheetName(), is("Feuille1"));
+        }
+    }
+
+    @Test
+    public void parse_should_extract_multi_sheet_xls() throws Exception {
+        // given
+        final String fileName = "Talend_Desk-Tableau-Bord-011214.xls";
+        SchemaParser.Request request;
+        try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
+            request = getRequest(inputStream, "My Dataset");
+
+            // when
+            final Schema schema = parser.parse(request);
+
+            // then
+            assertThat(schema.getSheetContents(), is(notNullValue()));
+            assertThat(schema.draft(), is(true));
+            assertThat(schema.getSheetName(), is("Sumary"));
+        }
     }
 
     @Test

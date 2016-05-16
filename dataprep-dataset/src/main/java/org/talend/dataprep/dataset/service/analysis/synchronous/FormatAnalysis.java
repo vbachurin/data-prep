@@ -13,12 +13,6 @@
 
 package org.talend.dataprep.dataset.service.analysis.synchronous;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.Charset;
-import java.util.Collections;
-import java.util.Set;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +29,12 @@ import org.talend.dataprep.exception.error.DataSetErrorCodes;
 import org.talend.dataprep.lock.DistributedLock;
 import org.talend.dataprep.log.Markers;
 import org.talend.dataprep.schema.*;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * <p>
@@ -196,15 +196,14 @@ public class FormatAnalysis implements SynchronousDataSetAnalyzer {
             SchemaParser parser = format.getFormatFamily().getSchemaGuesser();
 
             Schema schema = parser.parse(new SchemaParser.Request(content, metadata));
+            metadata.setSheetName(schema.getSheetName());
+            metadata.setDraft(schema.draft());
             if (schema.draft()) {
-                metadata.setSheetName(schema.getSheetContents().get(0).getName());
-                metadata.setDraft(true);
                 metadata.setSchemaParserResult(schema);
                 repository.add(metadata);
                 LOG.info(Markers.dataset(dataSetId), "format analysed");
                 return;
             }
-            metadata.setDraft(false);
             if (schema.getSheetContents().isEmpty()) {
                 throw new IOException("Parser could not detect file format for " + metadata.getId());
             }

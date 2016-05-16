@@ -13,13 +13,6 @@
 
 package org.talend.dataprep.dataset.service.analysis.synchronous;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-
-import java.util.IllegalFormatCodePointException;
-import java.util.stream.Stream;
-
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
@@ -28,6 +21,12 @@ import org.talend.dataprep.dataset.DataSetBaseTest;
 import org.talend.dataprep.dataset.service.DataSetServiceTest;
 import org.talend.dataprep.schema.csv.CSVFormatFamily;
 import org.talend.dataprep.schema.xls.XlsFormatFamily;
+
+import java.util.stream.Stream;
+
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 
 public class FormatAnalysisTest extends DataSetBaseTest {

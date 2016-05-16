@@ -81,6 +81,7 @@ public class XlsSchemaParser implements SchemaParser {
                     result = Schema.Builder.parserResult() //
                             .sheetContents(sheetContents) //
                             .draft(false) //
+                            .sheetName(sheetContents.get(0).getName()) //
                             .build();
                 }
                 // multiple sheet, set draft flag on
