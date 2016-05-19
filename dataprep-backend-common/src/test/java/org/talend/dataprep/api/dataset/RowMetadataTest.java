@@ -196,8 +196,8 @@ public class RowMetadataTest {
         ColumnMetadata metadata2 = getColumnMetadata("last", 2, Type.STRING);
         columns1.add(metadata1);
         columns1.add(metadata2);
-        columns2.add(metadata2);
         columns2.add(metadata1);
+        columns2.add(metadata2);
         RowMetadata row1 = new RowMetadata(columns1);
         RowMetadata row2 = new RowMetadata(columns2);
 
@@ -215,6 +215,7 @@ public class RowMetadataTest {
         // given
         List<ColumnMetadata> columns1 = new ArrayList<>();
         List<ColumnMetadata> columns2 = new ArrayList<>();
+        List<ColumnMetadata> columns3 = new ArrayList<>();
         ColumnMetadata metadata1 = getColumnMetadata("first", 1, Type.STRING);
         ColumnMetadata metadata2 = getColumnMetadata("last", 2, Type.STRING);
         ColumnMetadata metadata3 = getColumnMetadata("last", 2, Type.INTEGER);
@@ -222,16 +223,21 @@ public class RowMetadataTest {
         columns1.add(metadata2);
         columns2.add(metadata1);
         columns2.add(metadata3);
+        columns3.add(metadata2);
+        columns3.add(metadata1);
 
         // when
         RowMetadata row1 = new RowMetadata(columns1);
         RowMetadata row2 = new RowMetadata(columns2);
-        RowMetadata row3 = null;
+        RowMetadata row3 = new RowMetadata(columns3);
+        RowMetadata row4 = null;
 
         // then
         assertFalse(row1.compatible(row2));
         assertFalse(row2.compatible(row1));
+        assertFalse(row3.compatible(row1));
         assertFalse(row2.compatible(row3));
+        assertFalse(row2.compatible(row4));
     }
 
     /**

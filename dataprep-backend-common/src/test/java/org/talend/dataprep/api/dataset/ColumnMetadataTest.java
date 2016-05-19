@@ -52,7 +52,7 @@ public class ColumnMetadataTest {
     public void should_be_compatible() {
         int id = 1;
         ColumnMetadata metadata1 = ColumnMetadata.Builder.column().id(id).name("name").type(Type.STRING).build();
-        ColumnMetadata metadata2 = ColumnMetadata.Builder.column().id(id).name("name2").type(Type.STRING).build();
+        ColumnMetadata metadata2 = ColumnMetadata.Builder.column().id(id).name("name").type(Type.STRING).build();
         assertTrue(metadata1.compatible(metadata1));
         assertTrue(metadata1.compatible(metadata2));
         assertTrue(metadata2.compatible(metadata1));
@@ -63,8 +63,11 @@ public class ColumnMetadataTest {
         int id = 1;
         ColumnMetadata metadata1 = ColumnMetadata.Builder.column().id(id).name("name").type(Type.STRING).build();
         ColumnMetadata metadata2 = ColumnMetadata.Builder.column().id(id).name("name").type(Type.INTEGER).build();
+        ColumnMetadata metadata3 = ColumnMetadata.Builder.column().id(id).name("name2").type(Type.STRING).build();
         assertFalse(metadata1.compatible(metadata2));
         assertFalse(metadata2.compatible(metadata1));
+        assertFalse(metadata3.compatible(metadata1));
+        assertFalse(metadata3.compatible(metadata2));
     }
 
 

@@ -1,15 +1,15 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.api.dataset;
 
@@ -176,35 +176,32 @@ public class ColumnMetadata implements Serializable {
         return quality;
     }
 
-    public boolean isDomainForced()
-    {
+    public boolean isDomainForced() {
         return domainForced;
     }
 
-    public void setDomainForced( boolean domainForced )
-    {
+    public void setDomainForced(boolean domainForced) {
         this.domainForced = domainForced;
     }
 
-    public boolean isTypeForced()
-    {
+    public boolean isTypeForced() {
         return typeForced;
     }
 
-    public void setTypeForced( boolean typeForced )
-    {
+    public void setTypeForced(boolean typeForced) {
         this.typeForced = typeForced;
     }
 
     /**
-     * Returns true if this column metadata is compatible (has same type) with <tt>columnMetadata</tt> and false otherwise.
+     * Returns true if this column metadata is compatible (has same type and the same name) with <tt>columnMetadata</tt>
+     * and false otherwise.
      *
      * @param columnMetadata the specified row metadata
-     * @return  true if this column metadata is compatible <tt>columnMetadata</tt> and false otherwise
+     * @return true if this column metadata is compatible <tt>columnMetadata</tt> and false otherwise
      */
-    public boolean compatible(ColumnMetadata columnMetadata){
-        if (columnMetadata != null){
-            return StringUtils.equals(typeName, columnMetadata.getType());
+    public boolean compatible(ColumnMetadata columnMetadata) {
+        if (columnMetadata != null) {
+            return StringUtils.equals(typeName, columnMetadata.getType()) && StringUtils.equals(name, columnMetadata.getName());
         }
         return false;
     }
@@ -287,17 +284,15 @@ public class ColumnMetadata implements Serializable {
         return semanticDomains;
     }
 
-    public void setSemanticDomains( List<SemanticDomain> semanticDomains ) {
+    public void setSemanticDomains(List<SemanticDomain> semanticDomains) {
         this.semanticDomains = semanticDomains;
     }
 
-    public float getDomainFrequency()
-    {
+    public float getDomainFrequency() {
         return domainFrequency;
     }
 
-    public void setDomainFrequency( float domainFrequency )
-    {
+    public void setDomainFrequency(float domainFrequency) {
         this.domainFrequency = domainFrequency;
     }
 

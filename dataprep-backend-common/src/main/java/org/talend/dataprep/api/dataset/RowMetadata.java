@@ -68,8 +68,8 @@ public class RowMetadata implements Serializable {
     }
 
     /**
-     * Returns true if this data set metadata is compatible with <tt>rowMetadata</tt> (they have same types and in
-     * the same order) and false otherwise.
+     * Returns true if this data set metadata is compatible with <tt>rowMetadata</tt> (they have same types in
+     * the same order and same column names) and false otherwise.
      * 
      * @param other the specified row metadata
      * @return true if this row metadata is compatible with the specified one and false otherwise
