@@ -71,6 +71,7 @@ public class TaskExecution {
         executor.setCorePoolSize(4);
         executor.setMaxPoolSize(10);
         executor.setWaitForTasksToCompleteOnShutdown(false);
+        executor.initialize();
         return AuthenticatedTaskExecutor.authenticated(executor);
     }
 }
