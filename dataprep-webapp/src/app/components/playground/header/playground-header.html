@@ -56,7 +56,8 @@
                 <a id="playground-lookup-icon"
                    class="icon"
                    ng-click="$ctrl.onLookup()"
-                   ng-class="{pressed: $ctrl.lookupVisible}">
+                   ng-class="{pressed: $ctrl.lookupVisible}"
+                   translate-once-title="LOOKUP_ICON_TOOLTIP">
                     <img src="assets/images/header/lookup.png">
                 </a>
             </li>
@@ -92,7 +93,10 @@
             </li>
             <li><documentation-search></documentation-search></li>
             <li id="help-history"><history-control></history-control></li>
-            <li id="playground-close-container"><label id="playground-close" ng-click="$ctrl.onClose()"></label></li>
+            <li id="playground-close-container"
+                translate-once-title="CLOSE_ICON_TOOLTIP">
+                <label id="playground-close" ng-click="$ctrl.onClose()"></label>
+            </li>
         </ul>
     </div>
 
