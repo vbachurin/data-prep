@@ -18,21 +18,13 @@ describe('Playground header component', () => {
 
     beforeEach(angular.mock.module('data-prep.playground'));
     beforeEach(angular.mock.module('htmlTemplates'));
-    beforeEach(angular.mock.module('pascalprecht.translate', ($translateProvider) => {
-        $translateProvider.translations('en', {
-            'FILE_DETAILS_LINES': '{{records}} lines',
-            'FILE_DETAILS_LIMIT': 'cut at {{records}} lines'
-        });
-        $translateProvider.preferredLanguage('en');
-    }));
 
     beforeEach(inject(($rootScope, $compile) => {
         scope = $rootScope.$new();
 
         createElement = () => {
             element = angular.element(`
-                <playground-header dataset="dataset"
-                    display-nb-lines="displayNbLines"
+                <playground-header
                     preview="preview"
                     lookup-visible="lookupVisible"
                     feedback-visible="feedbackVisible"
@@ -81,56 +73,6 @@ describe('Playground header component', () => {
     });
 
     describe('left header', () => {
-        it('should render dataset name and nb lines', () => {
-            //given
-            scope.dataset = {
-                id: '12ce6c32-bf80-41c8-92e5-66d70f22ec1f',
-                name: 'US States',
-                records: '3'
-            };
-            scope.displayNbLines = true;
-
-            //when
-            createElement();
-
-            //then
-            expect(element.find('#playground-left-header').text().trim().replace(/[\s]+/g, ' ')).toBe('US States - 3 lines');
-        });
-
-        it('should render dataset name and cut lines number when dataset is truncated', () => {
-            //given
-            scope.dataset = {
-                id: '12ce6c32-bf80-41c8-92e5-66d70f22ec1f',
-                name: 'US States',
-                records: '3',
-                limit: 50
-            };
-            scope.displayNbLines = true;
-
-            //when
-            createElement();
-
-            //then
-            expect(element.find('#playground-left-header').text().trim().replace(/[\s]+/g, ' ')).toBe('US States - cut at 50 lines');
-        });
-
-        it('should not render dataset nb lines', () => {
-            //given
-            scope.dataset = {
-                id: '12ce6c32-bf80-41c8-92e5-66d70f22ec1f',
-                name: 'US States',
-                records: '3',
-                limit: 50
-            };
-            scope.displayNbLines = false;
-
-            //when
-            createElement();
-
-            //then
-            expect(element.find('#playground-left-header').text().trim()).toBe('US States');
-        });
-
         it('should render insertion playground left header', () => {
             //when
             createElement();

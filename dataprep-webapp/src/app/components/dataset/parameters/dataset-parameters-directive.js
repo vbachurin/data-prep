@@ -22,12 +22,14 @@
  *             dataset="dataset"
  *             on-parameters-change="validate(dataset, parameters)"
  *             configuration="configuration"
+ *             display-nb-lines="true"
  *             parameters="parameters"></dataset-parameters>
  * @param {boolean} processing Flag that indicate that the validation is processing. It disables the validation button and switch to a loading icon.
  * @param {object} dataset The dataset we are editing
  * @param {function} onParametersChange The validation callback
  * @param {object} configuration The parameters configuration {separators: [{label: ';', value: ';'}, ...], encodings: ['UTF-8', ...]}
  * @param {object} parameters The parameters values {separator: ';', encoding: 'UTF-8'}. CAUTION: The values are directly bound to the inputs
+ * @param {boolean} displayNbLines Display number of lines
  * */
 export default function DatasetParameters() {
     return {
@@ -38,7 +40,8 @@ export default function DatasetParameters() {
             dataset: '=',
             onParametersChange: '&',
             configuration: '=',
-            parameters: '='
+            parameters: '=',
+            displayNbLines: '<'
         },
         bindToController: true,
         controller: 'DatasetParametersCtrl',

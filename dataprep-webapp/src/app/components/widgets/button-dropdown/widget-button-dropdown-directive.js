@@ -40,7 +40,7 @@ export default function TalendButtonDropdown($timeout) {
                 '</div>' +
             '</button>' +
             '<div class="line-separator"></div>' +
-            '<talend-dropdown close-on-select="true">' +
+            '<talend-dropdown close-on-select="buttonDropdownCtrl.closeOnSelect">' +
                 '<button class="button-dropdown-side dropdown-action dropdown-container"></button>' +
                 '<ng-transclude class="dropdown-menu"></ng-transclude>' +
             '</talend-dropdown>' +
@@ -48,7 +48,8 @@ export default function TalendButtonDropdown($timeout) {
         scope: {
             buttonIcon: '@',
             buttonText: '@',
-            buttonAction: '&'
+            buttonAction: '&',
+            closeOnSelect: '<'
         },
         bindToController: true,
         controller: () => {},

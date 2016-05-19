@@ -44,8 +44,6 @@
 const PlaygroundHeader = {
     templateUrl: 'app/components/playground/header/playground-header.html',
     bindings: {
-        dataset: '<',
-        displayNbLines: '<',
         preview: '<',
         lookupVisible: '<',
         parametersVisible: '<',

@@ -31,6 +31,7 @@
   "UNDO_ICON_TOOLTIP": "Undo",
   "REDO_ICON_TOOLTIP": "Redo",
   "ONBOARDING": "Click here to discover the application",
+  "OTHER": "Other",
 
   "_comment": "Left side menu",
   "ALL_FOLDERS": "All Datasets",
@@ -321,6 +322,8 @@
   "DATASET_PARAMETERS_ENCODING": "Encoding",
   "DATASET_PARAMETERS_SEPARATOR": "Separator",
   "ACTION_HELP": "Learn more...",
+  "NAME": "Name :",
+  "SIZE": "Size :",
 
   "_comment": "Upgrade version parameters",
   "UPGRADE_VERSION_NEW_VERSION_AVAILABLE": "New Version Available",

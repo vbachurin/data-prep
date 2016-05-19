@@ -59,7 +59,8 @@
                                 class="inventory-actions-related-item btn-icon"
                                 button-action="$ctrl.openRelatedInventoryItem($ctrl.relatedInventories[0])"
                                 button-icon="c"
-                                title="{{'OPEN_ACTION' | translate:$ctrl.getTooltipContent()}}">
+                                title="{{'OPEN_ACTION' | translate:$ctrl.getTooltipContent()}}"
+                                close-on-select="true">
             <ul class="inventory-actions-related-item-menu"
                 ng-if="$ctrl.relatedInventories.length">
                 <li ng-click="$ctrl.open($ctrl.item)">

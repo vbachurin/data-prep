@@ -14,9 +14,7 @@
   -->
 
 <div class="playground-container" tabindex="0">
-    <playground-header dataset="playgroundCtrl.state.playground.dataset"
-                       display-nb-lines="!playgroundCtrl.state.playground.isFetchingStats"
-                       preview="playgroundCtrl.previewInProgress()"
+    <playground-header preview="playgroundCtrl.previewInProgress()"
                        lookup-visible="playgroundCtrl.state.playground.lookup.visibility"
                        parameters-visible="playgroundCtrl.state.playground.parameters.visible"
                        feedback-visible="!playgroundCtrl.state.ee"
@@ -67,7 +65,8 @@
                                     processing="playgroundCtrl.state.playground.parameters.isSending"
                                     dataset="playgroundCtrl.state.playground.dataset"
                                     configuration="playgroundCtrl.state.playground.parameters.configuration"
-                                    parameters="playgroundCtrl.state.playground.parameters.values"></dataset-parameters>
+                                    parameters="playgroundCtrl.state.playground.parameters.values"
+                                    display-nb-lines="!playgroundCtrl.state.playground.isFetchingStats"></dataset-parameters>
             </talend-slidable>
 
             <filter-bar id="playground-filter-bar"></filter-bar>

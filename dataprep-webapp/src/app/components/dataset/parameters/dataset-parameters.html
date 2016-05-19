@@ -15,45 +15,68 @@
 
 <form class="dataset-parameters" ng-submit="datasetParametersCtrl.validate()">
     <div class="dataset-parameters-title" translate-once="DATASET_PARAMETERS"></div>
-
-    <div class="dataset-parameters-body">
-        <div class="dataset-parameters-parameter dataset-parameters-encoding">
-            <div class="dataset-parameters-label">
-                <span translate-once="DATASET_PARAMETERS_ENCODING"></span> :
+    <div class="param">
+        <div class="dataset-parameters-header param-row">
+            <div class="param-row-item">
+                <div class="param-name" translate-once="NAME"></div>
+                <div class="dataset-name param-input"
+                      title="{{datasetParametersCtrl.dataset.name}}"
+                      ng-bind="::datasetParametersCtrl.dataset.name">
+                </div>
             </div>
-            <div class="dataset-parameters-input">
-                <select ng-model="datasetParametersCtrl.parameters.encoding"
-                        ng-options="encoding for encoding in datasetParametersCtrl.configuration.encodings">
-                </select>
-            </div>
-        </div>
-        <div class="dataset-parameters-parameter dataset-parameters-separator"
-             ng-if="datasetParametersCtrl.dataset.type === 'text/csv'">
-            <div class="dataset-parameters-label">
-                <span translate-once="DATASET_PARAMETERS_SEPARATOR"></span> :
-            </div>
-            <div class="dataset-parameters-input">
-                <select ng-model="datasetParametersCtrl.parameters.separator"
-                        ng-options="separator.value as separator.label for separator in datasetParametersCtrl.configuration.separators">
-                    <option value="">Other</option>
-                </select>
-            </div>
-            <div class="dataset-parameters-input" ng-if="!datasetParametersCtrl.separatorIsInList()">
-                <input class="small-input"
-                       type="text"
-                       ng-trim="false"
-                       ng-model="datasetParametersCtrl.parameters.separator"
-                       ng-model-options="{debounce: { 'default': 200, 'blur': 0 }}"/>
+            <div ng-if="datasetParametersCtrl.displayNbLines"
+                  ng-switch="!!datasetParametersCtrl.dataset.limit"
+                  class="param-row-item">
+                <div class="param-name" translate-once="SIZE"></div>
+                <div class="param-input color-white"
+                      ng-switch-when="false"
+                      translate="FILE_DETAILS_LINES"
+                      translate-value-records="{{::datasetParametersCtrl.dataset.records}}"></div>
+                <div class="param-input color-white"
+                      ng-switch-when="true"
+                      translate="FILE_DETAILS_LIMIT"
+                      translate-value-records="{{::datasetParametersCtrl.dataset.limit}}"></div>
             </div>
         </div>
 
-        <div class="dataset-parameters-actions">
-            <talend-button-loader button-class="btn-primary"
-                                  disable-condition="datasetParametersCtrl.processing"
-                                  loading="datasetParametersCtrl.processing"
-                                  loading-class="icon">
-                <span translate-once="SUBMIT"></span>
-            </talend-button-loader>
+        <div class="param-row">
+            <div class="dataset-parameters-encoding param-row-item">
+                <div class="param-name">
+                    <span translate-once="DATASET_PARAMETERS_ENCODING"></span> :
+                </div>
+                <div class="param-input">
+                    <select ng-model="datasetParametersCtrl.parameters.encoding"
+                            ng-options="encoding for encoding in datasetParametersCtrl.configuration.encodings">
+                    </select>
+                </div>
+            </div>
+            <div class="dataset-parameters-separator param-row-item"
+                 ng-if="datasetParametersCtrl.dataset.type === 'text/csv'">
+                <div class="param-name">
+                    <span translate-once="DATASET_PARAMETERS_SEPARATOR"></span> :
+                </div>
+                <div class="param-input">
+                    <select ng-model="datasetParametersCtrl.parameters.separator"
+                            ng-options="separator.value as separator.label for separator in datasetParametersCtrl.configuration.separators">
+                        <option value="" translate-once="OTHER"></option>
+                    </select>
+                </div>
+                <div ng-if="!datasetParametersCtrl.separatorIsInList()">
+                    <input class="small-input"
+                           type="text"
+                           ng-trim="false"
+                           ng-model="datasetParametersCtrl.parameters.separator"
+                           ng-model-options="{debounce: { 'default': 200, 'blur': 0 }}"/>
+                </div>
+            </div>
         </div>
+    </div>
+    <div class="dataset-parameters-actions">
+        <talend-button-loader button-class="btn-primary"
+                              disable-condition="datasetParametersCtrl.processing"
+                              loading="datasetParametersCtrl.processing"
+                              loading-class="icon">
+            <span translate-once="SUBMIT"></span>
+        </talend-button-loader>
     </div>
 </form>

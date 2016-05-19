@@ -30,7 +30,7 @@ $slide-action-background: $base-background-color;
 
     #playground-dataset-parameters {
       box-shadow: $box-shadow-to-bottom;
-      @include slidable-top(130px, 0px);
+      @include slidable-top(200px, 0px);
       > * {
         margin: 10px;
       }

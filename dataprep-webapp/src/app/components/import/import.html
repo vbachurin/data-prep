@@ -1,7 +1,8 @@
 <div id="help-import" ng-if="$ctrl.importTypes.length > 0">
     <talend-button-dropdown button-icon="m"
                             button-text="{{'IMPORT_DATASET' | translate }}"
-                            button-action="$ctrl.startDefaultImport()">
+                            button-action="$ctrl.startDefaultImport()"
+                            close-on-select="true">
         <ul>
             <li ng-repeat="importType in $ctrl.importTypes track by importType.locationType" ng-click="$ctrl.startImport(importType)">
                 {{importType.label}}

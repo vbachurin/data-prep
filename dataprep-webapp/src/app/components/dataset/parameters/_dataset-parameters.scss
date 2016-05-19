@@ -21,39 +21,66 @@
     padding: 10px;
   }
 
-  .dataset-parameters-body {
+  .param {
     @include display(flex);
-    padding: 20px;
+    @include flex-direction(column);
+    @include justify-content(flex-start);
+    @include align-items(stretch);
 
-    .dataset-parameters-parameter {
+    .param-row {
       @include display(flex);
+      @include flex-direction(row);
+      @include flex-wrap(wrap);
       @include align-items(center);
-      padding: 0 10px;
 
-      .dataset-parameters-label {
+      .param-row-item {
+        @include display(flex);
+        @include flex-direction(row);
+        @include flex-wrap(wrap);
+        @include align-items(center);
+        @include flex-basis(300px);
+        @include flex-grow(1);
+
+        .param-name {
+          @include flex-basis(75px);
+          @include flex-grow(0);
+
+          color: $white;
+        }
+
+        .param-input {
+          @include flex-basis(180px);
+          @include flex-grow(0);
+
+          &.dataset-name {
+            @include ellipsis(250px);
+            @include flex-grow(1);
+            font-weight: bold;
+            text-transform: uppercase;
+            color: $green;
+            padding-right: 10px;
+          }
+        }
+      }
+    }
+
+    .dataset-parameters-header {
+      .color-white {
         color: $white;
-        padding: 0 5px;
-      }
-
-      input,
-      select {
-        margin: 0;
-      }
-
-      input {
-        text-align: center;
-      }
-
-      .small-input {
-        width: 40px;
       }
     }
 
-    .dataset-parameters-actions {
-      @include flex-basis(30px);
-      @include flex-grow(1);
-      @include flex-shrink(1);
-      text-align: right;
+    .small-input {
+      width: 40px;
+      margin: 0;
     }
+  }
+
+  .dataset-parameters-actions {
+    @include flex-basis(30px);
+    @include flex-grow(1);
+    @include flex-shrink(1);
+    text-align: right;
+    padding: 0 10px 10px 0;
   }
 }
