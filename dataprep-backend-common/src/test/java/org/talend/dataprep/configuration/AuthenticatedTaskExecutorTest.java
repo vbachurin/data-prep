@@ -3,6 +3,7 @@ package org.talend.dataprep.configuration;
 import org.apache.cxf.common.i18n.Exception;
 import org.hamcrest.Matchers;
 import org.junit.Test;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,9 +21,10 @@ public class AuthenticatedTaskExecutorTest {
         final Authentication authentication = new UsernamePasswordAuthenticationToken(new Object(), new Object());
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        final AuthenticatedTaskExecutor executor = new AuthenticatedTaskExecutor();
-        executor.setWaitForTasksToCompleteOnShutdown(true);
-        executor.initialize();
+        ThreadPoolTaskExecutor delegate = new ThreadPoolTaskExecutor();
+        delegate.setWaitForTasksToCompleteOnShutdown(true);
+        delegate.initialize();
+        final AuthenticatedTaskExecutor executor = AuthenticatedTaskExecutor.authenticated(delegate);
 
         final CountDownLatch lock = new CountDownLatch(1);
 
