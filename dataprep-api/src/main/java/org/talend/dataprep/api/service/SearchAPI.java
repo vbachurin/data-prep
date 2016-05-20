@@ -53,13 +53,17 @@ public class SearchAPI extends APIService {
      * Search dataprep folders, preparations and datasets.
      *
      * @param name the name searched.
+     * @param filter the types of items to search. It can be (dataset, preparation, folder).
+     * @param strict strict mode means that the name should be the full name (still case insensitive).
      */
     //@formatter:off
     @RequestMapping(value = "/api/search", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List the of elements contained in a folder matching the given name", produces = APPLICATION_JSON_VALUE)
     @Timed
     public void search(
-            @ApiParam(value = "name") @RequestParam(defaultValue = "", required = false) String name,
+            @ApiParam(value = "name") @RequestParam(defaultValue = "", required = false) final String name,
+            @ApiParam(value = "filter") @RequestParam(required = false) final List<String> filter,
+            @ApiParam(value = "strict") @RequestParam(defaultValue = "false", required = false) final boolean strict,
             final OutputStream output) {
     //@formatter:on
 
@@ -67,16 +71,21 @@ public class SearchAPI extends APIService {
             LOG.debug("Searching dataprep for '{}' (pool: {})...", name, getConnectionStats());
         }
 
-        final int foldersFound;
-        final int datasetsFound;
-        final int preparationsFound;
+        int foldersFound = 0;
+        int datasetsFound = 0;
+        int preparationsFound = 0;
         try (final JsonGenerator generator = mapper.getFactory().createGenerator(output)) {
-
             generator.writeStartObject();
 
-            foldersFound = searchAndWriteFolders(name, generator);
-            datasetsFound = searchAndWriteDatasets(name, generator);
-            preparationsFound = searchAndWritePreparations(name, generator);
+            if(filter == null || filter.contains("folder")) {
+                foldersFound = searchAndWriteFolders(name, strict, generator);
+            }
+            if(filter == null || filter.contains("dataset")) {
+                datasetsFound = searchAndWriteDatasets(name, strict, generator);
+            }
+            if(filter == null || filter.contains("preparation")) {
+                preparationsFound = searchAndWritePreparations(name, strict, generator);
+            }
 
             generator.writeEndObject();
 
@@ -84,19 +93,26 @@ public class SearchAPI extends APIService {
             throw new TDPException(UNABLE_TO_SEARCH_DATAPREP, e);
         }
 
-        LOG.info("Searching dataprep for {} done, found {} folder(s), {} dataset(s) and {} preparation(s)", name, datasetsFound, foldersFound, preparationsFound);
+        LOG.info("Searching dataprep for {} done with filter: {} and strict mode: {}, found {} folder(s), {} dataset(s) and {} preparation(s)",
+                name,
+                filter,
+                strict,
+                datasetsFound,
+                foldersFound,
+                preparationsFound
+        );
 
     }
 
     /**
      * Search for the given name in the folders and write the result straight to output in json.
      * @param name the name searched.
-     * @param output where to write the json.
-     * @return the number of folders that match the searched name.
+     * @param strict strict mode (the name should be the full name)
+     * @param output where to write the json.  @return the number of folders that match the searched name.
      */
-    private int searchAndWriteFolders(String name, JsonGenerator output) throws IOException {
+    private int searchAndWriteFolders(final String name, final boolean strict, final JsonGenerator output) throws IOException {
         final int foldersFound;
-        final SearchFolders commandListFolders = getCommand(SearchFolders.class, name);
+        final SearchFolders commandListFolders = getCommand(SearchFolders.class, name, strict);
         try (InputStream input = commandListFolders.execute()) {
             List<Folder> folders= mapper.readValue(input, new TypeReference<List<Folder>>(){});
             foldersFound = folders.size();
@@ -112,13 +128,13 @@ public class SearchAPI extends APIService {
     /**
      * Search for the given name in the datasets and write the result straight to output in json.
      * @param name the name searched.
-     * @param output where to write the json.
-     * @return the number of datasets that match the searched name.
+     * @param strict strict mode (the name should be the full name)
+     *@param output where to write the json.  @return the number of datasets that match the searched name.
      */
-    private int searchAndWriteDatasets(String name, JsonGenerator output) throws IOException {
+    private int searchAndWriteDatasets(final String name, final boolean strict, final JsonGenerator output) throws IOException {
 
         final int datasetsFound;
-        final SearchDataSets command = getCommand(SearchDataSets.class, name);
+        final SearchDataSets command = getCommand(SearchDataSets.class, name, strict);
         try (InputStream input = command.execute()) {
             List<DataSetMetadata> datasets= mapper.readValue(input, new TypeReference<List<DataSetMetadata>>(){});
             datasetsFound = datasets.size();
@@ -134,13 +150,13 @@ public class SearchAPI extends APIService {
     /**
      * Search for the given name in preparations and write them straight to the ouput on json.
      * @param name the searched name.
-     * @param output where to write the preparations.
-     * @return the number of preparation found.
+     * @param strict strict mode (the name should be the full name)
+     *@param output where to write the preparations.  @return the number of preparation found.
      */
-    private int searchAndWritePreparations(String name, JsonGenerator output) throws IOException {
+    private int searchAndWritePreparations(final String name, final boolean strict, final JsonGenerator output) throws IOException {
 
         final int preparationsFound;
-        final PreparationSearchByName command = getCommand(PreparationSearchByName.class, name, false);
+        final PreparationSearchByName command = getCommand(PreparationSearchByName.class, name, strict);
         try (InputStream input = command.execute()) {
             List<Preparation> preparations= mapper.readValue(input, new TypeReference<List<Preparation>>(){});
             preparationsFound = preparations.size();

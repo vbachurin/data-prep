@@ -106,19 +106,18 @@ public class InMemoryFolderRepository extends FolderRepositoryAdapter {
     }
 
     @Override
-    public Iterable<Folder> searchFolders(String queryString) {
+    public Iterable<Folder> searchFolders(String queryString, boolean strict) {
         final List<Folder> children = new ArrayList<>();
         this.foldersMap.values().stream().forEach(folder -> {
             String cleanPath = cleanPath(folder.getPath());
 
             if (StringUtils.contains(cleanPath, '/')) {
-                if (StringUtils.containsIgnoreCase(StringUtils.substringAfterLast(cleanPath, "/"), queryString)) {
-                    children.add(folder);
-                }
-            } else {
-                if (StringUtils.containsIgnoreCase(cleanPath, queryString)) {
-                    children.add(folder);
-                }
+                cleanPath = StringUtils.substringAfterLast(cleanPath, "/");
+            }
+
+            if ((strict && StringUtils.equalsIgnoreCase(cleanPath, queryString))
+                    || (!strict && StringUtils.containsIgnoreCase(cleanPath, queryString))) {
+                children.add(folder);
             }
 
         });

@@ -41,17 +41,18 @@ public class SearchDataSets extends GenericCommand<InputStream> {
      * @param name the name to search.
      */
     // private constructor to ensure IoC
-    private SearchDataSets(String name) {
+    private SearchDataSets(final String name, final boolean strict) {
         super(GenericCommand.DATASET_GROUP);
-        execute(() -> onExecute(name));
+        execute(() -> onExecute(name, strict));
         on(HttpStatus.OK).then(pipeStream());
 
     }
 
-    private HttpRequestBase onExecute(String name) {
+    private HttpRequestBase onExecute(final String name, final boolean strict) {
         try {
             URIBuilder uriBuilder = new URIBuilder(datasetServiceUrl + "/datasets/search");
             uriBuilder.addParameter("name", name);
+            uriBuilder.addParameter("strict", String.valueOf(strict));
             return new HttpGet(uriBuilder.build());
         } catch (URISyntaxException e) {
             throw new TDPException(UNEXPECTED_EXCEPTION, e);

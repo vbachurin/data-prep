@@ -133,9 +133,10 @@ public interface FolderRepository {
     /**
      *
      * @param queryString part of the name to search in folder (not case sensitive)
+     * @param strict strict mode means the name is the full name
      * @return A {@link Iterable} of {@link Folder} with the query string in the name
      */
-    Iterable<Folder> searchFolders(String queryString);
+    Iterable<Folder> searchFolders(String queryString, boolean strict);
 
     /**
      * Return the folder that holds the given content id and content type.

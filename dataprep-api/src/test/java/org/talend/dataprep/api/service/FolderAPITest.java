@@ -202,6 +202,9 @@ public class FolderAPITest extends ApiServiceTestBase {
 
     @Test
     public void search_folders() throws Exception {
+        // given
+        final boolean strict = true;
+        final boolean nonStrict = false;
         createFolder("foo");
         createFolder("bar");
         createFolder("foo/beer");
@@ -214,16 +217,21 @@ public class FolderAPITest extends ApiServiceTestBase {
         createFolder("foo/wine/Goodwine");
         createFolder("foo/wine/verygoodWInE");
 
-        assertOnSearch("foo", 1);
-        assertOnSearch("wine", 3);
-        assertOnSearch("tIti", 4);
-        assertOnSearch("GoOd", 2);
+        assertOnSearch("foo", nonStrict, 1);
+        assertOnSearch("wine", nonStrict, 3);
+        assertOnSearch("tIti", nonStrict, 4);
+        assertOnSearch("GoOd", nonStrict, 2);
+
+        assertOnSearch("titi", strict, 1);
+        assertOnSearch("good", strict, 0);
     }
 
-    private void assertOnSearch(String searchQuery, int expectedSize) throws Exception {
+    private void assertOnSearch(final String searchQuery, final boolean strict, final int expectedSize) throws Exception {
         //when
         final Response response = RestAssured.given() //
-                .queryParam("pathName", searchQuery).when() //
+                .queryParam("pathName", searchQuery) //
+                .queryParam("strict", strict) //
+                .when() //
                 .get("/api/folders/search");
         final List<Folder> folders = mapper.readValue(response.asString(), new TypeReference<List<Folder>>() {
         });

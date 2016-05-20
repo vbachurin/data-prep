@@ -985,18 +985,27 @@ public class DataSetService {
      * Search datasets.
      *
      * @param name what to searched in datasets.
+     * @param strict If the searched name should be the full name
      * @return the list of found datasets metadata.
      */
     @RequestMapping(value = "/datasets/search", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Search the dataset metadata", notes = "Search the dataset metadata.")
     @Timed
-    public Iterable<DataSetMetadata> search(@RequestParam @ApiParam(value = "What to search in datasets") final String name) {
+    public Iterable<DataSetMetadata> search(@RequestParam @ApiParam(value = "What to search in datasets") final String name,
+                                            @RequestParam @ApiParam(value = "The searched name should be the full name") final boolean strict) {
 
         LOG.debug("search datasets metadata for {}", name);
 
         final Set<DataSetMetadata> found;
         try (final Stream<DataSetMetadata> stream = stream(dataSetMetadataRepository.list().spliterator(), false)) {
-            found = stream.filter(m -> StringUtils.containsIgnoreCase(m.getName(), name)).collect(Collectors.toSet());
+            found = stream
+                    .filter(m -> {
+                        if(strict) {
+                            return StringUtils.equalsIgnoreCase(m.getName(), name);
+                        }
+                        return StringUtils.containsIgnoreCase(m.getName(), name);
+                    })
+                    .collect(Collectors.toSet());
         }
 
         LOG.info("found {} dataset while searching {}", found.size(), name);

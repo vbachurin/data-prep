@@ -150,14 +150,17 @@ public class FolderAPI extends APIService {
     /**
      * no javadoc here so see description in @ApiOperation notes.
      *
-     * @param pathName
+     * @param pathName The folder to search.
+     * @param strict Strict mode means searched name is the full name.
      * @return
      */
     @RequestMapping(value = "/api/folders/search", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Search Folders with parameter as part of the name", produces = APPLICATION_JSON_VALUE, notes = "")
     @Timed
-    public void search(@RequestParam(required = false) String pathName, final OutputStream output) {
-        final HystrixCommand<InputStream> searchFolders = getCommand(SearchFolders.class, pathName);
+    public void search(@RequestParam(required = false) final String pathName,
+                       @RequestParam(required = false) final boolean strict,
+                       final OutputStream output) {
+        final HystrixCommand<InputStream> searchFolders = getCommand(SearchFolders.class, pathName, strict);
         try (InputStream commandResult = searchFolders.execute()){
             HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
             IOUtils.copyLarge(commandResult, output);

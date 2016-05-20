@@ -492,10 +492,10 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
     }
 
     /**
-     * @see FolderRepository#searchFolders(String)
+     * @see FolderRepository#searchFolders(String, boolean)
      */
     @Override
-    public Iterable<Folder> searchFolders(String queryString) {
+    public Iterable<Folder> searchFolders(String queryString, boolean strict) {
         Set<Folder> folders = new HashSet<>();
 
         FoldersConsumer foldersConsumer = new FoldersConsumer() {
@@ -515,7 +515,8 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
                 if (Files.isDirectory(path)) {
                     String pathStr = pathAsString(path);
                     String pathName = extractName(pathStr);
-                    if (StringUtils.containsIgnoreCase(pathName, queryString)) {
+                    if ((strict && StringUtils.equalsIgnoreCase(pathName, queryString))
+                            || (!strict && StringUtils.containsIgnoreCase(pathName, queryString))) {
                         FileInfo fileInfo = FileInfo.create(path);
                         Folder folder = fileInfo != null
                                 ? new Folder(pathStr, pathName, fileInfo.getCreationDate(), fileInfo.getLastModificationDate())

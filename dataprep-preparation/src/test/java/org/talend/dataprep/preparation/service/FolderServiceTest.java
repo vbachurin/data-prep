@@ -13,23 +13,22 @@
 
 package org.talend.dataprep.preparation.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.jayway.restassured.response.Response;
+import org.junit.Test;
+import org.talend.dataprep.api.folder.Folder;
+import org.talend.dataprep.preparation.BasePreparationTest;
+
+import java.io.IOException;
+import java.util.List;
+
 import static com.jayway.restassured.RestAssured.given;
 import static java.util.stream.Collectors.toList;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-import java.util.List;
-
-import org.junit.Test;
-import org.talend.dataprep.api.folder.Folder;
-import org.talend.dataprep.preparation.BasePreparationTest;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.jayway.restassured.response.Response;
 
 /**
  * Unit/integration tests for the FolderService
@@ -133,6 +132,38 @@ public class FolderServiceTest extends BasePreparationTest {
         // then
         assertThat(response.getStatusCode(), is(400));
         checkErrorResponse(response.asString());
+    }
+
+    @Test
+    public void shouldSearchFolders() throws Exception {
+        // given
+        final boolean strict = true;
+        final boolean nonStrict = false;
+
+        createFolder("foo");
+        createFolder("foo/bar");
+        createFolder("foo/toto");
+        createFolder("foo/bar/tototo");
+
+        // when / then
+        assertSearch("toto", strict, new String[]{"foo/toto"});
+        assertSearch("tot", nonStrict, new String[]{"foo/toto", "foo/bar/tototo"});
+    }
+
+    private void assertSearch(final String name, final boolean strict, final String[] expectedResultPaths) throws IOException {
+        final Response response = given() //
+                .queryParam("pathName", name) //
+                .queryParam("strict", strict) //
+                .expect().statusCode(200).log().ifError()//
+                .when() //
+                .get("/folders/search");
+
+        // then
+        assertThat(response.getStatusCode(), is(200));
+        final List<Folder> folders = mapper.readValue(response.asString(), new TypeReference<List<Folder>>() {});
+        final List<String> foldersNames = folders.stream().map(Folder::getPath).collect(toList());
+        assertThat(foldersNames.size(), is(expectedResultPaths.length));
+        assertThat(foldersNames, containsInAnyOrder(expectedResultPaths));
     }
 
     private void createFolder(String path) {

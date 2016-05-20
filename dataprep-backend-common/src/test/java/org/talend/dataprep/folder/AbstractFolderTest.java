@@ -428,11 +428,10 @@ public abstract class AbstractFolderTest {
      */
     @Test
     public void create_folders_then_search() throws Exception {
-
+        // given
         long sizeBefore = getFolderRepository().size();
 
         getFolderRepository().addFolder("foo");
-
         getFolderRepository().addFolder("bar");
 
         long sizeAfter = getFolderRepository().size();
@@ -442,32 +441,23 @@ public abstract class AbstractFolderTest {
         assertChildrenSize("", 2);
 
         getFolderRepository().addFolder("foo/beer");
-
         getFolderRepository().addFolder("foo/wine");
-
         getFolderRepository().addFolder("foo/wine/toto");
-
         getFolderRepository().addFolder("foo/wine/titi");
-
         getFolderRepository().addFolder("foo/wine/thetiti");
-
         getFolderRepository().addFolder("foo/wine/yupTITI");
-
         getFolderRepository().addFolder("foo/wine/yeahTITI");
-
         getFolderRepository().addFolder("foo/wine/goodwine");
-
         getFolderRepository().addFolder("foo/wine/verygoodWInE");
 
         sizeAfter = getFolderRepository().size();
-
         Assertions.assertThat(sizeAfter).isEqualTo(sizeBefore + 2 + 9);
 
-        assertOnSearch("foo", 1);
-
-        assertOnSearch("wine", 3);
-
-        assertOnSearch("tIti", 4);
+        // when / then
+        assertOnSearch("foo", false, 1);
+        assertOnSearch("wine", false, 3);
+        assertOnSearch("tIti", false, 4);
+        assertOnSearch("titi", true, 1); // strict
 
     }
 
@@ -543,8 +533,8 @@ public abstract class AbstractFolderTest {
         }
     }
 
-    private void assertOnSearch(String query, int foundNumber) {
-        Iterable<Folder> folders = getFolderRepository().searchFolders(query);
+    private void assertOnSearch(final String query, final boolean strict, final int foundNumber) {
+        Iterable<Folder> folders = getFolderRepository().searchFolders(query, strict);
         Assertions.assertThat(Lists.newArrayList(folders)).isNotNull().isNotEmpty().hasSize(foundNumber);
     }
 

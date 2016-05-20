@@ -13,24 +13,10 @@
 
 package org.talend.dataprep.dataset.service;
 
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.RestAssured.when;
-import static com.jayway.restassured.http.ContentType.JSON;
-import static com.jayway.restassured.path.json.JsonPath.from;
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
-import static org.hamcrest.Matchers.*;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.*;
-import static org.springframework.http.HttpStatus.OK;
-import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
-import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
-
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.restassured.response.Response;
 import org.apache.commons.io.IOUtils;
 import org.assertj.core.api.Assertions;
 import org.hamcrest.CoreMatchers;
@@ -50,10 +36,23 @@ import org.talend.dataprep.lock.DistributedLock;
 import org.talend.dataprep.schema.csv.CSVFormatFamily;
 import org.talend.dataprep.security.Security;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jayway.restassured.response.Response;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.RestAssured.when;
+import static com.jayway.restassured.http.ContentType.JSON;
+import static com.jayway.restassured.path.json.JsonPath.from;
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+import static org.hamcrest.Matchers.*;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.*;
+import static org.springframework.http.HttpStatus.OK;
+import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
+import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
 public class DataSetServiceTest extends DataSetBaseTest {
 
@@ -457,21 +456,26 @@ public class DataSetServiceTest extends DataSetBaseTest {
     @Test
     public void shouldSearchDatasets() throws Exception {
         // given
-        String ticId = createCSVDataSet(this.getClass().getResourceAsStream(T_SHIRT_100_CSV), "tic");
-        String ticTacId = createCSVDataSet(this.getClass().getResourceAsStream(T_SHIRT_100_CSV), "tic tac");
-        String ticTacTocId = createCSVDataSet(this.getClass().getResourceAsStream(T_SHIRT_100_CSV), "tic tac toc");
-        String tutuId = createCSVDataSet(this.getClass().getResourceAsStream(T_SHIRT_100_CSV), "tutu");
+        final boolean strict = true;
+        final boolean nonStrict = false;
+        final String ticId = createCSVDataSet(this.getClass().getResourceAsStream(T_SHIRT_100_CSV), "tic");
+        final String ticTacId = createCSVDataSet(this.getClass().getResourceAsStream(T_SHIRT_100_CSV), "tic tac");
+        final String ticTacTocId = createCSVDataSet(this.getClass().getResourceAsStream(T_SHIRT_100_CSV), "tic tac toc");
 
         // when / then
-        checkSearchResult("toto", emptyList());
-        checkSearchResult("tic", asList(ticId, ticTacId, ticTacTocId));
-        checkSearchResult("tac", asList(ticTacId, ticTacTocId));
-        checkSearchResult("toc", asList(ticTacTocId));
+        checkSearchResult("toto", nonStrict, emptyList());
+        checkSearchResult("tic", nonStrict, asList(ticId, ticTacId, ticTacTocId));
+        checkSearchResult("tac", nonStrict, asList(ticTacId, ticTacTocId));
+        checkSearchResult("toc", nonStrict, asList(ticTacTocId));
+
+        checkSearchResult("tac", strict, emptyList());
+        checkSearchResult("tic TAC toc", strict, asList(ticTacTocId));
     }
 
-    private void checkSearchResult(String search, List<String> expectedIds) throws IOException {
+    private void checkSearchResult(final String search, final boolean isStrict, final List<String> expectedIds) throws IOException {
         final Response response = given() //
                 .queryParam("name", search) //
+                .queryParam("strict", isStrict) //
                 .when()//
                 .expect().statusCode(200).log().ifError() //
                 .get("/datasets/search");

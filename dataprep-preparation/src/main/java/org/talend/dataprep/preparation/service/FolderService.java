@@ -111,14 +111,16 @@ public class FolderService {
     /**
      * Search for folders.
      *
-     * @param pathName the part of the name to look for.
+     * @param pathName the folder name to search.
+     * @param strict strict mode means the name is the full name.
      * @return the folders whose part of their name match the given path.
      */
     @RequestMapping(value = "/folders/search", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Search Folders with parameter as part of the name", produces = APPLICATION_JSON_VALUE)
     @Timed
-    public Iterable<Folder> search(@RequestParam(required = false) String pathName) {
-        return folderRepository.searchFolders(pathName);
+    public Iterable<Folder> search(@RequestParam(required = false) final String pathName,
+                                   @RequestParam(required = false) final boolean strict) {
+        return folderRepository.searchFolders(pathName, strict);
     }
 
     /**

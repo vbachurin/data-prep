@@ -14,10 +14,12 @@
 package org.talend.dataprep.api.service;
 
 import static com.jayway.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
@@ -27,62 +29,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.jayway.restassured.response.Response;
 
-/**
- *
- */
 public class SearchAPITest extends ApiServiceTestBase {
-
-    @Test
-    public void shouldSearch() throws Exception {
-
-        // given
-        folderRepository.addFolder("/beer");
-        folderRepository.addFolder("/beer/Queue de charrue");
-        folderRepository.addFolder("/beer/Saint Feuillien");
-
-        folderRepository.addFolder("/whisky");
-        folderRepository.addFolder("/whisky/McCallan Sherry Oak");
-        folderRepository.addFolder("/whisky/McCallan Fine Oak");
-        folderRepository.addFolder("/whisky/McCallan 1824 Collection");
-
-        final String expectedDSId = createDataset("dataset/dataset.csv", "MacCallan collection", "text/csv");
-        createDataset("dataset/dataset.csv", "Saint Feuillien", "text/csv");
-
-        final String expectedPrepId = createPreparationFromFile("dataset/dataset.csv", "cleanup MacCallan", "text/csv", "/whisky");
-        createPreparationFromFile("dataset/dataset.csv", "cleanup Queue 2 charrue", "text/csv", "/beer");
-
-        // when
-        final Response response = given() //
-                .queryParam("name", "callan") //
-                .when()//
-                .expect().statusCode(200).log().ifError() //
-                .get("/api/search");
-
-        // then
-        assertThat(response.getStatusCode(), is(200));
-
-        final JsonNode rootNode = mapper.readTree(response.asInputStream());
-
-        assertTrue(rootNode.has("folders"));
-        final JsonNode folders = rootNode.get("folders");
-        assertTrue(folders.isArray());
-        assertEquals(3, folders.size());
-
-        assertTrue(rootNode.has("datasets"));
-        final JsonNode datasets = rootNode.get("datasets");
-        assertTrue(datasets.isArray());
-        assertEquals(1, datasets.size());
-        assertEquals(expectedDSId, datasets.get(0).get("id").asText());
-
-        assertTrue(rootNode.has("preparations"));
-        final JsonNode preparations = rootNode.get("preparations");
-        assertTrue(preparations.isArray());
-        assertEquals(1, preparations.size());
-        final JsonNode preparation = preparations.get(0);
-        assertEquals(expectedPrepId, preparation.get("id").asText());
-        assertTrue(preparation.has("folder"));
-    }
-
 
     @Test
     public void shouldReturnMatchingPreparationsWhenPerformingInventory() throws IOException {
@@ -146,5 +93,96 @@ public class SearchAPITest extends ApiServiceTestBase {
         JsonNode preparations = rootNode.get("preparations");
         List<Preparation> preparationList = mapper.readValue(preparations.toString(), new TypeReference<List<Preparation>>(){});
         assertThat(preparationList.size(), is(0));
+    }
+
+    @Test
+    public void shouldSearch() throws Exception {
+        // given
+        folderRepository.addFolder("/beer");
+        folderRepository.addFolder("/beer/Queue de charrue");
+        folderRepository.addFolder("/beer/Saint Feuillien");
+
+        folderRepository.addFolder("/whisky");
+        folderRepository.addFolder("/whisky/McCallan Sherry Oak");
+        folderRepository.addFolder("/whisky/McCallan Fine Oak");
+        folderRepository.addFolder("/whisky/McCallan 1824 Collection");
+
+        folderRepository.addFolder("/menu");
+        folderRepository.addFolder("/menu/menu A");
+        folderRepository.addFolder("/menu/menu B");
+        folderRepository.addFolder("/menu/menu C");
+
+
+        final String datasetId1 = createDataset("dataset/dataset.csv", "MacCallan collection", "text/csv");
+        final String datasetId2 = createDataset("dataset/dataset.csv", "menu", "text/csv");
+        createDataset("dataset/dataset.csv", "Saint Feuillien", "text/csv");
+        createDataset("dataset/dataset.csv", "menu bis", "text/csv");
+
+        final String preparationId1 = createPreparationFromFile("dataset/dataset.csv", "cleanup MacCallan", "text/csv", "/whisky");
+        final String preparationId2 = createPreparationFromFile("dataset/dataset.csv", "menu", "text/csv", "/menu");
+        createPreparationFromFile("dataset/dataset.csv", "cleanup Queue 2 charrue", "text/csv", "/beer");
+        createPreparationFromFile("dataset/dataset.csv", "cleanup menu", "text/csv", "/menu");
+
+        final boolean nonStrict = false;
+        final boolean strict = true;
+
+        // when / then
+        assertSearch("callan",
+                nonStrict,
+                new String[] { "whisky/McCallan Sherry Oak", "whisky/McCallan Fine Oak", "whisky/McCallan 1824 Collection" },
+                new String[] { datasetId1 },
+                new String[] { preparationId1 });
+
+        assertSearch("menu",
+                strict,
+                new String[] { "menu" },
+                new String[] { datasetId2 },
+                new String[] { preparationId2 });
+    }
+
+    private void assertSearch(final String name,
+                              final boolean strict,
+                              final String[] expectedFoldersPath,
+                              final String[] expectedDatasetsId,
+                              final String[] expectedPreparationsId) throws IOException {
+        // when
+        final Response response = given() //
+                .queryParam("name", name) //
+                .queryParam("strict", strict) //
+                .when()//
+                .expect().statusCode(200).log().ifError() //
+                .get("/api/search");
+
+        // then
+        assertThat(response.getStatusCode(), is(200));
+
+        final JsonNode rootNode = mapper.readTree(response.asInputStream());
+
+        assertSearchItems(rootNode, "folders", "path", expectedFoldersPath);
+        assertSearchItems(rootNode, "datasets", "id", expectedDatasetsId);
+        assertSearchItems(rootNode, "preparations", "id", expectedPreparationsId);
+
+        final JsonNode preparations = rootNode.get("preparations");
+        for(int i = 0; i < preparations.size(); ++i) {
+            assertTrue(preparations.get(i).has("folder"));
+        }
+    }
+
+    private void assertSearchItems(final JsonNode rootNode, final String prop, final String field, final String[] expectedFields) {
+        // check that the property holding the list of items exists
+        assertTrue(rootNode.has(prop));
+
+        // check that the number of items is the expected number
+        final JsonNode items = rootNode.get(prop);
+        assertTrue(items.isArray());
+        assertThat(items.size(), is(expectedFields.length));
+
+        // check that list of items contains exactly list of expected ones
+        // by comparing the "field" of each item with the expectedFields
+        final List<String> extractedFields = new ArrayList<>(items.size());
+        for(int i = 0; i < items.size(); ++i) {
+            extractedFields.add(items.get(i).get(field).textValue());
+        }
+        assertThat(extractedFields, containsInAnyOrder(expectedFields));
     }
 }
