@@ -38,7 +38,7 @@ export default function SuggestionService(LineSuggestionService, ColumnSuggestio
          */
         tab: null,
 
-        setColumn,
+        setColumns,
         setLine,
         selectTab,
     };
@@ -51,8 +51,8 @@ export default function SuggestionService(LineSuggestionService, ColumnSuggestio
      * @param {object} column The new selected column
      * @description Set the selected column and init its suggested transformations
      */
-    function setColumn(column) {
-        ColumnSuggestionService.initTransformations(column);
+    function setColumns(columns) {
+        ColumnSuggestionService.initTransformations(columns);
     }
 
     /**

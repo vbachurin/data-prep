@@ -129,7 +129,7 @@ describe('Playground directive', () => {
                     orderList: orderList,
                 },
                 grid: {
-                    selectedColumn: { id: '0001' },
+                    selectedColumns: [{ id: '0001' }],
                     selectedLine: { '0001': '1' },
                 },
                 recipe: { current: { steps: [] } },

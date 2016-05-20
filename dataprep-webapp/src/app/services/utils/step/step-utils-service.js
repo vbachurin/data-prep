@@ -19,6 +19,19 @@ import _ from 'lodash';
  * @description Step utility service
  */
 export default class StepUtilsService {
+
+    /**
+     * @ngdoc method
+     * @name getCurrentSteps
+     * @methodOf data-prep.services.utils.service:StepUtilsService
+     * @param {object} recipeState The recipe state
+     * @description Return real current recipe steps
+     * @returns {object} The current recipe steps
+     */
+    getCurrentSteps(recipeState) {
+        return recipeState.beforePreview || recipeState.current;
+    }
+
     /**
      * @ngdoc method
      * @name getStep
@@ -34,11 +47,11 @@ export default class StepUtilsService {
             return recipeState.initialStep;
         }
 
-        if (index >= recipeState.current.steps.length || index < 0) {
-            return defaultLast ? recipeState.current.steps[recipeState.current.steps.length - 1] : null;
+        if (index >= this.getCurrentSteps(recipeState).steps.length || index < 0) {
+            return defaultLast ? this.getCurrentSteps(recipeState).steps[this.getCurrentSteps(recipeState).steps.length - 1] : null;
         }
 
-        return recipeState.current.steps[index];
+        return this.getCurrentSteps(recipeState).steps[index];
     }
 
     /**
@@ -54,11 +67,11 @@ export default class StepUtilsService {
         if (index <= 0) {
             return recipeState.initialStep;
         }
-        else if (index >= recipeState.current.steps.length) {
-            return recipeState.current.steps[recipeState.current.steps.length - 1];
+        else if (index >= this.getCurrentSteps(recipeState).steps.length) {
+            return this.getCurrentSteps(recipeState).steps[this.getCurrentSteps(recipeState).steps.length - 1];
         }
 
-        return recipeState.current.steps[index - 1];
+        return this.getCurrentSteps(recipeState).steps[index - 1];
     }
 
     /**
@@ -70,7 +83,7 @@ export default class StepUtilsService {
      * @description Get the step before the given one
      */
     getPreviousStep(recipeState, step) {
-        const index = recipeState.current.steps.indexOf(step);
+        const index = this.getCurrentSteps(recipeState).steps.indexOf(step);
         return this.getStepBefore(recipeState, index);
     }
 
@@ -83,9 +96,9 @@ export default class StepUtilsService {
      * @returns {number} The last active step index
      */
     getActiveThresholdStepIndex(recipeState) {
-        return recipeState.current.lastActiveStep ?
-            recipeState.current.steps.indexOf(recipeState.current.lastActiveStep) :
-            recipeState.current.steps.length - 1;
+        return this.getCurrentSteps(recipeState).lastActiveStep ?
+            this.getCurrentSteps(recipeState).steps.indexOf(this.getCurrentSteps(recipeState).lastActiveStep) :
+        this.getCurrentSteps(recipeState).steps.length - 1;
     }
 
     /**
@@ -98,7 +111,7 @@ export default class StepUtilsService {
      * @returns {number} The current step index
      */
     getStepIndex(recipeState, step) {
-        return recipeState.current.steps.indexOf(step);
+        return this.getCurrentSteps(recipeState).steps.indexOf(step);
     }
 
     /**
@@ -110,7 +123,7 @@ export default class StepUtilsService {
      * @returns {object} The last active step
      */
     getLastActiveStep(recipeState) {
-        return recipeState.current.lastActiveStep || this.getLastStep(recipeState);
+        return this.getCurrentSteps(recipeState).lastActiveStep || this.getLastStep(recipeState);
     }
 
     /**
@@ -148,8 +161,8 @@ export default class StepUtilsService {
      * @returns {object} The last step
      */
     getLastStep(recipeState) {
-        return recipeState.current.steps.length > 0 ?
-            recipeState.current.steps[recipeState.current.steps.length - 1] :
+        return this.getCurrentSteps(recipeState).steps.length > 0 ?
+            this.getCurrentSteps(recipeState).steps[this.getCurrentSteps(recipeState).steps.length - 1] :
             recipeState.initialStep;
     }
 
@@ -164,7 +177,7 @@ export default class StepUtilsService {
      */
     getAllStepsFrom(recipeState, step) {
         const index = this.getStepIndex(recipeState, step);
-        return recipeState.current.steps.slice(index);
+        return this.getCurrentSteps(recipeState).steps.slice(index);
     }
 
     /**

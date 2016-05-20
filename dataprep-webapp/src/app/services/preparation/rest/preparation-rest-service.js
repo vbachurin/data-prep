@@ -180,15 +180,15 @@ export default function PreparationRestService($http, RestURLs) {
      * @ngdoc method
      * @name adaptTransformAction
      * @methodOf data-prep.services.preparation.service:PreparationRestService
-     * @param {object | array} actionParams The transformation(s) configuration {action: string, parameters: {object}}
+     * @param {array} actions The transformation(s) configuration {action: string, parameters: {object}}
      * @param {string} insertionStepId The insertion point step id. (Head = 'head' | falsy | head_step_id)
      * @description Adapt transformation action to api
      * @returns {object} - the adapted action
      */
-    function adaptTransformAction(actionParams, insertionStepId) {
+    function adaptTransformAction(actions, insertionStepId) {
         return {
             insertionStepId,
-            actions: actionParams instanceof Array ? actionParams : [actionParams],
+            actions,
         };
     }
 
@@ -197,13 +197,13 @@ export default function PreparationRestService($http, RestURLs) {
      * @name appendStep
      * @methodOf data-prep.services.preparation.service:PreparationRestService
      * @param {object} preparationId The preparation id
-     * @param {object | array} actionParams The transformation(s) configuration {action: string, parameters: {object}}
+     * @param {array} actions The transformation(s) configuration {action: string, parameters: {object}}
      * @param {string} insertionStepId The insertion point step id. (Head = 'head' | falsy | head_step_id)
      * @description Append a new transformation in the current preparation.
      * @returns {promise} - the POST promise
      */
-    function appendStep(preparationId, actionParams, insertionStepId) {
-        const actionParam = adaptTransformAction(actionParams, insertionStepId);
+    function appendStep(preparationId, actions, insertionStepId) {
+        const actionParam = adaptTransformAction(actions, insertionStepId);
         const request = {
             method: 'POST',
             url: `${RestURLs.preparationUrl}/${preparationId}/actions`,

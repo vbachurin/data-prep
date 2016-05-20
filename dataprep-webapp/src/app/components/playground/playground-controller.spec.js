@@ -533,6 +533,14 @@ describe('Playground controller', () => {
         beforeEach(inject(($q, LookupService, StateService) => {
             spyOn(LookupService, 'initLookups').and.returnValue($q.when());
             spyOn(StateService, 'setLookupVisibility').and.returnValue();
+
+            stateMock.playground.grid = {
+                selectedColumns: [{
+                    id: '0001',
+                    name: 'firstname',
+                }]
+            };
+
         }));
 
         it('should load lookup panel when it is hidden', inject((LookupService) => {

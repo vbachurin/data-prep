@@ -42,6 +42,7 @@ describe('Playground state service', () => {
         spyOn(FilterStateService, 'enableFilters').and.returnValue();
         spyOn(FilterStateService, 'disableFilters').and.returnValue();
         spyOn(LookupStateService, 'reset').and.returnValue();
+        spyOn(LookupStateService, 'setVisibility').and.returnValue();
         spyOn(SuggestionsStateService, 'reset').and.returnValue();
         spyOn(ParametersStateService, 'hide').and.returnValue();
         spyOn(ParametersStateService, 'show').and.returnValue();
@@ -113,6 +114,20 @@ describe('Playground state service', () => {
 
             //then
             expect(playgroundState.isSavingPreparation).toBe(true);
+        }));
+
+        it('should set set Lookup Visibility flag', inject((playgroundState, LookupStateService, PlaygroundStateService) => {
+            //given
+            playgroundState.grid = {
+                selectedColumns :  [{ id: '0000'}, { id: '0001'}],
+            };
+
+            //when
+            PlaygroundStateService.setLookupVisibility(true);
+
+            //then
+            expect(playgroundState.grid.selectedColumns).toEqual([{ id: '0000'}]);
+            expect(LookupStateService.setVisibility).toHaveBeenCalledWith(true);
         }));
     });
 

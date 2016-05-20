@@ -37,7 +37,7 @@ export default function StatsDetailsCtrl(state, FilterService, StatisticsService
      * @description Add a pattern filter from selected pattern item
      */
     function addPatternFilter(item, keyName = null) {
-        const column = state.playground.grid.selectedColumn;
+        const column = state.playground.grid.selectedColumns[0];
         const args = {
             patterns: [
                 {

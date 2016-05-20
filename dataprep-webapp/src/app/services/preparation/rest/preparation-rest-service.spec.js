@@ -228,20 +228,20 @@ describe('Preparation REST Service', () => {
     describe('preparation step lifecycle', () => {
         it('should append a transformation step in the current preparation', inject(($rootScope, RestURLs, PreparationRestService) => {
             //given
-            const actionParams = {
+            const actionParams = [{
                 action: 'fillemptywithdefault',
                 parameters: {
                     action: 'fillemptywithdefault',
                     parameters: { default_value: 'N/A', column_name: 'state', column_id: '0000' },
                 },
-            };
+            }];
 
             const preparationId = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
 
             //given : preparation step append request
             $httpBackend
                 .expectPOST(RestURLs.preparationUrl + '/' + preparationId + '/actions', {
-                    actions: [actionParams],
+                    actions: actionParams,
                 })
                 .respond(200);
 
@@ -255,13 +255,13 @@ describe('Preparation REST Service', () => {
 
         it('should append a transformation step in the current preparation at a provided insertion point', inject(($rootScope, RestURLs, PreparationRestService) => {
             //given
-            const actionParams = {
+            const actionParams = [{
                 action: 'fillemptywithdefault',
                 parameters: {
                     action: 'fillemptywithdefault',
                     parameters: { default_value: 'N/A', column_name: 'state', column_id: '0000' },
                 },
-            };
+            }];
             const insertionPoint = '65ab26e169174ef68b434';
 
             const preparationId = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
@@ -270,7 +270,7 @@ describe('Preparation REST Service', () => {
             $httpBackend
                 .expectPOST(RestURLs.preparationUrl + '/' + preparationId + '/actions', {
                     insertionStepId: insertionPoint,
-                    actions: [actionParams],
+                    actions: actionParams,
                 })
                 .respond(200);
 
@@ -279,7 +279,6 @@ describe('Preparation REST Service', () => {
             $httpBackend.flush();
             $rootScope.$digest();
 
-            //then : append request to have been called
         }));
 
         it('should append a list of transformation step in the current preparation', inject(($rootScope, RestURLs, PreparationRestService) => {

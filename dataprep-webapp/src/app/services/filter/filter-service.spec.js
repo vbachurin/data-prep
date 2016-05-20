@@ -548,12 +548,12 @@ describe('Filter service', function () {
             it('should create date filter', inject(function (FilterService, StateService) {
                 //given
                 stateMock.playground.grid = {
-                    selectedColumn: {
+                    selectedColumns: [{
                         id: 'col1',
                         statistics: {
                             patternFrequencyTable: [{ pattern: 'yyyy-MM-dd' }],
                         },
-                    },
+                    }],
                 };
 
                 expect(StateService.addGridFilter).not.toHaveBeenCalled();
@@ -1157,12 +1157,12 @@ describe('Filter service', function () {
             };
 
             stateMock.playground.grid = {
-                selectedColumn: {
+                selectedColumns: [{
                     id: '0000',
                     statistics: {
                         patternFrequencyTable: [{ pattern: 'yyyy-MM-dd' }],
                     },
-                },
+                }],
             };
 
             expect(StateService.updateGridFilter).not.toHaveBeenCalled();
@@ -1370,12 +1370,12 @@ describe('Filter service', function () {
             };
 
             stateMock.playground.grid = {
-                selectedColumn: {
+                selectedColumns: [{
                     id: '0000',
                     statistics: {
                         patternFrequencyTable: [{ pattern: 'yyyy-MM-dd' }],
                     },
-                },
+                }],
             };
 
             //when
@@ -1439,12 +1439,12 @@ describe('Filter service', function () {
             };
 
             stateMock.playground.grid = {
-                selectedColumn: {
+                selectedColumns: [{
                     id: '0000',
                     statistics: {
                         patternFrequencyTable: [{ pattern: 'yyyy-MM-dd' }],
                     },
-                },
+                }],
             };
 
             //when

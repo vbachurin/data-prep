@@ -74,6 +74,8 @@ export function StateService(RouteStateService, routeState,
         // playground - grid
         setColumnFocus: PlaygroundStateService.setColumnFocus,
         setGridSelection: PlaygroundStateService.setGridSelection,
+        toggleColumnSelection: PlaygroundStateService.toggleColumnSelection,
+        changeRangeSelection: PlaygroundStateService.changeRangeSelection,
 
         // playground - lookup
         setLookupActions: PlaygroundStateService.setLookupActions,

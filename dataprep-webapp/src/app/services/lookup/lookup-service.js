@@ -111,7 +111,7 @@ export default class LookupService {
 
                 // change column selection to focus on step target
                 const selectedColumn = _.find(this.state.playground.data.metadata.columns, { id: step.actionParameters.parameters.column_id });
-                this.StateService.setGridSelection(selectedColumn);
+                this.StateService.setGridSelection([selectedColumn]);
 
                 // lookup already loaded
                 if (this.state.playground.lookup.dataset === lookupAction &&
@@ -283,7 +283,7 @@ export default class LookupService {
      * @description Fetch the last step in recipe that is a lookup action for the selected column
      */
     _getSelectedColumnLastLookup() {
-        const selectedColumn = this.state.playground.grid.selectedColumn;
+        const selectedColumn = this.state.playground.grid.selectedColumns.length ? this.state.playground.grid.selectedColumns[0] : null;
         return selectedColumn &&
             _.findLast(this.state.playground.recipe.current.steps, (nextStep) => {
                 return nextStep.column.id === selectedColumn.id && nextStep.transformation.name === 'lookup';
@@ -299,7 +299,7 @@ export default class LookupService {
      */
     _getSelectedColumnLookup(lookupAction) {
         const datasetId = this._getDsId(lookupAction);
-        const selectedColumn = this.state.playground.grid.selectedColumn;
+        const selectedColumn = this.state.playground.grid.selectedColumns.length ? this.state.playground.grid.selectedColumns[0] : null;
         return selectedColumn &&
             _.findLast(this.state.playground.recipe.current.steps, (nextStep) => {
                 return nextStep.column.id === selectedColumn.id &&

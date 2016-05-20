@@ -104,7 +104,7 @@ export default function DatagridHeaderCtrl($scope, state, TransformationCacheSer
             column_name: vm.column.name,
         };
 
-        PlaygroundService.appendStep(RENAME_ACTION, params)
+        PlaygroundService.appendStep([{ action: RENAME_ACTION, parameters: params }])
             .then(() => {
                 vm.setEditMode(false);
                 originalName = vm.newName;

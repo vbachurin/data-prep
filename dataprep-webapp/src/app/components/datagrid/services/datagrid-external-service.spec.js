@@ -49,7 +49,7 @@ describe('Datagrid external service', () => {
 
         spyOn(StatisticsService, 'updateStatistics').and.returnValue();
         spyOn(StatisticsService, 'reset').and.returnValue();
-        spyOn(SuggestionService, 'setColumn').and.returnValue();
+        spyOn(SuggestionService, 'setColumns').and.returnValue();
         spyOn(SuggestionService, 'setLine').and.returnValue();
         spyOn(SuggestionService, 'selectTab').and.returnValue();
 
@@ -93,7 +93,7 @@ describe('Datagrid external service', () => {
         describe('tab selection', () => {
             it('should select "COLUMN" tab if no tab is provided', inject((DatagridExternalService, SuggestionService) => {
                 //given
-                stateMock.playground.grid.selectedColumn = { id: '0001' };
+                stateMock.playground.grid.selectedColumns = [{ id: '0001' }];
                 expect(SuggestionService.selectTab).not.toHaveBeenCalled();
 
                 //when
@@ -106,7 +106,7 @@ describe('Datagrid external service', () => {
             it('should select "LINE" tab when there is no selected column', inject((DatagridExternalService, SuggestionService) => {
                 //given
                 stateMock.playground.grid.selectedLine = { tdpId: 125 };
-                stateMock.playground.grid.selectedColumn = null;
+                stateMock.playground.grid.selectedColumns = [];
                 expect(SuggestionService.selectTab).not.toHaveBeenCalled();
 
                 //when
@@ -121,7 +121,7 @@ describe('Datagrid external service', () => {
             it('should reset charts when there is no selected column', inject((DatagridExternalService, StatisticsService) => {
                 //given
                 stateMock.playground.grid.selectedLine = { tdpId: 125 };
-                stateMock.playground.grid.selectedColumn = null;
+                stateMock.playground.grid.selectedColumns = [];
                 expect(StatisticsService.reset).not.toHaveBeenCalled();
 
                 //when
@@ -133,7 +133,7 @@ describe('Datagrid external service', () => {
 
             it('should update charts when there is a selected column', inject((DatagridExternalService, StatisticsService) => {
                 //given
-                stateMock.playground.grid.selectedColumn = { id: '0001' };
+                stateMock.playground.grid.selectedColumns = [{ id: '0001' }];
                 expect(StatisticsService.updateStatistics).not.toHaveBeenCalled();
 
                 //when
@@ -145,7 +145,7 @@ describe('Datagrid external service', () => {
 
             it('should load Lookup Panel when a new column is selected', inject((DatagridExternalService, LookupService) => {
                 //given
-                stateMock.playground.grid.selectedColumn = { id: '0001' };
+                stateMock.playground.grid.selectedColumns = [{ id: '0001' }];
                 expect(LookupService.updateTargetColumn).not.toHaveBeenCalled();
 
                 //when
@@ -158,18 +158,23 @@ describe('Datagrid external service', () => {
 
         describe('transformations', () => {
             it('should do nothing if selected column/line have not changed', inject((DatagridExternalService, SuggestionService) => {
+                //given
+                stateMock.playground.grid.selectedColumns = [];
+
                 //when
                 DatagridExternalService.updateSuggestionPanel();
 
                 //then
                 expect(SuggestionService.setLine).not.toHaveBeenCalled();
-                expect(SuggestionService.setColumn).not.toHaveBeenCalled();
+                expect(SuggestionService.setColumns).not.toHaveBeenCalled();
             }));
 
             describe('line scope', () => {
                 it('should update when there is a selected line', inject((DatagridExternalService, SuggestionService) => {
                     //given
                     stateMock.playground.grid.selectedLine = { tdpId: 125 };
+                    stateMock.playground.grid.selectedColumns = [];
+
                     expect(SuggestionService.setLine).not.toHaveBeenCalled();
 
                     //when
@@ -182,7 +187,7 @@ describe('Datagrid external service', () => {
                 it('should NOT update when there is no selected line', inject((DatagridExternalService, SuggestionService) => {
                     //given
                     stateMock.playground.grid.selectedLine = null;
-                    stateMock.playground.grid.selectedColumn = { id: '0001' };
+                    stateMock.playground.grid.selectedColumns = [{ id: '0001' }];
                     expect(SuggestionService.setLine).not.toHaveBeenCalled();
 
                     //when
@@ -199,7 +204,7 @@ describe('Datagrid external service', () => {
                     DatagridExternalService.lastSelectedLine = selectedLine;
                     expect(SuggestionService.setLine).not.toHaveBeenCalled();
 
-                    stateMock.playground.grid.selectedColumn = { id: '0001' };
+                    stateMock.playground.grid.selectedColumns = [{ id: '0001' }];
 
                     //when
                     DatagridExternalService.updateSuggestionPanel();
@@ -212,41 +217,56 @@ describe('Datagrid external service', () => {
             describe('column scope', () => {
                 it('should update when there is a selected column', inject((DatagridExternalService, SuggestionService) => {
                     //given
-                    stateMock.playground.grid.selectedColumn = { id: '0001' };
-                    expect(SuggestionService.setColumn).not.toHaveBeenCalled();
+                    stateMock.playground.grid.selectedColumns = [{ id: '0001' }];
+                    expect(SuggestionService.setColumns).not.toHaveBeenCalled();
 
                     //when
                     DatagridExternalService.updateSuggestionPanel();
 
                     //then
-                    expect(SuggestionService.setColumn).toHaveBeenCalled();
+                    expect(SuggestionService.setColumns).toHaveBeenCalled();
                 }));
 
                 it('should NOT update when there is no selected column', inject((DatagridExternalService, SuggestionService) => {
                     //given
                     stateMock.playground.grid.selectedLine = { tdpId: 125 };
-                    stateMock.playground.grid.selectedColumn = null;
-                    expect(SuggestionService.setColumn).not.toHaveBeenCalled();
+                    stateMock.playground.grid.selectedColumns = [];
+                    expect(SuggestionService.setColumns).not.toHaveBeenCalled();
 
                     //when
                     DatagridExternalService.updateSuggestionPanel();
 
                     //then
-                    expect(SuggestionService.setColumn).not.toHaveBeenCalled();
+                    expect(SuggestionService.setColumns).not.toHaveBeenCalled();
                 }));
 
                 it('should NOT update when selected column has not changed', inject((DatagridExternalService, SuggestionService) => {
                     //given
                     const selectedColumn = { id: '0001' };
-                    stateMock.playground.grid.selectedColumn = selectedColumn;
-                    DatagridExternalService.lastSelectedColumn = selectedColumn;
-                    expect(SuggestionService.setColumn).not.toHaveBeenCalled();
+                    stateMock.playground.grid.selectedColumns = [selectedColumn];
+                    DatagridExternalService.lastSelectedColumn = stateMock.playground.grid.selectedColumns[0];
+                    DatagridExternalService.lastSelectedColumnsNumber = 1;
+
+                    expect(SuggestionService.setColumns).not.toHaveBeenCalled();
 
                     //when
                     DatagridExternalService.updateSuggestionPanel();
 
                     //then
-                    expect(SuggestionService.setColumn).not.toHaveBeenCalled();
+                    expect(SuggestionService.setColumns).not.toHaveBeenCalled();
+                }));
+
+                it('should call StatisticsService ', inject((DatagridExternalService, StatisticsService) => {
+                    //given
+                    stateMock.playground.grid.selectedColumns = [{ id: '0001' }, { id: '0002' }];
+                    DatagridExternalService.lastSelectedColumn = stateMock.playground.grid.selectedColumns[0];
+                    DatagridExternalService.lastSelectedColumnsNumber = 1;
+
+                    //when
+                    DatagridExternalService.updateSuggestionPanel();
+
+                    //then
+                    expect(StatisticsService.reset).toHaveBeenCalled();
                 }));
             });
         });

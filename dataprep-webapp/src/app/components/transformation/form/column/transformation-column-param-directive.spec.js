@@ -38,7 +38,7 @@ describe('Transformation column param directive', function () {
     beforeEach(angular.mock.module('data-prep.transformation-form', function ($provide) {
 
         // set the selected column to the first one
-        stateMock.playground.grid.selectedColumn = stateMock.playground.data.metadata.columns[0];
+        stateMock.playground.grid.selectedColumns = [stateMock.playground.data.metadata.columns[0]];
 
         $provide.constant('state', stateMock);
     }));

@@ -40,7 +40,7 @@ describe('Lookup directive', function () {
                     orderList: orderList,
                 },
                 grid: {
-                    selectedColumn: {},
+                    selectedColumns: [{}],
                 },
             },
         };
@@ -60,7 +60,7 @@ describe('Lookup directive', function () {
     afterEach(function () {
         StateMock.playground.lookup.columnsToAdd = [];
         StateMock.playground.lookup.selectedColumn = null;
-        StateMock.playground.grid.selectedColumn = null;
+        StateMock.playground.grid.selectedColumns = [];
 
         scope.$destroy();
         element.remove();
@@ -132,7 +132,7 @@ describe('Lookup directive', function () {
         //given
         StateMock.playground.lookup.columnsToAdd = [1, 2];
         StateMock.playground.lookup.selectedColumn = { id: '0000' };
-        StateMock.playground.grid.selectedColumn = null;
+        StateMock.playground.grid.selectedColumns = [];
 
         //when
         createElement();
@@ -146,7 +146,7 @@ describe('Lookup directive', function () {
         //given
         StateMock.playground.lookup.columnsToAdd = [1, 2];
         StateMock.playground.lookup.selectedColumn = { id: '0000' };
-        StateMock.playground.grid.selectedColumn = { id: '0000' };
+        StateMock.playground.grid.selectedColumns = [{ id: '0000' }];
 
         //when
         createElement();

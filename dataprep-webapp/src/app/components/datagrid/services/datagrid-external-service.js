@@ -30,6 +30,7 @@ export default class DatagridExternalService {
         this.scrollTimeout = null;
         this.lastSelectedTab = null;
         this.lastSelectedColumn = null;
+        this.lastSelectedColumnsNumber = null;
         this.lastSelectedLine = null;
 
         this.$timeout = $timeout;
@@ -49,25 +50,27 @@ export default class DatagridExternalService {
      * Ex : StatisticsService for dataviz, ColumnSuggestionService for transformation list
      */
     updateSuggestionPanel() {
-        const column = this.state.playground.grid.selectedColumn;
+        const columnNumber = this.state.playground.grid.selectedColumns.length;
+        const column = columnNumber === 1 ? this.state.playground.grid.selectedColumns[0] : null;
         const line = this.state.playground.grid.selectedLine;
 
-        const columnHasChanged = column !== this.lastSelectedColumn;
+        const columnsHaveChanged = columnNumber !== this.lastSelectedColumnsNumber || column !== this.lastSelectedColumn;
         const lineHasChanged = line !== this.lastSelectedLine;
 
-        if (!columnHasChanged && !lineHasChanged) {
+        if (!columnsHaveChanged && !lineHasChanged) {
             return;
         }
 
+        this.lastSelectedColumnsNumber = columnNumber;
         this.lastSelectedColumn = column;
         this.lastSelectedLine = line;
-        this.lastSelectedTab = !column ? 'LINE' : 'COLUMN';
+        this.lastSelectedTab = !columnNumber ? 'LINE' : 'COLUMN';
 
         // change tab
         this.SuggestionService.selectTab(this.lastSelectedTab);
 
         // reset charts if we have no selected column
-        if (!this.lastSelectedColumn) {
+        if (!this.lastSelectedColumnsNumber) {
             this.StatisticsService.reset();
         }
 
@@ -77,10 +80,16 @@ export default class DatagridExternalService {
         }
 
         // update column scope transformations and charts if we have a selected column that has changed
-        if (this.lastSelectedColumn && columnHasChanged) {
-            this.SuggestionService.setColumn(this.lastSelectedColumn);
-            this.StatisticsService.updateStatistics();
-            this.LookupService.updateTargetColumn();
+        if (columnsHaveChanged && this.lastSelectedColumnsNumber) {
+            this.SuggestionService.setColumns(this.state.playground.grid.selectedColumns);
+
+            if (this.lastSelectedColumnsNumber === 1 && column) {
+                this.StatisticsService.updateStatistics();
+                this.LookupService.updateTargetColumn();
+            }
+            else {
+                this.StatisticsService.reset();
+            }
         }
     }
 

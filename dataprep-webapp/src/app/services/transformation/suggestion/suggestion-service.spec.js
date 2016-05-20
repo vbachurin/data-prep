@@ -25,13 +25,13 @@ describe('Suggestion Service', function () {
         it('should init column suggestions', inject(function (SuggestionService, ColumnSuggestionService) {
             //given
             expect(ColumnSuggestionService.initTransformations).not.toHaveBeenCalled();
-            var column = { id: '0001' };
+            var columns = [{ id: '0001' }];
 
             //when
-            SuggestionService.setColumn(column);
+            SuggestionService.setColumns(columns);
 
             //then
-            expect(ColumnSuggestionService.initTransformations).toHaveBeenCalledWith(column);
+            expect(ColumnSuggestionService.initTransformations).toHaveBeenCalledWith(columns);
         }));
 
         it('should init line suggestions', inject(function (SuggestionService, LineSuggestionService) {

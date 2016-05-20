@@ -235,12 +235,17 @@ describe('Datagrid header controller', () => {
             ctrl.updateColumnName();
 
             //then
-            expect(PlaygroundService.appendStep).toHaveBeenCalledWith('rename_column', {
-                new_column_name: 'new name',
-                scope: 'column',
-                column_id: '0001',
-                column_name: 'Original name',
-            });
+            const expectedParams = [{
+                action: 'rename_column',
+                parameters: {
+                    new_column_name: 'new name',
+                    scope: 'column',
+                    column_id: '0001',
+                    column_name: 'Original name',
+                }
+            }];
+
+            expect(PlaygroundService.appendStep).toHaveBeenCalledWith(expectedParams);
         }));
 
         it('should turn off edition mode after name update', () => {

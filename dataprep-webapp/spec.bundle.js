@@ -11,12 +11,10 @@
 
  ============================================================================*/
 
-import 'jquery';
-import 'angular';
-import 'angular-mocks';
 
 import './src/vendor';
 import './src/app/index-module';
+import 'angular-mocks';
 
-let context = require.context('./src/', true, /\.spec\.js/);
+const context = require.context('./src/', true, /\.spec\.js/);
 context.keys().forEach(context);

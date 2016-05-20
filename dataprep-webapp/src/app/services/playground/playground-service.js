@@ -29,7 +29,13 @@
  * @requires data-prep.services.utils.service:MessageService
  * @requires data-prep.services.utils.service:StepUtilsService
  */
-export default function PlaygroundService($state, $rootScope, $q, $translate, $timeout,
+
+import { map } from 'lodash';
+
+// actions scopes
+const LINE = 'line';
+
+export default function PlaygroundService($state, $rootScope, $q, $translate, $timeout, $stateParams,
                                           state, StateService, StepUtilsService,
                                           DatasetService, DatagridService,
                                           FilterAdapterService, PreparationService, PreviewService,
@@ -245,17 +251,18 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
 
         return PreparationService.getDetails(state.playground.preparation.id)
             .then((resp) => {
+                const isRecipeEmpty = !state.playground.recipe.current.steps.length;
                 RecipeService.refresh(resp);
-                if (state.playground.recipe.current.steps.length === 1) { // first step append
+                if (isRecipeEmpty && state.playground.recipe.current.steps.length) {
                     StateService.showRecipe();
                     $state.go('playground.preparation', { prepid: state.playground.preparation.id });
                 }
-                else if (OnboardingService.shouldStartTour('recipe') &&
-                    state.playground.recipe.current.steps.length === 3) { // third step append : show onboarding
+
+                if (OnboardingService.shouldStartTour('recipe') &&
+                    state.playground.recipe.current.steps.length >= 3) {
                     StateService.showRecipe();
                     $timeout(OnboardingService.startTour('recipe'), 300, false);
                 }
-
                 return resp;
             });
     }
@@ -356,36 +363,35 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
     // --------------------------------------------------------------------------------------------
     // ---------------------------------------------STEPS------------------------------------------
     // --------------------------------------------------------------------------------------------
+
     /**
      * @ngdoc method
      * @name appendStep
      * @methodOf data-prep.services.playground.service:PlaygroundService
-     * @param {string} action The action name
-     * @param {object} parameters The transformation parameters
-     * @description Call an execution of a transformation on the column in the current preparation and add an entry
+     * @param {array} actions The actions
+     * @description Call an execution of a transformation on the columns in the current preparation and add an entry
      * in actions history. It there is no preparation yet, it is created first and tagged as draft.
      */
-    function appendStep(action, parameters) {
+    function appendStep(actions) {
         /* jshint camelcase: false */
         $rootScope.$emit('talend.loading.start');
+        const previousHead = StepUtilsService.getLastStep(state.playground.recipe);
 
         return getCurrentPreparation()
         // append step
             .then((preparation) => {
-                return PreparationService.appendStep(preparation.id, { action, parameters });
+                return PreparationService.appendStep(preparation.id, actions);
             })
             // update recipe and datagrid
             .then(() => {
-                const columnToFocus = parameters.column_id;
-                return $q.all([this.updatePreparationDetails(), updatePreparationDatagrid(columnToFocus)]);
+                return $q.all([this.updatePreparationDetails(), updatePreparationDatagrid()]);
             })
             // add entry in history for undo/redo
             .then(() => {
                 const actualHead = StepUtilsService.getLastStep(state.playground.recipe);
-                const previousHead = StepUtilsService.getPreviousStep(state.playground.recipe, actualHead);
-
-                const undo = setPreparationHead.bind(service, state.playground.preparation.id, previousHead.transformation.stepId);
-                const redo = setPreparationHead.bind(service, state.playground.preparation.id, actualHead.transformation.stepId, parameters.column_id);
+                const previousStepId = previousHead && previousHead.transformation ? previousHead.transformation.stepId : state.playground.recipe.initialStep.transformation.stepId;
+                const undo = setPreparationHead.bind(service, state.playground.preparation.id, previousStepId);
+                const redo = setPreparationHead.bind(service, state.playground.preparation.id, actualHead.transformation.stepId, actions[0] && actions[0].parameters.column_id);
                 HistoryService.addAction(undo, redo);
             })
             // hide loading screen
@@ -459,7 +465,7 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
         const previousHead = StepUtilsService.getLastStep(state.playground.recipe).transformation.stepId;
 
         return PreparationService.removeStep(state.playground.preparation.id, step.transformation.stepId)
-        // update recipe and datagrid
+            // update recipe and datagrid
             .then(() => {
                 return $q.all([this.updatePreparationDetails(), updatePreparationDatagrid()]);
             })
@@ -504,22 +510,38 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
      * The closure then takes the parameters and append the new step in the current preparation
      */
     function createAppendStepClosure(action, scope) {
-        return (params) => {
-            const column = state.playground.grid.selectedColumn;
+        return (params = params || {}) => {
+            let actions = [];
             const line = state.playground.grid.selectedLine;
+            let lineParameters = { ...params };
+            switch (scope) {
+            case LINE:
+                lineParameters.scope = scope;
+                lineParameters.row_id = line && line.tdpId;
 
-            params = params || {};
-            params.scope = scope;
-            params.column_id = column && column.id;
-            params.column_name = column && column.name;
-            params.row_id = line && line.tdpId;
+                if (state.playground.filter.applyTransformationOnFilters) {
+                    const stepFilters = FilterAdapterService.toTree(state.playground.filter.gridFilters);
+                    lineParameters = { ...lineParameters, ...stepFilters };
+                }
+                actions = [{ action: action.name, parameters: lineParameters }];
+                break;
+            default:
+                actions = map(state.playground.grid.selectedColumns, (column) => {
+                    let parameters = { ...params };
+                    parameters.scope = scope;
+                    parameters.column_id = column && column.id;
+                    parameters.column_name = column && column.name;
+                    parameters.row_id = line && line.tdpId;
 
-            if (state.playground.filter.applyTransformationOnFilters) {
-                const stepFilters = FilterAdapterService.toTree(state.playground.filter.gridFilters);
-                _.extend(params, stepFilters);
+                    if (state.playground.filter.applyTransformationOnFilters) {
+                        const stepFilters = FilterAdapterService.toTree(state.playground.filter.gridFilters);
+                        parameters = { ...parameters, ...stepFilters };
+                    }
+                    return { action: action.name, parameters };
+                });
+                break;
             }
-
-            return service.appendStep(action.name, params);
+            return service.appendStep(actions);
         };
     }
 

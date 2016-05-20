@@ -712,7 +712,7 @@ describe('Statistics service', () => {
             //given
             const column = { id: '0000', type: 'integer', statistics: { min: 5, max: 55 } };
             stateMock.playground.statistics.histogram = {};
-            stateMock.playground.grid.selectedColumn = column;
+            stateMock.playground.grid.selectedColumns = [column];
 
             const removeCallback = StatisticsService.getRangeFilterRemoveFn();
 
@@ -731,7 +731,7 @@ describe('Statistics service', () => {
         it('should create a function that do nothing when the selected column is NOT the same', inject(function (StatisticsService, StateService) {
             //given
             stateMock.playground.statistics.histogram = {};
-            stateMock.playground.grid.selectedColumn = { id: '0000', statistics: { min: 5, max: 55 } };
+            stateMock.playground.grid.selectedColumns = [{ id: '0000', statistics: { min: 5, max: 55 } }];
 
             const removeCallback = StatisticsService.getRangeFilterRemoveFn();
 
@@ -746,7 +746,7 @@ describe('Statistics service', () => {
     describe('init Statistics : The statistics values', () => {
         it('should init number statistics whithout quantile', inject(function (StatisticsService, StateService) {
             //given
-            stateMock.playground.grid.selectedColumn = {
+            stateMock.playground.grid.selectedColumns = [{
                 id: '0001',
                 type: 'integer',
                 domain: 'city name',
@@ -765,7 +765,7 @@ describe('Statistics service', () => {
                         lowerQuantile: 'NaN',
                     },
                 },
-            };
+            }];
             expect(StateService.setStatisticsDetails).not.toHaveBeenCalled();
 
             //when
@@ -792,7 +792,7 @@ describe('Statistics service', () => {
 
         it('should init number statistics with quantile', inject(function (StatisticsService, StateService) {
             //given
-            stateMock.playground.grid.selectedColumn = {
+            stateMock.playground.grid.selectedColumns = [{
                 id: '0001',
                 type: 'integer',
                 domain: 'code postal',
@@ -813,7 +813,7 @@ describe('Statistics service', () => {
                         upperQuantile: 16,
                     },
                 },
-            };
+            }];
             expect(StateService.setStatisticsDetails).not.toHaveBeenCalled();
 
             //when
@@ -843,7 +843,7 @@ describe('Statistics service', () => {
 
         it('should init text statistics', inject(function (StatisticsService, StateService) {
             //given
-            stateMock.playground.grid.selectedColumn = {
+            stateMock.playground.grid.selectedColumns = [{
                 id: '0001',
                 type: 'string',
                 domain: 'text',
@@ -860,7 +860,7 @@ describe('Statistics service', () => {
                         maximalLength: 14,
                     },
                 },
-            };
+            }];
             expect(StateService.setStatisticsDetails).not.toHaveBeenCalled();
 
             //when
@@ -886,7 +886,7 @@ describe('Statistics service', () => {
 
         it('should init common statistics when the column type is not "number" or "text"', inject(function (StatisticsService, StateService) {
             //given
-            stateMock.playground.grid.selectedColumn = {
+            stateMock.playground.grid.selectedColumns = [{
                 id: '0001',
                 type: 'boolean',
                 domain: 'US_STATE_CODE',
@@ -898,7 +898,7 @@ describe('Statistics service', () => {
                     invalid: 8,
                     valid: 9,
                 },
-            };
+            }];
             expect(StateService.setStatisticsDetails).not.toHaveBeenCalled();
 
             //when
@@ -921,7 +921,7 @@ describe('Statistics service', () => {
 
     describe('Update Statistics : The statistics values', () => {
         beforeEach(inject(() => {
-            stateMock.playground.grid.selectedColumn = {
+            stateMock.playground.grid.selectedColumns = [{
                 id: '0001',
                 name: 'city',
                 type: 'date',
@@ -929,13 +929,13 @@ describe('Statistics service', () => {
                 statistics: {
                     patternFrequencyTable: [],
                 },
-            };
+            }];
             stateMock.playground.grid.filteredRecords = [{ '0001': '10-12-2015' }, { '0001': '2015-12-02' }, { '0001': 'To,/' }, { '0001': '2015-12-02' }, { '0001': '10/12-20' }];
         }));
 
         it('should update empty pattern statistics', inject(function ($rootScope, StatisticsService, StateService) {
             //given
-            stateMock.playground.grid.selectedColumn.statistics.patternFrequencyTable = [
+            stateMock.playground.grid.selectedColumns[0].statistics.patternFrequencyTable = [
                 {
                     pattern: '',
                     occurrences: 1,
@@ -961,7 +961,7 @@ describe('Statistics service', () => {
 
         it('should update date pattern statistics', inject(function ($rootScope, StatisticsService, StateService) {
             //given
-            stateMock.playground.grid.selectedColumn.statistics.patternFrequencyTable = [
+            stateMock.playground.grid.selectedColumns[0].statistics.patternFrequencyTable = [
                 {
                     pattern: 'd-M-yyyy',
                     occurrences: 1,
@@ -996,7 +996,7 @@ describe('Statistics service', () => {
 
         it('should update non date pattern statistics', inject(function ($rootScope, StatisticsService, StateService) {
             //given
-            stateMock.playground.grid.selectedColumn.statistics.patternFrequencyTable = [
+            stateMock.playground.grid.selectedColumns[0].statistics.patternFrequencyTable = [
                 {
                     pattern: 'Aa,/',
                     occurrences: 3,
@@ -1031,7 +1031,7 @@ describe('Statistics service', () => {
 
         it('should update pattern statistics without filter', inject(function ($rootScope, StatisticsService, StateService) {
             //given
-            stateMock.playground.grid.selectedColumn.statistics.patternFrequencyTable = [
+            stateMock.playground.grid.selectedColumns[0].statistics.patternFrequencyTable = [
                 {
                     pattern: 'Aa,/',
                     occurrences: 3,
@@ -1085,7 +1085,7 @@ describe('Statistics service', () => {
         ];
 
         beforeEach(inject(function (StatisticsService, StepUtilsService, StorageService) {
-            stateMock.playground.grid.selectedColumn = currentColumn;
+            stateMock.playground.grid.selectedColumns = [currentColumn];
             stateMock.playground.dataset = { id: datasetId };
             stateMock.playground.preparation = { id: preparationId };
             spyOn(StepUtilsService, 'getLastActiveStep').and.returnValue({ transformation: { stepId: stepId } });
@@ -1095,7 +1095,7 @@ describe('Statistics service', () => {
 
         it('should update histogram data with classical occurrence when there is no saved aggregation on the current preparation/dataset/column with filter', inject(function ($rootScope, StatisticsService, StorageService, StateService) {
             //given
-            stateMock.playground.grid.selectedColumn = barChartStrCol;
+            stateMock.playground.grid.selectedColumns = [barChartStrCol];
             stateMock.playground.grid.filteredOccurences = { '   toto': 3, titi: 2 };
             spyOn(StorageService, 'getAggregation').and.returnValue();
 
@@ -1141,7 +1141,7 @@ describe('Statistics service', () => {
 
         it('should update histogram data with classical occurrence when saved aggregation column does NOT exist anymore', inject(function ($rootScope, StatisticsService, StorageService, StateService) {
             //given
-            stateMock.playground.grid.selectedColumn = barChartStrCol;
+            stateMock.playground.grid.selectedColumns = [barChartStrCol];
             stateMock.playground.grid.filteredOccurences = { '   toto': 3, titi: 2 };
             stateMock.playground.grid.numericColumns = [
                 { id: '0002', name: 'state' },
@@ -1230,7 +1230,7 @@ describe('Statistics service', () => {
                 valueField: 'MAX',
                 vertical: false,
                 className: 'blueBar',
-                column: stateMock.playground.grid.selectedColumn,
+                column: stateMock.playground.grid.selectedColumns[0],
                 aggregationColumn: column,
                 aggregation: aggregation,
             });
@@ -1238,7 +1238,7 @@ describe('Statistics service', () => {
 
         it('should reset non histogram charts', inject(function (StatisticsService, StateService) {
             //given
-            stateMock.playground.grid.selectedColumn = barChartNumCol;
+            stateMock.playground.grid.selectedColumns = [barChartNumCol];
 
             //when
             StatisticsService.updateStatistics();
@@ -1265,7 +1265,7 @@ describe('Statistics service', () => {
         ];
 
         beforeEach(inject(function (StatisticsService, StepUtilsService, StorageService) {
-            stateMock.playground.grid.selectedColumn = currentColumn;
+            stateMock.playground.grid.selectedColumns = [currentColumn];
             stateMock.playground.dataset = { id: datasetId };
             stateMock.playground.preparation = { id: preparationId };
             spyOn(StepUtilsService, 'getLastActiveStep').and.returnValue({ transformation: { stepId: stepId } });
@@ -1302,7 +1302,7 @@ describe('Statistics service', () => {
                 label: 'MAX',
                 vertical: false,
                 className: 'blueBar',
-                column: stateMock.playground.grid.selectedColumn,
+                column: stateMock.playground.grid.selectedColumns[0],
                 aggregationColumn: column,
                 aggregation: aggregation,
             });
@@ -1335,7 +1335,7 @@ describe('Statistics service', () => {
                 keyField: 'formattedValue',
                 valueField: 'MAX',
                 label: 'MAX',
-                column: stateMock.playground.grid.selectedColumn,
+                column: stateMock.playground.grid.selectedColumns[0],
                 vertical: false,
                 className: 'blueBar',
                 aggregationColumn: column,
@@ -1375,7 +1375,7 @@ describe('Statistics service', () => {
     describe('Process classic charts', () => {
         describe('The range slider', () => {
             beforeEach(() => {
-                stateMock.playground.grid.selectedColumn = {
+                stateMock.playground.grid.selectedColumns = [{
                     id: '0001',
                     type: 'integer',
                     domain: 'city name',
@@ -1395,7 +1395,7 @@ describe('Statistics service', () => {
                         },
                         histogram: { items: [] },
                     },
-                };
+                }];
                 stateMock.playground.statistics.histogram = {};
                 stateMock.playground.statistics.details = {
                     common: {
@@ -1611,7 +1611,7 @@ describe('Statistics service', () => {
         describe('The boxplot data', () => {
             it('should reset boxplotData when quantile values are NaN', inject(function (StatisticsService, StateService) {
                 //given
-                stateMock.playground.grid.selectedColumn = {
+                stateMock.playground.grid.selectedColumns = [{
                     id: '0001',
                     type: 'integer',
                     domain: 'city name',
@@ -1630,7 +1630,7 @@ describe('Statistics service', () => {
                             lowerQuantile: 'NaN',
                         },
                     },
-                };
+                }];
                 stateMock.playground.statistics.details = {
                     common: {
                         COUNT: 4,
@@ -1657,7 +1657,7 @@ describe('Statistics service', () => {
 
             it('should set boxplotData statistics with quantile', inject(function (StatisticsService, StateService) {
                 //given
-                stateMock.playground.grid.selectedColumn = {
+                stateMock.playground.grid.selectedColumns = [{
                     id: '0001',
                     type: 'integer',
                     domain: 'code postal',
@@ -1678,7 +1678,7 @@ describe('Statistics service', () => {
                             upperQuantile: 16,
                         },
                     },
-                };
+                }];
                 stateMock.playground.statistics.details = {
                     common: {
                         COUNT: 4,
@@ -1718,7 +1718,7 @@ describe('Statistics service', () => {
         describe('process horizontal chart', () => {
             it('should reset non histogram data when column type is "string"', inject(function (StatisticsService, StateService) {
                 //given
-                stateMock.playground.grid.selectedColumn = barChartStrCol;
+                stateMock.playground.grid.selectedColumns = [barChartStrCol];
                 stateMock.playground.grid.filteredOccurences = { '   toto': 3, titi: 2 };
 
                 //when
@@ -1730,7 +1730,7 @@ describe('Statistics service', () => {
 
             it('should set the frequency data with formatted value when column type is "string" with filter', inject(function (StatisticsService, StateService) {
                 //given
-                stateMock.playground.grid.selectedColumn = barChartStrCol;
+                stateMock.playground.grid.selectedColumns = [barChartStrCol];
                 stateMock.playground.grid.filteredOccurences = { '   toto': 3, titi: 2 };
 
                 //when
@@ -1773,7 +1773,7 @@ describe('Statistics service', () => {
 
             it('should set the frequency data with formatted value when column type is "string" without filter', inject(function (StatisticsService, StateService) {
                 //given
-                stateMock.playground.grid.selectedColumn = barChartStrCol2;
+                stateMock.playground.grid.selectedColumns = [barChartStrCol2];
                 stateMock.playground.grid.filteredOccurences = { '   toto': 1, coucou: 1, cici: 1, titi: 1 };
                 expect(StatisticsService.histogram).toBeFalsy();
 
@@ -1817,7 +1817,7 @@ describe('Statistics service', () => {
 
             it('should reset non histogram data when column type is "boolean"', inject(function (StatisticsService, StateService) {
                 //given
-                stateMock.playground.grid.selectedColumn = barChartBoolCol;
+                stateMock.playground.grid.selectedColumns = [barChartBoolCol];
                 stateMock.playground.grid.filteredOccurences = { true: 3, false: 2 };
 
                 //when
@@ -1829,7 +1829,7 @@ describe('Statistics service', () => {
 
             it('should set the frequency data when column type is "boolean"', inject(function (StatisticsService, StateService) {
                 //given
-                stateMock.playground.grid.selectedColumn = barChartBoolCol;
+                stateMock.playground.grid.selectedColumns = [barChartBoolCol];
                 stateMock.playground.grid.filteredOccurences = { true: 3, false: 2 };
 
                 //when
@@ -1869,7 +1869,7 @@ describe('Statistics service', () => {
             describe('number', () => {
                 it('should set the range data frequency when column type is "number" with filters', inject(function ($rootScope, StatisticsService, StateService) {
                     //given
-                    stateMock.playground.grid.selectedColumn = barChartNumCol;
+                    stateMock.playground.grid.selectedColumns = [barChartNumCol];
                     stateMock.playground.filter.gridFilters = [{}];
                     stateMock.playground.grid.filteredOccurences = { 1: 2, 3: 1, 11: 6 };
                     stateMock.playground.statistics.details = {
@@ -1914,7 +1914,7 @@ describe('Statistics service', () => {
 
                 it('should set the range data frequency without filters', inject(function ($rootScope, StatisticsService, StateService) {
                     //given
-                    stateMock.playground.grid.selectedColumn = barChartNumCol;
+                    stateMock.playground.grid.selectedColumns = [barChartNumCol];
                     stateMock.playground.filter.gridFilters = [];
                     stateMock.playground.grid.filteredOccurences = null;
                     stateMock.playground.statistics.details = {
@@ -1970,7 +1970,7 @@ describe('Statistics service', () => {
 
                 it('should NOT set the range histogram when there is no histogram', () => {
                     //given
-                    stateMock.playground.grid.selectedColumn = barChartDateColWithoutHistogram;
+                    stateMock.playground.grid.selectedColumns = [barChartDateColWithoutHistogram];
                     stateMock.playground.statistics = {};
 
                     //when
@@ -1983,7 +1983,7 @@ describe('Statistics service', () => {
 
                 it('should set the range data frequency when column type is "date" with filters', (done) => {
                     //given
-                    stateMock.playground.grid.selectedColumn = barChartDateCol;
+                    stateMock.playground.grid.selectedColumns = [barChartDateCol];
                     stateMock.playground.filter.gridFilters = [{}];
                     stateMock.playground.grid.filteredOccurences = {
                         '05/01/2015': 6,
@@ -2083,7 +2083,7 @@ describe('Statistics service', () => {
 
                 it('should set the range data frequency with no filters', () => {
                     //given
-                    stateMock.playground.grid.selectedColumn = barChartDateCol;
+                    stateMock.playground.grid.selectedColumns = [barChartDateCol];
                     stateMock.playground.filter.gridFilters = [];
                     stateMock.playground.grid.filteredOccurences = null;
                     stateMock.playground.statistics = {
@@ -2178,7 +2178,7 @@ describe('Statistics service', () => {
 
                 it('should adapt date range label to century', () => {
                     //given
-                    stateMock.playground.grid.selectedColumn = barChartDateColCENTURY;
+                    stateMock.playground.grid.selectedColumns = [barChartDateColCENTURY];
                     stateMock.playground.statistics = {
                         histogram: {
                             data: [
@@ -2227,7 +2227,7 @@ describe('Statistics service', () => {
 
                 it('should adapt date range label to decade', () => {
                     //given
-                    stateMock.playground.grid.selectedColumn = barChartDateColDECADE;
+                    stateMock.playground.grid.selectedColumns = [barChartDateColDECADE];
                     stateMock.playground.statistics = {
                         histogram: {
                             data: [
@@ -2276,7 +2276,7 @@ describe('Statistics service', () => {
 
                 it('should adapt date range label to year', () => {
                     //given
-                    stateMock.playground.grid.selectedColumn = barChartDateColYEAR;
+                    stateMock.playground.grid.selectedColumns = [barChartDateColYEAR];
                     stateMock.playground.statistics = {
                         histogram: {
                             data: [
@@ -2325,7 +2325,7 @@ describe('Statistics service', () => {
 
                 it('should adapt date range label to half year', () => {
                     //given
-                    stateMock.playground.grid.selectedColumn = barChartDateColHAFLYEAR;
+                    stateMock.playground.grid.selectedColumns = [barChartDateColHAFLYEAR];
                     stateMock.playground.statistics = {
                         histogram: {
                             data: [
@@ -2374,7 +2374,7 @@ describe('Statistics service', () => {
 
                 it('should adapt date range label to quarter', () => {
                     //given
-                    stateMock.playground.grid.selectedColumn = barChartDateColQUARTER;
+                    stateMock.playground.grid.selectedColumns = [barChartDateColQUARTER];
                     stateMock.playground.statistics = {
                         histogram: {
                             data: [
@@ -2423,7 +2423,7 @@ describe('Statistics service', () => {
 
                 it('should adapt date range label to month', () => {
                     //given
-                    stateMock.playground.grid.selectedColumn = barChartDateColMONTH;
+                    stateMock.playground.grid.selectedColumns = [barChartDateColMONTH];
                     stateMock.playground.statistics = {
                         histogram: {
                             data: [
@@ -2472,7 +2472,7 @@ describe('Statistics service', () => {
 
                 it('should adapt date range label to week', () => {
                     //given
-                    stateMock.playground.grid.selectedColumn = barChartDateColWEEK;
+                    stateMock.playground.grid.selectedColumns = [barChartDateColWEEK];
                     stateMock.playground.statistics = {
                         histogram: {
                             data: [
@@ -2521,7 +2521,7 @@ describe('Statistics service', () => {
 
                 it('should adapt date range label to day', () => {
                     //given
-                    stateMock.playground.grid.selectedColumn = barChartDateColDAY;
+                    stateMock.playground.grid.selectedColumns = [barChartDateColDAY];
                     stateMock.playground.statistics = {
                         histogram: {
                             data: [
@@ -2572,7 +2572,7 @@ describe('Statistics service', () => {
 
         it('should reset charts data when column type is not supported', inject(function (StatisticsService, StateService) {
             //given
-            stateMock.playground.grid.selectedColumn = unknownTypeCol;
+            stateMock.playground.grid.selectedColumns = [unknownTypeCol];
 
             //when
             StatisticsService.processClassicChart();
@@ -2589,7 +2589,7 @@ describe('Statistics service', () => {
             const preparationId = '2132548345365';
             stateMock.playground.dataset = { id: datasetId };
             stateMock.playground.preparation = { id: preparationId };
-            stateMock.playground.grid.selectedColumn = barChartStrCol;
+            stateMock.playground.grid.selectedColumns = [barChartStrCol];
             stateMock.playground.grid.filteredOccurences = { '   toto': 3, titi: 2 };
             spyOn(StorageService, 'removeAggregation').and.returnValue();
             expect(StorageService.removeAggregation).not.toHaveBeenCalled();
@@ -2621,7 +2621,7 @@ describe('Statistics service', () => {
         let _StateService;
 
         beforeEach(inject(($rootScope, StatisticsService, StepUtilsService, StorageService, StateService) => {
-            stateMock.playground.grid.selectedColumn = currentColumn;
+            stateMock.playground.grid.selectedColumns = [currentColumn];
             stateMock.playground.dataset = { id: datasetId };
             stateMock.playground.preparation = { id: preparationId };
             spyOn(StepUtilsService, 'getLastActiveStep').and.returnValue({ transformation: { stepId: stepId } });
@@ -2637,7 +2637,7 @@ describe('Statistics service', () => {
 
         it('should update filtered Numeric column', () => {
             //given
-            stateMock.playground.grid.selectedColumn = barChartNumCol;
+            stateMock.playground.grid.selectedColumns = [barChartNumCol];
             stateMock.playground.filter.gridFilters = [{
                 colId: '0000',
                 type: 'inside_range',
@@ -2693,7 +2693,7 @@ describe('Statistics service', () => {
         it('should update filtered Date column', (done) => {
             //given
             spyOn(_StorageService, 'getAggregation').and.returnValue();
-            stateMock.playground.grid.selectedColumn = barChartDateCol;
+            stateMock.playground.grid.selectedColumns = [barChartDateCol];
             stateMock.playground.filter.gridFilters = [{}];
             stateMock.playground.grid.filteredOccurences = {
                 '05/01/2015': 6,
@@ -2767,7 +2767,7 @@ describe('Statistics service', () => {
 
         it('should update filtered Text column', () => {
             //given
-            stateMock.playground.grid.selectedColumn = barChartStrCol;
+            stateMock.playground.grid.selectedColumns = [barChartStrCol];
             spyOn(_StorageService, 'getAggregation').and.returnValue();
             stateMock.playground.grid.filteredOccurences = { '   toto': 3, titi: 2 };
 
@@ -2793,7 +2793,7 @@ describe('Statistics service', () => {
 
         it('should update filtered Patterns Frequency', (done) => {
             //given
-            stateMock.playground.grid.selectedColumn.statistics.patternFrequencyTable = [
+            stateMock.playground.grid.selectedColumns[0].statistics.patternFrequencyTable = [
                 { pattern: '', occurrences: 1 },
             ];
             stateMock.playground.grid.filteredRecords = [{ '0001': 'toto' }];
@@ -2814,7 +2814,7 @@ describe('Statistics service', () => {
 
         it('should NOT update filtered data when there is an aggregation', () => {
             //given
-            stateMock.playground.grid.selectedColumn = barChartStrCol;
+            stateMock.playground.grid.selectedColumns = [barChartStrCol];
             const savedAggregation = {
                 aggregationColumnId: '0002',
                 aggregation: 'MAX',
@@ -2833,7 +2833,7 @@ describe('Statistics service', () => {
 
         it('should update aggregation chart when at least 1 filter exists', inject(($q, StatisticsService, StatisticsRestService, StorageService) => {
             //given
-            stateMock.playground.grid.selectedColumn = barChartStrCol;
+            stateMock.playground.grid.selectedColumns = [barChartStrCol];
             stateMock.playground.grid.numericColumns = [{ id: '0002' }];
             const savedAggregation = {
                 aggregationColumnId: '0002',
@@ -2876,7 +2876,7 @@ describe('Statistics service', () => {
 
         it('should reset date filtered occurrence worker', inject(function (StatisticsService) {
             //given
-            stateMock.playground.grid.selectedColumn = barChartDateCol;
+            stateMock.playground.grid.selectedColumns = [barChartDateCol];
             stateMock.playground.filter.gridFilters = [];
             stateMock.playground.grid.filteredOccurences = null;
             StatisticsService.statistics = {};
@@ -2902,7 +2902,7 @@ describe('Statistics service', () => {
 
         it('should reset date pattern filtered occurrence worker', inject(function (StatisticsService) {
             //given
-            stateMock.playground.grid.selectedColumn = {
+            stateMock.playground.grid.selectedColumns = [{
                 id: '0001',
                 name: 'city',
                 type: 'date',
@@ -2919,7 +2919,7 @@ describe('Statistics service', () => {
                         },
                     ],
                 },
-            };
+            }];
             stateMock.playground.filter.gridFilters = [{}];
             stateMock.playground.grid.filteredRecords = [
                 { '0001': '18-01-2015' },

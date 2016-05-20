@@ -23,6 +23,9 @@ describe('stats details directive', function () {
         stateMock = {
             playground: {
                 statistics: {},
+                grid: {
+                    selectedColumns: [{}]
+                },
             },
         };
         $provide.constant('state', stateMock);

@@ -272,7 +272,7 @@ describe('Column suggestion service', function () {
             expect(StateService.setSuggestionsLoading).not.toHaveBeenCalled();
 
             //when
-            ColumnSuggestionService.initTransformations(firstSelectedColumn);
+            ColumnSuggestionService.initTransformations([firstSelectedColumn]);
             $rootScope.$digest();
 
             //then
@@ -287,7 +287,7 @@ describe('Column suggestion service', function () {
             spyOn(StateService, 'setColumnTransformations');
 
             //when
-            ColumnSuggestionService.initTransformations(firstSelectedColumn);
+            ColumnSuggestionService.initTransformations([firstSelectedColumn]);
             $rootScope.$digest();
 
             ColumnSuggestionService.filterTransformations();
@@ -404,7 +404,7 @@ describe('Column suggestion service', function () {
     it('should initialize column transformations with new transfos for empty and invalid cells', inject(function ($rootScope, ColumnSuggestionService, TransformationCacheService, StateService) {
         //when
         spyOn(StateService, 'setColumnTransformations').and.returnValue();
-        ColumnSuggestionService.initTransformations(firstSelectedColumn);
+        ColumnSuggestionService.initTransformations([firstSelectedColumn]);
         $rootScope.$digest();
 
         //then
@@ -461,7 +461,7 @@ describe('Column suggestion service', function () {
 
         //when
         spyOn(StateService, 'setColumnTransformations').and.returnValue();
-        ColumnSuggestionService.initTransformations(firstSelectedColumn);
+        ColumnSuggestionService.initTransformations([firstSelectedColumn]);
         $rootScope.$digest();
 
         //then

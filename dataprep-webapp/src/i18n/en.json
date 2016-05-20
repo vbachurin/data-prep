@@ -242,6 +242,7 @@
   "APPLY_CHANGE_TO": "Apply changes to:",
   "ALL_LINES": "All Lines",
   "FILTERED_LINED": "Filtered Lines",
+  "MULTI_COLUMNS_SELECTED": "{{nb}} columns selected",
 
   "_comment": "Recipe",
   "FILTERS_APPLIED": "Filters applied",
@@ -287,6 +288,10 @@
   "REFRESHING_WAIT": "refreshing, please wait...",
   "TOOLTIP_MATCHING_FILTER": "matching your filter",
   "TOOLTIP_MATCHING_FULL": "in entire dataset",
+  "NO_CHART": "No chart for the current selection",
+  "NO_VALUE": "No value for the current selection",
+  "NO_PATTERN": "No pattern for the current selection",
+  "NO_ADVANCED_CHART": "No advanced chart for the current selection",
 
   "_comment": "Dataset actions",
   "REPLACE_FILE_CONTENT": "Overwrite dataset with another file",

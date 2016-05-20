@@ -1,15 +1,17 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
+
+import { range, chain, map } from 'lodash';
 
 /**
  * @ngdoc service
@@ -86,8 +88,8 @@ export default function PreviewService($q, state, DatagridService, PreparationSe
      * @returns {object[]} The rows TDP ids in the range
      */
     function getDisplayedTdpIds() {
-        const indexes = _.range(service.gridRangeIndex.top, service.gridRangeIndex.bottom + 1);
-        return _.chain(indexes)
+        const indexes = range(service.gridRangeIndex.top, service.gridRangeIndex.bottom + 1);
+        return chain(indexes)
             .map(state.playground.grid.dataView.getItem)
             .map('tdpId')
             .sortBy('tdpId')
@@ -232,8 +234,8 @@ export default function PreviewService($q, state, DatagridService, PreparationSe
      * @methodOf data-prep.services.preview.service:PreviewService
      * @param {string} preparationId The preparation id
      * @param {object} datasetId The dataset id
-     * @param {object} action The action to append
-     * @param {object} actionParams The action parameters
+     * @param {string} action The action name
+     * @param {Array} actionParams The action parameters list
      * @description Call the update step preview service and replace records in the grid.
      * It cancel the previous preview first
      */
@@ -242,17 +244,14 @@ export default function PreviewService($q, state, DatagridService, PreparationSe
         initPreviewIdNeeded();
 
         const params = {
-            action: {
-                action,
-                parameters: actionParams,
-            },
+            actions: map(actionParams, (parameters) => ({ action, parameters })),
             tdpIds: displayedTdpIds,
             datasetId,
             preparationId,
         };
         return PreparationService.getPreviewAdd(params, previewCanceler)
             .then(function (response) {
-                DatagridService.focusedColumn = actionParams.column_id;
+                DatagridService.focusedColumn = actionParams[0].column_id;
                 return response;
             })
             .then(replaceRecords)

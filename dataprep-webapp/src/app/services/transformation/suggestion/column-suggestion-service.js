@@ -89,17 +89,17 @@ export default function ColumnSuggestionService($q, state, StateService, Transfo
      * @ngdoc method
      * @name initTransformations
      * @methodOf data-prep.services.transformation.service:ColumnSuggestionService
-     * @param {object} column The target column
+     * @param {array} columns The target columns
      * @description Get and process the transformations from backend
      */
-    function initTransformations(column) {
+    function initTransformations(columns) {
         StateService.setSuggestionsLoading(true);
         StateService.setColumnTransformations(); // clear current transformations
 
         $q
             .all([
-                TransformationCacheService.getColumnSuggestions(column),
-                TransformationCacheService.getColumnTransformations(column),
+                columns.length === 1 ? TransformationCacheService.getColumnSuggestions(columns[0]) : $q.when([]),
+                TransformationCacheService.getColumnTransformations(columns[0]),
             ])
             .then(function (values) {
                 const suggestions = prepareSuggestions(values[0], values[1].allCategories);

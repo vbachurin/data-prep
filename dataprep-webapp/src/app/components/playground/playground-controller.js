@@ -271,7 +271,6 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
      * @ngdoc method
      * @name loadPreparation
      * @description open a preparation
-     * @param {string} prepid The preparation id
      */
     function loadPreparation() {
         PlaygroundService.load(state.playground.preparation)

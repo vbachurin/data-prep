@@ -207,6 +207,8 @@ describe('Lookup service', () => {
             beforeEach(inject(($q, TransformationRestService, DatasetListService) => {
                 spyOn(TransformationRestService, 'getDatasetTransformations').and.returnValue($q.when({ data: lookupActions }));
                 spyOn(DatasetListService, 'refreshDatasets').and.returnValue($q.when());
+
+                stateMock.playground.grid.selectedColumns = [];
             }));
 
             it('should fetch datasets list', inject((LookupService, DatasetListService) => {
@@ -290,6 +292,7 @@ describe('Lookup service', () => {
             it('should load the first action as new lookup', inject(($rootScope, LookupService, DatasetRestService, StateService) => {
                 //given
                 stateMock.playground.lookup.addedActions = lookupActions;
+                stateMock.playground.grid.selectedColumns = [];
 
                 //when
                 LookupService.initLookups();
@@ -307,7 +310,7 @@ describe('Lookup service', () => {
                 stateMock.playground.recipe.current.steps = [lookupStep];
                 stateMock.playground.data = { metadata: { columns: [{ id: '0000' }] } };
                 stateMock.playground.lookup.addedActions = lookupActions;
-                stateMock.playground.grid.selectedColumn = { id: '0000' };
+                stateMock.playground.grid.selectedColumns = [{ id: '0000' }];
 
                 //when
                 LookupService.initLookups();
@@ -324,6 +327,7 @@ describe('Lookup service', () => {
         it('should load action as new lookup', inject(($rootScope, LookupService, DatasetRestService, StateService) => {
             //given
             stateMock.playground.lookup.addedActions = lookupActions;
+            stateMock.playground.grid.selectedColumns = [{ id: '0000' }];
 
             //when
             LookupService.loadFromAction(firstLookupAction);
@@ -337,7 +341,7 @@ describe('Lookup service', () => {
             //given
             stateMock.playground.data = { metadata: { columns: [{ id: '0000' }] } };
             stateMock.playground.lookup.addedActions = lookupActions;
-            stateMock.playground.grid.selectedColumn = { id: '0000' };
+            stateMock.playground.grid.selectedColumns = [{ id: '0000' }];
             stateMock.playground.recipe.current.steps = [lookupStep];
 
             //when
@@ -353,6 +357,7 @@ describe('Lookup service', () => {
             stateMock.playground.lookup.addedActions = lookupActions;
             stateMock.playground.lookup.dataset = firstLookupAction;
             stateMock.playground.lookup.step = null;
+            stateMock.playground.grid.selectedColumns = [];
 
             //when
             LookupService.loadFromAction(firstLookupAction);
@@ -391,7 +396,7 @@ describe('Lookup service', () => {
             $rootScope.$digest();
 
             //then
-            expect(StateService.setGridSelection).toHaveBeenCalledWith({ id: '0000' });
+            expect(StateService.setGridSelection).toHaveBeenCalledWith([{ id: '0000' }]);
         }));
 
         it('should NOT change lookup state when the step lookup is already loaded', inject(($rootScope, LookupService, DatasetRestService, StateService) => {
@@ -418,7 +423,7 @@ describe('Lookup service', () => {
             stateMock.playground.lookup.dataset = firstLookupAction;
             stateMock.playground.lookup.step = lookupStep;
             stateMock.playground.lookup.visibility = true;
-
+            stateMock.playground.grid.selectedColumns = [];
             //when
             LookupService.updateTargetColumn();
             $rootScope.$digest();
@@ -433,7 +438,7 @@ describe('Lookup service', () => {
             stateMock.playground.lookup.addedActions = lookupActions;
             stateMock.playground.lookup.dataset = firstLookupAction;
             stateMock.playground.lookup.visibility = true;
-            stateMock.playground.grid.selectedColumn = { id: '0000' };
+            stateMock.playground.grid.selectedColumns = [{ id: '0000' }];
             stateMock.playground.recipe.current.steps = [lookupStep];
 
             //when

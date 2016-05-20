@@ -76,6 +76,7 @@ describe('Grid state service', () => {
     describe('filter', () => {
         it('should set filters to DataView', inject((gridState, GridStateService) => {
             //given
+            gridState.selectedColumns = [];
             gridState.dataView.setItems(data.records, 'tdpId');
             const filterFnCol1 = () => (item) => (item.col1.indexOf('toto') > -1);
             const filterFnCol2 = () => (item) => (item.col2.indexOf('toto') > -1);
@@ -96,6 +97,7 @@ describe('Grid state service', () => {
 
         it('should grid line stats', inject((gridState, GridStateService) => {
             //given
+            gridState.selectedColumns = [];
             gridState.dataView.setItems(data.records.slice(0, 2), 'tdpId');
             const filterFnCol1 = () => (item) => (item.col1.indexOf('toto') > -1);
             const filterFnCol2 = () => (item) => (item.col2.indexOf('toto') > -1);
@@ -118,6 +120,7 @@ describe('Grid state service', () => {
         it('should set data to DataView', inject((gridState, GridStateService) => {
             //given
             expect(gridState.dataView.getItems()).not.toBe(data.records);
+            gridState.selectedColumns = [];
 
             //when
             GridStateService.setData(data);
@@ -131,6 +134,7 @@ describe('Grid state service', () => {
             gridState.nbLines = null;
             gridState.nbTotalLines = null;
             gridState.displayLinesPercentage = null;
+            gridState.selectedColumns = [];
 
             //when
             GridStateService.setData(data);
@@ -144,6 +148,7 @@ describe('Grid state service', () => {
         it('should update numeric columns', inject((gridState, GridStateService) => {
             //given
             gridState.numericColumns = [];
+            gridState.selectedColumns = [];
 
             //when
             GridStateService.setData(data);
@@ -161,6 +166,7 @@ describe('Grid state service', () => {
                 const oldRow = { tdpId: '0125' };
                 gridState.lineIndex = 2;
                 gridState.selectedLine = oldRow;
+                gridState.selectedColumns = [];
 
                 //when
                 GridStateService.setData(data);
@@ -173,6 +179,7 @@ describe('Grid state service', () => {
                 const oldRow = { tdpId: '0125' };
                 gridState.lineIndex = 2;
                 gridState.selectedLine = oldRow;
+                gridState.selectedColumns = [];
 
                 //when
                 GridStateService.setData(previewData);
@@ -184,6 +191,7 @@ describe('Grid state service', () => {
             it('should NOT change select line row when there is no selected line yet', inject((gridState, GridStateService) => {
                 gridState.lineIndex = null;
                 gridState.selectedLine = null;
+                gridState.selectedColumns = [];
 
                 //when
                 GridStateService.setData(data);
@@ -192,66 +200,83 @@ describe('Grid state service', () => {
                 expect(gridState.selectedLine).toBe(null);
             }));
 
-            it('should update column metadata with the new metadata corresponding to the selected id', inject((gridState, GridStateService) => {
+            it('should update columns metadata with the new metadata', inject((gridState, GridStateService) => {
                 //given
-                const oldMetadata = { id: '0001' };
-                gridState.selectedColumn = oldMetadata;
+                const oldMetadata1 = { id: '0001' };
+                const oldMetadata2 = { id: '0002' };
+                gridState.selectedColumns = [oldMetadata1, oldMetadata2];
 
                 //when
                 GridStateService.setData(data);
 
                 //then
-                expect(gridState.selectedColumn).not.toBe(oldMetadata);
-                expect(gridState.selectedColumn).toBe(data.metadata.columns[1]);
+                expect(gridState.selectedColumns[0]).not.toBe(oldMetadata1);
+                expect(gridState.selectedColumns[0]).toBe(data.metadata.columns[1]);
+
+                expect(gridState.selectedColumns[1]).not.toBe(oldMetadata2);
+                expect(gridState.selectedColumns[1]).toBe(data.metadata.columns[2]);
+            }));
+
+            it('should update column metadata with the new metadata corresponding to the selected id', inject((gridState, GridStateService) => {
+                //given
+                const oldMetadata = { id: '0001' };
+                gridState.selectedColumns = [oldMetadata];
+
+                //when
+                GridStateService.setData(data);
+
+                //then
+                expect(gridState.selectedColumns[0]).not.toBe(oldMetadata);
+                expect(gridState.selectedColumns[0]).toBe(data.metadata.columns[1]);
             }));
 
             it('should update column metadata with the 1st column when actual selected column is not in the new columns', inject((gridState, GridStateService) => {
                 //given
                 const oldMetadata = { id: '0018' };
-                gridState.selectedColumn = oldMetadata;
+                gridState.selectedColumns = [oldMetadata];
 
                 //when
                 GridStateService.setData(data);
 
                 //then
-                expect(gridState.selectedColumn).not.toBe(oldMetadata);
-                expect(gridState.selectedColumn).toBe(data.metadata.columns[0]);
+                expect(gridState.selectedColumns[0]).not.toBe(oldMetadata);
+                expect(gridState.selectedColumns[0]).toBe(data.metadata.columns[0]);
             }));
 
             it('should update column metadata with the first column metadata when there is no selected column yet', inject((gridState, GridStateService) => {
                 //given
-                gridState.selectedColumn = null;
+                gridState.selectedColumns = [];
                 gridState.lineIndex = null;
 
                 //when
                 GridStateService.setData(data);
 
                 //then
-                expect(gridState.selectedColumn).toBe(data.metadata.columns[0]);
+                expect(gridState.selectedColumns[0]).toBe(data.metadata.columns[0]);
             }));
 
             it('should NOT update column metadata when there is no selected column but a selected line', inject((gridState, GridStateService) => {
                 //given
-                gridState.selectedColumn = null;
+                gridState.selectedColumns = [];
                 gridState.lineIndex = 2;
 
                 //when
                 GridStateService.setData(data);
 
                 //then
-                expect(gridState.selectedColumn).toBe(null);
+                expect(gridState.selectedColumns).toEqual([]);
             }));
 
             it('should not change selected column when data is preview data', inject((gridState, GridStateService) => {
                 //given
                 const oldMetadata = { id: '0001' };
-                gridState.selectedColumn = oldMetadata;
+                gridState.selectedColumns = [oldMetadata];
 
                 //when
                 GridStateService.setData(previewData);
 
                 //then
-                expect(gridState.selectedColumn).toBe(oldMetadata);
+                expect(gridState.selectedColumns[0]).toBe(oldMetadata);
             }));
         });
     });
@@ -271,14 +296,14 @@ describe('Grid state service', () => {
         it('should set grid selection', inject((gridState, GridStateService) => {
             //given
             gridState.dataView.setItems(data.records, 'tdpId');
-            gridState.selectedColumn = null;
+            gridState.selectedColumns = [];
             gridState.selectedLine = null;
 
             //when
-            GridStateService.setGridSelection('0001', 2);
+            GridStateService.setGridSelection(['0001'], 2);
 
             //then
-            expect(gridState.selectedColumn).toBe('0001');
+            expect(gridState.selectedColumns[0]).toBe('0001');
             expect(gridState.selectedLine).toBe(data.records[2]);
         }));
 
@@ -301,24 +326,108 @@ describe('Grid state service', () => {
         it('should reset event result state', inject((gridState, GridStateService) => {
             //given
             gridState.columnFocus = '0001';
-            gridState.selectedColumn = '0001';
+            gridState.selectedColumns = ['0001'];
             gridState.selectedLine = 2;
             gridState.numericColumns = [{}, {}];
             gridState.filteredRecords = [{}, {}];
             gridState.filteredOccurences = { toto: 3 };
+            gridState.columns = [{}];
 
             //when
             GridStateService.reset();
 
             //then
             expect(gridState.columnFocus).toBe(null);
-            expect(gridState.selectedColumn).toBe(null);
+            expect(gridState.selectedColumns).toEqual([]);
             expect(gridState.selectedLine).toBe(null);
             expect(gridState.numericColumns).toEqual([]);
             expect(gridState.filteredRecords).toEqual([]);
             expect(gridState.filteredOccurences).toEqual({});
+            expect(gridState.columns).toEqual([]);
         }));
     });
+
+    describe('selected colums', () => {
+        describe('toggleColumnSelection', () => {
+            it('should select a column', inject((gridState, GridStateService) => {
+                //given
+                const col = { id: '0001' };
+                const newCol = { id: '0002' };
+                gridState.selectedColumns = [col];
+
+                //when
+                GridStateService.toggleColumnSelection(newCol);
+
+                //then
+                expect(gridState.selectedColumns.length).toBe(2);
+                expect(gridState.selectedColumns[0]).toBe(col);
+                expect(gridState.selectedColumns[1]).toBe(newCol);
+            }));
+
+            it('should unselect a selected column', inject((gridState, GridStateService) => {
+                //given
+                const col1 = { id: '0001' };
+                const col2 = { id: '0002' };
+                gridState.selectedColumns = [col1, col2];
+
+                //when
+                GridStateService.toggleColumnSelection(col2);
+
+                //then
+                expect(gridState.selectedColumns.length).toBe(1);
+                expect(gridState.selectedColumns[0]).toBe(col1);
+            }));
+        });
+
+        describe('changeRangeSelection', () => {
+
+            it('should select a columns', inject((gridState, GridStateService) => {
+                //given
+                gridState.columns =  data.metadata.columns;
+                gridState.selectedColumns = [];
+
+                //when
+                GridStateService.changeRangeSelection(data.metadata.columns[1]);
+
+                //then
+                expect(gridState.selectedColumns.length).toBe(1);
+                expect(gridState.selectedColumns[0]).toBe(data.metadata.columns[1]);
+            }));
+
+
+            it('should select a columns range if min < index', inject((gridState, GridStateService) => {
+                //given
+                gridState.columns =  data.metadata.columns;
+                gridState.selectedColumns = [data.metadata.columns[2], data.metadata.columns[3]];
+
+                //when
+                GridStateService.changeRangeSelection(data.metadata.columns[1]);
+
+                //then
+                expect(gridState.selectedColumns.length).toBe(3);
+                expect(gridState.selectedColumns[0]).toBe(data.metadata.columns[1]);
+                expect(gridState.selectedColumns[1]).toBe(data.metadata.columns[2]);
+                expect(gridState.selectedColumns[2]).toBe(data.metadata.columns[3]);
+            }));
+
+            it('should select a columns range if min >= index', inject((gridState, GridStateService) => {
+                //given
+                gridState.columns =  data.metadata.columns;
+                gridState.selectedColumns = [data.metadata.columns[0], data.metadata.columns[1]];
+
+                //when
+                GridStateService.changeRangeSelection(data.metadata.columns[2]);
+
+                //then
+                expect(gridState.selectedColumns.length).toBe(3);
+                expect(gridState.selectedColumns[0]).toBe(data.metadata.columns[0]);
+                expect(gridState.selectedColumns[1]).toBe(data.metadata.columns[1]);
+                expect(gridState.selectedColumns[2]).toBe(data.metadata.columns[2]);
+            }));
+
+        });
+    });
+
 
     describe('filtered values', () => {
         const filteredRecords = [
@@ -334,7 +443,7 @@ describe('Grid state service', () => {
         it('should update filtered records on filter change', inject((gridState, GridStateService) => {
             //given
             gridState.filteredRecords = null;
-            gridState.selectedColumn = { id: '0003' };
+            gridState.selectedColumns = [{ id: '0003' }];
 
             //when
             GridStateService.setFilter([], { columns: [], records: filteredRecords });
@@ -346,7 +455,7 @@ describe('Grid state service', () => {
         it('should update filtered records occurrences on filter change', inject((gridState, GridStateService) => {
             //given
             gridState.filteredOccurences = null;
-            gridState.selectedColumn = { id: '0003' };
+            gridState.selectedColumns = [{ id: '0003' }];
 
             //when
             GridStateService.setFilter([], { columns: [], records: filteredRecords });
@@ -358,7 +467,7 @@ describe('Grid state service', () => {
         it('should update filtered records on data change', inject((gridState, GridStateService) => {
             //given
             gridState.filteredRecords = null;
-            gridState.selectedColumn = { id: '0003' };
+            gridState.selectedColumns = [{ id: '0003' }];
 
             //when
             GridStateService.setData({
@@ -373,7 +482,7 @@ describe('Grid state service', () => {
         it('should update filtered records occurrences on data change', inject((gridState, GridStateService) => {
             //given
             gridState.filteredOccurences = null;
-            gridState.selectedColumn = { id: '0003' };
+            gridState.selectedColumns = [{ id: '0003' }];
 
             //when
             GridStateService.setData({
@@ -392,7 +501,7 @@ describe('Grid state service', () => {
             const column = { id: '0003' };
 
             //when
-            GridStateService.setGridSelection(column, null);
+            GridStateService.setGridSelection([column], null);
 
             //then
             expect(gridState.filteredOccurences).toEqual({ DEV: 2, CP: 1 });

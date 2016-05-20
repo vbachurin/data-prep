@@ -135,10 +135,10 @@ describe('Lookup controller', function () {
                     id: '132da49ef87694ab64e6',
                 },
                 grid: {
-                    selectedColumn: {
+                    selectedColumns: [{
                         id: 'mainGridColId',
                         name: 'mainGridColName',
-                    },
+                    }],
                 },
                 lookup: {
                     selectedColumn: {

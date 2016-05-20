@@ -557,7 +557,7 @@ describe('Playground Service', () => {
                     name: 'my dataset name',
                 };
                 stateMock.playground.preparation = null;
-                const action = 'uppercase';
+
                 const parameters = {
                     param1: 'param1Value',
                     param2: 4,
@@ -565,11 +565,12 @@ describe('Playground Service', () => {
                     column_id: '0001',
                     column_name: 'firstname',
                 };
+                const actions = [{ action: 'uppercase', parameters: parameters }];
 
                 expect(createdPreparation.draft).toBeFalsy();
 
                 // when
-                PlaygroundService.appendStep(action, parameters);
+                PlaygroundService.appendStep(actions);
                 stateMock.playground.preparation = createdPreparation; //emulate created preparation set in state
                 $rootScope.$digest();
 
@@ -582,7 +583,6 @@ describe('Playground Service', () => {
                 // given
                 stateMock.playground.dataset = { id: '76a415cf854d8654' };
                 stateMock.playground.preparation = null;
-                const action = 'uppercase';
                 const parameters = {
                     param1: 'param1Value',
                     param2: 4,
@@ -590,26 +590,22 @@ describe('Playground Service', () => {
                     column_id: '0001',
                     column_name: 'firstname',
                 };
-                const actionParameters = {
-                    action: action,
-                    parameters: parameters,
-                };
+                const actions = [{ action: 'uppercase', parameters: parameters }];
 
                 expect(createdPreparation.draft).toBeFalsy();
 
                 // when
-                PlaygroundService.appendStep(action, parameters);
+                PlaygroundService.appendStep(actions);
                 stateMock.playground.preparation = createdPreparation; //emulate created preparation set in state
                 $rootScope.$digest();
 
                 // then
-                expect(PreparationService.appendStep).toHaveBeenCalledWith(createdPreparation.id, actionParameters);
+                expect(PreparationService.appendStep).toHaveBeenCalledWith(createdPreparation.id, actions);
             }));
 
             it('should append step to an existing preparation', inject(($rootScope, PlaygroundService, PreparationService) => {
                 // given
                 stateMock.playground.preparation = { id: '15de46846f8a46' };
-                const action = 'uppercase';
                 const parameters = {
                     param1: 'param1Value',
                     param2: 4,
@@ -617,23 +613,19 @@ describe('Playground Service', () => {
                     column_id: '0001',
                     column_name: 'firstname',
                 };
-                const actionParameters = {
-                    action: action,
-                    parameters: parameters,
-                };
+                const actions = [{ action: 'uppercase', parameters: parameters }];
 
                 // when
-                PlaygroundService.appendStep(action, parameters);
+                PlaygroundService.appendStep(actions);
                 $rootScope.$digest();
 
                 // then
-                expect(PreparationService.appendStep).toHaveBeenCalledWith('15de46846f8a46', actionParameters);
+                expect(PreparationService.appendStep).toHaveBeenCalledWith('15de46846f8a46', actions);
             }));
 
             it('should show/hide loading', inject(($rootScope, PlaygroundService) => {
                 // given
                 stateMock.playground.preparation = { id: '15de46846f8a46' };
-                const action = 'uppercase';
                 const parameters = {
                     param1: 'param1Value',
                     param2: 4,
@@ -641,9 +633,10 @@ describe('Playground Service', () => {
                     column_id: '0001',
                     column_name: 'firstname',
                 };
+                const actions = [{ action: 'uppercase', parameters: parameters }];
 
                 // when
-                PlaygroundService.appendStep(action, parameters);
+                PlaygroundService.appendStep(actions);
                 expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.start');
                 $rootScope.$digest();
 
@@ -654,7 +647,6 @@ describe('Playground Service', () => {
             it('should refresh recipe', inject(($rootScope, PlaygroundService, RecipeService) => {
                 // given
                 stateMock.playground.preparation = { id: '15de46846f8a46' };
-                const action = 'uppercase';
                 const parameters = {
                     param1: 'param1Value',
                     param2: 4,
@@ -662,9 +654,9 @@ describe('Playground Service', () => {
                     column_id: '0001',
                     column_name: 'firstname',
                 };
-
+                const actions = [{ action: 'uppercase', parameters: parameters }];
                 // when
-                PlaygroundService.appendStep(action, parameters);
+                PlaygroundService.appendStep(actions);
                 $rootScope.$digest();
 
                 // then
@@ -674,7 +666,6 @@ describe('Playground Service', () => {
             it('should refresh datagrid with head content', inject(($rootScope, PlaygroundService, PreparationService, DatagridService, PreviewService) => {
                 // given
                 stateMock.playground.preparation = { id: '15de46846f8a46' };
-                const action = 'uppercase';
                 const parameters = {
                     param1: 'param1Value',
                     param2: 4,
@@ -682,9 +673,10 @@ describe('Playground Service', () => {
                     column_id: '0001',
                     column_name: 'firstname',
                 };
+                const actions = [{ action: 'uppercase', parameters: parameters }];
 
                 // when
-                PlaygroundService.appendStep(action, parameters);
+                PlaygroundService.appendStep(actions);
                 $rootScope.$digest();
 
                 // then
@@ -704,7 +696,6 @@ describe('Playground Service', () => {
                 beforeEach(inject(($rootScope, PlaygroundService, HistoryService) => {
                     // given
                     stateMock.playground.preparation = { id: preparationId };
-                    const action = 'uppercase';
                     const parameters = {
                         param1: 'param1Value',
                         param2: 4,
@@ -712,10 +703,12 @@ describe('Playground Service', () => {
                         column_id: '0001',
                         column_name: 'firstname',
                     };
+                    const actions = [{ action: 'uppercase', parameters: parameters }];
+
                     expect(HistoryService.addAction).not.toHaveBeenCalled();
 
                     // when
-                    PlaygroundService.appendStep(action, parameters);
+                    PlaygroundService.appendStep(actions);
                     $rootScope.$digest();
 
                     // then
@@ -735,7 +728,7 @@ describe('Playground Service', () => {
                     undo();
 
                     // then
-                    expect(PreparationService.setHead).toHaveBeenCalledWith(preparationId, previousLastStepId);
+                    expect(PreparationService.setHead).toHaveBeenCalledWith(preparationId, lastStepId);
                 }));
 
                 it('should refresh recipe on UNDO', inject(($rootScope, DatagridService, RecipeService) => {
@@ -1080,7 +1073,7 @@ describe('Playground Service', () => {
                 const updateAllCellWithValue = false; // only selected cell
 
                 stateMock.playground.grid.selectedLine = { tdpId: 58 };
-                stateMock.playground.grid.selectedColumn = { id: '0001', name: 'firstname' };
+                stateMock.playground.grid.selectedColumns = [{ id: '0001', name: 'firstname' }];
                 stateMock.playground.filter.applyTransformationOnFilters = false;
 
                 //when
@@ -1098,7 +1091,9 @@ describe('Playground Service', () => {
                     column_id: '0001',
                     column_name: 'firstname',
                 };
-                expect(PlaygroundService.appendStep).toHaveBeenCalledWith('replace_on_value', expectedParams);
+
+                const actions = [{ action: 'replace_on_value', parameters: expectedParams }];
+                expect(PlaygroundService.appendStep).toHaveBeenCalledWith(actions);
             }));
 
             it('should append step on column scope', inject((PlaygroundService) => {
@@ -1109,7 +1104,7 @@ describe('Playground Service', () => {
                 const updateAllCellWithValue = true; // all cells in column
 
                 stateMock.playground.grid.selectedLine = { tdpId: 58 };
-                stateMock.playground.grid.selectedColumn = { id: '0001', name: 'firstname' };
+                stateMock.playground.grid.selectedColumns = [{ id: '0001', name: 'firstname' }];
                 stateMock.playground.filter.applyTransformationOnFilters = false;
 
                 //when
@@ -1127,7 +1122,9 @@ describe('Playground Service', () => {
                     column_id: '0001',
                     column_name: 'firstname',
                 };
-                expect(PlaygroundService.appendStep).toHaveBeenCalledWith('replace_on_value', expectedParams);
+
+                const actions = [{ action: 'replace_on_value', parameters: expectedParams }];
+                expect(PlaygroundService.appendStep).toHaveBeenCalledWith(actions);
             }));
 
             it('should append step with filters', inject((PlaygroundService) => {
@@ -1138,7 +1135,7 @@ describe('Playground Service', () => {
                 const updateAllCellWithValue = true;
 
                 stateMock.playground.grid.selectedLine = { tdpId: 58 };
-                stateMock.playground.grid.selectedColumn = { id: '0001', name: 'firstname' };
+                stateMock.playground.grid.selectedColumns = [{ id: '0001', name: 'firstname' }];
                 stateMock.playground.filter.applyTransformationOnFilters = true; // apply on filter
 
                 //when
@@ -1162,7 +1159,9 @@ describe('Playground Service', () => {
                         },
                     },
                 };
-                expect(PlaygroundService.appendStep).toHaveBeenCalledWith('replace_on_value', expectedParams);
+
+                const actions = [{ action: 'replace_on_value', parameters: expectedParams }];
+                expect(PlaygroundService.appendStep).toHaveBeenCalledWith(actions);
             }));
         });
 
@@ -1184,7 +1183,7 @@ describe('Playground Service', () => {
                 var transformation = { name: 'tolowercase' };
                 var scope = 'column';
                 var params = { param: 'value' };
-                stateMock.playground.grid.selectedColumn = { id: '0001', name: 'firstname' };
+                stateMock.playground.grid.selectedColumns = [{ id: '0001', name: 'firstname' }];
                 stateMock.playground.filter.applyTransformationOnFilters = false;
 
                 //when
@@ -1198,7 +1197,9 @@ describe('Playground Service', () => {
                     column_name: 'firstname',
                     row_id: undefined,
                 };
-                expect(PlaygroundService.appendStep).toHaveBeenCalledWith('tolowercase', expectedParams);
+
+                const actions = [{ action: 'tolowercase', parameters: expectedParams }];
+                expect(PlaygroundService.appendStep).toHaveBeenCalledWith(actions);
             }));
 
             it('should call appendStep with row', inject((PlaygroundService) => {
@@ -1208,6 +1209,7 @@ describe('Playground Service', () => {
                 var params = { param: 'value' };
                 stateMock.playground.grid.selectedLine = { tdpId: 125 };
                 stateMock.playground.filter.applyTransformationOnFilters = false;
+                stateMock.playground.grid.selectedColumns = [{ id: '0001', name: 'firstname' }];
 
                 //when
                 PlaygroundService.completeParamsAndAppend(transformation, scope, params);
@@ -1216,18 +1218,18 @@ describe('Playground Service', () => {
                 var expectedParams = {
                     param: 'value',
                     scope: 'line',
-                    column_id: undefined,
-                    column_name: undefined,
                     row_id: 125,
                 };
-                expect(PlaygroundService.appendStep).toHaveBeenCalledWith('tolowercase', expectedParams);
+
+                const actions = [{ action: 'tolowercase', parameters: expectedParams }];
+                expect(PlaygroundService.appendStep).toHaveBeenCalledWith(actions);
             }));
 
             it('should call appendStep without param', inject((PlaygroundService) => {
                 //given
                 var transformation = { name: 'tolowercase' };
                 var scope = 'column';
-                stateMock.playground.grid.selectedColumn = { id: '0001', name: 'firstname' };
+                stateMock.playground.grid.selectedColumns = [{ id: '0001', name: 'firstname' }];
                 stateMock.playground.filter.applyTransformationOnFilters = false;
 
                 //when
@@ -1240,14 +1242,16 @@ describe('Playground Service', () => {
                     column_name: 'firstname',
                     row_id: undefined,
                 };
-                expect(PlaygroundService.appendStep).toHaveBeenCalledWith('tolowercase', expectedParams);
+
+                const actions = [{ action: 'tolowercase', parameters: expectedParams }];
+                expect(PlaygroundService.appendStep).toHaveBeenCalledWith(actions);
             }));
 
             it('should call appendStep with filter', inject((PlaygroundService) => {
                 //given
                 var transformation = { name: 'tolowercase' };
                 var scope = 'column';
-                stateMock.playground.grid.selectedColumn = { id: '0001', name: 'firstname' };
+                stateMock.playground.grid.selectedColumns = [{ id: '0001', name: 'firstname' }];
                 stateMock.playground.filter.applyTransformationOnFilters = true;
 
                 //when
@@ -1266,7 +1270,9 @@ describe('Playground Service', () => {
                         },
                     },
                 };
-                expect(PlaygroundService.appendStep).toHaveBeenCalledWith('tolowercase', expectedParams);
+
+                const actions = [{ action: 'tolowercase', parameters: expectedParams }];
+                expect(PlaygroundService.appendStep).toHaveBeenCalledWith(actions);
             }));
 
             it('should create an append closure', inject((PlaygroundService) => {
@@ -1274,7 +1280,7 @@ describe('Playground Service', () => {
                 var transformation = { name: 'tolowercase' };
                 var scope = 'column';
                 var params = { param: 'value' };
-                stateMock.playground.grid.selectedColumn = { id: '0001', name: 'firstname' };
+                stateMock.playground.grid.selectedColumns = [{ id: '0001', name: 'firstname' }];
                 stateMock.playground.grid.selectedLine = { tdpId: 125 };
                 stateMock.playground.filter.applyTransformationOnFilters = false;
 
@@ -1290,7 +1296,43 @@ describe('Playground Service', () => {
                     column_name: 'firstname',
                     row_id: 125,
                 };
-                expect(PlaygroundService.appendStep).toHaveBeenCalledWith('tolowercase', expectedParams);
+
+                const actions = [{ action: 'tolowercase', parameters: expectedParams }];
+                expect(PlaygroundService.appendStep).toHaveBeenCalledWith(actions);
+            }));
+
+            it('should create an append closure with multi columns', inject((PlaygroundService) => {
+                //given
+                var transformation = { name: 'tolowercase' };
+                var scope = 'column';
+                var params = { param: 'value' };
+                stateMock.playground.grid.selectedColumns = [{ id: '0001', name: 'firstname' }, { id: '0002', name: 'lastname' }];
+                stateMock.playground.grid.selectedLine = { tdpId: 125 };
+                stateMock.playground.filter.applyTransformationOnFilters = false;
+
+                //when
+                var closure = PlaygroundService.createAppendStepClosure(transformation, scope);
+                closure(params);
+
+                //then
+                var expectedParams1 = {
+                    param: 'value',
+                    scope: 'column',
+                    column_id: '0001',
+                    column_name: 'firstname',
+                    row_id: 125,
+                };
+
+                var expectedParams2 = {
+                    param: 'value',
+                    scope: 'column',
+                    column_id: '0002',
+                    column_name: 'lastname',
+                    row_id: 125,
+                };
+
+                const actions = [{ action: 'tolowercase', parameters: expectedParams1 },  { action: 'tolowercase', parameters: expectedParams2 }];
+                expect(PlaygroundService.appendStep).toHaveBeenCalledWith(actions);
             }));
         });
 
@@ -1516,12 +1558,11 @@ describe('Playground Service', () => {
                 expect($state.go).not.toHaveBeenCalled();
                 stateMock.playground.dataset = { id: '123456' };
 
-                const action = 'uppercase';
-                const column = { id: 'firstname' };
                 const parameters = { param1: 'param1Value', param2: 4 };
+                const actions = [{ action: 'uppercase', parameters: parameters }];
 
                 // when
-                PlaygroundService.appendStep(action, column, parameters);
+                PlaygroundService.appendStep(actions);
                 stateMock.playground.preparation = createdPreparation;
                 $rootScope.$digest();
 
@@ -1531,107 +1572,66 @@ describe('Playground Service', () => {
         });
 
         describe('recipe display', () => {
-            it('should show recipe on first step', inject(($rootScope, PlaygroundService, StateService) => {
-                // given
-                expect(StateService.showRecipe).not.toHaveBeenCalled();
-                stateMock.playground.dataset = { id: '123456' };
-
-                const action = 'uppercase';
-                const column = { id: 'firstname' };
-                const parameters = { param1: 'param1Value', param2: 4 };
-
-                // when
-                PlaygroundService.appendStep(action, column, parameters);
-                stateMock.playground.preparation = createdPreparation;
-                $rootScope.$digest();
-
-                // then
-                expect(StateService.showRecipe).toHaveBeenCalled();
-            }));
-
-            it('should NOT force recipe display on second step', inject(($rootScope, PlaygroundService, StateService) => {
-                // given
-                stateMock.playground.preparation = { id: '123456' };
-                expect(StateService.showRecipe).not.toHaveBeenCalled();
-                stateMock.playground.recipe.current.steps.push({});
-
-                const action = 'uppercase';
-                const column = { id: 'firstname' };
-                const parameters = { param1: 'param1Value', param2: 4 };
-
-                // when
-                PlaygroundService.appendStep(action, column, parameters);
-                $rootScope.$digest();
-
-                // then
-                expect(StateService.showRecipe).not.toHaveBeenCalled();
-            }));
-
-            it('should show recipe and display onboarding on third step if the tour has not been completed yet', inject(($rootScope, $timeout, PlaygroundService, StateService, OnboardingService) => {
+            it('should display onboarding on third step if the tour has not been completed yet', inject(($rootScope, $timeout, PlaygroundService, StateService, OnboardingService) => {
                 // given
                 stateMock.playground.dataset = { id: '123456' };
                 spyOn(OnboardingService, 'startTour').and.returnValue();
                 spyOn(OnboardingService, 'shouldStartTour').and.returnValue(true); //not completed
 
-                const action = 'uppercase';
-                const column = { id: 'firstname' };
                 const parameters = { param1: 'param1Value', param2: 4 };
+                const actions = [{ action: 'uppercase', parameters: parameters }];
 
                 // given : first action call
-                PlaygroundService.appendStep(action, column, parameters);
+                PlaygroundService.appendStep(actions);
                 stateMock.playground.preparation = createdPreparation;
                 $rootScope.$digest();
                 $timeout.flush(300);
 
                 // given : second action call
-                PlaygroundService.appendStep(action, column, parameters);
+                PlaygroundService.appendStep(actions);
                 $timeout.flush(300);
                 $rootScope.$digest();
 
-                expect(StateService.showRecipe.calls.count()).toBe(1); //called on 1st action
                 expect(OnboardingService.startTour).not.toHaveBeenCalled();
 
                 // when
-                PlaygroundService.appendStep(action, column, parameters);
-                $rootScope.$digest();
-                $timeout.flush(300);
-
-                // then
-                expect(StateService.showRecipe.calls.count()).toBe(2);
-                expect(OnboardingService.startTour).toHaveBeenCalled();
-            }));
-
-            it('should NOT show recipe and display onboarding on third step if the tour has already been completed', inject(($rootScope, $timeout, PlaygroundService, StateService, OnboardingService) => {
-                // given
-                stateMock.playground.dataset = { id: '123456' };
-                spyOn(OnboardingService, 'startTour').and.returnValue();
-                spyOn(OnboardingService, 'shouldStartTour').and.returnValue(false); //already completed
-
-                const action = 'uppercase';
-                const column = { id: 'firstname' };
-                const parameters = { param1: 'param1Value', param2: 4 };
-
-                // given : first action call
-                PlaygroundService.appendStep(action, column, parameters);
-                stateMock.playground.preparation = createdPreparation;
-                $rootScope.$digest();
-                $timeout.flush(300);
-
-                // given : second action call
-                PlaygroundService.appendStep(action, column, parameters);
-                $timeout.flush(300);
-                $rootScope.$digest();
-
-                expect(StateService.showRecipe.calls.count()).toBe(1); //called on 1st action
-                expect(OnboardingService.startTour).not.toHaveBeenCalled();
-
-                // when
-                PlaygroundService.appendStep(action, column, parameters);
+                PlaygroundService.appendStep(actions);
                 $rootScope.$digest();
                 $timeout.flush(300);
 
                 // then
                 expect(StateService.showRecipe.calls.count()).toBe(1);
+                expect(OnboardingService.startTour).toHaveBeenCalled();
+            }));
+
+            it('should NOT display onboarding on third step if the tour has already been completed', inject(($rootScope, $timeout, PlaygroundService, StateService, OnboardingService) => {
+                // given
+                stateMock.playground.dataset = { id: '123456' };
+                spyOn(OnboardingService, 'startTour').and.returnValue();
+                spyOn(OnboardingService, 'shouldStartTour').and.returnValue(false); //already completed
+
+                const parameters = { param1: 'param1Value', param2: 4 };
+                const actions = [{ action: 'uppercase', parameters: parameters }];
+
+                // given : first action call
+                PlaygroundService.appendStep(actions);
+                stateMock.playground.preparation = createdPreparation;
+                $rootScope.$digest();
+                $timeout.flush(300);
+
+                // given : second action call
+                PlaygroundService.appendStep(actions);
+                $timeout.flush(300);
+                $rootScope.$digest();
+
+                expect(OnboardingService.startTour).not.toHaveBeenCalled();
+
+                // when
+                PlaygroundService.appendStep(actions);
+                $rootScope.$digest();
+                $timeout.flush(300);
+
+                // then
                 expect(OnboardingService.startTour).not.toHaveBeenCalled();
             }));
         });

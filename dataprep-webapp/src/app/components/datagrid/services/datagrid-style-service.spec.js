@@ -145,10 +145,9 @@ describe('Datagrid style service', () => {
             //given
             DatagridStyleService.init(gridMock);
             assertColumnsHasNoStyles();
-            var selectedColumnId = gridColumns[1].id;
 
             //when
-            DatagridStyleService.updateColumnClass(selectedColumnId);
+            DatagridStyleService.updateColumnsClass([gridColumns[1]]);
 
             //then
             expect(gridColumns[0].cssClass).toBeFalsy();
@@ -165,7 +164,7 @@ describe('Datagrid style service', () => {
             assertColumnsHasNoStyles();
 
             //when
-            DatagridStyleService.updateColumnClass();
+            DatagridStyleService.updateColumnsClass([]);
 
             //then
             expect(gridColumns[0].cssClass).toBeFalsy();
@@ -185,7 +184,7 @@ describe('Datagrid style service', () => {
             DatagridStyleService.hightlightedContent = 'toto';
 
             //when
-            DatagridStyleService.resetStyles(gridColumns[1].id);
+            DatagridStyleService.resetStyles([gridColumns[1]]);
 
             //then
             expect(DatagridStyleService.hightlightedColumnId).toBeFalsy();
@@ -196,10 +195,9 @@ describe('Datagrid style service', () => {
             //given
             DatagridStyleService.init(gridMock);
             assertColumnsHasNoStyles();
-            var selectedColumnId = gridColumns[1].id;
 
             //when
-            DatagridStyleService.resetStyles(selectedColumnId);
+            DatagridStyleService.resetStyles([gridColumns[1]]);
 
             //then
             expect(gridColumns[0].cssClass).toBeFalsy();

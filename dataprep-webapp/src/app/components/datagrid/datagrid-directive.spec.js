@@ -37,7 +37,7 @@ describe('Datagrid directive', () => {
         stateMock = {
             playground: {
                 filter: { gridFilters: [] },
-                grid: { dataView: dataViewMock, selectedColumn: { id: '0001' }, selectedLine: { '0001': '1' } },
+                grid: { dataView: dataViewMock, selectedColumns: [{ id: '0001' }], selectedLine: { '0001': '1' } },
                 lookup: { visibility: false },
             },
         };
@@ -75,7 +75,7 @@ describe('Datagrid directive', () => {
         spyOn(DatagridStyleService, 'highlightCellsContaining').and.returnValue();
         spyOn(DatagridStyleService, 'resetCellStyles').and.returnValue();
         spyOn(DatagridStyleService, 'resetStyles').and.returnValue();
-        spyOn(DatagridStyleService, 'updateColumnClass').and.returnValue();
+        spyOn(DatagridStyleService, 'updateColumnsClass').and.returnValue();
         spyOn(DatagridExternalService, 'updateSuggestionPanel').and.returnValue();
         spyOn(DatagridExternalService, 'updateGridRangeIndex').and.returnValue();
         spyOn(StateService, 'setGridSelection').and.returnValue();
@@ -262,7 +262,7 @@ describe('Datagrid directive', () => {
 
             //when
             stateMock.playground.grid.selectedLine = { '0000': 'toto', '0001': 'tata' };
-            stateMock.playground.grid.selectedColumn = { id: '0001' };
+            stateMock.playground.grid.selectedColumns = [{ id: '0001' }];
             scope.$digest();
 
             //then
@@ -278,30 +278,64 @@ describe('Datagrid directive', () => {
 
                 //when
                 stateMock.playground.grid.selectedLine = null;
-                stateMock.playground.grid.selectedColumn = { id: '0001' };
+                stateMock.playground.grid.selectedColumns = [{ id: '0001' }];
                 scope.$digest();
                 expect(DatagridStyleService.resetStyles).not.toHaveBeenCalled();
                 $timeout.flush(1);
 
                 //then
-                expect(DatagridStyleService.resetStyles).toHaveBeenCalledWith('0001');
+                expect(DatagridStyleService.resetStyles).toHaveBeenCalledWith(stateMock.playground.grid.selectedColumns);
             }));
 
             it('should only update columns styles (not the entire grid style) when there is a selected line', inject(($timeout, DatagridStyleService) => {
                 //given
                 createElement();
                 stateMock.playground.data = data;
-                expect(DatagridStyleService.updateColumnClass).not.toHaveBeenCalled();
+                expect(DatagridStyleService.updateColumnsClass).not.toHaveBeenCalled();
 
                 //when
                 stateMock.playground.grid.selectedLine = { '0000': 'toto', '0001': 'tata' };
-                stateMock.playground.grid.selectedColumn = { id: '0001' };
+                stateMock.playground.grid.selectedColumns = [{ id: '0001' }];
                 scope.$digest();
-                expect(DatagridStyleService.updateColumnClass).not.toHaveBeenCalled();
+                expect(DatagridStyleService.updateColumnsClass).not.toHaveBeenCalled();
                 $timeout.flush(1);
 
                 //then
-                expect(DatagridStyleService.updateColumnClass).toHaveBeenCalledWith('0001');
+                expect(DatagridStyleService.updateColumnsClass).toHaveBeenCalledWith(stateMock.playground.grid.selectedColumns);
+            }));
+
+            it('should only update columns styles when there is more than one selected column', inject(($timeout, DatagridStyleService) => {
+                //given
+                createElement();
+                stateMock.playground.data = data;
+                expect(DatagridStyleService.updateColumnsClass).not.toHaveBeenCalled();
+
+                //when
+                stateMock.playground.grid.selectedLine = { '0000': 'toto', '0001': 'tata' };
+                stateMock.playground.grid.selectedColumns = [{ id: '0001' }, { id: '0002' }];
+                scope.$digest();
+                expect(DatagridStyleService.resetStyles).not.toHaveBeenCalled();
+                $timeout.flush(1);
+
+                //then
+                expect(DatagridStyleService.resetStyles).toHaveBeenCalledWith(stateMock.playground.grid.selectedColumns);
+            }));
+
+            it('should only update columns styles when there is no selected column', inject(($timeout, DatagridStyleService) => {
+                //given
+                createElement();
+                stateMock.playground.data = data;
+                expect(DatagridStyleService.updateColumnsClass).not.toHaveBeenCalled();
+
+                //when
+                stateMock.playground.grid.selectedLine = { '0000': 'toto', '0001': 'tata' };
+                stateMock.playground.grid.selectedColumns = [];
+                scope.$digest();
+                expect(DatagridStyleService.updateColumnsClass).not.toHaveBeenCalled();
+                $timeout.flush(1);
+
+                //then
+                expect(DatagridStyleService.updateColumnsClass).toHaveBeenCalledWith(stateMock.playground.grid.selectedColumns);
             }));
         });
 
@@ -315,7 +349,7 @@ describe('Datagrid directive', () => {
 
                 //when
                 stateMock.playground.grid.selectedLine = { '0000': 'toto', '0001': 'tata' };
-                stateMock.playground.grid.selectedColumn = { id: '0001' };
+                stateMock.playground.grid.selectedColumns = [{ id: '0001' }];
                 scope.$digest();
 
                 //then
@@ -330,7 +364,7 @@ describe('Datagrid directive', () => {
 
                 //when
                 stateMock.playground.grid.selectedLine = { '0000': 'toto', '0001': 'tata' };
-                stateMock.playground.grid.selectedColumn = { id: '0001' };
+                stateMock.playground.grid.selectedColumns = [{ id: '0001' }];
                 scope.$digest();
                 expect(DatagridStyleService.highlightCellsContaining).not.toHaveBeenCalled();
                 $timeout.flush(500);
@@ -348,7 +382,7 @@ describe('Datagrid directive', () => {
 
                 //when
                 stateMock.playground.grid.selectedLine = { '0000': 'toto', '0001': 'tata' };
-                stateMock.playground.grid.selectedColumn = { id: '0001' };
+                stateMock.playground.grid.selectedColumns = [{ id: '0001' }];
                 scope.$digest();
                 $timeout.flush(500);
 
@@ -364,7 +398,7 @@ describe('Datagrid directive', () => {
 
                 //when
                 stateMock.playground.grid.selectedLine = null;
-                stateMock.playground.grid.selectedColumn = { id: '0001' };
+                stateMock.playground.grid.selectedColumns = [{ id: '0001' }];
                 scope.$digest();
                 $timeout.flush(500);
 
@@ -381,13 +415,13 @@ describe('Datagrid directive', () => {
                 expect(DatagridExternalService.updateSuggestionPanel).not.toHaveBeenCalled();
 
                 //when
-                stateMock.playground.grid.selectedColumn = { id: '0001' };
+                stateMock.playground.grid.selectedColumns = [{ id: '0001' }];
                 scope.$digest();
                 expect(DatagridExternalService.updateSuggestionPanel).not.toHaveBeenCalled();
                 $timeout.flush(500);
 
                 //then
-                expect(DatagridExternalService.updateSuggestionPanel).toHaveBeenCalledWith(true);
+                expect(DatagridExternalService.updateSuggestionPanel).toHaveBeenCalled();
             }));
 
             it('should NOT update suggestion panel when in preview mode', inject(($timeout, DatagridExternalService) => {
@@ -397,7 +431,7 @@ describe('Datagrid directive', () => {
                 expect(DatagridExternalService.updateSuggestionPanel).not.toHaveBeenCalled();
 
                 //when
-                stateMock.playground.grid.selectedColumn = { id: '0001' };
+                stateMock.playground.grid.selectedColumns = [{ id: '0001' }];
                 scope.$digest();
                 $timeout.flush(1);
 
