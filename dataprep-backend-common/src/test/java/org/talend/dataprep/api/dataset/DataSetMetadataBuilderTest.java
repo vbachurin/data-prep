@@ -144,9 +144,9 @@ public class DataSetMetadataBuilderTest {
     }
 
     @Test
-    public void testFormatGuessId() throws Exception {
-        assertEquals("formatGuess",
-                builder.metadata().id("1234").formatGuessId("formatGuess").build().getContent().getFormatGuessId());
+    public void testFormatFamilyId() throws Exception {
+        assertEquals("formatFamily",
+                builder.metadata().id("1234").formatFamilyId("formatFamily").build().getContent().getFormatFamilyId());
     }
 
     @Test
@@ -232,7 +232,7 @@ public class DataSetMetadataBuilderTest {
         content.setLimit(1000L);
         content.setNbLinesInHeader(10);
         content.setNbLinesInFooter(10);
-        content.setFormatGuessId("formatGuess#csv");
+        content.setFormatFamilyId("formatGuess#csv");
         content.setMediaType("text/csv");
         content.setParameters(parameters);
 
@@ -276,7 +276,7 @@ public class DataSetMetadataBuilderTest {
         assertThat(copy.getContent().getLimit().get(), equalTo(original.getContent().getLimit().get()));
         assertThat(copy.getContent().getNbLinesInHeader(), equalTo(original.getContent().getNbLinesInHeader()));
         assertThat(copy.getContent().getNbLinesInFooter(), equalTo(original.getContent().getNbLinesInFooter()));
-        assertThat(copy.getContent().getFormatGuessId(), equalTo(original.getContent().getFormatGuessId()));
+        assertThat(copy.getContent().getFormatFamilyId(), equalTo(original.getContent().getFormatFamilyId()));
         assertThat(copy.getContent().getMediaType(), equalTo(original.getContent().getMediaType()));
         assertThat(copy.getContent().getParameters(), equalTo(original.getContent().getParameters()));
         assertThat(copy.getEncoding(), equalTo(original.getEncoding()));

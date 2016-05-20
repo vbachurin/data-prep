@@ -355,19 +355,19 @@ public class CSVSchemaParserTest extends AbstractSchemaTestUtils {
 
     @Test
     public void should_accept_csv_update() throws Exception {
-        final DataSetMetadata metadata = metadataBuilder.metadata().id("toto").formatGuessId("formatGuess#csv").build();
+        final DataSetMetadata metadata = metadataBuilder.metadata().id("toto").formatFamilyId("formatGuess#csv").build();
         assertTrue(csvSchemaParser.accept(metadata));
     }
 
     @Test
     public void should_not_accept_xls_update() throws Exception {
-        final DataSetMetadata metadata = metadataBuilder.metadata().id("tata").formatGuessId("formatGuess#xls").build();
+        final DataSetMetadata metadata = metadataBuilder.metadata().id("tata").formatFamilyId("formatGuess#xls").build();
         assertFalse(csvSchemaParser.accept(metadata));
     }
 
     @Test
     public void should_not_accept_html_update() throws Exception {
-        final DataSetMetadata metadata = metadataBuilder.metadata().id("tata").formatGuessId("formatGuess#html").build();
+        final DataSetMetadata metadata = metadataBuilder.metadata().id("tata").formatFamilyId("formatGuess#html").build();
         assertFalse(csvSchemaParser.accept(metadata));
     }
 

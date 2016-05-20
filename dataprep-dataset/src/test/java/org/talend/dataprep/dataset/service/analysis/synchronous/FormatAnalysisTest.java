@@ -60,7 +60,7 @@ public class FormatAnalysisTest extends DataSetBaseTest {
 
         final DataSetMetadata updated = dataSetMetadataRepository.get("1234");
         assertNotNull(updated);
-        assertThat(updated.getContent().getFormatGuessId(), is(CSVFormatFamily.BEAN_ID));
+        assertThat(updated.getContent().getFormatFamilyId(), is(CSVFormatFamily.BEAN_ID));
         assertThat(updated.getContent().getMediaType(), is("text/csv"));
         assertThat(updated.getEncoding(), is("windows-1252"));
         //assertThat(updated.getContent().getParameters().get("SEPARATOR"), is(";"));
@@ -75,7 +75,7 @@ public class FormatAnalysisTest extends DataSetBaseTest {
         formatAnalysis.analyze("1234");
         final DataSetMetadata actual = dataSetMetadataRepository.get("1234");
         assertThat(actual, notNullValue());
-        assertThat(actual.getContent().getFormatGuessId(), is(CSVFormatFamily.BEAN_ID));
+        assertThat(actual.getContent().getFormatFamilyId(), is(CSVFormatFamily.BEAN_ID));
         assertThat(actual.getContent().getMediaType(), is("text/csv"));
         assertThat(actual.getContent().getParameters().get("SEPARATOR"), is(";"));
     }
@@ -88,7 +88,7 @@ public class FormatAnalysisTest extends DataSetBaseTest {
         formatAnalysis.analyze("1234");
         final DataSetMetadata actual = dataSetMetadataRepository.get("1234");
         assertThat(actual, notNullValue());
-        assertThat(actual.getContent().getFormatGuessId(), is(CSVFormatFamily.BEAN_ID));
+        assertThat(actual.getContent().getFormatFamilyId(), is(CSVFormatFamily.BEAN_ID));
         assertThat(actual.getContent().getMediaType(), is("text/csv"));
         assertThat(actual.getContent().getParameters().get("SEPARATOR"), is("\t"));
         assertThat(actual.getEncoding(), is("UTF-16LE"));
@@ -115,7 +115,7 @@ public class FormatAnalysisTest extends DataSetBaseTest {
         formatAnalysis.analyze("1234");
         final DataSetMetadata actual = dataSetMetadataRepository.get("1234");
         assertThat(actual, notNullValue());
-        assertThat(actual.getContent().getFormatGuessId(), is(XlsFormatFamily.BEAN_ID));
+        assertThat(actual.getContent().getFormatFamilyId(), is(XlsFormatFamily.BEAN_ID));
         assertThat(actual.getContent().getMediaType(), is("application/vnd.ms-excel"));
         assertThat(actual.getContent().getParameters().isEmpty(), is(true));
     }

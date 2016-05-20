@@ -800,9 +800,9 @@ public class DataSetService extends BaseDataSetService {
                 }
 
                 // Validate that the new data set metadata and removes the draft status
-                final String formatGuessId = dataSetMetadata.getContent().getFormatGuessId();
-                if (formatFamilyFactory.hasFormatFamily(formatGuessId)) {
-                    FormatFamily format = formatFamilyFactory.getFormatFamily(formatGuessId);
+                final String formatFamilyId = dataSetMetadata.getContent().getFormatFamilyId();
+                if (formatFamilyFactory.hasFormatFamily(formatFamilyId)) {
+                    FormatFamily format = formatFamilyFactory.getFormatFamily(formatFamilyId);
                     try {
                         DraftValidator draftValidator = format.getDraftValidator();
                         DraftValidator.Result result = draftValidator.validate(dataSetMetadata);

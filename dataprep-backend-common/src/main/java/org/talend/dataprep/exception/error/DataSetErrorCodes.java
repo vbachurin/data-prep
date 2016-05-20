@@ -92,7 +92,7 @@ public enum DataSetErrorCodes implements ErrorCode {
     FOLDER_NOT_EMPTY(CONFLICT.value()),
     /**
      * Error return when the uploaded content is not supported by any
-     * {@link org.talend.dataprep.schema.FormatGuesser guesser}.
+     * {@link org.talend.dataprep.schema.CompositeFormatDetector guesser}.
      */
     UNSUPPORTED_CONTENT(BAD_REQUEST.value()),
 

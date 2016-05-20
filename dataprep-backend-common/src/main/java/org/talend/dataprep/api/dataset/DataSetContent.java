@@ -48,7 +48,7 @@ public class DataSetContent implements Serializable {
     private Map<String, String> parameters = new HashMap<>();
 
     @JsonProperty("formatGuess")
-    private String formatGuessId;
+    private String formatFamilyId;
 
     /** If the dataset is too big, */
     @JsonProperty("limit")
@@ -78,12 +78,12 @@ public class DataSetContent implements Serializable {
         this.mediaType = mediaType;
     }
 
-    public String getFormatGuessId() {
-        return formatGuessId;
+    public String getFormatFamilyId() {
+        return formatFamilyId;
     }
 
-    public void setFormatGuessId(String formatGuessId) {
-        this.formatGuessId = formatGuessId;
+    public void setFormatFamilyId(String formatFamilyId) {
+        this.formatFamilyId = formatFamilyId;
     }
 
     public long getNbRecords() {
@@ -141,11 +141,11 @@ public class DataSetContent implements Serializable {
                 Objects.equals(limit, that.limit) && //
                 Objects.equals(mediaType, that.mediaType) && //
                 Objects.equals(parameters, that.parameters) && //
-                Objects.equals(formatGuessId, that.formatGuessId);
+                Objects.equals(formatFamilyId, that.formatFamilyId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(nbRecords, nbLinesInHeader, nbLinesInFooter, limit, mediaType, parameters, formatGuessId);
+        return Objects.hash(nbRecords, nbLinesInHeader, nbLinesInFooter, limit, mediaType, parameters, formatFamilyId);
     }
 }

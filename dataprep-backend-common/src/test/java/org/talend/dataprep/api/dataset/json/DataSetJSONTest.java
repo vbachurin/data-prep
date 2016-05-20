@@ -159,7 +159,7 @@ public class DataSetJSONTest {
 
         final DataSetContent content = metadata.getContent();
         content.addParameter(CSVFormatFamily.SEPARATOR_PARAMETER, ",");
-        content.setFormatGuessId(new CSVFormatFamily().getBeanId());
+        content.setFormatFamilyId(new CSVFormatFamily().getBeanId());
         content.setMediaType("text/csv");
         metadata.getLifecycle().qualityAnalyzed(true);
         metadata.getLifecycle().schemaAnalyzed(true);
@@ -178,7 +178,7 @@ public class DataSetJSONTest {
         DataSet dataSet = from(DataSetJSONTest.class.getResourceAsStream("test3.json"));
         final DataSetMetadata metadata = dataSet.getMetadata();
         metadata.getContent().addParameter(CSVFormatFamily.SEPARATOR_PARAMETER, ",");
-        metadata.getContent().setFormatGuessId(new CSVFormatFamily().getBeanId());
+        metadata.getContent().setFormatFamilyId(new CSVFormatFamily().getBeanId());
         assertNotNull(metadata);
         StringWriter writer = new StringWriter();
         to(dataSet, writer);

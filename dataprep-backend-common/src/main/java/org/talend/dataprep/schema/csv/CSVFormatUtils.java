@@ -46,7 +46,7 @@ public class CSVFormatUtils {
      * Retrieve properties (separator, header and the headerNbLines) associated with a dataset content and put them in a
      * map with their corresponding key.
      *
-     * @param separator the separator object detected by the CSVFormatGuesser
+     * @param separator the separator object detected by the {@link CSVSchemaParser}
      * @return a map associating to header and separator parameters their corresponding value
      */
     public Map<String, String> compileSeparatorProperties(Separator separator) {

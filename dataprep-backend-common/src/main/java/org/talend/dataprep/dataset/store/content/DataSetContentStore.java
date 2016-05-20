@@ -68,7 +68,7 @@ public abstract class DataSetContentStore {
      */
     protected InputStream get(DataSetMetadata dataSetMetadata) {
         DataSetContent content = dataSetMetadata.getContent();
-        Serializer serializer = factory.getFormatFamily(content.getFormatGuessId()).getSerializer();
+        Serializer serializer = factory.getFormatFamily(content.getFormatFamilyId()).getSerializer();
         return serializer.serialize(getAsRaw(dataSetMetadata), dataSetMetadata);
     }
 

@@ -60,7 +60,7 @@ public class FormatAnalysis implements SynchronousDataSetAnalyzer {
     private ContentStoreRouter store;
 
     /**
-     * Format guess factory.
+     * Format family factory.
      */
     @Autowired
     private FormatFamily.Factory formatFamilyFactory;
@@ -148,7 +148,7 @@ public class FormatAnalysis implements SynchronousDataSetAnalyzer {
         DataSetContent dataSetContent = metadata.getContent();
 
         final String mediaType = metadata.getLocation().toMediaType(format.getFormatFamily());
-        dataSetContent.setFormatGuessId(formatFamily.getBeanId());
+        dataSetContent.setFormatFamilyId(formatFamily.getBeanId());
         dataSetContent.setMediaType(mediaType);
         metadata.setEncoding(format.getEncoding());
 
@@ -167,7 +167,7 @@ public class FormatAnalysis implements SynchronousDataSetAnalyzer {
 
         final Marker marker = Markers.dataset(updated.getId());
 
-        FormatFamily formatFamily = formatFamilyFactory.getFormatFamily(original.getContent().getFormatGuessId());
+        FormatFamily formatFamily = formatFamilyFactory.getFormatFamily(original.getContent().getFormatFamilyId());
 
         if (!formatFamily.getSchemaGuesser().accept(updated)) {
             LOG.debug(marker, "the schema cannot be updated");
@@ -184,9 +184,9 @@ public class FormatAnalysis implements SynchronousDataSetAnalyzer {
     /**
      * Parse and store column name information.
      *
-     * @param dataSetId the dataset id.
-     * @param metadata the dataset metadata to parse.
-     * @param format the format guesser.
+     * @param dataSetId the dataset id
+     * @param metadata the dataset metadata to parse
+     * @param format the format
      */
     private void parseColumnNameInformation(String dataSetId, DataSetMetadata metadata, Format format) {
 

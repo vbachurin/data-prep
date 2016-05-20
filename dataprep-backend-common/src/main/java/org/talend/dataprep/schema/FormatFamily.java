@@ -61,12 +61,12 @@ public interface FormatFamily {
         @Autowired
         private Map<String, FormatFamily> formatFamilyMap;
 
-        public FormatFamily getFormatFamily(String formatGuessId) {
-            return formatFamilyMap.get(formatGuessId);
+        public FormatFamily getFormatFamily(String formatFamilyId) {
+            return formatFamilyMap.get(formatFamilyId);
         }
 
-        public boolean hasFormatFamily(String formatGuessId) {
-            return formatFamilyMap.containsKey(formatGuessId);
+        public boolean hasFormatFamily(String formatFamilyId) {
+            return formatFamilyMap.containsKey(formatFamilyId);
         }
 
     }

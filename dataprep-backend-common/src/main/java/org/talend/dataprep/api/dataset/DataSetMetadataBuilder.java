@@ -110,9 +110,9 @@ public class DataSetMetadataBuilder {
     private int footerSize;
 
     /**
-     * @see org.talend.dataprep.api.dataset.DataSetContent#formatGuessId
+     * @see org.talend.dataprep.api.dataset.DataSetContent#formatFamilyId
      */
-    private String formatGuessId;
+    private String formatFamilyId;
 
     /**
      * @see org.talend.dataprep.api.dataset.DataSetContent#mediaType
@@ -300,8 +300,8 @@ public class DataSetMetadataBuilder {
         return this;
     }
 
-    public DataSetMetadataBuilder formatGuessId(String formatGuessId) {
-        this.formatGuessId = formatGuessId;
+    public DataSetMetadataBuilder formatFamilyId(String formatGuessId) {
+        this.formatFamilyId = formatGuessId;
         return this;
     }
 
@@ -374,7 +374,7 @@ public class DataSetMetadataBuilder {
         this.headerSize = original.getContent().getNbLinesInHeader();
         this.footerSize = original.getContent().getNbLinesInFooter();
 
-        this.formatGuessId = original.getContent().getFormatGuessId();
+        this.formatFamilyId = original.getContent().getFormatFamilyId();
         this.mediaType = original.getContent().getMediaType();
         this.parameters = original.getContent().getParameters();
         this.encoding = original.getEncoding();
@@ -453,8 +453,8 @@ public class DataSetMetadataBuilder {
         currentContent.setNbLinesInFooter(footerSize);
         currentContent.setParameters(parameters);
 
-        if (formatGuessId != null) {
-            currentContent.setFormatGuessId(formatGuessId);
+        if (formatFamilyId != null) {
+            currentContent.setFormatFamilyId(formatFamilyId);
         }
         currentContent.setMediaType(mediaType);
 

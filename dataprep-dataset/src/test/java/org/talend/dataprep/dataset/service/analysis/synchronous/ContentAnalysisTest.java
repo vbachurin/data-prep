@@ -107,7 +107,7 @@ public class ContentAnalysisTest extends DataSetBaseTest {
      */
     private void createCsvDataSet(DataSetMetadata metadata, String source) {
         metadata.setLocation(new LocalStoreLocation());
-        metadata.getContent().setFormatGuessId(CSVFormatFamily.BEAN_ID);
+        metadata.getContent().setFormatFamilyId(CSVFormatFamily.BEAN_ID);
         metadata.getContent().addParameter(CSVFormatFamily.SEPARATOR_PARAMETER, ",");
         dataSetMetadataRepository.add(metadata);
         contentStore.storeAsRaw(metadata, this.getClass().getResourceAsStream(source));

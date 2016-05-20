@@ -233,7 +233,7 @@ public class DataSetServiceTest extends DataSetBaseTest {
         // Adds 1 data set to store
         String id1 = UUID.randomUUID().toString();
         final DataSetMetadata metadata = metadataBuilder.metadata().id(id1).name("name1").author("anonymous").created(0)
-                .formatGuessId(new CSVFormatFamily().getBeanId()).build();
+                .formatFamilyId(new CSVFormatFamily().getBeanId()).build();
 
         metadata.getContent().addParameter(CSVFormatFamily.SEPARATOR_PARAMETER, ";");
         dataSetMetadataRepository.add(metadata);
@@ -249,7 +249,7 @@ public class DataSetServiceTest extends DataSetBaseTest {
         // Adds a new data set to store
         String id2 = UUID.randomUUID().toString();
         DataSetMetadata metadata2 = metadataBuilder.metadata().id(id2).name("name2").author("anonymous").created(0)
-                .formatGuessId(new CSVFormatFamily().getBeanId()).build();
+                .formatFamilyId(new CSVFormatFamily().getBeanId()).build();
         metadata2.getContent().addParameter(CSVFormatFamily.SEPARATOR_PARAMETER, ";");
         dataSetMetadataRepository.add(metadata2);
         when().get("/datasets").then().statusCode(OK.value());
@@ -283,11 +283,11 @@ public class DataSetServiceTest extends DataSetBaseTest {
         // Adds 2 data set metadata to store
         String id1 = UUID.randomUUID().toString();
         final DataSetMetadata metadata1 = metadataBuilder.metadata().id(id1).name("AAAA").author("anonymous").created(0)
-                .formatGuessId(new CSVFormatFamily().getBeanId()).build();
+                .formatFamilyId(new CSVFormatFamily().getBeanId()).build();
         dataSetMetadataRepository.add(metadata1);
         String id2 = UUID.randomUUID().toString();
         final DataSetMetadata metadata2 = metadataBuilder.metadata().id(id2).name("BBBB").author("anonymous").created(0)
-                .formatGuessId(new CSVFormatFamily().getBeanId()).build();
+                .formatFamilyId(new CSVFormatFamily().getBeanId()).build();
         dataSetMetadataRepository.add(metadata2);
         // Ensure order by name (most recent first)
         String actual = when().get("/datasets?sort=name").asString();
@@ -305,11 +305,11 @@ public class DataSetServiceTest extends DataSetBaseTest {
         // Adds 2 data set metadata to store
         String id1 = UUID.randomUUID().toString();
         final DataSetMetadata metadata1 = metadataBuilder.metadata().id(id1).name("AAAA").author("anonymous").created(20)
-                .formatGuessId(new CSVFormatFamily().getBeanId()).build();
+                .formatFamilyId(new CSVFormatFamily().getBeanId()).build();
         dataSetMetadataRepository.add(metadata1);
         String id2 = UUID.randomUUID().toString();
         final DataSetMetadata metadata2 = metadataBuilder.metadata().id(id2).name("BBBB").author("anonymous").created(0)
-                .formatGuessId(new CSVFormatFamily().getBeanId()).build();
+                .formatFamilyId(new CSVFormatFamily().getBeanId()).build();
         dataSetMetadataRepository.add(metadata2);
         // Ensure order by date (most recent first)
         String actual = when().get("/datasets?sort=date").asString();
@@ -327,11 +327,11 @@ public class DataSetServiceTest extends DataSetBaseTest {
         // Adds 2 data set metadata to store
         String id1 = UUID.randomUUID().toString();
         final DataSetMetadata metadata1 = metadataBuilder.metadata().id(id1).name("AAAA").author("anonymous").created(20)
-                .formatGuessId(new CSVFormatFamily().getBeanId()).build();
+                .formatFamilyId(new CSVFormatFamily().getBeanId()).build();
         dataSetMetadataRepository.add(metadata1);
         String id2 = UUID.randomUUID().toString();
         final DataSetMetadata metadata2 = metadataBuilder.metadata().id(id2).name("BBBB").author("anonymous").created(0)
-                .formatGuessId(new CSVFormatFamily().getBeanId()).build();
+                .formatFamilyId(new CSVFormatFamily().getBeanId()).build();
         dataSetMetadataRepository.add(metadata2);
         // Ensure order by date (most recent first)
         String actual = when().get("/datasets?sort=date&order=desc").asString();
@@ -365,15 +365,15 @@ public class DataSetServiceTest extends DataSetBaseTest {
         // Adds 2 data set metadata to store
         String id1 = UUID.randomUUID().toString();
         final DataSetMetadata metadata1 = metadataBuilder.metadata().id(id1).name("AAAA").author("anonymous").created(20)
-                .formatGuessId(new CSVFormatFamily().getBeanId()).build();
+                .formatFamilyId(new CSVFormatFamily().getBeanId()).build();
         dataSetMetadataRepository.add(metadata1);
         String id2 = UUID.randomUUID().toString();
         final DataSetMetadata metadata2 = metadataBuilder.metadata().id(id2).name("CCCC").author("anonymous").created(0)
-                .formatGuessId(new CSVFormatFamily().getBeanId()).build();
+                .formatFamilyId(new CSVFormatFamily().getBeanId()).build();
         dataSetMetadataRepository.add(metadata2);
         String id3 = UUID.randomUUID().toString();
         final DataSetMetadata metadata3 = metadataBuilder.metadata().id(id3).name("bbbb").author("anonymous").created(0)
-                .formatGuessId(new CSVFormatFamily().getBeanId()).build();
+                .formatFamilyId(new CSVFormatFamily().getBeanId()).build();
         dataSetMetadataRepository.add(metadata3);
         // Ensure order by name (last character from alphabet first)
         String actual = when().get("/datasets?sort=name&order=desc").asString();
@@ -513,7 +513,7 @@ public class DataSetServiceTest extends DataSetBaseTest {
         // given
         final String datasetId = UUID.randomUUID().toString();
         final DataSetMetadata dataSetMetadata = metadataBuilder.metadata().id(datasetId)
-                .formatGuessId(new CSVFormatFamily().getBeanId()).build();
+                .formatFamilyId(new CSVFormatFamily().getBeanId()).build();
         dataSetMetadata.getContent().addParameter(CSVFormatFamily.SEPARATOR_PARAMETER, ";");
         dataSetMetadataRepository.add(dataSetMetadata);
         contentStore.storeAsRaw(dataSetMetadata, new ByteArrayInputStream(new byte[0]));
@@ -611,7 +611,7 @@ public class DataSetServiceTest extends DataSetBaseTest {
         String expectedId = UUID.randomUUID().toString();
 
         DataSetMetadata dataSetMetadata = metadataBuilder.metadata().id(expectedId)
-                .formatGuessId(new CSVFormatFamily().getBeanId()).build();
+                .formatFamilyId(new CSVFormatFamily().getBeanId()).build();
 
         dataSetMetadata.getContent().addParameter(CSVFormatFamily.SEPARATOR_PARAMETER, ";");
         dataSetMetadataRepository.add(dataSetMetadata);
@@ -903,6 +903,11 @@ public class DataSetServiceTest extends DataSetBaseTest {
 
     /**
      * Test the import of a csv file with a really low separator coefficient variation.
+<<<<<<< Updated upstream
+=======
+     *
+     * @see org.talend.dataprep.schema.csv.CSVSchemaParser
+>>>>>>> Stashed changes
      */
     @Test
     public void testLowSeparatorOccurrencesInCSV() throws Exception {
@@ -922,7 +927,7 @@ public class DataSetServiceTest extends DataSetBaseTest {
      * Test the import of an excel file that is also detected as csv file. See
      * https://jira.talendforge.org/browse/TDP-258
      *
-     * @see CSVFormatGuesser
+     * @see org.talend.dataprep.schema.csv.CSVSchemaParser
      */
     @Test
     public void testXlsFileThatIsAlsoParsedAsCSV() throws Exception {
@@ -1048,7 +1053,7 @@ public class DataSetServiceTest extends DataSetBaseTest {
                 .headerSize(1) //
                 .qualityAnalyzed(true) //
                 .schemaAnalyzed(true) //
-                .formatGuessId(new CSVFormatFamily().getBeanId()) //
+                .formatFamilyId(new CSVFormatFamily().getBeanId()) //
                 .mediaType("text/csv");
 
         DataSetMetadata metadata = builder.build();
@@ -1510,7 +1515,7 @@ public class DataSetServiceTest extends DataSetBaseTest {
     private String insertEmptyDataSet() {
         String datasetId = UUID.randomUUID().toString();
         DataSetMetadata dataSetMetadata = metadataBuilder.metadata().id(datasetId)
-                .formatGuessId(new CSVFormatFamily().getBeanId()).build();
+                .formatFamilyId(new CSVFormatFamily().getBeanId()).build();
         dataSetMetadata.getContent().addParameter(CSVFormatFamily.SEPARATOR_PARAMETER, ";");
         dataSetMetadataRepository.add(dataSetMetadata);
         contentStore.storeAsRaw(dataSetMetadata, new ByteArrayInputStream(new byte[0]));

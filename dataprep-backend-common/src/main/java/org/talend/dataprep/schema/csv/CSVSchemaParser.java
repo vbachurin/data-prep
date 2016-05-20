@@ -66,7 +66,7 @@ public class CSVSchemaParser implements SchemaParser {
         if (metadata == null || metadata.getContent() == null){
             return false;
         }
-        return StringUtils.equals(metadata.getContent().getFormatGuessId(), CSVFormatFamily.BEAN_ID);
+        return StringUtils.equals(metadata.getContent().getFormatFamilyId(), CSVFormatFamily.BEAN_ID);
     }
 
     /**
