@@ -30,6 +30,7 @@ import org.talend.dataprep.api.folder.FolderEntry;
 import org.talend.dataprep.folder.store.FolderRepository;
 import org.talend.dataprep.folder.store.FolderRepositoryAdapter;
 import org.talend.dataprep.folder.store.NotEmptyFolderException;
+import org.talend.dataprep.util.StringsHelper;
 
 @Component("folderRepository#in-memory")
 @ConditionalOnProperty(name = "folder.store", havingValue = "in-memory")
@@ -115,11 +116,9 @@ public class InMemoryFolderRepository extends FolderRepositoryAdapter {
                 cleanPath = StringUtils.substringAfterLast(cleanPath, "/");
             }
 
-            if ((strict && StringUtils.equalsIgnoreCase(cleanPath, queryString))
-                    || (!strict && StringUtils.containsIgnoreCase(cleanPath, queryString))) {
+            if (StringsHelper.match(cleanPath, queryString, strict)) {
                 children.add(folder);
             }
-
         });
 
         return children;

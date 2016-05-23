@@ -13,6 +13,7 @@
 
 package org.talend.dataprep.dataset.service;
 
+import static java.util.stream.Collectors.toSet;
 import static java.util.stream.StreamSupport.stream;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
@@ -78,6 +79,7 @@ import org.talend.dataprep.user.store.UserDataRepository;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.talend.dataprep.util.StringsHelper;
 
 @RestController
 @Api(value = "datasets", basePath = "/datasets", description = "Operations on data sets")
@@ -999,13 +1001,8 @@ public class DataSetService {
         final Set<DataSetMetadata> found;
         try (final Stream<DataSetMetadata> stream = stream(dataSetMetadataRepository.list().spliterator(), false)) {
             found = stream
-                    .filter(m -> {
-                        if(strict) {
-                            return StringUtils.equalsIgnoreCase(m.getName(), name);
-                        }
-                        return StringUtils.containsIgnoreCase(m.getName(), name);
-                    })
-                    .collect(Collectors.toSet());
+                    .filter(metadata -> StringsHelper.match(metadata.getName(), name, strict))
+                    .collect(toSet());
         }
 
         LOG.info("found {} dataset while searching {}", found.size(), name);

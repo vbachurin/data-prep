@@ -20,6 +20,7 @@ import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.preparation.Identifiable;
 import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.preparation.Step;
+import org.talend.dataprep.util.StringsHelper;
 
 /**
  * Base interface for preparation repositories (mongodb & in memory).
@@ -71,18 +72,10 @@ public interface PreparationRepository {
         if (StringUtils.isEmpty(name)) {
             result = listAll(Preparation.class);
         } else {
-            if (exactMatch) {
-                result = listAll(Preparation.class) //
-                        .stream() //
-                        .filter(preparation -> StringUtils.equalsIgnoreCase(name, preparation.getName())) //
-                        .collect(Collectors.toList()); //
-            } else {
-                result = listAll(Preparation.class) //
-                        .stream() //
-                        .filter(preparation -> StringUtils.containsIgnoreCase(preparation.getName(),name)) //
-                        .collect(Collectors.toList()); //
-
-            }
+            result = listAll(Preparation.class) //
+                    .stream() //
+                    .filter(preparation -> StringsHelper.match(preparation.getName(), name, exactMatch)) //
+                    .collect(Collectors.toList()); //
         }
         return result;
     }

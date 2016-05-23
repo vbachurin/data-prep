@@ -49,6 +49,7 @@ import org.talend.dataprep.folder.store.FolderRepositoryAdapter;
 import org.talend.dataprep.folder.store.NotEmptyFolderException;
 
 import com.google.common.collect.Lists;
+import org.talend.dataprep.util.StringsHelper;
 
 /**
  * File system folder repository implementation.
@@ -515,8 +516,7 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
                 if (Files.isDirectory(path)) {
                     String pathStr = pathAsString(path);
                     String pathName = extractName(pathStr);
-                    if ((strict && StringUtils.equalsIgnoreCase(pathName, queryString))
-                            || (!strict && StringUtils.containsIgnoreCase(pathName, queryString))) {
+                    if (StringsHelper.match(pathName, queryString, strict)) {
                         FileInfo fileInfo = FileInfo.create(path);
                         Folder folder = fileInfo != null
                                 ? new Folder(pathStr, pathName, fileInfo.getCreationDate(), fileInfo.getLastModificationDate())
