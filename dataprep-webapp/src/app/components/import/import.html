@@ -55,7 +55,7 @@
               disable-enter="true">
     <span translate-once="ENTER_DATASET_NAME"></span>
     <form name="$ctrl.datasetNameForm"
-          ng-submit="$ctrl.datasetNameForm.$valid && $ctrl.uploadDatasetName()">
+          ng-submit="$ctrl.datasetNameForm.$valid && $ctrl.onImportNameValidation()">
         <input type="text"
                ng-model="$ctrl.datasetName"
                required

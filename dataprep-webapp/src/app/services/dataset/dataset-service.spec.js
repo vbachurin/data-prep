@@ -46,13 +46,13 @@ describe('Dataset Service', () => {
     }));
 
     beforeEach(inject(($q, DatasetListService, DatasetRestService, StateService) => {
-        promiseWithProgress = $q.when(true);
+        promiseWithProgress = $q.when();
 
         spyOn(DatasetListService, 'create').and.returnValue(promiseWithProgress);
         spyOn(DatasetListService, 'update').and.returnValue(promiseWithProgress);
-        spyOn(DatasetListService, 'delete').and.returnValue($q.when(true));
-        spyOn(DatasetListService, 'clone').and.returnValue($q.when(true));
-        spyOn(DatasetListService, 'processCertification').and.returnValue($q.when(true));
+        spyOn(DatasetListService, 'delete').and.returnValue($q.when());
+        spyOn(DatasetListService, 'clone').and.returnValue($q.when());
+        spyOn(DatasetListService, 'processCertification').and.returnValue($q.when());
         spyOn(DatasetListService, 'refreshDatasets').and.returnValue($q.when(datasets));
 
         spyOn(DatasetRestService, 'getContent').and.returnValue($q.when({}));
@@ -468,67 +468,131 @@ describe('Dataset Service', () => {
     });
 
     describe('utils', () => {
-        it('should adapt info to dataset object for upload', inject((DatasetService) => {
-            // given
-            const file = {
-                path: '/path/to/file'
-            };
-            const name = 'myDataset';
-            const id = 'e85afAa78556d5425bc2';
+        describe('createDatasetInfo', () => {
+            it('should adapt info to dataset object for upload', inject((DatasetService) => {
+                // given
+                const file = {
+                    path: '/path/to/file'
+                };
+                const name = 'myDataset';
+                const id = 'e85afAa78556d5425bc2';
 
-            // when
-            const dataset = DatasetService.createDatasetInfo(file, name, id);
+                // when
+                const dataset = DatasetService.createDatasetInfo(file, name, id);
 
-            // then
-            expect(dataset.name).toBe(name);
-            expect(dataset.progress).toBe(0);
-            expect(dataset.file).toBe(file);
-            expect(dataset.error).toBe(false);
-            expect(dataset.id).toBe(id);
-            expect(dataset.type).toBe('file');
-        }));
+                // then
+                expect(dataset.name).toBe(name);
+                expect(dataset.progress).toBe(0);
+                expect(dataset.file).toBe(file);
+                expect(dataset.error).toBe(false);
+                expect(dataset.id).toBe(id);
+                expect(dataset.type).toBe('file');
+            }));
 
-        it('should adapt info to dataset object for remote dataset', inject((DatasetService) => {
-            // given
-            const importParameters = {
-                type: 'http',
-                name: 'remote dataset',
-                url: 'http://www.lequipe.fr'
-            };
+            it('should adapt info to dataset object for remote dataset', inject((DatasetService) => {
+                // given
+                const importParameters = {
+                    type: 'http',
+                    name: 'remote dataset',
+                    url: 'http://www.lequipe.fr'
+                };
 
-            // when
-            const dataset = DatasetService.createDatasetInfo(null, importParameters.name, null);
+                // when
+                const dataset = DatasetService.createDatasetInfo(null, importParameters.name, null);
 
-            // then
-            expect(dataset.name).toBe(importParameters.name);
-            expect(dataset.progress).toBe(0);
-            expect(dataset.file).toBeNull();
-            expect(dataset.error).toBe(false);
-            expect(dataset.id).toBeNull();
-            expect(dataset.type).toBe('remote');
-        }));
+                // then
+                expect(dataset.name).toBe(importParameters.name);
+                expect(dataset.progress).toBe(0);
+                expect(dataset.file).toBeNull();
+                expect(dataset.error).toBe(false);
+                expect(dataset.id).toBeNull();
+                expect(dataset.type).toBe('remote');
+            }));
+        });
 
-        it('should get unique dataset name', inject((DatasetService) => {
-            // given
-            const name = 'my dataset';
+        describe('getUniqueName', () => {
+            beforeEach(inject(($q, DatasetRestService) => {
+                let call = 0;
+                spyOn(DatasetRestService, 'getDatasetByName').and.callFake(() => {
+                    if(call === 0) {
+                        call ++;
+                        return $q.reject({});
+                    }
+                    return $q.resolve();
+                });
+            }));
+            
+            it('should get unique dataset name', inject(($rootScope, DatasetService) => {
+                // given
+                const name = 'my dataset';
+                let uniqueName = '';
 
-            // when
-            const uniqueName = DatasetService.getUniqueName(name);
+                // when
+                DatasetService.getUniqueName(name)
+                    .then((res) => { uniqueName = res; });
+                $rootScope.$digest();
 
-            // then
-            expect(uniqueName).toBe('my dataset (1)');
-        }));
+                // then
+                expect(uniqueName).toBe('my dataset (2)');
+            }));
 
-        it('should get unique dataset name with a number in it', inject((DatasetService) => {
-            // given
-            const name = 'my second dataset (2)';
+            it('should get unique dataset name with a number in it', inject(($rootScope, DatasetService) => {
+                // given
+                const name = 'my second dataset (1)';
+                let uniqueName = '';
 
-            // when
-            const uniqueName = DatasetService.getUniqueName(name);
+                // when
+                DatasetService.getUniqueName(name)
+                    .then((res) => { uniqueName = res; });
+                $rootScope.$digest();
 
-            // then
-            expect(uniqueName).toBe('my second dataset (3)');
-        }));
+                // then
+                expect(uniqueName).toBe('my second dataset (2)');
+            }));
+        });
+        
+        describe('checkNameAvailability', () => {
+            it('should resolve on name availability', inject(($rootScope, $q, DatasetRestService, DatasetService) => {
+                // given
+                const name = 'my second dataset (2)';
+                let resolved = false;
+                let rejected = false;
+
+                spyOn(DatasetRestService, 'getDatasetByName').and.returnValue($q.when());
+
+                // when
+                DatasetService.checkNameAvailability(name)
+                    .then(() => { resolved = true; })
+                    .catch((existingDataset) => { rejected = existingDataset; });
+                $rootScope.$digest();
+
+                // then
+                expect(DatasetRestService.getDatasetByName).toHaveBeenCalledWith(name);
+                expect(resolved).toBe(true);
+                expect(rejected).toBeFalsy();
+            }));
+
+            it('should reject the existing dataset on name UNavailability', inject(($rootScope, $q, DatasetRestService, DatasetService) => {
+                // given
+                const name = 'my second dataset (2)';
+                const dataset = { id: '1', name: name };
+                let resolved = false;
+                let rejected = false;
+
+                spyOn(DatasetRestService, 'getDatasetByName').and.returnValue($q.when(dataset));
+
+                // when
+                DatasetService.checkNameAvailability(name)
+                    .then(() => { resolved = true; })
+                    .catch((existingDataset) => { rejected = existingDataset; });
+                $rootScope.$digest();
+
+                // then
+                expect(DatasetRestService.getDatasetByName).toHaveBeenCalledWith(name);
+                expect(resolved).toBeFalsy();
+                expect(rejected).toBe(dataset);
+            }));
+        });
     });
 
     describe('compatible preparations', () => {

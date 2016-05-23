@@ -70,7 +70,36 @@ export default function ImportCtrl($document,
      */
     vm.startDefaultImport = () => {
         let defaultExportType = _.find(vm.importTypes, 'defaultImport', true);
-        vm.startImport(defaultExportType? defaultExportType : vm.importTypes[0]);
+        vm.startImport(defaultExportType ? defaultExportType : vm.importTypes[0]);
+    };
+
+    /**
+     * @ngdoc method
+     * @name startImport
+     * @methodOf data-prep.import.controller:ImportCtrl
+     * @description Start the import process of a dataset. Route the call to the right import method
+     * (local or remote) depending on the import type user choice.
+     */
+    vm.startImport = (importType) => {
+        vm.currentInputType = importType;
+        switch (importType.locationType) {
+            case 'local':
+                $document.find('#datasetFile').eq(0).click();
+                break;
+            default:
+                vm.showModal = true;
+                if (vm.currentInputType.dynamic) {
+                    vm.isFetchingParameters = true;
+                    ImportRestService.importParameters(vm.currentInputType.locationType)
+                        .then((response) => {
+                            vm.currentInputType.parameters = response.data;
+                        })
+                        .finally(() => {
+                            vm.isFetchingParameters = false;
+                        });
+                }
+
+        }
     };
 
     /**
@@ -89,44 +118,14 @@ export default function ImportCtrl($document,
 
                 // deal with select inline parameters
                 if (paramItem.type === 'select') {
-                    let selectedValue = _.find(paramItem.configuration.values, {value: paramItem.value});
+                    let selectedValue = _.find(paramItem.configuration.values, { value: paramItem.value });
                     getParamIteration(paramsAccu, selectedValue.parameters);
                 }
             });
         }
         return paramsAccu;
     }
-
-    /**
-     * @ngdoc method
-     * @name startImport
-     * @methodOf data-prep.import.controller:ImportCtrl
-     * @description Start the import process of a dataset. Route the call to the right import method
-     * (local or remote) depending on the import type user choice.
-     */
-    vm.startImport = (importType) => {
-        vm.currentInputType = importType;
-        switch (importType.locationType) {
-            case 'local':
-                $document.find('#datasetFile').eq(0).click();
-                break;
-            default:
-                vm.showModal = true;
-                if(vm.currentInputType.dynamic){
-                    vm.isFetchingParameters = true;
-                    ImportRestService.importParameters(vm.currentInputType.locationType)
-                        .then((response) => {
-                            vm.currentInputType.parameters = response.data;
-                        })
-                        .finally( () => {
-                            vm.isFetchingParameters = false;
-                        });
-                }
-
-        }
-    };
-
-
+    
     /**
      * @ngdoc method
      * @name createDataset
@@ -137,14 +136,14 @@ export default function ImportCtrl($document,
      */
     function createDataset(file, name, importType) {
 
-        let params = getParamIteration({}, importType.parameters);
+        const params = getParamIteration({}, importType.parameters);
         params.type = importType.locationType;
         params.name = name;
 
-        let dataset = DatasetService.createDatasetInfo(file, params.name);
+        const dataset = DatasetService.createDatasetInfo(file, name);
         StateService.startUploadingDataset(dataset);
 
-        DatasetService.create(params, importType.contentType, file)
+        return DatasetService.create(params, importType.contentType, file)
             .progress((event) => {
                 dataset.progress = parseInt(100.0 * event.loaded / event.total);
             })
@@ -156,8 +155,6 @@ export default function ImportCtrl($document,
             })
             .finally(() => {
                 StateService.finishUploadingDataset(dataset);
-                vm.datasetName = '';
-                vm.datasetFile = null;
             });
     }
 
@@ -165,66 +162,83 @@ export default function ImportCtrl($document,
      * @ngdoc method
      * @name import
      * @methodOf data-prep.import.controller:ImportCtrl
-     * @description Check if dataset exist already and create dataset
+     * @description Import step 1 - It checks if the dataset name is available
+     * If so : the dataset is created
+     * If not : the new name modal is shown
      */
     vm.import = (importType) => {
-        let file = vm.datasetFile ? vm.datasetFile[0] : null;
-        let datasetName = (file ? vm.datasetFile[0].name : _.find(importType.parameters, (o) => { return o.name ==='name'; }).value);
+        const file = vm.datasetFile ? vm.datasetFile[0] : null;
+        const datasetName = file ?
+            file.name :
+            _.find(importType.parameters, (o) => o.name === 'name').value;
 
         // remove file extension and ask final name
-        vm.datasetName = datasetName.replace(/\.[^/.]+$/, '');
+        const name = datasetName.replace(/\.[^/.]+$/, '');
 
-        // show dataset name popup when name already exists
-        if (DatasetService.getDatasetByName(vm.datasetName)) {
-            vm.datasetNameModal = true;
-        }
-        // create dataset with calculated name if it is unique
-        else {
-            createDataset(file, vm.datasetName, vm.currentInputType);
-        }
-
+        return DatasetService.checkNameAvailability(name)
+        // name available: we create the dataset
+            .then(() => {
+                createDataset(file, name, importType);
+            })
+            // name is not available, we ask for a new name
+            .catch(() => {
+                vm.datasetName = name;
+                vm.datasetNameModal = true;
+            });
     };
 
     /**
      * @ngdoc method
      * @name uploadDatasetName
      * @methodOf data-prep.import.controller:ImportCtrl
-     * @description Upload dataset : Step 2 - name entered. It ask for override if a dataset with the same name
-     * exists, and trigger the upload
+     * @description Import step 2 - name entered. It checks if the name is available
+     * If so : the dataset is created
+     * If not : the user has to choose to create a new one or the update the existing one
      */
-    vm.uploadDatasetName = () => {
-        // if the name exists, ask for update or creation
-        vm.existingDatasetFromName = DatasetService.getDatasetByName(vm.datasetName);
-        if (vm.existingDatasetFromName) {
-            TalendConfirmService.confirm(null, ['UPDATE_EXISTING_DATASET'], {dataset: vm.datasetName})
-                .then(vm.updateExistingDataset)
-                .catch((cause) => {
-                    if (cause !== 'dismiss') {
-                        createDataset(vm.datasetFile ? vm.datasetFile[0] : null, DatasetService.getUniqueName(vm.datasetName), vm.currentInputType);
-                    }
-                });
-        }
-        // create with requested name
-        else {
-            createDataset(vm.datasetFile ? vm.datasetFile[0] : null, vm.datasetName, vm.currentInputType);
-        }
+    vm.onImportNameValidation = () => {
+        const file = vm.datasetFile ? vm.datasetFile[0] : null;
+        const importType = vm.currentInputType;
+        const name = vm.datasetName;
+        
+        return DatasetService.checkNameAvailability(name)
+        // name still exists
+            .then(() => {
+                createDataset(file, name, importType);
+            })
+            // name still exists : we ask if user want to update it
+            .catch((existingDataset) => updateOrCreate(file, existingDataset, importType, name));
     };
 
     /**
      * @ngdoc method
-     * @name updateExistingDataset
+     * @name updateOrCreate
      * @methodOf data-prep.import.controller:ImportCtrl
-     * @description Upload dataset : Step 3 bis - Update existing dataset
+     * @param {object} file The dataset file
+     * @param {object} existingDataset The dataset to update
+     * @param {object} importType The import configuration
+     * @param {string} name The dataset name
+     * @description Import step 3 - Ask to create or update the existing dataset
+     * Create : get a unique name and create
+     * Update : update the content of the existing dataset
      */
-    vm.updateExistingDataset = () => {
-        let file = vm.datasetFile ? vm.datasetFile[0] : null;
-        let existingDataset = vm.existingDatasetFromName;
-
-        UpdateWorkflowService.updateDataset(file, existingDataset)
-            .finally(() => {
-                vm.datasetName = '';
-                vm.datasetFile = null;
+    function updateOrCreate(file, existingDataset, importType, name) {
+        return TalendConfirmService.confirm(null, ['UPDATE_EXISTING_DATASET'], { dataset: name })
+        // user confirm : let's update the dataset
+            .then(() => {
+                UpdateWorkflowService.updateDataset(file, existingDataset)
+            })
+            // user dismiss : cancel
+            // user select no : get unique name and create a new dataset
+            .catch((cause) => {
+                if (cause === 'dismiss') {
+                    return;
+                }
+                return DatasetService.getUniqueName(name)
+                    .then((name) => createDataset(
+                        file,
+                        name,
+                        importType
+                    ));
             });
-    };
-
+    }
 }

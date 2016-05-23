@@ -1,15 +1,15 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
 
 /**
  * @ngdoc service
@@ -35,6 +35,7 @@ export default function DatasetRestService($rootScope, $upload, $http, RestURLs)
         getContent: getContent,
         getSheetPreview: getSheetPreview,
         getEncodings: getEncodings,
+        getDatasetByName: getDatasetByName,
 
         processCertification: processCertification,
         toggleFavorite: toggleFavorite,
@@ -61,7 +62,7 @@ export default function DatasetRestService($rootScope, $upload, $http, RestURLs)
             headers: {
                 'Content-Type': contentType
             },
-            data: file? file: parameters
+            data: file ? file : parameters
         };
         return $upload.http(req);
     }
@@ -78,7 +79,7 @@ export default function DatasetRestService($rootScope, $upload, $http, RestURLs)
         return $upload.http({
             url: RestURLs.datasetUrl + '/' + dataset.id + '?name=' + encodeURIComponent(dataset.name),
             method: 'PUT',
-            headers: {'Content-Type': 'text/plain'},
+            headers: { 'Content-Type': 'text/plain' },
             data: dataset.file
         });
     }
@@ -104,7 +105,7 @@ export default function DatasetRestService($rootScope, $upload, $http, RestURLs)
      * @returns {Promise} The GET promise
      */
     function cloneDataset(dataset) {
-        return $http.post(RestURLs.datasetUrl + '/' + dataset.id +'/copy');
+        return $http.post(RestURLs.datasetUrl + '/' + dataset.id + '/copy');
     }
 
     //--------------------------------------------------------------------------------------------------------------
@@ -135,6 +136,22 @@ export default function DatasetRestService($rootScope, $upload, $http, RestURLs)
             method: 'GET',
             timeout: deferredAbort.promise
         });
+    }
+    
+    /**
+     * @ngdoc method
+     * @name search
+     * @methodOf data-prep.services.inventory.service:InventoryRestService
+     * @param {String} name The dataset name
+     * @returns {Promise} The GET promise
+     */
+    function getDatasetByName(name) {
+        return $http(
+            {
+                url: `${RestURLs.searchUrl}?name=${encodeURIComponent(name)}&strict=true&filter=dataset`,
+                method: 'GET',
+            })
+            .then((resp) => resp.data.datasets && resp.data.datasets[0]);
     }
 
     /**
@@ -222,7 +239,9 @@ export default function DatasetRestService($rootScope, $upload, $http, RestURLs)
         $rootScope.$emit('talend.loading.start');
         return $http.get(RestURLs.datasetUrl + '/preview/' + datasetId + '?metadata=true' + (sheetName ? '&sheetName=' + encodeURIComponent(sheetName) : ''))
             .then((response) => response.data)
-            .finally(() => { $rootScope.$emit('talend.loading.stop') });
+            .finally(() => {
+                $rootScope.$emit('talend.loading.stop')
+            });
     }
 
     //--------------------------------------------------------------------------------------------------------------
@@ -263,7 +282,7 @@ export default function DatasetRestService($rootScope, $upload, $http, RestURLs)
      * @returns {Promise} The GET promise
      */
     function getCompatiblePreparations(datasetId) {
-        return $http.get(RestURLs.datasetUrl+ '/' + datasetId  + '/compatiblepreparations')
+        return $http.get(RestURLs.datasetUrl + '/' + datasetId + '/compatiblepreparations')
             .then((response) => response.data);
     }
 }

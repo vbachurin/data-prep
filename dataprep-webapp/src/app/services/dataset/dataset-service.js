@@ -61,8 +61,8 @@ export default function DatasetService($q, state, StateService, DatasetListServi
 
         //utils
         getUniqueName: getUniqueName,
-        createDatasetInfo: createDatasetInfo
-
+        createDatasetInfo: createDatasetInfo,
+        checkNameAvailability: checkNameAvailability
     };
 
     //--------------------------------------------------------------------------------------------------------------
@@ -185,10 +185,10 @@ export default function DatasetService($q, state, StateService, DatasetListServi
      * @name createDatasetInfo
      * @methodOf data-prep.services.dataset.service:DatasetService
      * @description create the dataset info from the given parameters.
-     * @param {file} file - the file tu upload in case of
-     * @param {string} name - the dataset name
-     * @param {string} id - the dataset id (used to update existing dataset)
-     * @returns {Object} - the adapted dataset infos {name: string, progress: number, file: *, error: boolean}
+     * @param {file} file The file tu upload in case of
+     * @param {string} name The dataset name
+     * @param {string} id The dataset id (used to update existing dataset)
+     * @returns {Object} The adapted dataset infos {name: string, progress: number, file: *, error: boolean}
      */
     function createDatasetInfo(file, name, id) {
         return {
@@ -205,22 +205,39 @@ export default function DatasetService($q, state, StateService, DatasetListServi
      * @ngdoc method
      * @name getUniqueName
      * @methodOf data-prep.services.dataset.service:DatasetService
-     * @param {string} name - the base name
+     * @param {string} name The base name
+     * @param {number} index The number to add
      * @description Get a unique name from a base name. The existence check is done on the local dataset list. It
      *     transform the base name, adding "(number)"
-     * @returns {string} - the unique name
+     * @returns {promise} The process to get a unique name
      */
-    function getUniqueName(name) {
+    function getUniqueName(name, index=1) {
         const cleanedName = name.replace(/\([0-9]+\)$/, '').trim();
-        let result = cleanedName;
+        const result = cleanedName + ' (' + index + ')';
 
-        let index = 1;
-        while (getDatasetByName(result)) {
-            result = cleanedName + ' (' + index + ')';
-            index++;
-        }
+        return checkNameAvailability(result)
+            .catch(() => getUniqueName(name, index + 1));
+    }
 
-        return result;
+    /**
+     * @ngdoc method
+     * @name checkNameAvailability
+     * @methodOf data-prep.services.dataset.service:DatasetService
+     * @description Check if the dataset name is available.
+     * @param {string} name The dataset name
+     * @returns {promise} Resolve the promise if it is available, 
+     * reject it with the existing dataset if not
+     */
+    function checkNameAvailability(name) {
+        return DatasetRestService.getDatasetByName(name)
+            .then((dataset) => {
+                if(dataset) {
+                    return $q.reject(dataset);
+                }
+                else {
+                    return $q.when(name);
+                }
+            });
     }
 
     //--------------------------------------------------------------------------------------------------------------

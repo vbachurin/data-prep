@@ -16,6 +16,6 @@ import HomeCtrl from './home-controller';
 const HomeComponent = {
     templateUrl: 'app/components/home/home.html',
     controller: HomeCtrl,
-}
+};
 
 export default HomeComponent;
