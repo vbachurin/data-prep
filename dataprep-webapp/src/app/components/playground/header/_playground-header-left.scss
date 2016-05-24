@@ -1,6 +1,6 @@
 #playground-left-header {
   #dataset-header-details{
-    flex-grow: 0;
+    @include flex-grow(0);
     height: 50px;
     padding: 10px;
 
