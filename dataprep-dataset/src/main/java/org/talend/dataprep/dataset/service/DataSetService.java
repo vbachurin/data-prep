@@ -402,7 +402,9 @@ public class DataSetService {
             }
 
             final Optional<Long> limit = dataSetMetadata.getContent().getLimit();
-            if (sample != null && sample > 0 && (limit.isPresent() && limit.get().longValue() != sample)) {
+            if (sample != null && limit.isPresent() && limit.get().longValue() == sample) {
+                dataSet.setRecords(contentStore.stream(dataSetMetadata));
+            } else if (sample != null && sample > 0) {
                 // computes the statistics only if columns are required
                 if (metadata) {
                     // Compute statistics *before* to avoid consumption of too many threads in serialization (call to a
