@@ -20,9 +20,7 @@ import static org.junit.Assert.fail;
 import static org.talend.dataprep.exception.error.CommonErrorCodes.MISSING_ACTION_SCOPE;
 import static org.talend.dataprep.transformation.api.action.metadata.category.ScopeCategory.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -315,6 +313,11 @@ class CellTransformation extends ActionMetadata implements CellAction {
         final String value = row.get(columnId);
         row.set(columnId, value.toUpperCase());
     }
+
+    @Override
+    public Set<Behavior> getBehavior() {
+        return EnumSet.allOf(Behavior.class);
+    }
 }
 
 @Component
@@ -341,6 +344,11 @@ class LineTransformation extends ActionMetadata implements RowAction {
         for (final Map.Entry<String, Object> entry : row.values().entrySet()) {
             row.set(entry.getKey(), entry.getValue().toString().toUpperCase());
         }
+    }
+
+    @Override
+    public Set<Behavior> getBehavior() {
+        return EnumSet.allOf(Behavior.class);
     }
 }
 
@@ -369,6 +377,11 @@ class ColumnTransformation extends ActionMetadata implements ColumnAction {
         final String value = row.get(columnId);
         row.set(columnId, value.toUpperCase());
     }
+
+    @Override
+    public Set<Behavior> getBehavior() {
+        return EnumSet.allOf(Behavior.class);
+    }
 }
 
 @Component
@@ -395,5 +408,10 @@ class TableTransformation extends ActionMetadata implements DataSetAction {
         for (final Map.Entry<String, Object> entry : row.values().entrySet()) {
             row.set(entry.getKey(), entry.getValue().toString().toUpperCase());
         }
+    }
+
+    @Override
+    public Set<Behavior> getBehavior() {
+        return EnumSet.allOf(Behavior.class);
     }
 }

@@ -22,6 +22,9 @@ import org.talend.dataprep.transformation.api.action.metadata.common.CellAction;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.metadata.common.DataSetAction;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 /**
  * A unit test action: only use to test unexpected action failures.
  */
@@ -58,5 +61,10 @@ public class FailedAction extends ActionMetadata implements ColumnAction, CellAc
     @Override
     public void applyOnDataSet(DataSetRow row, ActionContext context) {
         throw new RuntimeException("On purpose unchecked exception");
+    }
+
+    @Override
+    public Set<Behavior> getBehavior() {
+        return EnumSet.allOf(Behavior.class);
     }
 }

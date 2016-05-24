@@ -28,6 +28,9 @@ import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetad
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataquality.datamasking.semantic.ValueDataMasker;
 
+import java.util.Collections;
+import java.util.Set;
+
 /**
  * Mask sensitive data according to the semantic category.
  */
@@ -103,6 +106,11 @@ public class MaskDataByDomain extends ActionMetadata implements ColumnAction {
                 actionContext.setActionStatus(ActionStatus.CANCELED);
             }
         }
+    }
+
+    @Override
+    public Set<Behavior> getBehavior() {
+        return Collections.singleton(Behavior.VALUES_COLUMN);
     }
 
 }

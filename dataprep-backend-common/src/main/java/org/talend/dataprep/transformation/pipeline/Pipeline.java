@@ -7,6 +7,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -214,8 +215,13 @@ public class Pipeline implements Node, RuntimeNode {
                 current.to(new CompileNode(action, context.create(action.getRowAction())));
                 if (action.getParameters().containsKey(ImplicitParameters.FILTER.getKey())) {
                     // action has a filter, to cover cases where filters are on invalid values
-                    // TODO Perform static analysis of filter to discover if filter holds conditions that needs up-to-date statistics
-                    current.to(new InlineAnalysisNode(inlineAnalyzer, c -> true, adapter));
+                    final String filterAsString = action.getParameters().get(ImplicitParameters.FILTER.getKey());
+                    // TODO Perform static analysis of filter to discover if filter holds conditions that needs up-to-date
+                    // statistics
+                    if (StringUtils.contains(filterAsString, "valid") || StringUtils.contains(filterAsString, "invalid")) {
+                        // TODO Perform static analysis of filter to discover which column is the filter on.
+                        current.to(new InlineAnalysisNode(inlineAnalyzer, c -> true, adapter));
+                    }
                 }
                 current.to(new ActionNode(action, context.in(action.getRowAction())));
             }

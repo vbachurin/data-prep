@@ -21,6 +21,9 @@ import org.talend.dataprep.transformation.api.action.metadata.category.ActionCat
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 
+import java.util.Collections;
+import java.util.Set;
+
 /**
  * Abstract Action for math operations
  */
@@ -66,4 +69,8 @@ public abstract class AbstractMathAction extends ActionMetadata implements Colum
         }
     }
 
+    @Override
+    public Set<Behavior> getBehavior() {
+        return Collections.singleton(Behavior.METADATA_CREATE_COLUMNS);
+    }
 }

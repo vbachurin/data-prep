@@ -226,11 +226,7 @@ public abstract class ActionMetadata {
     }
 
     @JsonIgnore
-    public Set<Behavior> getBehavior() {
-        // Safe strategy: use all behaviors to disable all optimizations. Each implementation of action must explicitly
-        // declare its behavior(s).
-        return EnumSet.allOf(Behavior.class);
-    }
+    public abstract Set<Behavior> getBehavior();
 
     @JsonIgnore
     protected MessagesBundle getMessagesBundle() {

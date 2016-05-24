@@ -57,9 +57,12 @@ public class PipelineTransformer implements Transformer {
                 .withContext(configuration.getTransformationContext())
                 .withStatisticsAdapter(adapter)
                 .build();
-        LOGGER.debug("Before transformation: {}", pipeline);
-        pipeline.execute(input);
-        LOGGER.debug("After transformation: {}", pipeline);
+        try {
+            LOGGER.debug("Before transformation: {}", pipeline);
+            pipeline.execute(input);
+        } finally {
+            LOGGER.debug("After transformation: {}", pipeline);
+        }
     }
 
     @Override

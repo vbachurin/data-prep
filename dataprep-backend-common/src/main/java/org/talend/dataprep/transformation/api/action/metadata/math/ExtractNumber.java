@@ -16,10 +16,7 @@ import java.math.BigDecimal;
 import java.text.CharacterIterator;
 import java.text.DecimalFormat;
 import java.text.StringCharacterIterator;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.annotation.PostConstruct;
 
@@ -167,6 +164,11 @@ public class ExtractNumber extends ActionMetadata implements ColumnAction {
         final String columnId = context.getColumnId();
         final String newColumnId = context.column("result");
         row.set(newColumnId, extractNumber(row.get(columnId)));
+    }
+
+    @Override
+    public Set<Behavior> getBehavior() {
+        return Collections.singleton(Behavior.METADATA_CREATE_COLUMNS);
     }
 
     /**
