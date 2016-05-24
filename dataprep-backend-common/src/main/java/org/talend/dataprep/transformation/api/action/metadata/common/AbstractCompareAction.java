@@ -13,8 +13,10 @@
 
 package org.talend.dataprep.transformation.api.action.metadata.common;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Nonnull;
 
@@ -224,6 +226,11 @@ public abstract class AbstractCompareAction extends ActionMetadata implements Co
         default:
             return false;
         }
+    }
+
+    @Override
+    public Set<Behavior> getBehavior() {
+        return Collections.singleton(Behavior.METADATA_CREATE_COLUMNS);
     }
 
     /**
