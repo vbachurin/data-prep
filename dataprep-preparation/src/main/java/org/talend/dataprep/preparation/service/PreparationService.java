@@ -971,6 +971,7 @@ public class PreparationService {
         } else {
             LOGGER.debug("Unable to lock Preparation {} for user {}. Already locked by {}", preparationId, userId,
                     lockedResource.getUserId());
+            // TODO: We must find a way to avoid printing stack trace when such a kind of non critical exceptions occurs
             throw new TDPException(CommonErrorCodes.CONFLICT_TO_LOCK_RESOURCE,
                     build().put("id", lockedResource.getUserId()));
         }
@@ -992,6 +993,7 @@ public class PreparationService {
         } else {
             LOGGER.debug("Unable to unlock Preparation {} for user {}. Already locked by {}", preparationId, userId,
                     lockedResource.getUserId());
+            // TODO: We must find a way to avoid printing stack trace when such a kind of non critical exceptions occurs
             throw new TDPException(CommonErrorCodes.CONFLICT_TO_UNLOCK_RESOURCE,
                     build().put("id", lockedResource.getUserId()));
         }

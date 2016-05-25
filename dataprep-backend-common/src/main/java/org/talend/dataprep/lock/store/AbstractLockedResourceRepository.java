@@ -39,6 +39,12 @@ public abstract class AbstractLockedResourceRepository implements LockedResource
      */
     protected LockFactory lockFactory;
 
+
+    @Value("${lock.resource.store.lock.delay:10}")
+    public void setDelay(long delay) {
+        this.delay = delay;
+    }
+
     @Override
     public LockedResource tryLock(Identifiable resource, String userId) {
         return tryLock(resource, userId, lockFactory);

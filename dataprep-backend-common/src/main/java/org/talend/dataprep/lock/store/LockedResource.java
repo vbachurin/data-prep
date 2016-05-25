@@ -26,7 +26,7 @@ public class LockedResource {
      */
     private String userId;
 
-    /**g
+    /**
      * The identifier of the locked resource
      */
     private String resourceId;
@@ -99,5 +99,14 @@ public class LockedResource {
         result = 31 * result + (resourceId != null ? resourceId.hashCode() : 0);
         result = 31 * result + (int) (expirationTime ^ (expirationTime >>> 32));
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "LockedResource{" +
+                "userId='" + userId + '\'' +
+                ", resourceId='" + resourceId + '\'' +
+                ", expirationTime=" + expirationTime +
+                '}';
     }
 }

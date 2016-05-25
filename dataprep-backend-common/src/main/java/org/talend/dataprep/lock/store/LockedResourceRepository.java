@@ -88,8 +88,19 @@ public interface LockedResourceRepository {
      */
     void remove(Identifiable resource);
 
+    /**
+     * Returns true if the specified locked resource is owned by the specified user and false otherwise.
+     * @param lockedResource the locked resource object
+     * @param userId the user identifier
+     * @return true if the specified locked resource is owned by the specified user and false otherwise
+     */
     boolean lockOwned(LockedResource lockedResource, String userId);
 
+    /**
+     * Returns true if the specified locked resource is released and false otherwise.
+     * @param lockedResource the locked resource object
+     * @return true if the specified locked resource is released and false otherwise
+     */
     boolean lockReleased(LockedResource lockedResource);
 
 }

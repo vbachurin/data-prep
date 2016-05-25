@@ -31,8 +31,6 @@ import javax.validation.Valid;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang.StringUtils;
-import org.apache.cxf.security.SecurityContext;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.talend.dataprep.api.preparation.Action;
@@ -56,7 +54,6 @@ import com.netflix.hystrix.HystrixCommand;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.talend.dataprep.security.Security;
 
 @RestController
 public class PreparationAPI extends APIService {

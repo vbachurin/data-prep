@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.preparation.Identifiable;
 
 @Component
-@ConditionalOnProperty(name = "lock.resource.store", havingValue = "none")
+@ConditionalOnProperty(name = "lock.resource.store", havingValue = "none", matchIfMissing = true)
 public class NoOpLockedResourceRepository implements LockedResourceRepository {
 
     @Override
@@ -51,12 +51,12 @@ public class NoOpLockedResourceRepository implements LockedResourceRepository {
 
     @Override
     public void clear() {
-
+        // Does nothing
     }
 
     @Override
     public void remove(Identifiable resource) {
-
+        // Does nothing
     }
 
     @Override
