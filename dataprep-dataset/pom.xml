@@ -150,7 +150,7 @@
                         <artifactId>docker-maven-plugin</artifactId>
                         <configuration>
                             <imageName>talend/${project.name}:${project.version}</imageName>
-                            <baseImage>mykro/java8-jre:latest</baseImage>
+                            <baseImage>registry.talend.com:5000/mykro/java8-jre:latest</baseImage>
                             <cmd>java -Dspring.config.name=application_docker -jar /${project.build.finalName}.jar</cmd>
                             <resources>
                                 <resource>
