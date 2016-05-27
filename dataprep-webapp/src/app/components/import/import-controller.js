@@ -118,14 +118,14 @@ export default function ImportCtrl($document,
 
                 // deal with select inline parameters
                 if (paramItem.type === 'select') {
-                    let selectedValue = _.find(paramItem.configuration.values, { value: paramItem.value });
+                    let selectedValue = _.find(paramItem.configuration.values, {value: paramItem.value});
                     getParamIteration(paramsAccu, selectedValue.parameters);
                 }
             });
         }
         return paramsAccu;
     }
-    
+
     /**
      * @ngdoc method
      * @name createDataset
@@ -170,13 +170,13 @@ export default function ImportCtrl($document,
         const file = vm.datasetFile ? vm.datasetFile[0] : null;
         const datasetName = file ?
             file.name :
-            _.find(importType.parameters, (o) => o.name === 'name').value;
+            _.find(importType.parameters, {name: 'name'}).value;
 
         // remove file extension and ask final name
         const name = datasetName.replace(/\.[^/.]+$/, '');
 
         return DatasetService.checkNameAvailability(name)
-        // name available: we create the dataset
+            // name available: we create the dataset
             .then(() => {
                 createDataset(file, name, importType);
             })
@@ -199,9 +199,9 @@ export default function ImportCtrl($document,
         const file = vm.datasetFile ? vm.datasetFile[0] : null;
         const importType = vm.currentInputType;
         const name = vm.datasetName;
-        
+
         return DatasetService.checkNameAvailability(name)
-        // name still exists
+            // name still exists
             .then(() => {
                 createDataset(file, name, importType);
             })
@@ -222,8 +222,8 @@ export default function ImportCtrl($document,
      * Update : update the content of the existing dataset
      */
     function updateOrCreate(file, existingDataset, importType, name) {
-        return TalendConfirmService.confirm(null, ['UPDATE_EXISTING_DATASET'], { dataset: name })
-        // user confirm : let's update the dataset
+        return TalendConfirmService.confirm(null, ['UPDATE_EXISTING_DATASET'], {dataset: name})
+            // user confirm : let's update the dataset
             .then(() => {
                 UpdateWorkflowService.updateDataset(file, existingDataset)
             })

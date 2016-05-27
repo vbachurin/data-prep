@@ -206,12 +206,12 @@ export default function DatasetService($q, state, StateService, DatasetListServi
      * @name getUniqueName
      * @methodOf data-prep.services.dataset.service:DatasetService
      * @param {string} name The base name
-     * @param {number} index The number to add
+     * @param {number} index The number to add initialized to 1
      * @description Get a unique name from a base name. The existence check is done on the local dataset list. It
      *     transform the base name, adding "(number)"
      * @returns {promise} The process to get a unique name
      */
-    function getUniqueName(name, index=1) {
+    function getUniqueName(name, index = 1) {
         const cleanedName = name.replace(/\([0-9]+\)$/, '').trim();
         const result = cleanedName + ' (' + index + ')';
 
@@ -225,13 +225,13 @@ export default function DatasetService($q, state, StateService, DatasetListServi
      * @methodOf data-prep.services.dataset.service:DatasetService
      * @description Check if the dataset name is available.
      * @param {string} name The dataset name
-     * @returns {promise} Resolve the promise if it is available, 
+     * @returns {promise} Resolve the promise if it is available,
      * reject it with the existing dataset if not
      */
     function checkNameAvailability(name) {
         return DatasetRestService.getDatasetByName(name)
             .then((dataset) => {
-                if(dataset) {
+                if (dataset) {
                     return $q.reject(dataset);
                 }
                 else {
@@ -397,6 +397,8 @@ export default function DatasetService($q, state, StateService, DatasetListServi
                 StateService.setDatasetName(metadata.id, oldName);
                 return $q.reject(error);
             })
-            .finally(() => { _injectPreparations(metadata, preparations) });
+            .finally(() => {
+                _injectPreparations(metadata, preparations)
+            });
     }
 }
