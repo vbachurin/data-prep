@@ -1,15 +1,15 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.dataset.store.content;
 
@@ -33,6 +33,10 @@ public class ContentStoreRouter extends DataSetContentStore {
     /** Content store name prefix. */
     private static final String STORE_PREFIX = "ContentStore#";
 
+    /** A component to limit data set content limit (or not, depending on edition). */
+    @Autowired
+    DataSetContentLimit limit;
+
     /** The application context needed to retrieve content stores. */
     @Autowired
     private ApplicationContext context;
@@ -42,7 +46,7 @@ public class ContentStoreRouter extends DataSetContentStore {
      */
     @Override
     public void storeAsRaw(DataSetMetadata dataSetMetadata, InputStream dataSetContent) {
-        DataSetContentStore target = getContentStore(dataSetMetadata);
+        DataSetContentStore target = wrapStore(dataSetMetadata);
         target.storeAsRaw(dataSetMetadata, dataSetContent);
     }
 
@@ -51,7 +55,7 @@ public class ContentStoreRouter extends DataSetContentStore {
      */
     @Override
     public InputStream get(DataSetMetadata dataSetMetadata) {
-        DataSetContentStore target = getContentStore(dataSetMetadata);
+        DataSetContentStore target = wrapStore(dataSetMetadata);
         return target.get(dataSetMetadata);
     }
 
@@ -60,7 +64,7 @@ public class ContentStoreRouter extends DataSetContentStore {
      */
     @Override
     public InputStream getAsRaw(DataSetMetadata dataSetMetadata) {
-        DataSetContentStore target = getContentStore(dataSetMetadata);
+        DataSetContentStore target = wrapStore(dataSetMetadata);
         return target.getAsRaw(dataSetMetadata);
     }
 
@@ -69,7 +73,7 @@ public class ContentStoreRouter extends DataSetContentStore {
      */
     @Override
     public void delete(DataSetMetadata dataSetMetadata) {
-        DataSetContentStore target = getContentStore(dataSetMetadata);
+        DataSetContentStore target = wrapStore(dataSetMetadata);
         target.delete(dataSetMetadata);
     }
 
@@ -89,16 +93,17 @@ public class ContentStoreRouter extends DataSetContentStore {
      * @param dataSetMetadata the dataset metadata to store the content.
      * @return the DataSetContentStore that deals with this dataset metadata.
      */
-    private DataSetContentStore getContentStore(DataSetMetadata dataSetMetadata) {
+    private DataSetContentStore wrapStore(DataSetMetadata dataSetMetadata) {
         String storeName = STORE_PREFIX + dataSetMetadata.getLocation().getLocationType();
-        return context.getBean(storeName, DataSetContentStore.class);
+        final DataSetContentStore contentStore = context.getBean(storeName, DataSetContentStore.class);
+        return limit.get(contentStore);
     }
 
     /**
      * @return the local content store.
      */
     private DataSetContentStore getLocalContentStore() {
-        String storeName = STORE_PREFIX + "local";
-        return context.getBean(storeName, DataSetContentStore.class);
+        final DataSetContentStore contentStore = context.getBean(STORE_PREFIX + "local", DataSetContentStore.class);
+        return limit.get(contentStore);
     }
 }

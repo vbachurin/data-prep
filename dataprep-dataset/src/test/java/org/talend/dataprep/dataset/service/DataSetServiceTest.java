@@ -56,34 +56,6 @@ import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
 public class DataSetServiceTest extends DataSetBaseTest {
 
-    private static final String T_SHIRT_100_CSV_EXPECTED_JSON = "../t-shirt_100.csv.expected.json";
-
-    private static final String T_SHIRT_100_CSV = "../t-shirt_100.csv";
-
-    private static final String US_STATES_TO_CLEAN_CSV = "../us_states_to_clean.csv";
-
-    private static final String TAGADA2_CSV = "../tagada2.csv";
-
-    private static final String TAGADA_CSV = "../tagada.csv";
-
-    private static final String EMPTY_LINES2_JSON = "../empty_lines2.json";
-
-    private static final String EMPTY_LINES2_CSV = "../empty_lines2.csv";
-
-    private static final String METADATA_JSON = "../metadata.json";
-
-    private static final String DATASET_WITH_NUL_CHAR_CSV = "../dataset_with_NUL_char.csv";
-
-    /** DataPrep jackson ready to use builder. */
-    @Autowired
-    private ObjectMapper mapper;
-
-    @Autowired
-    private Security security;
-
-    @Autowired
-    private VersionService versionService;
-
     @Test
     public void CORSHeaders() throws Exception {
         given().header("Origin", "fake.host.to.trigger.cors")
@@ -597,27 +569,6 @@ public class DataSetServiceTest extends DataSetBaseTest {
     }
 
     @Test
-    public void sample() throws Exception {
-        // given
-        String dataSetId = createCSVDataSet(this.getClass().getResourceAsStream(T_SHIRT_100_CSV), "ds-6");
-        // when
-        String sample = requestDataSetSample(dataSetId, true, "17");
-        // then
-        assertEquals(17, getNumberOfRecords(sample));
-    }
-
-    @Test
-    public void sampleShouldUpdateStatistics() throws Exception {
-        // given
-        String dataSetId = createCSVDataSet(this.getClass().getResourceAsStream(T_SHIRT_100_CSV), "ds-5");
-        // when
-        String sample = requestDataSetSample(dataSetId, true, "16");
-        // then
-        InputStream expected = this.getClass().getResourceAsStream("../t-shirt_100.csv_sample_16.expected.json");
-        assertThat(sample, sameJSONAsFile(expected));
-    }
-
-    @Test
     public void sampleWithNegativeSize() throws Exception {
         // given
         String dataSetId = createCSVDataSet(this.getClass().getResourceAsStream(T_SHIRT_100_CSV), "ds-4");
@@ -635,24 +586,6 @@ public class DataSetServiceTest extends DataSetBaseTest {
         String sample = requestDataSetSample(dataSetId, true, "0");
         // then
         assertEquals(100, getNumberOfRecords(sample));
-    }
-
-    @Test(expected = java.lang.AssertionError.class)
-    public void sampleWithDecimalSize() throws Exception {
-        // given
-        String dataSetId = createCSVDataSet(this.getClass().getResourceAsStream(T_SHIRT_100_CSV), "ds-2");
-        // when
-        requestDataSetSample(dataSetId, true, "10.5");
-        // then expect error (400 bad request)
-    }
-
-    @Test(expected = java.lang.AssertionError.class)
-    public void sampleWithBadContent() throws Exception {
-        // given
-        String dataSetId = createCSVDataSet(this.getClass().getResourceAsStream(T_SHIRT_100_CSV), "ds-1");
-        // when
-        requestDataSetSample(dataSetId, true, "ghqmkdhjsgf");
-        // then expect error (400 bad request)
     }
 
     @Test
@@ -926,39 +859,7 @@ public class DataSetServiceTest extends DataSetBaseTest {
     }
 
     /**
-     * see https://jira.talendforge.org/browse/TDP-1066
-     */
-    @Test
-    public void shouldUpdateLimit() throws Exception {
-
-        // given
-        String dataSetId = createCSVDataSet(this.getClass().getResourceAsStream("../avengers.csv"), "tdp-1066-3");
-        InputStream metadataInput = when().get("/datasets/{id}/metadata", dataSetId).asInputStream();
-        DataSet dataSet = mapper.readerFor(DataSet.class).readValue(metadataInput);
-        DataSetMetadata metadata = dataSet.getMetadata();
-
-        // when
-        metadata.getContent().setLimit(2L);
-        final int statusCode = given() //
-                .contentType(JSON) //
-                .body(mapper.writer().writeValueAsString(metadata)) //
-                .expect().statusCode(200).log().ifError() //
-                .when().put("/datasets/{id}", dataSetId).getStatusCode();
-
-        assertThat(statusCode, is(200));
-        assertQueueMessages(dataSetId);
-
-        // then
-        InputStream expected = this.getClass().getResourceAsStream("../avengers_expected_limit_2.json");
-        String datasetContent = given().when().get("/datasets/{id}/content?metadata=true", dataSetId).asString();
-
-        assertThat(datasetContent, sameJSONAsFile(expected));
-    }
-
-    /**
      * Test the import of a csv file with a really low separator coefficient variation.
-     *
-     * @see CSVFormatGuesser
      */
     @Test
     public void testLowSeparatorOccurrencesInCSV() throws Exception {
@@ -1474,38 +1375,10 @@ public class DataSetServiceTest extends DataSetBaseTest {
         return datasetId;
     }
 
-    private String createCSVDataSet(InputStream content, String name) throws Exception {
-        String dataSetId = given() //
-                .body(IOUtils.toString(content)) //
-                .queryParam("Content-Type", "text/csv") //
-                .queryParam("name", name) //
-                .when() //
-                .expect().statusCode(200).log().ifError() //
-                .post("/datasets") //
-                .asString();
-        assertQueueMessages(dataSetId);
-        return dataSetId;
-    }
-
     private String createXlsDataSet(InputStream content) throws Exception {
         String dataSetId = given().body(IOUtils.toByteArray(content)).when().post("/datasets").asString();
         assertQueueMessages(dataSetId);
         return dataSetId;
     }
 
-    private String requestDataSetSample(String dataSetId, boolean withMetadata, String sampleSize) {
-        return given() //
-                .expect() //
-                .statusCode(200) //
-                .when() //
-                .get("/datasets/{id}/content?metadata={withMetadata}&sample={sampleSize}", dataSetId, withMetadata, sampleSize) //
-                .asString();
-
-    }
-
-    private long getNumberOfRecords(String json) throws IOException {
-        JsonNode rootNode = mapper.readTree(json);
-        JsonNode records = rootNode.get("records");
-        return records.size();
-    }
 }

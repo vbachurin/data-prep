@@ -83,7 +83,7 @@ import org.talend.dataprep.util.StringsHelper;
 
 @RestController
 @Api(value = "datasets", basePath = "/datasets", description = "Operations on data sets")
-public class DataSetService {
+public class DataSetService extends BaseDataSetService {
 
     /**
      * This class' logger.
@@ -120,16 +120,16 @@ public class DataSetService {
     private FormatAnalysis formatAnalyzer;
 
     /**
-     * Quality analyzer needed to compute quality on dataset sample.
+     * Quality analyzer needed to compute quality on dataset.
      */
     @Autowired
-    private QualityAnalysis qualityAnalyzer;
+    protected QualityAnalysis qualityAnalyzer;
 
     /**
-     * Statistics analyzer needed to compute statistics on dataset sample.
+     * Statistics analyzer needed to compute statistics on dataset.
      */
     @Autowired
-    private StatisticsAnalysis statisticsAnalysis;
+    protected StatisticsAnalysis statisticsAnalysis;
 
     /**
      * JMS template used to call asynchronous analysers.
@@ -141,13 +141,13 @@ public class DataSetService {
      * Dataset metadata repository.
      */
     @Autowired
-    private DataSetMetadataRepository dataSetMetadataRepository;
+    protected DataSetMetadataRepository dataSetMetadataRepository;
 
     /**
      * Dataset content store.
      */
     @Autowired
-    private ContentStoreRouter contentStore;
+    protected ContentStoreRouter contentStore;
 
     /**
      * User repository.
@@ -269,7 +269,7 @@ public class DataSetService {
      *
      * @param dataSetId the specified data set id
      * @param sort the sort criterion: either name or date.
-     * @param order the sorting order: either asc or descgi
+     * @param order the sorting order: either asc or desc.
      * @return a list containing all data sets that are compatible with the data set with id <tt>dataSetId</tt> and
      * empty list if no data set is compatible.
      */
@@ -305,7 +305,7 @@ public class DataSetService {
      * @param content The raw content of the data set (might be a CSV, XLS...) or the connection parameter in case of a
      * remote csv.
      * @return The new data id.
-     * @see #get(boolean, Long, String)
+     * @see #get(boolean, String)
      */
     //@formatter:off
     @RequestMapping(value = "/datasets", method = POST, consumes = MediaType.ALL_VALUE, produces = TEXT_PLAIN_VALUE)
@@ -316,7 +316,7 @@ public class DataSetService {
             @ApiParam(value = "User readable name of the data set (e.g. 'Finance Report 2015', 'Test Data Set').") @RequestParam(defaultValue = "") String name,
             @RequestHeader(CONTENT_TYPE) String contentType,
             @ApiParam(value = "content") InputStream content) throws IOException {
-    //@formatter:on
+        //@formatter:on
 
         HttpResponseContext.header(CONTENT_TYPE, TEXT_PLAIN_VALUE);
 
@@ -328,14 +328,13 @@ public class DataSetService {
         checkIfNameIsAvailable(id, name);
 
         // get the location out of the content type and the request body
+        final DataSetLocation location;
         try {
-            DataSetLocation location;
-            try {
-                location = datasetLocator.getDataSetLocation(contentType, content);
-            } catch (IOException e) {
-                throw new TDPException(DataSetErrorCodes.UNABLE_TO_READ_DATASET_LOCATION, e);
-            }
-
+            location = datasetLocator.getDataSetLocation(contentType, content);
+        } catch (IOException e) {
+            throw new TDPException(DataSetErrorCodes.UNABLE_TO_READ_DATASET_LOCATION, e);
+        }
+        try {
             DataSetMetadata dataSetMetadata = metadataBuilder.metadata() //
                     .id(id) //
                     .name(name) //
@@ -367,17 +366,14 @@ public class DataSetService {
             dataSetMetadataRepository.remove(id);
             throw new TDPException(DataSetErrorCodes.UNABLE_CREATE_DATASET, e);
         }
-
     }
 
     /**
-     * Returns the data set content for given id. Service might return
-     * {@link org.apache.commons.httpclient.HttpStatus#SC_ACCEPTED} if the data set exists but analysis is not yet fully
-     * completed so content is not yet ready to be served.
+     * Returns the <b>full</b> data set content for given id.
      *
      * @param metadata If <code>true</code>, includes data set metadata information.
-     * @param sample Size of the wanted sample, if missing, the full dataset is returned.
      * @param dataSetId A data set id.
+     * @return The full data set.
      */
     @RequestMapping(value = "/datasets/{id}/content", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get a data set by id", notes = "Get a data set content based on provided id. Id should be a UUID returned by the list operation. Not valid or non existing data set id returns empty content.")
@@ -385,53 +381,21 @@ public class DataSetService {
     @ResponseBody
     public DataSet get(
             @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata, //
-            @RequestParam(required = false) @ApiParam(name = "sample", defaultValue = "0", value = "Size of the wanted sample, if missing, the full dataset is returned") Long sample, //
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the requested data set") String dataSetId) {
-
         HttpResponseContext.header(CONTENT_TYPE, APPLICATION_JSON_VALUE);
         final Marker marker = Markers.dataset(dataSetId);
         LOG.debug(marker, "Get data set #{}", dataSetId);
-
         try {
             DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
-            if (dataSetMetadata == null) {
-                throw new TDPException(DataSetErrorCodes.DATASET_DOES_NOT_EXIST, ExceptionContext.build().put("id", dataSetId));
-            }
-            if (dataSetMetadata.getLifecycle().importing()) {
-                // Data set is being imported, this is an error since user should not have an id to a being-created
-                // data set (create() operation is a blocking operation).
-                final ExceptionContext context = ExceptionContext.build().put("id", dataSetId); //$NON-NLS-1$
-                throw new TDPException(DataSetErrorCodes.UNABLE_TO_SERVE_DATASET_CONTENT, context);
-            }
+            assertDataSetMetadata(dataSetMetadata, dataSetId);
             // Build the result
             DataSet dataSet = new DataSet();
             if (metadata) {
                 completeWithUserData(dataSetMetadata);
                 dataSet.setMetadata(dataSetMetadata);
             }
-
-            final Optional<Long> limit = dataSetMetadata.getContent().getLimit();
-            if (sample != null && (sample == dataSetMetadata.getContent().getNbRecords()
-                    || (limit.isPresent() && limit.get().longValue() == sample))) {
-                dataSet.setRecords(contentStore.stream(dataSetMetadata));
-            } else if (sample != null && sample > 0) {
-                // computes the statistics only if columns are required
-                if (metadata) {
-                    // Compute statistics *before* to avoid consumption of too many threads in serialization (call to a
-                    // stream sample may use a thread and a pipe stream, so better to consume to perform in this order).
-                    LOG.debug(marker, "Sample statistics...");
-                    computeSampleStatistics(dataSetMetadata, sample);
-                    LOG.debug(marker, "Sample statistics done.");
-                }
-                LOG.debug(marker, "Sampling...");
-                dataSet.setRecords(contentStore.sample(dataSetMetadata, sample));
-                LOG.debug(marker, "Sample done.");
-            } else {
-                dataSet.setRecords(contentStore.stream(dataSetMetadata));
-            }
-
+            dataSet.setRecords(contentStore.stream(dataSetMetadata));
             return dataSet;
-
         } finally {
             LOG.debug(marker, "Get done.");
         }
@@ -441,7 +405,7 @@ public class DataSetService {
      * Returns the data set {@link DataSetMetadata metadata} for given <code>dataSetId</code>.
      *
      * @param dataSetId A data set id. If <code>null</code> <b>or</b> if no data set with provided id exits, operation
-     * returns {@link org.apache.commons.httpclient.HttpStatus#SC_NO_CONTENT}
+     * returns {@link org.apache.commons.httpclient.HttpStatus#SC_NO_CONTENT} if metadata does not exist.
      */
     @RequestMapping(value = "/datasets/{id}/metadata", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get metadata information of a data set by id", notes = "Get metadata information of a data set by id. Not valid or non existing data set id returns empty content.")
@@ -500,7 +464,7 @@ public class DataSetService {
     @ApiOperation(value = "Copy a data set", produces = TEXT_PLAIN_VALUE, notes = "Copy a new data set based on the given id. Returns the id of the newly created data set.")
     @Timed
     public String copy(@PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to clone") String dataSetId,
-            @ApiParam(value = "The name of the cloned dataset.") @RequestParam(required = false) String copyName)
+                       @ApiParam(value = "The name of the cloned dataset.") @RequestParam(required = false) String copyName)
             throws IOException {
 
         HttpResponseContext.header(CONTENT_TYPE, TEXT_PLAIN_VALUE);
@@ -745,7 +709,7 @@ public class DataSetService {
      *
      * @param dataSetMetadata, the metadata to be updated
      */
-    private void completeWithUserData(DataSetMetadata dataSetMetadata) {
+    void completeWithUserData(DataSetMetadata dataSetMetadata) {
         String userId = security.getUserId();
         UserData userData = userDataRepository.get(userId);
         if (userData != null) {
@@ -1066,22 +1030,4 @@ public class DataSetService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Computes quality and statistics for a dataset sample.
-     *
-     * @param dataSetMetadata the dataset metadata.
-     * @param sample the sample size
-     */
-    private void computeSampleStatistics(DataSetMetadata dataSetMetadata, long sample) {
-        // compute statistics on a copy
-        DataSet copy = new DataSet();
-        copy.setMetadata(dataSetMetadata);
-        // Compute quality and statistics on sample only
-        try (Stream<DataSetRow> stream = contentStore.sample(dataSetMetadata, sample)) {
-            qualityAnalyzer.computeQuality(copy.getMetadata(), stream, sample);
-        }
-        try (Stream<DataSetRow> stream = contentStore.sample(dataSetMetadata, sample)) {
-            statisticsAnalysis.computeFullStatistics(copy.getMetadata(), stream);
-        }
-    }
 }

@@ -43,9 +43,6 @@ public class TransformationCacheKey implements ContentCacheKey {
     /** The optional step id. */
     private String stepId;
 
-    /** The sample size (default is 'full'). */
-    private String sample = "full";
-
     /** The transformation format. */
     private String format;
 
@@ -60,7 +57,7 @@ public class TransformationCacheKey implements ContentCacheKey {
      */
     public TransformationCacheKey(String preparationId, DataSetMetadata metadata, String format, String stepId)
             throws IOException {
-        this(preparationId, metadata, format, StringUtils.EMPTY, stepId, -1L);
+        this(preparationId, metadata, format, StringUtils.EMPTY, stepId);
     }
 
     /**
@@ -72,7 +69,7 @@ public class TransformationCacheKey implements ContentCacheKey {
      * @param stepId the preparation version (step).
      * @throws IOException if an error occurs while computing the cache key.
      */
-    public TransformationCacheKey(String preparationId, DataSetMetadata metadata, String format, String parameters, String stepId, Long sample)
+    public TransformationCacheKey(String preparationId, DataSetMetadata metadata, String format, String parameters, String stepId)
             throws IOException {
         if (StringUtils.equals("head", stepId)) {
             throw new IllegalArgumentException("'head' is not allowed as step id for cache key");
@@ -83,7 +80,6 @@ public class TransformationCacheKey implements ContentCacheKey {
         this.format = format;
         this.stepId = stepId;
         this.parameters = parameters;
-        this.sample = String.valueOf(sample);
     }
 
     /**
@@ -103,7 +99,7 @@ public class TransformationCacheKey implements ContentCacheKey {
     @Override
     public String toString() {
         return "TransformationCacheKey{" + "datasetId='" + datasetId + '\'' + ", datasetMetadataHash='" + datasetMetadataHash
-                + '\'' + ", preparationId='" + preparationId + '\'' + ", stepId='" + stepId + '\'' + ", sample='" + sample + '\''
+                + '\'' + ", preparationId='" + preparationId + '\'' + ", stepId='" + stepId + '\''
                 + ", format='" + format + '\'' + '}';
     }
 
@@ -114,6 +110,6 @@ public class TransformationCacheKey implements ContentCacheKey {
      */
     @Override
     public String getKey() {
-        return "transformation-" + Objects.hash(preparationId, datasetId, datasetMetadataHash, stepId, sample, format, parameters);
+        return "transformation-" + Objects.hash(preparationId, datasetId, datasetMetadataHash, stepId, format, parameters);
     }
 }

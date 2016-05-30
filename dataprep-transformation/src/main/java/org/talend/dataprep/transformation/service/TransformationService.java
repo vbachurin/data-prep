@@ -48,7 +48,7 @@ import org.talend.dataprep.api.org.talend.dataprep.api.export.ExportParameters;
 import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.preparation.StepDiff;
 import org.talend.dataprep.cache.ContentCache;
-import org.talend.dataprep.command.dataset.DataSetGet;
+import org.talend.dataprep.command.dataset.DataSetSampleGet;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.exception.error.TransformationErrorCodes;
@@ -127,7 +127,7 @@ public class TransformationService extends BaseTransformationService {
             return outputStream -> {
 
                 // get the dataset content (in an auto-closable block to make sure it is properly closed)
-                final DataSetGet dataSetGet = applicationContext.getBean(DataSetGet.class, parameters.getDatasetId(), true, -1L);
+                final DataSetSampleGet dataSetGet = applicationContext.getBean(DataSetSampleGet.class, parameters.getDatasetId());
                 try (InputStream datasetContent = dataSetGet.execute()) {
                     try (JsonParser parser = mapper.getFactory().createParser(datasetContent)) {
                         // Create dataset
@@ -165,7 +165,7 @@ public class TransformationService extends BaseTransformationService {
             setExportHeaders(preparation.getName(), format);
             return outputStream -> {
                 // get the dataset content (in an auto-closable block to make sure it is properly closed)
-                final DataSetGet dataSetGet = applicationContext.getBean(DataSetGet.class, preparation.getDataSetId(), true, -1L);
+                final DataSetSampleGet dataSetGet = applicationContext.getBean(DataSetSampleGet.class, preparation.getDataSetId());
                 try (InputStream datasetContent = dataSetGet.execute()) {
                     try (JsonParser parser = mapper.getFactory().createParser(datasetContent)) {
                         // head is not allowed as step id
@@ -208,9 +208,9 @@ public class TransformationService extends BaseTransformationService {
         LOG.debug("Export for preparation #{}.", parameters.getPreparationId());
         // Full run execution (depends on the export parameters).
         final ExportStrategy strategy;
-        if (parameters.getPreparationId() != null) {
+        if (!StringUtils.isEmpty(parameters.getPreparationId())) {
             strategy = new PreparationStrategy();
-        } else if (parameters.getDatasetId() != null) {
+        } else if (!StringUtils.isEmpty(parameters.getDatasetId())) {
             strategy = new DataSetStrategy();
         } else {
             throw new IllegalArgumentException("Not valid export parameters (no preparation id nor data set id.");
@@ -236,7 +236,6 @@ public class TransformationService extends BaseTransformationService {
     public void applyOnDataset(@ApiParam(value = "Preparation id to apply.") @PathVariable(value = "preparationId") final String preparationId,
                                @ApiParam(value = "DataSet id to transform.") @PathVariable(value = "datasetId") final String datasetId,
                                @ApiParam(value = "Output format") @PathVariable("format") final String formatName,
-                               @ApiParam(name = "Sample size", value = "Optional sample size to use for the dataset, if missing, the full dataset is returned") @RequestParam(value="sample", required = false) Long sample,
                                @ApiParam(value = "Step id", defaultValue = "head") @RequestParam(value = "stepId", required = false, defaultValue = "head") final String stepId,
                                @ApiParam(value = "Name of the transformation", defaultValue = "untitled") @RequestParam(value = "name", required = false, defaultValue = "untitled") final String name,
                                @RequestParam final Map<String, String> exportParams,
@@ -244,14 +243,14 @@ public class TransformationService extends BaseTransformationService {
         //@formatter:on
 
         // get the dataset content (in an auto-closable block to make sure it is properly closed)
-        final DataSetGet dataSetGet = context.getBean(DataSetGet.class, datasetId, true, sample);
+        final DataSetSampleGet dataSetGet = context.getBean(DataSetSampleGet.class, datasetId);
         try (InputStream datasetContent = dataSetGet.execute()){
 
             // the parser need to be encapsulated within an auto closeable block so that its records can be fully
             // streamed
             try (JsonParser parser = mapper.getFactory().createParser(datasetContent)) {
                 final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
-                useCache(preparationId, dataSet, output, formatName, stepId, name, sample, filterRawExportParams(exportParams));
+                useCache(preparationId, dataSet, output, formatName, stepId, name, filterRawExportParams(exportParams));
             }
 
         } catch (Exception e) {
@@ -276,12 +275,11 @@ public class TransformationService extends BaseTransformationService {
     public void exportDataset(
             @ApiParam(value = "DataSet id to transform.") @PathVariable(value = "datasetId") final String datasetId,
             @ApiParam(value = "Output format") @PathVariable("format") final String formatName,
-            @ApiParam(name = "Sample size", value = "Optional sample size to use for the dataset, if missing, the full dataset is returned") @RequestParam(value="sample", required = false) Long sample,
             @ApiParam(value = "Name of the transformation", defaultValue = "untitled") @RequestParam(value = "name", required = false, defaultValue = "untitled") final String name,
             @RequestParam final Map<String, String> exportParams,
             final OutputStream output) {
         //@formatter:on
-        applyOnDataset(null, datasetId, formatName, sample, null, name, exportParams, output);
+        applyOnDataset(null, datasetId, formatName, null, name, exportParams, output);
     }
 
     /**
@@ -298,7 +296,7 @@ public class TransformationService extends BaseTransformationService {
      * @throws IOException if an error occurs.
      */
     private void useCache(String preparationId, DataSet dataSet, OutputStream output, String formatName, String stepId,
-            String name, Long sample, Map<String, String> optionalParams) throws IOException {
+            String name, Map<String, String> optionalParams) throws IOException {
 
         String version = stepId;
 
@@ -317,7 +315,7 @@ public class TransformationService extends BaseTransformationService {
                     .map(Map.Entry::getValue) //
                     .reduce((s1, s2) -> s1 + s2) //
                     .orElse(StringUtils.EMPTY);
-            key = new TransformationCacheKey(preparationId, dataSet.getMetadata(), formatName, parameters, version, sample);
+            key = new TransformationCacheKey(preparationId, dataSet.getMetadata(), formatName, parameters, version);
         } catch (IOException e) {
             LOG.warn("cannot generate transformation cache key for {}. Cache will not be used.", dataSet.getMetadata(), e);
             internalTransform(preparationId, dataSet, output, formatName, stepId, name, optionalParams);
@@ -378,8 +376,7 @@ public class TransformationService extends BaseTransformationService {
                 // because of piped streams, processing must be asynchronous
                 Runnable r = () -> applyOnDataset(parameters.getPreparationId(), //
                         preparation.getDataSetId(), //
-                        "JSON", //
-                        parameters.getSampleSize(), //
+                        "JSON",
                         parameters.getStepId(), //
                         "untitled", //
                         Collections.emptyMap(), // no optional parameters
@@ -390,10 +387,8 @@ public class TransformationService extends BaseTransformationService {
                 throw new TDPException(CommonErrorCodes.UNABLE_TO_AGGREGATE, e);
             }
         } else {
-            final DataSetGet dataSetGet = context.getBean(DataSetGet.class, //
-                    parameters.getDatasetId(), //
-                    true, //
-                    parameters.getSampleSize());
+            final DataSetSampleGet dataSetGet = context.getBean(DataSetSampleGet.class, //
+                    parameters.getDatasetId());
             contentToAggregate = dataSetGet.execute();
         }
 
@@ -446,7 +441,7 @@ public class TransformationService extends BaseTransformationService {
         }
 
         // because of dataset records streaming, the dataset content must be within an auto closeable block
-        final DataSetGet dataSetGet = context.getBean(DataSetGet.class, previewParameters.getDataSetId(), true, null);
+        final DataSetSampleGet dataSetGet = context.getBean(DataSetSampleGet.class, previewParameters.getDataSetId());
         try (InputStream dataSetContent = dataSetGet.execute(); //
              JsonParser parser = mapper.getFactory().createParser(dataSetContent)) {
             final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
@@ -479,10 +474,11 @@ public class TransformationService extends BaseTransformationService {
         }
 
         // get the dataset content
-        final DataSetGet dataSetGet = context.getBean(DataSetGet.class, previewParameters.getDataSetId(), true, 1L);
+        final DataSetSampleGet dataSetGet = context.getBean(DataSetSampleGet.class, previewParameters.getDataSetId());
         try (InputStream content = dataSetGet.execute(); //
              JsonParser parser = mapper.getFactory().createParser(content)) {
             final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
+            dataSet.setRecords(dataSet.getRecords().limit(1));
 
             final OutputStream output = new ByteArrayOutputStream();
 

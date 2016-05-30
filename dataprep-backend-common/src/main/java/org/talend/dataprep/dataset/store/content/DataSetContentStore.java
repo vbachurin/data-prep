@@ -1,20 +1,19 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.dataset.store.content;
 
 import java.io.InputStream;
-import java.util.Optional;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -24,6 +23,8 @@ import org.talend.dataprep.api.dataset.DataSetContent;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.json.DataSetRowIterator;
+import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.schema.FormatFamily;
 import org.talend.dataprep.schema.Serializer;
 
@@ -59,7 +60,7 @@ public abstract class DataSetContentStore {
      * <li>Throw an exception if data set is not ready for read (content type missing).</li>
      * </ul>
      * Implementations are also encouraged to implement method with no blocking code.
-     * 
+     *
      * @param dataSetMetadata The {@link DataSetMetadata data set} to read content from.
      * @return A valid <b>JSON</b> stream. It is a JSON array where each element in the array contains a single data set
      * row (it does not mean there's a line in input stream per data set row, a data set row might be split on multiple
@@ -69,34 +70,26 @@ public abstract class DataSetContentStore {
         DataSetContent content = dataSetMetadata.getContent();
         Serializer serializer = factory.getFormatFamily(content.getFormatGuessId()).getSerializer();
         return serializer.serialize(getAsRaw(dataSetMetadata), dataSetMetadata);
-
     }
 
     /**
      * Similarly to {@link #get(DataSetMetadata)} returns the content of the data set but as a {@link Stream stream} of
      * {@link DataSetRow rows} instead of JSON content.
-     * 
+     *
      * @param dataSetMetadata The {@link DataSetMetadata data set} to read rows from.
      * @return A valid <b>{@link DataSetRow}</b> stream.
      */
-    public final Stream<DataSetRow> stream(DataSetMetadata dataSetMetadata) {
+    public Stream<DataSetRow> stream(DataSetMetadata dataSetMetadata) {
         final InputStream inputStream = get(dataSetMetadata);
         final DataSetRowIterator iterator = new DataSetRowIterator(inputStream, true);
         final Iterable<DataSetRow> rowIterable = () -> iterator;
         Stream<DataSetRow> dataSetRowStream = StreamSupport.stream(rowIterable.spliterator(), false);
-
-        // deal with dataset size limit (ignored if limit is <= 0)
-        final Optional<Long> limit = dataSetMetadata.getContent().getLimit();
-        if (limit.isPresent() && limit.get() > 0) {
-            dataSetRowStream = dataSetRowStream.limit(limit.get());
-        }
-
         // make sure to close the original input stream when closing this one
         dataSetRowStream = dataSetRowStream.onClose(() -> {
             try {
                 inputStream.close();
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
             }
         });
 
@@ -104,20 +97,9 @@ public abstract class DataSetContentStore {
     }
 
     /**
-     * Return a sample of the given size for the wanted dataset.
-     *
-     * @param dataSetMetadata The {@link DataSetMetadata data set} to read rows from.
-     * @param size the wanted sample size.
-     * @return A valid <b>{@link DataSetRow}</b> stream sample.
-     */
-    public Stream<DataSetRow> sample(DataSetMetadata dataSetMetadata, long size) {
-        return stream(dataSetMetadata).limit(size);
-    }
-
-    /**
      * Returns the {@link DataSetMetadata data set} content as "raw" (i.e. the content supplied by user upon data set
      * creation).
-     * 
+     *
      * @param dataSetMetadata The {@link DataSetMetadata data set} to read content from.
      * @return The content associated with <code>dataSetMetadata</code>.
      */
@@ -125,7 +107,7 @@ public abstract class DataSetContentStore {
 
     /**
      * Deletes the {@link DataSetMetadata data set}. No recovery operation is expected.
-     * 
+     *
      * @param dataSetMetadata The data set to delete.
      */
     public abstract void delete(DataSetMetadata dataSetMetadata);

@@ -40,10 +40,10 @@ import org.talend.dataquality.common.inference.ValueQualityStatistics;
 @Component
 public class QualityAnalysis implements SynchronousDataSetAnalyzer {
 
-    @Value("#{'${max_records:5000}'}")
-    private final int maxRecord = 5000;
-
     private static final Logger LOGGER = LoggerFactory.getLogger(QualityAnalysis.class);
+
+    @Value("#{'${max_records:2000}'}")
+    private final int maxRecord = 2000;
 
     @Autowired
     DataSetMetadataRepository repository;

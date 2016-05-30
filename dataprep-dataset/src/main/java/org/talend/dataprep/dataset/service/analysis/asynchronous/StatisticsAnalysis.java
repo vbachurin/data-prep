@@ -98,60 +98,77 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
             throw new IllegalArgumentException("Data set id cannot be null or empty.");
         }
 
-        DistributedLock datasetLock = repository.createDatasetMetadataLock(dataSetId);
-        datasetLock.lock();
-        try {
-            LOGGER.debug("Statistics analysis starts for {}", dataSetId);
+        LOGGER.debug("Statistics analysis starts for {}", dataSetId);
 
-            DataSetMetadata metadata = repository.get(dataSetId);
-            if (metadata != null) {
-                if (!metadata.getLifecycle().schemaAnalyzed()) {
-                    LOGGER.debug(
-                            "Dataset {}, schema information must be computed before quality analysis can be performed, ignoring message",
-                            metadata.getId());
-                    return; // no acknowledge to allow re-poll.
-                }
+        DataSetMetadata metadata = repository.get(dataSetId);
+        if (metadata != null) {
+            if (!metadata.getLifecycle().schemaAnalyzed()) {
+                LOGGER.debug(
+                        "Dataset {}, schema information must be computed before quality analysis can be performed, ignoring message",
+                        metadata.getId());
+                return; // no acknowledge to allow re-poll.
+            }
 
-                final List<ColumnMetadata> columns = metadata.getRowMetadata().getColumns();
-                if (columns.isEmpty()) {
-                    LOGGER.debug("Skip statistics of {} (no column information).", metadata.getId());
-                } else {
-                    // base analysis
-                    try (final Stream<DataSetRow> stream = store.stream(metadata)) {
-                        try (Analyzer<Analyzers.Result> analyzer = analyzerService.baselineAnalysis(columns)) {
-                            computeStatistics(analyzer, columns, stream);
-                            updateNbRecords(metadata, analyzer.getResult());
-                            LOGGER.debug("Base statistics analysis done for{}", dataSetId);
-                        }
-                    } catch (Exception e) {
-                        LOGGER.warn("Base statistics analysis, dataset {} generates an error", dataSetId, e);
-                        throw new TDPException(UNABLE_TO_ANALYZE_DATASET_QUALITY, e);
-                    }
-
-                    // advanced analysis
-                    try (final Stream<DataSetRow> stream = store.stream(metadata)) {
-                        try (Analyzer<Analyzers.Result> analyzer = analyzerService.advancedAnalysis(columns)) {
-                            computeStatistics(analyzer, columns, stream);
-                            LOGGER.debug("Advanced statistics analysis done for{}", dataSetId);
-                        }
-                    } catch (Exception e) {
-                        LOGGER.warn("Advances statistics analysis, dataset {} generates an error", dataSetId, e);
-                        throw new TDPException(UNABLE_TO_ANALYZE_DATASET_QUALITY, e);
-                    }
-
-                    // Tag data set quality: now analyzed
-                    metadata.getLifecycle().qualityAnalyzed(true);
-                    repository.add(metadata);
-                    LOGGER.info("Statistics analysis done for {}", dataSetId);
-                }
-
+            final List<ColumnMetadata> columns = metadata.getRowMetadata().getColumns();
+            if (columns.isEmpty()) {
+                LOGGER.debug("Skip statistics of {} (no column information).", metadata.getId());
             } else {
-                LOGGER.info("Unable to analyze quality of data set #{}: seems to be removed.", dataSetId);
+                // base analysis
+                try (final Stream<DataSetRow> stream = store.stream(metadata)) {
+                    try (Analyzer<Analyzers.Result> analyzer = analyzerService.baselineAnalysis(columns)) {
+                        computeStatistics(analyzer, columns, stream);
+                        updateNbRecords(metadata, analyzer.getResult());
+                        LOGGER.debug("Base statistics analysis done for{}", dataSetId);
+                        // Save base analysis
+                        saveAnalyzerResults(dataSetId, analyzer);
+                    }
+                } catch (Exception e) {
+                    LOGGER.warn("Base statistics analysis, dataset {} generates an error", dataSetId, e);
+                    throw new TDPException(UNABLE_TO_ANALYZE_DATASET_QUALITY, e);
+                }
+                // advanced analysis
+                try (final Stream<DataSetRow> stream = store.stream(metadata)) {
+                    try (Analyzer<Analyzers.Result> analyzer = analyzerService.advancedAnalysis(columns)) {
+                        computeStatistics(analyzer, columns, stream);
+                        LOGGER.debug("Advanced statistics analysis done for{}", dataSetId);
+                        // Save advanced analysis
+                        saveAnalyzerResults(dataSetId, analyzer);
+                    }
+                } catch (Exception e) {
+                    LOGGER.warn("Advances statistics analysis, dataset {} generates an error", dataSetId, e);
+                    throw new TDPException(UNABLE_TO_ANALYZE_DATASET_QUALITY, e);
+                }
+                // Tag data set quality: now analyzed
+                DistributedLock datasetLock = repository.createDatasetMetadataLock(metadata.getId());
+                try {
+                    datasetLock.lock();
+                    final DataSetMetadata dataSetMetadata = repository.get(dataSetId);
+                    if (dataSetMetadata != null) {
+                        dataSetMetadata.getLifecycle().qualityAnalyzed(true);
+                        repository.add(metadata);
+                    }
+                } finally {
+                    datasetLock.unlock();
+                }
+                LOGGER.info("Statistics analysis done for {}", dataSetId);
+            }
+        } else {
+            LOGGER.info("Unable to analyze quality of data set #{}: seems to be removed.", dataSetId);
+        }
+    }
+
+    private void saveAnalyzerResults(String id, Analyzer<Analyzers.Result> analyzer) {
+        DistributedLock datasetLock = repository.createDatasetMetadataLock(id);
+        try {
+            datasetLock.lock();
+            final DataSetMetadata dataSetMetadata = repository.get(id);
+            if (dataSetMetadata != null) {
+                adapter.adapt(dataSetMetadata.getRowMetadata().getColumns(), analyzer.getResult());
+                repository.add(dataSetMetadata);
             }
         } finally {
             datasetLock.unlock();
         }
-
     }
 
     /**

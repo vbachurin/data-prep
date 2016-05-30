@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import org.apache.commons.io.IOUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
@@ -38,6 +39,8 @@ import org.talend.dataprep.api.service.command.transformation.SuggestLookupActio
 import org.talend.dataprep.command.CommandHelper;
 import org.talend.dataprep.command.GenericCommand;
 import org.talend.dataprep.command.dataset.DataSetGet;
+import org.talend.dataprep.command.dataset.DataSetSampleGet;
+import org.talend.dataprep.dataset.store.content.DataSetContentLimit;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.APIErrorCodes;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
@@ -54,6 +57,9 @@ import io.swagger.annotations.ApiParam;
 
 @RestController
 public class DataSetAPI extends APIService {
+
+    @Autowired
+    DataSetContentLimit limit;
 
     /**
      * Create a dataset from request body content.
@@ -157,26 +163,17 @@ public class DataSetAPI extends APIService {
 
     @RequestMapping(value = "/api/datasets/{id}", method = GET, consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get a data set by id.", produces = APPLICATION_JSON_VALUE, notes = "Get a data set based on given id.")
-    public StreamingResponseBody get(
-            @ApiParam(value = "Id of the data set to get") @PathVariable(value = "id") String id,
-            @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata,
-            @RequestParam(required = false, defaultValue = "full") @ApiParam(name = "sample", value = "Size of the wanted sample, if missing or 'full', the full dataset is returned") String sample, //
-            final OutputStream output) {
+    public StreamingResponseBody get(@ApiParam(value = "Id of the data set to get") @PathVariable(value = "id") String id) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Requesting dataset #{} (pool: {})...", id, getConnectionStats());
         }
-        HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
-
-        Long sampleValue;
         try {
-            sampleValue = Long.parseLong(sample);
-        } catch (NumberFormatException e) {
-            sampleValue = null;
-        }
-
-        HystrixCommand<InputStream> retrievalCommand;
-        try {
-            retrievalCommand = getCommand(DataSetGet.class, id, metadata, sampleValue);
+            HystrixCommand<InputStream> retrievalCommand;
+            if (limit.limitContentSize()) {
+                retrievalCommand = getCommand(DataSetGet.class, id);
+            } else {
+                retrievalCommand = getCommand(DataSetSampleGet.class, id);
+            }
             return CommandHelper.toStreaming(retrievalCommand);
         } finally {
             if (LOG.isDebugEnabled()) {
@@ -194,18 +191,22 @@ public class DataSetAPI extends APIService {
     @RequestMapping(value = "/api/datasets/{id}/metadata", method = GET, consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get a data set metadata by id.", produces = APPLICATION_JSON_VALUE, notes = "Get a data set metadata based on given id.")
     public DataSetMetadata getMetadata(@ApiParam(value = "Id of the data set to get") @PathVariable(value = "id") String id) {
-
         if (LOG.isDebugEnabled()) {
             LOG.debug("Requesting dataset metadata #{} (pool: {})...", id, getConnectionStats());
         }
-
-        HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
-
-        HystrixCommand<DataSetMetadata> getMetadataCommand = getCommand(DataSetGetMetadata.class, id);
-        final DataSetMetadata metadata = getMetadataCommand.execute();
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Request dataset metadata #{} (pool: {}) done.", id, getConnectionStats());
+        final DataSetMetadata metadata;
+        try {
+            final HystrixCommand<DataSetMetadata> getMetadataCommand;
+            if (limit.limitContentSize()) {
+                getMetadataCommand = getCommand(DataSetGetMetadata.class, id);
+            } else {
+                getMetadataCommand = getCommand(DataSetSampleGetMetadata.class, id);
+            }
+            metadata = getMetadataCommand.execute();
+        } finally {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Request dataset metadata #{} (pool: {}) done.", id, getConnectionStats());
+            }
         }
         return metadata;
     }

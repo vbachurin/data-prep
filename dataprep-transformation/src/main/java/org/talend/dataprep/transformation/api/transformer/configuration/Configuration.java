@@ -295,7 +295,8 @@ public class Configuration {
         }
 
         public Builder outFilter(Predicate<DataSetRow> outFilter) {
-            return null;
+            this.outFilter = outFilter;
+            return this;
         }
     }
 }
