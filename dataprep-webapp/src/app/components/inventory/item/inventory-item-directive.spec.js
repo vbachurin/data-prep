@@ -87,6 +87,7 @@ describe('InventoryItem directive', () => {
             "PREPARATION_DETAILS": "owned by {{author}}, created {{creationDate | TDPMoment}}, contains {{steps.length -1}} step(s)",
             "FOLDER_DETAILS": "owned by {{author}}, created {{creationDate | TDPMoment}}, contains {{datasets.length}} dataset(s)",
             'COPY_MOVE_ACTION': 'Copy or Move {{type}} \"{{name}}\"',
+            'COPY_TO_ACTION': 'Copy {{type}} \"{{name}}\"',
             'DELETE_ACTION': 'Delete {{type}} \"{{name}}\"',
             'CERTIFY_ACTION': 'Certify {{type}} \"{{name}}\"',
             'FAVORITE_ACTION': 'Add {{type}} \"{{name}}\" in your favorites'
@@ -307,7 +308,7 @@ describe('InventoryItem directive', () => {
                 expect(element.find('.divider').length).toBe(2);
             });
 
-            it('should display copy/clone icon', () => {
+            it('should display copy icon', () => {
                 //when
                 createElement();
 
@@ -315,7 +316,7 @@ describe('InventoryItem directive', () => {
                 const icon = element.find('a').eq(0).attr('data-icon');
                 expect(icon).toBe('B');
             });
-            it('should display copy/clone icon tooltip', () => {
+            it('should display copy icon tooltip', () => {
                 //when
                 createElement();
 
