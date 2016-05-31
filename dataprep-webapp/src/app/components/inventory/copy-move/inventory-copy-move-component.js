@@ -47,7 +47,7 @@ const InventoryCopyMoveComponent = {
 
                 <talend-button-loader
                         id="copy-move-move-btn"
-                        button-class="btn-primary modal-primary-button"
+                        button-class="btn-primary modal-primary-button separated-button"
                         disable-condition="$ctrl.copyMoveForm.$invalid  || $ctrl.isMoving || $ctrl.isCopying"
                         loading="$ctrl.isMoving"
                         loading-class="icon"
