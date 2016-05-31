@@ -90,7 +90,6 @@ Using the bug tracker [Talend bugtracker](http://jira.talendforge.org/) is the b
 See the [tooling](/tooling/) folder.
 
 
-
 ## 6. License
 
 Copyright (c) 2006-2016 Talend
