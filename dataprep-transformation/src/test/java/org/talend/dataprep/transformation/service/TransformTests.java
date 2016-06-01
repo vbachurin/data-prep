@@ -152,26 +152,6 @@ public class TransformTests extends TransformationServiceBaseTests {
     }
 
     @Test
-    public void uppercaseActionWithSample() throws Exception {
-        // given
-        String dataSetId = createDataset("input_dataset.csv", "uppercase", "text/csv");
-        String preparationId = createEmptyPreparationFromDataset(dataSetId, "uppercase prep");
-        applyActionFromFile(preparationId, "uppercase_action.json");
-
-        // when
-        String transformedContent = given() //
-                .expect().statusCode(200).log().ifError()//
-                .when() //
-                .get("/apply/preparation/{preparationId}/dataset/{datasetId}/{format}?sample={sample}", preparationId, dataSetId,
-                        "JSON", 6) //
-                .asString();
-
-        // then
-        String expectedContent = IOUtils.toString(this.getClass().getResourceAsStream("uppercase_expected_with_sample.json"));
-        assertEquals(expectedContent, transformedContent, false);
-    }
-
-    @Test
     public void testCache() throws Exception {
         // given
         String dsId = createDataset("input_dataset.csv", "uppercase", "text/csv");

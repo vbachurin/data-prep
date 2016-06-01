@@ -165,7 +165,7 @@ public class ActionMetadataTest extends AbstractMetadataBaseTest {
         final Action action = factory.create(cellTransformation, parameters);
 
         // when
-        ActionTestWorkbench.test(row, action);
+        ActionTestWorkbench.test(row, actionRegistry, action);
 
         // then
         assertThat(row.get("0000"), is("TOTO"));
@@ -187,7 +187,7 @@ public class ActionMetadataTest extends AbstractMetadataBaseTest {
         final Action action = factory.create(cellTransformation, parameters);
 
         // when
-        ActionTestWorkbench.test(row, action);
+        ActionTestWorkbench.test(row, actionRegistry, action);
 
         // then
         assertThat(row.get("0001"), is("toto"));
@@ -209,7 +209,7 @@ public class ActionMetadataTest extends AbstractMetadataBaseTest {
         final Action action = factory.create(lineTransformation, parameters);
 
         // when
-        ActionTestWorkbench.test(row, action);
+        ActionTestWorkbench.test(row, actionRegistry, action);
 
         // then
         assertThat(row.get("0001"), is("TOTO"));
@@ -232,7 +232,7 @@ public class ActionMetadataTest extends AbstractMetadataBaseTest {
         final Action action = factory.create(lineTransformation, parameters);
 
         // when
-        ActionTestWorkbench.test(row, action);
+        ActionTestWorkbench.test(row, actionRegistry, action);
 
         // then
         assertThat(row.get("0001"), is("toto"));
@@ -255,7 +255,7 @@ public class ActionMetadataTest extends AbstractMetadataBaseTest {
         final Action action = factory.create(columnTransformation, parameters);
 
         // when
-        ActionTestWorkbench.test(row, action);
+        ActionTestWorkbench.test(row, actionRegistry, action);
 
         // then
         assertThat(row.get("0001"), is("TOTO"));
@@ -269,18 +269,18 @@ public class ActionMetadataTest extends AbstractMetadataBaseTest {
         parameters.put("scope", "dataset");
 
         final Map<String, String> rowValues = new HashMap<>();
-        rowValues.put("0001", "toto");
-        rowValues.put("0002", "tata");
+        rowValues.put("0000", "toto");
+        rowValues.put("0001", "tata");
         final DataSetRow row = new DataSetRow(rowValues);
 
         final Action action = factory.create(tableTransformation, parameters);
 
         // when
-        ActionTestWorkbench.test(row, action);
+        ActionTestWorkbench.test(row, actionRegistry, action);
 
         // then
-        assertThat(row.get("0001"), is("TOTO"));
-        assertThat(row.get("0002"), is("TATA"));
+        assertThat(row.get("0000"), is("TOTO"));
+        assertThat(row.get("0001"), is("TATA"));
     }
 }
 
@@ -288,13 +288,13 @@ public class ActionMetadataTest extends AbstractMetadataBaseTest {
 // -----------------------------------------IMPLEMENTATIONS CLASSES--------------------------------------------------
 // ------------------------------------------------------------------------------------------------------------------
 
-@Component
+@Component("action#CellTransformation")
 @Profile("test")
 class CellTransformation extends ActionMetadata implements CellAction {
 
     @Override
     public String getName() {
-        return null;
+        return "CellTransformation";
     }
 
     @Override
@@ -316,17 +316,17 @@ class CellTransformation extends ActionMetadata implements CellAction {
 
     @Override
     public Set<Behavior> getBehavior() {
-        return EnumSet.allOf(Behavior.class);
+        return Collections.emptySet();
     }
 }
 
-@Component
+@Component("action#LineTransformation")
 @Profile("test")
 class LineTransformation extends ActionMetadata implements RowAction {
 
     @Override
     public String getName() {
-        return null;
+        return "LineTransformation";
     }
 
     @Override
@@ -348,17 +348,17 @@ class LineTransformation extends ActionMetadata implements RowAction {
 
     @Override
     public Set<Behavior> getBehavior() {
-        return EnumSet.allOf(Behavior.class);
+        return Collections.emptySet();
     }
 }
 
-@Component
+@Component("action#ColumnTransformation")
 @Profile("test")
 class ColumnTransformation extends ActionMetadata implements ColumnAction {
 
     @Override
     public String getName() {
-        return null;
+        return "ColumnTransformation";
     }
 
     @Override
@@ -380,17 +380,17 @@ class ColumnTransformation extends ActionMetadata implements ColumnAction {
 
     @Override
     public Set<Behavior> getBehavior() {
-        return EnumSet.allOf(Behavior.class);
+        return Collections.emptySet();
     }
 }
 
-@Component
+@Component("action#TableTransformation")
 @Profile("test")
 class TableTransformation extends ActionMetadata implements DataSetAction {
 
     @Override
     public String getName() {
-        return null;
+        return "TableTransformation";
     }
 
     @Override
@@ -412,6 +412,6 @@ class TableTransformation extends ActionMetadata implements DataSetAction {
 
     @Override
     public Set<Behavior> getBehavior() {
-        return EnumSet.allOf(Behavior.class);
+        return Collections.emptySet();
     }
 }

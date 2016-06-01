@@ -13,6 +13,7 @@
 
 package org.talend.dataprep.api.org.talend.dataprep.api.export;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.validation.constraints.NotNull;
@@ -36,13 +37,15 @@ public class ExportParameters {
     /** The preparation id to format. If this is null, datasetId must be set. */
     private String preparationId;
 
-    /** The step id to format at a specific state. If null, the preparation head version will be exported. */
-    private String stepId;
+    /** The step id to format at a specific state. By default preparation head version is exported. */
+    private String stepId = "head";
 
     /** The dataset id to format. If this is null, preparationId must be set. */
     private String datasetId;
 
-    private Map<String, String> arguments;
+    private String exportName;
+
+    private Map<String, String> arguments = new HashMap<>();
 
     @JsonProperty("filter")
     @JsonRawValue
@@ -90,6 +93,14 @@ public class ExportParameters {
 
     public void setArguments(Map<String, String> arguments) {
         this.arguments = arguments;
+    }
+
+    public String getExportName() {
+        return exportName;
+    }
+
+    public void setExportName(String exportName) {
+        this.exportName = exportName;
     }
 
     /**

@@ -70,7 +70,7 @@ public class ReorderColumnTest extends AbstractMetadataBaseTest {
         DataSetRow row = createDataSetRow(2);
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         Assertions.assertThat(row.getRowMetadata().getColumns()).isNotEmpty().hasSize(2);
@@ -91,7 +91,7 @@ public class ReorderColumnTest extends AbstractMetadataBaseTest {
         parameters.put(OtherColumnParameters.SELECTED_COLUMN_PARAMETER, "0003");
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         Assertions.assertThat(row.getRowMetadata().getColumns()).isNotEmpty().hasSize(4);
@@ -112,7 +112,7 @@ public class ReorderColumnTest extends AbstractMetadataBaseTest {
         parameters.put(OtherColumnParameters.SELECTED_COLUMN_PARAMETER, "0000");
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         Assertions.assertThat(row.getRowMetadata().getColumns()).isNotEmpty().hasSize(4);
@@ -133,7 +133,7 @@ public class ReorderColumnTest extends AbstractMetadataBaseTest {
         parameters.put(OtherColumnParameters.SELECTED_COLUMN_PARAMETER, "0002");
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         Assertions.assertThat(row.getRowMetadata().getColumns()).isNotEmpty().hasSize(5);
@@ -159,7 +159,7 @@ public class ReorderColumnTest extends AbstractMetadataBaseTest {
         parameters.put(OtherColumnParameters.SELECTED_COLUMN_PARAMETER, "0002");
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         Assertions.assertThat(row.getRowMetadata().getColumns()).isNotEmpty().hasSize(5);
@@ -178,7 +178,7 @@ public class ReorderColumnTest extends AbstractMetadataBaseTest {
         parameters.put(OtherColumnParameters.SELECTED_COLUMN_PARAMETER, "0000");
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         Assertions.assertThat(row.getRowMetadata().getColumns()).isNotEmpty().hasSize(5);
@@ -204,7 +204,7 @@ public class ReorderColumnTest extends AbstractMetadataBaseTest {
         parameters.put(OtherColumnParameters.SELECTED_COLUMN_PARAMETER, "0002");
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         Assertions.assertThat(row.getRowMetadata().getColumns()).isNotEmpty().hasSize(5);
@@ -223,7 +223,7 @@ public class ReorderColumnTest extends AbstractMetadataBaseTest {
         parameters.put(OtherColumnParameters.SELECTED_COLUMN_PARAMETER, "0000");
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         Assertions.assertThat(row.getRowMetadata().getColumns()).isNotEmpty().hasSize(5);
@@ -242,7 +242,7 @@ public class ReorderColumnTest extends AbstractMetadataBaseTest {
         parameters.put(OtherColumnParameters.SELECTED_COLUMN_PARAMETER, "0004");
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         Assertions.assertThat(row.getRowMetadata().getColumns()).isNotEmpty().hasSize(5);

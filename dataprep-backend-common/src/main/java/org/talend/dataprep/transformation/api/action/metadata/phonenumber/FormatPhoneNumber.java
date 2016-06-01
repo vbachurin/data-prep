@@ -14,11 +14,7 @@ package org.talend.dataprep.transformation.api.action.metadata.phonenumber;
 
 import static org.apache.commons.lang.StringUtils.EMPTY;
 
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import javax.annotation.Nonnull;
 
@@ -39,7 +35,6 @@ import org.talend.dataprep.transformation.api.action.metadata.common.ColumnActio
 import org.talend.dataprep.transformation.api.action.metadata.common.OtherColumnParameters;
 import org.talend.dataquality.standardization.phone.PhoneNumberHandlerBase;
 
-
 /**
  * Format a validated phone number to a specified format.
  */
@@ -54,10 +49,13 @@ public class FormatPhoneNumber extends ActionMetadata implements ColumnAction {
     /** a region code parameter */
     protected static final String REGIONS_PARAMETER_CONSTANT_MODE = "region_code"; //$NON-NLS-1$
 
-    private static final String PHONE_NUMBER_HANDLER_KEY = "phone_number_handler_helper";//$NON-NLS-1$
-
     /** a manually input parameter of region code */
     protected static final String MANUAL_REGION_PARAMETER_STRING = "manual_region_string"; //$NON-NLS-1$
+
+    /** a parameter of format type */
+    protected static final String FORMAT_TYPE_PARAMETER = "format_type"; //$NON-NLS-1$
+
+    private static final String PHONE_NUMBER_HANDLER_KEY = "phone_number_handler_helper";//$NON-NLS-1$
 
     private static final String US_REGION_CODE = "US";
 
@@ -69,19 +67,16 @@ public class FormatPhoneNumber extends ActionMetadata implements ColumnAction {
 
     private static final String OTHER_REGION_TO_BE_SPECIFIED = "other (region)";
 
-    /** a parameter of format type */
-    protected static final String FORMAT_TYPE_PARAMETER = "format_type"; //$NON-NLS-1$
+    private static final Logger LOGGER = LoggerFactory.getLogger(FormatPhoneNumber.class);
 
     /** the follow 4 types is provided to user selection on UI */
-    private final String TYPE_INTERNATIONAL = "International"; //$NON-NLS-1$
+    private static final String TYPE_INTERNATIONAL = "International"; //$NON-NLS-1$
 
-    private final String TYPE_NATIONAL = "National"; //$NON-NLS-1$
+    private static final String TYPE_NATIONAL = "National"; //$NON-NLS-1$
 
-    private final String TYPE_E164 = "E164"; //$NON-NLS-1$
+    private static final String TYPE_E164 = "E164"; //$NON-NLS-1$
 
-    private final String TYPE_RFC396 = "RFC3966"; //$NON-NLS-1$
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(FormatPhoneNumber.class);
+    private static final String TYPE_RFC396 = "RFC3966"; //$NON-NLS-1$
 
     @Override
     public void compile(ActionContext context) {
@@ -145,15 +140,15 @@ public class FormatPhoneNumber extends ActionMetadata implements ColumnAction {
                                 ParameterType.COLUMN, //
                                 StringUtils.EMPTY, false, false, StringUtils.EMPTY, getMessagesBundle())) //
                 .item(OtherColumnParameters.CONSTANT_MODE, //
-                		SelectParameter.Builder.builder().name(REGIONS_PARAMETER_CONSTANT_MODE).canBeBlank(true) //
-                        .item(US_REGION_CODE) //
-                        .item(FR_REGION_CODE) //
-                        .item(UK_REGION_CODE) //
-                        .item(DE_REGION_CODE) //
-                        .item(OTHER_REGION_TO_BE_SPECIFIED,
-                                new Parameter(MANUAL_REGION_PARAMETER_STRING, ParameterType.STRING, EMPTY))
-                        .defaultValue(US_REGION_CODE).build()) //
-                
+                        SelectParameter.Builder.builder().name(REGIONS_PARAMETER_CONSTANT_MODE).canBeBlank(true) //
+                                .item(US_REGION_CODE) //
+                                .item(FR_REGION_CODE) //
+                                .item(UK_REGION_CODE) //
+                                .item(DE_REGION_CODE) //
+                                .item(OTHER_REGION_TO_BE_SPECIFIED,
+                                        new Parameter(MANUAL_REGION_PARAMETER_STRING, ParameterType.STRING, EMPTY))
+                                .defaultValue(US_REGION_CODE).build()) //
+
                 .defaultValue(OtherColumnParameters.CONSTANT_MODE).build());
 
         parameters.add(SelectParameter.Builder.builder().name(FORMAT_TYPE_PARAMETER) //
@@ -165,25 +160,25 @@ public class FormatPhoneNumber extends ActionMetadata implements ColumnAction {
         return parameters;
     }
 
-	private String getRegionCode(ActionContext context, DataSetRow row) {
-		final Map<String, String> parameters = context.getParameters();
-		String regionParam = null;
-		if (OtherColumnParameters.CONSTANT_MODE.equals(parameters.get(OtherColumnParameters.MODE_PARAMETER))) {
-			regionParam = parameters.get(REGIONS_PARAMETER_CONSTANT_MODE);
-			if (StringUtils.equals(OTHER_REGION_TO_BE_SPECIFIED, regionParam)) {
-				regionParam = parameters.get(MANUAL_REGION_PARAMETER_STRING);
-			}
-		} else if(OtherColumnParameters.SELECTED_COLUMN_PARAMETER.equals(parameters.get(OtherColumnParameters.MODE_PARAMETER))){
-			final ColumnMetadata selectedColumn = context.getRowMetadata().getById(parameters
-									.get(OtherColumnParameters.SELECTED_COLUMN_PARAMETER));
-			regionParam = row.get(selectedColumn.getId());
-		}
-		if (StringUtils.isEmpty(regionParam)) {
-			return Locale.getDefault().getCountry();
-		}
+    private String getRegionCode(ActionContext context, DataSetRow row) {
+        final Map<String, String> parameters = context.getParameters();
+        String regionParam = null;
+        if (OtherColumnParameters.CONSTANT_MODE.equals(parameters.get(OtherColumnParameters.MODE_PARAMETER))) {
+            regionParam = parameters.get(REGIONS_PARAMETER_CONSTANT_MODE);
+            if (StringUtils.equals(OTHER_REGION_TO_BE_SPECIFIED, regionParam)) {
+                regionParam = parameters.get(MANUAL_REGION_PARAMETER_STRING);
+            }
+        } else if (OtherColumnParameters.SELECTED_COLUMN_PARAMETER.equals(parameters.get(OtherColumnParameters.MODE_PARAMETER))) {
+            final ColumnMetadata selectedColumn = context.getRowMetadata()
+                    .getById(parameters.get(OtherColumnParameters.SELECTED_COLUMN_PARAMETER));
+            regionParam = row.get(selectedColumn.getId());
+        }
+        if (StringUtils.isEmpty(regionParam)) {
+            return Locale.getDefault().getCountry();
+        }
 
-		return regionParam;
-	}
+        return regionParam;
+    }
 
     @Override
     public String getName() {

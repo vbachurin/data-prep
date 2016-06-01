@@ -122,6 +122,12 @@ public class DataSetRowIterator implements Iterator<DataSetRow> {
                 case VALUE_NULL:
                     row.set(currentFieldName, "");
                     break;
+                case VALUE_TRUE:
+                case VALUE_FALSE:
+                    if ("_deleted".equals(currentFieldName)) {
+                        row.setDeleted(Boolean.parseBoolean(parser.getText()));
+                    }
+                    break;
                 default:
                     // let's skip this unsupported token
                     break;

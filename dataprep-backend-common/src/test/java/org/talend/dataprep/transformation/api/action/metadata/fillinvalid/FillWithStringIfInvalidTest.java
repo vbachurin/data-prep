@@ -30,8 +30,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.AbstractMetadataBaseTest;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
@@ -47,109 +50,111 @@ public class FillWithStringIfInvalidTest extends AbstractMetadataBaseTest {
 
     /** The action to test. */
     @Autowired
-    private FillInvalid action;
+    private FillInvalid fillInvalid;
 
     @PostConstruct
     public void init() {
-        action = (FillInvalid) action.adapt(ColumnMetadata.Builder.column().type(Type.STRING).build());
+        fillInvalid = (FillInvalid) fillInvalid.adapt(ColumnMetadata.Builder.column().type(Type.STRING).build());
     }
 
     @Test
     public void should_fill_non_valid_string() throws Exception {
         // given
         final Map<String, String> values = new HashMap<>();
-        values.put("0001", "David Bowie");
-        values.put("0002", "N");
-        values.put("0003", "100");
+        values.put("0000", "David Bowie");
+        values.put("0001", "N");
+        values.put("0002", "100");
 
-        final RowMetadata rowMetadata = new RowMetadata();
-        rowMetadata.setColumns(Collections.singletonList(ColumnMetadata.Builder.column() //
-                .type(Type.STRING) //
-                .computedId("0003") //
-                .invalidValues(newHashSet("100")) //
-                .build()));
-
-        final DataSetRow row = new DataSetRow(rowMetadata, values);
+        final DataSetRow row = new DataSetRow(values);
+        final RowMetadata rowMetadata = row.getRowMetadata();
+        rowMetadata.getById("0002").setType(Type.STRING.getName());
+        rowMetadata.getById("0002").getQuality().setInvalidValues(newHashSet("100"));
 
         Map<String, String> parameters = ActionMetadataTestUtils
                 .parseParameters(this.getClass().getResourceAsStream("fillInvalidStringAction.json"));
-        parameters.put(ImplicitParameters.COLUMN_ID.getKey().toLowerCase(), "0003");
+        parameters.put(ImplicitParameters.COLUMN_ID.getKey().toLowerCase(), "0002");
+
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        final Action action = factory.create(fillInvalid, parameters);
+        final ActionContext context = new ActionContext(new TransformationContext(), rowMetadata);
+        context.setParameters(parameters);
+        action.getRowAction().apply(row, context);
 
         // then
-        assertEquals("beer", row.get("0003"));
-        assertEquals("David Bowie", row.get("0001"));
+        assertEquals("beer", row.get("0002"));
+        assertEquals("David Bowie", row.get("0000"));
     }
 
     @Test
     public void should_not_fill_non_valid_string() throws Exception {
         // given
         final Map<String, String> values = new HashMap<>();
-        values.put("0001", "David Bowie");
-        values.put("0002", "N");
-        values.put("0003", "wine");
+        values.put("0000", "David Bowie");
+        values.put("0001", "N");
+        values.put("0002", "wine");
 
-        final RowMetadata rowMetadata = new RowMetadata();
-        rowMetadata.setColumns(Collections.singletonList(ColumnMetadata.Builder.column() //
-                .type(Type.STRING) //
-                .computedId("0003") //
-                .invalidValues(newHashSet("100")) //
-                .build()));
-
-        final DataSetRow row = new DataSetRow(rowMetadata, values);
+        final DataSetRow row = new DataSetRow(values);
+        final RowMetadata rowMetadata = row.getRowMetadata();
+        rowMetadata.getById("0002").setType(Type.STRING.getName());
+        rowMetadata.getById("0002").getQuality().setInvalidValues(newHashSet("100"));
 
         Map<String, String> parameters = ActionMetadataTestUtils
                 .parseParameters(this.getClass().getResourceAsStream("fillInvalidStringAction.json"));
-        parameters.put(ImplicitParameters.COLUMN_ID.getKey().toLowerCase(), "0003");
+        parameters.put(ImplicitParameters.COLUMN_ID.getKey().toLowerCase(), "0002");
+
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        final Action action = factory.create(fillInvalid, parameters);
+        final ActionContext context = new ActionContext(new TransformationContext(), rowMetadata);
+        context.setParameters(parameters);
+        action.getRowAction().apply(row, context);
 
         // then
-        assertEquals("wine", row.get("0003"));
-        assertEquals("David Bowie", row.get("0001"));
+        assertEquals("wine", row.get("0002"));
+        assertEquals("David Bowie", row.get("0000"));
     }
 
     @Test
     public void should_fill_empty_string_other_column() throws Exception {
         // given
         final Map<String, String> values = new HashMap<>();
-        values.put("0001", "David Bowie");
-        values.put("0002", "DC");
-        values.put("0003", "Something");
+        values.put("0000", "David Bowie");
+        values.put("0001", "DC");
+        values.put("0002", "Something");
 
-        final RowMetadata rowMetadata = new RowMetadata();
-        rowMetadata.addColumn(
-                ColumnMetadata.Builder.column().type(Type.STRING).computedId("0002").invalidValues(newHashSet("DC")).build());
-        rowMetadata.addColumn(ColumnMetadata.Builder.column().type(Type.STRING).computedId("0003").build());
-
-        final DataSetRow row = new DataSetRow(rowMetadata, values);
+        final DataSetRow row = new DataSetRow(values);
+        final RowMetadata rowMetadata = row.getRowMetadata();
+        rowMetadata.getById("0001").setType(Type.STRING.getName());
+        rowMetadata.getById("0001").getQuality().setInvalidValues(newHashSet("DC"));
+        rowMetadata.getById("0002").setType(Type.STRING.getName());
 
         Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
                 this.getClass().getResourceAsStream("fillInvalidStringAction.json"));
 
         // when
         parameters.put(FillIfEmpty.MODE_PARAMETER, FillIfEmpty.OTHER_COLUMN_MODE);
-        parameters.put(FillIfEmpty.SELECTED_COLUMN_PARAMETER, "0003");
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        parameters.put(FillIfEmpty.SELECTED_COLUMN_PARAMETER, "0002");
+        final Action action = factory.create(fillInvalid, parameters);
+        final ActionContext context = new ActionContext(new TransformationContext(), rowMetadata);
+        context.setParameters(parameters);
+        action.getRowAction().apply(row, context);
 
         // then
-        Assert.assertEquals("Something", row.get("0002"));
-        Assert.assertEquals("David Bowie", row.get("0001"));
+        Assert.assertEquals("Something", row.get("0001"));
+        Assert.assertEquals("David Bowie", row.get("0000"));
     }
 
     @Test
     public void should_accept_column() {
-        assertTrue(action.acceptColumn(getColumn(Type.STRING)));
+        assertTrue(fillInvalid.acceptColumn(getColumn(Type.STRING)));
     }
 
     @Test
     public void should_adapt_null() throws Exception {
-        assertThat(action.adapt((ColumnMetadata) null), is(action));
+        assertThat(fillInvalid.adapt((ColumnMetadata) null), is(fillInvalid));
     }
 
     @Test
     public void should_not_accept_column() {
-        assertFalse(action.acceptColumn(getColumn(Type.ANY)));
+        assertFalse(fillInvalid.acceptColumn(getColumn(Type.ANY)));
     }
 }

@@ -5,7 +5,7 @@
       "parameters": {
         "default_value": "True",
         "scope": "column",
-        "column_id": "0002",
+        "column_id": "0001",
         "mode": "constant_mode",
         "column_name": "age"
       }

@@ -81,7 +81,7 @@ public class DeleteColumnTest extends AbstractMetadataBaseTest {
         parameters.put(ImplicitParameters.COLUMN_ID.getKey().toLowerCase(), "0002");
 
         // when
-        ActionTestWorkbench.test(row, factory.create(deleteColumn, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(deleteColumn, parameters));
 
         // then
         final int rowSize = row.getRowMetadata().getColumns().size();
@@ -104,7 +104,7 @@ public class DeleteColumnTest extends AbstractMetadataBaseTest {
         // when
         parameters.put(ImplicitParameters.COLUMN_ID.getKey().toLowerCase(), "0002");
         final Action rowAction = factory.create(deleteColumn, parameters);
-        ActionTestWorkbench.test(Arrays.asList(row, row2), rowAction);
+        ActionTestWorkbench.test(Arrays.asList(row, row2), actionRegistry, rowAction);
 
         // then
         final int rowSize = row.getRowMetadata().getColumns().size();
@@ -131,8 +131,8 @@ public class DeleteColumnTest extends AbstractMetadataBaseTest {
         final Action action1 = factory.create(deleteColumn, parameters);
         parameters.put(ImplicitParameters.COLUMN_ID.getKey().toLowerCase(), "0001");
         final Action action2 = factory.create(deleteColumn, parameters);
-        ActionTestWorkbench.test(row, action1, action2);
-        ActionTestWorkbench.test(row2, action1, action2);
+        ActionTestWorkbench.test(row, actionRegistry, action1, action2);
+        ActionTestWorkbench.test(row2, actionRegistry, action1, action2);
 
         // then
         final int rowSize = row.getRowMetadata().getColumns().size();

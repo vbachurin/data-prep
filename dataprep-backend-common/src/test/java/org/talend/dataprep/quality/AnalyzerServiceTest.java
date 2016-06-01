@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataquality.common.inference.Analyzer;
 import org.talend.dataquality.common.inference.Analyzers;
+import org.talend.dataprep.api.type.Type;
 
 public class AnalyzerServiceTest {
 
@@ -38,7 +39,9 @@ public class AnalyzerServiceTest {
     public void buildAllAnalysis() throws Exception {
         // When
         final AnalyzerService.Analysis[] allAnalysis = AnalyzerService.Analysis.values();
-        final Analyzer<Analyzers.Result> analyzer = service.build(new ColumnMetadata(), allAnalysis);
+        final ColumnMetadata column = new ColumnMetadata();
+        column.setType(Type.INTEGER.getName());
+        final Analyzer<Analyzers.Result> analyzer = service.build(column, allAnalysis);
         assertNotNull(analyzer);
         analyzer.analyze("");
 

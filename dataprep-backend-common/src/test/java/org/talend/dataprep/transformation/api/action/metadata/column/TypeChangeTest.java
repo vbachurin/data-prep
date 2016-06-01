@@ -1,19 +1,18 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.transformation.api.action.metadata.column;
 
-import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.talend.dataprep.transformation.api.action.metadata.column.TypeChange.NEW_TYPE_PARAMETER_KEY;
 
@@ -36,19 +35,25 @@ public class TypeChangeTest extends AbstractMetadataBaseTest {
     @Autowired
     private TypeChange typeChange;
 
-    private ColumnMetadata columnMetadata;
-
     private Map<String, String> parameters;
+
+    private DataSetRow row;
 
     @Before
     public void init() {
-        columnMetadata = ColumnMetadata.Builder.column() //
-                .type(Type.INTEGER) //
-                .computedId("0002") //
-                .domain("FR_BEER") //
-                .domainFrequency(1) //
-                .domainLabel("French Beer") //
-                .build();
+        final Map<String, String> values = new HashMap<>();
+        values.put("0000", "David Bowie");
+        values.put("0001", "");
+        values.put("0002", "Something");
+
+        row = new DataSetRow(values);
+        final RowMetadata rowMetadata = row.getRowMetadata();
+        ColumnMetadata columnMetadata = rowMetadata.getById("0002");
+        columnMetadata.setType(Type.INTEGER.getName());
+        columnMetadata.setDomain("FR_BEER");
+        columnMetadata.setDomainFrequency(1);
+        columnMetadata.setDomainLabel("French Beer");
+
         parameters = new HashMap<>();
         parameters.put(NEW_TYPE_PARAMETER_KEY, "string");
         parameters.put(ImplicitParameters.SCOPE.getKey().toLowerCase(), "column");
@@ -57,43 +62,21 @@ public class TypeChangeTest extends AbstractMetadataBaseTest {
 
     @Test
     public void should_change_type() throws Exception {
-        // given
-        final Map<String, String> values = new HashMap<>();
-        values.put("0001", "David Bowie");
-        values.put("0002", "");
-        values.put("0003", "Something");
-
-        final RowMetadata rowMetadata = new RowMetadata();
-        rowMetadata.setColumns(singletonList(columnMetadata));
-
-        final DataSetRow row = new DataSetRow(rowMetadata, values);
-
         // when
-        ActionTestWorkbench.test(row, factory.create(typeChange, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(typeChange, parameters));
 
         // then
-        final ColumnMetadata column = row.getRowMetadata().getColumns().get(0);
+        final ColumnMetadata column = row.getRowMetadata().getById("0002");
         assertThat(column.getType()).isEqualTo("string");
     }
 
     @Test
     public void should_reset_domain() throws Exception {
-        // given
-        final Map<String, String> values = new HashMap<>();
-        values.put("0001", "David Bowie");
-        values.put("0002", "");
-        values.put("0003", "Something");
-
-        final RowMetadata rowMetadata = new RowMetadata();
-        rowMetadata.setColumns(singletonList(columnMetadata));
-
-        final DataSetRow row = new DataSetRow(rowMetadata, values);
-
         // when
-        ActionTestWorkbench.test(row, factory.create(typeChange, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(typeChange, parameters));
 
         // then
-        final ColumnMetadata column = row.getRowMetadata().getColumns().get(0);
+        final ColumnMetadata column = row.getRowMetadata().getById("0002");
         assertThat(column.getDomain()).isEqualTo("");
         assertThat(column.getDomainLabel()).isEqualTo("");
         assertThat(column.getDomainFrequency()).isEqualTo(0);
@@ -101,19 +84,8 @@ public class TypeChangeTest extends AbstractMetadataBaseTest {
 
     @Test
     public void should_add_column_to_force_columns() throws Exception {
-        // given
-        final Map<String, String> values = new HashMap<>();
-        values.put("0001", "David Bowie");
-        values.put("0002", "");
-        values.put("0003", "Something");
-
-        final RowMetadata rowMetadata = new RowMetadata();
-        rowMetadata.setColumns(singletonList(columnMetadata));
-
-        final DataSetRow row = new DataSetRow(rowMetadata, values);
-
         // when
-        ActionTestWorkbench.test(row, factory.create(typeChange, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(typeChange, parameters));
 
         // then
         assertThat(row.getRowMetadata().getById("0002").isTypeForced()).isTrue();

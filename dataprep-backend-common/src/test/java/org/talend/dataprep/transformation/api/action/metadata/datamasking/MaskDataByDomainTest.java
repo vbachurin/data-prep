@@ -80,7 +80,7 @@ public class MaskDataByDomainTest extends AbstractMetadataBaseTest {
         expectedValues.put("0000", "XXXXXX@talend.com");
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertEquals(expectedValues, row.values());
@@ -97,7 +97,7 @@ public class MaskDataByDomainTest extends AbstractMetadataBaseTest {
         colMeta.setType(Type.INTEGER.getName());
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         int realValueAsInteger = Integer.parseInt((String) row.values().get("0000"));
@@ -120,7 +120,7 @@ public class MaskDataByDomainTest extends AbstractMetadataBaseTest {
         expectedValues.put("0000", " ");
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertEquals(expectedValues, row.values());
@@ -142,7 +142,7 @@ public class MaskDataByDomainTest extends AbstractMetadataBaseTest {
         expectedValues.put("0000", "XXXXXXX");
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertEquals(expectedValues, row.values());
@@ -163,7 +163,7 @@ public class MaskDataByDomainTest extends AbstractMetadataBaseTest {
         expectedValues.put("0000", "azerty@talend.com");
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertEquals(expectedValues, row.values());

@@ -14,17 +14,11 @@
 package org.talend.dataprep.api.service.command.export;
 
 import static org.talend.dataprep.command.Defaults.pipeStream;
-import static org.talend.dataprep.format.export.ExportFormat.PREFIX;
 
 import java.io.InputStream;
-import java.net.URISyntaxException;
-import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.springframework.context.annotation.Scope;

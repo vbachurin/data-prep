@@ -77,7 +77,7 @@ public class SwapTest extends BaseDateTests {
         parameters.put(OtherColumnParameters.SELECTED_COLUMN_PARAMETER, "0001");
 
         // when
-        ActionTestWorkbench.test(rows, factory.create(action, parameters));
+        ActionTestWorkbench.test(rows, actionRegistry, factory.create(action, parameters));
 
         // then
         Assertions.assertThat(rows.get(0).values()) //
@@ -104,7 +104,7 @@ public class SwapTest extends BaseDateTests {
         parameters.put(OtherColumnParameters.SELECTED_COLUMN_PARAMETER, "0001");
 
         // when
-        ActionTestWorkbench.test(rows, factory.create(action, parameters));
+        ActionTestWorkbench.test(rows, actionRegistry, factory.create(action, parameters));
 
         // then
         Assertions.assertThat(rows.get(0).values()) //
@@ -126,7 +126,7 @@ public class SwapTest extends BaseDateTests {
         parameters.put(OtherColumnParameters.SELECTED_COLUMN_PARAMETER, "0001");
 
         // when
-        ActionTestWorkbench.test(rows, factory.create(action, parameters));
+        ActionTestWorkbench.test(rows, actionRegistry, factory.create(action, parameters));
 
         // then
         Assertions.assertThat(rows.get(0).values()) //
@@ -148,7 +148,7 @@ public class SwapTest extends BaseDateTests {
         parameters.put(OtherColumnParameters.SELECTED_COLUMN_PARAMETER, "0009");
 
         // when
-        ActionTestWorkbench.test(rows, factory.create(action, parameters));
+        ActionTestWorkbench.test(rows, actionRegistry, factory.create(action, parameters));
 
         // then
         Assertions.assertThat(rows.get(0).values()) //

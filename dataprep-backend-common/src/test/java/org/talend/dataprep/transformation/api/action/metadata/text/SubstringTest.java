@@ -83,7 +83,7 @@ public class SubstringTest extends AbstractMetadataBaseTest {
         expectedValues.put("0002", "01/01/2015");
 
         //when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertEquals(expectedValues, row.values());
@@ -105,7 +105,7 @@ public class SubstringTest extends AbstractMetadataBaseTest {
         expectedValues.put("0002", "01/01/2015");
 
         //when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertEquals(expectedValues, row.values());
@@ -127,7 +127,7 @@ public class SubstringTest extends AbstractMetadataBaseTest {
         expectedValues.put("0002", "01/01/2015");
 
         //when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertEquals(expectedValues, row.values());
@@ -152,7 +152,7 @@ public class SubstringTest extends AbstractMetadataBaseTest {
         expectedValues.put("0002", "01/01/2015");
 
         //when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertEquals(expectedValues, row.values());
@@ -176,7 +176,7 @@ public class SubstringTest extends AbstractMetadataBaseTest {
         expectedValues.put("0002", "01/01/2015");
 
         //when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertEquals(expectedValues, row.values());
@@ -202,7 +202,7 @@ public class SubstringTest extends AbstractMetadataBaseTest {
         expectedValues.put("0002", "01/01/2015");
 
         //when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertEquals(expectedValues, row.values());
@@ -229,7 +229,7 @@ public class SubstringTest extends AbstractMetadataBaseTest {
         expectedValues.put("0002", "01/01/2015");
 
         //when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertEquals(expectedValues, row.values());
@@ -254,7 +254,7 @@ public class SubstringTest extends AbstractMetadataBaseTest {
         expectedValues.put("0002", "01/01/2015");
 
         //when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertEquals(expectedValues, row.values());
@@ -277,11 +277,11 @@ public class SubstringTest extends AbstractMetadataBaseTest {
         expectedValues.put("0002", "01/01/2015");
 
         //when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         parameters.put(FROM_INDEX_PARAMETER, "1");
         parameters.put(TO_INDEX_PARAMETER, "6");
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertEquals(expectedValues, row.values());
@@ -305,7 +305,7 @@ public class SubstringTest extends AbstractMetadataBaseTest {
         expectedValues.put("0002", "01/01/2015");
 
         //when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertEquals(expectedValues, row.values());
@@ -329,7 +329,7 @@ public class SubstringTest extends AbstractMetadataBaseTest {
         expectedValues.put("0002", "01/01/2015");
 
         //when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertEquals(expectedValues, row.values());
@@ -355,7 +355,7 @@ public class SubstringTest extends AbstractMetadataBaseTest {
         expectedValues.put("0002", "01/01/2015");
 
         //when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertEquals(expectedValues, row.values());
@@ -382,7 +382,7 @@ public class SubstringTest extends AbstractMetadataBaseTest {
         expectedValues.put("0002", "01/01/2015");
 
         //when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertEquals(expectedValues, row.values());
@@ -409,7 +409,7 @@ public class SubstringTest extends AbstractMetadataBaseTest {
         expectedValues.put("0002", "01/01/2015");
 
         //when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertEquals(expectedValues, row.values());
@@ -436,7 +436,7 @@ public class SubstringTest extends AbstractMetadataBaseTest {
         expectedValues.put("0002", "01/01/2015");
 
         //when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertEquals(expectedValues, row.values());
@@ -458,14 +458,14 @@ public class SubstringTest extends AbstractMetadataBaseTest {
         expectedValues.put("0004", "ips");
         expectedValues.put("0002", "01/01/2015");
 
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // when
         parameters.put("column_id", "0003");
         parameters.put(FROM_INDEX_PARAMETER, "1");
         parameters.put(TO_INDEX_PARAMETER, "4");
         parameters.put(ImplicitParameters.COLUMN_ID.getKey().toLowerCase(), "0003");
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertEquals(expectedValues, row.values());
@@ -487,7 +487,7 @@ public class SubstringTest extends AbstractMetadataBaseTest {
         expected.add(createMetadata("0002", "last update"));
 
         //when
-        ActionTestWorkbench.test(rowMetadata, factory.create(action, parameters));
+        ActionTestWorkbench.test(rowMetadata, actionRegistry, factory.create(action, parameters));
 
         // then
         assertEquals(expected, rowMetadata.getColumns());
@@ -511,7 +511,7 @@ public class SubstringTest extends AbstractMetadataBaseTest {
         expected.add(createMetadata("0002", "last update"));
 
         //when
-        ActionTestWorkbench.test(row, factory.create(action, parameters), factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters), factory.create(action, parameters));
 
         // then
         assertEquals(expected, row.getRowMetadata().getColumns());

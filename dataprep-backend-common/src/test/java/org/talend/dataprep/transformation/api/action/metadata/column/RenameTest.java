@@ -104,7 +104,7 @@ public class RenameTest extends AbstractMetadataBaseTest {
         expected.add(renamedMetadata);
 
         //when
-        ActionTestWorkbench.test(rowMetadata, factory.create(action, parameters));
+        ActionTestWorkbench.test(rowMetadata, actionRegistry, factory.create(action, parameters));
 
         // then
         assertEquals(expected, rowMetadata.getColumns());

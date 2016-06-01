@@ -92,7 +92,7 @@ public class ExtractUrlTokensTest extends AbstractMetadataBaseTest {
         expectedValues.put("0002", "01/01/2015");
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertEquals(expectedValues, row.values());
@@ -122,7 +122,7 @@ public class ExtractUrlTokensTest extends AbstractMetadataBaseTest {
         expectedValues.put("0002", "01/01/2015");
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertEquals(expectedValues, row.values());
@@ -151,7 +151,7 @@ public class ExtractUrlTokensTest extends AbstractMetadataBaseTest {
         expectedValues.put("0002", "01/01/2015");
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertEquals(expectedValues, row.values());
@@ -181,7 +181,7 @@ public class ExtractUrlTokensTest extends AbstractMetadataBaseTest {
         expectedValues.put("0002", "01/01/2015");
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertEquals(expectedValues, row.values());
@@ -210,7 +210,7 @@ public class ExtractUrlTokensTest extends AbstractMetadataBaseTest {
         expected.add(createMetadata("0002", "last update"));
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertEquals(expected, row.getRowMetadata().getColumns());

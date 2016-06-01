@@ -1,15 +1,15 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.transformation.service;
 
@@ -22,7 +22,10 @@ import static org.talend.dataprep.transformation.api.action.metadata.category.Sc
 import static org.talend.dataprep.transformation.api.action.metadata.category.ScopeCategory.LINE;
 
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -43,7 +46,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 import org.talend.daikon.exception.ExceptionContext;
-import org.talend.dataprep.api.dataset.*;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.DataSet;
+import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.org.talend.dataprep.api.export.ExportParameters;
 import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.preparation.StepDiff;
@@ -93,9 +99,11 @@ public class TransformationService extends BaseTransformationService {
     /** All available transformation actions. */
     @Autowired
     private ActionMetadata[] allActions;
+
     /** he aggregation service. */
     @Autowired
     private AggregationService aggregationService;
+
     /** The action suggestion engine. */
     @Autowired
     private SuggestionEngine suggestionEngine;
@@ -112,99 +120,12 @@ public class TransformationService extends BaseTransformationService {
     @Resource(name = "serializer#json#executor")
     private TaskExecutor executor;
 
-    private abstract class ExportStrategy {
-
-        abstract StreamingResponseBody execute(ExportParameters parameters);
-    }
-
-    private class DataSetStrategy extends ExportStrategy {
-
-        @Override
-        public StreamingResponseBody execute(ExportParameters parameters) {
-            final String formatName = parameters.getExportType();
-            final ExportFormat format = getFormat(formatName);
-            setExportHeaders(parameters.getDatasetId(), format);
-            return outputStream -> {
-
-                // get the dataset content (in an auto-closable block to make sure it is properly closed)
-                final DataSetSampleGet dataSetGet = applicationContext.getBean(DataSetSampleGet.class, parameters.getDatasetId());
-                try (InputStream datasetContent = dataSetGet.execute()) {
-                    try (JsonParser parser = mapper.getFactory().createParser(datasetContent)) {
-                        // Create dataset
-                        final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
-                        final DataSetMetadata dataSetMetadata = dataSet.getMetadata();
-                        final Predicate<DataSetRow> filter = filterService.build(parameters.getFilter(),
-                                dataSetMetadata.getRowMetadata());
-                        // get the actions to apply (no preparation ==> dataset export ==> no actions)
-                        Configuration configuration = Configuration.builder() //
-                                .inFilter(filter) //
-                                .format(format.getName()) //
-                                .volume(Configuration.Volume.SMALL) //
-                                .output(outputStream) //
-                                .build();
-                        factory.get(configuration).transform(dataSet, configuration);
-                    } catch (Exception e) {
-                        throw new TDPException(TransformationErrorCodes.UNABLE_TO_TRANSFORM_DATASET, e);
-                    }
-                } catch (Exception e) {
-                    throw new TDPException(TransformationErrorCodes.UNABLE_TO_TRANSFORM_DATASET, e);
-                }
-            };
-        }
-    }
-
-    private class PreparationStrategy extends ExportStrategy {
-
-        @Override
-        public StreamingResponseBody execute(ExportParameters parameters) {
-            final String stepId = parameters.getStepId();
-            final String preparationId = parameters.getPreparationId();
-            final String formatName = parameters.getExportType();
-            final Preparation preparation = getPreparation(preparationId);
-            final ExportFormat format = getFormat(formatName);
-            setExportHeaders(preparation.getName(), format);
-            return outputStream -> {
-                // get the dataset content (in an auto-closable block to make sure it is properly closed)
-                final DataSetSampleGet dataSetGet = applicationContext.getBean(DataSetSampleGet.class, preparation.getDataSetId());
-                try (InputStream datasetContent = dataSetGet.execute()) {
-                    try (JsonParser parser = mapper.getFactory().createParser(datasetContent)) {
-                        // head is not allowed as step id
-                        String version = stepId;
-                        if (StringUtils.equals("head", stepId)) {
-                            version = preparation.getSteps().get(preparation.getSteps().size() - 1);
-                        }
-                        // Create dataset
-                        final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
-                        final DataSetMetadata dataSetMetadata = dataSet.getMetadata();
-                        final Predicate<DataSetRow> filter = filterService.build(parameters.getFilter(),
-                                dataSetMetadata.getRowMetadata());
-                        // get the actions to apply (no preparation ==> dataset export ==> no actions)
-                        String actions = getActions(preparationId, version);
-
-                        Configuration configuration = Configuration.builder() //
-                                .inFilter(filter) //
-                                .format(format.getName()) //
-                                .actions(actions) //
-                                .stepId(stepId) //
-                                .volume(Configuration.Volume.SMALL) //
-                                .output(outputStream) //
-                                .build();
-                        factory.get(configuration).transform(dataSet, configuration);
-                    } catch (Exception e) {
-                        throw new TDPException(TransformationErrorCodes.UNABLE_TO_TRANSFORM_DATASET, e);
-                    }
-                } catch (Exception e) {
-                    throw new TDPException(TransformationErrorCodes.UNABLE_TO_TRANSFORM_DATASET, e);
-                }
-            };
-        }
-    }
-
     @RequestMapping(value = "/apply", method = POST, consumes = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Run the transformation given the provided export parameters", notes = "This operation transforms the dataset or preparation using parameters in export parameters.")
     @VolumeMetered
-    public StreamingResponseBody execute(@ApiParam(value = "Preparation id to apply.") @RequestBody @Valid final ExportParameters parameters,
-                                         @ApiParam(name = "Sample size", value = "Optional sample size to use for the dataset, if missing, the full dataset is returned") @RequestParam(value="sample", required = false) Long sample) {
+    public StreamingResponseBody execute(
+            @ApiParam(value = "Preparation id to apply.") @RequestBody @Valid final ExportParameters parameters,
+            @ApiParam(name = "Sample size", value = "Optional sample size to use for the dataset, if missing, the full dataset is returned") @RequestParam(value = "sample", required = false) Long sample) {
         LOG.debug("Export for preparation #{}.", parameters.getPreparationId());
         // Full run execution (depends on the export parameters).
         final ExportStrategy strategy;
@@ -244,7 +165,7 @@ public class TransformationService extends BaseTransformationService {
 
         // get the dataset content (in an auto-closable block to make sure it is properly closed)
         final DataSetSampleGet dataSetGet = context.getBean(DataSetSampleGet.class, datasetId);
-        try (InputStream datasetContent = dataSetGet.execute()){
+        try (InputStream datasetContent = dataSetGet.execute()) {
 
             // the parser need to be encapsulated within an auto closeable block so that its records can be fully
             // streamed
@@ -301,9 +222,8 @@ public class TransformationService extends BaseTransformationService {
         String version = stepId;
 
         // head is not allowed as step id
-        if (StringUtils.equals("head", stepId)) {
+        if (StringUtils.equals("head", stepId) || (StringUtils.isEmpty(stepId) && preparationId != null)) {
             Preparation preparation = getPreparation(preparationId);
-
             version = preparation.getSteps().get(preparation.getSteps().size() - 1);
         }
 
@@ -376,8 +296,7 @@ public class TransformationService extends BaseTransformationService {
                 // because of piped streams, processing must be asynchronous
                 Runnable r = () -> applyOnDataset(parameters.getPreparationId(), //
                         preparation.getDataSetId(), //
-                        "JSON",
-                        parameters.getStepId(), //
+                        "JSON", parameters.getStepId(), //
                         "untitled", //
                         Collections.emptyMap(), // no optional parameters
                         temp);
@@ -443,7 +362,7 @@ public class TransformationService extends BaseTransformationService {
         // because of dataset records streaming, the dataset content must be within an auto closeable block
         final DataSetSampleGet dataSetGet = context.getBean(DataSetSampleGet.class, previewParameters.getDataSetId());
         try (InputStream dataSetContent = dataSetGet.execute(); //
-             JsonParser parser = mapper.getFactory().createParser(dataSetContent)) {
+                JsonParser parser = mapper.getFactory().createParser(dataSetContent)) {
             final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
 
             // execute the... preview !
@@ -476,7 +395,7 @@ public class TransformationService extends BaseTransformationService {
         // get the dataset content
         final DataSetSampleGet dataSetGet = context.getBean(DataSetSampleGet.class, previewParameters.getDataSetId());
         try (InputStream content = dataSetGet.execute(); //
-             JsonParser parser = mapper.getFactory().createParser(content)) {
+                JsonParser parser = mapper.getFactory().createParser(content)) {
             final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
             dataSet.setRecords(dataSet.getRecords().limit(1));
 
@@ -525,7 +444,7 @@ public class TransformationService extends BaseTransformationService {
                                 .output(output) //
                                 .actions(referenceActions) //
                                 .build() //
-        ) //
+                ) //
                 .build();
         factory.get(configuration).transform(dataSet, configuration);
     }
@@ -592,7 +511,7 @@ public class TransformationService extends BaseTransformationService {
 
         // look for all actions applicable to the column type
         final List<ActionMetadata> actions;
-        try(Stream<ActionMetadata> stream = Stream.of(this.allActions)){
+        try (Stream<ActionMetadata> stream = Stream.of(this.allActions)) {
             actions = stream.filter(am -> am.acceptColumn(column)).collect(toList());
         }
         final List<Suggestion> suggestions = suggestionEngine.score(actions, column);
@@ -614,7 +533,7 @@ public class TransformationService extends BaseTransformationService {
     @ApiOperation(value = "Return all actions on lines", notes = "This operation returns an array of actions.")
     @ResponseBody
     public List<ActionMetadata> lineActions() {
-        try (Stream<ActionMetadata> stream = Stream.of(this.allActions)){
+        try (Stream<ActionMetadata> stream = Stream.of(this.allActions)) {
             return stream //
                     .filter(action -> action.acceptScope(LINE)) //
                     .map(action -> action.adapt(LINE)) //
@@ -662,6 +581,97 @@ public class TransformationService extends BaseTransformationService {
         return formatRegistrationService.getExternalFormats().stream() //
                 .sorted((f1, f2) -> f1.getOrder() - f2.getOrder()) // Enforce strict order.
                 .collect(Collectors.toList());
+    }
+
+    private abstract class ExportStrategy {
+
+        abstract StreamingResponseBody execute(ExportParameters parameters);
+    }
+
+    private class DataSetStrategy extends ExportStrategy {
+
+        @Override
+        public StreamingResponseBody execute(ExportParameters parameters) {
+            final String formatName = parameters.getExportType();
+            final ExportFormat format = getFormat(formatName);
+            setExportHeaders(parameters.getExportName(), format);
+            return outputStream -> {
+
+                // get the dataset content (in an auto-closable block to make sure it is properly closed)
+                final DataSetSampleGet dataSetGet = applicationContext.getBean(DataSetSampleGet.class, parameters.getDatasetId());
+                try (InputStream datasetContent = dataSetGet.execute()) {
+                    try (JsonParser parser = mapper.getFactory().createParser(datasetContent)) {
+                        // Create dataset
+                        final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
+                        final DataSetMetadata dataSetMetadata = dataSet.getMetadata();
+                        final Predicate<DataSetRow> filter = filterService.build(parameters.getFilter(),
+                                dataSetMetadata.getRowMetadata());
+                        // get the actions to apply (no preparation ==> dataset export ==> no actions)
+                        Configuration configuration = Configuration.builder() //
+                                .args(parameters.getArguments()) //
+                                .inFilter(filter) //
+                                .format(format.getName()) //
+                                .volume(Configuration.Volume.SMALL) //
+                                .output(outputStream) //
+                                .build();
+                        factory.get(configuration).transform(dataSet, configuration);
+                    } catch (Exception e) {
+                        throw new TDPException(TransformationErrorCodes.UNABLE_TO_TRANSFORM_DATASET, e);
+                    }
+                } catch (Exception e) {
+                    throw new TDPException(TransformationErrorCodes.UNABLE_TO_TRANSFORM_DATASET, e);
+                }
+            };
+        }
+    }
+
+    private class PreparationStrategy extends ExportStrategy {
+
+        @Override
+        public StreamingResponseBody execute(ExportParameters parameters) {
+            final String stepId = parameters.getStepId();
+            final String preparationId = parameters.getPreparationId();
+            final String formatName = parameters.getExportType();
+            final Preparation preparation = getPreparation(preparationId);
+            final ExportFormat format = getFormat(formatName);
+            setExportHeaders(parameters.getExportName(), format);
+            return outputStream -> {
+                // get the dataset content (in an auto-closable block to make sure it is properly closed)
+                final DataSetSampleGet dataSetGet = applicationContext.getBean(DataSetSampleGet.class,
+                        preparation.getDataSetId());
+                try (InputStream datasetContent = dataSetGet.execute()) {
+                    try (JsonParser parser = mapper.getFactory().createParser(datasetContent)) {
+                        // head is not allowed as step id
+                        String version = stepId;
+                        if (StringUtils.equals("head", stepId) || StringUtils.isEmpty(stepId)) {
+                            version = preparation.getSteps().get(preparation.getSteps().size() - 1);
+                        }
+                        // Create dataset
+                        final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
+                        final DataSetMetadata dataSetMetadata = dataSet.getMetadata();
+                        final Predicate<DataSetRow> filter = filterService.build(parameters.getFilter(),
+                                dataSetMetadata.getRowMetadata());
+                        // get the actions to apply (no preparation ==> dataset export ==> no actions)
+                        String actions = getActions(preparationId, version);
+
+                        Configuration configuration = Configuration.builder() //
+                                .args(parameters.getArguments()) //
+                                .inFilter(filter) //
+                                .format(format.getName()) //
+                                .actions(actions) //
+                                .stepId(stepId) //
+                                .volume(Configuration.Volume.SMALL) //
+                                .output(outputStream) //
+                                .build();
+                        factory.get(configuration).transform(dataSet, configuration);
+                    } catch (Exception e) {
+                        throw new TDPException(TransformationErrorCodes.UNABLE_TO_TRANSFORM_DATASET, e);
+                    }
+                } catch (Exception e) {
+                    throw new TDPException(TransformationErrorCodes.UNABLE_TO_TRANSFORM_DATASET, e);
+                }
+            };
+        }
     }
 
 }

@@ -71,7 +71,7 @@ public class TrimTest extends AbstractMetadataBaseTest {
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertEquals("the beatles", row.get("0000"));
@@ -85,7 +85,7 @@ public class TrimTest extends AbstractMetadataBaseTest {
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertEquals("The  Beatles", row.get("0000"));
@@ -99,7 +99,7 @@ public class TrimTest extends AbstractMetadataBaseTest {
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertEquals("the beatles", row.get("0000"));

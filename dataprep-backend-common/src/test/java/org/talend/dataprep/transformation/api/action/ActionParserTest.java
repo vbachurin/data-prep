@@ -36,6 +36,7 @@ import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.transformation.pipeline.ActionRegistry;
 
 /**
  * Unit test for the ActionParser class.
@@ -47,6 +48,9 @@ import org.talend.dataprep.exception.TDPException;
 @ComponentScan(basePackages = "org.talend.dataprep")
 @EnableAutoConfiguration
 public class ActionParserTest {
+
+    @Autowired
+    ActionRegistry actionRegistry;
 
     /** The bean to test. */
     @Autowired
@@ -80,7 +84,7 @@ public class ActionParserTest {
 
         // when
         final Action[] actions = actualActions.toArray(new Action[actualActions.size()]);
-        ActionTestWorkbench.test(actualRow, actions);
+        ActionTestWorkbench.test(actualRow, actionRegistry, actions);
 
         // then
         assertEquals(expectedRow, actualRow);
@@ -97,7 +101,7 @@ public class ActionParserTest {
 
         // when
         final Action[] actions = actualActions.toArray(new Action[actualActions.size()]);
-        ActionTestWorkbench.test(actualRow, actions);
+        ActionTestWorkbench.test(actualRow, actionRegistry, actions);
 
         // then
         RowMetadata expectedMetadata = getRowMetadata();

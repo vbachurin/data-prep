@@ -13,10 +13,7 @@
 
 package org.talend.dataprep.transformation.api.action;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 
 import org.talend.dataprep.api.dataset.*;
@@ -24,32 +21,33 @@ import org.talend.dataprep.api.dataset.statistics.StatisticsAdapter;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.transformer.json.NullAnalyzer;
+import org.talend.dataprep.transformation.pipeline.ActionRegistry;
 import org.talend.dataprep.transformation.pipeline.Pipeline;
 import org.talend.dataprep.transformation.pipeline.node.BasicNode;
-import org.talend.datascience.common.inference.Analyzer;
-import org.talend.datascience.common.inference.Analyzers;
+import org.talend.dataquality.common.inference.Analyzer;
+import org.talend.dataquality.common.inference.Analyzers;
 
 public class ActionTestWorkbench {
 
     private ActionTestWorkbench() {
     }
 
-    public static void test(RowMetadata rowMetadata, Action... actions) {
-        test(new DataSetRow(rowMetadata), actions);
+    public static void test(RowMetadata rowMetadata, ActionRegistry actionRegistry, Action... actions) {
+        test(new DataSetRow(rowMetadata), actionRegistry, actions);
     }
 
-    public static void test(DataSetRow input, Action... actions) {
-        test(Collections.singletonList(input), actions);
+    public static void test(DataSetRow input, ActionRegistry actionRegistry, Action... actions) {
+        test(Collections.singletonList(input), actionRegistry, actions);
     }
 
-    public static void test(Collection<DataSetRow> input, Action... actions) {
-        test(input, c -> Analyzers.with(NullAnalyzer.INSTANCE), c -> Analyzers.with(NullAnalyzer.INSTANCE), actions);
+    public static void test(Collection<DataSetRow> input, ActionRegistry actionRegistry, Action... actions) {
+        test(input, c -> Analyzers.with(NullAnalyzer.INSTANCE), c -> Analyzers.with(NullAnalyzer.INSTANCE), actionRegistry, actions);
     }
 
     public static void test(Collection<DataSetRow> input,
                             Function<List<ColumnMetadata>, Analyzer<Analyzers.Result>> inlineAnalysis,
                             Function<List<ColumnMetadata>, Analyzer<Analyzers.Result>> delayedAnalysis,
-                            Action... actions) {
+                            ActionRegistry actionRegistry, Action... actions) {
         TransformationContext context = new TransformationContext();
         final List<Action> allActions = new ArrayList<>();
         Collections.addAll(allActions, actions);
@@ -60,8 +58,9 @@ public class ActionTestWorkbench {
         dataSetMetadata.setRowMetadata(rowMetadata);
         dataSet.setMetadata(dataSetMetadata);
         dataSet.setRecords(input.stream());
-        final TestOutputNode outputNode = new TestOutputNode();
+        final TestOutputNode outputNode = new TestOutputNode(input);
         Pipeline pipeline = Pipeline.Builder.builder() //
+                .withActionRegistry(actionRegistry)
                 .withInitialMetadata(rowMetadata) //
                 .withActions(allActions) //
                 .withContext(context) //
@@ -76,11 +75,20 @@ public class ActionTestWorkbench {
         // (although this should be avoided in tests).
         // TODO Make this method return the modified metadata iso. setting modified columns.
         rowMetadata.setColumns(outputNode.getMetadata().getColumns());
+        for (DataSetRow dataSetRow : input) {
+            dataSetRow.setRowMetadata(rowMetadata);
+        }
     }
 
     private static class TestOutputNode extends BasicNode {
 
+        private final Iterator<DataSetRow> input;
+
         private RowMetadata metadata;
+
+        public TestOutputNode(Collection<DataSetRow> input) {
+            this.input = input.iterator();
+        }
 
         public RowMetadata getMetadata() {
             return metadata;
@@ -88,8 +96,15 @@ public class ActionTestWorkbench {
 
         @Override
         public void receive(DataSetRow row, RowMetadata metadata) {
-            this.metadata = metadata;
-            row.setRowMetadata(this.metadata);
+            if (input.hasNext()) {
+                final DataSetRow next = input.next();
+                next.values().clear();
+                next.values().putAll(row.values());
+            }
+            if (!row.isDeleted() || this.metadata == null) {
+                this.metadata = metadata;
+                row.setRowMetadata(this.metadata);
+            }
         }
 
     }

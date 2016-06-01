@@ -28,10 +28,6 @@ public abstract class Visitor {
         basicLink.getTarget().accept(this);
     }
 
-    public void visitDelayedAnalysis(DelayedAnalysisNode delayedAnalysisNode) {
-        doNodeVisit(delayedAnalysisNode);
-    }
-
     public void visitPipeline(Pipeline pipeline) {
         pipeline.getNode().accept(this);
     }

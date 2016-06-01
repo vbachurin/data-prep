@@ -3,7 +3,7 @@
     {
       "action": "clear_invalid",
       "parameters": {
-        "column_id": "0002",
+        "column_id": "0001",
         "column_name": "age",
         "scope": "column"
       }

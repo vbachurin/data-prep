@@ -3,6 +3,7 @@ package org.talend.dataprep.command;
 import com.netflix.hystrix.HystrixCommand;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 import org.talend.dataprep.http.HttpResponseContext;
 

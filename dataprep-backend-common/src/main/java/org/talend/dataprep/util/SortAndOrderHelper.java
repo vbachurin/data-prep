@@ -114,6 +114,9 @@ public class SortAndOrderHelper {
             case DATE:
                 comparator = Comparator.comparing(metadata -> valueOf(metadata.getCreationDate()), comparisonOrder);
                 break;
+            case MODIF:
+                comparator = Comparator.comparing(metadata -> valueOf(metadata.getLastModificationDate()), comparisonOrder);
+                break;
             default:
                 // this should never happen
                 throw new TDPException(CommonErrorCodes.ILLEGAL_ORDER_FOR_LIST, build().put("sort", sort));

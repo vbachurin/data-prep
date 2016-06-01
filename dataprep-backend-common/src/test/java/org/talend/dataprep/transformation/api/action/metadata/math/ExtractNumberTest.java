@@ -160,7 +160,7 @@ public class ExtractNumberTest extends AbstractMetadataBaseTest {
         ActionTestWorkbench.test(Collections.singletonList(row), //
                 c -> analyzerService.schemaAnalysis(c), // Test requires some analysis in asserts
                 c -> analyzerService.full(c), // Test requires some analysis in asserts
-                factory.create(action, parameters));
+                actionRegistry, factory.create(action, parameters));
 
         // then
         assertThat(row.getRowMetadata().getColumns()) //
@@ -220,7 +220,7 @@ public class ExtractNumberTest extends AbstractMetadataBaseTest {
         ActionTestWorkbench.test(Collections.singletonList(row), //
                 c -> analyzerService.schemaAnalysis(c), // Test requires some analysis in asserts
                 c -> analyzerService.full(c), // Test requires some analysis in asserts
-                factory.create(action, parameters));
+                actionRegistry, factory.create(action, parameters));
 
         // then
         assertThat(row.getRowMetadata().getColumns()) //

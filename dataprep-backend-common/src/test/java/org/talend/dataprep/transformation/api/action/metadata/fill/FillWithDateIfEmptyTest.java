@@ -65,140 +65,126 @@ public class FillWithDateIfEmptyTest extends AbstractMetadataBaseTest {
     public void should_fill_empty_date() throws Exception {
         // given
         final Map<String, String> values = new HashMap<>();
-        values.put("0001", "David Bowie");
-        values.put("0002", "");
-        values.put("0003", "100");
+        values.put("0000", "David Bowie");
+        values.put("0001", "");
+        values.put("0002", "100");
 
-        final RowMetadata rowMetadata = new RowMetadata();
-        rowMetadata.setColumns(Collections.singletonList(ColumnMetadata.Builder.column() //
-                .type(Type.DATE) //
-                .computedId("0002") //
-                .build()));
-
-        final DataSetRow row = new DataSetRow(rowMetadata, values);
+        final DataSetRow row = new DataSetRow(values);
+        final RowMetadata rowMetadata = row.getRowMetadata();
+        rowMetadata.getById("0001").setType(Type.DATE.getName());
 
         Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
                 this.getClass().getResourceAsStream("fillEmptyDateAction.json"));
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
-        Assert.assertEquals("1/1/1970 10:00:00", row.get("0002"));
-        Assert.assertEquals("David Bowie", row.get("0001"));
+        Assert.assertEquals("1/1/1970 10:00:00", row.get("0001"));
+        Assert.assertEquals("David Bowie", row.get("0000"));
     }
 
     @Test
     public void should_not_fill_empty_date() throws Exception {
         // given
         final Map<String, String> values = new HashMap<>();
-        values.put("0001", "David Bowie");
-        values.put("0002", "not empty");
-        values.put("0003", "100");
+        values.put("0000", "David Bowie");
+        values.put("0001", "not empty");
+        values.put("0002", "100");
 
-        final RowMetadata rowMetadata = new RowMetadata();
-        rowMetadata.setColumns(Collections.singletonList(ColumnMetadata.Builder.column() //
-                .type(Type.DATE) //
-                .computedId("0002") //
-                .build()));
-
-        final DataSetRow row = new DataSetRow(rowMetadata, values);
+        final DataSetRow row = new DataSetRow(values);
+        final RowMetadata rowMetadata = row.getRowMetadata();
+        rowMetadata.getById("0001").setType(Type.DATE.getName());
 
         Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
                 this.getClass().getResourceAsStream("fillEmptyDateAction.json"));
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
-        Assert.assertEquals("not empty", row.get("0002"));
-        Assert.assertEquals("David Bowie", row.get("0001"));
+        Assert.assertEquals("not empty", row.get("0001"));
+        Assert.assertEquals("David Bowie", row.get("0000"));
     }
 
     @Test
     public void test_TDP_591() throws Exception {
         // given
         final Map<String, String> values = new HashMap<>();
-        values.put("0001", "David Bowie");
-        values.put("0002", "");
-        values.put("0003", "100");
+        values.put("0000", "David Bowie");
+        values.put("0001", "");
+        values.put("0002", "100");
 
-        final RowMetadata rowMetadata = new RowMetadata();
-        rowMetadata.setColumns(Collections.singletonList(ColumnMetadata.Builder.column() //
-                .type(Type.DATE) //
-                .computedId("0002") //
-                .build()));
-
-        final DataSetRow row = new DataSetRow(rowMetadata, values);
-        setStatistics(row, "0002", ChangeDatePatternTest.class.getResourceAsStream("statistics_yyyy-MM-dd.json"));
+        final DataSetRow row = new DataSetRow(values);
+        final RowMetadata rowMetadata = row.getRowMetadata();
+        rowMetadata.getById("0001").setType(Type.DATE.getName());
+        setStatistics(row, "0001", ChangeDatePatternTest.class.getResourceAsStream("statistics_yyyy-MM-dd.json"));
 
         Map<String, String> parameters = ActionMetadataTestUtils
                 .parseParameters(this.getClass().getResourceAsStream("fillEmptyDateAction.json"));
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
-        Assert.assertEquals("1970-01-01", row.get("0002"));
-        Assert.assertEquals("David Bowie", row.get("0001"));
+        Assert.assertEquals("1970-01-01", row.get("0001"));
+        Assert.assertEquals("David Bowie", row.get("0000"));
     }
 
     @Test
     public void should_fill_empty_string_other_column() throws Exception {
         // given
         final Map<String, String> values = new HashMap<>();
-        values.put("0001", "David Bowie");
-        values.put("0002", "");
-        values.put("0003", "15/10/1999");
+        values.put("0000", "David Bowie");
+        values.put("0001", "");
+        values.put("0002", "15/10/1999");
 
-        final RowMetadata rowMetadata = new RowMetadata();
-        rowMetadata.addColumn(ColumnMetadata.Builder.column().type(Type.DATE).computedId("0002").build());
-        rowMetadata.addColumn(ColumnMetadata.Builder.column().type(Type.DATE).computedId("0003").build());
-
-        final DataSetRow row = new DataSetRow(rowMetadata, values);
-        setStatistics(row, "0002", ChangeDatePatternTest.class.getResourceAsStream("statistics_yyyy-MM-dd.json"));
+        final DataSetRow row = new DataSetRow(values);
+        final RowMetadata rowMetadata = row.getRowMetadata();
+        rowMetadata.getById("0001").setType(Type.DATE.getName());
+        rowMetadata.getById("0002").setType(Type.DATE.getName());
+        setStatistics(row, "0001", ChangeDatePatternTest.class.getResourceAsStream("statistics_yyyy-MM-dd.json"));
 
         Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
                 this.getClass().getResourceAsStream("fillEmptyIntegerAction.json"));
 
         // when
         parameters.put(FillIfEmpty.MODE_PARAMETER, FillIfEmpty.OTHER_COLUMN_MODE);
-        parameters.put(FillIfEmpty.SELECTED_COLUMN_PARAMETER, "0003");
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        parameters.put(FillIfEmpty.SELECTED_COLUMN_PARAMETER, "0002");
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
-        Assert.assertEquals("15/10/1999", row.get("0003"));
-        Assert.assertEquals("1999-10-15", row.get("0002"));
-        Assert.assertEquals("David Bowie", row.get("0001"));
+        Assert.assertEquals("15/10/1999", row.get("0002"));
+        Assert.assertEquals("1999-10-15", row.get("0001"));
+        Assert.assertEquals("David Bowie", row.get("0000"));
     }
 
     @Test
     public void should_fill_empty_string_other_column_not_date() throws Exception {
         // given
         final Map<String, String> values = new HashMap<>();
-        values.put("0001", "David Bowie");
-        values.put("0002", "");
-        values.put("0003", "tagada");
+        values.put("0000", "David Bowie");
+        values.put("0001", "");
+        values.put("0002", "tagada");
 
-        final RowMetadata rowMetadata = new RowMetadata();
-        rowMetadata.addColumn(ColumnMetadata.Builder.column().type(Type.DATE).computedId("0002").build());
-        rowMetadata.addColumn(ColumnMetadata.Builder.column().type(Type.DATE).computedId("0003").build());
-
-        final DataSetRow row = new DataSetRow(rowMetadata, values);
-        setStatistics(row, "0002", ChangeDatePatternTest.class.getResourceAsStream("statistics_yyyy-MM-dd.json"));
+        final DataSetRow row = new DataSetRow(values);
+        final RowMetadata rowMetadata = row.getRowMetadata();
+        rowMetadata.getById("0001").setType(Type.DATE.getName());
+        rowMetadata.getById("0002").setType(Type.DATE.getName());
+        setStatistics(row, "0001", ChangeDatePatternTest.class.getResourceAsStream("statistics_yyyy-MM-dd.json"));
 
         Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
                 this.getClass().getResourceAsStream("fillEmptyIntegerAction.json"));
 
         // when
         parameters.put(FillIfEmpty.MODE_PARAMETER, FillIfEmpty.OTHER_COLUMN_MODE);
-        parameters.put(FillIfEmpty.SELECTED_COLUMN_PARAMETER, "0003");
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        parameters.put(FillIfEmpty.SELECTED_COLUMN_PARAMETER, "0002");
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
-        Assert.assertEquals("tagada", row.get("0003"));
         Assert.assertEquals("tagada", row.get("0002"));
-        Assert.assertEquals("David Bowie", row.get("0001"));
+        Assert.assertEquals("tagada", row.get("0001"));
+        Assert.assertEquals("David Bowie", row.get("0000"));
     }
 
     @Test

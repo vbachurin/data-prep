@@ -11,16 +11,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.DisposableBean;
 import org.talend.dataprep.api.dataset.*;
-import org.talend.dataprep.api.dataset.statistics.StatisticsAdapter;
 import org.talend.dataprep.api.preparation.Action;
-import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
-import org.talend.dataprep.transformation.api.transformer.json.NullAnalyzer;
 import org.talend.dataprep.transformation.pipeline.link.BasicLink;
 import org.talend.dataprep.transformation.pipeline.link.CloneLink;
-import org.talend.dataprep.transformation.pipeline.link.NullLink;
 import org.talend.dataprep.transformation.pipeline.node.*;
 
 import static org.junit.Assert.assertEquals;
@@ -309,7 +305,6 @@ public class PipelineTest {
                 .to(new BasicNode()) //
                 .toMany(new BasicNode()) //
                 .to(new ActionNode(new Action(), new ActionContext(new TransformationContext()))) //
-                .to(new DelayedAnalysisNode(c -> NullAnalyzer.INSTANCE, c -> true, new StatisticsAdapter())) //
                 .to(output) //
                 .build();
         final Pipeline pipeline = new Pipeline(node);
@@ -320,7 +315,7 @@ public class PipelineTest {
 
         // Then
         final Class[] expectedClasses = { Pipeline.class, SourceNode.class, BasicLink.class, BasicNode.class, CloneLink.class,
-                ActionNode.class, DelayedAnalysisNode.class };
+                ActionNode.class };
         Assert.assertThat(visitor.traversedClasses, CoreMatchers.hasItems(expectedClasses));
         Assert.assertNotNull(pipeline.toString());
     }
@@ -412,12 +407,6 @@ public class PipelineTest {
         public void visitBasicLink(BasicLink basicLink) {
             traversedClasses.add(basicLink.getClass());
             super.visitBasicLink(basicLink);
-        }
-
-        @Override
-        public void visitDelayedAnalysis(DelayedAnalysisNode delayedAnalysisNode) {
-            traversedClasses.add(delayedAnalysisNode.getClass());
-            super.visitDelayedAnalysis(delayedAnalysisNode);
         }
 
         @Override

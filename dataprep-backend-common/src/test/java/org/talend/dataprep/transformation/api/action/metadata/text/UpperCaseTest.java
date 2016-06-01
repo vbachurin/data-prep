@@ -78,7 +78,7 @@ public class UpperCaseTest extends AbstractMetadataBaseTest {
         expectedValues.put("0001", "Canada");
 
         //when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertEquals(expectedValues, row.values());
@@ -97,7 +97,7 @@ public class UpperCaseTest extends AbstractMetadataBaseTest {
         expectedValues.put("0002", "Ottawa");
 
         //when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertEquals(expectedValues, row.values());

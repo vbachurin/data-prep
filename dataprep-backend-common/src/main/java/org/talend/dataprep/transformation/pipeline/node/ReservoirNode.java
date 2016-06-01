@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -20,19 +21,20 @@ import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.dataset.statistics.StatisticsAdapter;
+import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.transformation.pipeline.Monitored;
 import org.talend.dataprep.transformation.pipeline.Signal;
 import org.talend.dataprep.transformation.pipeline.Visitor;
 import org.talend.dataprep.util.FilesHelper;
+import org.talend.dataquality.common.inference.Analyzer;
+import org.talend.dataquality.common.inference.Analyzers;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.talend.datascience.common.inference.Analyzer;
-import org.talend.datascience.common.inference.Analyzers;
 
 public class ReservoirNode extends AnalysisNode implements Monitored {
 
@@ -51,8 +53,8 @@ public class ReservoirNode extends AnalysisNode implements Monitored {
     private Analyzer<Analyzers.Result> resultAnalyzer;
 
     public ReservoirNode(Function<List<ColumnMetadata>, Analyzer<Analyzers.Result>> analyzer, //
-                         Predicate<ColumnMetadata> filter, //
-                         StatisticsAdapter adapter) {
+            Predicate<ColumnMetadata> filter, //
+            StatisticsAdapter adapter) {
         super(analyzer, filter, adapter);
         try {
             reservoir = File.createTempFile("ReservoirNode", ".zip");
@@ -70,36 +72,58 @@ public class ReservoirNode extends AnalysisNode implements Monitored {
     public void receive(DataSetRow row, RowMetadata metadata) {
         final long start = System.currentTimeMillis();
         try {
+            List<ColumnMetadata> columns = metadata.getColumns();
+            final Set<String> filteredColumnNames;
+            final List<ColumnMetadata> filteredColumns;
+            if (!columns.isEmpty()) {
+                filteredColumns = columns.stream().filter(filter).collect(Collectors.toList());
+                filteredColumnNames = filteredColumns.stream().map(ColumnMetadata::getId).collect(Collectors.toSet());
+            } else {
+                // No column in row metadata, guess all type, starting from string columns.
+                ColumnMetadata.Builder builder = ColumnMetadata.Builder.column().type(Type.STRING);
+                final int rowSize = row.toArray(DataSetRow.SKIP_TDP_ID).length;
+                columns = new ArrayList<>(rowSize + 1);
+                for (int i = 0; i < rowSize; i++) {
+                    final ColumnMetadata newColumn = builder.build();
+                    metadata.addColumn(newColumn);
+                    columns.add(newColumn);
+                }
+                filteredColumns = columns;
+                filteredColumnNames = columns.stream().map(ColumnMetadata::getId).collect(Collectors.toSet());
+            }
+            rowMetadata = metadata;
+            // Analyze non deleted rows
             if (!row.isDeleted()) {
-                final List<ColumnMetadata> filteredColumns = metadata.getColumns().stream().filter(filter).collect(Collectors.toList());
-                final Set<String> filteredColumnNames = filteredColumns.stream().map(ColumnMetadata::getId).collect(Collectors.toSet());
                 // Lazy initialization of the result analyzer
                 if (resultAnalyzer == null) {
                     resultAnalyzer = analyzer.apply(filteredColumns);
                 }
-                // Proceed to inline analysis and store results.
-                final List<ColumnMetadata> columns = metadata.getColumns();
+                final String[] values = row.order(columns)
+                        .toArray(DataSetRow.SKIP_TDP_ID.and(e -> filteredColumnNames.contains(e.getKey())));
                 try {
-                    generator.writeStartObject();
-                    rowMetadata = metadata;
-                    final String[] values = row.order(columns).toArray(DataSetRow.SKIP_TDP_ID.and(e -> filteredColumnNames.contains(e.getKey())));
-                    try {
-                        resultAnalyzer.analyze(values);
-                    } catch (Exception e) {
-                        LOGGER.debug("Unable to analyze row '{}'.", Arrays.toString(values), e);
-                    }
-                    columns.stream().forEach(column -> {
-                        try {
-                            generator.writeStringField(column.getId(), row.get(column.getId()));
-                        } catch (IOException e) {
-                            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
-                        }
-                    });
-                    generator.writeEndObject();
-                } catch (IOException e) {
-                    throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
+                    resultAnalyzer.analyze(values);
+                } catch (Exception e) {
+                    LOGGER.debug("Unable to analyze row '{}'.", Arrays.toString(values), e);
                 }
             }
+            // Store rows for end of stream signal.
+            try {
+                generator.writeStartObject();
+                columns.stream().forEach(column -> {
+                    try {
+                        generator.writeStringField(column.getId(), row.get(column.getId()));
+                    } catch (IOException e) {
+                        throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
+                    }
+                });
+                if (row.isDeleted()) {
+                    generator.writeBooleanField("_deleted", true);
+                }
+                generator.writeEndObject();
+            } catch (IOException e) {
+                throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
+            }
+
         } finally {
             totalTime += System.currentTimeMillis() - start;
             count++;
@@ -121,13 +145,13 @@ public class ReservoirNode extends AnalysisNode implements Monitored {
                 generator.writeEndObject();
                 generator.flush();
                 // Send stored records to next steps
-                if (rowMetadata != null) {
+                final ObjectMapper mapper = new ObjectMapper();
+                if (rowMetadata != null && resultAnalyzer != null) {
                     // Adapt row metadata
                     adapter.adapt(rowMetadata.getColumns(), resultAnalyzer.getResult(), filter);
                     resultAnalyzer.close();
 
                     final Analyzer<Analyzers.Result> configuredAnalyzer = analyzer.apply(rowMetadata.getColumns());
-                    final ObjectMapper mapper = new ObjectMapper();
                     try (JsonParser parser = mapper.getFactory()
                             .createParser(new GZIPInputStream(new FileInputStream(reservoir)))) {
                         final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
@@ -140,12 +164,11 @@ public class ReservoirNode extends AnalysisNode implements Monitored {
                             LOGGER.debug("Unable to close analyzer.", e);
                         }
                     }
-                    // Continue process
-                    try (JsonParser parser = mapper.getFactory()
-                            .createParser(new GZIPInputStream(new FileInputStream(reservoir)))) {
-                        final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
-                        dataSet.getRecords().forEach(r -> link.exec().emit(r, rowMetadata));
-                    }
+                }
+                // Continue process
+                try (JsonParser parser = mapper.getFactory().createParser(new GZIPInputStream(new FileInputStream(reservoir)))) {
+                    final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
+                    dataSet.getRecords().forEach(r -> link.exec().emit(r, rowMetadata));
                 }
             }
         } catch (Exception e) {

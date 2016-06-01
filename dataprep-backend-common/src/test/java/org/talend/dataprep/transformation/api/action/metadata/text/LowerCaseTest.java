@@ -79,7 +79,7 @@ public class LowerCaseTest extends AbstractMetadataBaseTest {
         expectedValues.put("0002", "May 20th 2015");
 
         //when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertEquals(expectedValues, row.values());
@@ -98,7 +98,7 @@ public class LowerCaseTest extends AbstractMetadataBaseTest {
         expectedValues.put("0002", "May 20th 2015");
 
         //when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertEquals(expectedValues, row.values());

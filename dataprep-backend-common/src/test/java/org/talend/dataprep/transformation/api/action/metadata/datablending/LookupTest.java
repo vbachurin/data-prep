@@ -47,6 +47,7 @@ import org.talend.dataprep.test.ServerConfiguration;
 import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionFactory;
+import org.talend.dataprep.transformation.pipeline.ActionRegistry;
 
 /**
  * Unit test for the Lookup action.
@@ -64,6 +65,9 @@ public class LookupTest {
 
     @Autowired
     ActionFactory factory;
+
+    @Autowired
+    private ActionRegistry actionRegistry;
 
     /** Spring application context. */
     @Autowired
@@ -149,7 +153,7 @@ public class LookupTest {
         DataSetRow row = ActionMetadataTestUtils.getRow("Atlanta", "GA", "Philips Arena");
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then (check values)
         DataSetRow expected = ActionMetadataTestUtils.getRow("Atlanta", "GA", "Philips Arena", "Georgia", "Atlanta");
@@ -170,7 +174,7 @@ public class LookupTest {
         DataSetRow row = ActionMetadataTestUtils.getRow("Dallas", "TX");
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then (check values)
         DataSetRow expected = ActionMetadataTestUtils.getRow("Dallas", "TX", "Dallas Mavericks", "American Airlines Center",
@@ -190,7 +194,7 @@ public class LookupTest {
         DataSetRow row = ActionMetadataTestUtils.getRow("Toronto", "ON", "Air Canada Centre");
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then (value)
         DataSetRow expected = ActionMetadataTestUtils.getRow("Toronto", "ON", "Air Canada Centre", "", "");
@@ -208,7 +212,7 @@ public class LookupTest {
         DataSetRow row = ActionMetadataTestUtils.getRow("Huntington", "", "");
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then (value)
         DataSetRow expected = ActionMetadataTestUtils.getRow("Huntington", "", "", "", "");
@@ -230,7 +234,7 @@ public class LookupTest {
                 ActionMetadataTestUtils.getRow("Oakland", "CA", "Oracle Arena") };
 
         // when
-        ActionTestWorkbench.test(Arrays.asList(rows), factory.create(action, parameters));
+        ActionTestWorkbench.test(Arrays.asList(rows), actionRegistry, factory.create(action, parameters));
 
         // then (check values)
         DataSetRow[] expectedRows = new DataSetRow[] {

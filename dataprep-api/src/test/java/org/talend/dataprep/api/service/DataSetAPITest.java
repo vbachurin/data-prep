@@ -50,7 +50,7 @@ import com.jayway.restassured.path.json.JsonPath;
 import com.jayway.restassured.response.Response;
 
 /**
- * Unit test for Export API.
+ * Unit test for Data Set API.
  */
 public class DataSetAPITest extends ApiServiceTestBase {
 
@@ -128,8 +128,8 @@ public class DataSetAPITest extends ApiServiceTestBase {
     public void testListCompatiblePreparationsWhenNothingIsCompatible() throws Exception {
         //
         final String dataSetId = createDataset("dataset/dataset.csv", "compatible1", "text/csv");
-        final String dataSetId2 = createDataset("dataset/dataset.csv", "compatible2", "text/csv");
-        final String dataSetId3 = createDataset("t-shirt_100.csv", "incompatible", "text/csv");
+        createDataset("dataset/dataset.csv", "compatible2", "text/csv");
+        createDataset("t-shirt_100.csv", "incompatible", "text/csv");
 
         final String getResult = when().get("/api/datasets/{id}/compatiblepreparations", dataSetId).asString();
         final List compatiblePreparations = mapper.readerFor(List.class).readValue(getResult);
@@ -143,7 +143,7 @@ public class DataSetAPITest extends ApiServiceTestBase {
         //
         final String dataSetId = createDataset("dataset/dataset.csv", "compatible1", "text/csv");
         final String dataSetId2 = createDataset("dataset/dataset.csv", "compatible2", "text/csv");
-        final String dataSetId3 = createDataset("t-shirt_100.csv", "incompatible", "text/csv");
+        createDataset("t-shirt_100.csv", "incompatible", "text/csv");
 
         final String prep1 = createPreparationFromDataset(dataSetId, "prep1");
         final String prep2 = createPreparationFromDataset(dataSetId2, "prep2");
@@ -320,22 +320,6 @@ public class DataSetAPITest extends ApiServiceTestBase {
     }
 
     @Test
-    public void testDataSetGetWithSample() throws Exception {
-        // given
-        final String dataSetId = createDataset("t-shirt_100.csv", "test_sample", "text/csv");
-
-        // when
-        final String contentAsString = when().get("/api/datasets/{id}?metadata=false&columns=false&sample=16", dataSetId)
-                .asString();
-
-        // then
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode rootNode = mapper.readTree(contentAsString);
-        JsonNode records = rootNode.findPath("records");
-        assertThat(records.size(), is(16));
-    }
-
-    @Test
     public void testDataSetGetMetadata() throws Exception {
         // given
         final String dataSetId = createDataset("dataset/dataset.csv", "test_metadata", "text/csv");
@@ -346,53 +330,6 @@ public class DataSetAPITest extends ApiServiceTestBase {
         // then
         final InputStream expected = PreparationAPITest.class.getResourceAsStream("dataset/expected_dataset_columns.json");
         assertThat(content, sameJSONAsFile(expected));
-    }
-
-    @Test
-    public void testDataSetGetWithSampleZeroOrFull() throws Exception {
-        // given
-        final String dataSetId = createDataset("t-shirt_100.csv", "test_sample", "text/csv");
-
-        // when 0
-        String contentAsString = when().get("/api/datasets/{id}?metadata=false&columns=false&sample=0", dataSetId).asString();
-
-        // then full content
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode rootNode = mapper.readTree(contentAsString);
-        JsonNode records = rootNode.findPath("records");
-        assertThat(records.size(), is(100));
-
-        // when full
-        contentAsString = when().get("/api/datasets/{id}?metadata=false&columns=false&sample=full", dataSetId).asString();
-
-        // then full content
-        rootNode = mapper.readTree(contentAsString);
-        records = rootNode.findPath("records");
-        assertThat(records.size(), is(100));
-    }
-
-    @Test
-    public void testDataSetGetWithSampleWhenSampleIsInvalid() throws Exception {
-        // given
-        final String dataSetId = createDataset("t-shirt_100.csv", "test_sample", "text/csv");
-
-        // when (decimal number)
-        String contentAsString = when().get("/api/datasets/{id}?metadata=false&columns=false&sample=10.6", dataSetId).asString();
-
-        // then (full content)
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode rootNode = mapper.readTree(contentAsString);
-        JsonNode records = rootNode.findPath("records");
-        assertThat(records.size(), is(100));
-
-        // when (
-        contentAsString = when().get("/api/datasets/{id}?metadata=false&columns=false&sample=ghqmskjh", dataSetId).asString();
-
-        // then (full content)
-        rootNode = mapper.readTree(contentAsString);
-        records = rootNode.findPath("records");
-        assertThat(records.size(), is(100));
-
     }
 
     @Test
@@ -487,7 +424,7 @@ public class DataSetAPITest extends ApiServiceTestBase {
                 if (StringUtils.equals(parameter.get("name").asText(), "url")) {
                     final String url = parameter.get("default").asText();
                     // the url id must be known
-                    assertThat(expectedIds.stream().filter(s -> url.contains(s)).count(), is(1L));
+                    assertThat(expectedIds.stream().filter(url::contains).count(), is(1L));
                 }
             }
         }

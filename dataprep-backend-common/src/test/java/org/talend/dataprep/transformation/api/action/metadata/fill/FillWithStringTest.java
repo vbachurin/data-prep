@@ -44,166 +44,149 @@ public class FillWithStringTest extends AbstractMetadataBaseTest {
 
     /** The action to test. */
     @Autowired
-    private FillWithValue action;
+    private FillWithValue fillWithValue;
 
     @PostConstruct
     public void init() {
-        action = (FillWithValue) action.adapt(ColumnMetadata.Builder.column().type(Type.STRING).build());
+        fillWithValue = (FillWithValue) fillWithValue.adapt(ColumnMetadata.Builder.column().type(Type.STRING).build());
     }
 
     @Test
     public void test_adapt() throws Exception {
-        assertThat(action.adapt((ColumnMetadata) null), is(action));
+        assertThat(fillWithValue.adapt((ColumnMetadata) null), is(fillWithValue));
         ColumnMetadata column = column().name("myColumn").id(0).type(Type.STRING).build();
-        assertThat(action.adapt(column), is(action));
+        assertThat(fillWithValue.adapt(column), is(fillWithValue));
     }
 
     @Test
     public void should_fill_empty_string() throws Exception {
         // given
         final Map<String, String> values = new HashMap<>();
-        values.put("0001", "David Bowie");
-        values.put("0002", "");
-        values.put("0003", "100");
+        values.put("0000", "David Bowie");
+        values.put("0001", "");
+        values.put("0002", "100");
 
-        final RowMetadata rowMetadata = new RowMetadata();
-        rowMetadata.setColumns(Collections.singletonList(ColumnMetadata.Builder.column() //
-                .type(Type.STRING) //
-                .computedId("0002") //
-                .build()));
-
-        final DataSetRow row = new DataSetRow(rowMetadata, values);
+        final DataSetRow row = new DataSetRow(values);
+        final RowMetadata rowMetadata = row.getRowMetadata();
+        rowMetadata.getById("0001").setType(Type.STRING.getName());
 
         Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
                 this.getClass().getResourceAsStream("fillEmptyStringAction.json"));
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(fillWithValue, parameters));
 
         // then
-        Assert.assertEquals("beer", row.get("0002"));
-        Assert.assertEquals("David Bowie", row.get("0001"));
+        Assert.assertEquals("beer", row.get("0001"));
+        Assert.assertEquals("David Bowie", row.get("0000"));
     }
 
     @Test
     public void should_not_fill_empty_string() throws Exception {
         // given
         final Map<String, String> values = new HashMap<>();
-        values.put("0001", "David Bowie");
-        values.put("0002", "not empty");
-        values.put("0003", "100");
+        values.put("0000", "David Bowie");
+        values.put("0001", "not empty");
+        values.put("0002", "100");
 
-        final RowMetadata rowMetadata = new RowMetadata();
-        rowMetadata.setColumns(Collections.singletonList(ColumnMetadata.Builder.column() //
-                .type(Type.STRING) //
-                .computedId("0002") //
-                .build()));
-
-        final DataSetRow row = new DataSetRow(rowMetadata, values);
+        final DataSetRow row = new DataSetRow(values);
+        final RowMetadata rowMetadata = row.getRowMetadata();
+        rowMetadata.getById("0001").setType(Type.STRING.getName());
 
         Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
                 this.getClass().getResourceAsStream("fillEmptyStringAction.json"));
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(fillWithValue, parameters));
 
         // then
-        Assert.assertEquals("beer", row.get("0002"));
-        Assert.assertEquals("David Bowie", row.get("0001"));
+        Assert.assertEquals("beer", row.get("0001"));
+        Assert.assertEquals("David Bowie", row.get("0000"));
     }
 
     @Test
     public void should_fill_empty_float() throws Exception {
         // given
         final Map<String, String> values = new HashMap<>();
-        values.put("0001", "David Bowie");
-        values.put("0002", "");
-        values.put("0003", "100");
+        values.put("0000", "David Bowie");
+        values.put("0001", "");
+        values.put("0002", "100");
 
-        final RowMetadata rowMetadata = new RowMetadata();
-        rowMetadata.setColumns(Collections.singletonList(ColumnMetadata.Builder.column() //
-                .type(Type.FLOAT) //
-                .computedId("0002") //
-                .build()));
-
-        final DataSetRow row = new DataSetRow(rowMetadata, values);
+        final DataSetRow row = new DataSetRow(values);
+        final RowMetadata rowMetadata = row.getRowMetadata();
+        rowMetadata.getById("0001").setType(Type.STRING.getName());
 
         Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
                 this.getClass().getResourceAsStream("fillEmptyStringAction.json"));
         parameters.put(AbstractFillWith.DEFAULT_VALUE_PARAMETER, "12.5");
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(fillWithValue, parameters));
 
         // then
-        Assert.assertEquals("12.5", row.get("0002"));
-        Assert.assertEquals("David Bowie", row.get("0001"));
+        Assert.assertEquals("12.5", row.get("0001"));
+        Assert.assertEquals("David Bowie", row.get("0000"));
     }
 
     @Test
     public void should_fill_empty_double() throws Exception {
         // given
         final Map<String, String> values = new HashMap<>();
-        values.put("0001", "David Bowie");
-        values.put("0002", "");
-        values.put("0003", "100");
+        values.put("0000", "David Bowie");
+        values.put("0001", "");
+        values.put("0002", "100");
 
-        final RowMetadata rowMetadata = new RowMetadata();
-        rowMetadata.setColumns(Collections.singletonList(ColumnMetadata.Builder.column() //
-                .type(Type.DOUBLE) //
-                .computedId("0002") //
-                .build()));
-
-        final DataSetRow row = new DataSetRow(rowMetadata, values);
+        final DataSetRow row = new DataSetRow(values);
+        final RowMetadata rowMetadata = row.getRowMetadata();
+        rowMetadata.getById("0001").setType(Type.DOUBLE.getName());
 
         Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
                 this.getClass().getResourceAsStream("fillEmptyStringAction.json"));
         parameters.put(AbstractFillWith.DEFAULT_VALUE_PARAMETER, "12.5");
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(fillWithValue, parameters));
 
         // then
-        Assert.assertEquals("12.5", row.get("0002"));
-        Assert.assertEquals("David Bowie", row.get("0001"));
+        Assert.assertEquals("12.5", row.get("0001"));
+        Assert.assertEquals("David Bowie", row.get("0000"));
     }
 
     @Test
     public void should_fill_empty_string_other_column() throws Exception {
         // given
         final Map<String, String> values = new HashMap<>();
-        values.put("0001", "David Bowie");
-        values.put("0002", "");
-        values.put("0003", "Something");
+        values.put("0000", "David Bowie");
+        values.put("0001", "");
+        values.put("0002", "Something");
 
-        final RowMetadata rowMetadata = new RowMetadata();
-        rowMetadata.addColumn(ColumnMetadata.Builder.column().type(Type.STRING).computedId("0002").build());
-        rowMetadata.addColumn(ColumnMetadata.Builder.column().type(Type.STRING).computedId("0003").build());
-
-        final DataSetRow row = new DataSetRow(rowMetadata, values);
+        final DataSetRow row = new DataSetRow(values);
+        final RowMetadata rowMetadata = row.getRowMetadata();
+        rowMetadata.getById("0001").setType(Type.STRING.getName());
+        rowMetadata.getById("0002").setType(Type.STRING.getName());
 
         Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
                 this.getClass().getResourceAsStream("fillEmptyIntegerAction.json"));
 
         // when
         parameters.put(FillIfEmpty.MODE_PARAMETER, FillIfEmpty.OTHER_COLUMN_MODE);
-        parameters.put(FillIfEmpty.SELECTED_COLUMN_PARAMETER, "0003");
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        parameters.put(FillIfEmpty.SELECTED_COLUMN_PARAMETER, "0002");
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(fillWithValue, parameters));
 
         // then
-        Assert.assertEquals("Something", row.get("0002"));
-        Assert.assertEquals("David Bowie", row.get("0001"));
+        Assert.assertEquals("Something", row.get("0001"));
+        Assert.assertEquals("David Bowie", row.get("0000"));
     }
 
     @Test
     public void should_accept_column() {
-        assertTrue(action.acceptColumn(getColumn(Type.STRING)));
+        assertTrue(fillWithValue.acceptColumn(getColumn(Type.STRING)));
     }
 
     @Test
     public void should_not_accept_column() {
-        assertFalse(action.acceptColumn(getColumn(Type.NUMERIC)));
-        assertFalse(action.acceptColumn(getColumn(Type.ANY)));
+        assertFalse(fillWithValue.acceptColumn(getColumn(Type.NUMERIC)));
+        assertFalse(fillWithValue.acceptColumn(getColumn(Type.ANY)));
     }
 
 }

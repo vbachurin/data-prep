@@ -586,22 +586,7 @@ public class PreparationAPITest extends ApiServiceTestBase {
         assertThat(preparationContent,
                 sameJSONAsFile(PreparationAPITest.class.getResourceAsStream("t-shirt_100.csv.expected.json")));
     }
-
-    @Test
-    public void shouldGetPreparationContentSample() throws IOException {
-        // given
-        final String preparationId = createPreparationFromFile("t-shirt_100.csv", "testPreparationContentGet", "text/csv");
-
-        // when
-        String preparationContent = given().get("/api/preparations/{preparation}/content?sample=53", preparationId).asString();
-
-        // then
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode rootNode = mapper.readTree(preparationContent);
-        JsonNode records = rootNode.get("records");
-        assertThat(records.size(), is(53));
-    }
-
+    
     @Test
     public void shouldGetPreparationContentWhenInvalidSample() throws IOException {
         // given

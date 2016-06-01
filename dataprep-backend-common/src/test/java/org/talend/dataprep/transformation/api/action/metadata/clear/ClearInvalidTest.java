@@ -28,8 +28,11 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.AbstractMetadataBaseTest;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
@@ -43,7 +46,7 @@ public class ClearInvalidTest extends AbstractMetadataBaseTest {
 
     /** The action to test. */
     @Autowired
-    private ClearInvalid action;
+    private ClearInvalid clearInvalid;
 
     private Map<String, String> parameters;
 
@@ -57,39 +60,42 @@ public class ClearInvalidTest extends AbstractMetadataBaseTest {
 
     @Test
     public void testName() throws Exception {
-        assertThat(action.getName(), is("clear_invalid"));
+        assertThat(clearInvalid.getName(), is("clear_invalid"));
     }
 
     @Test
     public void testCategory() throws Exception {
-        assertThat(action.getCategory(), is(ActionCategory.DATA_CLEANSING.getDisplayName()));
+        assertThat(clearInvalid.getCategory(), is(ActionCategory.DATA_CLEANSING.getDisplayName()));
     }
 
     @Test
     public void testActionScope() throws Exception {
-        assertThat(action.getActionScope(), hasItem("invalid"));
+        assertThat(clearInvalid.getActionScope(), hasItem("invalid"));
     }
 
     @Test
     public void should_clear_because_non_valid() {
         // given
         final Map<String, String> values = new HashMap<>();
-        values.put("0001", "David Bowie");
-        values.put("0002", "N");
-        values.put("0003", "Something");
+        values.put("0000", "David Bowie");
+        values.put("0001", "N");
+        values.put("0002", "Something");
 
         final DataSetRow row = new DataSetRow(values);
         final RowMetadata rowMetadata = row.getRowMetadata();
-        rowMetadata.getById("0002").setType(Type.STRING.getName());
-        rowMetadata.getById("0002").getQuality().getInvalidValues().add("N");
+        rowMetadata.getById("0001").setType(Type.STRING.getName());
+        rowMetadata.getById("0001").getQuality().getInvalidValues().add("N");
 
         final Map<String, Object> expectedValues = new LinkedHashMap<>();
-        expectedValues.put("0001", "David Bowie");
-        expectedValues.put("0002", "");
-        expectedValues.put("0003", "Something");
+        expectedValues.put("0000", "David Bowie");
+        expectedValues.put("0001", "");
+        expectedValues.put("0002", "Something");
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        final Action action = factory.create(clearInvalid, parameters);
+        final ActionContext context = new ActionContext(new TransformationContext(), rowMetadata);
+        context.setParameters(parameters);
+        action.getRowAction().apply(row, context);
 
         // then
         assertEquals(expectedValues, row.values());
@@ -99,84 +105,27 @@ public class ClearInvalidTest extends AbstractMetadataBaseTest {
     public void should_not_clear_because_valid() {
         // given
         final Map<String, String> values = new HashMap<>();
-        values.put("0001", "David Bowie");
-        values.put("0002", "N");
-        values.put("0003", "Something");
+        values.put("0000", "David Bowie");
+        values.put("0001", "N");
+        values.put("0002", "Something");
 
         final DataSetRow row = new DataSetRow(values);
         final RowMetadata rowMetadata = row.getRowMetadata();
-        rowMetadata.getById("0002").setType(Type.STRING.getName());
+        rowMetadata.getById("0001").setType(Type.STRING.getName());
 
         final Map<String, Object> expectedValues = new HashMap<>();
-        expectedValues.put("0001", "David Bowie");
-        expectedValues.put("0002", "N");
-        expectedValues.put("0003", "Something");
+        expectedValues.put("0000", "David Bowie");
+        expectedValues.put("0001", "N");
+        expectedValues.put("0002", "Something");
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        final Action action = factory.create(clearInvalid, parameters);
+        final ActionContext context = new ActionContext(new TransformationContext(), rowMetadata);
+        context.setParameters(parameters);
+        action.getRowAction().apply(row, context);
 
         // then
         assertEquals(expectedValues, row.values());
-    }
-
-    @Test
-    public void should_clear_invalid_values_not_in_metadata_integer() {
-        // given
-        final Map<String, String> values = new HashMap<>();
-        values.put("0001", "David Bowie");
-        values.put("0002", "N");
-        values.put("0003", "Something");
-
-        final DataSetRow row = new DataSetRow(values);
-        final RowMetadata rowMetadata = row.getRowMetadata();
-        rowMetadata.getById("0002").setType(Type.INTEGER.getName());
-        rowMetadata.getById("0002").getQuality().getInvalidValues().add("N");
-
-        final Map<String, Object> expectedValues = new LinkedHashMap<>();
-        expectedValues.put("0001", "David Bowie");
-        expectedValues.put("0002", "");
-        expectedValues.put("0003", "Something");
-
-        // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
-
-        // then
-        assertEquals(expectedValues, row.values());
-
-        // ... and column metadata invalid values are also updated
-        final Set<String> invalidValues = row.getRowMetadata().getById("0002").getQuality().getInvalidValues();
-        assertEquals(1, invalidValues.size());
-        assertTrue(invalidValues.contains("N"));
-    }
-
-    @Test
-    public void should_clear_invalid_values_not_in_metadata_date() {
-        // given
-        final Map<String, String> values = new HashMap<>();
-        values.put("0001", "David Bowie");
-        values.put("0002", "N");
-        values.put("0003", "Something");
-
-        final DataSetRow row = new DataSetRow(values);
-        final RowMetadata rowMetadata = row.getRowMetadata();
-        rowMetadata.getById("0002").setType(Type.DATE.getName());
-        rowMetadata.getById("0002").getQuality().getInvalidValues().add("N");
-
-        final Map<String, Object> expectedValues = new LinkedHashMap<>();
-        expectedValues.put("0001", "David Bowie");
-        expectedValues.put("0002", "");
-        expectedValues.put("0003", "Something");
-
-        // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
-
-        // then
-        assertEquals(expectedValues, row.values());
-
-        // ... and column metadata invalid values are also updated
-        final Set<String> invalidValues = row.getRowMetadata().getById("0002").getQuality().getInvalidValues();
-        assertEquals(1, invalidValues.size());
-        assertTrue(invalidValues.contains("N"));
     }
 
     @Test
@@ -197,7 +146,10 @@ public class ClearInvalidTest extends AbstractMetadataBaseTest {
         expectedValues.put("0003", "Something");
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        final Action action = factory.create(clearInvalid, parameters);
+        final ActionContext context = new ActionContext(new TransformationContext(), rowMetadata);
+        context.setParameters(parameters);
+        action.getRowAction().apply(row, context);
 
         // then
         assertEquals(expectedValues, row.values());
@@ -207,40 +159,11 @@ public class ClearInvalidTest extends AbstractMetadataBaseTest {
         assertTrue(invalidValues.isEmpty());
     }
 
-    @Test
-    public void should_clear_invalid_values_not_in_metadata_decimal() {
-        // given
-        final Map<String, String> values = new HashMap<>();
-        values.put("0001", "David Bowie");
-        values.put("0002", "1.1");
-        values.put("0003", "Something");
-
-        final DataSetRow row = new DataSetRow(values);
-        final RowMetadata rowMetadata = row.getRowMetadata();
-        rowMetadata.getById("0002").setType(Type.INTEGER.getName());
-        rowMetadata.getById("0002").getQuality().getInvalidValues().add("1.1");
-
-        final Map<String, Object> expectedValues = new LinkedHashMap<>();
-        expectedValues.put("0001", "David Bowie");
-        expectedValues.put("0002", "");
-        expectedValues.put("0003", "Something");
-
-        // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
-
-        // then
-        assertEquals(expectedValues, row.values());
-
-        // ... and column metadata invalid values are also updated
-        final Set<String> invalidValues = row.getRowMetadata().getById("0002").getQuality().getInvalidValues();
-        assertEquals(1, invalidValues.size());
-        assertTrue(invalidValues.contains("1.1"));
-    }
 
     @Test
     public void should_accept_column() {
         for (Type type : Type.values()) {
-            assertTrue(action.acceptColumn(getColumn(type)));
+            assertTrue(clearInvalid.acceptColumn(getColumn(type)));
         }
     }
 

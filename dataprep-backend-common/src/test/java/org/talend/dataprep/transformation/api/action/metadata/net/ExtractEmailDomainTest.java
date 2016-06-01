@@ -84,7 +84,7 @@ public class ExtractEmailDomainTest extends AbstractMetadataBaseTest {
         expectedValues.put("0002", "01/01/2015");
 
         //when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertEquals(expectedValues, row.values());
@@ -107,7 +107,7 @@ public class ExtractEmailDomainTest extends AbstractMetadataBaseTest {
         expectedValues.put("0002", "01/01/2015");
 
         //when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertEquals(expectedValues, row.values());
@@ -130,7 +130,7 @@ public class ExtractEmailDomainTest extends AbstractMetadataBaseTest {
         expected.add(createMetadata("0002", "last update"));
 
         //when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertEquals(expected, row.getRowMetadata().getColumns());
@@ -155,7 +155,7 @@ public class ExtractEmailDomainTest extends AbstractMetadataBaseTest {
         expected.add(createMetadata("0002", "last update"));
 
         //when
-        ActionTestWorkbench.test(rowMetadata, factory.create(action, parameters), factory.create(action, parameters));
+        ActionTestWorkbench.test(rowMetadata, actionRegistry, factory.create(action, parameters), factory.create(action, parameters));
 
         // then
         assertEquals(expected, rowMetadata.getColumns());

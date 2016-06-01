@@ -82,7 +82,7 @@ public class CopyColumnTest extends AbstractMetadataBaseTest {
         expectedValues.put("0002", "01/01/2015");
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertEquals(expectedValues, row.values());
@@ -107,7 +107,7 @@ public class CopyColumnTest extends AbstractMetadataBaseTest {
         expected.add(createMetadata("0002", "last update"));
 
         // when
-        ActionTestWorkbench.test(rowMetadata, factory.create(action, parameters));
+        ActionTestWorkbench.test(rowMetadata, actionRegistry, factory.create(action, parameters));
 
         // then
         assertEquals(expected, rowMetadata.getColumns());
@@ -128,7 +128,7 @@ public class CopyColumnTest extends AbstractMetadataBaseTest {
 
         // when
         rowMetadata.deleteColumnById("0003");
-        ActionTestWorkbench.test(rowMetadata, factory.create(action, parameters));
+        ActionTestWorkbench.test(rowMetadata, actionRegistry, factory.create(action, parameters));
 
         // then
         final List<ColumnMetadata> columns = rowMetadata.getColumns();
@@ -154,7 +154,7 @@ public class CopyColumnTest extends AbstractMetadataBaseTest {
         expected.add(transformed);
 
         // when
-        ActionTestWorkbench.test(rowMetadata, factory.create(action, parameters));
+        ActionTestWorkbench.test(rowMetadata, actionRegistry, factory.create(action, parameters));
 
         // then
         assertEquals(expected.get(1).getStatistics(), original.getStatistics());
@@ -178,7 +178,7 @@ public class CopyColumnTest extends AbstractMetadataBaseTest {
 
         Assertions.assertThat(rowMetadata.getColumns()).isNotNull().isNotEmpty().hasSize(1);
 
-        ActionTestWorkbench.test(rowMetadata, factory.create(action, parameters));
+        ActionTestWorkbench.test(rowMetadata, actionRegistry, factory.create(action, parameters));
 
         List<ColumnMetadata> expected = rowMetadata.getColumns();
 
@@ -213,7 +213,7 @@ public class CopyColumnTest extends AbstractMetadataBaseTest {
 
         Assertions.assertThat(rowMetadata.getColumns()).isNotNull().isNotEmpty().hasSize(1);
 
-        ActionTestWorkbench.test(rowMetadata, factory.create(action, parameters));
+        ActionTestWorkbench.test(rowMetadata, actionRegistry, factory.create(action, parameters));
 
         List<ColumnMetadata> expected = rowMetadata.getColumns();
 
@@ -249,7 +249,7 @@ public class CopyColumnTest extends AbstractMetadataBaseTest {
 
         Assertions.assertThat(rowMetadata.getColumns()).isNotNull().isNotEmpty().hasSize(1);
 
-        ActionTestWorkbench.test(rowMetadata, factory.create(action, parameters));
+        ActionTestWorkbench.test(rowMetadata, actionRegistry, factory.create(action, parameters));
 
         List<ColumnMetadata> expected = rowMetadata.getColumns();
 

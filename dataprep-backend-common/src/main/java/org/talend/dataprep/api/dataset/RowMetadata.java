@@ -93,6 +93,7 @@ public class RowMetadata implements Serializable {
      */
     public void setColumns(List<ColumnMetadata> columnMetadata) {
         columns.clear();
+        nextId = 0;
         columnMetadata.forEach(this::addColumn);
     }
 

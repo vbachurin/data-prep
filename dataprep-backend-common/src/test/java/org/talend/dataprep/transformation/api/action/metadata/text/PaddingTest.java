@@ -77,7 +77,7 @@ public class PaddingTest extends AbstractMetadataBaseTest {
         expectedValues.put("joined", "May 20th 2015");
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertEquals(expectedValues, row.values());

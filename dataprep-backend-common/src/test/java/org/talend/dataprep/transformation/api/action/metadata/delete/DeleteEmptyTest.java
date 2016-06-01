@@ -73,27 +73,27 @@ public class DeleteEmptyTest extends AbstractMetadataBaseTest {
     public void should_delete_because_value_not_set() {
         // given
         final Map<String, String> values = new HashMap<>();
-        values.put("name", "David Bowie");
+        values.put("0000", "David Bowie");
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertTrue(row.isDeleted());
-        assertEquals("David Bowie", row.get("name"));
+        assertEquals("David Bowie", row.get("0000"));
     }
 
     @Test
     public void should_delete_because_null() {
         // given
         final Map<String, String> values = new HashMap<>();
-        values.put("name", "David Bowie");
-        values.put("city", null);
+        values.put("0000", "David Bowie");
+        values.put("0001", null);
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertTrue(row.isDeleted());
@@ -103,12 +103,12 @@ public class DeleteEmptyTest extends AbstractMetadataBaseTest {
     public void should_delete_because_empty() {
         // given
         final Map<String, String> values = new HashMap<>();
-        values.put("name", "David Bowie");
-        values.put("city", "");
+        values.put("0000", "David Bowie");
+        values.put("0001", "");
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertTrue(row.isDeleted());
@@ -118,12 +118,12 @@ public class DeleteEmptyTest extends AbstractMetadataBaseTest {
     public void should_delete_because_value_is_made_of_spaces() {
         // given
         final Map<String, String> values = new HashMap<>();
-        values.put("name", "David Bowie");
-        values.put("city", " ");
+        values.put("0000", "David Bowie");
+        values.put("0001", " ");
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertTrue(row.isDeleted());
@@ -133,29 +133,29 @@ public class DeleteEmptyTest extends AbstractMetadataBaseTest {
     public void should_not_delete_because_value_set() {
         // given
         final Map<String, String> values = new HashMap<>();
-        values.put("name", "David Bowie");
-        values.put("city", "-");
+        values.put("0000", "David Bowie");
+        values.put("0001", "-");
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertFalse(row.isDeleted());
-        assertEquals("David Bowie", row.get("name"));
-        assertEquals("-", row.get("city"));
+        assertEquals("David Bowie", row.get("0000"));
+        assertEquals("-", row.get("0001"));
     }
 
     @Test
     public void should_not_delete_because_value_set_2() {
         // given
         final Map<String, String> values = new HashMap<>();
-        values.put("name", "David Bowie");
-        values.put("city", " a value ");
+        values.put("0000", "David Bowie");
+        values.put("0001", " a value ");
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertFalse(row.isDeleted());
@@ -165,12 +165,12 @@ public class DeleteEmptyTest extends AbstractMetadataBaseTest {
     public void should_not_delete_because_value_set_of_boolean() {
         // given
         final Map<String, String> values = new HashMap<>();
-        values.put("name", "David Bowie");
-        values.put("city", "true");
+        values.put("0000", "David Bowie");
+        values.put("0001", "true");
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertFalse(row.isDeleted());
@@ -180,12 +180,12 @@ public class DeleteEmptyTest extends AbstractMetadataBaseTest {
     public void should_not_delete_because_value_set_of_number() {
         // given
         final Map<String, String> values = new HashMap<>();
-        values.put("name", "David Bowie");
-        values.put("city", "45");
+        values.put("0000", "David Bowie");
+        values.put("0001", "45");
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertFalse(row.isDeleted());
@@ -195,12 +195,12 @@ public class DeleteEmptyTest extends AbstractMetadataBaseTest {
     public void should_not_delete_because_value_set_of_negative_boolean() {
         // given
         final Map<String, String> values = new HashMap<>();
-        values.put("name", "David Bowie");
-        values.put("city", "-12");
+        values.put("0000", "David Bowie");
+        values.put("0001", "-12");
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertFalse(row.isDeleted());
@@ -210,12 +210,12 @@ public class DeleteEmptyTest extends AbstractMetadataBaseTest {
     public void should_not_delete_because_value_set_of_float() {
         // given
         final Map<String, String> values = new HashMap<>();
-        values.put("name", "David Bowie");
-        values.put("city", "0.001");
+        values.put("0000", "David Bowie");
+        values.put("0001", "0.001");
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertFalse(row.isDeleted());

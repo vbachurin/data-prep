@@ -54,7 +54,7 @@ public class TextClusteringTest extends AbstractMetadataBaseTest {
         rows.add(createRow(columnId, "Tata"));
 
         // when
-        ActionTestWorkbench.test(rows, factory.create(textClustering, parameters));
+        ActionTestWorkbench.test(rows, actionRegistry, factory.create(textClustering, parameters));
 
         // then
         rows.stream().map(row -> row.get(columnId)).forEach(uglyState -> Assertions.assertThat(uglyState).isEqualTo("Tata"));
@@ -91,7 +91,7 @@ public class TextClusteringTest extends AbstractMetadataBaseTest {
         rows.add(createRow(columnId, "Tata1"));
 
         // when
-        ActionTestWorkbench.test(rows, factory.create(textClustering, parameters));
+        ActionTestWorkbench.test(rows, actionRegistry, factory.create(textClustering, parameters));
 
         // then
         rows.stream().map((row) -> row.get(columnId)).forEach(uglyState -> Assertions.assertThat(uglyState).isNotEqualTo("Tata"));

@@ -57,7 +57,7 @@ public class NaturalLogarithmTest
         DataSetRow row = getRow("3", "3", "Done !");
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertColumnWithResultCreated(row);
@@ -70,7 +70,7 @@ public class NaturalLogarithmTest
         DataSetRow row = getRow("-3", "3", "Done !");
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertColumnWithResultCreated(row);
@@ -83,7 +83,7 @@ public class NaturalLogarithmTest
         DataSetRow row = getRow("beer", "3", "Done !");
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertColumnWithResultCreated(row);

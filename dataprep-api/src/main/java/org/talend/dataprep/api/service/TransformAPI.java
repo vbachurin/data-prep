@@ -1,15 +1,15 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.api.service;
 
@@ -18,7 +18,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 import java.io.InputStream;
-import java.io.OutputStream;
 
 import javax.validation.Valid;
 
@@ -46,7 +45,6 @@ import io.swagger.annotations.ApiParam;
 
 @RestController
 public class TransformAPI extends APIService {
-
 
     /**
      * Get all the possible actions for a given column.
@@ -88,7 +86,7 @@ public class TransformAPI extends APIService {
     @RequestMapping(value = "/api/transform/actions/line", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get all actions on line", notes = "Returns all actions for the given column.")
     @Timed
-    public StreamingResponseBody lineActions(OutputStream output) {
+    public StreamingResponseBody lineActions() {
         final HystrixCommand<InputStream> getSuggestedActions = getCommand(LineActions.class);
         return CommandHelper.toStreaming(getSuggestedActions);
     }
@@ -100,24 +98,23 @@ public class TransformAPI extends APIService {
     @RequestMapping(value = "/api/transform/suggest/{action}/params", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get the transformation dynamic parameters", notes = "Returns the transformation parameters.")
     @Timed
-    public StreamingResponseBody suggestActionParams(@ApiParam(value = "Transformation name.")
-    @PathVariable("action")
-    final String action, @ApiParam(value = "Suggested dynamic transformation input (preparation id or dataset id")
-    @Valid
-    final DynamicParamsInput dynamicParamsInput) {
+    public StreamingResponseBody suggestActionParams(
+            @ApiParam(value = "Transformation name.") @PathVariable("action") final String action,
+            @ApiParam(value = "Suggested dynamic transformation input (preparation id or dataset id") @Valid final DynamicParamsInput dynamicParamsInput) {
         // get preparation/dataset content
         HystrixCommand<InputStream> inputData;
         final String preparationId = dynamicParamsInput.getPreparationId();
         if (isNotBlank(preparationId)) {
             final PreparationDetailsGet preparationDetailsGet = getCommand(PreparationDetailsGet.class, preparationId);
-            inputData = getCommand(PreparationGetContent.class, preparationId, dynamicParamsInput.getStepId(), preparationDetailsGet);
+            inputData = getCommand(PreparationGetContent.class, preparationId, dynamicParamsInput.getStepId(),
+                    preparationDetailsGet);
         } else {
-            inputData = getCommand(DataSetGet.class, dynamicParamsInput.getDatasetId(), true, null);
+            inputData = getCommand(DataSetGet.class, dynamicParamsInput.getDatasetId());
         }
 
         // get params, passing content in the body
-        final GenericCommand<InputStream> getActionDynamicParams = getCommand(SuggestActionParams.class,
-                inputData, action, dynamicParamsInput.getColumnId());
+        final GenericCommand<InputStream> getActionDynamicParams = getCommand(SuggestActionParams.class, inputData, action,
+                dynamicParamsInput.getColumnId());
         return CommandHelper.toStreaming(getActionDynamicParams);
     }
 }

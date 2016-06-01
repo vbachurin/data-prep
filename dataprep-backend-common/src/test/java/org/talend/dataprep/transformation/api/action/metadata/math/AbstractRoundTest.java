@@ -47,7 +47,7 @@ public abstract class AbstractRoundTest extends AbstractMetadataBaseTest {
         }
 
         // when
-        ActionTestWorkbench.test(row, factory.create(getAction(), getParameters()));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(getAction(), getParameters()));
 
         // then
         assertEquals(expected, row.get("0000"));

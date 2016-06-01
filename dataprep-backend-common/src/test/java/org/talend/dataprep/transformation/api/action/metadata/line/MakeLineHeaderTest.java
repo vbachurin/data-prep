@@ -84,7 +84,7 @@ public class MakeLineHeaderTest extends AbstractMetadataBaseTest {
         assertThat(row2.isDeleted(), is(false));
 
         //when
-        ActionTestWorkbench.test(Arrays.asList(row1, row2), factory.create(action, parameters));
+        ActionTestWorkbench.test(Arrays.asList(row1, row2), actionRegistry, factory.create(action, parameters));
 
         // then
         assertThat(row1.isDeleted(), is(false));
@@ -130,11 +130,11 @@ public class MakeLineHeaderTest extends AbstractMetadataBaseTest {
         upperCaseParameters.put(ImplicitParameters.SCOPE.getKey().toLowerCase(), "column");
         upperCaseParameters.put(ImplicitParameters.COLUMN_ID.getKey().toLowerCase(), "0000");
         final Action upperCase = factory.create(new UpperCase(), upperCaseParameters);
-        ActionTestWorkbench.test(Arrays.asList(row1, row2, row3), makeHeader, upperCase);
+        ActionTestWorkbench.test(Arrays.asList(row1, row2, row3), actionRegistry, makeHeader, upperCase);
 
         // then
-        assertEquals("0000", row1.getRowMetadata().getById("0000").getName());
-        assertEquals("0001", row1.getRowMetadata().getById("0001").getName());
+        assertEquals("John", row1.getRowMetadata().getById("0000").getName());
+        assertEquals("Lennon", row1.getRowMetadata().getById("0001").getName());
         assertEquals("John", row2.getRowMetadata().getById("0000").getName());
         assertEquals("Lennon", row2.getRowMetadata().getById("0001").getName());
         assertEquals("John", row3.getRowMetadata().getById("0000").getName());
@@ -178,12 +178,12 @@ public class MakeLineHeaderTest extends AbstractMetadataBaseTest {
         concatColumnParameters.put(OtherColumnParameters.MODE_PARAMETER, "other_column_mode");
         concatColumnParameters.put(OtherColumnParameters.SELECTED_COLUMN_PARAMETER, "0001");
         final Action concat = factory.create(new Concat(), concatColumnParameters);
-        ActionTestWorkbench.test(Arrays.asList(row1, row2, row3), makeHeader, concat);
+        ActionTestWorkbench.test(Arrays.asList(row1, row2, row3), actionRegistry, makeHeader, concat);
 
         // then
         assertEquals(3, row3.getRowMetadata().getColumns().size());
-        assertEquals("0000", row1.getRowMetadata().getById("0000").getName());
-        assertEquals("0001", row1.getRowMetadata().getById("0001").getName());
+        assertEquals("John", row1.getRowMetadata().getById("0000").getName());
+        assertEquals("Lennon", row1.getRowMetadata().getById("0001").getName());
         assertEquals("John", row2.getRowMetadata().getById("0000").getName());
         assertEquals("Lennon", row2.getRowMetadata().getById("0001").getName());
         assertEquals("John", row3.getRowMetadata().getById("0000").getName());
@@ -226,7 +226,7 @@ public class MakeLineHeaderTest extends AbstractMetadataBaseTest {
         assertThat(row3.isDeleted(), is(false));
 
         //when
-        ActionTestWorkbench.test(Arrays.asList( row1,row2, row3 ), factory.create(action, parameters));
+        ActionTestWorkbench.test(Arrays.asList( row1,row2, row3 ), actionRegistry, factory.create(action, parameters));
 
         // then
         assertThat(row1.isDeleted(), is(true));

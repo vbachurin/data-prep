@@ -80,7 +80,7 @@ public class NegateTest extends AbstractMetadataBaseTest {
         DataSetRow row = new DataSetRow(values);
 
         //when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertThat(row.get("0002"), is("False"));
@@ -96,7 +96,7 @@ public class NegateTest extends AbstractMetadataBaseTest {
         DataSetRow row = new DataSetRow(values);
 
         //when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertThat(row.get("0002"), is("True"));

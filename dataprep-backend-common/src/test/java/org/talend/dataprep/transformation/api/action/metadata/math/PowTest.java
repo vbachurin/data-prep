@@ -60,7 +60,7 @@ public class PowTest extends AbstractMetadataBaseTest {
         parameters.put(OtherColumnParameters.CONSTANT_VALUE, "7");
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertColumnWithResultCreated(row);
@@ -75,7 +75,7 @@ public class PowTest extends AbstractMetadataBaseTest {
         parameters.put(OtherColumnParameters.MODE_PARAMETER, OtherColumnParameters.CONSTANT_MODE);
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertColumnWithResultCreated(row);
@@ -91,7 +91,7 @@ public class PowTest extends AbstractMetadataBaseTest {
         parameters.put(OtherColumnParameters.CONSTANT_VALUE, "beer");
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertColumnWithResultCreated(row);
@@ -107,7 +107,7 @@ public class PowTest extends AbstractMetadataBaseTest {
         parameters.put(OtherColumnParameters.SELECTED_COLUMN_PARAMETER, "0001");
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertColumnWithResultCreated(row);
@@ -123,7 +123,7 @@ public class PowTest extends AbstractMetadataBaseTest {
         parameters.put(OtherColumnParameters.SELECTED_COLUMN_PARAMETER, "000xx");
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertColumnWithResultCreated(row);
@@ -139,7 +139,7 @@ public class PowTest extends AbstractMetadataBaseTest {
         parameters.put(OtherColumnParameters.SELECTED_COLUMN_PARAMETER, "0002");
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertColumnWithResultCreated(row);

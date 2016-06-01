@@ -39,23 +39,25 @@ public abstract class BaseDateTests extends AbstractMetadataBaseTest {
      */
     protected DataSetRow getDefaultRow(String statisticsFileName) throws IOException {
 
-        List<ColumnMetadata> columns = new ArrayList<>(3);
-        columns.add(ColumnMetadata.Builder.column().name("recipe").type(Type.STRING).build());
         ObjectMapper mapper = new ObjectMapper();
         final Statistics statistics = mapper.readerFor(Statistics.class)
                 .readValue(CompareDatesTest.class.getResourceAsStream(statisticsFileName));
-        columns.add(ColumnMetadata.Builder.column().name("last update").type(Type.DATE).statistics(statistics).build());
-        columns.add(ColumnMetadata.Builder.column().name("steps").type(Type.STRING).build());
-
-        RowMetadata metadata = new RowMetadata();
-        metadata.setColumns(columns);
 
         Map<String, String> values = new HashMap<>();
         values.put("0000", "lorem bacon");
         values.put("0001", "01/01/2010");
         values.put("0002", "Bacon");
 
-        return new DataSetRow(metadata, values);
+        final DataSetRow row = new DataSetRow(values);
+        row.getRowMetadata().getById("0000").setType(Type.STRING.getName());
+        row.getRowMetadata().getById("0000").setName("recipe");
+        row.getRowMetadata().getById("0001").setType(Type.DATE.getName());
+        row.getRowMetadata().getById("0001").setName("last update");
+        row.getRowMetadata().getById("0001").setStatistics(statistics);
+        row.getRowMetadata().getById("0002").setType(Type.STRING.getName());
+        row.getRowMetadata().getById("0002").setName("steps");
+
+        return row;
     }
 
 }

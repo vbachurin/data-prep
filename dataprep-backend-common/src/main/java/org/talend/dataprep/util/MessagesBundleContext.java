@@ -67,4 +67,12 @@ public class MessagesBundleContext implements Filter {
     public void init(FilterConfig filterConfig) throws ServletException {
         // no op
     }
+
+    public static void set(MessagesBundle messagesBundle) {
+        THREAD_LOCAL.set(messagesBundle);
+    }
+
+    public static void clear() {
+        THREAD_LOCAL.remove();
+    }
 }

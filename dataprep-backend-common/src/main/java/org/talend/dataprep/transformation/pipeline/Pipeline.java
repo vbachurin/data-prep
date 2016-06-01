@@ -111,7 +111,7 @@ public class Pipeline implements Node, RuntimeNode {
 
         private Supplier<Node> outputSupplier = () -> NullNode.INSTANCE;
 
-        private boolean allowMetadataChange;
+        private boolean allowMetadataChange = true;
 
         private Predicate<DataSetRow> inFilter;
 
@@ -269,6 +269,10 @@ public class Pipeline implements Node, RuntimeNode {
                 current = NodeBuilder.filteredSource(inFilter);
             } else {
                 current = NodeBuilder.source();
+            }
+            if (rowMetadata.getColumns().isEmpty()) {
+                LOGGER.debug("No initial metadata submitted for transformation, computing new one.");
+                current.to(new ReservoirNode(inlineAnalyzer, c -> true, adapter));
             }
             // Apply actions
             for (Action action : actions) {

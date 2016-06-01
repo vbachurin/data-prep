@@ -161,7 +161,7 @@ public class TransformAPITest extends ApiServiceTestBase {
 
         // then
         assertEquals(200, addActionResponseCode);
-        final String actualContent = given().get("/api/preparations/{id}/content?version=head&sample=100", preparationId).asString();
+        final String actualContent = given().get("/api/preparations/{id}/content?version=head", preparationId).asString();
         assertThat(actualContent, sameJSONAsFile(this.getClass().getResourceAsStream("bugfix/TDP-280_expected.json")));
     }
 

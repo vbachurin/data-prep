@@ -32,6 +32,7 @@ import org.talend.dataprep.transformation.api.action.metadata.date.CompareDatesT
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.talend.dataprep.transformation.pipeline.ActionRegistry;
 
 /**
  * Base class for all related unit tests that deal with metadata
@@ -41,6 +42,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Configuration
 @ComponentScan(basePackages = "org.talend.dataprep")
 public abstract class AbstractMetadataBaseTest {
+
+    @Autowired
+    protected ActionRegistry actionRegistry;
 
     /** The dataprep ready jackson builder. */
     @Autowired

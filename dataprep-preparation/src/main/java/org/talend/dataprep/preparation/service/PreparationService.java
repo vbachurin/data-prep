@@ -58,7 +58,6 @@ import org.talend.dataprep.lock.store.LockedResource;
 import org.talend.dataprep.lock.store.LockedResourceRepository;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.preparation.store.PreparationRepository;
-import org.talend.dataprep.security.PublicAPI;
 import org.talend.dataprep.security.Security;
 import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
 import org.talend.dataprep.transformation.api.action.validation.ActionMetadataValidation;
@@ -175,6 +174,7 @@ public class PreparationService {
     /**
      *
      * List all preparation details.
+     * 
      * @param sort how to sort the preparations.
      * @param order how to order the sort.
      * @return the preparation details.
@@ -407,7 +407,6 @@ public class PreparationService {
             throws IOException {
     //@formatter:on
 
-
         LOGGER.debug("moving {} from {} to {} with the new name '{}'", preparationId, folder, destination, newName);
 
         HttpResponseContext.header(CONTENT_TYPE, TEXT_PLAIN_VALUE);
@@ -617,9 +616,7 @@ public class PreparationService {
     @RequestMapping(value = "/preparations/{id}/actions", method = POST, consumes = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Adds an action to a preparation", notes = "Append an action at end of the preparation with given id.")
     @Timed
-    public void appendSteps(@PathVariable("id")
-    final String id, @RequestBody
-    final AppendStep stepsToAppend) {
+    public void appendSteps(@PathVariable("id") final String id, @RequestBody final AppendStep stepsToAppend) {
         checkActionStepConsistency(stepsToAppend);
 
         LOGGER.debug("Adding actions to preparation #{}", id);
@@ -658,10 +655,8 @@ public class PreparationService {
     @RequestMapping(value = "/preparations/{id}/actions/{stepId}", method = PUT, consumes = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Updates an action in a preparation", notes = "Modifies an action in preparation's steps.")
     @Timed
-    public void updateAction(@PathVariable("id")
-    final String preparationId, @PathVariable("stepId")
-    final String stepToModifyId, @RequestBody
-    final AppendStep newStep) {
+    public void updateAction(@PathVariable("id") final String preparationId, @PathVariable("stepId") final String stepToModifyId,
+            @RequestBody final AppendStep newStep) {
         //@formatter:on
 
         checkActionStepConsistency(newStep);
@@ -761,10 +756,8 @@ public class PreparationService {
     @RequestMapping(value = "/preparations/{id}/head/{headId}", method = PUT)
     @ApiOperation(value = "Move preparation head", notes = "Set head to the specified head id")
     @Timed
-    public void setPreparationHead(@PathVariable("id")
-    final String preparationId, //
-            @PathVariable("headId")
-    final String headId) {
+    public void setPreparationHead(@PathVariable("id") final String preparationId, //
+            @PathVariable("headId") final String headId) {
 
         final Step head = getStep(headId);
         if (head == null) {
@@ -977,8 +970,7 @@ public class PreparationService {
             LOGGER.debug("Unable to lock Preparation {} for user {}. Already locked by {}", preparationId, userId,
                     lockedResource.getUserId());
             // TODO: We must find a way to avoid printing stack trace when such a kind of non critical exceptions occurs
-            throw new TDPException(CommonErrorCodes.CONFLICT_TO_LOCK_RESOURCE,
-                    build().put("id", lockedResource.getUserId()));
+            throw new TDPException(CommonErrorCodes.CONFLICT_TO_LOCK_RESOURCE, build().put("id", lockedResource.getUserId()));
         }
     }
 
@@ -999,8 +991,7 @@ public class PreparationService {
             LOGGER.debug("Unable to unlock Preparation {} for user {}. Already locked by {}", preparationId, userId,
                     lockedResource.getUserId());
             // TODO: We must find a way to avoid printing stack trace when such a kind of non critical exceptions occurs
-            throw new TDPException(CommonErrorCodes.CONFLICT_TO_UNLOCK_RESOURCE,
-                    build().put("id", lockedResource.getUserId()));
+            throw new TDPException(CommonErrorCodes.CONFLICT_TO_UNLOCK_RESOURCE, build().put("id", lockedResource.getUserId()));
         }
     }
 

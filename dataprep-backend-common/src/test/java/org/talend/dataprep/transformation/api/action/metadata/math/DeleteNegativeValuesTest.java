@@ -78,7 +78,7 @@ public class DeleteNegativeValuesTest extends AbstractMetadataBaseTest {
         final DataSetRow row = new DataSetRow(values);
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertTrue(row.isDeleted());
@@ -95,7 +95,7 @@ public class DeleteNegativeValuesTest extends AbstractMetadataBaseTest {
         final DataSetRow row = new DataSetRow(values);
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertTrue(row.isDeleted());
@@ -111,7 +111,7 @@ public class DeleteNegativeValuesTest extends AbstractMetadataBaseTest {
         final DataSetRow row = new DataSetRow(values);
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertTrue(row.isDeleted());
@@ -127,7 +127,7 @@ public class DeleteNegativeValuesTest extends AbstractMetadataBaseTest {
         final DataSetRow row = new DataSetRow(values);
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertTrue(row.isDeleted());
@@ -144,7 +144,7 @@ public class DeleteNegativeValuesTest extends AbstractMetadataBaseTest {
         final DataSetRow row = new DataSetRow(values);
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertTrue(row.isDeleted());
@@ -161,7 +161,7 @@ public class DeleteNegativeValuesTest extends AbstractMetadataBaseTest {
         final DataSetRow row = new DataSetRow(values);
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertTrue(row.isDeleted());
@@ -177,7 +177,7 @@ public class DeleteNegativeValuesTest extends AbstractMetadataBaseTest {
         final DataSetRow row = new DataSetRow(values);
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertFalse(row.isDeleted());
@@ -193,7 +193,7 @@ public class DeleteNegativeValuesTest extends AbstractMetadataBaseTest {
         final DataSetRow row = new DataSetRow(values);
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertFalse(row.isDeleted());
@@ -210,7 +210,7 @@ public class DeleteNegativeValuesTest extends AbstractMetadataBaseTest {
         final DataSetRow row = new DataSetRow(values);
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertFalse(row.isDeleted());
@@ -227,7 +227,7 @@ public class DeleteNegativeValuesTest extends AbstractMetadataBaseTest {
         final DataSetRow row = new DataSetRow(values);
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertFalse(row.isDeleted());
@@ -244,7 +244,7 @@ public class DeleteNegativeValuesTest extends AbstractMetadataBaseTest {
         final DataSetRow row = new DataSetRow(values);
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertFalse(row.isDeleted());
@@ -261,7 +261,7 @@ public class DeleteNegativeValuesTest extends AbstractMetadataBaseTest {
         final DataSetRow row = new DataSetRow(values);
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         assertTrue(row.isDeleted());

@@ -8,11 +8,8 @@ public class PipelineConsoleDump extends Visitor {
 
     private final StringBuilder builder;
 
-    private int indent;
-
     public PipelineConsoleDump(StringBuilder builder) {
         this.builder = builder;
-        indent = 0;
     }
 
     private void buildMonitorInformation(Monitored monitored) {
@@ -49,13 +46,6 @@ public class PipelineConsoleDump extends Visitor {
     public void visitBasicLink(BasicLink basicLink) {
         builder.append("-> ");
         super.visitBasicLink(basicLink);
-    }
-
-    @Override
-    public void visitDelayedAnalysis(DelayedAnalysisNode delayedAnalysisNode) {
-        buildMonitorInformation(delayedAnalysisNode);
-        builder.append("DELAYED ANALYSIS").append('\n');
-        super.visitDelayedAnalysis(delayedAnalysisNode);
     }
 
     @Override

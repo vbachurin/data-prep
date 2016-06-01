@@ -3,7 +3,7 @@
     {
       "action": "clear_matching",
       "parameters": {
-        "column_id": "0003",
+        "column_id": "0002",
         "column_name": "description",
         "scope": "column",
         "matching_value": {

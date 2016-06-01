@@ -21,7 +21,7 @@
         </Console>
     </appenders>
     <loggers>
-        <root level="fatal" includeLocation="true">
+        <root level="error" includeLocation="true">
             <appender-ref ref="console"/>
         </root>
     </loggers>

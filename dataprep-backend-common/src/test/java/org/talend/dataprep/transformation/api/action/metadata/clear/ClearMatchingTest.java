@@ -12,7 +12,6 @@ import org.assertj.core.api.Assertions;
 import org.assertj.core.data.MapEntry;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
@@ -57,97 +56,95 @@ public class ClearMatchingTest extends AbstractMetadataBaseTest {
     public void should_clear_because_equals() throws Exception {
         // given
         final Map<String, String> firstRowValues = new HashMap<>();
-        firstRowValues.put("0001", "David Bowie");
-        firstRowValues.put("0002", "N");
-        firstRowValues.put("0003", "Something");
+        firstRowValues.put("0000", "David Bowie");
+        firstRowValues.put("0001", "N");
+        firstRowValues.put("0002", "Something");
 
         final Map<String, String> secondRowValues = new HashMap<>();
-        secondRowValues.put("0001", "Beer");
-        secondRowValues.put("0002", "T");
-        secondRowValues.put("0003", "NotSomething");
+        secondRowValues.put("0000", "Beer");
+        secondRowValues.put("0001", "T");
+        secondRowValues.put("0002", "NotSomething");
 
-        final RowMetadata rowMetadata = new RowMetadata();
-        rowMetadata.setColumns(Collections.singletonList(ColumnMetadata.Builder.column() //
-                .type(Type.STRING) //
-                .computedId("0003") //
-                .build()));
+        List<DataSetRow> rows = Arrays.asList(new DataSetRow(firstRowValues), //
+                new DataSetRow(secondRowValues));
+        for (DataSetRow row : rows) {
+            final RowMetadata rowMetadata = row.getRowMetadata();
+            rowMetadata.getById("0002").setType(Type.STRING.getName());
+        }
 
-        List<DataSetRow> rows = Arrays.asList(new DataSetRow(rowMetadata, firstRowValues), //
-                new DataSetRow(rowMetadata, secondRowValues));
 
         // when
-        ActionTestWorkbench.test(rows, factory.create(action, parameters));
+        ActionTestWorkbench.test(rows, actionRegistry, factory.create(action, parameters));
 
         // then
         Assertions.assertThat(rows.get(0).values()) //
                 .isNotEmpty() //
                 .hasSize(3) //
-                .containsExactly(MapEntry.entry("0001", "David Bowie"), //
-                        MapEntry.entry("0002", "N"), //
-                        MapEntry.entry("0003", ""));
+                .containsExactly(MapEntry.entry("0000", "David Bowie"), //
+                        MapEntry.entry("0001", "N"), //
+                        MapEntry.entry("0002", ""));
 
         Assertions.assertThat(rows.get(1).values()) //
                 .isNotEmpty() //
                 .hasSize(3) //
-                .containsExactly(MapEntry.entry("0001", "Beer"), //
-                        MapEntry.entry("0002", "T"), //
-                        MapEntry.entry("0003", "NotSomething"));
+                .containsExactly(MapEntry.entry("0000", "Beer"), //
+                        MapEntry.entry("0001", "T"), //
+                        MapEntry.entry("0002", "NotSomething"));
     }
 
     @Test
     public void should_clear_because_pattern_match() throws Exception {
         // given
         final Map<String, String> firstRowValues = new HashMap<>();
-        firstRowValues.put("0001", "David Bowie");
-        firstRowValues.put("0002", "N");
-        firstRowValues.put("0003", "Something");
+        firstRowValues.put("0000", "David Bowie");
+        firstRowValues.put("0001", "N");
+        firstRowValues.put("0002", "Something");
 
         final Map<String, String> secondRowValues = new HashMap<>();
-        secondRowValues.put("0001", "Beer");
-        secondRowValues.put("0002", "T");
-        secondRowValues.put("0003", "NotSomething");
+        secondRowValues.put("0000", "Beer");
+        secondRowValues.put("0001", "T");
+        secondRowValues.put("0002", "NotSomething");
 
         final Map<String, String> thirdRowValues = new HashMap<>();
-        thirdRowValues.put("0001", "Wine");
-        thirdRowValues.put("0002", "True");
-        thirdRowValues.put("0003", "Somethin");
+        thirdRowValues.put("0000", "Wine");
+        thirdRowValues.put("0001", "True");
+        thirdRowValues.put("0002", "Somethin");
 
-        final RowMetadata rowMetadata = new RowMetadata();
-        rowMetadata.setColumns(Collections.singletonList(ColumnMetadata.Builder.column() //
-                .type(Type.STRING) //
-                .computedId("0003") //
-                .build()));
+        List<DataSetRow> rows = Arrays.asList(new DataSetRow(firstRowValues), //
+                new DataSetRow(secondRowValues), //
+                new DataSetRow(thirdRowValues));
+        for (DataSetRow row : rows) {
+            final RowMetadata rowMetadata = row.getRowMetadata();
+            rowMetadata.getById("0002").setType(Type.STRING.getName());
+        }
 
-        List<DataSetRow> rows = Arrays.asList(new DataSetRow(rowMetadata, firstRowValues), //
-                new DataSetRow(rowMetadata, secondRowValues), //
-                new DataSetRow(rowMetadata, thirdRowValues));
 
         parameters.put(ClearMatching.VALUE_PARAMETER, generateJson(".*Something", ReplaceOnValueHelper.REGEX_MODE));
 
         // when
-        ActionTestWorkbench.test(rows, factory.create(action, parameters));
+        ActionTestWorkbench.test(rows, actionRegistry, factory.create(action, parameters));
 
         // then
         Assertions.assertThat(rows.get(0).values()) //
                 .isNotEmpty() //
                 .hasSize(3) //
-                .containsExactly(MapEntry.entry("0001", "David Bowie"), //
-                        MapEntry.entry("0002", "N"), //
-                        MapEntry.entry("0003", ""));
+                .containsExactly(MapEntry.entry("0000", "David Bowie"), //
+                        MapEntry.entry("0001", "N"), //
+                        MapEntry.entry("0002", ""));
 
         Assertions.assertThat(rows.get(1).values()) //
                 .isNotEmpty() //
                 .hasSize(3) //
-                .containsExactly(MapEntry.entry("0001", "Beer"), //
-                        MapEntry.entry("0002", "T"), //
-                        MapEntry.entry("0003", ""));
+                .containsExactly(MapEntry.entry("0000", "Beer"), //
+                        MapEntry.entry("0001", "T"), //
+                        MapEntry.entry("0002", ""));
 
         Assertions.assertThat(rows.get(2).values()) //
                 .isNotEmpty() //
                 .hasSize(3) //
-                .containsExactly(MapEntry.entry("0001", "Wine"), //
-                        MapEntry.entry("0002", "True"), //
-                        MapEntry.entry("0003", "Somethin"));
+                .containsExactly(MapEntry.entry("0000", "Wine"), //
+                        MapEntry.entry("0001", "True"), //
+                        MapEntry.entry("0002", "Somethin"));
 
     }
 
@@ -155,176 +152,159 @@ public class ClearMatchingTest extends AbstractMetadataBaseTest {
     public void should_not_clear_because_not_equals() throws Exception {
         // given
         final Map<String, String> values = new HashMap<>();
-        values.put("0001", "David Bowie");
-        values.put("0002", "N");
-        values.put("0003", "Something");
+        values.put("0000", "David Bowie");
+        values.put("0001", "N");
+        values.put("0002", "Something");
 
-        final RowMetadata rowMetadata = new RowMetadata();
-        rowMetadata.setColumns(Collections.singletonList(ColumnMetadata.Builder.column() //
-                .type(Type.STRING) //
-                .computedId("0003") //
-                .build()));
-
-        final DataSetRow row = new DataSetRow(rowMetadata, values);
+        final DataSetRow row = new DataSetRow(values);
+        final RowMetadata rowMetadata = row.getRowMetadata();
+        rowMetadata.getById("0002").setType(Type.STRING.getName());
 
         parameters.put(ClearMatching.VALUE_PARAMETER, generateJson("Badibada", ReplaceOnValueHelper.REGEX_MODE));
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         Assertions.assertThat(row.values()) //
                 .isNotEmpty() //
                 .hasSize(3) //
-                .containsExactly(MapEntry.entry("0001", "David Bowie"), //
-                        MapEntry.entry("0002", "N"), //
-                        MapEntry.entry("0003", "Something"));
+                .containsExactly(MapEntry.entry("0000", "David Bowie"), //
+                        MapEntry.entry("0001", "N"), //
+                        MapEntry.entry("0002", "Something"));
     }
 
     @Test
     public void should_clear_boolean_because_equals() throws Exception {
         // given
         final Map<String, String> values = new HashMap<>();
-        values.put("0001", "David Bowie");
-        values.put("0002", "Something");
-        values.put("0003", "True");
+        values.put("0000", "David Bowie");
+        values.put("0001", "Something");
+        values.put("0002", "True");
 
-        final RowMetadata rowMetadata = new RowMetadata();
-        rowMetadata.setColumns(Collections.singletonList(ColumnMetadata.Builder.column() //
-                .type(Type.BOOLEAN) //
-                .computedId("0003") //
-                .build()));
-
-        final DataSetRow row = new DataSetRow(rowMetadata, values);
+        final DataSetRow row = new DataSetRow(values);
+        final RowMetadata rowMetadata = row.getRowMetadata();
+        rowMetadata.getById("0002").setType(Type.BOOLEAN.getName());
 
         parameters.put(ClearMatching.VALUE_PARAMETER, Boolean.TRUE.toString());
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         Assertions.assertThat(row.values()) //
                 .isNotEmpty() //
                 .hasSize(3) //
-                .containsExactly(MapEntry.entry("0001", "David Bowie"), //
-                        MapEntry.entry("0002", "Something"), //
-                        MapEntry.entry("0003", ""));
+                .containsExactly(MapEntry.entry("0000", "David Bowie"), //
+                        MapEntry.entry("0001", "Something"), //
+                        MapEntry.entry("0002", ""));
     }
 
     @Test
     public void should_clear_boolean_because_equals_ignore_case() throws Exception {
         // given
         final Map<String, String> values = new HashMap<>();
-        values.put("0001", "David Bowie");
-        values.put("0002", "Something");
-        values.put("0003", "False");
+        values.put("0000", "David Bowie");
+        values.put("0001", "Something");
+        values.put("0002", "False");
 
-        final RowMetadata rowMetadata = new RowMetadata();
-        rowMetadata.setColumns(Collections.singletonList(ColumnMetadata.Builder.column() //
-                .type(Type.BOOLEAN) //
-                .computedId("0003") //
-                .build()));
-
-        final DataSetRow row = new DataSetRow(rowMetadata, values);
+        final DataSetRow row = new DataSetRow(values);
+        final RowMetadata rowMetadata = row.getRowMetadata();
+        rowMetadata.getById("0002").setType(Type.BOOLEAN.getName());
 
         parameters.put(ClearMatching.VALUE_PARAMETER, Boolean.FALSE.toString());
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         Assertions.assertThat(row.values()) //
                 .isNotEmpty() //
                 .hasSize(3) //
-                .containsExactly(MapEntry.entry("0001", "David Bowie"), //
-                        MapEntry.entry("0002", "Something"), //
-                        MapEntry.entry("0003", ""));
+                .containsExactly(MapEntry.entry("0000", "David Bowie"), //
+                        MapEntry.entry("0001", "Something"), //
+                        MapEntry.entry("0002", ""));
     }
 
     @Test
     public void should_not_clear_boolean_because_not_equals() throws Exception {
         // given
         final Map<String, String> values = new HashMap<>();
-        values.put("0001", "David Bowie");
-        values.put("0002", "True");
-        values.put("0003", "Something");
+        values.put("0000", "David Bowie");
+        values.put("0001", "True");
+        values.put("0002", "Something");
 
-        final RowMetadata rowMetadata = new RowMetadata();
-        rowMetadata.setColumns(Collections.singletonList(ColumnMetadata.Builder.column() //
-                .type(Type.BOOLEAN) //
-                .computedId("0003") //
-                .build()));
 
-        final DataSetRow row = new DataSetRow(rowMetadata, values);
+        final DataSetRow row = new DataSetRow(values);
+        final RowMetadata rowMetadata = row.getRowMetadata();
+        rowMetadata.getById("0002").setType(Type.BOOLEAN.getName());
 
         parameters.put(ClearMatching.VALUE_PARAMETER, "tchoubidoo");
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
         Assertions.assertThat(row.values()) //
                 .isNotEmpty() //
                 .hasSize(3) //
-                .containsExactly(MapEntry.entry("0001", "David Bowie"), //
-                        MapEntry.entry("0002", "True"), //
-                        MapEntry.entry("0003", "Something"));
+                .containsExactly(MapEntry.entry("0000", "David Bowie"), //
+                        MapEntry.entry("0001", "True"), //
+                        MapEntry.entry("0002", "Something"));
     }
 
     @Test
     public void should_clear_because_pattern_match_integer() throws Exception {
         // given
         final Map<String, String> firstRowValues = new HashMap<>();
-        firstRowValues.put("0001", "David Bowie");
-        firstRowValues.put("0002", "N");
-        firstRowValues.put("0003", "123");
+        firstRowValues.put("0000", "David Bowie");
+        firstRowValues.put("0001", "N");
+        firstRowValues.put("0002", "123");
 
         final Map<String, String> secondRowValues = new HashMap<>();
-        secondRowValues.put("0001", "Beer");
-        secondRowValues.put("0002", "T");
-        secondRowValues.put("0003", "1234");
+        secondRowValues.put("0000", "Beer");
+        secondRowValues.put("0001", "T");
+        secondRowValues.put("0002", "1234");
 
         final Map<String, String> thirdRowValues = new HashMap<>();
-        thirdRowValues.put("0001", "Wine");
-        thirdRowValues.put("0002", "True");
-        thirdRowValues.put("0003", "01234");
+        thirdRowValues.put("0000", "Wine");
+        thirdRowValues.put("0001", "True");
+        thirdRowValues.put("0002", "01234");
 
-        final RowMetadata rowMetadata = new RowMetadata();
-        rowMetadata.setColumns(Collections.singletonList(ColumnMetadata.Builder.column() //
-                .type(Type.INTEGER) //
-                .computedId("0003") //
-                .build()));
-
-        List<DataSetRow> rows = Arrays.asList(new DataSetRow(rowMetadata, firstRowValues), //
-                new DataSetRow(rowMetadata, secondRowValues), //
-                new DataSetRow(rowMetadata, thirdRowValues));
+        List<DataSetRow> rows = Arrays.asList(new DataSetRow(firstRowValues), //
+                new DataSetRow(secondRowValues), //
+                new DataSetRow(thirdRowValues));
+        for (DataSetRow row : rows) {
+            final RowMetadata rowMetadata = row.getRowMetadata();
+            rowMetadata.getById("0002").setType(Type.INTEGER.getName());
+        }
 
         parameters.put(ClearMatching.VALUE_PARAMETER, generateJson(".*1234", ReplaceOnValueHelper.REGEX_MODE));
 
         // when
-        ActionTestWorkbench.test(rows, factory.create(action, parameters));
+        ActionTestWorkbench.test(rows, actionRegistry, factory.create(action, parameters));
 
         // then
         Assertions.assertThat(rows.get(0).values()) //
                 .isNotEmpty() //
                 .hasSize(3) //
-                .containsExactly(MapEntry.entry("0001", "David Bowie"), //
-                        MapEntry.entry("0002", "N"), //
-                        MapEntry.entry("0003", "123"));
+                .containsExactly(MapEntry.entry("0000", "David Bowie"), //
+                        MapEntry.entry("0001", "N"), //
+                        MapEntry.entry("0002", "123"));
 
         Assertions.assertThat(rows.get(1).values()) //
                 .isNotEmpty() //
                 .hasSize(3) //
-                .containsExactly(MapEntry.entry("0001", "Beer"), //
-                        MapEntry.entry("0002", "T"), //
-                        MapEntry.entry("0003", ""));
+                .containsExactly(MapEntry.entry("0000", "Beer"), //
+                        MapEntry.entry("0001", "T"), //
+                        MapEntry.entry("0002", ""));
 
         Assertions.assertThat(rows.get(2).values()) //
                 .isNotEmpty() //
                 .hasSize(3) //
-                .containsExactly(MapEntry.entry("0001", "Wine"), //
-                        MapEntry.entry("0002", "True"), //
-                        MapEntry.entry("0003", ""));
+                .containsExactly(MapEntry.entry("0000", "Wine"), //
+                        MapEntry.entry("0001", "True"), //
+                        MapEntry.entry("0002", ""));
 
     }
 

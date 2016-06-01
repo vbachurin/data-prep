@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,11 +56,19 @@ public class FormatPhoneNumberTest extends AbstractMetadataBaseTest {
     private final String PHONE_US1 = "+1-541-754-3010";
 
     private final String PHONE_US2 = "15417543010";
+    private Locale previousLocale;
 
     @Before
     public void init() throws IOException {
         parameters = ActionMetadataTestUtils
                 .parseParameters(FormatPhoneNumberTest.class.getResourceAsStream("formatphonenumber.json"));
+        previousLocale = Locale.getDefault();
+        Locale.setDefault(Locale.ENGLISH);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        Locale.setDefault(previousLocale);
     }
 
     @Test
@@ -100,7 +109,7 @@ public class FormatPhoneNumberTest extends AbstractMetadataBaseTest {
         Map<String, Object> expectedValues = new LinkedHashMap<>();
         expectedValues.put("0000", "+33 6 56 96 58 22");
 
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
         assertEquals(expectedValues, row.values());
 
     }
@@ -116,7 +125,7 @@ public class FormatPhoneNumberTest extends AbstractMetadataBaseTest {
 
         Map<String, Object> expectedValues = new LinkedHashMap<>();
         expectedValues.put("0000", "+33147554323");
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
         assertEquals(expectedValues, row.values());
     }
 
@@ -130,7 +139,7 @@ public class FormatPhoneNumberTest extends AbstractMetadataBaseTest {
         DataSetRow row = new DataSetRow(values);
         Map<String, Object> expectedValues = new LinkedHashMap<>();
         expectedValues.put("0000", "(541) 754-3010");
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
         assertEquals(expectedValues, row.values());
 
     }
@@ -145,10 +154,9 @@ public class FormatPhoneNumberTest extends AbstractMetadataBaseTest {
         values.put("0000", PHONE_US1);
         DataSetRow row = new DataSetRow(values);
         Map<String, Object> expectedValues = new LinkedHashMap<>();
-        expectedValues = new LinkedHashMap<>();
         expectedValues.put("0000", "tel:+1-541-754-3010");
 
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
         assertEquals(expectedValues, row.values());
 
     }
@@ -167,7 +175,7 @@ public class FormatPhoneNumberTest extends AbstractMetadataBaseTest {
         Map<String, Object> expectedValues = new LinkedHashMap<>();
         expectedValues.put("0000", "+86 186 1128 1111");
 
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
         assertEquals(expectedValues, row.values());
     }
     
@@ -185,7 +193,7 @@ public class FormatPhoneNumberTest extends AbstractMetadataBaseTest {
         Map<String, Object> expectedValues = new LinkedHashMap<>();
         expectedValues.put("0000", "+33 6 56 96 58 22");
         expectedValues.put("0001", "FR");
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
         assertEquals(expectedValues, row.values());
 
     }
@@ -203,7 +211,7 @@ public class FormatPhoneNumberTest extends AbstractMetadataBaseTest {
         Map<String, Object> expectedValues = new LinkedHashMap<>();
         expectedValues.put("0000", "+33147554323");
         expectedValues.put("0001", "FR");
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
         assertEquals(expectedValues, row.values());
     }
     
@@ -219,7 +227,7 @@ public class FormatPhoneNumberTest extends AbstractMetadataBaseTest {
         Map<String, Object> expectedValues = new LinkedHashMap<>();
         expectedValues.put("0000", "(541) 754-3010");
         expectedValues.put("0001", "US");
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
         assertEquals(expectedValues, row.values());
 
     }
@@ -233,11 +241,10 @@ public class FormatPhoneNumberTest extends AbstractMetadataBaseTest {
         values.put("0001", "US");
         DataSetRow row = new DataSetRow(values);
         Map<String, Object> expectedValues = new LinkedHashMap<>();
-        expectedValues = new LinkedHashMap<>();
         expectedValues.put("0000", "tel:+1-541-754-3010");
         expectedValues.put("0001", "US");
 
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
         assertEquals(expectedValues, row.values());
 
     }
@@ -250,14 +257,13 @@ public class FormatPhoneNumberTest extends AbstractMetadataBaseTest {
         values.put("0000", PHONE_US2);
         DataSetRow row = new DataSetRow(values);
         Map<String, Object> expectedValues = new LinkedHashMap<>();
-        expectedValues = new LinkedHashMap<>();
         if(Locale.getDefault()==Locale.US){
         	expectedValues.put("0000", "tel:+1-541-754-3010");
         }else{
         	expectedValues.put("0000", PHONE_US2);
         }
 
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
         assertEquals(expectedValues, row.values());
 
     }
@@ -275,7 +281,7 @@ public class FormatPhoneNumberTest extends AbstractMetadataBaseTest {
         Map<String, Object> expectedValues = new LinkedHashMap<>();
         expectedValues.put("0000", null);
 
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
         assertEquals(expectedValues, row.values());
     }
     
@@ -291,7 +297,7 @@ public class FormatPhoneNumberTest extends AbstractMetadataBaseTest {
         Map<String, Object> expectedValues = new LinkedHashMap<>();
         expectedValues.put("0000", PHONE_US2);
 
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
         assertEquals(expectedValues, row.values());
     }
 
@@ -308,7 +314,7 @@ public class FormatPhoneNumberTest extends AbstractMetadataBaseTest {
         Map<String, Object> expectedValues = new LinkedHashMap<>();
         expectedValues.put("0000", PHONE_FR2);
 
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
         assertEquals(expectedValues, row.values());
     }
 
@@ -323,7 +329,7 @@ public class FormatPhoneNumberTest extends AbstractMetadataBaseTest {
         final Map<String, Object> expectedValues = new LinkedHashMap<>();
         expectedValues.put("0000", PHONE_FR3);
         // when
-        ActionTestWorkbench.test(row1, factory.create(action, parameters));
+        ActionTestWorkbench.test(row1, actionRegistry, factory.create(action, parameters));
 
         // then
         assertEquals(expectedValues, row1.values());
@@ -342,7 +348,7 @@ public class FormatPhoneNumberTest extends AbstractMetadataBaseTest {
         Map<String, Object> expectedValues = new LinkedHashMap<>();
         expectedValues.put("0000", PHONE_US2);
 
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
         assertEquals(expectedValues, row.values());
     }
     
@@ -359,7 +365,7 @@ public class FormatPhoneNumberTest extends AbstractMetadataBaseTest {
         Map<String, Object> expectedValues = new LinkedHashMap<>();
         expectedValues.put("0000", PHONE_FR2);
         expectedValues.put("0001", "US");
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
         assertEquals(expectedValues, row.values());
     }
     
@@ -378,7 +384,7 @@ public class FormatPhoneNumberTest extends AbstractMetadataBaseTest {
         Map<String, Object> expectedValues = new LinkedHashMap<>();
         expectedValues.put("0000", PHONE_FR1);
         expectedValues.put("0001", "CN");
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
         assertEquals(expectedValues, row.values());
 
     }
@@ -396,7 +402,7 @@ public class FormatPhoneNumberTest extends AbstractMetadataBaseTest {
         Map<String, Object> expectedValues = new LinkedHashMap<>();
         expectedValues.put("0000", PHONE_US2);
         expectedValues.put("0001", "FR");
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
         assertEquals(expectedValues, row.values());
 
     }
@@ -410,11 +416,10 @@ public class FormatPhoneNumberTest extends AbstractMetadataBaseTest {
         values.put("0001", null);
         DataSetRow row = new DataSetRow(values);
         Map<String, Object> expectedValues = new LinkedHashMap<>();
-        expectedValues = new LinkedHashMap<>();
         expectedValues.put("0000", PHONE_FR2);
         expectedValues.put("0001", null);
 
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
         assertEquals(expectedValues, row.values());
 
     }
