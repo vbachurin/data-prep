@@ -154,7 +154,7 @@ public class FormatPhoneNumber extends ActionMetadata implements ColumnAction {
                                 new Parameter(MANUAL_REGION_PARAMETER_STRING, ParameterType.STRING, EMPTY))
                         .defaultValue(US_REGION_CODE).build()) //
                 
-                .defaultValue(OtherColumnParameters.OTHER_COLUMN_MODE).build());
+                .defaultValue(OtherColumnParameters.CONSTANT_MODE).build());
 
         parameters.add(SelectParameter.Builder.builder().name(FORMAT_TYPE_PARAMETER) //
                 .item(TYPE_INTERNATIONAL) //
