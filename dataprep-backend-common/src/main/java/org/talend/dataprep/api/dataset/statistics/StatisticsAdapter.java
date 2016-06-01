@@ -49,8 +49,8 @@ import org.talend.dataquality.statistics.quality.DataTypeQualityAnalyzer;
 import org.talend.dataquality.statistics.text.TextLengthStatistics;
 import org.talend.dataquality.statistics.type.DataTypeEnum;
 import org.talend.dataquality.statistics.type.DataTypeOccurences;
-import org.talend.datascience.common.inference.Analyzers;
-import org.talend.datascience.common.inference.ValueQualityStatistics;
+import org.talend.dataquality.common.inference.Analyzers;
+import org.talend.dataquality.common.inference.ValueQualityStatistics;
 
 /**
  * Statistics adapter. This is used to inject every statistics part in the columns metadata.
@@ -230,7 +230,7 @@ public class StatisticsAdapter {
             // TDP-471: Don't pick semantic type if lower than a threshold.
             final Optional<Map.Entry<CategoryFrequency, Long>> entry = foundSemanticTypes.entrySet().stream()
                     .filter(e -> !e.getKey().getCategoryName().isEmpty())
-                    .max((o1, o2) -> (int) (o1.getKey().getFrequency() - o2.getKey().getFrequency()));
+                    .max((o1, o2) -> (o1.getKey().compareTo(o2.getKey())));
             if (entry.isPresent()) {
                 // TODO (TDP-734) Take into account limit of the semantic analyzer.
                 final float percentage = entry.get().getKey().getFrequency();
