@@ -25,9 +25,9 @@ import org.talend.dataprep.parameters.Clusters;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataquality.record.linkage.constant.AttributeMatcherType;
-import org.talend.datascience.common.recordlinkage.PostMerge;
-import org.talend.datascience.common.recordlinkage.StringClusters;
-import org.talend.datascience.common.recordlinkage.StringsClusterAnalyzer;
+import org.talend.dataquality.record.linkage.analyzer.PostMerge;
+import org.talend.dataquality.record.linkage.analyzer.StringClusters;
+import org.talend.dataquality.record.linkage.analyzer.StringsClusterAnalyzer;
 
 /**
  * Cluster action dynamic parameter generator It takes an InputStream as argument, containing the dataset
