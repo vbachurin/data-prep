@@ -51,7 +51,9 @@ import org.talend.dataprep.api.service.info.VersionService;
 import org.talend.dataprep.api.user.UserData;
 import org.talend.dataprep.configuration.EncodingSupport;
 import org.talend.dataprep.dataset.service.analysis.DataSetAnalyzer;
+import org.talend.dataprep.dataset.service.analysis.asynchronous.AsyncBackgroundAnalysis;
 import org.talend.dataprep.dataset.service.analysis.asynchronous.AsynchronousDataSetAnalyzer;
+import org.talend.dataprep.dataset.service.analysis.asynchronous.SyncBackgroundAnalyzer;
 import org.talend.dataprep.dataset.service.analysis.synchronous.*;
 import org.talend.dataprep.dataset.service.api.Import;
 import org.talend.dataprep.dataset.service.api.UpdateColumnParameters;
@@ -928,7 +930,12 @@ public class DataSetService extends BaseDataSetService {
             dataSetMetadataRepository.add(dataSetMetadata);
 
             // analyze the updated dataset (not all analysis are performed)
-            queueEvents(dataSetId, ContentAnalysis.class, FormatAnalysis.class, SchemaAnalysis.class);
+            queueEvents(dataSetId, //
+                    ContentAnalysis.class, //
+                    FormatAnalysis.class, //
+                    SchemaAnalysis.class, //
+                    SyncBackgroundAnalyzer.class, //
+                    AsyncBackgroundAnalysis.class);
 
         } finally {
             lock.unlock();

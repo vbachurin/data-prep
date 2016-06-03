@@ -49,8 +49,7 @@ import org.talend.dataquality.common.inference.ValueQualityStatistics;
  * Compute statistics analysis on the full dataset.
  */
 @Component
-@ConditionalOnProperty(name = "dataset.asynchronous.analysis", havingValue = "true", matchIfMissing = true)
-public class BackgroundAnalysis implements AsynchronousDataSetAnalyzer {
+public class BackgroundAnalysis {
 
     /** This class' logger. */
     private static final Logger LOGGER = LoggerFactory.getLogger(BackgroundAnalysis.class);
@@ -72,28 +71,8 @@ public class BackgroundAnalysis implements AsynchronousDataSetAnalyzer {
     StatisticsAdapter adapter;
 
     /**
-     * Receives jms message to start a quality analysis.
-     * 
-     * @param message the jms message that holds the dataset id.
-     */
-    @JmsListener(destination = Destinations.STATISTICS_ANALYSIS)
-    public void analyzeQuality(Message message) {
-        try {
-            String dataSetId = message.getStringProperty("dataset.id"); //$NON-NLS-1$
-            try {
-                analyze(dataSetId);
-            } finally {
-                message.acknowledge();
-            }
-        } catch (JMSException e) {
-            throw new TDPException(DataSetErrorCodes.UNEXPECTED_JMS_EXCEPTION, e);
-        }
-    }
-
-    /**
      * @see DataSetAnalyzer#analyze
      */
-    @Override
     public void analyze(String dataSetId) {
 
         if (StringUtils.isEmpty(dataSetId)) {
@@ -210,30 +189,4 @@ public class BackgroundAnalysis implements AsynchronousDataSetAnalyzer {
         adapter.adapt(columns, analyzer.getResult());
     }
 
-    /**
-     * Compute the statistics for the given dataset metadata and content.
-     *
-     * @param metadata the metadata to compute the statistics for.
-     * @param stream the content to compute the statistics from.
-     */
-    public void computeFullStatistics(final DataSetMetadata metadata, final Stream<DataSetRow> stream) {
-        final List<ColumnMetadata> columns = metadata.getRowMetadata().getColumns();
-        if (columns.isEmpty()) {
-            LOGGER.debug("Skip statistics of {} (no column information).", metadata.getId());
-            return;
-        }
-        try (Analyzer<Analyzers.Result> analyzer = analyzerService.full(columns)) {
-            computeStatistics(analyzer, columns, stream);
-        } catch (Exception e) {
-            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
-        }
-    }
-
-    /**
-     * @see AsynchronousDataSetAnalyzer#destination()
-     */
-    @Override
-    public String destination() {
-        return Destinations.STATISTICS_ANALYSIS;
-    }
 }
