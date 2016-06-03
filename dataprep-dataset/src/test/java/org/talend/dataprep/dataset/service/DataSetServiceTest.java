@@ -481,7 +481,7 @@ public class DataSetServiceTest extends DataSetBaseTest {
         List<String> ids = from(when().get("/datasets").asString()).get("");
         assertThat(ids.size(), is(1));
         int statusCode = when().get("/datasets/{id}/content", expectedId).getStatusCode();
-        assertTrue("statusCode is:" + statusCode, statusCode == HttpStatus.ACCEPTED.value() || statusCode == OK.value());
+        assertEquals("statusCode is:" + statusCode, statusCode, OK.value());
     }
 
     @Test

@@ -52,7 +52,6 @@ import org.talend.dataprep.api.user.UserData;
 import org.talend.dataprep.configuration.EncodingSupport;
 import org.talend.dataprep.dataset.service.analysis.DataSetAnalyzer;
 import org.talend.dataprep.dataset.service.analysis.asynchronous.AsynchronousDataSetAnalyzer;
-import org.talend.dataprep.dataset.service.analysis.asynchronous.StatisticsAnalysis;
 import org.talend.dataprep.dataset.service.analysis.synchronous.*;
 import org.talend.dataprep.dataset.service.api.Import;
 import org.talend.dataprep.dataset.service.api.UpdateColumnParameters;
@@ -104,8 +103,8 @@ public class DataSetService extends BaseDataSetService {
     /**
      * DQ asynchronous analyzers.
      */
-    @Autowired
-    private AsynchronousDataSetAnalyzer[] asynchronousAnalyzers;
+    @Autowired(required = false)
+    private AsynchronousDataSetAnalyzer[] asynchronousAnalyzers = new AsynchronousDataSetAnalyzer[0];
 
     /**
      * DQ synchronous analyzers.
@@ -124,12 +123,6 @@ public class DataSetService extends BaseDataSetService {
      */
     @Autowired
     protected QualityAnalysis qualityAnalyzer;
-
-    /**
-     * Statistics analyzer needed to compute statistics on dataset.
-     */
-    @Autowired
-    protected StatisticsAnalysis statisticsAnalysis;
 
     /**
      * JMS template used to call asynchronous analysers.

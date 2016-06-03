@@ -17,6 +17,7 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import org.junit.Test;
@@ -33,8 +34,8 @@ public class DataSetAnalyzersTest extends DataSetBaseTest {
     @Autowired
     List<SynchronousDataSetAnalyzer> synchronousAnalyzers;
 
-    @Autowired
-    List<AsynchronousDataSetAnalyzer> asynchronousAnalyzers;
+    @Autowired(required = false)
+    List<AsynchronousDataSetAnalyzer> asynchronousAnalyzers = new LinkedList<>();
 
     @Test
     public void testSynchronousOrder() throws Exception {

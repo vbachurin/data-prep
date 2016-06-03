@@ -25,6 +25,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -48,10 +49,11 @@ import org.talend.dataquality.common.inference.ValueQualityStatistics;
  * Compute statistics analysis on the full dataset.
  */
 @Component
-public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
+@ConditionalOnProperty(name = "dataset.asynchronous.analysis", havingValue = "true", matchIfMissing = true)
+public class BackgroundAnalysis implements AsynchronousDataSetAnalyzer {
 
     /** This class' logger. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(StatisticsAnalysis.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BackgroundAnalysis.class);
 
     /** Dataset metadata repository. */
     @Autowired
