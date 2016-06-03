@@ -68,15 +68,11 @@ public class LocalFileContentStore extends DataSetContentStore {
     public void storeAsRaw(DataSetMetadata dataSetMetadata, InputStream dataSetContent) {
         final Marker marker = Markers.dataset(dataSetMetadata.getId());
         try {
-            if (dataSetContent.available() > 0) {
-                File dataSetFile = getFile(dataSetMetadata);
-                FileUtils.touch(dataSetFile);
-                FileOutputStream fos = new FileOutputStream(dataSetFile);
-                IOUtils.copy(dataSetContent, fos);
-                LOGGER.debug(marker, "Data set stored to '{}'.", dataSetFile);
-            } else {
-                LOGGER.debug(marker, "Ignore update of data set as content seems empty");
-            }
+            File dataSetFile = getFile(dataSetMetadata);
+            FileUtils.touch(dataSetFile);
+            FileOutputStream fos = new FileOutputStream(dataSetFile);
+            IOUtils.copy(dataSetContent, fos);
+            LOGGER.debug(marker, "Data set stored to '{}'.", dataSetFile);
         } catch (IOException e) {
             throw new TDPException(DataSetErrorCodes.UNABLE_TO_STORE_DATASET_CONTENT, e, build().put("id",
                     dataSetMetadata.getId()));
@@ -88,8 +84,7 @@ public class LocalFileContentStore extends DataSetContentStore {
         try {
             return new FileInputStream(getFile(dataSetMetadata));
         } catch (FileNotFoundException e) {
-            LOGGER.warn("File '{}' does not exist.", getFile(dataSetMetadata), e);
-            return new ByteArrayInputStream(new byte[0]);
+            throw new TDPException(DataSetErrorCodes.UNABLE_TO_READ_DATASET_CONTENT, e);
         }
     }
 
