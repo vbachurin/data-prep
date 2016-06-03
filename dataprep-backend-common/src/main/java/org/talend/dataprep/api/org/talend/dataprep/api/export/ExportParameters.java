@@ -18,6 +18,8 @@ import java.util.Map;
 
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import org.talend.dataprep.validation.OneNotBlank;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -54,6 +56,8 @@ public class ExportParameters {
     @JsonProperty("outFilter")
     @JsonRawValue
     private Object outFilter;
+
+    private Map<String, String> unmappedProperties = new HashMap<>();
 
     public String getExportType() {
         return exportType;
@@ -135,6 +139,16 @@ public class ExportParameters {
         } else {
             this.outFilter = outFilter;
         }
+    }
+
+
+    public Map<String, String> any() {
+        return unmappedProperties;
+    }
+
+    @JsonAnySetter
+    public void set(String name, String value) {
+        unmappedProperties.put(name, value);
     }
 
     @Override
