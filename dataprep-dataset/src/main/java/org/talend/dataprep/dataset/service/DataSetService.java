@@ -595,7 +595,7 @@ public class DataSetService extends BaseDataSetService {
                 datasetBuilder.copyNonContentRelated(metadataForUpdate);
                 datasetBuilder.modified(System.currentTimeMillis());
             }
-            if (name != null) {
+            if (!StringUtils.isEmpty(name)) {
                 datasetBuilder.name(name);
             }
             final DataSetMetadata dataSetMetadata = datasetBuilder.build();
