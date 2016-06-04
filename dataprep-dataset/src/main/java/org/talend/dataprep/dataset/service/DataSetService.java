@@ -574,7 +574,7 @@ public class DataSetService extends BaseDataSetService {
      * Updates a data set content and metadata. If no data set exists for given id, data set is silently created.
      *
      * @param dataSetId The id of data set to be updated.
-     * @param name The new name for the data set.
+     * @param name The new name for the data set. Empty name (or <code>null</code>) does not update dataset name.
      * @param dataSetContent The new content for the data set. If empty, existing content will <b>not</b> be replaced.
      * For delete operation, look at {@link #delete(String)}.
      */
