@@ -14,6 +14,7 @@
 package org.talend.dataprep.lock;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -25,7 +26,7 @@ import com.hazelcast.core.ILock;
  * implementation.
  */
 @Component
-@Profile({"ami", "standalone"})
+@ConditionalOnProperty(value = "hazelcast.enabled", havingValue = "true")
 public class HazelcastLockFactory implements LockFactory {
 
     /** The Hazel cast instance. */
