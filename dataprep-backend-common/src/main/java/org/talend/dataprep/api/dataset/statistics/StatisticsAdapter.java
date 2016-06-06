@@ -20,7 +20,6 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.*;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -35,8 +34,6 @@ import org.talend.dataprep.api.dataset.statistics.number.NumberHistogram;
 import org.talend.dataprep.api.dataset.statistics.number.StreamNumberHistogramStatistics;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.api.type.TypeUtils;
-import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataquality.semantic.classifier.SemanticCategoryEnum;
 import org.talend.dataquality.semantic.recognizer.CategoryFrequency;
 import org.talend.dataquality.semantic.statistics.SemanticType;
@@ -45,7 +42,6 @@ import org.talend.dataquality.statistics.frequency.DataTypeFrequencyStatistics;
 import org.talend.dataquality.statistics.frequency.pattern.PatternFrequencyStatistics;
 import org.talend.dataquality.statistics.numeric.quantile.QuantileStatistics;
 import org.talend.dataquality.statistics.numeric.summary.SummaryStatistics;
-import org.talend.dataquality.statistics.quality.DataTypeQualityAnalyzer;
 import org.talend.dataquality.statistics.text.TextLengthStatistics;
 import org.talend.dataquality.statistics.type.DataTypeEnum;
 import org.talend.dataquality.statistics.type.DataTypeOccurences;
@@ -153,16 +149,10 @@ public class StatisticsAdapter {
             final DataTypeOccurences dataType = result.get(DataTypeOccurences.class);
             final DataTypeEnum suggestedEnumType = dataType.getSuggestedType();
             final Type suggestedColumnType = Type.get(suggestedEnumType.name());
-            final Type mostFrequentSubType = mostFrequentSubType(dataType);
 
             // the suggested type can be modified by #injectValueQuality
             column.setType(suggestedColumnType.getName());
             injectValueQuality(column, result);
-            // Try to use the most frequent sub type of the suggested type when possible
-            if (mostFrequentSubType != null && suggestedColumnType != mostFrequentSubType) {
-                column.getQuality().setMostFrequentSubType(mostFrequentSubType.getName());
-            }
-
         }
     }
 
@@ -172,47 +162,16 @@ public class StatisticsAdapter {
             final Quality quality = column.getQuality();
             final ValueQualityStatistics valueQualityStatistics = result.get(ValueQualityStatistics.class);
 
-            final long validCount;
-            final long invalidCount;
             final long allCount = valueQualityStatistics.getCount();
-            final Set<String> invalidValues;
             final long emptyCount = valueQualityStatistics.getEmptyCount();
-
-            final Set<String> rawInvalids = valueQualityStatistics.getInvalidValues();
-            final Type columnType = Type.get(column.getType());
-
-            // if the value
-            String invalidDetectionTypeString = column.getQuality().getMostFrequentSubType();
-            Type invalidDetectionType = invalidDetectionTypeString != null ? Type.get(invalidDetectionTypeString) : null;
-
-            if (invalidDetectionType != null && !columnType.equals(invalidDetectionType)) {
-                if (invalidDetectionType.equals(TypeUtils.subTypeOfOther(invalidDetectionType, columnType))) {
-                    // some values have been filtered then type used to compute invalids is not the good one
-                    invalidValues = filterInvalids(columnType, rawInvalids);
-                    validCount = allCount - emptyCount - invalidValues.size();
-                } else {
-                    // fallback to string because invalidDetection type is not the subtype of the actual detectedType
-                    validCount = allCount - emptyCount;
-                    invalidValues = Collections.emptySet();
-                    column.setType(Type.STRING.getName());
-                }
-            } else {
-                if (Type.get(column.getType()) == STRING && StringUtils.isEmpty(column.getDomain())) {
-                    // String column can not have invalid values, make sure of this
-                    validCount = allCount - emptyCount;
-                    invalidValues = Collections.emptySet();
-                } else {
-                    validCount = valueQualityStatistics.getValidCount() + valueQualityStatistics.getUnknownCount();
-                    invalidValues = rawInvalids;
-                }
-            }
-            invalidCount = allCount - emptyCount - validCount;
+            final long validCount = valueQualityStatistics.getValidCount();
+            final long invalidCount = allCount - emptyCount - validCount;
 
             // Set in column quality...
             quality.setEmpty((int) emptyCount);
             quality.setValid((int) validCount);
             quality.setInvalid((int) invalidCount);
-            quality.setInvalidValues(invalidValues);
+            quality.setInvalidValues(valueQualityStatistics.getInvalidValues());
             // ... and statistics
             statistics.setCount(allCount);
             statistics.setEmpty((int) emptyCount);
@@ -374,62 +333,6 @@ public class StatisticsAdapter {
             textLengthSummary.setMinimalLength(textLengthStatistics.getMinTextLength());
             textLengthSummary.setMaximalLength(textLengthStatistics.getMaxTextLength());
         }
-    }
-
-    /**
-     * Filters the values of type <tt>type</tt> from the set of invalids values. Never returns null.
-     *
-     * @param type     the specified type
-     * @param invalids the specified set of invalid values
-     * @return the set of invalid values that do not contains values of specified type
-     */
-    private Set<String> filterInvalids(Type type, Set<String> invalids) {
-        if (invalids == null || invalids.isEmpty() || Type.STRING.equals(type)) {
-            return Collections.emptySet();
-        }
-        try (DataTypeQualityAnalyzer analyzer = new DataTypeQualityAnalyzer(DataTypeEnum.get(type.getName()))) {
-            analyzer.init();
-            final Set<String> result;
-            invalids.stream().forEach(analyzer::analyze);
-            List<ValueQualityStatistics> analyzerResult = analyzer.getResult();
-            result = analyzerResult.get(0).getInvalidValues();
-            // defensive programming
-            if (result == null || result.isEmpty()) {
-                return Collections.emptySet();
-            }
-            return result;
-        } catch (Exception e) {
-            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
-        }
-    }
-
-    /**
-     * Returns the most frequent sub type of the suggested type when it is the second most frequent type.
-     *
-     * @param dataType the specified data type occurrences result
-     * @return the most frequent sub type of the suggested type when it is the second most frequent type
-     */
-    private Type mostFrequentSubType(DataTypeOccurences dataType) {
-        final DataTypeEnum suggestedEnumType = dataType.getSuggestedType();
-
-        final List<Map.Entry<DataTypeEnum, Long>> sortedFrequencies = dataType.getTypeFrequencies().entrySet().stream()
-        //@formatter:off
-                .filter(t -> !DataTypeEnum.EMPTY.equals(t.getKey())) // remove empty type
-                .sorted((t1, t2) -> Long.compare(t2.getValue(), t1.getValue()))
-                .collect(Collectors.toList());
-        //@formatter:on
-        final DataTypeEnum secondEnumChoice;
-        // retrieve the second choice
-        if (sortedFrequencies.size() <= 1) {
-            secondEnumChoice = null;
-        } else if (!suggestedEnumType.equals(sortedFrequencies.get(0).getKey())) {
-            secondEnumChoice = sortedFrequencies.get(0).getKey();
-        } else {
-            secondEnumChoice = sortedFrequencies.get(1).getKey();
-        }
-        final Type suggested = Type.get(suggestedEnumType.name());
-        final Type secondChoice = secondEnumChoice != null ? Type.get(secondEnumChoice.name()) : null;
-        return TypeUtils.subTypeOfOther(suggested, secondChoice);
     }
 
 }
