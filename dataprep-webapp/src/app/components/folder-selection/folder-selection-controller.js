@@ -128,9 +128,9 @@ class FolderSelectionCtrl {
     //------------------------------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
-     * @name populateSearchResult
+     * @name performSearch
      * @methodOf data-prep.folder-selection.controller:FolderSelectionCtrl
-     * @description decides to show the folders tree or the search result
+     * @description perform folder search
      **/
     performSearch() {
         if (this.searchFolderQuery) {

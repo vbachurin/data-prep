@@ -18,11 +18,25 @@ export default class PreparationBreadcrumbController {
         this.state = state;
         this.FolderService = FolderService;
     }
-    
+
+    /**
+     * @ngdoc method
+     * @name go
+     * @methodOf data-prep.preparation-header.controller:PreparationBreadcrumbController
+     * @description go to a folder
+     * @param {object} folder The folder to go
+     */
     go(folder) {
         this.$state.go('nav.index.preparations', { folderId: folder.id });
     }
 
+    /**
+     * @ngdoc method
+     * @name fetchChildren
+     * @methodOf data-prep.preparation-header.controller:PreparationBreadcrumbController
+     * @description fetch the content of a folder
+     * @param {object} folder The folder to go
+     */
     fetchChildren(folder) {
         this.FolderService.refreshBreadcrumbChildren(folder.id);
     }

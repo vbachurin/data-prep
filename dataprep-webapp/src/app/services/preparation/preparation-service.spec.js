@@ -195,14 +195,14 @@ describe('Preparation Service', () => {
                     dataSetId: 'dacd45cf-5bd0-4768-a9b7-f6c199581efc',
                     author: 'anonymousUser'
                 };
-                $stateParams.folderPath = 'test/';
+                $stateParams.folderId = 'test/';
 
                 //when
                 PreparationService.open(preparation);
                 $rootScope.$digest();
 
                 //then
-                expect(StateService.setPreviousRoute).toHaveBeenCalledWith('nav.index.preparations', { folderPath: 'test/' });
+                expect(StateService.setPreviousRoute).toHaveBeenCalledWith('nav.index.preparations', { folderId: 'test/' });
             }));
 
             it('should open a preparation', inject(($stateParams, $rootScope, $state, StateService, PreparationService) => {

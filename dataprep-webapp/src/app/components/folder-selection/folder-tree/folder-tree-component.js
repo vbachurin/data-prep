@@ -10,6 +10,25 @@
  9 rue Pages 92150 Suresnes, France
 
  ============================================================================*/
+/**
+ * @ngdoc component
+ * @name data-prep.folder-selection.component:FolderTreeComponent
+ * @description This component display a folder tree
+ * @restrict E
+ *
+ * @usage
+ * <folder-tree ng-switch-when="false"
+ *              node="$ctrl.tree"
+ *              level="0"
+ *              on-toggle="$ctrl.toggle(node)"
+ *              on-select="$ctrl.chooseFolder(node.folder)">
+ * </folder-tree>
+ *
+ * @param {object}  node the root of the tree
+ * @param {integer} level the level of the node
+ * @param {function}    onToggle function to call when opening/closing a node
+ * @param {function}    onSelect function to call when selecting a node
+ */
 
 const FolderTreeComponent = {
     bindings: {

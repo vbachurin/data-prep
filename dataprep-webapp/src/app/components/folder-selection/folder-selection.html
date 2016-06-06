@@ -40,7 +40,7 @@
                           is-opened="false"
                           has-children="false"
                           is-selected="node.folder.selected"
-                          on-toggle="$ctrl.onToggle(node)"
-                          on-select="$ctrl.onSelect(node)"></folder-tree-node>
+                          on-toggle="$ctrl.toggle(node)"
+                          on-select="$ctrl.chooseFolder(node.folder)"></folder-tree-node>
     </div>
 </div>

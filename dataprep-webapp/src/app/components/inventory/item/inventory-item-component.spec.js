@@ -678,7 +678,7 @@ describe('InventoryItem directive', () => {
             };
         }));
 
-        it('should render insertion playground left header attribute', () => {
+        it('should render insertion inventory actions attribute', () => {
             // when
             createElement();
             

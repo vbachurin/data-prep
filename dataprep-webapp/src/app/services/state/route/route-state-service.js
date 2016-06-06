@@ -13,9 +13,9 @@
 
 export const routeState = {
     previous: 'nav.index.preparations',
-    previousOptions: {folderPath: ''},
+    previousOptions: {folderId: ''},
     next: 'nav.index.preparations',
-    nextOptions: {folderPath: ''},
+    nextOptions: {folderId: ''},
 };
 
 export class RouteStateService {
@@ -37,12 +37,12 @@ export class RouteStateService {
 
     resetPrevious() {
         routeState.previous = 'nav.index.preparations';
-        routeState.previousOptions = {folderPath: ''};
+        routeState.previousOptions = {folderId: ''};
     }
 
     resetNext() {
         routeState.next = 'nav.index.preparations';
-        routeState.nextOptions = {folderPath: ''};
+        routeState.nextOptions = {folderId: ''};
     }
 
     reset() {

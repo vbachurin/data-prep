@@ -31,7 +31,7 @@
             </a>
 
             <inventory-item ng-if="item.inventoryType === 'folder'"
-                            ui-sref="nav.index.preparations({folderPath: item.path})"
+                            ui-sref="nav.index.preparations({folderId: item.id})"
                             item="item"
                             type="folder"
                             details="SEARCH_FOLDER_DETAILS">

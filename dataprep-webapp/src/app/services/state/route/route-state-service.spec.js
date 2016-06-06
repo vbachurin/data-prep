@@ -20,7 +20,7 @@ describe('Route state service', () => {
         it('should init previous route', inject((routeState) => {
             //then
             expect(routeState.previous).toBe('nav.index.preparations');
-            expect(routeState.previousOptions).toEqual({ folderPath: '' });
+            expect(routeState.previousOptions).toEqual({ folderId: '' });
         }));
 
         it('should set previous route', inject((routeState, RouteStateService) => {
@@ -71,7 +71,7 @@ describe('Route state service', () => {
 
             //then
             expect(routeState.previous).toBe('nav.index.preparations');
-            expect(routeState.previousOptions).toEqual({ folderPath: '' });
+            expect(routeState.previousOptions).toEqual({ folderId: '' });
         }));
     });
 
@@ -79,7 +79,7 @@ describe('Route state service', () => {
         it('should init next route', inject((routeState) => {
             //then
             expect(routeState.next).toBe('nav.index.preparations');
-            expect(routeState.nextOptions).toEqual({ folderPath: '' });
+            expect(routeState.nextOptions).toEqual({ folderId: '' });
         }));
 
         it('should set next route', inject((routeState, RouteStateService) => {
@@ -130,7 +130,7 @@ describe('Route state service', () => {
 
             //then
             expect(routeState.next).toBe('nav.index.preparations');
-            expect(routeState.nextOptions).toEqual({ folderPath: '' });
+            expect(routeState.nextOptions).toEqual({ folderId: '' });
         }));
     });
 
@@ -154,9 +154,9 @@ describe('Route state service', () => {
 
             //then
             expect(routeState.previous).toBe('nav.index.preparations');
-            expect(routeState.previousOptions).toEqual({ folderPath: '' });
+            expect(routeState.previousOptions).toEqual({ folderId: '' });
             expect(routeState.next).toBe('nav.index.preparations');
-            expect(routeState.nextOptions).toEqual({ folderPath: '' });
+            expect(routeState.nextOptions).toEqual({ folderId: '' });
         }));
     });
 });
