@@ -76,7 +76,8 @@ public class StatisticsUtilsTest {
 
         //then
         assertEquals(10, stringColumn.getStatistics().getEmpty());
-        assertEquals(0, stringColumn.getStatistics().getInvalid()); // String columns can't have invalid values
+        // String columns can't have invalid values but adapter code is not supposed to take account.
+        assertEquals(20, stringColumn.getStatistics().getInvalid());
         assertEquals(50, stringColumn.getStatistics().getValid());
     }
 
