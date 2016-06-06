@@ -13,9 +13,9 @@
 package org.talend.dataprep.configuration;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 
 import com.hazelcast.config.Config;
 import com.hazelcast.config.GroupConfig;
@@ -29,7 +29,7 @@ import com.hazelcast.core.HazelcastInstance;
  * in its own JVM, serving multiple concurrent requests thus the need for a distributed lock system.
  */
 @Configuration
-@Profile({"standalone", "ami"})
+@ConditionalOnProperty(value = "hazelcast.enabled", havingValue = "true")
 @SuppressWarnings("InsufficientBranchCoverage")
 public class HazelcastSetup {
 
