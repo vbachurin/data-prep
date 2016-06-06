@@ -1,12 +1,12 @@
 package org.talend.dataprep.dataset.store.content;
 
-import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.dataset.DataSetMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
-
 import java.io.InputStream;
 import java.util.Optional;
 import java.util.stream.Stream;
+
+import org.springframework.stereotype.Component;
+import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.api.dataset.DataSetRow;
 
 @Component
 class LimitDataSetContent implements DataSetContentLimit {

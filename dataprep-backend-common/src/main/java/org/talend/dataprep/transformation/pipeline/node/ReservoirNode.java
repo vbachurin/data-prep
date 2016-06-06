@@ -148,6 +148,7 @@ public class ReservoirNode extends AnalysisNode implements Monitored {
                 final ObjectMapper mapper = new ObjectMapper();
                 if (rowMetadata != null && resultAnalyzer != null) {
                     // Adapt row metadata
+                    resultAnalyzer.end();
                     adapter.adapt(rowMetadata.getColumns(), resultAnalyzer.getResult(), filter);
                     resultAnalyzer.close();
 
