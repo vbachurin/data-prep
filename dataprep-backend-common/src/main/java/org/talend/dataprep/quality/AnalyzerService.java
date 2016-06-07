@@ -124,7 +124,7 @@ public class AnalyzerService implements DisposableBean {
         patternFrequencyAnalyzers.add(dateTimePatternFrequencyAnalyzer);
         patternFrequencyAnalyzers.add(new LatinExtendedCharPatternRecognizer());
 
-        return new CompositePatternFrequencyAnalyzer(patternFrequencyAnalyzers);
+        return new CompositePatternFrequencyAnalyzer(patternFrequencyAnalyzers, TypeUtils.convert(columns));
     }
 
     /**

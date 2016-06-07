@@ -38,6 +38,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.statistics.Statistics;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
@@ -373,6 +374,8 @@ public class ComputeTimeSinceTest extends BaseDateTests {
         String compare = "07/26/2015 13:00";
 
         DataSetRow row = getDefaultRow("statistics_MM_dd_yyyy_HH_mm.json");
+        final Statistics dateStatistics = row.getRowMetadata().getById("0001").getStatistics();
+        row.getRowMetadata().getById("0002").setStatistics(dateStatistics);
         row.set("0001", date);
         row.set("0002", compare);
 
