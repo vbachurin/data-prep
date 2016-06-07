@@ -28,19 +28,20 @@
          ng-switch="!!$ctrl.searchFolderQuery">
 
         <folder-tree ng-switch-when="false"
-                     node="$ctrl.tree"
                      level="0"
+                     on-select="$ctrl.chooseFolder(node.folder)"
                      on-toggle="$ctrl.toggle(node)"
-                     on-select="$ctrl.chooseFolder(node.folder)"></folder-tree>
+                     node="$ctrl.tree"></folder-tree>
 
         <folder-tree-node ng-switch-when="true"
                           ng-repeat="node in $ctrl.searchItems track by node.folder.id"
-                          name="node.folder.path"
-                          level="0"
-                          is-opened="false"
                           has-children="false"
+                          is-opened="false"
                           is-selected="node.folder.selected"
-                          on-toggle="$ctrl.toggle(node)"
-                          on-select="$ctrl.chooseFolder(node.folder)"></folder-tree-node>
+                          level="0"
+                          name="node.folder.path"
+                          on-select="$ctrl.chooseFolder(node.folder)"
+                          on-toggle="$ctrl.toggle(node)">
+        </folder-tree-node>
     </div>
 </div>

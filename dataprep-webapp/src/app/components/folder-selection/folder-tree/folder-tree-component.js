@@ -17,25 +17,24 @@
  * @restrict E
  *
  * @usage
- * <folder-tree ng-switch-when="false"
+ * <folder-tree level="0"
  *              node="$ctrl.tree"
- *              level="0"
- *              on-toggle="$ctrl.toggle(node)"
- *              on-select="$ctrl.chooseFolder(node.folder)">
+ *              on-select="$ctrl.chooseFolder(node.folder)"
+ *              on-toggle="$ctrl.toggle(node)">
  * </folder-tree>
  *
- * @param {object}  node the root of the tree
- * @param {integer} level the level of the node
+ * @param {object}      node the root of the tree
+ * @param {integer}     level the level of the node
  * @param {function}    onToggle function to call when opening/closing a node
  * @param {function}    onSelect function to call when selecting a node
  */
 
 const FolderTreeComponent = {
     bindings: {
-        node: '<',
         level: '<',
-        onToggle: '&',
+        node: '<',
         onSelect: '&',
+        onToggle: '&',
     },
     templateUrl: 'app/components/folder-selection/folder-tree/folder-tree.html'
 };

@@ -35,7 +35,7 @@ export default class PreparationBreadcrumbController {
      * @name fetchChildren
      * @methodOf data-prep.preparation-header.controller:PreparationBreadcrumbController
      * @description fetch the content of a folder
-     * @param {object} folder The folder to go
+     * @param {object} folder The folder to fetch into its children
      */
     fetchChildren(folder) {
         this.FolderService.refreshBreadcrumbChildren(folder.id);

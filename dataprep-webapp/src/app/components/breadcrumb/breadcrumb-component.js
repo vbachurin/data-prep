@@ -17,14 +17,14 @@
  * @restrict E
  *
  * @usage
- * <breadcrumb items="$ctrl.state.inventory.breadcrumb"
- *             children="$ctrl.state.inventory.breadcrumbChildren"
- *             on-select="$ctrl.go(item)"
- *             on-list-open="$ctrl.fetchChildren(item)">
+ * <breadcrumb children="$ctrl.state.inventory.breadcrumbChildren"
+ *             items="$ctrl.state.inventory.breadcrumb"
+ *             on-list-open="$ctrl.fetchChildren(item)"
+ *             on-select="$ctrl.go(item)">
  * </breadcrumb>
  *
- * @param {array}    items nodes of the breadcrumb
- * @param {array}      children items of the dropdown of a node of the breadcrumbChildren
+ * @param {array}       children items of the dropdown of a node of the breadcrumbChildren
+ * @param {array}       items nodes of the breadcrumb
  * @param {function}    onListOpen function to call when opening a dropdown
  * @param {function}    onSelect function to call when selecting an item of the breadcrumb
  */
@@ -32,8 +32,8 @@
 const BreadcrumbComponent = {
     templateUrl: 'app/components/breadcrumb/breadcrumb.html',
     bindings: {
-        items: '<',
         children: '<',
+        items: '<',
         onListOpen: '&',
         onSelect: '&',
     }
