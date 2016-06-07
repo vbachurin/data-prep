@@ -592,7 +592,7 @@ public class DataSetAPITest extends ApiServiceTestBase {
         .then()
             .statusCode(200)
             .body("name", hasItems("dataset1", "dataset2"))
-            .body("name", hasSize(2));;
+            .body("name", hasSize(2));
 
         // only certified
         given()
