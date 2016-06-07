@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.jms.core.JmsTemplate;
@@ -50,6 +51,7 @@ import org.talend.dataprep.api.dataset.location.SemanticDomain;
 import org.talend.dataprep.api.service.info.VersionService;
 import org.talend.dataprep.api.user.UserData;
 import org.talend.dataprep.configuration.EncodingSupport;
+import org.talend.dataprep.dataset.event.DataSetRawContentUpdateEvent;
 import org.talend.dataprep.dataset.service.analysis.DataSetAnalyzer;
 import org.talend.dataprep.dataset.service.analysis.asynchronous.AsyncBackgroundAnalysis;
 import org.talend.dataprep.dataset.service.analysis.asynchronous.AsynchronousDataSetAnalyzer;
@@ -101,6 +103,9 @@ public class DataSetService extends BaseDataSetService {
     static {
         DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC")); //$NON-NLS-1$
     }
+
+    @Autowired
+    ApplicationEventPublisher publisher;
 
     /**
      * DQ asynchronous analyzers.
@@ -603,6 +608,7 @@ public class DataSetService extends BaseDataSetService {
             // Save data set content
             contentStore.storeAsRaw(dataSetMetadata, dataSetContent);
             dataSetMetadataRepository.add(dataSetMetadata);
+            publisher.publishEvent(new DataSetRawContentUpdateEvent(dataSetMetadata));
         } finally {
             lock.unlock();
         }
