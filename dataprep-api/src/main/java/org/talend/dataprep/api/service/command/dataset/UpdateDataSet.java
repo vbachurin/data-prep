@@ -25,8 +25,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.command.GenericCommand;
-import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.exception.error.APIErrorCodes;
 
 @Component
 @Scope("request")
@@ -40,7 +38,6 @@ public class UpdateDataSet extends GenericCommand<String> {
             put.setEntity(new InputStreamEntity(dataSetContent));
             return put;
         });
-        onError(e -> new TDPException(APIErrorCodes.UNABLE_TO_CREATE_OR_UPDATE_DATASET, e));
         on(HttpStatus.NO_CONTENT).then(emptyString());
         on(HttpStatus.OK).then(asString());
     }

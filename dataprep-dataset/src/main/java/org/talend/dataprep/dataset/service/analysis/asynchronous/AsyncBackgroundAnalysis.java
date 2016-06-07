@@ -16,8 +16,6 @@ package org.talend.dataprep.dataset.service.analysis.asynchronous;
 import javax.jms.JMSException;
 import javax.jms.Message;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.jms.annotation.JmsListener;
@@ -26,6 +24,7 @@ import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.service.analysis.DataSetAnalyzer;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.DataSetErrorCodes;
+import org.talend.dataprep.security.SecurityProxy;
 
 /**
  * Compute statistics analysis on the full dataset.
@@ -35,7 +34,10 @@ import org.talend.dataprep.exception.error.DataSetErrorCodes;
 public class AsyncBackgroundAnalysis implements AsynchronousDataSetAnalyzer {
 
     @Autowired
-    BackgroundAnalysis backgroundAnalysis;
+    private BackgroundAnalysis backgroundAnalysis;
+
+    @Autowired
+    private SecurityProxy securityProxy;
 
     /**
      * Receives jms message to start a quality analysis.
@@ -45,11 +47,16 @@ public class AsyncBackgroundAnalysis implements AsynchronousDataSetAnalyzer {
     @JmsListener(destination = Destinations.STATISTICS_ANALYSIS)
     public void analyzeQuality(Message message) {
         try {
-            String dataSetId = message.getStringProperty("dataset.id"); //$NON-NLS-1$
+            String dataSetId = message.getStringProperty("dataset.id");
+            String securityToken = message.getStringProperty("security.token");
+
+
             try {
+                securityProxy.borrowIdentity(securityToken);
                 analyze(dataSetId);
             } finally {
                 message.acknowledge();
+                securityProxy.releaseIdentity();
             }
         } catch (JMSException e) {
             throw new TDPException(DataSetErrorCodes.UNEXPECTED_JMS_EXCEPTION, e);

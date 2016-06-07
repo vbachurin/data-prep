@@ -64,6 +64,7 @@ public class FileSystemDataSetMetadataRepositoryTest extends DataSetBaseTest {
         final DataSetMetadata actual = repository.get(expected.getId());
 
         // then
+        actual.setOwner(null); // for simplicity
         assertEquals(expected, actual);
     }
 
@@ -110,6 +111,7 @@ public class FileSystemDataSetMetadataRepositoryTest extends DataSetBaseTest {
 
         // then
         final DataSetMetadata actual = repository.get(id);
+        actual.setOwner(null); // for simplicity
         assertEquals(update, actual);
     }
 
@@ -176,6 +178,10 @@ public class FileSystemDataSetMetadataRepositoryTest extends DataSetBaseTest {
         actual.forEach(dataSetMetadata -> {
             assertTrue(Integer.valueOf(dataSetMetadata.getId()) <= expected);
             count.addAndGet(1);
+
+            assertFalse(dataSetMetadata.isSharedDataSet());
+            assertNotNull(dataSetMetadata.getOwner());
+            assertEquals(dataSetMetadata.getAuthor(), dataSetMetadata.getOwner().getFirstName());
         });
 
         assertEquals(expected, count.intValue());

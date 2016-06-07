@@ -40,7 +40,6 @@ public class DataSetGet extends GenericCommand<InputStream> {
      * Constructor.
      *
      * @param dataSetId the requested dataset id.
-     * @param metadata true if the metadata is requested.
      */
     public DataSetGet(String dataSetId) {
         super(DATASET_GROUP);

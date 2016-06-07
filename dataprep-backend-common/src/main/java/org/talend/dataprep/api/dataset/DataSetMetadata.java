@@ -14,12 +14,18 @@
 package org.talend.dataprep.api.dataset;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
+import org.talend.dataprep.api.share.Owner;
+import org.talend.dataprep.api.share.SharedResource;
 import org.talend.dataprep.schema.Schema;
 import org.talend.dataprep.schema.csv.CSVSerializer;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
@@ -34,7 +40,7 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
  * 
  * @see DataSetMetadataBuilder
  */
-public class DataSetMetadata implements Serializable {
+public class DataSetMetadata implements Serializable, SharedResource {
 
     /** Serialization UID. */
     private static final long serialVersionUID = 1L;
@@ -115,6 +121,19 @@ public class DataSetMetadata implements Serializable {
      */
     @JsonProperty("encoding")
     private String encoding = "UTF-8";
+
+    /** True if this dataset metadata is shared by another user. */
+    @Transient // no saved in the database but computed when needed
+    private boolean sharedDataSet = false;
+
+    /** This dataset metadata owner. */
+    @Transient // no saved in the database but computed when needed
+    private Owner owner;
+
+    /** What role has the current user on this folder. */
+    @Transient // no saved in the database but computed when needed
+    private Set<String> roles = new HashSet<>();
+
 
     /**
      * Default empty constructor.
@@ -223,6 +242,15 @@ public class DataSetMetadata implements Serializable {
     }
 
     /**
+     * @return this shared resource owner/author id.
+     */
+    @Override
+    @JsonIgnore
+    public String getOwnerId() {
+        return getAuthor();
+    }
+
+    /**
      * @return the sheet name
      */
     public String getSheetName() {
@@ -327,6 +355,60 @@ public class DataSetMetadata implements Serializable {
     }
 
     /**
+     * @return the SharedDataSet
+     */
+    public boolean isSharedDataSet() {
+        return sharedDataSet;
+    }
+
+    /**
+     * @param sharedDataSet the sharedDataSet to set.
+     */
+    public void setSharedDataSet(boolean sharedDataSet) {
+        this.sharedDataSet = sharedDataSet;
+    }
+
+    /**
+     * Set the shared resource flag.
+     *
+     * @param shared the shared resource flag value.
+     */
+    @Override
+    public void setSharedResource(boolean shared) {
+        this.setSharedDataSet(shared);
+    }
+
+    /**
+     * @return the Owner
+     */
+    public Owner getOwner() {
+        return owner;
+    }
+
+    /**
+     * @param owner the owner to set.
+     */
+    @Override
+    public void setOwner(Owner owner) {
+        this.owner = owner;
+    }
+
+    /**
+     * @return the Roles
+     */
+    public Set<String> getRoles() {
+        return roles;
+    }
+
+    /**
+     * @param roles the roles to set.
+     */
+    @Override
+    public void setRoles(Set<String> roles) {
+        this.roles = roles;
+    }
+
+    /**
      * Returns true if this data set metadata is compatible with <tt>rowMetadata</tt> (they have same columns names and
      * same types and in the same order) and false otherwise.
      *
@@ -342,6 +424,9 @@ public class DataSetMetadata implements Serializable {
         return result;
     }
 
+    /**
+     * @see Object#toString()
+     */
     @Override
     public String toString() {
         return "DataSetMetadata{" + //
@@ -358,9 +443,15 @@ public class DataSetMetadata implements Serializable {
                 ", sheetName='" + sheetName + '\'' + //
                 ", draft=" + draft + //
                 ", schemaParserResult=" + schemaParserResult + //
+                ", shared=" + sharedDataSet + //
+                ", owner=" + owner + //
+                ", roles=" + roles + //
                 ", favorite=" + favorite + '}';
     }
 
+    /**
+     * @see Object#equals(Object)
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -382,14 +473,20 @@ public class DataSetMetadata implements Serializable {
                 Objects.equals(name, that.name) && //
                 Objects.equals(author, that.author) && //
                 Objects.equals(sheetName, that.sheetName) && //
+                Objects.equals(sharedDataSet, that.sharedDataSet) && //
+                Objects.equals(owner, that.owner) && //
+                Objects.equals(roles, that.roles) && //
                 Objects.equals(schemaParserResult, that.schemaParserResult) && //
                 Objects.equals(appVersion, that.appVersion);
     }
 
+    /**
+     * @see Object#hashCode()
+     */
     @Override
     public int hashCode() {
         return Objects.hash(id, rowMetadata, lifecycle, content, governance, location, name, author, creationDate,lastModificationDate, sheetName,
-                draft, schemaParserResult, favorite, appVersion);
+                draft, schemaParserResult, favorite, sharedDataSet, owner, roles, appVersion);
     }
 
 }

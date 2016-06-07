@@ -11,23 +11,21 @@
 //
 //  ============================================================================
 
-package org.talend.dataprep.dataset.service;
+package org.talend.dataprep.security;
 
-import java.io.InputStream;
-
-public class Destinations {
-
-    /**
-     * JMS Destination for data statistics information of a data set.
-     *
-     * @see org.talend.dataprep.dataset.service.DataSetService#create(String, String, InputStream)
-     */
-    public static final String STATISTICS_ANALYSIS = "org.talend.tdp.dataset.content.statistics"; //$NON-NLS-1
+/**
+ * Security Proxy to let a thread borrow the identity of a user out of its authentication token.
+ */
+public interface SecurityProxy {
 
     /**
-     * Private constructor.
+     * Let a thread borrow the identity of a user.
+     * @param securityToken the security token to use for the proxy identity.
      */
-    private Destinations() {
-        // utility class should not have a public constructor.
-    }
+    void borrowIdentity(String securityToken);
+
+    /**
+     * Release the borrowed identity.
+     */
+    void releaseIdentity();
 }

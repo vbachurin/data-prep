@@ -11,9 +11,11 @@
 //
 //  ============================================================================
 
-package org.talend.dataprep.api.folder;
+package org.talend.dataprep.api.share;
 
 import java.util.Objects;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Owner of a folder.
@@ -88,6 +90,16 @@ public class Owner {
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
+
+    /**
+     * @return the display name for the front.
+     */
+    @JsonProperty("displayName")
+    public String getDisplayName() {
+        final String displayName = firstName + ' ' + lastName;
+        return displayName.trim();
+    }
+
 
     /**
      * @see Object#toString()

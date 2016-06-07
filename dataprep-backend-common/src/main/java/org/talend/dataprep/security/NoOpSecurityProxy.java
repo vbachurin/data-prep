@@ -11,23 +11,29 @@
 //
 //  ============================================================================
 
-package org.talend.dataprep.dataset.service;
+package org.talend.dataprep.security;
 
-import java.io.InputStream;
+import org.springframework.stereotype.Component;
 
-public class Destinations {
-
-    /**
-     * JMS Destination for data statistics information of a data set.
-     *
-     * @see org.talend.dataprep.dataset.service.DataSetService#create(String, String, InputStream)
-     */
-    public static final String STATISTICS_ANALYSIS = "org.talend.tdp.dataset.content.statistics"; //$NON-NLS-1
+/**
+ * No op implementation of the SecurityProxy.
+ */
+@Component
+public class NoOpSecurityProxy implements SecurityProxy {
 
     /**
-     * Private constructor.
+     * @see SecurityProxy#borrowIdentity(String)
      */
-    private Destinations() {
-        // utility class should not have a public constructor.
+    @Override
+    public void borrowIdentity(String securityToken) {
+        // no op
+    }
+
+    /**
+     * @see SecurityProxy#releaseIdentity()
+     */
+    @Override
+    public void releaseIdentity() {
+        // no op
     }
 }

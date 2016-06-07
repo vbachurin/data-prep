@@ -19,6 +19,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 import static org.talend.dataprep.exception.error.DataSetErrorCodes.DATASET_NAME_ALREADY_USED;
+import static org.talend.dataprep.exception.error.DataSetErrorCodes.UNABLE_TO_CREATE_OR_UPDATE_DATASET;
 import static org.talend.dataprep.util.SortAndOrderHelper.getDataSetMetadataComparator;
 
 import java.io.IOException;
@@ -63,7 +64,6 @@ import org.talend.dataprep.dataset.service.locator.DataSetLocatorService;
 import org.talend.dataprep.dataset.store.content.ContentStoreRouter;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.exception.error.DataSetErrorCodes;
 import org.talend.dataprep.exception.json.JsonErrorCodeDescription;
 import org.talend.dataprep.http.HttpResponseContext;
@@ -78,11 +78,11 @@ import org.talend.dataprep.schema.Schema;
 import org.talend.dataprep.security.PublicAPI;
 import org.talend.dataprep.security.Security;
 import org.talend.dataprep.user.store.UserDataRepository;
+import org.talend.dataprep.util.StringsHelper;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.talend.dataprep.util.StringsHelper;
 
 @RestController
 @Api(value = "datasets", basePath = "/datasets", description = "Operations on data sets")
@@ -197,7 +197,7 @@ public class DataSetService extends BaseDataSetService {
     @Value("#{'${dataset.imports}'.split(',')}")
     private Set<String> enabledImports;
 
-    @Value("${dataset.list.limit}")
+    @Value("${dataset.list.limit:10}")
     private int datasetListLimit;
 
     /**
@@ -236,7 +236,8 @@ public class DataSetService extends BaseDataSetService {
             }
             jmsTemplate.send(asynchronousDataSetAnalyzer.destination(), session -> {
                 Message message = session.createMessage();
-                message.setStringProperty("dataset.id", id); // $NON-NLS-1
+                message.setStringProperty("dataset.id", id);
+                message.setStringProperty("security.token", security.getAuthenticationToken());
                 return message;
             });
         }
@@ -246,11 +247,11 @@ public class DataSetService extends BaseDataSetService {
     @ApiOperation(value = "List all data sets and filters on certified, or favorite or a limited number when asked", notes = "Returns the list of data sets (and filters) the current user is allowed to see. Creation date is a Epoch time value (in UTC time zone).")
     @Timed
     public Iterable<DataSetMetadata> list(
-            @ApiParam(value = "Sort key (by name, creation or modification date)") @RequestParam(defaultValue = "DATE", required = false) String sort,
-            @ApiParam(value = "Order for sort key (desc or asc or modif)") @RequestParam(defaultValue = "DESC", required = false) String order,
-            @ApiParam(value = "Filter on name containing the specified name") @RequestParam(defaultValue = "", required = false) String name,
-            @ApiParam(value = "Filter on certified data sets") @RequestParam(defaultValue = "false", required = false) boolean certified,
-            @ApiParam(value = "Filter on favorite data sets") @RequestParam(defaultValue = "false", required = false) boolean favorite,
+            @ApiParam(value = "Sort key (by name, creation or modification date)") @RequestParam(defaultValue = "DATE") String sort,
+            @ApiParam(value = "Order for sort key (desc or asc or modif)") @RequestParam(defaultValue = "DESC") String order,
+            @ApiParam(value = "Filter on name containing the specified name") @RequestParam(defaultValue = "") String name,
+            @ApiParam(value = "Filter on certified data sets") @RequestParam(defaultValue = "false") boolean certified,
+            @ApiParam(value = "Filter on favorite data sets") @RequestParam(defaultValue = "false") boolean favorite,
             @ApiParam(value = "Only return a limited number of data sets") @RequestParam(defaultValue = "false", required = false) boolean limit) {
 
         Spliterator<DataSetMetadata> iterator = dataSetMetadataRepository.list().spliterator();
@@ -397,7 +398,7 @@ public class DataSetService extends BaseDataSetService {
         final Marker marker = Markers.dataset(dataSetId);
         LOG.debug(marker, "Get data set #{}", dataSetId);
         try {
-            DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
+            DataSetMetadata dataSetMetadata = dataSetMetadataRepository.getForContent(dataSetId);
             assertDataSetMetadata(dataSetMetadata, dataSetId);
             // Build the result
             DataSet dataSet = new DataSet();
@@ -457,8 +458,8 @@ public class DataSetService extends BaseDataSetService {
         try {
             lock.lock();
             if (metadata != null) {
+                dataSetMetadataRepository.remove(dataSetId); // first remove the metadata as there may be additional check
                 contentStore.delete(metadata);
-                dataSetMetadataRepository.remove(dataSetId);
             } // do nothing if the dataset does not exists
         } finally {
             lock.unlock();
@@ -819,8 +820,12 @@ public class DataSetService extends BaseDataSetService {
                 // all good mate!! so send that to jms
                 // Asks for a in depth schema analysis (for column type information).
                 queueEvents(dataSetId, FormatAnalysis.class);
-            } catch (Exception e) {
-                throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
+            }
+            catch (TDPException e) {
+                throw e;
+            }
+            catch (Exception e) {
+                throw new TDPException(UNABLE_TO_CREATE_OR_UPDATE_DATASET, e);
             }
         } finally {
             lock.unlock();

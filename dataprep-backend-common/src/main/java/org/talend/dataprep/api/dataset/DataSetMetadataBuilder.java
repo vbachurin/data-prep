@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.location.LocalStoreLocation;
 import org.talend.dataprep.api.service.info.VersionService;
+import org.talend.dataprep.api.share.Owner;
 import org.talend.dataprep.schema.Schema;
 
 /**
@@ -167,10 +168,19 @@ public class DataSetMetadataBuilder {
     /** Flag used to make sure the builder went through metadata(). */
     private boolean builtWithMetadata = false;
 
+    /** @see org.talend.dataprep.api.dataset.DataSetMetadata#sharedDataSet */
+    private boolean sharedDataSet = false;
+    /** @see org.talend.dataprep.api.dataset.DataSetMetadata#owner */
+    private Owner owner;
+    /** @see org.talend.dataprep.api.dataset.DataSetMetadata#roles */
+    private Set<String> roles = new HashSet<>();
+
+
     /**
      * Private constructor to ensure IoC use.
      */
     private DataSetMetadataBuilder() {
+        // private constructor to ensure the IoC
     }
 
     public DataSetMetadataBuilder metadata() {
@@ -275,6 +285,21 @@ public class DataSetMetadataBuilder {
         return this;
     }
 
+    public DataSetMetadataBuilder shared(boolean shared) {
+        this.sharedDataSet = shared;
+        return this;
+    }
+
+    public DataSetMetadataBuilder owner(Owner owner) {
+        this.owner = owner;
+        return this;
+    }
+
+    public DataSetMetadataBuilder roles(Set<String> roles) {
+        this.roles = roles;
+        return this;
+    }
+
     public DataSetMetadataBuilder formatGuessId(String formatGuessId) {
         this.formatGuessId = formatGuessId;
         return this;
@@ -324,6 +349,9 @@ public class DataSetMetadataBuilder {
         this.isFavorite = original.isFavorite();
         this.location = original.getLocation();
         this.lastModificationDate = original.getLastModificationDate();
+        this.sharedDataSet = original.isSharedDataSet();
+        this.owner = original.getOwner();
+        this.roles = original.getRoles();
         return this;
     }
 
@@ -412,6 +440,9 @@ public class DataSetMetadataBuilder {
             metadata.getGovernance().setCertificationStep(this.certificationStep);
         }
         metadata.setSchemaParserResult(this.schemaParserResult);
+        metadata.setSharedDataSet(sharedDataSet);
+        metadata.setOwner(owner);
+        metadata.setRoles(roles);
 
         // Content information
         metadata.setEncoding(encoding);

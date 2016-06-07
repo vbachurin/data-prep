@@ -173,7 +173,9 @@ public enum DataSetErrorCodes implements ErrorCode {
     /**
      * Error thrown when data prep fails to create a new data set.
      */
-    UNABLE_CREATE_DATASET(INTERNAL_SERVER_ERROR.value());
+    UNABLE_CREATE_DATASET(INTERNAL_SERVER_ERROR.value()),
+    /** Error thrown when an error occurs while adding or updating a dataset. */
+    UNABLE_TO_CREATE_OR_UPDATE_DATASET(INTERNAL_SERVER_ERROR.value());
 
 
     /**

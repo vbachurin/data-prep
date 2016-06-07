@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -112,7 +113,7 @@ public abstract class DataSetBaseTest {
 
     protected void assertQueueMessages(String dataSetId) throws Exception {
         // Asserts on metadata status
-        DataSetMetadata metadata = dataSetMetadataRepository.get(dataSetId);
+        DataSetMetadata metadata = dataSetMetadataRepository.getForContent(dataSetId);
         assertNotNull(metadata);
         DataSetLifecycle lifecycle = metadata.getLifecycle();
         assertThat(lifecycle.contentIndexed(), is(true));
@@ -123,15 +124,13 @@ public abstract class DataSetBaseTest {
     @Before
     public void setUp() throws IOException {
         RestAssured.port = port;
-        dataSetMetadataRepository.clear();
-        contentStore.clear();
-        userDataRepository.clear();
     }
 
-    @org.junit.After
+    @After
     public void tearDown() throws IOException {
         dataSetMetadataRepository.clear();
         contentStore.clear();
+        userDataRepository.clear();
     }
 
     protected long getNumberOfRecords(String json) throws IOException {

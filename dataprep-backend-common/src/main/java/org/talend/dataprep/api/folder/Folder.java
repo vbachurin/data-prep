@@ -20,13 +20,15 @@ import java.util.Set;
 
 import org.springframework.data.annotation.AccessType;
 import org.springframework.data.annotation.Transient;
+import org.talend.dataprep.api.share.Owner;
+import org.talend.dataprep.api.share.SharedResource;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Model a folder.
  */
-public class Folder implements Serializable {
+public class Folder implements Serializable, SharedResource {
 
     /** Serialization UID. */
     private static final long serialVersionUID = 1L;
@@ -186,6 +188,7 @@ public class Folder implements Serializable {
     /**
      * @param owner the owner to set.
      */
+    @Override
     public void setOwner(Owner owner) {
         this.owner = owner;
     }
@@ -193,6 +196,7 @@ public class Folder implements Serializable {
     /**
      * @return the OwnerId
      */
+    @Override
     public String getOwnerId() {
         return ownerId;
     }
@@ -219,6 +223,14 @@ public class Folder implements Serializable {
     }
 
     /**
+     * @see SharedResource#setSharedResource(boolean)
+     */
+    @Override
+    public void setSharedResource(boolean shared) {
+        this.setSharedFolder(shared);
+    }
+
+    /**
      * @return the Roles
      */
     public Set<String> getRoles() {
@@ -228,6 +240,7 @@ public class Folder implements Serializable {
     /**
      * @param roles the roles to set.
      */
+    @Override
     public void setRoles(Set<String> roles) {
         this.roles = roles;
     }

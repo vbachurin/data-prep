@@ -16,6 +16,8 @@ package org.talend.dataprep.api.folder;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.talend.dataprep.api.share.Owner;
+
 /**
  * Builder class for Folder.
  */

@@ -23,8 +23,7 @@ import com.jayway.restassured.response.Response;
 
 public class MailServiceAPITest extends ApiServiceTestBase {
 
-    @Test
-    public void shouldReturnInternalSeverError500() throws Exception {
+    @Test public void shouldNotSendEmptyMail() throws Exception {
 
         MailDetails mailDetails = new MailDetails();
 
@@ -36,7 +35,9 @@ public class MailServiceAPITest extends ApiServiceTestBase {
                 .put("/api/mail");
 
         Assertions.assertThat(response.getStatusCode()).isEqualTo(400);
-
     }
+
+
+
 
 }

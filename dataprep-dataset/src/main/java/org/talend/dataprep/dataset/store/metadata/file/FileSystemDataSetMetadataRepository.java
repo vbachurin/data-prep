@@ -32,10 +32,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.api.share.Owner;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepositoryAdapter;
 import org.talend.dataprep.exception.TDPException;
@@ -43,6 +43,8 @@ import org.talend.dataprep.exception.error.DataSetErrorCodes;
 import org.talend.dataprep.lock.DistributedLock;
 import org.talend.dataprep.util.FilesHelper;
 import org.talend.dataprep.util.ReentrantReadWriteLockGroup;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * File system implementation of the DataSetMetadataRepository.
@@ -58,7 +60,7 @@ public class FileSystemDataSetMetadataRepository extends DataSetMetadataReposito
 
     /** The dataprep ready jackson builder. */
     @Autowired
-    private Jackson2ObjectMapperBuilder builder;
+    private ObjectMapper mapper;
 
     /** Where to store the dataset metadata */
     @Value("${dataset.metadata.store.file.location}")
@@ -91,7 +93,7 @@ public class FileSystemDataSetMetadataRepository extends DataSetMetadataReposito
 
         lock.writeLock().lock();
         try (GZIPOutputStream output = new GZIPOutputStream(new FileOutputStream(file))) {
-            builder.build().writer().writeValue(output, metadata);
+            mapper.writer().writeValue(output, metadata);
         } catch (IOException e) {
             LOG.error("Error saving {}", metadata, e);
             throw new TDPException(DataSetErrorCodes.UNABLE_TO_STORE_DATASET_METADATA, e,
@@ -120,7 +122,13 @@ public class FileSystemDataSetMetadataRepository extends DataSetMetadataReposito
 
         lock.readLock().lock();
         try (GZIPInputStream input = new GZIPInputStream(new FileInputStream(file))) {
-            return builder.build().readerFor(DataSetMetadata.class).readValue(input);
+            final DataSetMetadata dataSetMetadata = mapper.readerFor(DataSetMetadata.class).readValue(input);
+            // set default values for sharing and owner
+            dataSetMetadata.setSharedDataSet(false);
+            final Owner owner = new Owner();
+            owner.setFirstName(dataSetMetadata.getAuthor());
+            dataSetMetadata.setOwner(owner);
+            return dataSetMetadata;
         } catch (IOException e) {
             LOG.error("unable to load dataset {}", id, e);
             return null;
