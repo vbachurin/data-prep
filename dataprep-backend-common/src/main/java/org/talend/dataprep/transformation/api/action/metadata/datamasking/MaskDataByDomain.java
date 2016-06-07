@@ -89,6 +89,7 @@ public class MaskDataByDomain extends ActionMetadata implements ColumnAction {
                 row.set(columnId, masker.maskValue(value));
             } catch (Exception e) {
                 // Nothing to do, we let the original value as is
+                LOGGER.debug("Unable to process value '{}'.", value, e);
             }
         }
     }
@@ -109,12 +110,12 @@ public class MaskDataByDomain extends ActionMetadata implements ColumnAction {
             try {
                 if (Type.DATE.getName().equals(type)) {
                     final List<PatternFrequency> patternFreqList = column.getStatistics().getPatternFrequencies();
-                    final List<String> datatimePatternList = patternFreqList.stream().map(pf -> pf.getPattern())
+                    final List<String> dateTimePatternList = patternFreqList.stream() //
+                            .map(PatternFrequency::getPattern) //
                             .collect(Collectors.toList());
-                    actionContext.get(MASKER, (p) -> new ValueDataMasker(domain, type, datatimePatternList));
-
+                    actionContext.get(MASKER, p -> new ValueDataMasker(domain, type, dateTimePatternList));
                 } else {
-                    actionContext.get(MASKER, (p) -> new ValueDataMasker(domain, type));
+                    actionContext.get(MASKER, p -> new ValueDataMasker(domain, type));
                 }
             } catch (Exception e) {
                 LOGGER.error(e.getMessage(), e);
@@ -125,7 +126,7 @@ public class MaskDataByDomain extends ActionMetadata implements ColumnAction {
 
     @Override
     public Set<Behavior> getBehavior() {
-        return EnumSet.of(Behavior.VALUES_COLUMN);
+        return EnumSet.of(Behavior.VALUES_COLUMN, Behavior.NEED_STATISTICS);
     }
 
 }

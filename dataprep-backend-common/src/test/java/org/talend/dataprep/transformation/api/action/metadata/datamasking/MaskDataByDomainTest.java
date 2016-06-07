@@ -23,8 +23,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.core.Is;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -32,25 +30,26 @@ import org.slf4j.LoggerFactory;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.AbstractMetadataBaseTest;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
-import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
-import org.talend.dataprep.transformation.api.action.metadata.line.MakeLineHeader;
-import org.talend.dataprep.transformation.api.action.metadata.text.LowerCase;
 import org.talend.dataquality.datamasking.semantic.MaskableCategoryEnum;
+import org.talend.dataquality.semantic.classifier.SemanticCategoryEnum;
 
 /**
- * Test class for LowerCase action. Creates one consumer, and test it.
+ * Test class for MaskDataByDomain action.
  *
- * @see LowerCase
+ * @see MaskDataByDomain
  */
 public class MaskDataByDomainTest extends AbstractMetadataBaseTest {
 
     /** The action to test. */
-    private MaskDataByDomain action;
+    private MaskDataByDomain maskDataByDomain;
 
     private Map<String, String> parameters;
 
@@ -58,14 +57,14 @@ public class MaskDataByDomainTest extends AbstractMetadataBaseTest {
 
     @Before
     public void init() throws IOException {
-        action = new MaskDataByDomain();
+        maskDataByDomain = new MaskDataByDomain();
         parameters = ActionMetadataTestUtils
                 .parseParameters(MaskDataByDomainTest.class.getResourceAsStream("maskDataByDomainAction.json"));
     }
 
     @Test
     public void testCategory() throws Exception {
-        assertThat(action.getCategory(), is(ActionCategory.DATA_MASKING.getDisplayName()));
+        assertThat(maskDataByDomain.getCategory(), is(ActionCategory.DATA_MASKING.getDisplayName()));
     }
 
     @Test
@@ -75,13 +74,13 @@ public class MaskDataByDomainTest extends AbstractMetadataBaseTest {
         final Map<String, String> values = new HashMap<>();
         values.put("0000", "2015-09-15");
         final DataSetRow row = new DataSetRow(values);
-        final RowMetadata rowMeta = row.getRowMetadata();
-        ColumnMetadata colMeta = rowMeta.getById("0000");
+        final RowMetadata rowMetadata = row.getRowMetadata();
+        ColumnMetadata colMeta = rowMetadata.getById("0000");
         colMeta.setType(Type.DATE.getName());
         setStatistics(row, "0000", MaskDataByDomainTest.class.getResourceAsStream("statistics_datetime.json"));
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(maskDataByDomain, parameters));
 
         // then
         final String resultValue = row.values().get("0000").toString();
@@ -96,15 +95,19 @@ public class MaskDataByDomainTest extends AbstractMetadataBaseTest {
         final Map<String, String> values = new HashMap<>();
         values.put("0000", "azerty@talend.com");
         final DataSetRow row = new DataSetRow(values);
-        final RowMetadata rowMeta = row.getRowMetadata();
-        ColumnMetadata colMeta = rowMeta.getById("0000");
-        colMeta.setDomain(MaskableCategoryEnum.EMAIL.name());
+        final RowMetadata rowMetadata = row.getRowMetadata();
+        ColumnMetadata colMeta = rowMetadata.getById("0000");
+        colMeta.setDomain(SemanticCategoryEnum.EMAIL.name());
 
         final Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "XXXXXX@talend.com");
 
         // when
-        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
+        final Action action = factory.create(maskDataByDomain, parameters);
+        final ActionContext context = new ActionContext(new TransformationContext(), rowMetadata);
+        context.setParameters(parameters);
+        action.getRowAction().compile(context);
+        action.getRowAction().apply(row, context);
 
         // then
         assertEquals(expectedValues, row.values());
@@ -116,12 +119,12 @@ public class MaskDataByDomainTest extends AbstractMetadataBaseTest {
         final Map<String, String> values = new HashMap<>();
         values.put("0000", "12");
         final DataSetRow row = new DataSetRow(values);
-        final RowMetadata rowMeta = row.getRowMetadata();
-        ColumnMetadata colMeta = rowMeta.getById("0000");
+        final RowMetadata rowMetadata = row.getRowMetadata();
+        ColumnMetadata colMeta = rowMetadata.getById("0000");
         colMeta.setType(Type.INTEGER.getName());
 
         // when
-        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(maskDataByDomain, parameters));
 
         // then
         int realValueAsInteger = Integer.parseInt((String) row.values().get("0000"));
@@ -135,12 +138,12 @@ public class MaskDataByDomainTest extends AbstractMetadataBaseTest {
         final Map<String, String> values = new HashMap<>();
         values.put("0000", "12.5");
         final DataSetRow row = new DataSetRow(values);
-        final RowMetadata rowMeta = row.getRowMetadata();
-        ColumnMetadata colMeta = rowMeta.getById("0000");
+        final RowMetadata rowMetadata = row.getRowMetadata();
+        ColumnMetadata colMeta = rowMetadata.getById("0000");
         colMeta.setType(Type.FLOAT.getName());
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(maskDataByDomain, parameters));
 
         // then
         float realValueAsFloat = Float.parseFloat((String) row.values().get("0000"));
@@ -154,12 +157,12 @@ public class MaskDataByDomainTest extends AbstractMetadataBaseTest {
         final Map<String, String> values = new HashMap<>();
         values.put("0000", "12.5");
         final DataSetRow row = new DataSetRow(values);
-        final RowMetadata rowMeta = row.getRowMetadata();
-        ColumnMetadata colMeta = rowMeta.getById("0000");
+        final RowMetadata rowMetadata = row.getRowMetadata();
+        ColumnMetadata colMeta = rowMetadata.getById("0000");
         colMeta.setType(Type.INTEGER.getName());
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(maskDataByDomain, parameters));
 
         // then
         float realValueAsFloat = Float.parseFloat((String) row.values().get("0000"));
@@ -173,12 +176,12 @@ public class MaskDataByDomainTest extends AbstractMetadataBaseTest {
         final Map<String, String> values = new HashMap<>();
         values.put("0000", "12");
         final DataSetRow row = new DataSetRow(values);
-        final RowMetadata rowMeta = row.getRowMetadata();
-        ColumnMetadata colMeta = rowMeta.getById("0000");
+        final RowMetadata rowMetadata = row.getRowMetadata();
+        ColumnMetadata colMeta = rowMetadata.getById("0000");
         colMeta.setType(Type.FLOAT.getName());
 
         // when
-        ActionTestWorkbench.test(row, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(maskDataByDomain, parameters));
 
         // then
         int realValueAsInteger = Integer.parseInt((String) row.values().get("0000"));
@@ -193,15 +196,15 @@ public class MaskDataByDomainTest extends AbstractMetadataBaseTest {
         final Map<String, String> values = new HashMap<>();
         values.put("0000", " ");
         final DataSetRow row = new DataSetRow(values);
-        final RowMetadata rowMeta = row.getRowMetadata();
-        ColumnMetadata colMeta = rowMeta.getById("0000");
+        final RowMetadata rowMetadata = row.getRowMetadata();
+        ColumnMetadata colMeta = rowMetadata.getById("0000");
         colMeta.setDomain(MaskableCategoryEnum.EMAIL.name());
 
         final Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", " ");
 
         // when
-        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(maskDataByDomain, parameters));
 
         // then
         assertEquals(expectedValues, row.values());
@@ -215,15 +218,19 @@ public class MaskDataByDomainTest extends AbstractMetadataBaseTest {
         final Map<String, String> values = new HashMap<>();
         values.put("0000", "bla bla");
         final DataSetRow row = new DataSetRow(values);
-        final RowMetadata rowMeta = row.getRowMetadata();
-        ColumnMetadata colMeta = rowMeta.getById("0000");
+        final RowMetadata rowMetadata = row.getRowMetadata();
+        ColumnMetadata colMeta = rowMetadata.getById("0000");
         colMeta.setDomain(MaskableCategoryEnum.EMAIL.name());
 
         final Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "XXXXXXX");
 
         // when
-        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
+        final Action action = factory.create(maskDataByDomain, parameters);
+        final ActionContext context = new ActionContext(new TransformationContext(), rowMetadata);
+        context.setParameters(parameters);
+        action.getRowAction().compile(context);
+        action.getRowAction().apply(row, context);
 
         // then
         assertEquals(expectedValues, row.values());
@@ -236,15 +243,15 @@ public class MaskDataByDomainTest extends AbstractMetadataBaseTest {
         final Map<String, String> values = new HashMap<>();
         values.put("0000", "azerty@talend.com");
         final DataSetRow row = new DataSetRow(values);
-        final RowMetadata rowMeta = row.getRowMetadata();
-        ColumnMetadata colMeta = rowMeta.getById("0000");
+        final RowMetadata rowMetadata = row.getRowMetadata();
+        ColumnMetadata colMeta = rowMetadata.getById("0000");
         colMeta.setType(Type.ANY.getName());
 
         final Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "azerty@talend.com");
 
         // when
-        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(maskDataByDomain, parameters));
 
         // then
         assertEquals(expectedValues, row.values());
@@ -274,7 +281,7 @@ public class MaskDataByDomainTest extends AbstractMetadataBaseTest {
         colMeta.setType(Type.INTEGER.getName());
 
         //when
-        ActionTestWorkbench.test(Arrays.asList(row1, row2), factory.create(action, parameters));
+        ActionTestWorkbench.test(Arrays.asList(row1, row2), actionRegistry, factory.create(maskDataByDomain, parameters));
 
         // then
         // assert that line #1 is left unchanged
@@ -288,16 +295,16 @@ public class MaskDataByDomainTest extends AbstractMetadataBaseTest {
 
     @Test
     public void should_accept_column() {
-        assertTrue(action.acceptColumn(getColumn(Type.STRING)));
+        assertTrue(maskDataByDomain.acceptColumn(getColumn(Type.STRING)));
     }
 
     @Test
     public void should_not_accept_column() {
-        assertFalse(action.acceptColumn(getColumn(Type.DATE)));
-        assertFalse(action.acceptColumn(getColumn(Type.NUMERIC)));
-        assertFalse(action.acceptColumn(getColumn(Type.INTEGER)));
-        assertFalse(action.acceptColumn(getColumn(Type.FLOAT)));
-        assertFalse(action.acceptColumn(getColumn(Type.BOOLEAN)));
-        assertFalse(action.acceptColumn(getColumn(Type.ANY)));
+        assertFalse(maskDataByDomain.acceptColumn(getColumn(Type.DATE)));
+        assertFalse(maskDataByDomain.acceptColumn(getColumn(Type.NUMERIC)));
+        assertFalse(maskDataByDomain.acceptColumn(getColumn(Type.INTEGER)));
+        assertFalse(maskDataByDomain.acceptColumn(getColumn(Type.FLOAT)));
+        assertFalse(maskDataByDomain.acceptColumn(getColumn(Type.BOOLEAN)));
+        assertFalse(maskDataByDomain.acceptColumn(getColumn(Type.ANY)));
     }
 }
