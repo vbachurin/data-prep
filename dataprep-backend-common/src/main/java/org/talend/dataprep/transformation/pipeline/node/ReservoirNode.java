@@ -147,9 +147,9 @@ public class ReservoirNode extends AnalysisNode implements Monitored {
                 // Send stored records to next steps
                 final ObjectMapper mapper = new ObjectMapper();
                 if (rowMetadata != null && resultAnalyzer != null) {
-                    // Adapt row metadata
+                    // Adapt row metadata to infer type (only for non type-forced columns)
                     resultAnalyzer.end();
-                    adapter.adapt(rowMetadata.getColumns(), resultAnalyzer.getResult(), filter);
+                    adapter.adapt(rowMetadata.getColumns(), resultAnalyzer.getResult(), filter.and(c -> !c.isTypeForced()));
                     resultAnalyzer.close();
 
                     final Analyzer<Analyzers.Result> configuredAnalyzer = analyzer.apply(rowMetadata.getColumns());

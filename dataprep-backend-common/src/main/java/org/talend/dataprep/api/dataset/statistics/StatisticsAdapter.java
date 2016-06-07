@@ -152,8 +152,8 @@ public class StatisticsAdapter {
 
             // the suggested type can be modified by #injectValueQuality
             column.setType(suggestedColumnType.getName());
-            injectValueQuality(column, result);
         }
+        injectValueQuality(column, result);
     }
 
     private void injectValueQuality(final ColumnMetadata column, final Analyzers.Result result) {
