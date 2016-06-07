@@ -1,36 +1,29 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.api.service.mail;
 
-import java.util.Arrays;
-import java.util.HashSet;
-
 import javax.mail.internet.InternetAddress;
 
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 /**
  * An implementation of {@link FeedbackSender} useful to debug
  */
-@ConditionalOnProperty(value = { "mail.smtp.host", "mail.smtp.to", "mail.smtp.username",
-        "mail.smtp.from" }, matchIfMissing = true)
 @Component
-public class NoOpFeedbackSender extends AbstractFeedbackSender {
+public class NoOpFeedbackSender implements FeedbackSender {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NoOpFeedbackSender.class);
 
@@ -38,12 +31,9 @@ public class NoOpFeedbackSender extends AbstractFeedbackSender {
     public void send(String subject, String body, String sender) {
         if (LOGGER.isDebugEnabled()) {
             try {
-                String recipientList = StringUtils.join((new HashSet<>(Arrays.asList(recipients))).toArray(), ',');
                 InternetAddress from = new InternetAddress(sender);
                 String builder = "***** Sending mail" + //
                         "from: " + from.toString() + //
-                        "username: " + userName + //
-                        "Recipients=" + recipientList + //
                         "Subject=" + subject + //
                         "Body=" + body;
                 LOGGER.debug(builder);
