@@ -15,7 +15,9 @@ package org.talend.dataprep.transformation.api.action.metadata.text;
 
 import java.util.EnumSet;
 import java.util.Set;
+import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -35,6 +37,8 @@ public class Trim extends ActionMetadata implements ColumnAction {
      * The action name.
      */
     public static final String TRIM_ACTION_NAME = "trim"; //$NON-NLS-1$
+
+    private static final String TRIM_PATTERN = "trimPattern";
 
     /**
      * @see ActionMetadata#getName()
@@ -60,6 +64,15 @@ public class Trim extends ActionMetadata implements ColumnAction {
         return Type.STRING.equals(Type.get(column.getType()));
     }
 
+    @Override
+    public void compile(ActionContext actionContext) {
+        super.compile(actionContext);
+        if (actionContext.getActionStatus() == ActionContext.ActionStatus.OK) {
+            final Pattern pattern = Pattern.compile("(^\\h*)|(\\h*$)");
+            actionContext.get(TRIM_PATTERN, parameters -> pattern);
+        }
+    }
+
     /**
      * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext)
      */
@@ -68,7 +81,8 @@ public class Trim extends ActionMetadata implements ColumnAction {
         final String columnId = context.getColumnId();
         final String toTrim = row.get(columnId);
         if (toTrim != null) {
-            row.set(columnId, toTrim.trim());
+            final Pattern trimPattern = context.get(TRIM_PATTERN);
+            row.set(columnId, trimPattern.matcher(toTrim).replaceAll(StringUtils.EMPTY));
         }
     }
 
