@@ -28,7 +28,10 @@ describe('InventoryItem directive', () => {
         'type': 'text/csv',
         'certificationStep': 'NONE',
         'preparations': [{name:'US States prepa'}, {name:'US States prepa 2'}],
-        'favorite' : true
+        'favorite' : true,
+        'owner': {
+            'displayName': "anonymousUser"
+        }
     };
 
     const csv_dataset = {
@@ -47,6 +50,17 @@ describe('InventoryItem directive', () => {
         'id': '12ce6c32-bf80-41c8-92e5-66d70f22ec1f',
         'name': 'US States',
         'type': 'application/vnd.remote-ds.job'
+    };
+
+    const shared_dataset = {
+        'id': '39f6a264-1eb7-4f72-9680-98acc9933bab',
+        'name': 'US States shared',
+        'type': 'text/csv',
+        'created': '1437020219748',
+        'owner': {
+            'displayName': "anonymous user"
+        },
+        'sharedDataset': 'true'
     };
 
     const preparation = {
@@ -83,7 +97,7 @@ describe('InventoryItem directive', () => {
     beforeEach(angular.mock.module('pascalprecht.translate', ($translateProvider) => {
         $translateProvider.translations('en', {
             'OPEN_ACTION':'Open {{type}} \"{{name}}\"',
-            'DATASET_DETAILS': 'owned by {{author}}, created {{created | TDPMoment}}, contains {{records}} lines',
+            'DATASET_DETAILS': 'owned by {{owner.displayName}}, created {{created | TDPMoment}}, contains {{records}} lines',
             "PREPARATION_DETAILS": "owned by {{author}}, created {{creationDate | TDPMoment}}, contains {{steps.length -1}} step(s)",
             "FOLDER_DETAILS": "owned by {{author}}, created {{creationDate | TDPMoment}}, contains {{datasets.length}} dataset(s)",
             'COPY_MOVE_ACTION': 'Copy or Move {{type}} \"{{name}}\"',
@@ -170,6 +184,7 @@ describe('InventoryItem directive', () => {
             scope.copy = () =>{};
             scope.processCertif = () =>{};
             scope.rename = () =>{};
+            scope.isItemShared = () =>{};
             scope.open = () =>{};
             scope.update = () =>{};
             scope.remove = () =>{};
@@ -188,6 +203,7 @@ describe('InventoryItem directive', () => {
                     'process-certification="processCertif" ' +
                     'copy="copy" ' +
                     'rename="rename" ' +
+                    'is-item-shared="isItemShared" ' +
                     'remove="remove" ' +
                     'toggle-favorite="toggleFavorite" ' +
                     'update="update" ' +
@@ -551,6 +567,94 @@ describe('InventoryItem directive', () => {
 
                 // then
                 expect(ctrl.toggleFavorite).toHaveBeenCalled();
+            });
+        });
+
+    });
+
+    describe('shared dataset', () => {
+
+        beforeEach(inject(($rootScope, $compile) => {
+            scope = $rootScope.$new();
+
+            scope.dataset = shared_dataset;
+            scope.openDataset = () =>{};
+            scope.openRelatedInventory = () =>{};
+            scope.copy = () =>{};
+            scope.processCertif = () =>{};
+            scope.rename = () =>{};
+            scope.isItemShared = () =>{return true};
+            scope.open = () =>{};
+            scope.update = () =>{};
+            scope.remove = () =>{};
+            scope.openRelatedInv = () =>{};
+            scope.toggleFavorite = () =>{};
+            scope.preparations = [];
+            createElement = () => {
+                element = angular.element('<inventory-item ' +
+                    'item="dataset" ' +
+                    'details="DATASET_DETAILS" ' +
+                    'type="dataset" ' +
+                    'related-inventories="preparations" ' +
+                    'related-inventories-type="preparation" ' +
+                    'open-related-inventory="openRelatedInventory" ' +
+                    'open="open" ' +
+                    'process-certification="processCertif" ' +
+                    'copy="copy" ' +
+                    'rename="rename" ' +
+                    'is-item-shared="isItemShared" ' +
+                    'remove="remove" ' +
+                    'toggle-favorite="toggleFavorite" ' +
+                    'update="update" ' +
+                    '></inventory-item>');
+                $compile(element)(scope);
+                scope.$digest();
+                ctrl = element.controller('inventoryItem');
+                return element;
+            };
+        }));
+
+        describe('display inventory components', () => {
+
+            it('should display inventory details', inject(($filter) => {
+                // given
+                const momentize = $filter('TDPMoment');
+
+                // when
+                createElement();
+
+                // then
+                expect(element.find('.inventory-description').eq(0).text()).toBe('owned by anonymous user, created ' + momentize('1437020219748') + ', contains  lines');
+            }));
+
+            it('should display READONLY title', () => {
+                // when
+                createElement();
+
+                // then
+                const title = element.find('.inventory-text > span').eq(0).text().trim();
+                expect(title).toBe(shared_dataset.name);
+            });
+
+            it('should display 2 dividers', () => {
+                // when
+                createElement();
+
+                // then
+                expect(element.find('.divider').length).toBe(2);
+            });
+
+            it('should NOT display remove icon', () => {
+                // when
+                createElement();
+
+                var links = element.find('a');
+
+                // then
+                for (var i=0; i<links.length; i++) {
+                    const icon = element.find('a').eq(i).attr('data-icon');
+                    expect(icon).not.toBe('e');
+                }
             });
         });
 

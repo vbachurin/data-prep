@@ -28,6 +28,7 @@
  *      process-certification="datasetListCtrl.processCertification"
  *      remove="datasetListCtrl.remove"
  *      rename="datasetListCtrl.rename"
+ *      rename="datasetListCtrl.isItemShared"
  *      related-inventories="dataset.preparations"
  *      related-inventories-type="preparation"
  *      toggle-favorite="datasetListCtrl.datasetService.toggleFavorite"
@@ -44,6 +45,7 @@
  * @param {function}    processCertification attributes certification to the inventory item
  * @param {function}    remove the inventory item
  * @param {function}    rename the inventory item
+ * @param {boolean}     true if the item is shared
  * @param {array}       relatedInventories related inventory items
  * @param {string}      relatedInventoriesType of the related inventory item
  * @param {function}    toggleFavorite the inventory item
@@ -63,6 +65,7 @@ const InventoryItemcomponent = {
         processCertification: '=',
         remove: '=',
         rename: '=',
+        isItemShared: '=',
         relatedInventories: '=',
         relatedInventoriesType: '@',
         toggleFavorite: '=',

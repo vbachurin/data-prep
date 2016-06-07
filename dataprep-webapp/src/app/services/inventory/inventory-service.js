@@ -75,6 +75,7 @@ class InventoryService {
                 itemToDisplay.originalItem = item;
                 itemToDisplay.lastModificationDate = item.lastModificationDate;
                 itemToDisplay.tooltipName = item.name;
+                itemToDisplay.owner = item.owner;
 
                 inventory_items.push(itemToDisplay);
             });

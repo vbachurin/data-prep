@@ -36,7 +36,7 @@
 
     <!-- Descriptions -->
     <div class="inventory-text">
-        <talend-editable-text ng-if="$ctrl.open && $ctrl.rename"
+        <talend-editable-text ng-if="$ctrl.open && $ctrl.rename && !$ctrl.isItemShared($ctrl.item)"
                               text="$ctrl.item.name"
                               text-class="inventory-title"
                               text-title="{{'OPEN_ACTION' | translate: $ctrl.getTooltipContent()}}"
@@ -44,17 +44,18 @@
                               on-validate="$ctrl.rename($ctrl.item, text)"
                               validate-only-on-change>
         </talend-editable-text>
-        <span ng-if="!$ctrl.open || !$ctrl.rename"
+        <span ng-if="!$ctrl.open || !$ctrl.rename || $ctrl.isItemShared($ctrl.item)"
               class="inventory-title"
               ng-bind-html="$ctrl.item.name"
-              title="{{$ctrl.item.tooltipName}}"></span>
+              title="{{$ctrl.item.tooltipName}}"
+              ng-click="$ctrl.openInventoryItem()"></span>
         <div class="inventory-description"
              ng-bind-html="$ctrl.details | translate:$ctrl.item">
         </div>
     </div>
 
     <!-- Action Icons -->
-    <div class="inventory-actions" insertion-inventory-actions item="$ctrl.item" type="$ctrl.type">
+    <div class="inventory-actions" insertion-inventory-actions item="$ctrl.item" type="$ctrl.type" visible="$ctrl.open && $ctrl.rename">
         <talend-button-dropdown ng-if="!$ctrl.item.draft && $ctrl.relatedInventories.length"
                                 class="inventory-actions-related-item btn-icon"
                                 button-action="$ctrl.openRelatedInventoryItem($ctrl.relatedInventories[0])"
@@ -102,7 +103,7 @@
            translate-values="{type: $ctrl.type, name: $ctrl.item.name}"
            ng-click="$ctrl.copy($ctrl.item)"></a>
 
-        <a ng-if="$ctrl.remove"
+        <a ng-if="$ctrl.remove && !$ctrl.isItemShared($ctrl.item)"
            data-icon="e"
            class="btn-icon"
            translate-once-title="DELETE_ACTION"

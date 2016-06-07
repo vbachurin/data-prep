@@ -47,6 +47,7 @@ export default class DatasetListCtrl {
         this.processCertification = this.processCertification.bind(this);
         this.remove = this.remove.bind(this);
         this.rename = this.rename.bind(this);
+        this.isItemShared= this.isItemShared.bind(this);
         this.clone = this.clone.bind(this);
 
         this.renamingList = [];
@@ -82,6 +83,21 @@ export default class DatasetListCtrl {
                 'REMOVE_SUCCESS',
                 { type: 'dataset', name: dataset.name }
             ));
+    }
+
+    /**
+     * @ngdoc method
+     * @name isItemShared
+     * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
+     * @description Return true if the dataset is shared
+     * @param {object} dataset The dataset to check
+     */
+    isItemShared(dataset) {
+        var shared = dataset.sharedDataSet;
+        if (angular.isUndefined(shared)) {
+            return false;
+        }
+        return shared ;
     }
 
     /**

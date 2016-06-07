@@ -27,6 +27,9 @@ describe('DatasetList component', () => {
             'type': 'text/csv',
             'certificationStep': 'NONE',
             'preparations': [{ name: 'US States prepa' }, { name: 'US States prepa 2' }],
+            'owner': {
+                'displayName': 'anonymousUser'
+            }
         },
         {
             'id': 'e93b9c92-e054-4f6a-a38f-ca52f22ead2b',
@@ -36,6 +39,9 @@ describe('DatasetList component', () => {
             'type': 'application/vnd.ms-excel',
             'certificationStep': 'PENDING',
             'preparations': [{ name: 'Customers prepa' }],
+            'owner': {
+                'displayName': 'anonymousUser'
+            }
         },
         {
             'id': 'e93b9c92-e054-4f6a-a38f-ca52f22ead3a',
@@ -44,12 +50,15 @@ describe('DatasetList component', () => {
             'created': '14370202197',
             'certificationStep': 'CERTIFIED',
             'preparations': [],
+            'owner': {
+                'displayName': 'anonymousUser'
+            }
         }
     ];
 
     beforeEach(angular.mock.module('pascalprecht.translate', ($translateProvider) => {
         $translateProvider.translations('en', {
-            'DATASET_DETAILS': 'owned by {{author}}, created {{created | TDPMoment}}, contains {{records}} lines'
+            'DATASET_DETAILS': 'owned by {{owner.displayName}}, created {{created | TDPMoment}}, contains {{records}} lines'
         });
         $translateProvider.preferredLanguage('en');
     }));

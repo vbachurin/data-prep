@@ -397,7 +397,7 @@ describe('Preparation Creator Controller', () => {
             scope.$digest();
 
             //then
-            expect(PreparationService.create).toHaveBeenCalledWith(ctrl.baseDataset.id, ctrl.enteredName, stateMock.inventory.folder.metadata.path);
+            expect(PreparationService.create).toHaveBeenCalledWith(ctrl.baseDataset.id, ctrl.enteredName, stateMock.inventory.folder.metadata.id);
             expect(ctrl.showAddPrepModal).toBe(false);
             expect($state.go).toHaveBeenCalledWith('playground.preparation', {prepid: newPreparation.id});
         }));

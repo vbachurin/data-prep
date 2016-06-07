@@ -160,7 +160,7 @@ class PreparationCreatorCtrl {
      */
     createPreparation() {
         this.addPreparationForm.$commitViewValue();
-        this.preparationService.create(this.baseDataset.id, this.enteredName, this.state.inventory.folder.metadata.path)
+        this.preparationService.create(this.baseDataset.id, this.enteredName, this.state.inventory.folder.metadata.id)
             .then((newPreparation) => {
                 this.showAddPrepModal = false;
                 this.$state.go('playground.preparation', {prepid: newPreparation.id});

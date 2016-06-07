@@ -25,7 +25,10 @@ describe('Inventory Service', () => {
                 created: 1,
                 records: 100,
                 path: 'home',
-                type: 'csv'
+                type: 'csv',
+                owner: {
+                    id: 'charles'
+                }
             }]
 
         }
@@ -41,7 +44,19 @@ describe('Inventory Service', () => {
         //given
         let result= null;
         let expectedResult = [
-            {inventoryType: 'dataset', author: 'toto', created: 1, records: 100, name: 'dataset <span class="highlighted">test</span>', path: 'home', type: 'csv', originalItem: results.data.datasets[0], lastModificationDate: 3, tooltipName: 'dataset test'},
+            {inventoryType: 'dataset',
+                author: 'toto',
+                created: 1,
+                records: 100,
+                name: 'dataset <span class="highlighted">test</span>',
+                path: 'home',
+                type: 'csv',
+                originalItem: results.data.datasets[0],
+                lastModificationDate: 3,
+                tooltipName: 'dataset test',
+                owner: {
+                    id: 'charles'
+                }},
             {name : 'prep <span class="highlighted">test</span>', lastModificationDate: 2, inventoryType: 'preparation', tooltipName: 'prep test'},
             {name : 'folder <span class="highlighted">test</span>', lastModificationDate: 1, inventoryType: 'folder', tooltipName: 'folder test'}
         ];
