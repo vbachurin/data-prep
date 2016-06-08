@@ -422,23 +422,28 @@ public class PreparationService {
         // Ensure that the preparation is not locked elsewhere
         lock(preparationId);
 
-        // set the target name
-        final String targetName = StringUtils.isEmpty(newName) ? original.getName() : newName;
+        try {
+            // set the target name
+            final String targetName = StringUtils.isEmpty(newName) ? original.getName() : newName;
 
-        // first check if the name is already used in the target folder
-        checkIfPreparationNameIsAvailable(destination, targetName);
+            // first check if the name is already used in the target folder
+            checkIfPreparationNameIsAvailable(destination, targetName);
 
-        // rename the dataset only if we received a new name
-        if (!targetName.equals(original.getName())) {
-            original.setName(newName);
-            preparationRepository.add(original);
+            // rename the dataset only if we received a new name
+            if (!targetName.equals(original.getName())) {
+                original.setName(newName);
+                preparationRepository.add(original);
+            }
+
+            // move the preparation
+            FolderEntry folderEntry = new FolderEntry(PREPARATION, preparationId);
+            folderRepository.moveFolderEntry(folderEntry, folder, destination);
+
+            LOGGER.info("preparation {} moved from {} to {} with the new name {}", preparationId, folder, destination, targetName);
         }
-
-        // move the preparation
-        FolderEntry folderEntry = new FolderEntry(PREPARATION, preparationId);
-        folderRepository.moveFolderEntry(folderEntry, folder, destination);
-
-        LOGGER.info("preparation {} moved from {} to {} with the new name {}", preparationId, folder, destination, targetName);
+        finally {
+            unlock(preparationId);
+        }
     }
 
     /**
