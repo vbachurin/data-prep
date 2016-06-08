@@ -17,6 +17,8 @@ import static org.junit.Assert.*;
 
 import java.util.Collection;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.talend.dataprep.api.preparation.Identifiable;
+import org.talend.dataprep.lock.store.LockedResource.LockUserInfo;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = { NoOpLockedResourceRepositoryTest.class })
@@ -33,37 +36,45 @@ import org.talend.dataprep.api.preparation.Identifiable;
 public class NoOpLockedResourceRepositoryTest extends LockedResourceTestUtils {
 
     @Autowired
-    LockedResourceRepository repository;
+    private LockedResourceRepository repository;
+
+    @Before
+    public void setUp() {
+        repository.clear();
+    }
+
+    @After
+    public void tearDown() {
+        repository.clear();
+    }
 
     @Test
     public void should_lock_resource_lock() {
-        String owner = "1";
-        String preEmpter = "2";
+        LockUserInfo owner = randomLockUserInfo();
+        LockUserInfo preEmpter = randomLockUserInfo();
         Identifiable resource = getFirstResourceType("1");
 
         LockedResource lockedResource = repository.tryLock(resource, owner);
         LockedResource lockedByPreempter = repository.tryLock(resource, preEmpter);
 
         assertNotNull(lockedResource);
-        assertTrue(repository.lockOwned(lockedResource, owner));
-        assertTrue(repository.lockOwned(lockedByPreempter, preEmpter));
+        assertTrue(repository.lockOwned(lockedResource, owner.getId()));
+        assertTrue(repository.lockOwned(lockedByPreempter, preEmpter.getId()));
         assertNotEquals(lockedByPreempter, lockedResource);
-
     }
 
     @Test
     public void should_always_unlock() {
-        String owner = "1";
-        String preEmpter = "2";
+        LockUserInfo owner = randomLockUserInfo();
+        LockUserInfo preEmpter = randomLockUserInfo();
         Identifiable resource = getFirstResourceType("1");
 
         LockedResource lockedResource = repository.tryLock(resource, owner);
-        LockedResource lockedByPreemter = repository.tryUnlock(resource, preEmpter);
+        LockedResource lockedByPreemter = repository.tryUnlock(resource, preEmpter.getId());
 
         assertNotNull(lockedResource);
         assertNull(lockedByPreemter);
         assertTrue(repository.lockReleased(lockedByPreemter));
-
     }
 
     @Test
@@ -78,11 +89,11 @@ public class NoOpLockedResourceRepositoryTest extends LockedResourceTestUtils {
 
     @Test
     public void lock_should_be_reentrant() {
-        String lockOwner = "1";
+        LockUserInfo owner = randomLockUserInfo();
         Identifiable resource = getFirstResourceType("1");
 
-        LockedResource lockedResource = repository.tryLock(resource, lockOwner);
-        LockedResource lockedResource2 = repository.tryLock(resource, lockOwner);
+        LockedResource lockedResource = repository.tryLock(resource, owner);
+        LockedResource lockedResource2 = repository.tryLock(resource, owner);
 
         assertNotNull(lockedResource);
         assertNotNull(lockedResource2);
@@ -93,8 +104,10 @@ public class NoOpLockedResourceRepositoryTest extends LockedResourceTestUtils {
 
     @Test
     public void should_always_list_empty_collection() {
-        String user1 = "1";
-        String user2 = "2";
+
+        LockUserInfo user1 = randomLockUserInfo();
+        LockUserInfo user2 = randomLockUserInfo();
+
         Identifiable resource = getFirstResourceType("1");
         Identifiable resource2 = getSecondResourceType("2");
         Identifiable resource3 = getSecondResourceType("3");
@@ -102,7 +115,7 @@ public class NoOpLockedResourceRepositoryTest extends LockedResourceTestUtils {
         LockedResource lockOnResource1 = repository.tryLock(resource, user1);
         LockedResource lockOnResource2 = repository.tryLock(resource2, user2);
         repository.tryLock(resource3, user2);
-        repository.tryUnlock(resource3, user2);
+        repository.tryUnlock(resource3, user2.getId());
 
         Collection<LockedResource> allLockedResources = repository.listAll();
 
@@ -112,8 +125,8 @@ public class NoOpLockedResourceRepositoryTest extends LockedResourceTestUtils {
 
     @Test
     public void should_list_empty_collection_for_resources_locked_by_a_user() {
-        String user1 = "1";
-        String user2 = "2";
+        LockUserInfo user1 = randomLockUserInfo();
+        LockUserInfo user2 = randomLockUserInfo();
         Identifiable resource = getFirstResourceType("1");
         Identifiable resource2 = getSecondResourceType("2");
         Identifiable resource3 = getSecondResourceType("3");
@@ -122,7 +135,7 @@ public class NoOpLockedResourceRepositoryTest extends LockedResourceTestUtils {
         LockedResource lockOnResource2 = repository.tryLock(resource2, user2);
         LockedResource lockOnResource3 = repository.tryLock(resource3, user2);
 
-        Collection<LockedResource> allLockedResources = repository.listByUser(user2);
+        Collection<LockedResource> allLockedResources = repository.listByUser(user2.getId());
 
         assertNotNull(allLockedResources);
         assertEquals(0, allLockedResources.size());
@@ -130,7 +143,7 @@ public class NoOpLockedResourceRepositoryTest extends LockedResourceTestUtils {
 
     @Test
     public void should_get_null_when_trying_to_get_locked_resource() {
-        String user1 = "1";
+        LockUserInfo user1 = randomLockUserInfo();
         Identifiable resource = getFirstResourceType("1");
 
         LockedResource lockOnResource1 = repository.tryLock(resource, user1);

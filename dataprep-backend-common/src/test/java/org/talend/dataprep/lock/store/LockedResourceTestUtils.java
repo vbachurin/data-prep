@@ -13,7 +13,11 @@
 
 package org.talend.dataprep.lock.store;
 
+import java.util.Random;
+import java.util.UUID;
+
 import org.talend.dataprep.api.preparation.Identifiable;
+import org.talend.dataprep.lock.store.LockedResource.LockUserInfo;
 
 public abstract class LockedResourceTestUtils {
 
@@ -52,5 +56,13 @@ public abstract class LockedResourceTestUtils {
         SecondResource(String id) {
             super(id);
         }
+    }
+
+    protected LockUserInfo randomLockUserInfo() {
+        final Random random = new Random();
+        final String userId = UUID.randomUUID().toString();
+        final String displayName = "display name for " + random.nextInt(100) + 1;
+
+        return new LockUserInfo(userId, displayName);
     }
 }

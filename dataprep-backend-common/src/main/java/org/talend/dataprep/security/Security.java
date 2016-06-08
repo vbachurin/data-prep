@@ -26,6 +26,13 @@ public interface Security {
     String getUserId();
 
     /**
+     * @return the current user display name, e.g. first name + last name.
+     */
+    default String getUserDisplayName() {
+        return getUserId();
+    }
+
+    /**
      * @return an authentication token.
      */
     String getAuthenticationToken();

@@ -55,6 +55,7 @@ import org.talend.dataprep.exception.json.JsonErrorCodeDescription;
 import org.talend.dataprep.folder.store.FolderRepository;
 import org.talend.dataprep.http.HttpResponseContext;
 import org.talend.dataprep.lock.store.LockedResource;
+import org.talend.dataprep.lock.store.LockedResource.LockUserInfo;
 import org.talend.dataprep.lock.store.LockedResourceRepository;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.preparation.store.PreparationRepository;
@@ -968,14 +969,16 @@ public class PreparationService {
             return;
         }
 
-        LockedResource lockedResource = lockedResourceRepository.tryLock(preparation, userId);
+        LockUserInfo userInfo = new LockUserInfo(userId, security.getUserDisplayName());
+        LockedResource lockedResource = lockedResourceRepository.tryLock(preparation, userInfo);
         if (lockedResourceRepository.lockOwned(lockedResource, userId)) {
             LOGGER.debug("Preparation {} locked for user {}.", preparationId, userId);
         } else {
             LOGGER.debug("Unable to lock Preparation {} for user {}. Already locked by {}", preparationId, userId,
                     lockedResource.getUserId());
             // TODO: We must find a way to avoid printing stack trace when such a kind of non critical exceptions occurs
-            throw new TDPException(CommonErrorCodes.CONFLICT_TO_LOCK_RESOURCE, build().put("id", lockedResource.getUserId()));
+            throw new TDPException(CommonErrorCodes.CONFLICT_TO_LOCK_RESOURCE,
+                    build().put("id", lockedResource.getUserDisplayName()));
         }
     }
 
@@ -996,7 +999,8 @@ public class PreparationService {
             LOGGER.debug("Unable to unlock Preparation {} for user {}. Already locked by {}", preparationId, userId,
                     lockedResource.getUserId());
             // TODO: We must find a way to avoid printing stack trace when such a kind of non critical exceptions occurs
-            throw new TDPException(CommonErrorCodes.CONFLICT_TO_UNLOCK_RESOURCE, build().put("id", lockedResource.getUserId()));
+            throw new TDPException(CommonErrorCodes.CONFLICT_TO_UNLOCK_RESOURCE,
+                    build().put("id", lockedResource.getUserDisplayName()));
         }
     }
 
