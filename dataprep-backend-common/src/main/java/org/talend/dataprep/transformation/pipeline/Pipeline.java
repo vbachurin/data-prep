@@ -115,7 +115,7 @@ public class Pipeline implements Node, RuntimeNode {
 
         private Predicate<DataSetRow> inFilter;
 
-        private Predicate<DataSetRow> outFilter;
+        private Function<RowMetadata, Predicate<DataSetRow>> outFilter;
 
         private boolean needGlobalStatistics = true;
 
@@ -237,7 +237,7 @@ public class Pipeline implements Node, RuntimeNode {
             return analysisResult;
         }
 
-        public Builder withFilterOut(Predicate<DataSetRow> outFilter) {
+        public Builder withFilterOut(Function<RowMetadata, Predicate<DataSetRow>> outFilter) {
             this.outFilter = outFilter;
             return this;
         }
@@ -282,8 +282,8 @@ public class Pipeline implements Node, RuntimeNode {
             }
             // Analyze (delayed)
             if (analysis.needDelayedAnalysis && needGlobalStatistics) {
-                current.to(new ReservoirNode(inlineAnalyzer, analysis.filter , adapter));
-                current.to(new ReservoirNode(delayedAnalyzer, analysis.filter , adapter));
+                current.to(new ReservoirNode(inlineAnalyzer, analysis.filter, adapter));
+                current.to(new ReservoirNode(delayedAnalyzer, analysis.filter, adapter));
             }
             // Output
             if (outFilter != null) {

@@ -1,5 +1,6 @@
 package org.talend.dataprep.transformation.pipeline.node;
 
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -7,15 +8,22 @@ import org.talend.dataprep.api.dataset.RowMetadata;
 
 public class FilteredNode extends BasicNode {
 
-    private final Predicate<DataSetRow> filter;
+    private final Function<RowMetadata, Predicate<DataSetRow>> filter;
 
-    public FilteredNode(Predicate<DataSetRow> filter) {
+    private Predicate<DataSetRow> instance;
+
+    public FilteredNode(Function<RowMetadata, Predicate<DataSetRow>> filter) {
         this.filter = filter;
     }
 
     @Override
     public void receive(DataSetRow row, RowMetadata metadata) {
-        if (filter.test(row)) {
+        synchronized (filter) {
+            if (instance == null) {
+                instance = filter.apply(metadata);
+            }
+        }
+        if (instance.test(row)) {
             super.receive(row, metadata);
         }
     }

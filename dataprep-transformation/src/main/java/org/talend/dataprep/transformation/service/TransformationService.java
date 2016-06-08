@@ -603,13 +603,10 @@ public class TransformationService extends BaseTransformationService {
                     try (JsonParser parser = mapper.getFactory().createParser(datasetContent)) {
                         // Create dataset
                         final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
-                        final DataSetMetadata dataSetMetadata = dataSet.getMetadata();
-                        final Predicate<DataSetRow> filter = filterService.build(parameters.getFilter(),
-                                dataSetMetadata.getRowMetadata());
                         // get the actions to apply (no preparation ==> dataset export ==> no actions)
                         Configuration configuration = Configuration.builder() //
                                 .args(parameters.getArguments()) //
-                                .inFilter(filter) //
+                                .outFilter(rm -> filterService.build(parameters.getFilter(), rm)) //
                                 .format(format.getName()) //
                                 .volume(Configuration.Volume.SMALL) //
                                 .output(outputStream) //
@@ -648,15 +645,12 @@ public class TransformationService extends BaseTransformationService {
                         }
                         // Create dataset
                         final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
-                        final DataSetMetadata dataSetMetadata = dataSet.getMetadata();
-                        final Predicate<DataSetRow> filter = filterService.build(parameters.getFilter(),
-                                dataSetMetadata.getRowMetadata());
                         // get the actions to apply (no preparation ==> dataset export ==> no actions)
                         String actions = getActions(preparationId, version);
 
                         Configuration configuration = Configuration.builder() //
                                 .args(parameters.getArguments()) //
-                                .inFilter(filter) //
+                                .outFilter(rm -> filterService.build(parameters.getFilter(), rm)) //
                                 .format(format.getName()) //
                                 .actions(actions) //
                                 .stepId(stepId) //

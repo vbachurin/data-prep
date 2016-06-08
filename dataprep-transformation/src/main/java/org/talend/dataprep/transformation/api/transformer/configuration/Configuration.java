@@ -16,11 +16,13 @@ package org.talend.dataprep.transformation.api.transformer.configuration;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.format.export.ExportFormat;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.format.JsonFormat;
@@ -34,7 +36,7 @@ public class Configuration {
 
     private final Predicate<DataSetRow> filter;
 
-    private final Predicate<DataSetRow> outFilter;
+    private final Function<RowMetadata, Predicate<DataSetRow>> outFilter;
 
     private final Supplier<Node> monitorSupplier;
 
@@ -75,7 +77,7 @@ public class Configuration {
      */
     protected Configuration(final OutputStream output, //
                             final Predicate<DataSetRow> filter, //
-                            final Predicate<DataSetRow> outFilter, //
+                            final Function<RowMetadata, Predicate<DataSetRow>> outFilter, //
                             final Supplier<Node> monitorSupplier, //
                             final String format, //
                             final String actions, //
@@ -160,7 +162,7 @@ public class Configuration {
         return filter;
     }
 
-    public Predicate<DataSetRow> getOutFilter() {
+    public Function<RowMetadata, Predicate<DataSetRow>> getOutFilter() {
         return outFilter;
     }
 
@@ -211,7 +213,7 @@ public class Configuration {
 
         private Predicate<DataSetRow> filter = r -> true;
 
-        private Predicate<DataSetRow> outFilter = r -> true;
+        private Function<RowMetadata, Predicate<DataSetRow>> outFilter = metadata -> r -> true;
 
         private boolean globalStatistics = true;
 
@@ -294,7 +296,7 @@ public class Configuration {
             return this;
         }
 
-        public Builder outFilter(Predicate<DataSetRow> outFilter) {
+        public Builder outFilter(Function<RowMetadata, Predicate<DataSetRow>> outFilter) {
             this.outFilter = outFilter;
             return this;
         }
