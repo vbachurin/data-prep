@@ -81,7 +81,7 @@ public class SchemaAnalysis implements SynchronousDataSetAnalyzer {
                 final List<ColumnMetadata> columns = metadata.getRowMetadata().getColumns();
                 try (Analyzer<Analyzers.Result> analyzer = analyzerService.schemaAnalysis(columns)) {
                     // Determine schema for the content.
-                    stream.map(row -> row.toArray(DataSetRow.SKIP_TDP_ID)).forEach(analyzer::analyze);
+                    stream.limit(100).map(row -> row.toArray(DataSetRow.SKIP_TDP_ID)).forEach(analyzer::analyze);
 
                     // Find the best suitable type
                     adapter.adapt(columns, analyzer.getResult());
