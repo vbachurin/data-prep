@@ -1440,7 +1440,7 @@ public class DataSetServiceTest extends DataSetBaseTest {
 
         // only names
         given()
-            .queryParam("name", "ataset2")
+            .queryParam("name", "ATAset2")
         .when()
             .get("/datasets")
         .then()

@@ -266,7 +266,7 @@ public class DataSetService extends BaseDataSetService {
                     })
                     .filter(metadata -> !favorite || metadata.isFavorite())
                     .filter(metadata -> !certified || Certification.CERTIFIED.equals(metadata.getGovernance().getCertificationStep()))
-                    .filter (metadata -> StringUtils.isEmpty(name) || StringUtils.contains(metadata.getName(), name))
+                    .filter (metadata -> StringUtils.isEmpty(name) || StringUtils.containsIgnoreCase(metadata.getName(), name))
                     .sorted(comparator)
                     .limit(limit ? datasetListLimit : Long.MAX_VALUE)
                     .collect(Collectors.toList());

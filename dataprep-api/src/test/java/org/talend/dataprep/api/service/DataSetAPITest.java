@@ -576,7 +576,7 @@ public class DataSetAPITest extends ApiServiceTestBase {
 
         // only names
         given()
-            .queryParam("name", "ataset2")
+            .queryParam("name", "ATASET2")
         .when()
             .get("/api/datasets")
         .then()
