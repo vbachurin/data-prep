@@ -226,7 +226,9 @@ public class AnalyzerService implements DisposableBean {
             for (Analysis setting : settings) {
                 switch (setting) {
                 case SEMANTIC:
-                    analyzers.add(new SemanticAnalyzer(builder));
+                    final SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer(builder);
+                    semanticAnalyzer.setLimit(Integer.MAX_VALUE);
+                    analyzers.add(semanticAnalyzer);
                     break;
                 case HISTOGRAM:
                     analyzers.add(new StreamDateHistogramAnalyzer(columns, types, dateParser));

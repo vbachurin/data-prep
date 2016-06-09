@@ -20,6 +20,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -216,20 +217,22 @@ public class StatisticsAdapter {
                 column.setDomainFrequency(0);
             }
             // Remembers all suggested semantic categories
-            Map<CategoryFrequency, Long> altCategoryCounts = semanticType.getCategoryToCount();
-            if (!altCategoryCounts.isEmpty()) {
-                List<SemanticDomain> semanticDomains = new ArrayList<>(altCategoryCounts.size());
-                for (Map.Entry<CategoryFrequency, Long> current : altCategoryCounts.entrySet()) {
-                    // Find category display name
-                    final String id = current.getKey().getCategoryId();
-                    if (!StringUtils.isEmpty(id)) {
-                        // Takes only actual semantic domains (unknown = "").
-                        final String categoryDisplayName = TypeUtils.getDomainLabel(id);
-                        semanticDomains.add(new SemanticDomain(id, categoryDisplayName, current.getKey().getFrequency()));
-                    }
-                }
-                column.setSemanticDomains(semanticDomains);
-            }
+            List<SemanticDomain> semanticDomains = semanticType.getCategoryToCount().entrySet().stream()
+                    .map(current -> { //
+                        // Find category display name
+                        final String id = current.getKey().getCategoryId();
+                        if (!StringUtils.isEmpty(id)) {
+                            // Takes only actual semantic domains (unknown = "").
+                            final String categoryDisplayName = TypeUtils.getDomainLabel(id);
+                            return new SemanticDomain(id, categoryDisplayName, current.getKey().getFrequency());
+                        } else {
+                            return null;
+                        }
+                    }) //
+                    .filter(semanticDomain -> semanticDomain != null && semanticDomain.getFrequency() >= 1) //
+                    .limit(10) //
+                    .collect(Collectors.toList());
+            column.setSemanticDomains(semanticDomains);
         }
     }
 
