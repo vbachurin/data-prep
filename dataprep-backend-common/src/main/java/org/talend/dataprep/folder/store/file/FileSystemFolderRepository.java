@@ -43,8 +43,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.folder.Folder;
+import org.talend.dataprep.api.folder.FolderBuilder;
 import org.talend.dataprep.api.folder.FolderContentType;
 import org.talend.dataprep.api.folder.FolderEntry;
+import org.talend.dataprep.api.share.Owner;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.DataSetErrorCodes;
 import org.talend.dataprep.folder.store.FolderRepository;
@@ -95,7 +97,14 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
     @Override
     public Folder getHome() {
         final Path path = getRootFolder();
-        final Folder home = folder().path("/").id(pathToId("/")).name(HOME_FOLDER_KEY).ownerId(security.getUserId()).build();
+        final String userId = security.getUserId();
+        final Folder home = folder() //
+                .path("/") //
+                .id(pathToId("/")) //
+                .name(HOME_FOLDER_KEY) //
+                .ownerId(userId) //
+                .owner(new Owner(userId, userId, "")) // default owner information
+                .build();
         final FolderInfo folderInfo = FolderInfo.create(path);
         if (folderInfo != null) {
             home.setLastModificationDate(folderInfo.getLastModificationDate());
@@ -137,12 +146,14 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
                 childrenStream.forEach(path -> { //
                     if (Files.isDirectory(path)) {
                         String pathStr = pathAsString(path);
+                        final String userId = security.getUserId();
                         final Folder child = folder() //
                                 .path(pathStr) //
                                 .id(pathToId(pathStr)) //
                                 .parentId(parentId) //
                                 .name(extractName(pathStr)) //
-                                .ownerId(security.getUserId()) //
+                                .ownerId(userId) //
+                                .owner(new Owner(userId, userId, "")) // default owner information
                                 .build();
                         final FolderInfo folderInfo = FolderInfo.create(path);
                         child.setLastModificationDate(folderInfo.getLastModificationDate());
@@ -220,11 +231,13 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
             String lastCreatedPath = pathFromHomeFolder(parent);
             String lastParentPath = getParentPath(lastCreatedPath);
 
+            final String userId = security.getUserId();
             return folder() //
                     .path(lastCreatedPath) //
                     .id(pathToId(lastCreatedPath)) //
                     .name(extractName(fullPathToCreate)) //
-                    .ownerId(security.getUserId()) //
+                    .ownerId(userId) //
+                    .owner(new Owner(userId, userId, "")) // default owner information
                     .parentId(pathToId(lastParentPath)) //
                     .creationDate(lastFolderInfoCreated.getCreationDate()) //
                     .lastModificationDate(lastFolderInfoCreated.getLastModificationDate()) //
@@ -249,12 +262,14 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
         final String path = idToPath(folderId);
         final Path folderPath = Paths.get(getRootFolder().toString(), split(path, PATH_SEPARATOR));
         final String pathStr = pathAsString(folderPath);
+        final String userId = security.getUserId();
         final Folder folder = folder() //
                 .path(pathStr) //
                 .id(pathToId(pathStr)) //
                 .parentId(pathToId(getParentPath(pathStr))) //
                 .name(extractName(pathStr)) //
-                .ownerId(security.getUserId()) //
+                .ownerId(userId) //
+                .owner(new Owner(userId, userId, "")) // default owner information
                 .build();
         FolderInfo folderInfo = FolderInfo.create(folderPath);
         folder.setLastModificationDate(folderInfo.getLastModificationDate());
@@ -564,11 +579,23 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
                     String pathStr = pathAsString(path);
                     String pathName = extractName(pathStr);
                     if (StringsHelper.match(pathName, queryString, strict)) {
+
+                        String userId = security.getUserId();
+                        FolderBuilder builder = folder() //
+                                .path(pathStr) //
+                                .id(pathToId(pathStr)) //
+                                .name(pathName) //
+                                .ownerId(userId) //
+                                .owner(new Owner(userId, userId, "")); // default owner information
+
                         FolderInfo folderInfo = FolderInfo.create(path);
-                        Folder folder = folderInfo != null
-                                ? folder().path(pathStr).id(pathToId(pathStr)).name(pathName).ownerId(security.getUserId()).creationDate(folderInfo.getCreationDate()).lastModificationDate(folderInfo.getLastModificationDate()).build()
-                                : folder().path(pathStr).id(pathToId(pathStr)).name(pathName).ownerId(security.getUserId()).build();
-                        folders.add(folder);
+                        if (folderInfo != null) {
+                            builder = builder //
+                                    .creationDate(folderInfo.getCreationDate()) //
+                                    .lastModificationDate(folderInfo.getLastModificationDate());
+                        }
+
+                        folders.add(builder.build());
                     }
                 }
             }
@@ -802,12 +829,14 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter {
                     final Path parent = file.getParent();
                     String parentPath = pathAsString(parent);
                     FolderInfo folderInfo = FolderInfo.create(parent);
+                    final String userId = security.getUserId();
                     result = folder() //
                             .path(parentPath) //
                             .id(pathToId(parentPath)) //
                             .parentId(pathToId(getParentPath(parentPath))) //
                             .name(extractName(parentPath)) //
-                            .ownerId(security.getUserId()) //
+                            .ownerId(userId) //
+                            .owner(new Owner(userId, userId, "")) // default owner information
                             .creationDate(folderInfo.getCreationDate()) //
                             .lastModificationDate(folderInfo.getLastModificationDate()) //
                             .build();

@@ -122,7 +122,18 @@ public class FolderService {
     @Timed
     public Iterable<Folder> search(@RequestParam final String name,
                                    @RequestParam(required = false) final boolean strict) {
-        return folderRepository.searchFolders(name, strict);
+        final Iterable<Folder> folders = folderRepository.searchFolders(name, strict);
+
+        int foldersFound = 0;
+        for (Folder folder : folders) {
+            final long count = stream(folderRepository.entries(folder.getId(), PREPARATION).spliterator(), false).count();
+            folder.setNbPreparations(count);
+            foldersFound++;
+        }
+
+        LOGGER.info("Found {} folder(s) searching for {}", foldersFound, name);
+
+        return folders;
     }
 
     /**

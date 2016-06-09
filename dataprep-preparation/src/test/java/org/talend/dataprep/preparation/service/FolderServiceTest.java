@@ -16,8 +16,7 @@ package org.talend.dataprep.preparation.service;
 import static com.jayway.restassured.RestAssured.given;
 import static java.util.stream.Collectors.toList;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -104,6 +103,29 @@ public class FolderServiceTest extends BasePreparationTest {
         });
         assertThat(folders, hasSize(1));
         assertThat(folders.get(0).getName(), is("foo"));
+    }
+
+    @Test
+    public void searchFolderShouldUpdateNbPreparationsFound() throws Exception {
+        // given
+        createFolder(home.getId(), "foo");
+        final Folder foo = getFolder(home.getId(), "foo");
+        createPreparationWithAPI("{\"name\": \"test_name\", \"dataSetId\": \"1234\"}", foo.getId());
+
+        // when
+        final Response response = given() //
+                .queryParam("name", "foo") //
+                .expect().statusCode(200).log().ifError()//
+                .when() //
+                .get("/folders/search");
+
+        // then
+        final List<Folder> folders = mapper.readValue(response.asString(), new TypeReference<List<Folder>>() {
+        });
+        assertThat(folders, hasSize(1));
+        final Folder folder = folders.get(0);
+        assertThat(folder.getName(), is("foo"));
+        assertEquals(1, folder.getNbPreparations());
     }
 
     @Test
