@@ -13,11 +13,12 @@
 
 package org.talend.dataprep.quality;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import javax.annotation.PostConstruct;
 
@@ -27,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.statistics.PatternFrequency;
@@ -39,6 +41,9 @@ import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.transformation.api.action.metadata.date.DateParser;
 import org.talend.dataprep.transformation.api.transformer.json.NullAnalyzer;
+import org.talend.dataquality.common.inference.Analyzer;
+import org.talend.dataquality.common.inference.Analyzers;
+import org.talend.dataquality.common.inference.ValueQualityStatistics;
 import org.talend.dataquality.semantic.classifier.SemanticCategoryEnum;
 import org.talend.dataquality.semantic.recognizer.CategoryRecognizerBuilder;
 import org.talend.dataquality.semantic.statistics.SemanticAnalyzer;
@@ -67,9 +72,6 @@ import org.talend.dataquality.statistics.text.TextLengthStatistics;
 import org.talend.dataquality.statistics.type.DataTypeAnalyzer;
 import org.talend.dataquality.statistics.type.DataTypeEnum;
 import org.talend.dataquality.statistics.type.DataTypeOccurences;
-import org.talend.dataquality.common.inference.Analyzer;
-import org.talend.dataquality.common.inference.Analyzers;
-import org.talend.dataquality.common.inference.ValueQualityStatistics;
 
 /**
  * Service in charge of analyzing dataset quality.
@@ -87,6 +89,10 @@ public class AnalyzerService implements DisposableBean {
 
     @Value("#{'${luceneIndexStrategy:singleton}'}")
     private String luceneIndexStrategy;
+
+    private Set<Analyzer> openedAnalyzers = new HashSet<>();
+
+    private CategoryRecognizerBuilder builder;
 
     /**
      * In case of a date column, return the most used pattern.
@@ -149,6 +155,7 @@ public class AnalyzerService implements DisposableBean {
 
     @PostConstruct
     public void init() {
+        // Configure DQ index creation strategy (one copy per use or one copy shared by all calls).
         LOGGER.info("Analyzer service lucene index strategy set to '{}'", luceneIndexStrategy);
         if ("basic".equals(luceneIndexStrategy)) {
             ClassPathDirectory.setProvider(new ClassPathDirectory.BasicProvider());
@@ -158,6 +165,17 @@ public class AnalyzerService implements DisposableBean {
             // Default
             LOGGER.warn("Not a supported strategy for lucene indexes: '{}'", luceneIndexStrategy);
             ClassPathDirectory.setProvider(new ClassPathDirectory.BasicProvider());
+        }
+        // Semantic builder (a single instance to be shared among all analyzers for proper index file management).
+        try {
+            final URI ddPath = AnalyzerService.class.getResource("/luceneIdx/dictionary").toURI(); //$NON-NLS-1$
+            final URI kwPath = AnalyzerService.class.getResource("/luceneIdx/keyword").toURI(); //$NON-NLS-1$
+            builder = CategoryRecognizerBuilder.newBuilder() //
+                    .ddPath(ddPath) //
+                    .kwPath(kwPath) //
+                    .lucene();
+        } catch (URISyntaxException e) {
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
     }
 
@@ -190,122 +208,112 @@ public class AnalyzerService implements DisposableBean {
         if (columns == null || columns.isEmpty()) {
             return Analyzers.with(NullAnalyzer.INSTANCE);
         }
-        try {
-            // Get all needed analysis
-            final Set<Analysis> all = EnumSet.noneOf(Analysis.class);
-            for (Analysis setting : settings) {
-                if (setting != null) {
-                    all.add(setting);
-                    all.addAll(Arrays.asList(setting.dependencies));
+        // Get all needed analysis
+        final Set<Analysis> all = EnumSet.noneOf(Analysis.class);
+        for (Analysis setting : settings) {
+            if (setting != null) {
+                all.add(setting);
+                all.addAll(Arrays.asList(setting.dependencies));
+            }
+        }
+        if (all.isEmpty()) {
+            return Analyzers.with(NullAnalyzer.INSTANCE);
+        }
+
+        // Column types
+        DataTypeEnum[] types = TypeUtils.convert(columns);
+        // Semantic domains
+        List<String> domainList = columns.stream() //
+                .map(c -> {
+                    final SemanticCategoryEnum category = SemanticCategoryEnum.getCategoryById(c.getDomain().toUpperCase());
+                    return category == null ? SemanticCategoryEnum.UNKNOWN.getId() : category.getId();
+                }) //
+                .collect(Collectors.toList());
+        final String[] domains = domainList.toArray(new String[domainList.size()]);
+        // Semantic indexes
+
+
+        // Build all analyzers
+        List<Analyzer> analyzers = new ArrayList<>();
+        for (Analysis setting : settings) {
+            switch (setting) {
+            case SEMANTIC:
+                final SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer(builder);
+                semanticAnalyzer.setLimit(Integer.MAX_VALUE);
+                analyzers.add(semanticAnalyzer);
+                break;
+            case HISTOGRAM:
+                analyzers.add(new StreamDateHistogramAnalyzer(columns, types, dateParser));
+                analyzers.add(new StreamNumberHistogramAnalyzer(types));
+                break;
+            case QUALITY:
+                final DataTypeQualityAnalyzer dataTypeQualityAnalyzer = new DataTypeQualityAnalyzer(types);
+                columns.forEach(c -> dataTypeQualityAnalyzer.addCustomDateTimePattern(getMostUsedDatePattern(c)));
+                analyzers.add(new ValueQualityAnalyzer(dataTypeQualityAnalyzer, new SemanticQualityAnalyzer(builder, domains),
+                        true)); // NOSONAR
+                break;
+            case CARDINALITY:
+                analyzers.add(new CardinalityAnalyzer());
+                break;
+            case PATTERNS:
+                analyzers.add(buildPatternAnalyzer(columns));
+                break;
+            case LENGTH:
+                analyzers.add(new TextLengthAnalyzer());
+                break;
+            case QUANTILES:
+                boolean acceptQuantiles = false;
+                for (DataTypeEnum type : types) {
+                    if (type == DataTypeEnum.INTEGER || type == DataTypeEnum.DOUBLE) {
+                        acceptQuantiles = true;
+                        break;
+                    }
                 }
-            }
-            if (all.isEmpty()) {
-                return Analyzers.with(NullAnalyzer.INSTANCE);
-            }
-
-            // Column types
-            DataTypeEnum[] types = TypeUtils.convert(columns);
-            // Semantic domains
-            List<String> domainList = columns.stream() //
-                    .map(c -> {
-                        final SemanticCategoryEnum category = SemanticCategoryEnum.getCategoryById(c.getDomain().toUpperCase());
-                        return category == null ? SemanticCategoryEnum.UNKNOWN.getId() : category.getId();
-                    }) //
-                    .collect(Collectors.toList());
-            final String[] domains = domainList.toArray(new String[domainList.size()]);
-            // Semantic indexes
-            final URI ddPath = AnalyzerService.class.getResource("/luceneIdx/dictionary").toURI(); //$NON-NLS-1$
-            final URI kwPath = AnalyzerService.class.getResource("/luceneIdx/keyword").toURI(); //$NON-NLS-1$
-            final CategoryRecognizerBuilder builder = CategoryRecognizerBuilder.newBuilder() //
-                    .ddPath(ddPath) //
-                    .kwPath(kwPath) //
-                    .lucene();
-
-            // Build all analyzers
-            List<Analyzer> analyzers = new ArrayList<>();
-            for (Analysis setting : settings) {
-                switch (setting) {
-                case SEMANTIC:
-                    final SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer(builder);
-                    semanticAnalyzer.setLimit(Integer.MAX_VALUE);
-                    analyzers.add(semanticAnalyzer);
-                    break;
-                case HISTOGRAM:
-                    analyzers.add(new StreamDateHistogramAnalyzer(columns, types, dateParser));
-                    analyzers.add(new StreamNumberHistogramAnalyzer(types));
-                    break;
-                case QUALITY:
-                    final DataTypeQualityAnalyzer dataTypeQualityAnalyzer = new DataTypeQualityAnalyzer(types);
-                    columns.forEach(c -> dataTypeQualityAnalyzer.addCustomDateTimePattern(getMostUsedDatePattern(c)));
-                    analyzers.add(new ValueQualityAnalyzer(dataTypeQualityAnalyzer, new SemanticQualityAnalyzer(builder, domains), // NOSONAR:
-                                                                                                                                   // Up
-                                                                                                                                   // to
-                                                                                                                                   // caller
-                                                                                                                                   // to
-                                                                                                                                   // close
-                                                                                                                                   // resources
-                            true));
-                    break;
-                case CARDINALITY:
-                    analyzers.add(new CardinalityAnalyzer());
-                    break;
-                case PATTERNS:
-                    analyzers.add(buildPatternAnalyzer(columns));
-                    break;
-                case LENGTH:
-                    analyzers.add(new TextLengthAnalyzer());
-                    break;
-                case QUANTILES:
-                    boolean acceptQuantiles = false;
-                    for (DataTypeEnum type : types) {
-                        if (type == DataTypeEnum.INTEGER || type == DataTypeEnum.DOUBLE) {
-                            acceptQuantiles = true;
-                            break;
-                        }
-                    }
-                    if (acceptQuantiles) {
-                        analyzers.add(new QuantileAnalyzer(types));
-                    }
-                    break;
-                case SUMMARY:
-                    analyzers.add(new SummaryAnalyzer(types));
-                    break;
-                case TYPE:
-                    boolean shouldUseTypeAnalysis = true;
-                    for (Analysis analysis : settings) {
-                        if (analysis == Analysis.QUALITY) {
-                            shouldUseTypeAnalysis = false;
-                            break;
-                        }
-                    }
-                    if (shouldUseTypeAnalysis) {
-                        final List<String> mostUsedDatePatterns = getMostUsedDatePatterns(columns);
-                        analyzers.add(new DataTypeAnalyzer(mostUsedDatePatterns));
-                    } else {
-                        LOGGER.warn("Disabled {} analysis (conflicts with {}).", setting, Analysis.QUALITY);
-                    }
-                    break;
-                case FREQUENCY:
-                    analyzers.add(new DataTypeFrequencyAnalyzer());
-                    break;
-                default:
-                    throw new IllegalArgumentException("Missing support for '" + setting + "'.");
+                if (acceptQuantiles) {
+                    analyzers.add(new QuantileAnalyzer(types));
                 }
+                break;
+            case SUMMARY:
+                analyzers.add(new SummaryAnalyzer(types));
+                break;
+            case TYPE:
+                boolean shouldUseTypeAnalysis = true;
+                for (Analysis analysis : settings) {
+                    if (analysis == Analysis.QUALITY) {
+                        shouldUseTypeAnalysis = false;
+                        break;
+                    }
+                }
+                if (shouldUseTypeAnalysis) {
+                    final List<String> mostUsedDatePatterns = getMostUsedDatePatterns(columns);
+                    analyzers.add(new DataTypeAnalyzer(mostUsedDatePatterns));
+                } else {
+                    LOGGER.warn("Disabled {} analysis (conflicts with {}).", setting, Analysis.QUALITY);
+                }
+                break;
+            case FREQUENCY:
+                analyzers.add(new DataTypeFrequencyAnalyzer());
+                break;
+            default:
+                throw new IllegalArgumentException("Missing support for '" + setting + "'.");
             }
+        }
 
-            // Merge all analyzers into one
-            final Analyzer<Analyzers.Result> analyzer = Analyzers.with(analyzers.toArray(new Analyzer[analyzers.size()]));
-            analyzer.init();
+        // Merge all analyzers into one
+        final Analyzer<Analyzers.Result> analyzer = Analyzers.with(analyzers.toArray(new Analyzer[analyzers.size()]));
+        analyzer.init();
+        if (LOGGER.isDebugEnabled()) {
+            // Wrap analyzer for usage monitoring (to diagnose non-closed analyzer issues).
+            return new ResourceMonitoredAnalyzer(analyzer);
+        } else {
             return analyzer;
-        } catch (URISyntaxException e) {
-            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
     }
 
     public Analyzer<Analyzers.Result> full(final List<ColumnMetadata> columns) {
         // Configure quality & semantic analysis (if column metadata information is present in stream).
-        return build(columns, Analysis.QUALITY, Analysis.CARDINALITY, Analysis.FREQUENCY, Analysis.PATTERNS,
-                Analysis.LENGTH, Analysis.SEMANTIC, Analysis.QUANTILES, Analysis.SUMMARY, Analysis.HISTOGRAM);
+        return build(columns, Analysis.QUALITY, Analysis.CARDINALITY, Analysis.FREQUENCY, Analysis.PATTERNS, Analysis.LENGTH,
+                Analysis.SEMANTIC, Analysis.QUANTILES, Analysis.SUMMARY, Analysis.HISTOGRAM);
     }
 
     public Analyzer<Analyzers.Result> qualityAnalysis(List<ColumnMetadata> columns) {
@@ -338,46 +346,57 @@ public class AnalyzerService implements DisposableBean {
         LOGGER.info("Clean up analyzers done.");
     }
 
+    @Scheduled(fixedDelay = 60000)
+    public void resourceMonitor() {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Opened analyzers: " + openedAnalyzers.size());
+            final Iterator<Analyzer> iterator = openedAnalyzers.iterator();
+            for (int i = 0; i < openedAnalyzers.size(); i++) {
+                LOGGER.debug("Analyzer #{}: {}", i, iterator.next());
+            }
+        }
+    }
+
     public enum Analysis {
-                          /**
-                           * Basic type discovery (integer, string...).
-                           */
+        /**
+         * Basic type discovery (integer, string...).
+         */
         TYPE(DataTypeOccurences.class),
-                          /**
-                           * Semantic type discovery (us_code, fr_phone...)
-                           */
+        /**
+         * Semantic type discovery (us_code, fr_phone...)
+         */
         SEMANTIC(SemanticType.class),
-                          /**
-                           * Histogram computation.
-                           */
+        /**
+         * Histogram computation.
+         */
         HISTOGRAM(StreamDateHistogramStatistics.class),
-                          /**
-                           * Data quality (empty, invalid, valid...)
-                           */
+        /**
+         * Data quality (empty, invalid, valid...)
+         */
         QUALITY(ValueQualityStatistics.class),
-                          /**
-                           * Cardinality (distinct, duplicates)
-                           */
+        /**
+         * Cardinality (distinct, duplicates)
+         */
         CARDINALITY(CardinalityStatistics.class),
-                          /**
-                           * String patterns
-                           */
+        /**
+         * String patterns
+         */
         PATTERNS(PatternFrequencyStatistics.class),
-                          /**
-                           * Text length (min / max length)
-                           */
+        /**
+         * Text length (min / max length)
+         */
         LENGTH(TextLengthStatistics.class),
-                          /**
-                           * Quantiles
-                           */
+        /**
+         * Quantiles
+         */
         QUANTILES(QuantileStatistics.class),
-                          /**
-                           * Min / Max / Variance for numeric values
-                           */
+        /**
+         * Min / Max / Variance for numeric values
+         */
         SUMMARY(SummaryStatistics.class),
-                          /**
-                           * Value to frequency map
-                           */
+        /**
+         * Value to frequency map
+         */
         FREQUENCY(DataTypeFrequencyStatistics.class);
 
         private final Class resultClass;
@@ -393,5 +412,63 @@ public class AnalyzerService implements DisposableBean {
             return resultClass;
         }
     }
+
+    private class ResourceMonitoredAnalyzer implements Analyzer<Analyzers.Result> {
+
+        private final Analyzer<Analyzers.Result> analyzer;
+
+        private Exception caller;
+        private long lastCall;
+
+        private ResourceMonitoredAnalyzer(Analyzer<Analyzers.Result> analyzer) {
+            caller = new RuntimeException(); // NOSONAR
+            openedAnalyzers.add(this);
+            this.analyzer = analyzer;
+        }
+
+        @Override
+        public void init() {
+            analyzer.init();
+        }
+
+        @Override
+        public boolean analyze(String... strings) {
+            lastCall = System.currentTimeMillis();
+            return analyzer.analyze(strings);
+        }
+
+        @Override
+        public void end() {
+            analyzer.end();
+        }
+
+        @Override
+        public List<Analyzers.Result> getResult() {
+            return analyzer.getResult();
+        }
+
+        @Override
+        public Analyzer<Analyzers.Result> merge(Analyzer<Analyzers.Result> analyzer) {
+            return analyzer.merge(analyzer);
+        }
+
+        @Override
+        public void close() throws Exception {
+            analyzer.close();
+            openedAnalyzers.remove(this);
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder builder = new StringBuilder();
+            builder.append(analyzer.toString()).append(' ').append(" last used (").append(System.currentTimeMillis() - lastCall)
+                    .append(" ms ago) ");
+            final StringWriter caller = new StringWriter();
+            this.caller.printStackTrace(new PrintWriter(caller));
+            builder.append("caller: ").append(caller.toString());
+            return builder.toString();
+        }
+    }
+
 
 }
