@@ -18,6 +18,7 @@ public class AnalyzerServiceTest {
     @Before
     public void setUp() throws Exception {
         service = new AnalyzerService();
+        service.init();
     }
 
     @Test
