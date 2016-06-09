@@ -992,7 +992,13 @@ public class PreparationService {
     private void unlock(String preparationId) {
         final String userId = security.getUserId();
         Preparation preparation = preparationRepository.get(preparationId, Preparation.class);
-        LockedResource lockedResource = lockedResourceRepository.tryUnlock(preparation, userId);
+        // TODO: A hack to avoid sending error until TDP-2124 is fixed
+        if ( preparation == null){
+            LOGGER.debug("Preparation {} you are trying to lock does not exist.", preparationId);
+            return;
+        }
+        LockUserInfo userInfo = new LockUserInfo(userId, security.getUserDisplayName());
+        LockedResource lockedResource = lockedResourceRepository.tryUnlock(preparation, userInfo);
         if (lockedResourceRepository.lockReleased(lockedResource)) {
             LOGGER.debug("Preparation {} unlocked by user {}.", preparationId, userId);
         } else {

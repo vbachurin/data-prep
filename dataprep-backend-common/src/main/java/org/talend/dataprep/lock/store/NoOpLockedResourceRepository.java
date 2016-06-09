@@ -33,14 +33,15 @@ public class NoOpLockedResourceRepository implements LockedResourceRepository {
      */
     @Override
     public LockedResource tryLock(Identifiable resource, LockUserInfo userInfo) {
+        checkArguments(resource, userInfo);
         return new LockedResource(resource.getId(), userInfo, 0);
     }
 
     /**
-     * @see LockedResourceRepository#tryUnlock(Identifiable, String)
+     * @see LockedResourceRepository#tryUnlock(Identifiable, LockUserInfo)
      */
     @Override
-    public LockedResource tryUnlock(Identifiable resource, String userId) {
+    public LockedResource tryUnlock(Identifiable resource, LockUserInfo userInfo) {
         return null;
     }
 
