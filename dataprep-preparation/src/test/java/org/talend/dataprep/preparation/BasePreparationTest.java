@@ -32,6 +32,7 @@ import org.talend.dataprep.api.folder.Folder;
 import org.talend.dataprep.api.preparation.Step;
 import org.talend.dataprep.api.service.info.VersionService;
 import org.talend.dataprep.folder.store.FolderRepository;
+import org.talend.dataprep.lock.store.LockedResourceRepository;
 import org.talend.dataprep.preparation.store.PreparationRepository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -67,6 +68,9 @@ public abstract class BasePreparationTest {
     /** Where the folders are stored.*/
     @Autowired
     protected FolderRepository folderRepository;
+
+    @Autowired
+    protected LockedResourceRepository lockRepository;
 
     /** the HOME folder */
     protected Folder home;

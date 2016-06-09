@@ -20,6 +20,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.talend.dataprep.api.folder.FolderContentType.PREPARATION;
 import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
 import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
@@ -37,6 +38,7 @@ import org.springframework.http.HttpStatus;
 import org.talend.dataprep.api.folder.Folder;
 import org.talend.dataprep.api.folder.FolderEntry;
 import org.talend.dataprep.api.preparation.*;
+import org.talend.dataprep.lock.store.LockedResource;
 import org.talend.dataprep.preparation.BasePreparationTest;
 import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
 
@@ -668,6 +670,32 @@ public class PreparationServiceTest extends BasePreparationTest {
 
         // then
         assertThat(response.getStatusCode(), is(200));
+    }
+
+    @Test
+    public void shouldReleaseALockAfterAMove() throws Exception {
+
+        // given
+        final Folder fromFolder = folderRepository.addFolder(home.getId(), "from");
+        final Folder toFolder = folderRepository.addFolder(home.getId(), "to");
+        final String originalId = createPreparationWithAPI("{\"name\": \"yap\", \"dataSetId\": \"7535\"}", fromFolder.getId());
+        Preparation expected = repository.get(originalId, Preparation.class);
+
+        // when
+        final Response response = given() //
+                .queryParam("folder", fromFolder.getId()) //
+                .queryParam("destination", toFolder.getId()) //
+                .when() //
+                .expect().statusCode(200).log().ifError() //
+                .put("/preparations/{id}/move", originalId);
+
+        // then
+        assertThat(response.getStatusCode(), is(200));
+        // assert that the resource is no more locked
+        LockedResource lockedResource = lockRepository.get(expected);
+
+        // then
+        assertNull(lockedResource);
     }
 
     // ------------------------------------------------------------------------------------------------------------------
