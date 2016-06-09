@@ -78,7 +78,10 @@ describe('InventoryItem directive', () => {
         'name': 'folder 1',
         'author': 'anonymousUser',
         'creationDate': '1437020219741',
-        'datasets': [{name: 'US States prepa'}, {name: 'US States prepa 2'}]
+        'nbPreparations': 3,
+        'owner': {
+            'displayName': "anonymousUser"
+        }
     };
 
     const certifiedDataset = {
@@ -99,7 +102,7 @@ describe('InventoryItem directive', () => {
             'OPEN_ACTION':'Open {{type}} \"{{name}}\"',
             'DATASET_DETAILS': 'owned by {{owner.displayName}}, created {{created | TDPMoment}}, contains {{records}} lines',
             "PREPARATION_DETAILS": "owned by {{author}}, created {{creationDate | TDPMoment}}, contains {{steps.length -1}} step(s)",
-            "FOLDER_DETAILS": "owned by {{author}}, created {{creationDate | TDPMoment}}, contains {{datasets.length}} dataset(s)",
+            "FOLDER_DETAILS": "owned by {{owner.displayName}}, created {{creationDate | TDPMoment}}, contains {{nbPreparations}} preparation(s)",
             'COPY_MOVE_ACTION': 'Copy or Move {{type}} \"{{name}}\"',
             'COPY_TO_ACTION': 'Copy {{type}} \"{{name}}\"',
             'DELETE_ACTION': 'Delete {{type}} \"{{name}}\"',
@@ -738,7 +741,7 @@ describe('InventoryItem directive', () => {
             const iconSrc = icon.find('img')[0].src;
             expect(strEndsWith(iconSrc, 'assets/images/folder/folder-icon.png')).toBe(true);
             expect(element.find('.inventory-title').eq(0).text().indexOf('folder 1')).toBe(0);
-            expect(element.find('.inventory-description').eq(0).text()).toBe('owned by anonymousUser, created ' + momentize('1437020219741') + ', contains 2 dataset(s)');
+            expect(element.find('.inventory-description').eq(0).text()).toBe('owned by anonymousUser, created ' + momentize('1437020219741') + ', contains 3 preparation(s)');
         }));
     });
 
