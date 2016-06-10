@@ -32,7 +32,7 @@ import org.talend.dataprep.lock.store.LockedResource.LockUserInfo;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = { NoOpLockedResourceRepositoryTest.class })
 @ComponentScan(basePackages = "org.talend.dataprep")
-@TestPropertySource(properties = { "lock.resource.store=none" })
+@TestPropertySource(properties = { "lock.preparation.store=none" })
 public class NoOpLockedResourceRepositoryTest extends LockedResourceTestUtils {
 
     @Autowired
