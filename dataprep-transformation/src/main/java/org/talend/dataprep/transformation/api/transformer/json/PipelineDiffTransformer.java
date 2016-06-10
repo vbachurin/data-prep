@@ -120,6 +120,7 @@ class PipelineDiffTransformer implements Transformer {
                                    TransformationContext transformationContext,
                                    Node output) {
         return Pipeline.Builder.builder() //
+                .withAnalyzerService(analyzerService) //
                 .withActionRegistry(actionRegistry) //
                 .withActions(actionParser.parse(actions)) //
                 .withInitialMetadata(rowMetadata) //

@@ -16,6 +16,7 @@ import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.dataset.statistics.StatisticsAdapter;
 import org.talend.dataprep.api.preparation.Action;
+import org.talend.dataprep.quality.AnalyzerService;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
@@ -119,8 +120,15 @@ public class Pipeline implements Node, RuntimeNode {
 
         private boolean needGlobalStatistics = true;
 
+        private AnalyzerService analyzerService;
+
         public static Builder builder() {
             return new Builder();
+        }
+
+        public Builder withAnalyzerService(AnalyzerService analyzerService) {
+            this.analyzerService = analyzerService;
+            return this;
         }
 
         public Builder withStatisticsAdapter(StatisticsAdapter adapter) {
@@ -246,9 +254,9 @@ public class Pipeline implements Node, RuntimeNode {
             if (allowMetadataChange) {
                 if (actionToMetadata.get(action).getBehavior().contains(ActionMetadata.Behavior.NEED_STATISTICS)) {
                     if (actionRegistry != null) {
-                        builder.to(new ReservoirNode(inlineAnalyzer, delayedAnalyzer, analysis.filter, adapter));
+                        builder.to(new ReservoirNode(inlineAnalyzer, getReservoirStats(), analysis.filter, adapter));
                     } else {
-                        builder.to(new ReservoirNode(inlineAnalyzer, delayedAnalyzer, c -> true, adapter));
+                        builder.to(new ReservoirNode(inlineAnalyzer, getReservoirStats(), c -> true, adapter));
                     }
                 }
                 if (action.getParameters().containsKey(ImplicitParameters.FILTER.getKey())) {
@@ -256,7 +264,7 @@ public class Pipeline implements Node, RuntimeNode {
                     final String filterAsString = action.getParameters().get(ImplicitParameters.FILTER.getKey());
                     if (StringUtils.contains(filterAsString, "valid") || StringUtils.contains(filterAsString, "invalid")) {
                         // TODO Perform static analysis of filter to discover which column is the filter on.
-                        builder.to(new ReservoirNode(inlineAnalyzer, delayedAnalyzer, c -> true, adapter));
+                        builder.to(new ReservoirNode(inlineAnalyzer, getReservoirStats(), c -> true, adapter));
                     }
                 }
             }
@@ -272,7 +280,7 @@ public class Pipeline implements Node, RuntimeNode {
             }
             if (rowMetadata.getColumns().isEmpty()) {
                 LOGGER.debug("No initial metadata submitted for transformation, computing new one.");
-                current.to(new ReservoirNode(inlineAnalyzer, delayedAnalyzer, c -> true, adapter));
+                current.to(new ReservoirNode(inlineAnalyzer, getReservoirStats(), c -> true, adapter));
             }
             // Apply actions
             for (Action action : actions) {
@@ -293,6 +301,16 @@ public class Pipeline implements Node, RuntimeNode {
             current.to(monitorSupplier.get());
             // Finally build pipeline
             return new Pipeline(current.build());
+        }
+
+        private Function<List<ColumnMetadata>, Analyzer<Analyzers.Result>> getReservoirStats() {
+            return c -> {
+                if (analyzerService != null) {
+                    return analyzerService.build(c, AnalyzerService.Analysis.QUALITY);
+                } else {
+                    return delayedAnalyzer.apply(c);
+                }
+            };
         }
 
         private class ActionAnalysis {

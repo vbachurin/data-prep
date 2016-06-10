@@ -46,6 +46,7 @@ public class PipelineTransformer implements Transformer {
         final RowMetadata rowMetadata = input.getMetadata().getRowMetadata();
         final TransformerWriter writer = writerRegistrationService.getWriter(configuration.formatId(), configuration.output(), configuration.getArguments());
         final Pipeline pipeline = Pipeline.Builder.builder()
+                .withAnalyzerService(analyzerService) //
                 .withActionRegistry(actionRegistry)
                 .withActions(actionParser.parse(configuration.getActions()))
                 .withInitialMetadata(rowMetadata)
