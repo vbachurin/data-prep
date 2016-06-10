@@ -44,6 +44,8 @@ public class ReservoirNode extends AnalysisNode implements Monitored {
 
     private final File reservoir;
 
+    private final Function<List<ColumnMetadata>, Analyzer<Analyzers.Result>> delayedAnalyzer;
+
     private RowMetadata rowMetadata;
 
     private long totalTime;
@@ -51,11 +53,15 @@ public class ReservoirNode extends AnalysisNode implements Monitored {
     private long count;
 
     private Analyzer<Analyzers.Result> resultAnalyzer;
+    private List<ColumnMetadata> filteredColumns;
+    private Set<String> filteredColumnNames;
 
     public ReservoirNode(Function<List<ColumnMetadata>, Analyzer<Analyzers.Result>> analyzer, //
-            Predicate<ColumnMetadata> filter, //
-            StatisticsAdapter adapter) {
+                         Function<List<ColumnMetadata>, Analyzer<Analyzers.Result>> delayedAnalyzer,
+                         Predicate<ColumnMetadata> filter, //
+                         StatisticsAdapter adapter) {
         super(analyzer, filter, adapter);
+        this.delayedAnalyzer = delayedAnalyzer;
         try {
             reservoir = File.createTempFile("ReservoirNode", ".zip");
             JsonFactory factory = new JsonFactory();
@@ -73,8 +79,6 @@ public class ReservoirNode extends AnalysisNode implements Monitored {
         final long start = System.currentTimeMillis();
         try {
             List<ColumnMetadata> columns = metadata.getColumns();
-            final Set<String> filteredColumnNames;
-            final List<ColumnMetadata> filteredColumns;
             if (!columns.isEmpty()) {
                 filteredColumns = columns.stream().filter(filter).collect(Collectors.toList());
                 filteredColumnNames = filteredColumns.stream().map(ColumnMetadata::getId).collect(Collectors.toSet());
@@ -149,15 +153,22 @@ public class ReservoirNode extends AnalysisNode implements Monitored {
                 if (rowMetadata != null && resultAnalyzer != null) {
                     // Adapt row metadata to infer type (only for non type-forced columns)
                     resultAnalyzer.end();
-                    adapter.adapt(rowMetadata.getColumns(), resultAnalyzer.getResult(), filter.and(c -> !c.isTypeForced()));
+                    final List<ColumnMetadata> columns = rowMetadata.getColumns();
+                    adapter.adapt(columns, resultAnalyzer.getResult(), filter.and(c -> !c.isTypeForced()));
                     resultAnalyzer.close();
 
-                    final Analyzer<Analyzers.Result> configuredAnalyzer = analyzer.apply(rowMetadata.getColumns());
+                    final Analyzer<Analyzers.Result> configuredAnalyzer = delayedAnalyzer.apply(filteredColumns);
                     try (JsonParser parser = mapper.getFactory()
                             .createParser(new GZIPInputStream(new FileInputStream(reservoir)))) {
                         final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
-                        dataSet.getRecords().forEach(r -> r.order(rowMetadata.getColumns()).toArray(DataSetRow.SKIP_TDP_ID));
-                        adapter.adapt(rowMetadata.getColumns(), resultAnalyzer.getResult(), filter);
+                        dataSet.getRecords().forEach(r -> {
+                            if (!r.isDeleted()) {
+                                final String[] values = r.order(columns).toArray(DataSetRow.SKIP_TDP_ID.and(e -> filteredColumnNames.contains(e.getKey())));
+                                configuredAnalyzer.analyze(values);
+                            }
+                        });
+                        configuredAnalyzer.end();
+                        adapter.adapt(columns, configuredAnalyzer.getResult(), filter);
                     } finally {
                         try {
                             configuredAnalyzer.close();

@@ -246,9 +246,9 @@ public class Pipeline implements Node, RuntimeNode {
             if (allowMetadataChange) {
                 if (actionToMetadata.get(action).getBehavior().contains(ActionMetadata.Behavior.NEED_STATISTICS)) {
                     if (actionRegistry != null) {
-                        builder.to(new ReservoirNode(inlineAnalyzer, analysis.filter, adapter));
+                        builder.to(new ReservoirNode(inlineAnalyzer, delayedAnalyzer, analysis.filter, adapter));
                     } else {
-                        builder.to(new ReservoirNode(inlineAnalyzer, c -> true, adapter));
+                        builder.to(new ReservoirNode(inlineAnalyzer, delayedAnalyzer, c -> true, adapter));
                     }
                 }
                 if (action.getParameters().containsKey(ImplicitParameters.FILTER.getKey())) {
@@ -256,7 +256,7 @@ public class Pipeline implements Node, RuntimeNode {
                     final String filterAsString = action.getParameters().get(ImplicitParameters.FILTER.getKey());
                     if (StringUtils.contains(filterAsString, "valid") || StringUtils.contains(filterAsString, "invalid")) {
                         // TODO Perform static analysis of filter to discover which column is the filter on.
-                        builder.to(new ReservoirNode(inlineAnalyzer, c -> true, adapter));
+                        builder.to(new ReservoirNode(inlineAnalyzer, delayedAnalyzer, c -> true, adapter));
                     }
                 }
             }
@@ -272,7 +272,7 @@ public class Pipeline implements Node, RuntimeNode {
             }
             if (rowMetadata.getColumns().isEmpty()) {
                 LOGGER.debug("No initial metadata submitted for transformation, computing new one.");
-                current.to(new ReservoirNode(inlineAnalyzer, c -> true, adapter));
+                current.to(new ReservoirNode(inlineAnalyzer, delayedAnalyzer, c -> true, adapter));
             }
             // Apply actions
             for (Action action : actions) {
@@ -282,8 +282,7 @@ public class Pipeline implements Node, RuntimeNode {
             }
             // Analyze (delayed)
             if (analysis.needDelayedAnalysis && needGlobalStatistics) {
-                current.to(new ReservoirNode(inlineAnalyzer, analysis.filter, adapter));
-                current.to(new ReservoirNode(delayedAnalyzer, analysis.filter, adapter));
+                current.to(new ReservoirNode(inlineAnalyzer, delayedAnalyzer, analysis.filter, adapter));
             }
             // Output
             if (outFilter != null) {
