@@ -89,13 +89,17 @@
     <div ng-if="actionsSuggestionsCtrl.state.playground.filter.gridFilters.length && actionsSuggestionsCtrl.state.playground.filter.enabled"
          class="filters-actions-form" >
         <span translate-once="APPLY_CHANGE_TO"></span>
-        <input type="radio"
-               ng-model="actionsSuggestionsCtrl.state.playground.filter.applyTransformationOnFilters"
-               ng-value="false" />
-        <span translate-once="ALL_LINES"></span>
-        <input type="radio"
-               ng-model="actionsSuggestionsCtrl.state.playground.filter.applyTransformationOnFilters"
-               ng-value="true" />
-        <span translate-once="FILTERED_LINED"></span>
+        <label>
+            <input type="radio"
+                   ng-model="actionsSuggestionsCtrl.state.playground.filter.applyTransformationOnFilters"
+                   ng-value="false" />
+            <span translate-once="ALL_LINES"></span>
+        </label>
+        <label>
+            <input type="radio"
+                   ng-model="actionsSuggestionsCtrl.state.playground.filter.applyTransformationOnFilters"
+                   ng-value="true" />
+            <span translate-once="FILTERED_LINED"></span>
+        </label>
     </div>
 </div>
