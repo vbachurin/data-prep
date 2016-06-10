@@ -96,7 +96,13 @@ public class Owner {
      */
     @JsonProperty("displayName")
     public String getDisplayName() {
-        final String displayName = firstName + ' ' + lastName;
+        String displayName = "";
+        if (firstName != null) {
+            displayName += firstName;
+        }
+        if (lastName != null) {
+            displayName += ' ' + lastName;
+        }
         return displayName.trim();
     }
 

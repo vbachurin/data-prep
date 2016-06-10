@@ -40,9 +40,11 @@ import org.talend.dataprep.api.preparation.Identifiable;
 import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.preparation.PreparationActions;
 import org.talend.dataprep.api.preparation.Step;
+import org.talend.dataprep.api.share.Owner;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.preparation.store.PreparationRepository;
+import org.talend.dataprep.security.Security;
 import org.talend.dataprep.util.FilesHelper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -73,6 +75,10 @@ public class FileSystemPreparationRepository implements PreparationRepository {
     /** Where to store the dataset metadata */
     @Value("${preparation.store.file.location}")
     private String preparationsLocation;
+
+    /** Security to get the current user. */
+    @Autowired
+    private Security security;
 
     /**
      * Make sure the root folder is there.
@@ -127,6 +133,10 @@ public class FileSystemPreparationRepository implements PreparationRepository {
         T result;
         try (GZIPInputStream input = new GZIPInputStream(new FileInputStream(from))) {
             result = mapper.readerFor(clazz).readValue(input);
+            if (result instanceof Preparation) {
+                Owner owner = new Owner(security.getUserId(), security.getUserId(), null);
+                ((Preparation) result).setOwner(owner);
+            }
         } catch (IOException e) {
             LOG.error("error reading preparation file {}", from.getAbsolutePath(), e);
             return null;

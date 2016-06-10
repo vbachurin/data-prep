@@ -25,9 +25,12 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
+import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.api.dataset.DataSetMetadataBuilder;
 import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.service.api.EnrichedPreparation;
 import org.talend.dataprep.api.service.command.common.HttpResponse;
@@ -52,6 +55,9 @@ import io.swagger.annotations.ApiParam;
 
 @RestController
 public class FolderAPI extends APIService {
+
+    @Autowired
+    private DataSetMetadataBuilder metadataBuilder;
 
     @RequestMapping(value = "/api/folders", method = GET)
     @ApiOperation(value = "List children folders of the parameter if null list root children.", produces = APPLICATION_JSON_VALUE)
@@ -282,14 +288,26 @@ public class FolderAPI extends APIService {
      */
     private void enrichAndWritePreparation(final Preparation preparation, final JsonGenerator output) {
 
+        // get the dataset metadata
         final DataSetGetMetadata getMetadata = getCommand(DataSetGetMetadata.class, preparation.getDataSetId());
-        final EnrichedPreparation enrichedPreparation = new EnrichedPreparation(preparation, getMetadata.execute());
+        DataSetMetadata metadata;
+        try {
+            metadata = getMetadata.execute();
+        }
+        // this can happen, especially if the dataset is not shared, but it should not prevent the preparation
+        // from being displayed
+        catch (Exception e) { // NOSONAR this can happen and does not need to be thrown or logged
+            metadata = null;
+            LOG.debug("error reading dataset metadata {} : {}", preparation.getId(), e.getMessage());
+        }
+
+        final EnrichedPreparation enrichedPreparation = new EnrichedPreparation(preparation, metadata);
 
         try {
             output.writeObject(enrichedPreparation);
         } catch (IOException e) {
             //simply log the error as there may be other preparations that could be processed
-            LOG.error("error writing {} to the http response", enrichedPreparation, e);
+            LOG.error("error reading dataset for preparation {} to the http response", enrichedPreparation, e);
         }
     }
 

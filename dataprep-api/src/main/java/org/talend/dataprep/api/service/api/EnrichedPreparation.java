@@ -52,6 +52,7 @@ public class EnrichedPreparation extends Preparation {
         this.setLastModificationDate(preparation.getLastModificationDate());
         this.setHeadId(preparation.getHeadId());
         this.setSteps(preparation.getSteps());
+        this.setOwner(preparation.getOwner());
     }
 
 
@@ -138,9 +139,9 @@ public class EnrichedPreparation extends Preparation {
         /** For the Serialization interface.*/
         private static final long serialVersionUID = 1L;
         /** The dataset id. */
-        private String dataSetId;
+        private String dataSetId = null;
         /** The dataset name. */
-        private String dataSetName;
+        private String dataSetName = null;
         /** the number of rows in the dataset. */
         private long dataSetNbRow;
 
@@ -149,9 +150,11 @@ public class EnrichedPreparation extends Preparation {
          * @param metadata the dataset metadata to create the summary from.
          */
         DataSetMetadataSummary(DataSetMetadata metadata) {
-            this.dataSetId = metadata.getId();
-            this.dataSetName = metadata.getName();
-            this.dataSetNbRow = metadata.getContent().getNbRecords();
+            if (metadata != null) {
+                this.dataSetId = metadata.getId();
+                this.dataSetName = metadata.getName();
+                this.dataSetNbRow = metadata.getContent().getNbRecords();
+            }
         }
 
         /**

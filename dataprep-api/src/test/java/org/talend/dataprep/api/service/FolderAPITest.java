@@ -192,10 +192,13 @@ public class FolderAPITest extends ApiServiceTestBase {
         assertEquals(3, preparations.size());
         for (JsonNode preparation : preparations) {
             final JsonNode dataset = preparation.get("dataset");
+            // check for dataset
             assertNotNull(dataset);
             assertTrue(dataset.has("dataSetId"));
             assertTrue(dataset.has("dataSetName"));
             assertTrue(dataset.has("dataSetNbRow"));
+            // check for owner
+            assertTrue(preparation.has("owner"));
         }
     }
 

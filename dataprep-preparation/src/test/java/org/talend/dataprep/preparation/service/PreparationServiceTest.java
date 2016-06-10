@@ -19,7 +19,6 @@ import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.talend.dataprep.api.folder.FolderContentType.PREPARATION;
 import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
@@ -84,6 +83,7 @@ public class PreparationServiceTest extends BasePreparationTest {
         response.then().statusCode(HttpStatus.OK.value())
                 .body(sameJSONAs("[{\"id\":\"#548425458\"," + "\"dataSetId\":\"1234\"," + "\"author\":null," + "\"name\":null,"
                         + "\"creationDate\":0," + "\"lastModificationDate\":12345,"
+                        + "\"owner\":null,"
                         + "\"steps\":[\"f6e172c33bdacbc69bca9d32b2bd78174712a171\"]," + "\"diff\":[]," + "\"actions\":[],"
                         + "\"metadata\":[]" + "}]"));
 
@@ -109,6 +109,7 @@ public class PreparationServiceTest extends BasePreparationTest {
                                 "\"name\":null," +
                                 "\"creationDate\":0," +
                                 "\"lastModificationDate\":12345," +
+                                "\"owner\":null," +
                                 "\"steps\":[\"f6e172c33bdacbc69bca9d32b2bd78174712a171\"]," +
                                 "\"diff\":[]," +
                                 "\"actions\":[]," +
@@ -120,6 +121,7 @@ public class PreparationServiceTest extends BasePreparationTest {
                                 "\"name\":null," +
                                 "\"creationDate\":500," +
                                 "\"lastModificationDate\":456789," +
+                                "\"owner\":null," +
                                 "\"steps\":[\"f6e172c33bdacbc69bca9d32b2bd78174712a171\"]," +
                                 "\"diff\":[]," +
                                 "\"actions\":[]," +

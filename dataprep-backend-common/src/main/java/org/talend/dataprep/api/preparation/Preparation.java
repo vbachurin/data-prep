@@ -17,13 +17,19 @@ import static java.lang.Math.max;
 import static java.lang.Math.min;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+
+import org.springframework.data.annotation.Transient;
+import org.talend.dataprep.api.share.Owner;
+import org.talend.dataprep.api.share.SharedResource;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class Preparation extends Identifiable implements Serializable {
+public class Preparation extends Identifiable implements SharedResource, Serializable {
 
     /** Serialization UID. */
     private static final long serialVersionUID = 1L;
@@ -53,6 +59,17 @@ public class Preparation extends Identifiable implements Serializable {
     /** List of the steps id for this preparation. */
     private List<String> steps;
 
+    /** This preparation owner. */
+    @Transient // no saved in the database but computed when needed
+    private Owner owner;
+
+    /** True if this preparation is shared by another user. */
+    @Transient // no saved in the database but computed when needed
+    private boolean sharedPreparation = false;
+
+    /** What role has the current user on this preparation. */
+    @Transient // no saved in the database but computed when needed
+    private Set<String> roles = new HashSet<>();
 
     /**
      * Default empty constructor.
@@ -193,6 +210,57 @@ public class Preparation extends Identifiable implements Serializable {
         this.appVersion = appVersion;
     }
 
+    /**
+     * @return the Owner
+     */
+    public Owner getOwner() {
+        return owner;
+    }
+
+    /**
+     * @see SharedResource#setOwner(Owner)
+     */
+    public void setOwner(Owner owner) {
+        this.owner = owner;
+    }
+
+    /**
+     * @see SharedResource#setSharedResource(boolean)
+     */
+    @Override
+    public void setSharedResource(boolean shared) {
+        this.sharedPreparation = shared;
+    }
+
+    /**
+     * @see SharedResource#setRoles(Set)
+     */
+    @Override
+    public void setRoles(Set<String> roles) {
+        this.roles = roles;
+    }
+
+    /**
+     * @return the SharedPreparation
+     */
+    public boolean isSharedPreparation() {
+        return sharedPreparation;
+    }
+
+    /**
+     * @return the Roles
+     */
+    public Set<String> getRoles() {
+        return roles;
+    }
+
+    /**
+     * @return this shared resource owner/author id.
+     */
+    @Override
+    public String getOwnerId() {
+        return author;
+    }
 
     @Override
     public String toString() {
@@ -201,6 +269,7 @@ public class Preparation extends Identifiable implements Serializable {
                 ", id='" + id + '\'' + //
                 ", dataSetId='" + dataSetId + '\'' + //
                 ", author='" + author + '\'' + //
+                ", owner='" + owner + '\'' + //
                 ", creationDate=" + creationDate + //
                 ", lastModificationDate=" + lastModificationDate + //
                 ", headId='" + headId +"'}";
@@ -233,7 +302,7 @@ public class Preparation extends Identifiable implements Serializable {
             return false;
         }
         Preparation that = (Preparation) o;
-        return Objects.equals(id, that.id) &&
+        return Objects.equals(id, that.id) && // NOSONAR generated code that's easy to read
                 Objects.equals(creationDate, that.creationDate) &&
                 Objects.equals(lastModificationDate, that.lastModificationDate) &&
                 Objects.equals(dataSetId, that.dataSetId) &&

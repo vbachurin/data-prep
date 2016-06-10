@@ -87,10 +87,17 @@ public class FileSystemPreparationRepositoryTest extends PreparationRepositoryTe
 
     @Test
     public void shouldGetPreparationThatWasAdded() throws JsonProcessingException {
+
+        // given
         Preparation expected = getPreparation("7561486");
         repository.add(expected);
+
+        // when
         final Preparation actual = repository.get(expected.id(), Preparation.class);
+
+        // then
         assertEquals(expected, actual);
+        assertNotNull(actual.getOwner());
     }
 
     @Test
