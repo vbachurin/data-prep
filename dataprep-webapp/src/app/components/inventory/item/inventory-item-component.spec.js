@@ -70,7 +70,10 @@ describe('InventoryItem directive', () => {
         'creationDate': '1437020219741',
         'type': 'text/csv',
         'certificationStep': 'NONE',
-        'steps': [{name:'US States prepa'}, {name:'US States prepa 2'}]
+        'steps': [{name: 'US States prepa'}, {name: 'US States prepa 2'}],
+        'owner': {
+            'displayName': "anonymousUser"
+        }
     };
 
     const folder = {
@@ -101,8 +104,8 @@ describe('InventoryItem directive', () => {
         $translateProvider.translations('en', {
             'OPEN_ACTION':'Open {{type}} \"{{name}}\"',
             'DATASET_DETAILS': 'owned by {{owner.displayName}}, created {{created | TDPMoment}}, contains {{records}} lines',
-            "PREPARATION_DETAILS": "owned by {{author}}, created {{creationDate | TDPMoment}}, contains {{steps.length -1}} step(s)",
-            "FOLDER_DETAILS": "owned by {{owner.displayName}}, created {{creationDate | TDPMoment}}, contains {{nbPreparations}} preparation(s)",
+            "PREPARATION_DETAILS": "owned by {{owner.displayName}}, created {{creationDate | TDPMoment}}, contains {{steps.length -1}} step(s)",
+            "FOLDER_DETAILS": "owned by {{owner.displayName}}, created {{creationDate | TDPMoment}}, contains {{nbPreparations}} dataset(s)",
             'COPY_MOVE_ACTION': 'Copy or Move {{type}} \"{{name}}\"',
             'COPY_TO_ACTION': 'Copy {{type}} \"{{name}}\"',
             'DELETE_ACTION': 'Delete {{type}} \"{{name}}\"',
