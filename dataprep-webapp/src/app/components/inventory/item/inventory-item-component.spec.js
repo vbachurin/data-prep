@@ -105,7 +105,7 @@ describe('InventoryItem directive', () => {
             'OPEN_ACTION':'Open {{type}} \"{{name}}\"',
             'DATASET_DETAILS': 'owned by {{owner.displayName}}, created {{created | TDPMoment}}, contains {{records}} lines',
             "PREPARATION_DETAILS": "owned by {{owner.displayName}}, created {{creationDate | TDPMoment}}, contains {{steps.length -1}} step(s)",
-            "FOLDER_DETAILS": "owned by {{owner.displayName}}, created {{creationDate | TDPMoment}}, contains {{nbPreparations}} dataset(s)",
+            "FOLDER_DETAILS": "owned by {{owner.displayName}}, created {{creationDate | TDPMoment}}, contains {{nbPreparations}} preparation(s)",
             'COPY_MOVE_ACTION': 'Copy or Move {{type}} \"{{name}}\"',
             'COPY_TO_ACTION': 'Copy {{type}} \"{{name}}\"',
             'DELETE_ACTION': 'Delete {{type}} \"{{name}}\"',
