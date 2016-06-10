@@ -58,6 +58,8 @@ export default function ConverterService() {
                 return 'number';
             case 'boolean':
                 return 'checkbox';
+            case 'password':
+                return 'password';
             default:
                 return 'text';
         }

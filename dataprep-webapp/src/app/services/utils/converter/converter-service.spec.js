@@ -29,6 +29,10 @@ describe('Converter service', function() {
         checkToInputType(ConverterService, ['boolean'], 'checkbox');
     }));
 
+    it('should return checkbox when input type is password', inject(function(ConverterService) {
+        checkToInputType(ConverterService, ['password'], 'password');
+    }));
+
     it('should return text by default', inject(function(ConverterService) {
         checkToInputType(ConverterService, ['toto', 'titi', 'tata'], 'text');
     }));
