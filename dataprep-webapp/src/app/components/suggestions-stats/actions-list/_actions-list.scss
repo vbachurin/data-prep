@@ -39,13 +39,12 @@
         background-color: $action-background;
       }
 
-      .trigger > a {
-        font-size: .85em;
-        cursor: pointer;
-        color: inherit;
-        padding-left: 10px;
-        text-decoration: none;
-        width:100%;
+      .trigger {
+        .trigger-label {
+          font-size: .9em;
+          cursor: pointer;
+          padding-left: 10px;
+        }
       }
 
       .trigger-container {

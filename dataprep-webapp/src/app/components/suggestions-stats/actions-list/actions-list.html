@@ -25,20 +25,20 @@
                     ng-switch="!!transfo.parameters">
                 <trigger class="trigger">
                     <!--with dynamic parameters-->
-                    <a ng-switch-when="false"
+                    <div class="trigger-label" ng-switch-when="false"
                        ng-if="transfo.dynamic"
-                       ng-click="actionsListCtrl.select(transfo)" ng-bind-html="transfo.labelHtml"></a>
+                       ng-click="actionsListCtrl.select(transfo)" ng-bind-html="transfo.labelHtml"></div>
 
                     <!--no parameters-->
-                    <a ng-switch-when="false"
+                    <div class="trigger-label" ng-switch-when="false"
                        ng-if="!transfo.dynamic"
                        ng-click="actionsListCtrl.select(transfo)"
                        ng-mouseenter="actionsListCtrl.earlyPreview(transfo)({})"
                        ng-mouseleave="actionsListCtrl.cancelEarlyPreview()"
-                       ng-bind-html="transfo.labelHtml"></a>
+                       ng-bind-html="transfo.labelHtml"></div>
 
                     <!--with static parameters-->
-                    <a ng-switch-when="true" ng-bind-html="transfo.labelHtml"></a>
+                    <div class="trigger-label" ng-switch-when="true" ng-bind-html="transfo.labelHtml"></div>
                 </trigger>
 
                 <content ng-switch-when="true">
