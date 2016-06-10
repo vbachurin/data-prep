@@ -30,6 +30,7 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.Quality;
 import org.talend.dataprep.api.dataset.location.SemanticDomain;
+import org.talend.dataprep.api.dataset.statistics.date.DateHistogram;
 import org.talend.dataprep.api.dataset.statistics.date.StreamDateHistogramStatistics;
 import org.talend.dataprep.api.dataset.statistics.number.NumberHistogram;
 import org.talend.dataprep.api.dataset.statistics.number.StreamNumberHistogramStatistics;
@@ -284,14 +285,29 @@ public class StatisticsAdapter {
         }
     }
 
+    /**
+     * Injects numerical statistics like max, min to statistics of the specified column metadata.
+     *
+     * For columns of type date, min and max values are retrieved from the date histogram
+     * @param column the specified column metadata
+     * @param result the analyzer result
+     */
     private void injectNumberSummary(final ColumnMetadata column, final Analyzers.Result result) {
         if (result.exist(SummaryStatistics.class)) {
             final Statistics statistics = column.getStatistics();
             final SummaryStatistics summaryStatistics = result.get(SummaryStatistics.class);
-            statistics.setMax(summaryStatistics.getMax());
-            statistics.setMin(summaryStatistics.getMin());
             statistics.setMean(summaryStatistics.getMean());
             statistics.setVariance(summaryStatistics.getVariance());
+            // if the column is of type Date
+            if (DATE.isAssignableFrom(column.getType()) && result.exist(StreamDateHistogramStatistics.class)){
+                final DateHistogram histogram = (DateHistogram) result.get(StreamDateHistogramStatistics.class).getHistogram();
+                statistics.setMax(histogram.getMaxUTCEpochMilliseconds());
+                statistics.setMin(histogram.getMinUTCEpochMilliseconds());
+            }
+            else {
+                statistics.setMax(summaryStatistics.getMax());
+                statistics.setMin(summaryStatistics.getMin());
+            }
         }
     }
 

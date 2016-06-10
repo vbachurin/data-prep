@@ -16,6 +16,7 @@ package org.talend.dataprep.api.dataset.statistics.date;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.talend.dataprep.api.dataset.statistics.Histogram;
 import org.talend.dataprep.api.dataset.statistics.HistogramRange;
 import org.talend.dataprep.date.DateManipulator;
@@ -25,8 +26,23 @@ public class DateHistogram implements Histogram {
 
     public static final String TYPE = "date";
 
+
     private final List<HistogramRange> items = new ArrayList<>();
+
     private DateManipulator.Pace pace;
+
+    /**
+     * The minimum date added to this histogram (in milliseconds since EPOCH in UTC)
+     */
+    @JsonIgnore
+    private long minUTCEpochMilliseconds;
+
+    /**
+     * The maximum date added to this histogram (in milliseconds since EPOCH in UTC)
+     */
+    @JsonIgnore
+    private long maxUTCEpochMilliseconds;
+
 
     @Override
     public List<HistogramRange> getItems() {
@@ -57,4 +73,38 @@ public class DateHistogram implements Histogram {
     public DateManipulator.Pace getPace() {
         return pace;
     }
+
+    /**
+     *
+     * @param minUTCEpochMilliseconds the minimum date added to this histogram (in milliseconds since EPOCH in UTC)
+     */
+    public void setMinUTCEpochMilliseconds(long minUTCEpochMilliseconds) {
+        this.minUTCEpochMilliseconds = minUTCEpochMilliseconds;
+    }
+
+    /**
+     *
+     * @return the minimum date added to this histogram (in milliseconds since EPOCH in UTC)
+     */
+    public long getMinUTCEpochMilliseconds() {
+        return minUTCEpochMilliseconds;
+    }
+
+    /**
+     *
+     * @param maxUTCEpochMilliseconds the maximum date added to this histogram (in milliseconds since EPOCH in UTC)
+     */
+    public void setMaxUTCEpochMilliseconds(long maxUTCEpochMilliseconds) {
+        this.maxUTCEpochMilliseconds = maxUTCEpochMilliseconds;
+    }
+
+    /**
+     *
+     * @return the maximum date added to this histogram (in milliseconds since EPOCH in UTC)
+     */
+    public long getMaxUTCEpochMilliseconds() {
+        return maxUTCEpochMilliseconds;
+    }
+
+
 }

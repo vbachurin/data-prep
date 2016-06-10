@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.talend.dataprep.api.dataset.statistics.Histogram;
 import org.talend.dataprep.api.dataset.statistics.HistogramRange;
@@ -74,8 +75,9 @@ public class StreamDateHistogramStatistics {
      * @param date the value to add to this histogram.
      */
     public void add(final LocalDateTime date) {
-        Arrays.stream(DateManipulator.Pace.values())
-                .forEach(pace -> add(pace, date));
+        try (Stream<DateManipulator.Pace> stream = Arrays.stream(DateManipulator.Pace.values())) {
+            stream.forEach(pace -> add(pace, date));
+        }
         refreshLimits(date);
     }
 
@@ -163,6 +165,9 @@ public class StreamDateHistogramStatistics {
 
             nextRangeStart = rangeEnd;
         }
+        // set min and max
+        histogram.setMinUTCEpochMilliseconds(minUTCEpochMilliseconds());
+        histogram.setMaxUTCEpochMilliseconds(maxUTCEpochMilliseconds());
 
         return histogram;
     }
@@ -177,5 +182,21 @@ public class StreamDateHistogramStatistics {
             throw new IllegalArgumentException("The number of bin must be a positive integer");
         }
         this.numberOfBins = numberOfBins;
+    }
+
+    /**
+     *
+     * @return the minimum date added to this histogram (in milliseconds since EPOCH in UTC)
+     */
+    public long minUTCEpochMilliseconds() {
+        return dateManipulator.getUTCEpochMilliseconds(min);
+    }
+
+    /**
+     *
+     * @return the maximum date added to this histogram (in milliseconds since EPOCH in UTC)
+     */
+    public long maxUTCEpochMilliseconds() {
+        return dateManipulator.getUTCEpochMilliseconds(max);
     }
 }

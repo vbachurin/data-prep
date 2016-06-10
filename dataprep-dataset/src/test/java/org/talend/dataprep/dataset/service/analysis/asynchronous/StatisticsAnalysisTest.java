@@ -14,8 +14,7 @@
 package org.talend.dataprep.dataset.service.analysis.asynchronous;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.InputStream;
 import java.util.List;
@@ -103,5 +102,23 @@ public class StatisticsAnalysisTest extends DataSetBaseTest {
         final DataSetMetadata analyzed = dataSetMetadataRepository.get(id);
         assertThat(analyzed.getLifecycle().schemaAnalyzed(), is(true));
         return analyzed;
+    }
+
+    /**
+     * See <a href="https://jira.talendforge.org/browse/TDP-2120">TDP-2120</a>.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testTDP_2021() throws Exception {
+        final DataSetMetadata metadata = initializeDataSetMetadata(this.getClass().getResourceAsStream("dataset.csv"));
+        final ColumnMetadata dateOfBirth = metadata.getRowMetadata().getById("0004");
+        assertThat(dateOfBirth.getName(), is("date-of-birth"));
+        final double min = dateOfBirth.getStatistics().getMin();
+        final double max = dateOfBirth.getStatistics().getMax();
+        assertFalse(Double.isNaN(min));
+        assertFalse(Double.isNaN(max));
+        assertEquals(-924912000000D, min, 0.5);
+        assertEquals(-707529600000D, max, 0.5);
     }
 }
