@@ -250,17 +250,6 @@ describe('InventoryItem directive', () => {
                 const title = element.find('.inventory-icon').eq(0).attr('title').trim();
                 expect(title).toBe('Open ' + ctrl.type + ' "' + dataset.name + '"');
             });
-            it('should display related inventory icon tooltip', () => {
-                // given
-                scope.preparations = dataset.preparations;
-
-                // when
-                createElement();
-
-                // then
-                const title = element.find('.inventory-icon').eq(0).attr('title').trim();
-                expect(title).toBe('Open ' + ctrl.relatedInventoriesType + ' "' + dataset.preparations[0].name + '"');
-            });
 
             it('should display inventory details', inject(($filter) => {
                 // given
@@ -436,6 +425,7 @@ describe('InventoryItem directive', () => {
             it('should open the related inventory item on file icon click', () => {
                 // given
                 scope.preparations = [{}, {}];
+                scope.dataset = {id: 'dataset1'};
                 createElement();
                 const icon = element.find('.inventory-icon');
 
@@ -443,7 +433,7 @@ describe('InventoryItem directive', () => {
                 icon.click();
 
                 // then
-                expect(ctrl.openRelatedInventory).toHaveBeenCalledWith(scope.preparations[0]);
+                expect(ctrl.open).toHaveBeenCalledWith(scope.dataset);
             });
 
             it('should open inventory item on inventory title click', () => {
@@ -460,6 +450,7 @@ describe('InventoryItem directive', () => {
             it('should open the related inventory item on inventory title click', () => {
                 // given
                 scope.preparations = [{}, {}];
+                scope.dataset = {id: 'dataset1'};
                 createElement();
                 const title = element.find('.inventory-title');
 
@@ -467,7 +458,7 @@ describe('InventoryItem directive', () => {
                 title.click();
 
                 // then
-                expect(ctrl.openRelatedInventory).toHaveBeenCalledWith(scope.preparations[0]);
+                expect(ctrl.open).toHaveBeenCalledWith(scope.dataset);
             });
 
             it('should open inventory item on element dblclick', () => {
@@ -484,6 +475,7 @@ describe('InventoryItem directive', () => {
             it('should open the related inventory item on element dblclick', () => {
                 // given
                 scope.preparations = [{}, {}];
+                scope.dataset = {id: 'dataset1'};
                 createElement();
                 const inventory = element.find('.inventory-item');
 
@@ -491,7 +483,7 @@ describe('InventoryItem directive', () => {
                 inventory.dblclick();
 
                 // then
-                expect(ctrl.openRelatedInventory).toHaveBeenCalledWith(scope.preparations[0]);
+                expect(ctrl.open).toHaveBeenCalledWith(scope.dataset);
             });
             it('should open related inventory item on bottle click', () => {
                 // given
@@ -790,6 +782,9 @@ describe('InventoryItem directive', () => {
         }));
 
         it('should render insertion inventory actions attribute', () => {
+            // given
+            scope.folder = folder;
+
             // when
             createElement();
             

@@ -45,7 +45,7 @@ describe('Inventory Item controller', function () {
             expect(ctrl.openRelatedInventory).toHaveBeenCalledWith(prep);
         }));
 
-        it('should process the tooltip data to compile it when related inventories do NOT exist', inject(function () {
+        it('should process the tooltip data to compile it', inject(function () {
             //given
             ctrl.relatedInventories = [];
             ctrl.type = 'dataset';
@@ -54,7 +54,7 @@ describe('Inventory Item controller', function () {
             };
 
             //when
-            var tooltipData = ctrl.getTooltipContent();
+            var tooltipData = ctrl.getTooltipContent(false);
 
             //then
             expect(tooltipData).toEqual({
@@ -63,13 +63,33 @@ describe('Inventory Item controller', function () {
             });
         }));
 
-        it('should process the tooltip data to compile it when related inventories exist', inject(function () {
+        it('should process the tooltip data to compile it by using tooltipname', inject(function () {
+            //given
+            ctrl.relatedInventories = [];
+            ctrl.type = 'dataset';
+            ctrl.item = {
+                name: 'my dataset name',
+                tooltipName: 'my dataset tooltip'
+
+            };
+
+            //when
+            var tooltipData = ctrl.getTooltipContent(false);
+
+            //then
+            expect(tooltipData).toEqual({
+                type: 'dataset',
+                name: 'my dataset tooltip'
+            });
+        }));
+
+        it('should process the tooltip data to compile it for related inventories', inject(function () {
             //given
             ctrl.relatedInventories = [{name:'prep1'}, {name:'prep2'}];
             ctrl.relatedInventoriesType = 'preparation';
 
             //when
-            var tooltipData = ctrl.getTooltipContent();
+            var tooltipData = ctrl.getTooltipContent(true);
 
             //then
             expect(tooltipData).toEqual({
@@ -77,31 +97,5 @@ describe('Inventory Item controller', function () {
                 name: 'prep1'
             });
         }));
-
-        it('should open an inventory Item: the case of related inventory', inject(function () {
-            //given
-            ctrl.relatedInventories = [{name:'prep1'}, {name:'prep2'}];
-            ctrl.actionsEnabled = true;
-
-            //when
-            ctrl.openInventoryItem();
-
-            //then
-            expect(ctrl.openRelatedInventory).toHaveBeenCalledWith(ctrl.relatedInventories[0]);
-        }));
-
-        it('should open an inventory Item: the case of the item itself', inject(function () {
-            //given
-            ctrl.relatedInventories = [];
-            ctrl.actionsEnabled = true;
-            ctrl.item = {};
-
-            //when
-            ctrl.openInventoryItem();
-
-            //then
-            expect(ctrl.open).toHaveBeenCalledWith(ctrl.item);
-        }));
-
     });
 });

@@ -37,34 +37,18 @@ export default function InventoryItemCtrl() {
      * @name getTooltipContent
      * @methodOf data-prep.inventory-item:InventoryItemCtrl
      * @description creates the object used to construct the tooltip
+     * @params isRelatedInventory if the related inventory item
      * @returns {Object} the object to construct the tooltip with
      */
-    vm.getTooltipContent = function getTooltipContent () {
-        return vm.relatedInventories && vm.relatedInventories.length ?
+    vm.getTooltipContent = function getTooltipContent (isRelatedInventory) {
+        return  isRelatedInventory && vm.relatedInventories && vm.relatedInventories.length?
         {
             type: vm.relatedInventoriesType,
             name: vm.relatedInventories[0].name
         } :
         {
             type: vm.type,
-            name: vm.item.name
+            name: vm.item.tooltipName ? vm.item.tooltipName : vm.item.name
         };
-    };
-
-    /**
-     * @ngdoc method
-     * @name openInventoryItem
-     * @methodOf data-prep.inventory-item:InventoryItemCtrl
-     * @description given an inventory Item, it opens it
-     */
-    vm.openInventoryItem = function openInventoryItem () {
-        if (vm.relatedInventories && vm.relatedInventories.length) {
-            vm.openRelatedInventoryItem(vm.relatedInventories[0]);
-        }
-        else {
-            if (vm.open) {
-                vm.open(vm.item);
-            }
-        }
     };
 }

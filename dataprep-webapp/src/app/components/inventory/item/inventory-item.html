@@ -13,12 +13,12 @@
   ~ ============================================================================
   -->
 
-<div class="inventory-item" ng-dblclick="$ctrl.openInventoryItem()">
+<div class="inventory-item" ng-dblclick="$ctrl.open($ctrl.item)">
     <!-- Type icon -->
     <div class="inventory-icon"
-         title="{{$ctrl.open ? ('OPEN_ACTION' | translate: $ctrl.getTooltipContent()) : ''}}"
+         title="{{$ctrl.open ? ('OPEN_ACTION' | translate: $ctrl.getTooltipContent(false)) : ''}}"
          ng-switch="$ctrl.type"
-         ng-click="$ctrl.openInventoryItem()">
+         ng-click="$ctrl.open($ctrl.item)">
 
         <div ng-switch-when="dataset" ng-switch="$ctrl.item.type">
             <img src="/assets/images/inventory/csv_file.png" ng-switch-when="text/csv"/>
@@ -39,8 +39,8 @@
         <talend-editable-text ng-if="$ctrl.open && $ctrl.rename && !$ctrl.isItemShared($ctrl.item)"
                               text="$ctrl.item.name"
                               text-class="inventory-title"
-                              text-title="{{'OPEN_ACTION' | translate: $ctrl.getTooltipContent()}}"
-                              on-text-click="$ctrl.openInventoryItem()"
+                              text-title="{{'OPEN_ACTION' | translate: $ctrl.getTooltipContent(false)}}"
+                              on-text-click="$ctrl.open($ctrl.item)"
                               on-validate="$ctrl.rename($ctrl.item, text)"
                               validate-only-on-change>
         </talend-editable-text>
@@ -48,7 +48,7 @@
               class="inventory-title"
               ng-bind-html="$ctrl.item.name"
               title="{{$ctrl.item.tooltipName}}"
-              ng-click="$ctrl.openInventoryItem()"></span>
+              ng-click="$ctrl.open($ctrl.item)"></span>
         <div class="inventory-description"
              ng-bind-html="$ctrl.details | translate:$ctrl.item">
         </div>
@@ -60,7 +60,7 @@
                                 class="inventory-actions-related-item btn-icon"
                                 button-action="$ctrl.openRelatedInventoryItem($ctrl.relatedInventories[0])"
                                 button-icon="c"
-                                title="{{'OPEN_ACTION' | translate:$ctrl.getTooltipContent()}}"
+                                title="{{'OPEN_ACTION' | translate:$ctrl.getTooltipContent(true)}}"
                                 close-on-select="true">
             <ul class="inventory-actions-related-item-menu"
                 ng-if="$ctrl.relatedInventories.length">
