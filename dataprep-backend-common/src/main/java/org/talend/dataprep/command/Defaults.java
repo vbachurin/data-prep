@@ -42,7 +42,13 @@ public class Defaults {
      * exception as its own.
      */
     public static Function<Exception, RuntimeException> passthrough() {
-        return e -> (RuntimeException) e;
+        return e -> {
+            if (e instanceof RuntimeException) {
+                return (RuntimeException) e;
+            } else {
+                return new TDPException(CommonErrorCodes.UNEXPECTED_SERVICE_EXCEPTION, e);
+            }
+        };
     }
 
     /**

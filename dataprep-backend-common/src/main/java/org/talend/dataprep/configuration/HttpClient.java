@@ -27,9 +27,12 @@ import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 /**
  * Http client bean name.
@@ -57,7 +60,7 @@ public class HttpClient {
     private int defaultKeepAlive;
 
     /** Timeout in seconds used when requesting a connection from the connection manager. */
-    @Value("${http.pool.connectionRequestTimeout:30}") // default is 30 seconds
+    @Value("${http.pool.connectionRequestTimeout:10}") // default is 10 seconds
     private int connectionRequestTimeout;
 
     /**
@@ -68,9 +71,6 @@ public class HttpClient {
         PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
         connectionManager.setMaxTotal(maxPoolSize);
         connectionManager.setDefaultMaxPerRoute(maxPerRoute);
-        // create a thread to monitor idle connections
-        IdleConnectionJanitor staleMonitor = new IdleConnectionJanitor(connectionManager);
-        staleMonitor.start();
         return connectionManager;
     }
 
@@ -124,6 +124,21 @@ public class HttpClient {
         };
     }
 
+    @Component
+    static class IdleConnectionJanitor {
+
+        @Autowired
+        PoolingHttpClientConnectionManager connectionManager;
+
+        // periodically checks for idle connections
+        @Scheduled(fixedDelay = 30000)
+        public void idleConnectionJanitor() {
+            connectionManager.closeExpiredConnections();
+            connectionManager.closeIdleConnections(60, TimeUnit.SECONDS);
+            LOGGER.debug("connection pool status {}", connectionManager.getTotalStats());
+        }
+    }
+
     /**
      * Default redirection strategy that does not follow redirection.
      */
@@ -139,53 +154,4 @@ public class HttpClient {
 
     }
 
-    /**
-     * Inner class in charge of cleaning idle connections.
-     */
-    static class IdleConnectionJanitor extends Thread {
-
-        /** The connection manager to clean up every once in a while. */
-        private final PoolingHttpClientConnectionManager connectionManager;
-        /** Flag to notify this thread to shutdown. */
-        private volatile boolean shutdown;
-
-        /**
-         * Constructor.
-         * @param connectionManager the connection manager to monitor.
-         */
-        public IdleConnectionJanitor(PoolingHttpClientConnectionManager connectionManager) {
-            super("Idle connections janitor");
-            this.connectionManager = connectionManager;
-        }
-
-        /**
-         * Close idle connections every 30 seconds.
-         */
-        @Override
-        public void run() {
-            try {
-                while (!shutdown) {
-                    synchronized (this) {
-                        wait(30000); // every 30 seconds, close idle (inactive for more than 60 seconds) connections
-                        connectionManager.closeExpiredConnections();
-                        connectionManager.closeIdleConnections(60, TimeUnit.SECONDS);
-                        LOGGER.debug("connection pool status {}", connectionManager.getTotalStats());
-                    }
-                }
-            } catch (InterruptedException ex) {
-                LOGGER.debug("Idle connections janitor (unexpected?) shutdown", ex);
-                shutdown();
-            }
-        }
-
-        /**
-         * Shut down this janitor.
-         */
-        private void shutdown() {
-            shutdown = true;
-            synchronized (this) {
-                notifyAll();
-            }
-        }
-    }
 }

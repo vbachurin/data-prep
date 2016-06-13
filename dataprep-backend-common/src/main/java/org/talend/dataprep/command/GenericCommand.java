@@ -50,6 +50,7 @@ import com.netflix.hystrix.HystrixCommandGroupKey;
 
 /**
  * Base Hystrix command request for all DataPrep commands.
+ * 
  * @param <T> Command result type.
  */
 @Component
@@ -58,24 +59,18 @@ public class GenericCommand<T> extends HystrixCommand<T> {
 
     /** Hystrix group used for dataset related commands. */
     public static final HystrixCommandGroupKey DATASET_GROUP = HystrixCommandGroupKey.Factory.asKey("dataset");
+
     /** Hystrix group used for preparation related commands. */
     public static final HystrixCommandGroupKey PREPARATION_GROUP = HystrixCommandGroupKey.Factory.asKey("preparation");
+
     /** Hystrix group used for transformation related commands. */
     public static final HystrixCommandGroupKey TRANSFORM_GROUP = HystrixCommandGroupKey.Factory.asKey("transform");
 
     /** This class' logger. */
     private static final Logger LOGGER = LoggerFactory.getLogger(GenericCommand.class);
 
-    /** Behaviours map.  */
+    /** Behaviours map. */
     private final Map<HttpStatus, BiFunction<HttpRequestBase, HttpResponse, T>> behavior = new EnumMap<>(HttpStatus.class);
-
-    private Supplier<HttpRequestBase> httpCall;
-
-    /** Headers of the response received by the command. Set in the run command. */
-    private Header[] commandResponseHeaders = new Header[0];
-
-    /** Default onError behaviour. */
-    private Function<Exception, RuntimeException> onError = Defaults.passthrough();
 
     /** DataPrep security holder. */
     @Autowired
@@ -89,7 +84,7 @@ public class GenericCommand<T> extends HystrixCommand<T> {
     @Autowired
     protected ObjectMapper objectMapper;
 
-    /** Spring application context.*/
+    /** Spring application context. */
     @Autowired
     protected ApplicationContext context;
 
@@ -104,6 +99,14 @@ public class GenericCommand<T> extends HystrixCommand<T> {
     /** Preparation service URL. */
     @Value("${preparation.service.url:}")
     protected String preparationServiceUrl;
+
+    private Supplier<HttpRequestBase> httpCall;
+
+    /** Headers of the response received by the command. Set in the run command. */
+    private Header[] commandResponseHeaders = new Header[0];
+
+    /** Default onError behaviour. */
+    private Function<Exception, RuntimeException> onError = Defaults.passthrough();
 
     /**
      * Protected constructor.
@@ -152,7 +155,12 @@ public class GenericCommand<T> extends HystrixCommand<T> {
             request.addHeader(AUTHORIZATION, authenticationToken);
         }
 
-        final HttpResponse response = client.execute(request);
+        final HttpResponse response;
+        try {
+            response = client.execute(request);
+        } catch (Exception e) {
+            throw onError.apply(e);
+        }
         commandResponseHeaders = response.getAllHeaders();
 
         final HttpStatus status = HttpStatus.valueOf(response.getStatusLine().getStatusCode());
@@ -161,7 +169,11 @@ public class GenericCommand<T> extends HystrixCommand<T> {
         // if yes use it
         BiFunction<HttpRequestBase, HttpResponse, T> function = behavior.get(status);
         if (function != null) {
-            return function.apply(request, response);
+            try {
+                return function.apply(request, response);
+            } catch (Exception e) {
+                throw onError.apply(e);
+            }
         }
 
         // handle response's HTTP status
@@ -266,6 +278,16 @@ public class GenericCommand<T> extends HystrixCommand<T> {
         return new BehaviorBuilder(status);
     }
 
+    /**
+     * Serialize the actions to string.
+     *
+     * @param stepActions - map of couple (stepId, action)
+     * @return the serialized actions
+     */
+    protected String serializeActions(final Collection<Action> stepActions) throws JsonProcessingException {
+        return "{\"actions\": " + objectMapper.writeValueAsString(stepActions) + "}";
+    }
+
     // A intermediate builder for behavior definition.
     protected class BehaviorBuilder {
 
@@ -277,7 +299,7 @@ public class GenericCommand<T> extends HystrixCommand<T> {
 
         /**
          * Declares what action should be performed for the given HTTP status(es).
-         * 
+         *
          * @param action A {@link BiFunction function} to be executed for given HTTP status(es).
          * @see Defaults
          */
@@ -286,15 +308,5 @@ public class GenericCommand<T> extends HystrixCommand<T> {
                 GenericCommand.this.behavior.put(currentStatus, action);
             }
         }
-    }
-
-    /**
-     * Serialize the actions to string.
-     *
-     * @param stepActions - map of couple (stepId, action)
-     * @return the serialized actions
-     */
-    protected String serializeActions(final Collection<Action> stepActions) throws JsonProcessingException {
-        return "{\"actions\": " + objectMapper.writeValueAsString(stepActions) + "}";
     }
 }
