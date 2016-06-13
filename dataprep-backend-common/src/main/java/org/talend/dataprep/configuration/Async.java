@@ -1,6 +1,7 @@
 package org.talend.dataprep.configuration;
 
-import java.io.PrintWriter;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.Collections;
 import java.util.concurrent.Callable;
 
@@ -67,9 +68,14 @@ public class Async {
                     TDPException tdpException = (TDPException) current;
                     HttpServletResponse servletResponse = request.getNativeResponse(HttpServletResponse.class);
                     if (!servletResponse.isCommitted()) {
-                        servletResponse.sendError(tdpException.getCode().getHttpStatus());
+                        servletResponse.setStatus(tdpException.getCode().getHttpStatus());
                         try {
-                            final PrintWriter writer = servletResponse.getWriter();
+                            Writer writer;
+                            try {
+                                writer = servletResponse.getWriter();
+                            } catch (IllegalStateException e) { // NOSONAR nothing to do with this exception
+                                writer = new OutputStreamWriter(servletResponse.getOutputStream());
+                            }
                             tdpException.writeTo(writer);
                         } catch (IllegalStateException e) {
                             // Content was already streamed, unable to write
