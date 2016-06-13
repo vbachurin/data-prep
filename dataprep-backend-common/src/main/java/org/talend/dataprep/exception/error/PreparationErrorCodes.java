@@ -30,7 +30,8 @@ public enum PreparationErrorCodes implements ErrorCode {
                                                         UNABLE_TO_SERVE_PREPARATION_CONTENT(400, "id", "version"),
                                                         UNABLE_TO_READ_PREPARATION(500, "id", "version"),
                                                         PREPARATION_NAME_ALREADY_USED(409, "id", "name", "folder"),
-                                                        PREPARATION_NOT_EMPTY(409, "id");
+                                                        PREPARATION_NOT_EMPTY(409, "id"),
+                                                        FORBIDDEN_PREPARATION_CREATION(403);
 
     /** The http status to use. */
     private int httpStatus;

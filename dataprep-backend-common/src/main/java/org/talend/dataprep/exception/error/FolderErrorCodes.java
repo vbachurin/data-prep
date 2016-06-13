@@ -31,7 +31,8 @@ public enum FolderErrorCodes implements ErrorCode {
     UNABLE_TO_LIST_FOLDER_ENTRIES(400, "folderId"),
     UNABLE_TO_DELETE_FOLDER_ENTRY(400, "contentId"),
     FOLDER_NOT_FOUND(404, "path"),
-    FOLDER_NOT_EMPTY(CONFLICT.value());
+                                                   FOLDER_NOT_EMPTY(CONFLICT.value()),
+                                                   FORBIDDEN_FOLDER_CREATION(403, "path");
 
     /** The http status to use. */
     private int httpStatus;
