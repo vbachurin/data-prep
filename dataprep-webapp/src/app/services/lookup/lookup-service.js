@@ -33,8 +33,9 @@ export default class LookupService {
         this.DatasetRestService = DatasetRestService;
         this.RecipeService = RecipeService;
         this.StorageService = StorageService;
-    }
 
+        this.loadFromAction = this.loadFromAction.bind(this);
+    }
     /**
      * @ngdoc method
      * @name initLookups
