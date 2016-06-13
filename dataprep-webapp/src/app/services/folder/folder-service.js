@@ -30,8 +30,6 @@ export default function FolderService($q, state, StateService, FolderRestService
         children: children,
         create: create,
         rename: rename,
-        refreshPreparationsSort: refreshPreparationsSort,
-        refreshPreparationsOrder: refreshPreparationsOrder,
         remove: FolderRestService.remove,
         tree: FolderRestService.tree,
     };
@@ -44,8 +42,8 @@ export default function FolderService($q, state, StateService, FolderRestService
      * @description Init the sort parameters and folder content
      */
     function init(id) {
-        refreshPreparationsSort();
-        refreshPreparationsOrder();
+        _refreshPreparationsSort();
+        _refreshPreparationsOrder();
         return refresh(id);
     }
 
@@ -53,6 +51,7 @@ export default function FolderService($q, state, StateService, FolderRestService
      * @ngdoc method
      * @name refresh
      * @methodOf data-prep.services.folder.service:FolderService
+     * @description Refresh the actual folder
      * @param {string} id The folder to init
      * @returns {Promise} The GET promise
      */
@@ -93,7 +92,7 @@ export default function FolderService($q, state, StateService, FolderRestService
      * @name _refreshPreparationsSort
      * @description Refresh the actual sort parameter
      * */
-    function refreshPreparationsSort() {
+    function _refreshPreparationsSort() {
         const savedSort = StorageService.getPreparationsSort();
         if (savedSort) {
             StateService.setPreparationsSort(_.find(state.inventory.sortList, {id: savedSort}));
@@ -106,7 +105,7 @@ export default function FolderService($q, state, StateService, FolderRestService
      * @name _refreshPreparationsOrder
      * @description Refresh the actual order parameter
      */
-    function refreshPreparationsOrder() {
+    function _refreshPreparationsOrder() {
         const savedSortOrder = StorageService.getPreparationsOrder();
         if (savedSortOrder) {
             StateService.setPreparationsOrder(_.find(state.inventory.orderList, {id: savedSortOrder}));
