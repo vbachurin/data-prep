@@ -505,7 +505,7 @@ public class PreparationServiceTest extends BasePreparationTest {
         // then
         assertThat(response.getStatusCode(), is(200));
         final Folder actual = mapper.readValue(response.asInputStream(), Folder.class);
-        assertEquals(bar, actual);
+        assertEquals(bar.getId(), actual.getId());
     }
 
     @Test

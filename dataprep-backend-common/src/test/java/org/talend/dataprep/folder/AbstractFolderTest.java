@@ -515,11 +515,11 @@ public abstract class AbstractFolderTest {
 
         // then
         assertNull(getFolderRepository().locateEntry(pathToId("not to be found"), PREPARATION));
-        assertEquals(root, getFolderRepository().locateEntry(bordeaux.getContentId(), bordeaux.getContentType()));
-        assertEquals(root, getFolderRepository().locateEntry(littleCreatures.getContentId(), littleCreatures.getContentType()));
+        assertEquals(root.getId(), getFolderRepository().locateEntry(bordeaux.getContentId(), bordeaux.getContentType()).getId());
+        assertEquals(root.getId(), getFolderRepository().locateEntry(littleCreatures.getContentId(), littleCreatures.getContentType()).getId());
 
-        assertEquals(foo, getFolderRepository().locateEntry(cars.getContentId(), cars.getContentType()));
-        assertEquals(foo, getFolderRepository().locateEntry(boats.getContentId(), boats.getContentType()));
+        assertEquals(foo.getId(), getFolderRepository().locateEntry(cars.getContentId(), cars.getContentType()).getId());
+        assertEquals(foo.getId(), getFolderRepository().locateEntry(boats.getContentId(), boats.getContentType()).getId());
     }
 
     @Test
