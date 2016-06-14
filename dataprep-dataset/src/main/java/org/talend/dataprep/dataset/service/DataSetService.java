@@ -256,12 +256,16 @@ public class DataSetService extends BaseDataSetService {
 
         Spliterator<DataSetMetadata> iterator = dataSetMetadataRepository.list().spliterator();
         // Return sorted results
+        String userId = security.getUserId();
+        final UserData userData = userDataRepository.get(userId);
         try (Stream<DataSetMetadata> stream = stream(iterator, false)) {
             // @formatter:off
             final Comparator<DataSetMetadata> comparator = getDataSetMetadataComparator(sort, order);
             return stream.filter(metadata -> !metadata.getLifecycle().importing())
                     .map(metadata -> {
-                        completeWithUserData(metadata);
+                        if (userData != null) {
+                            metadata.setFavorite(userData.getFavoritesDatasets().contains(metadata.getId()));
+                        }
                         return metadata;
                     })
                     .filter(metadata -> !favorite || metadata.isFavorite())
@@ -299,9 +303,13 @@ public class DataSetService extends BaseDataSetService {
 
         // Return sorted results
         try (Stream<DataSetMetadata> stream = stream(iterator, false)) {
+            String userId = security.getUserId();
+            final UserData userData = userDataRepository.get(userId);
             return stream.filter(metadata -> !metadata.getLifecycle().importing()) //
                     .map(metadata -> {
-                        completeWithUserData(metadata);
+                        if (userData != null) {
+                            metadata.setFavorite(userData.getFavoritesDatasets().contains(metadata.getId()));
+                        }
                         return metadata;
                     }) //
                     .sorted(comparator) //
