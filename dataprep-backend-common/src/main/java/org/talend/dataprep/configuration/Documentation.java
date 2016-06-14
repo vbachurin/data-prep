@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -58,6 +59,7 @@ public class Documentation {
     private String[] servicePaths;
 
     @Controller
+    @ConditionalOnBean(Documentation.class)
     public static class SwaggerUIRedirection {
         @RequestMapping("/docs")
         String swaggerUI() {
