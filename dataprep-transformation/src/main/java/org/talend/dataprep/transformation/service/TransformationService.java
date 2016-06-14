@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -49,7 +48,6 @@ import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.org.talend.dataprep.api.export.ExportParameters;
 import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.preparation.StepDiff;
@@ -612,9 +610,9 @@ public class TransformationService extends BaseTransformationService {
                                 .output(outputStream) //
                                 .build();
                         factory.get(configuration).transform(dataSet, configuration);
-                    } catch (Exception e) {
-                        throw new TDPException(TransformationErrorCodes.UNABLE_TO_TRANSFORM_DATASET, e);
                     }
+                } catch (TDPException e) {
+                    throw e;
                 } catch (Exception e) {
                     throw new TDPException(TransformationErrorCodes.UNABLE_TO_TRANSFORM_DATASET, e);
                 }
@@ -658,9 +656,9 @@ public class TransformationService extends BaseTransformationService {
                                 .output(outputStream) //
                                 .build();
                         factory.get(configuration).transform(dataSet, configuration);
-                    } catch (Exception e) {
-                        throw new TDPException(TransformationErrorCodes.UNABLE_TO_TRANSFORM_DATASET, e);
                     }
+                } catch (TDPException e) {
+                    throw e;
                 } catch (Exception e) {
                     throw new TDPException(TransformationErrorCodes.UNABLE_TO_TRANSFORM_DATASET, e);
                 }

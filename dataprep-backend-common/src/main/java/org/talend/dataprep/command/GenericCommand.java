@@ -114,6 +114,22 @@ public class GenericCommand<T> extends HystrixCommand<T> {
         super(group);
     }
 
+    @Override
+    protected RuntimeException decomposeException(Exception e) {
+        Throwable current = e;
+        while (current.getCause() != null) {
+            if (current instanceof TDPException) {
+                break;
+            }
+            current = current.getCause();
+        }
+        if (current instanceof TDPException) {
+            return (TDPException) current;
+        } else {
+            return super.decomposeException(e);
+        }
+    }
+
     /**
      * Runs a data prep command with the following steps:
      * <ul>

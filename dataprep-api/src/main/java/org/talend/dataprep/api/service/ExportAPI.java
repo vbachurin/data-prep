@@ -65,7 +65,7 @@ public class ExportAPI extends APIService {
                 final String paramName = names.nextElement();
                 if (StringUtils.contains(paramName, ExportFormat.PREFIX)) {
                     final String paramValue = HttpRequestContext.parameter(paramName);
-                    arguments.put(paramName, StringUtils.isNotEmpty(paramValue)? paramValue : StringUtils.EMPTY);
+                    arguments.put(paramName, StringUtils.isNotEmpty(paramValue) ? paramValue : StringUtils.EMPTY);
                 }
             }
             parameters.getArguments().putAll(arguments);
@@ -74,6 +74,8 @@ public class ExportAPI extends APIService {
 
             final GenericCommand<InputStream> command = getCommand(Export.class, parameters);
             return CommandHelper.toStreaming(command);
+        } catch (TDPException e) {
+            throw e;
         } catch (Exception e) {
             throw new TDPException(APIErrorCodes.UNABLE_TO_EXPORT_CONTENT, e);
         }
