@@ -446,6 +446,9 @@ public class DataSetService extends BaseDataSetService {
             HttpResponseContext.status(HttpStatus.NO_CONTENT);
             return null;
         }
+
+        LOG.debug("get dataset metadata for {}", dataSetId);
+
         DataSetMetadata metadata = dataSetMetadataRepository.get(dataSetId);
         if (metadata == null) {
             throw new TDPException(DataSetErrorCodes.DATASET_DOES_NOT_EXIST, ExceptionContext.build().put("id", dataSetId));
@@ -457,6 +460,7 @@ public class DataSetService extends BaseDataSetService {
         DataSet dataSet = new DataSet();
         completeWithUserData(metadata);
         dataSet.setMetadata(metadata);
+        LOG.info("found dataset {} for #{}", dataSet.getMetadata().getName(), dataSetId);
         return dataSet;
     }
 
