@@ -22,9 +22,6 @@ import org.talend.dataprep.lock.LockFactory;
  */
 public abstract class DataSetMetadataRepositoryAdapter implements DataSetMetadataRepository {
 
-    /** Prefix for the shared lock when working on a dataset. */
-    private static final String DATASET_LOCK_PREFIX = "dataset#"; //$NON-NLS-1$
-
     /** The lock factory. */
     @Autowired
     private LockFactory lockFactory;
@@ -34,7 +31,7 @@ public abstract class DataSetMetadataRepositoryAdapter implements DataSetMetadat
      */
     @Override
     public DistributedLock createDatasetMetadataLock(String id) {
-        return lockFactory.getLock(DATASET_LOCK_PREFIX + id);
+        return lockFactory.getLock(LockFactory.DATASET_LOCK_PREFIX + id);
     }
 
 }
