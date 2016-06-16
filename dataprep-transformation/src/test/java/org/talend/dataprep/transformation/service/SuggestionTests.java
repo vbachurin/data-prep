@@ -148,7 +148,7 @@ public class SuggestionTests extends TransformationServiceBaseTests {
                 .contentType(JSON) //
                 .body(columnMetadata) //
                 .when() //
-                .post("/suggest/column?limit=7") //
+                .post("/suggest/column?limit=9") //
                 .asString();
 
         // then
@@ -210,6 +210,7 @@ public class SuggestionTests extends TransformationServiceBaseTests {
                 .asString();
 
         // then
+        System.out.println(response);
         assertEquals(expectedSuggestions, response, false);
     }
 
