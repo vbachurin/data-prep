@@ -50,12 +50,14 @@ export default function DatasetService($q, state, StateService, DatasetListServi
         getDatasetByName: getDatasetByName, //retrieve dataset by name
         getSheetPreview: getSheetPreview,
         loadFilteredDatasets: DatasetRestService.loadFilteredDatasets, //retrieve datasets given a set of filters
+        injectPreparations: injectPreparations,
+        removePreparations: removePreparations,
+
 
         //dataset update
         rename: rename,
         setDatasetSheet: setDatasetSheet,
         updateParameters: updateParameters,
-        updateLocation: updateLocation,
         refreshSupportedEncodings: refreshSupportedEncodings,
 
         //compatible preparation list
@@ -322,10 +324,6 @@ export default function DatasetService($q, state, StateService, DatasetListServi
         return paramsAccu;
     }
 
-    function _setLocationParameters(location, parameters) {
-        getParamIteration(location, parameters);
-    }
-
     /**
      * @ngdoc method
      * @name updateParameters
@@ -346,27 +344,6 @@ export default function DatasetService($q, state, StateService, DatasetListServi
             })
             .catch((error) => {
                 _setParameters(metadata, originalParameters);
-                return $q.reject(error);
-            });
-    }
-
-    /**
-     * @ngdoc method
-     * @name updateLocation
-     * @methodOf data-prep.services.dataset.service:DatasetService
-     * @param {object} metadata The dataset metadata
-     * @param {object} parameters The new location parameters
-     * @returns {Promise} The process Promise
-     */
-    function updateLocation(metadata, parameters) {
-        const
-            newLocation = angular.copy(metadata.location),
-            oldLocation = angular.copy(metadata.location);
-        _setLocationParameters(newLocation, parameters);
-        metadata.location = newLocation;
-        return DatasetRestService.updateMetadata(metadata)
-            .catch((error) => {
-                metadata.location = oldLocation;
                 return $q.reject(error);
             });
     }
@@ -411,7 +388,7 @@ export default function DatasetService($q, state, StateService, DatasetListServi
     //--------------------------------------------------------------------------------------------------------------
     //TODO remove this and review the datasets model to NOT change the original object. This is done here to
     // avoid cyclic ref
-    function _removePreparations(metadata) {
+    function removePreparations(metadata) {
         const preparations = {
             defaultPreparation: metadata.defaultPreparation,
             preparations: metadata.preparations,
@@ -425,7 +402,7 @@ export default function DatasetService($q, state, StateService, DatasetListServi
 
     //TODO remove this and review the datasets model to NOT change the original object. This is done here to
     // avoid cyclic ref
-    function _injectPreparations(metadata, preparations) {
+    function injectPreparations(metadata, preparations) {
         metadata.defaultPreparation = preparations.defaultPreparation;
         metadata.preparations = preparations.preparations;
     }
@@ -442,7 +419,7 @@ export default function DatasetService($q, state, StateService, DatasetListServi
     function rename(metadata, name) {
         const oldName = metadata.name;
         StateService.setDatasetName(metadata.id, name);
-        const preparations = _removePreparations(metadata);
+        const preparations = removePreparations(metadata);
 
         return DatasetRestService.updateMetadata(metadata)
             .catch((error) => {
@@ -450,7 +427,7 @@ export default function DatasetService($q, state, StateService, DatasetListServi
                 return $q.reject(error);
             })
             .finally(() => {
-                _injectPreparations(metadata, preparations)
+                injectPreparations(metadata, preparations)
             });
     }
 }
