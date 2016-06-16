@@ -2,7 +2,6 @@ package org.talend.dataprep.util;
 
 import org.junit.Test;
 
-import static com.sun.corba.se.spi.activation.IIOP_CLEAR_TEXT.value;
 import static org.junit.Assert.*;
 
 public class StringsHelperTest {
