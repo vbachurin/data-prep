@@ -18,7 +18,7 @@ package org.talend.dataprep.grants;
  */
 public enum CommonRestrictedActions implements RestrictedAction {
 
-                                                                 CERTIFICATION("CERTIFICATION");
+    CERTIFICATION("CERTIFICATION");
 
     /**
      * The name of the action
