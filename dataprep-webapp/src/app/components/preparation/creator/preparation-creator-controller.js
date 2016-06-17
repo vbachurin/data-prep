@@ -12,13 +12,16 @@
  ============================================================================*/
 
 class PreparationCreatorCtrl {
-    constructor($document, $state, RestURLs, PreparationService, DatasetService, state) {
+    constructor(state, $document, $state, $translate, RestURLs,
+                PreparationService, DatasetService, UploadWorkflowService) {
         'ngInject';
 
+        this.$translate = $translate;
         this.$document = $document;
         this.$state = $state;
         this.preparationService = PreparationService;
         this.datasetService = DatasetService;
+        this.UploadWorkflowService = UploadWorkflowService;
         this.restURLs = RestURLs;
         this.enteredFilterText = '';
         this.filteredDatasets = [];
@@ -30,6 +33,8 @@ class PreparationCreatorCtrl {
         this.uploadingDatasets = [];
         this.whileImport = false;
         this.isFetchingDatasets = false;
+
+        this.preparationSuffix= this.$translate.instant('PREPARATION');
     }
 
     $onInit() {
@@ -143,8 +148,7 @@ class PreparationCreatorCtrl {
      * @params {Number} index the index to increment
      */
     _getUniquePrepName(index = 0) {
-        const suffix = index === 0 ? ' Preparation' : ' Preparation (' + index + ')';
-
+        const suffix = index === 0 ? ' ' + this.preparationSuffix : ' ' + this.preparationSuffix +' (' + index + ')';
         this.enteredName = this.baseDataset.name + suffix;
         const existingName = _.some(this.state.inventory.folder.content.preparations, {name: this.enteredName});
         if (existingName) {
@@ -154,17 +158,32 @@ class PreparationCreatorCtrl {
 
     /**
      * @ngdoc method
+     * @name createPreparationFromMultiSheetDataset
+     * @methodOf data-prep.preparation-creator.controller:PreparationCreatorCtrl
+     * @description created the preparation from a multi sheet dataset
+     */
+    createPreparationFromMultiSheetDataset() {
+        this.showAddPrepModal = false;
+        this.UploadWorkflowService.openDraft(this.baseDataset, true, this.enteredName);
+    }
+
+    /**
+     * @ngdoc method
      * @name createPreparation
      * @methodOf data-prep.preparation-creator.controller:PreparationCreatorCtrl
      * @description created the preparation
      */
     createPreparation() {
-        this.addPreparationForm.$commitViewValue();
-        this.preparationService.create(this.baseDataset.id, this.enteredName, this.state.inventory.folder.metadata.id)
-            .then((newPreparation) => {
-                this.showAddPrepModal = false;
-                this.$state.go('playground.preparation', {prepid: newPreparation.id});
-            });
+        if (this.baseDataset.draft) {
+            this.createPreparationFromMultiSheetDataset();
+        } else {
+            this.addPreparationForm.$commitViewValue();
+            this.preparationService.create(this.baseDataset.id, this.enteredName, this.state.inventory.folder.metadata.id)
+                .then((newPreparation) => {
+                    this.showAddPrepModal = false;
+                    this.$state.go('playground.preparation', {prepid: newPreparation.id});
+                });
+        }
     }
 
     /**

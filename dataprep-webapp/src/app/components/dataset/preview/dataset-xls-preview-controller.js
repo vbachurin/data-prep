@@ -21,7 +21,9 @@
  * @requires data-prep.services.state.service:StateService
  * @requires data-prep.services.folder.service:FolderService
  */
-export default function DatasetXlsPreviewCtrl($timeout, $state, state, DatasetSheetPreviewService, DatasetService, PlaygroundService, StateService) {
+export default function DatasetXlsPreviewCtrl($timeout, $state, state,
+                                              DatasetSheetPreviewService, DatasetService,
+                                              PlaygroundService, StateService, PreparationService) {
     'ngInject';
 
     var vm = this;
@@ -58,6 +60,21 @@ export default function DatasetXlsPreviewCtrl($timeout, $state, state, DatasetSh
 
     /**
      * @ngdoc method
+     * @name disableDatasetSheetConfirm
+     * @methodOf data-prep.dataset-xls-preview.controller:DatasetPreviewXlsCtrl
+     * @description Disable dataset Sheet confirm button
+     */
+    vm.disableDatasetSheetConfirm = function () {
+        if(DatasetSheetPreviewService.addPreparation) {
+            return _.some(state.inventory.folder.content.preparations, {name: vm.metadata.name});
+        } else {
+            return false;
+        }
+    };
+
+
+    /**
+     * @ngdoc method
      * @name setDatasetSheet
      * @methodOf data-prep.dataset-xls-preview.controller:DatasetPreviewXlsCtrl
      * @description Set the sheet in the dataset, update the dataset list, and hide the modal
@@ -68,8 +85,15 @@ export default function DatasetXlsPreviewCtrl($timeout, $state, state, DatasetSh
                 vm.visible = false;
             })
             .then(() => {
-                StateService.setPreviousRoute('nav.index.datasets');
-                $state.go('playground.dataset', {datasetid: vm.metadata.id});
+                if(DatasetSheetPreviewService.addPreparation) {
+                    PreparationService.create(vm.metadata.id, DatasetSheetPreviewService.preparationName, state.inventory.folder.metadata.id)
+                        .then((newPreparation) => {
+                            $state.go('playground.preparation', {prepid: newPreparation.id});
+                        });
+                } else {
+                    StateService.setPreviousRoute('nav.index.datasets');
+                    $state.go('playground.dataset', {datasetid: vm.metadata.id});
+                }
             });
     };
 }

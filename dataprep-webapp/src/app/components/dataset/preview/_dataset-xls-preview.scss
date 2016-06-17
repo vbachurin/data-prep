@@ -32,7 +32,7 @@
   .form-title {
     @include flex-grow(1);
     @include flex-basis(150px);
-    padding-right: 5px;
+    padding: 5px 5px 0 0;
 
     @include media($medium-screen) {
       text-align: right;

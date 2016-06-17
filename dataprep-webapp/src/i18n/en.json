@@ -137,6 +137,9 @@
   "_comment": "Add datasets",
   "IMPORT_DATASET": "Add Dataset",
   "IMPORT_WAIT": "Fetching import parameters, please wait...",
+  "DATASET_NAME": "Dataset Name:",
+  "PREPARATION": "Preparation",
+
 
 
   "_comment": "Common",
