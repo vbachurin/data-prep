@@ -215,7 +215,6 @@ public class TransformationService extends BaseTransformationService {
      * @param formatName the format name.
      * @param stepId the preparation step id.
      * @param name the preparation name.
-     * @param sample the sample size.
      * @param optionalParams list of optional parameters.
      * @throws IOException if an error occurs.
      */
@@ -365,11 +364,13 @@ public class TransformationService extends BaseTransformationService {
         // because of dataset records streaming, the dataset content must be within an auto closeable block
         final DataSetSampleGet dataSetGet = context.getBean(DataSetSampleGet.class, previewParameters.getDataSetId());
 
+        boolean identityReleased = false;
         securityProxy.asTechnicalUser();
         try (InputStream dataSetContent = dataSetGet.execute(); //
                 JsonParser parser = mapper.getFactory().createParser(dataSetContent)) {
 
             securityProxy.releaseIdentity();
+            identityReleased = true;
 
             final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
 
@@ -380,7 +381,10 @@ public class TransformationService extends BaseTransformationService {
         } catch (IOException e) {
             throw new TDPException(TransformationErrorCodes.UNABLE_TO_PERFORM_PREVIEW, e);
         } finally {
-            securityProxy.releaseIdentity();
+            // make sure the technical identity is released
+            if (!identityReleased) {
+                securityProxy.releaseIdentity();
+            }
         }
     }
 
@@ -403,12 +407,14 @@ public class TransformationService extends BaseTransformationService {
         }
 
         // get the dataset content as the technical user because the dataset may not be shared
+        boolean identityReleased = false;
         securityProxy.asTechnicalUser();
         final DataSetSampleGet dataSetGet = context.getBean(DataSetSampleGet.class, previewParameters.getDataSetId());
         try (InputStream content = dataSetGet.execute(); //
                 JsonParser parser = mapper.getFactory().createParser(content)) {
 
             securityProxy.releaseIdentity();
+            identityReleased = true;
 
             final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
             dataSet.setRecords(dataSet.getRecords().limit(1));
@@ -436,7 +442,10 @@ public class TransformationService extends BaseTransformationService {
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
         } finally {
-            securityProxy.releaseIdentity();
+            // make sure the identity is released !
+            if (!identityReleased) {
+                securityProxy.releaseIdentity();
+            }
         }
     }
 
