@@ -183,7 +183,7 @@ public class XlsSchemaParser implements SchemaParser {
                         sheetParser.parse(sheetSource);
                     } catch (FastStopParsingException e) {
                         // expected here as we stop after the first row
-                        LOGGER.debug(marker, "FastStopParsingException : " + e.getMessage());
+                        LOGGER.debug(marker, "FastStopParsingException", e);
                     }
                     Schema.SheetContent sheetContent = //
                     new Schema.SheetContent(StringUtils.isEmpty(sheetName) ? "sheet-" + i : sheetName, //

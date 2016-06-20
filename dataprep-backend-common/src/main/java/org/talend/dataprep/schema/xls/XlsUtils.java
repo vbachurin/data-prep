@@ -23,12 +23,7 @@ import java.io.PushbackInputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.text.StringCharacterIterator;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
@@ -47,6 +42,7 @@ import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.util.IOUtils;
+import org.openxmlformats.schemas.spreadsheetml.x2006.main.impl.CTSheetDimensionImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,16 +55,6 @@ public class XlsUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(XlsUtils.class);
 
     private static final XMLInputFactory XML_INPUT_FACTORY = XMLInputSingletonHolder.xmlInputFactory;
-
-    private static class XMLInputSingletonHolder {
-
-        private static final XMLInputFactory xmlInputFactory = XMLInputFactory.newFactory();
-
-        static {
-            xmlInputFactory.setProperty(XMLInputFactory.IS_NAMESPACE_AWARE, Boolean.TRUE);
-            xmlInputFactory.setProperty(XMLInputFactory.IS_VALIDATING, Boolean.FALSE);
-        }
-    }
 
     /**
      * Private constructor.
@@ -162,7 +148,7 @@ public class XlsUtils {
 
     /**
      * Detect the excel format with only peeking at the first 8 bytes of the input stream (leaving the stream untouched).
-     * 
+     *
      * @param inputStream the xls input stream.
      * @return true if the given input stream is a xls new format.
      * @throws IOException if an error occurs.
@@ -187,7 +173,7 @@ public class XlsUtils {
 
     /**
      * read workbook xml spec to get non hidden sheets
-     * 
+     *
      * @param inputStream
      * @return
      */
@@ -199,7 +185,7 @@ public class XlsUtils {
         XMLStreamReader streamReader = XML_INPUT_FACTORY.createXMLStreamReader(inputStream);
         try {
             /*
-             * 
+             *
              * <?xml version="1.0" encoding="UTF-8" standalone="yes"?> <workbook
              * xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"
              * xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"> <fileVersion appName="xl"
@@ -211,7 +197,7 @@ public class XlsUtils {
              * r:id="rId4"/> <sheet name="THURSDAY" sheetId="11" r:id="rId5"/> <sheet name="FRIDAY" sheetId="12"
              * r:id="rId6"/> <sheet name="SATURDAY" sheetId="13" r:id="rId7"/> <sheet name="SUNDAY" sheetId="14"
              * r:id="rId8"/> <sheet name="WEEK SUMMARY" sheetId="15" r:id="rId9"/> </sheets>
-             * 
+             *
              */
             // we only want sheets not with state=hidden
 
@@ -221,7 +207,6 @@ public class XlsUtils {
                 switch (streamReader.next()) {
                 case START_ELEMENT:
                     if (StringUtils.equals(streamReader.getLocalName(), "sheet")) {
-
                         Map<String, String> attributesValues = getAttributesNameValue(streamReader);
                         if (!attributesValues.isEmpty()) {
                             String sheetState = attributesValues.get("state");
@@ -230,7 +215,6 @@ public class XlsUtils {
                                 names.add(sheetName);
                             }
                         }
-
                     }
                     break;
                 case XMLStreamConstants.END_ELEMENT:
@@ -272,23 +256,23 @@ public class XlsUtils {
         try {
             while (streamReader.hasNext()) {
                 switch (streamReader.next()) {
-                    case START_ELEMENT:
-                        if (StringUtils.equals(streamReader.getLocalName(), "dimension")) {
-                            Map<String, String> attributesValues = getAttributesNameValue(streamReader);
-                            if (!attributesValues.isEmpty()) {
-                                return getColumnsNumberFromDimension( attributesValues.get("ref"));
-                            }
+                case START_ELEMENT:
+                    if (StringUtils.equals(streamReader.getLocalName(), "dimension")) {
+                        Map<String, String> attributesValues = getAttributesNameValue(streamReader);
+                        if (!attributesValues.isEmpty()) {
+                            return getColumnsNumberFromDimension(attributesValues.get("ref"));
                         }
-                        if (StringUtils.equals(streamReader.getLocalName(), "col")) {
-                            colNumber++;
-                        }
-                        break;
-                    case END_ELEMENT:
-                        if (StringUtils.equals(streamReader.getLocalName(), "cols")) {
-                            return colNumber;
-                        }
-                    default:
-                        // no op
+                    }
+                    if (StringUtils.equals(streamReader.getLocalName(), "col")) {
+                        colNumber++;
+                    }
+                    break;
+                case END_ELEMENT:
+                    if (StringUtils.equals(streamReader.getLocalName(), "cols")) {
+                        return colNumber;
+                    }
+                default:
+                    // no op
                 }
             }
         } finally {
@@ -301,6 +285,7 @@ public class XlsUtils {
 
     /**
      * transform all attributes to a Map (key: att name, value: att value)
+     *
      * @param streamReader
      * @return
      */
@@ -321,10 +306,10 @@ public class XlsUtils {
     }
 
     /**
-     * xlsx xml contains informations for the dimension in a format as "B1:AG142" A1:D5 so the column number is given
+     * xlsx xml contains information for the dimension in a format as "B1:AG142" A1:D5 so the column number is given
      * by the letters from the second part. we don't mind about the start we always start from A1 as data-prep doesn't
      * want to ignore empty columns
-     * 
+     *
      * @param dimension
      * @return 0 if <code>null</code>
      */
@@ -339,16 +324,16 @@ public class XlsUtils {
         }
         String secondPart = parts[1];
 
-        return getColumnNumberFromCellRef( secondPart) + 1;
+        return getColumnNumberFromCellRef(secondPart) + 1;
     }
 
     /**
      * return the column number from a cell reference (AA242)
-     * 
+     *
      * @param lastCell
      * @return
      */
-    public static int getColumnNumberFromCellRef( String lastCell) {
+    public static int getColumnNumberFromCellRef(String lastCell) {
 
         StringBuilder letters = new StringBuilder();
         // get all letters to remove row number
@@ -361,5 +346,15 @@ public class XlsUtils {
         // use poi api to calculate column number from an excell column format
         return CellReference.convertColStringToIndex(letters.toString());
 
+    }
+
+    private static class XMLInputSingletonHolder {
+
+        private static final XMLInputFactory xmlInputFactory = XMLInputFactory.newFactory();
+
+        static {
+            xmlInputFactory.setProperty(XMLInputFactory.IS_NAMESPACE_AWARE, Boolean.TRUE);
+            xmlInputFactory.setProperty(XMLInputFactory.IS_VALIDATING, Boolean.FALSE);
+        }
     }
 }

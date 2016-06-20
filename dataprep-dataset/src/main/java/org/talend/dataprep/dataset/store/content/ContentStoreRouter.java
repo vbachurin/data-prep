@@ -80,8 +80,7 @@ public class ContentStoreRouter extends DataSetContentStore {
     }
 
     @Override
-    public Stream<DataSetRow> stream( DataSetMetadata dataSetMetadata )
-    {
+    public Stream<DataSetRow> stream(DataSetMetadata dataSetMetadata) {
         DataSetContentStore target = wrapStore(dataSetMetadata);
         return target.stream(dataSetMetadata);
     }

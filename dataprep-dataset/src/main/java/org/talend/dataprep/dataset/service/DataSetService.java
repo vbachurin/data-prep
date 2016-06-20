@@ -151,6 +151,7 @@ public class DataSetService extends BaseDataSetService {
      */
     @Autowired
     private JmsTemplate jmsTemplate;
+
     /**
      * User repository.
      */
@@ -409,27 +410,22 @@ public class DataSetService extends BaseDataSetService {
     public Callable<DataSet> get(
             @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata, //
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the requested data set") String dataSetId) {
-        HttpResponseContext.header( CONTENT_TYPE, APPLICATION_JSON_VALUE );
-        return  () -> {
-            final Marker marker = Markers.dataset( dataSetId );
-            LOG.debug( marker, "Get data set #{}", dataSetId );
-            try
-            {
-                DataSetMetadata dataSetMetadata = dataSetMetadataRepository.getForContent( dataSetId );
-                assertDataSetMetadata( dataSetMetadata, dataSetId );
+        return () -> {
+            final Marker marker = Markers.dataset(dataSetId);
+            LOG.debug(marker, "Get data set #{}", dataSetId);
+            try {
+                DataSetMetadata dataSetMetadata = dataSetMetadataRepository.getForContent(dataSetId);
+                assertDataSetMetadata(dataSetMetadata, dataSetId);
                 // Build the result
                 DataSet dataSet = new DataSet();
-                if ( metadata )
-                {
-                    completeWithUserData( dataSetMetadata );
-                    dataSet.setMetadata( dataSetMetadata );
+                if (metadata) {
+                    completeWithUserData(dataSetMetadata);
+                    dataSet.setMetadata(dataSetMetadata);
                 }
-                dataSet.setRecords( contentStore.stream( dataSetMetadata ) );
+                dataSet.setRecords(contentStore.stream(dataSetMetadata));
                 return dataSet;
-            }
-            finally
-            {
-                LOG.debug( marker, "Get done." );
+            } finally {
+                LOG.debug(marker, "Get done.");
             }
         };
     }
@@ -497,7 +493,7 @@ public class DataSetService extends BaseDataSetService {
     @ApiOperation(value = "Copy a data set", produces = TEXT_PLAIN_VALUE, notes = "Copy a new data set based on the given id. Returns the id of the newly created data set.")
     @Timed
     public String copy(@PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to clone") String dataSetId,
-                       @ApiParam(value = "The name of the cloned dataset.") @RequestParam(required = false) String copyName)
+            @ApiParam(value = "The name of the cloned dataset.") @RequestParam(required = false) String copyName)
             throws IOException {
 
         HttpResponseContext.header(CONTENT_TYPE, TEXT_PLAIN_VALUE);
@@ -844,11 +840,9 @@ public class DataSetService extends BaseDataSetService {
                 // all good mate!! so send that to jms
                 // Asks for a in depth schema analysis (for column type information).
                 queueEvents(dataSetId, FormatAnalysis.class);
-            }
-            catch (TDPException e) {
+            } catch (TDPException e) {
                 throw e;
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 throw new TDPException(UNABLE_TO_CREATE_OR_UPDATE_DATASET, e);
             }
         } finally {
@@ -999,15 +993,13 @@ public class DataSetService extends BaseDataSetService {
     @ApiOperation(value = "Search the dataset metadata", notes = "Search the dataset metadata.")
     @Timed
     public Iterable<DataSetMetadata> search(@RequestParam @ApiParam(value = "What to search in datasets") final String name,
-                                            @RequestParam @ApiParam(value = "The searched name should be the full name") final boolean strict) {
+            @RequestParam @ApiParam(value = "The searched name should be the full name") final boolean strict) {
 
         LOG.debug("search datasets metadata for {}", name);
 
         final Set<DataSetMetadata> found;
         try (final Stream<DataSetMetadata> stream = stream(dataSetMetadataRepository.list().spliterator(), false)) {
-            found = stream
-                    .filter(metadata -> StringsHelper.match(metadata.getName(), name, strict))
-                    .collect(toSet());
+            found = stream.filter(metadata -> StringsHelper.match(metadata.getName(), name, strict)).collect(toSet());
         }
 
         LOG.info("found {} dataset while searching {}", found.size(), name);
