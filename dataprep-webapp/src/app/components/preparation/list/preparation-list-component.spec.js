@@ -85,9 +85,9 @@ describe('Preparation list component', () => {
     ];
 
     const folders = [
-        { path: '/tata/titi', name: 'titi' },
-        { path: '/tata/toto', name: 'toto' },
-        { path: '/tata/tutu', name: 'tutu' },
+        {id: '001', path: '/tata/titi', name: 'titi' },
+        {id: '002', path: '/tata/toto', name: 'toto' },
+        {id: '003', path: '/tata/tutu', name: 'tutu' },
     ];
 
     beforeEach(angular.mock.module('data-prep.preparation-list', ($provide) => {

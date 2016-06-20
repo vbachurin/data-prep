@@ -16,7 +16,7 @@
 <div id="preparation-inventory-list" class="inventory-list">
     <inventory-item
             id="folder_{{$index}}"
-            ng-repeat="folder in $ctrl.state.inventory.folder.content.folders track by folder.path"
+            ng-repeat="folder in $ctrl.state.inventory.folder.content.folders track by folder.id"
             item="folder"
             type="folder"
             details="FOLDER_DETAILS"
