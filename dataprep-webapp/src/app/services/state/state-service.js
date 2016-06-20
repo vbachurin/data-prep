@@ -49,6 +49,7 @@ export function StateService(RouteStateService, routeState, //
         setCurrentData: PlaygroundStateService.setData,
         setCurrentPreparation: PlaygroundStateService.setPreparation,
         setIsFetchingStats: PlaygroundStateService.setIsFetchingStats,
+        setIsSavingPreparation: PlaygroundStateService.setIsSavingPreparation,
         setNameEditionMode: PlaygroundStateService.setNameEditionMode,
         setPreparationName: PlaygroundStateService.setPreparationName,
         updateDatasetStatistics: PlaygroundStateService.updateDatasetStatistics,

@@ -526,6 +526,7 @@ describe('Playground controller', () => {
 
             spyOn(PreparationService, 'delete').and.returnValue($q.when(true));
             spyOn(StateService, 'resetPlayground').and.returnValue();
+            spyOn(StateService, 'setIsSavingPreparation').and.returnValue();
 
             ctrl = createController();
         }));
@@ -634,6 +635,20 @@ describe('Playground controller', () => {
                 //then
                 expect(StateService.resetPlayground).toHaveBeenCalled();
                 expect($state.go).toHaveBeenCalledWith('nav.index.preparations', undefined);
+            }));
+
+            it('should manage isSaving flag', inject((StateService) => {
+                //given
+                ctrl.destinationFolder = { path: '/my/folder' };
+                expect(StateService.setIsSavingPreparation).not.toHaveBeenCalled();
+
+                //when
+                ctrl.confirmSaveOnClose();
+                expect(StateService.setIsSavingPreparation).toHaveBeenCalledWith(true);
+                scope.$digest();
+
+                //then
+                expect(StateService.setIsSavingPreparation).toHaveBeenCalledWith(false);
             }));
         });
     });

@@ -100,6 +100,17 @@ describe('Playground state service', () => {
             //then
             expect(playgroundState.nameEditionMode).toBe(true);
         }));
+
+        it('should set saving in progress flag', inject((playgroundState, PlaygroundStateService) => {
+            //given
+            expect(playgroundState.isSavingPreparation).toBeFalsy();
+
+            //when
+            PlaygroundStateService.setIsSavingPreparation(true);
+
+            //then
+            expect(playgroundState.isSavingPreparation).toBe(true);
+        }));
     });
 
     describe('data', () => {
@@ -428,7 +439,7 @@ describe('Playground state service', () => {
     });
 
     describe('reset', () => {
-        it('should reset playground and sub-states', inject((playgroundState, PlaygroundStateService, RecipeStateService, GridStateService, FilterStateService, LookupStateService, SuggestionsStateService, ParametersStateService) => {
+        it('should reset playground', inject((playgroundState, PlaygroundStateService) => {
             //given
             playgroundState.data = {};
             playgroundState.dataset = {};
@@ -436,7 +447,7 @@ describe('Playground state service', () => {
             playgroundState.nameEditionMode = true;
             playgroundState.preparation = {};
             playgroundState.isFetchingStats = true;
-
+            playgroundState.isSavingPreparation = true;
 
             //when
             PlaygroundStateService.reset();
@@ -448,7 +459,22 @@ describe('Playground state service', () => {
             expect(playgroundState.lookupData).toBe(null);
             expect(playgroundState.preparation).toBe(null);
             expect(playgroundState.isFetchingStats).toBe(false);
+            expect(playgroundState.isSavingPreparation).toBe(false);
+        }));
+        
+        it('should reset sub-states', inject((playgroundState, PlaygroundStateService, RecipeStateService, GridStateService, FilterStateService, LookupStateService, SuggestionsStateService, ParametersStateService) => {
+            //given
+            expect(RecipeStateService.reset).not.toHaveBeenCalled();
+            expect(GridStateService.reset).not.toHaveBeenCalled();
+            expect(FilterStateService.reset).not.toHaveBeenCalled();
+            expect(LookupStateService.reset).not.toHaveBeenCalled();
+            expect(SuggestionsStateService.reset).not.toHaveBeenCalled();
+            expect(ParametersStateService.reset).not.toHaveBeenCalled();
 
+            //when
+            PlaygroundStateService.reset();
+
+            //then
             expect(RecipeStateService.reset).toHaveBeenCalled();
             expect(GridStateService.reset).toHaveBeenCalled();
             expect(FilterStateService.reset).toHaveBeenCalled();

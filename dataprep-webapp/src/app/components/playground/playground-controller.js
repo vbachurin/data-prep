@@ -175,6 +175,7 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
      */
     vm.confirmSaveOnClose = function confirmSaveOnClose() {
         vm.saveInProgress = true;
+        StateService.setIsSavingPreparation(true);
         let operation;
 
         const prepId = state.playground.preparation.id;
@@ -186,7 +187,9 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
         else {
             operation = PreparationService.setName(prepId, cleanName);
         }
-        return operation.then(vm.close);
+        return operation
+            .then(() => { vm.close(); })
+            .finally(() => { StateService.setIsSavingPreparation(false); });
     };
 
     /**

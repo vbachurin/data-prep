@@ -15,7 +15,7 @@ export const playgroundState = {
     preparationName: '',
     preparation: null,
     candidatePreparations: [],
-    displayPreparationPicker: false
+    isSavingPreparation: false,
 };
 
 export function PlaygroundStateService(RecipeStateService, recipeState,
@@ -40,6 +40,7 @@ export function PlaygroundStateService(RecipeStateService, recipeState,
         reset: reset,
         setDataset: setDataset,
         setIsFetchingStats: setIsFetchingStats,
+        setIsSavingPreparation: setIsSavingPreparation,
         setPreparation: setPreparation,
         setPreparationName: setPreparationName,
         setNameEditionMode: setNameEditionMode,
@@ -145,6 +146,10 @@ export function PlaygroundStateService(RecipeStateService, recipeState,
     function setIsFetchingStats(value) {
         playgroundState.isFetchingStats = value;
     }
+    
+    function setIsSavingPreparation(value) {
+        playgroundState.isSavingPreparation = value;
+    }
 
     //--------------------------------------------------------------------------------------------------------------
     //-------------------------------------------------PARAMETERS---------------------------------------------------
@@ -206,6 +211,7 @@ export function PlaygroundStateService(RecipeStateService, recipeState,
         playgroundState.nameEditionMode = false;
         playgroundState.lookupData = null;
         playgroundState.isFetchingStats = false;
+        playgroundState.isSavingPreparation = false;
 
         RecipeStateService.reset();
         FilterStateService.reset();

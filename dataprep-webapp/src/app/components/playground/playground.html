@@ -126,9 +126,10 @@
             <a class="modal-secondary-button"
                ng-click="playgroundCtrl.discardSaveOnClose()"
                translate-once="NO_THANKS"></a>
+
             <talend-button-loader button-class="modal-primary-button btn-primary"
-                                  disable-condition="playgroundCtrl.savePreparationForm.$invalid || playgroundCtrl.saveInProgress"
-                                  loading="playgroundCtrl.saveInProgress"
+                                  disable-condition="playgroundCtrl.savePreparationForm.$invalid || playgroundCtrl.state.playground.isSavingPreparation"
+                                  loading="playgroundCtrl.state.playground.isSavingPreparation"
                                   loading-class="icon">
                 <span translate-once="SAVE_IT"></span>
             </talend-button-loader>
