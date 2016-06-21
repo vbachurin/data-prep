@@ -354,6 +354,7 @@ public class DataSetMetadataBuilder {
         this.sharedDataSet = original.isSharedDataSet();
         this.owner = original.getOwner();
         this.roles = original.getRoles();
+        this.tag = original.getTag();
         return this;
     }
 

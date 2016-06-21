@@ -264,6 +264,7 @@ public class DataSetMetadataBuilderTest {
         metadata.getLifecycle().inProgress(true);
         metadata.getLifecycle().importing(true);
         metadata.setSchemaParserResult(schemaParserResult);
+        metadata.setTag("MyTag");
 
         return metadata;
     }
