@@ -126,6 +126,10 @@ public class DataSetMetadata implements Serializable, SharedResource {
     @Transient // no saved in the database but computed when needed
     private boolean sharedDataSet = false;
 
+    /** True if this dataset metadata is shared by current user. */
+    @Transient // no saved in the database but computed when needed
+    private boolean sharedByMe = false;
+
     /** This dataset metadata owner. */
     @Transient // no saved in the database but computed when needed
     private Owner owner;
@@ -378,6 +382,21 @@ public class DataSetMetadata implements Serializable, SharedResource {
     @Override
     public void setSharedResource(boolean shared) {
         this.setSharedDataSet(shared);
+    }
+
+    /**
+     * @return sharedByMe
+     */
+    public boolean isSharedByMe() {
+        return sharedByMe;
+    }
+
+    /**
+     * @see SharedResource#setSharedByMe(boolean)
+     */
+    @Override
+    public void setSharedByMe(boolean sharedByMe) {
+        this.sharedByMe = sharedByMe;
     }
 
     /**

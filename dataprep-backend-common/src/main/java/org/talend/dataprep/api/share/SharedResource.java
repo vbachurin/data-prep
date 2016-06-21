@@ -33,6 +33,12 @@ public interface SharedResource {
     void setSharedResource(boolean shared);
 
     /**
+     * Set the sharedByMe resource flag.
+     * @param sharedByMe the shared resource flag value.
+     */
+    void setSharedByMe(boolean sharedByMe);
+
+    /**
      * Set the current user role on this resource.
      * @param roles the roles as a list of string.
      */

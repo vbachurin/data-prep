@@ -67,6 +67,10 @@ public class Folder implements Serializable, SharedResource {
     @Transient // no saved in the database but computed when needed
     private boolean sharedFolder = false;
 
+    /** True if this folder is shared by current user. */
+    @Transient // no saved in the database but computed when needed
+    private boolean sharedByMe = false;
+
     /** What role has the current user on this folder. */
     @Transient // no saved in the database but computed when needed
     private Set<String> roles = new HashSet<>();
@@ -228,6 +232,21 @@ public class Folder implements Serializable, SharedResource {
     @Override
     public void setSharedResource(boolean shared) {
         this.setSharedFolder(shared);
+    }
+
+    /**
+     * @return sharedByMe
+     */
+    public boolean isSharedByMe() {
+        return sharedByMe;
+    }
+
+    /**
+     * @see SharedResource#setSharedByMe(boolean)
+     */
+    @Override
+    public void setSharedByMe(boolean sharedByMe) {
+        this.sharedByMe = sharedByMe;
     }
 
     /**
