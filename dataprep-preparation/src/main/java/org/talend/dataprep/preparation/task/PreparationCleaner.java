@@ -16,6 +16,7 @@ package org.talend.dataprep.preparation.task;
 import static java.util.stream.Collectors.*;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -30,6 +31,7 @@ import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.preparation.PreparationUtils;
 import org.talend.dataprep.api.preparation.Step;
 import org.talend.dataprep.preparation.store.PreparationRepository;
+import org.talend.dataprep.security.SecurityProxy;
 
 /**
  * Scheduler that clean the repository.
@@ -53,6 +55,9 @@ public class PreparationCleaner {
 
     @Autowired
     private PreparationUtils preparationUtils;
+
+    @Autowired
+    private SecurityProxy securityProxy;
 
     /**
      * Get all the step ids that belong to a preparation
@@ -106,10 +111,15 @@ public class PreparationCleaner {
     /**
      * Remove the orphan steps (that do NOT belong to any preparation).
      */
-    @Scheduled(fixedDelay = 60000)
+    @Scheduled(fixedDelay = 60 * 60 * 1000) // Every hour
     public void removeOrphanSteps() {
-        final List<Step> currentOrphans = getCurrentOrphanSteps();
-        updateOrphanTags(currentOrphans);
-        cleanSteps();
+        securityProxy.asTechnicalUser();
+        try {
+            final List<Step> currentOrphans = getCurrentOrphanSteps();
+            updateOrphanTags(currentOrphans);
+            cleanSteps();
+        } finally {
+            securityProxy.releaseIdentity();
+        }
     }
 }
