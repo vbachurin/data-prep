@@ -166,7 +166,7 @@ describe('RangeSlider controller', function () {
         const result = ctrl.setDateTimeToMidnight(timeStamp);
 
         //then
-        expect(result).toBe(1465768800000);//Mon Jun 13 2016 00:00:00
+        expect(result).toBe(new Date(2016, 5, 13, 0, 0, 0, 0).getTime());//Mon Jun 13 2016 00:00:00
     });
 
     it('should return true when string has comma', function () {

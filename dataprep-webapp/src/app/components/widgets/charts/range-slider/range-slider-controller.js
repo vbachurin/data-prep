@@ -106,7 +106,9 @@ export default function RangeSliderCtrl() {
      * @returns {number} date timestamp
      */
     vm.setDateTimeToMidnight = function setDateTimeToMidnight(timeStamp) {
-        return new Date(vm.formatDate(new Date(timeStamp))).getTime();
+        const dateToSetTimeToMidnight = new Date(timeStamp);
+        dateToSetTimeToMidnight.setHours(0, 0, 0, 0);
+        return dateToSetTimeToMidnight.getTime();
     };
 
     /**
