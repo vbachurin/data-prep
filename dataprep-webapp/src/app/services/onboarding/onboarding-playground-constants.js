@@ -15,45 +15,39 @@
 const playgroundTour = [
     {
         element: '.no-js',
-        title: '<center>Welcome to the dataset view</center>',
-        content: 'This table represents the raw data contained in your dataset.</br>From this view, you can prepare the modifications to apply on your dataset.',
+        title: '<center>Welcome to the preparation view</center>',
+        content: 'In this view, you can apply preparation steps to your dataset.</br>This table represents the result of your preparation.',
         position: 'right'
     },
     {
         element: '#datagrid .slick-header-columns-right > .slick-header-column',
-        title: '',
+        title: '<center>Columns</center>',
         content: 'Select a column to discover the transformation functions you can apply to your data.',
         position: 'right'
     },
     {
         element: '#datagrid .quality-bar',
-        title: '',
-        content: 'Use this quality bar to identify:<ul><li> - valid records (in green),</li><li> - empty records (in white)</li><li> - invalid records (in orange).</li></ul>Click one of the record types to apply functions on it.',
+        title: '<center>Quality bar</center>',
+        content: 'Use this quality bar to identify:<ul><li> - valid records (in green),</li><li> - empty records (in white),</li><li> - invalid records (in orange).</li></ul>Click one of the record types to apply functions on it.',
         position: 'right'
     },
     {
         element: '#help-suggestions',
-        title: '',
-        content: 'Click one of the available functions to perform it on the column you selected.</br>Don\'t worry, you will be able to undo or change it whenever you want.',
+        title: '<center>Functions</center>',
+        content: 'Click one of the available functions to apply it on the column you selected.',
         position: 'left'
     },
     {
         element: '#help-stats',
-        title: '',
-        content: 'In this panel, you will find some basic analysis of your data to help you have a better idea of its content.',
+        title: '<center>Data profiling</center>',
+        content: 'In this panel, you will find some analysis of your data to help you have a better idea of its content.<br/>You can also click the profiled data to create a filter.',
         position: 'left'
     },
     {
         element: '#playground-lookup-icon',
-        title: '',
-        content: 'Click here to link two datasets. It will help you to dynamically use the data from the second dataset to complement the main one.</br>For example, you can use it to add all US State abbreviations alongside the full name of the State.',
+        title: '<center>Data lookup</center>',
+        content: 'Click here to link a dataset to your preparation. It will help you to dynamically use the data from a second dataset to complement your preparation.</br>For example, you can use it to add all US State abbreviations alongside the full name of the State.',
         position: 'bottom'
-    },
-    {
-        element: '#playground-online-help-icon',
-        title: '',
-        content: 'Click here to access the <a href="https://help.talend.com/pages/viewpage.action?pageId=266307043&utm_medium=dpdesktop&utm_source=on_boarding" target="_blank">online help</a>.',
-        position: 'left'
     }
 ];
 

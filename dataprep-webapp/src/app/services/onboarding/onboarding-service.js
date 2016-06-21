@@ -1,28 +1,30 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
 
 /**
  * @ngdoc service
  * @name data-prep.services.onboarding.service:OnboardingService
  * @description OnboardingService service. This service exposes functions to start onboarding tours
- * @requires data-prep.services.onboarding.constant:datasetTour
- * @requires data-prep.services.onboarding.constant:playgroundTour
+ * @requires data-prep.services.state.constant:state
  * @requires data-prep.services.onboarding.constant:recipeTour
+ * @requires data-prep.services.onboarding.constant:playgroundTour
+ * @requires data-prep.services.onboarding.constant:preparationTour
  */
-export default function OnboardingService($window, datasetTour, playgroundTour, recipeTour) {
+export default function OnboardingService($timeout, $state, $window, state, recipeTour, playgroundTour, preparationTour) {
     'ngInject';
 
     const TOUR_OPTIONS_KEY = 'org.talend.dataprep.tour_options';
+    let previousRoute = '';
 
     /**
      * @ngdoc property
@@ -89,12 +91,12 @@ export default function OnboardingService($window, datasetTour, playgroundTour, 
      */
     function getTour(tour) {
         switch (tour) {
-            case 'dataset':
-                return datasetTour;
             case 'playground':
                 return playgroundTour;
             case 'recipe':
                 return recipeTour;
+            case 'preparation':
+                return preparationTour;
         }
     }
 
@@ -109,6 +111,10 @@ export default function OnboardingService($window, datasetTour, playgroundTour, 
         var options = getTourOptions();
         options[tour] = true;
         setTourOptions(options);
+        if (previousRoute === 'datasetsList') {
+            $state.go('nav.index.datasets');
+            previousRoute = '';
+        }
     }
 
     /**
@@ -132,20 +138,26 @@ export default function OnboardingService($window, datasetTour, playgroundTour, 
      * @description Configure and start an onboarding tour
      */
     function startTour(tour) {
-        introJs()
-            .setOptions({
-                nextLabel: 'NEXT',
-                prevLabel: 'BACK',
-                skipLabel: 'SKIP',
-                doneLabel: 'LET ME TRY',
-                steps: createIntroSteps(getTour(tour))
-            })
-            .oncomplete(function () {
-                setTourDone(tour);
-            })
-            .onexit(function () {
-                setTourDone(tour);
-            })
-            .start();
+        if ($state.current.name === 'nav.index.datasets') {
+            previousRoute = 'datasetsList';
+            $state.go('nav.index.preparations', {folderId: state.inventory.homeFolderId});
+        }
+        $timeout(function () {
+            introJs()
+                .setOptions({
+                    nextLabel: 'NEXT',
+                    prevLabel: 'BACK',
+                    skipLabel: 'SKIP',
+                    doneLabel: 'LET ME TRY',
+                    steps: createIntroSteps(getTour(tour))
+                })
+                .oncomplete(function () {
+                    setTourDone(tour);
+                })
+                .onexit(function () {
+                    setTourDone(tour);
+                })
+                .start();
+        }, 200, false);
     }
 }

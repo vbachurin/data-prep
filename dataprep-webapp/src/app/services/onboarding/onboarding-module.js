@@ -11,9 +11,9 @@
 
  ============================================================================*/
 
-import datasetTour from './onboarding-datasets-constants';
 import playgroundTour from './onboarding-playground-constants';
 import recipeTour from './onboarding-recipe-constants';
+import preparationTour from './onboarding-preparations-constants';
 import OnboardingService from './onboarding-service';
 
 (() => {
@@ -24,9 +24,12 @@ import OnboardingService from './onboarding-service';
      * @name data-prep.services.onboarding
      * @description This module contains the services to manage onboarding tours
      */
-    angular.module('data-prep.services.onboarding', [])
-        .constant('datasetTour', datasetTour)
+    angular.module('data-prep.services.onboarding', [
+            'ui.router',
+            'data-prep.services.state'
+        ])
         .constant('playgroundTour', playgroundTour)
         .constant('recipeTour', recipeTour)
+        .constant('preparationTour', preparationTour)
         .service('OnboardingService', OnboardingService);
 })();

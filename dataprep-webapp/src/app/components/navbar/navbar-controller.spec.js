@@ -29,7 +29,6 @@ describe('Navbar controller', function () {
             });
         };
 
-        spyOn(DatasetService, 'getDatasets').and.returnValue($q.when());
         spyOn(OnboardingService, 'startTour').and.returnValue();
     }));
 
@@ -48,14 +47,20 @@ describe('Navbar controller', function () {
             scope.$digest();
 
             //then
-            expect(DatasetService.getDatasets).toHaveBeenCalled();
-            expect(OnboardingService.startTour).not.toHaveBeenCalled();
+            expect(OnboardingService.startTour).toHaveBeenCalled();
+        }));
+
+        it('should start tour on preparation page', inject(function (DatasetService, OnboardingService) {
+            //given
+            $stateMock.params = {};
+            $stateMock.current = {name: 'nav.index.preparations'};
 
             //when
-            $timeout.flush(100);
+            createController();
+            scope.$digest();
 
             //then
-            expect(OnboardingService.startTour).toHaveBeenCalledWith('dataset');
+            expect(OnboardingService.startTour).toHaveBeenCalled();
         }));
 
         it('should not start tour on dataset playground page', inject(function ($timeout, DatasetService, OnboardingService) {
@@ -66,10 +71,8 @@ describe('Navbar controller', function () {
             //when
             createController();
             scope.$digest();
-            $timeout.flush(100);
 
             //then
-            expect(DatasetService.getDatasets).not.toHaveBeenCalled();
             expect(OnboardingService.startTour).not.toHaveBeenCalled();
         }));
 
@@ -81,15 +84,13 @@ describe('Navbar controller', function () {
             //when
             createController();
             scope.$digest();
-            $timeout.flush(100);
 
             //then
-            expect(DatasetService.getDatasets).not.toHaveBeenCalled();
             expect(OnboardingService.startTour).not.toHaveBeenCalled();
         }));
     });
 
-    describe('onboarding completed yet', function() {
+    describe('onboarding completed', function() {
         beforeEach(inject(function(OnboardingService) {
             spyOn(OnboardingService, 'shouldStartTour').and.returnValue(false);
         }));
@@ -105,7 +106,6 @@ describe('Navbar controller', function () {
             $timeout.flush(100);
 
             //then
-            expect(DatasetService.getDatasets).not.toHaveBeenCalled();
             expect(OnboardingService.startTour).not.toHaveBeenCalled();
         }));
     });
@@ -127,6 +127,5 @@ describe('Navbar controller', function () {
             //then
             expect(StateService.showFeedback).toHaveBeenCalled();
         }));
-
     });
 });

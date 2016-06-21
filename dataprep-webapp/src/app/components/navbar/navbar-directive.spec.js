@@ -35,54 +35,80 @@ describe('Navbar directive', function() {
         };
     }));
 
-    it('should render navigation bar', function() {
-        //when
-        createElement();
+    describe('rendering elements', () => {
+        it('should render navigation bar', function() {
+            //when
+            createElement();
 
-        //then
-        expect(element.find('talend-navbar').length).toBe(1);
+            //then
+            expect(element.find('talend-navbar').length).toBe(1);
+        });
+
+        it('should render footer bar', function() {
+            //when
+            createElement();
+
+            //then
+            expect(element.find('footer').length).toBe(1);
+        });
+
+        it('should render content insertion point', function() {
+            //when
+            createElement();
+
+            //then
+            expect(element.find('ui-view.content').length).toBe(1);
+        });
+
+        it('should render navigation items insertion point', function() {
+            //when
+            createElement();
+
+            //then
+            expect(element.find('.navigation-items[insertion-home-right-header]').length).toBe(1);
+        });
+
+
+        it('should render feedback form', function() {
+            //when
+            stateMock.ee = undefined;
+            createElement();
+
+            //then
+            expect(element.find('#message-icon').length).toBe(1);
+        });
+
+        it('should render onboarding icon', function() {
+            //when
+            createElement();
+
+            //then
+            expect(element.find('#onboarding-icon').length).toBe(1);
+        });
+
+        it('should not render feedback form', function() {
+            //when
+            stateMock.ee = true;
+            createElement();
+
+            //then
+            expect(element.find('#message-icon').length).toBe(0);
+        });
     });
 
-    it('should render footer bar', function() {
-        //when
-        createElement();
+    describe('events', () => {
+        it('should launch onboarding storytelling on icon click', () => {
+            //given
+            createElement();
+            var ctrl = element.controller('navbar');
+            spyOn(ctrl, 'startTour').and.returnValue();
 
-        //then
-        expect(element.find('footer').length).toBe(1);
-    });
+            //when
+            element.find('#onboarding-icon > a').eq(0).click();
+            scope.$digest();
 
-    it('should render content insertion point', function() {
-        //when
-        createElement();
-
-        //then
-        expect(element.find('ui-view.content').length).toBe(1);
-    });
-
-    it('should render navigation items insertion point', function() {
-        //when
-        createElement();
-
-        //then
-        expect(element.find('.navigation-items[insertion-home-right-header]').length).toBe(1);
-    });
-
-
-    it('should render feedback form', function() {
-        //when
-        stateMock.ee = undefined;
-        createElement();
-
-        //then
-        expect(element.find('#message-icon').length).toBe(1);
-    });
-
-    it('should not render feedback form', function() {
-        //when
-        stateMock.ee = true;
-        createElement();
-
-        //then
-        expect(element.find('#message-icon').length).toBe(0);
+            //then
+            expect(ctrl.startTour).toHaveBeenCalledWith('preparation');
+        });
     });
 });
