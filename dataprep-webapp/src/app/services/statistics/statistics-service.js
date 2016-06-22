@@ -231,10 +231,22 @@ export default function StatisticsService($log, $filter, state, StateService,
             return filter.colId === column.id && filter.type === 'inside_range';
         });
 
-        var rangeLimits = {
-            min: statistics.min,
-            max: statistics.max
-        };
+        let rangeLimits;
+        if (state.playground.grid.selectedColumn.type === 'date') {
+            const firstHistogramItem = _.first(state.playground.grid.selectedColumn.statistics.histogram.items),
+                  lastHistogramItem = _.last(state.playground.grid.selectedColumn.statistics.histogram.items);
+            rangeLimits = {
+                min: firstHistogramItem.range.min,
+                max: lastHistogramItem.range.max
+            };
+        } else {
+            rangeLimits = {
+                min: statistics.min,
+                max: statistics.max
+            };
+        }
+
+        rangeLimits.type = state.playground.grid.selectedColumn.type;
 
         if (currentRangeFilter) {
             var filterMin = currentRangeFilter.args.interval[0];
@@ -243,8 +255,8 @@ export default function StatisticsService($log, $filter, state, StateService,
             rangeLimits.minFilterVal = filterMin;
             rangeLimits.maxFilterVal = filterMax;
 
-            rangeLimits.minBrush = getValueWithinRange(filterMin, statistics.min, statistics.max);
-            rangeLimits.maxBrush = getValueWithinRange(filterMax, statistics.min, statistics.max);
+            rangeLimits.minBrush = getValueWithinRange(filterMin, rangeLimits.min, rangeLimits.max);
+            rangeLimits.maxBrush = getValueWithinRange(filterMax, rangeLimits.min, rangeLimits.max);
 
             StateService.setStatisticsHistogramActiveLimits([rangeLimits.minBrush, rangeLimits.maxBrush]);
         }
@@ -796,6 +808,7 @@ export default function StatisticsService($log, $filter, state, StateService,
                 break;
             case 'date':
                 initDateRangeHistogram();
+                initRangeLimits();
                 break;
             case 'text':
             case 'boolean':
@@ -925,6 +938,7 @@ export default function StatisticsService($log, $filter, state, StateService,
                     createFilteredDateRangeHistogram()
                         .then(function (histogram) {
                             StateService.setStatisticsFilteredHistogram(histogram);
+                            initRangeLimits();
                         });
                     break;
                 case 'text':

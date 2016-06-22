@@ -61,11 +61,14 @@ export default function ColumnProfileCtrl($translate, $timeout, state, Statistic
      * @param {object} interval The interval [min, max] to filter
      */
     vm.addRangeFilter = function addRangeFilter(interval) {
-        var selectedColumn = state.playground.grid.selectedColumn;
+        const selectedColumn = state.playground.grid.selectedColumn;
+        const isDateRange = selectedColumn.type === 'date';
 
         if (!interval.label) {
-            var min = d3.format(',')(interval.min);
-            var max = d3.format(',')(interval.max);
+            const formatDate = d3.time.format('%m/%d/%Y');
+            const formatNumber = d3.format(',');
+            const min = isDateRange ? formatDate(new Date(interval.min)) : formatNumber(interval.min);
+            const max = isDateRange ? formatDate(new Date(interval.max)) : formatNumber(interval.max);
             if(min === max){
                 interval.label = '[' + min + ']';
             }

@@ -31,6 +31,7 @@ describe('Range slider directive', function () {
 
     beforeEach(angular.mock.module('htmlTemplates'));
     beforeEach(angular.mock.module('talend.widget'));
+    beforeEach(angular.mock.module('data-prep.services.utils'));
 
     beforeEach(inject(function ($rootScope, $compile) {
         scope = $rootScope.$new(true);
@@ -127,7 +128,7 @@ describe('Range slider directive', function () {
             expect(ctrl.brush.extent()).toEqual([20, 20.01]);
         }));
 
-        it('should the min and max labels to the provided min/max values', inject(function ($timeout) {
+        it('should init the min and max labels to the provided min/max numeric values', inject(function ($timeout) {
             //given
             scope.rangeLimits = {
                 min: -50000,
@@ -145,9 +146,54 @@ describe('Range slider directive', function () {
             expect(element.find('text.the-minimum-label').eq(0).text()).toBe('-50,000');
             expect(element.find('text.the-maximum-label').eq(0).text()).toBe('20,000');
         }));
+
+        it('should display the min and max labels to the provided min/max date values', inject(function ($timeout) {
+            //given
+            const minDateTime = new Date(2000, 0, 1).getTime();
+            const maxDateTime = new Date(2001, 0, 1).getTime();
+            scope.rangeLimits = {
+                min: minDateTime,
+                max: maxDateTime,
+                type: 'date'
+            };
+            createElement();
+            $timeout.flush(100);
+            flushAllD3Transitions();
+
+            //then
+            expect(element.find('text.the-minimum-label').eq(0).text()).toBe('01/01/2000');
+            expect(element.find('text.the-maximum-label').eq(0).text()).toBe('01/01/2001');
+        }));
     });
 
     describe('inputs', function() {
+
+        it('should render datetimepicker inputs', () => {
+            //given
+            createElement();
+
+            //when
+            ctrl.showRangeInputs = true;
+            ctrl.isDateType = true;
+            scope.$digest();
+
+            //then
+            expect(element.find('talend-datetime-picker').length).toBe(2);
+            expect(element.find('input').length).toBe(2);
+        });
+
+        it('should render number inputs', () => {
+            //given
+            createElement();
+
+            //when
+            ctrl.showRangeInputs = false;
+            ctrl.isDateType = true;
+            scope.$digest();
+
+            //then
+            expect(element.find('talend-datetime-picker').length).toBe(0);
+        });
 
         it('should init inputs with the provided min/max when minFilterVal and maxFilterVal are undefined (no filter)', inject(function ($timeout) {
             //given
@@ -191,6 +237,31 @@ describe('Range slider directive', function () {
             expect(element.find('input').eq(1)[0].value).toBe('35');
         }));
 
+        it('should init inputs by rendering their values as human readable dates if type is date', inject(function($timeout) {
+            //given
+            const
+                minDateTime = new Date(2016, 0, 1).getTime(),
+                maxDateTime = new Date(2016, 11, 1).getTime();
+
+            scope.rangeLimits = {
+                min: minDateTime,
+                max: maxDateTime,
+                type: 'date'
+            };
+            createElement();
+            $timeout.flush(100);
+            flushAllD3Transitions();
+
+            //when
+            ctrl.showRangeInputs = true;
+            scope.$digest();
+
+            //then
+            const inputs = element.find('input');
+            expect(inputs.eq(0)[0].value).toBe('01/01/2016');
+            expect(inputs.eq(1)[0].value).toBe('12/01/2016');
+        }));
+
         describe('events', function() {
 
             describe('ENTER keyup', function() {
@@ -219,6 +290,54 @@ describe('Range slider directive', function () {
                     expect(ctrl.brush.extent()).toEqual([8, 10]);
                     expect(scope.brushEnd).toHaveBeenCalledWith({min: 8, max: 10, isMaxReached: false});
                     expect(minInput[0].value).toBe('8');
+                }));
+
+                it('should update brush with input dates and call brushend callback', inject(function ($timeout) {
+                    //given
+                    scope.rangeLimits = {
+                        min: new Date(2016, 1, 1).getTime(),
+                        max: new Date(2016, 1, 10).getTime(),
+                        minBrush: new Date(2016, 1, 3).getTime(),
+                        maxBrush: new Date(2016, 1, 7).getTime(),
+                        minFilterVal: new Date(2016, 1, 3).getTime(),
+                        maxFilterVal: new Date(2016, 1, 7).getTime(),
+                        type:'date'
+                    };
+
+                    createElement();
+                    $timeout.flush(100);
+
+                    ctrl.showRangeInputs = true;
+                    ctrl.minMaxModel = {
+                        minModel:'02/04/2016',
+                        maxModel:'02/06/2016'
+                    };
+                    scope.$digest();
+
+                    expect(ctrl.brush.extent()).toEqual([
+                        new Date(2016, 1, 3).getTime(),
+                        new Date(2016, 1, 7).getTime()
+                    ]);
+
+                    var minInput = element.find('input').eq(0);
+
+                    //when
+                    var enterKeyUpEvent = new angular.element.Event('keyup');
+                    enterKeyUpEvent.keyCode = 13;
+                    minInput.trigger(enterKeyUpEvent);
+                    scope.$digest();
+
+                    //then
+                    expect(ctrl.brush.extent()).toEqual([
+                        new Date('02/04/2016').getTime(),
+                        new Date('02/06/2016').getTime()
+                    ]);
+                    expect(scope.brushEnd).toHaveBeenCalledWith({
+                        min: new Date('02/04/2016').getTime(),
+                        max: new Date('02/06/2016').getTime(),
+                        isMaxReached: false
+                    });
+                    expect(minInput[0].value).toBe('02/04/2016');
                 }));
 
                 it('should invert min and max if min > max at brush end callback', inject(function ($timeout) {
@@ -319,7 +438,7 @@ describe('Range slider directive', function () {
                     expect(ctrl.brush.extent()).toEqual([8, 10]);
                 }));
 
-                it('should call brush end callback', inject(function ($timeout) {
+                it('should call brush end callback with numeric values', inject(function ($timeout) {
                     //given
                     createElement();
                     $timeout.flush(100);
@@ -340,6 +459,42 @@ describe('Range slider directive', function () {
 
                     //then
                     expect(scope.brushEnd).toHaveBeenCalledWith({min: 8, max: 10, isMaxReached: false});
+                }));
+
+                it('should call brush end callback with date values', inject(function ($timeout) {
+                    //given
+                    scope.rangeLimits = {
+                        min: new Date(2016, 1, 1).getTime(),
+                        max: new Date(2016, 1, 10).getTime(),
+                        minBrush: new Date(2016, 1, 3).getTime(),
+                        maxBrush: new Date(2016, 1, 7).getTime(),
+                        minFilterVal: new Date(2016, 1, 3).getTime(),
+                        maxFilterVal: new Date(2016, 1, 7).getTime(),
+                        type:'date'
+                    };
+                    createElement();
+                    $timeout.flush(100);
+                    expect(scope.brushEnd).not.toHaveBeenCalled();
+
+                    ctrl.showRangeInputs = true;
+                    ctrl.minMaxModel = {
+                        minModel:'02/04/2016',
+                        maxModel:'02/06/2016'
+                    };
+                    scope.$digest();
+                    var maxInput = element.find('talend-datetime-picker').eq(1);
+
+                    //when
+                    var tabKeyUpEvent = new angular.element.Event('keyup');
+                    tabKeyUpEvent.keyCode = 9;
+                    maxInput.trigger(tabKeyUpEvent);
+
+                    //then
+                    expect(scope.brushEnd).toHaveBeenCalledWith({
+                        min: new Date('02/04/2016').getTime(),
+                        max: new Date('02/06/2016').getTime(),
+                        isMaxReached: false
+                    });
                 }));
 
                 it('should invert min and max if min > max at brush end callback', inject(function ($timeout) {
@@ -573,7 +728,7 @@ describe('Range slider directive', function () {
         });
 
         describe('errors', function() {
-            it('should show error message when value is incorrect', inject(function ($timeout) {
+            it('should show error message when value is an incorrect number', inject(function ($timeout) {
                 //given
                 createElement();
                 $timeout.flush(100);
@@ -583,6 +738,32 @@ describe('Range slider directive', function () {
                 ctrl.minMaxModel = {
                     minModel:'kjhfkjfkl'
                 };
+                scope.$digest();
+
+                var minInput = element.find('input').eq(0);
+
+                //when
+                var keyUp = new angular.element.Event('keyup');
+                keyUp.keyCode = 56;
+                minInput.trigger(keyUp);
+                scope.$digest();
+
+                //then
+                expect(element.find('.error').eq(0).hasClass('ng-hide')).toBe(false);
+                expect(element.find('.error').eq(1).hasClass('ng-hide')).toBe(true);
+            }));
+
+            it('should show error message when value is an incorrect date', inject(function ($timeout) {
+                //given
+                createElement();
+                $timeout.flush(100);
+                flushAllD3Transitions();
+
+                ctrl.showRangeInputs = true;
+                ctrl.minMaxModel = {
+                    minModel:'01/012016'
+                };
+                ctrl.isDateType = true;
                 scope.$digest();
 
                 var minInput = element.find('input').eq(0);
@@ -631,6 +812,43 @@ describe('Range slider directive', function () {
                 expect(minInput[0].value).toBe('5');
             }));
 
+            it('should hide error message when date was incorrect and the user hits ENTER', inject(function ($timeout) {
+                //given
+                createElement();
+                $timeout.flush(100);
+                flushAllD3Transitions();
+                ctrl.rangeLimits = {
+                    min: new Date(2016, 1, 1).getTime(),
+                    max: new Date(2016, 1, 10).getTime(),
+                    minBrush: new Date(2016, 1, 3).getTime(),
+                    maxBrush: new Date(2016, 1, 7).getTime(),
+                    minFilterVal: new Date(2016, 1, 3).getTime(),
+                    maxFilterVal: new Date(2016, 1, 7).getTime(),
+                    type:'date'
+                };
+
+                ctrl.showRangeInputs = true;
+                ctrl.isDateType = true;
+                ctrl.minMaxModel = {
+                    minModel:'01/012016',
+                    maxModel:'01/01/2016'
+                };
+                scope.$digest();
+                const minInput = element.find('input').eq(0);
+
+                //when
+                const enterKeyUp = new angular.element.Event('keyup');
+                enterKeyUp.keyCode = 13;
+                minInput.trigger(enterKeyUp);
+                scope.$digest();
+                $timeout.flush();
+
+                //then
+                expect(element.find('.error').eq(0).hasClass('ng-hide')).toBe(true);
+                expect(element.find('.error').eq(1).hasClass('ng-hide')).toBe(true);
+                expect(minInput[0].value).toBe('02/03/2016');
+            }));
+
             it('should hide error message when value was incorrect and the user hits TAB', inject(function ($timeout) {
                 //given
                 createElement();
@@ -662,6 +880,44 @@ describe('Range slider directive', function () {
                 expect(element.find('.error').eq(0).hasClass('ng-hide')).toBe(true);
                 expect(element.find('.error').eq(1).hasClass('ng-hide')).toBe(true);
                 expect(minInput[0].value).toBe('5');
+            }));
+
+            it('should hide error message when date was incorrect and the user hits TAB', inject(function ($timeout) {
+                //given
+                createElement();
+                $timeout.flush(100);
+                flushAllD3Transitions();
+                ctrl.rangeLimits = {
+                    min: new Date(2016, 1, 1).getTime(),
+                    max: new Date(2016, 1, 10).getTime(),
+                    minBrush: new Date(2016, 1, 3).getTime(),
+                    maxBrush: new Date(2016, 1, 7).getTime(),
+                    minFilterVal: new Date(2016, 1, 3).getTime(),
+                    maxFilterVal: new Date(2016, 1, 7).getTime(),
+                    type:'date'
+                };
+                ctrl.showRangeInputs = true;
+                ctrl.isDateType = true;
+                ctrl.minMaxModel = {
+                    minModel:'01/012016',
+                    maxModel:'01/01/2016'
+                };
+                scope.$digest();
+
+                var minInput = element.find('input').eq(0);
+                scope.$digest();
+
+                //when
+                var enterKeyUp = new angular.element.Event('keyup');
+                enterKeyUp.keyCode = 9;
+                minInput.trigger(enterKeyUp);
+                scope.$digest();
+                $timeout.flush();
+
+                //then
+                expect(element.find('.error').eq(0).hasClass('ng-hide')).toBe(true);
+                expect(element.find('.error').eq(1).hasClass('ng-hide')).toBe(true);
+                expect(minInput[0].value).toBe('02/03/2016');
             }));
         });
     });
