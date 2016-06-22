@@ -745,16 +745,31 @@ describe('InventoryItem directive', () => {
             };
         }));
 
-        it('display inventory components', inject(($filter) => {
+        it('should display inventory components', inject(($filter) => {
+            //given
             const momentize = $filter('TDPMoment');
 
+            //when
             createElement();
 
+            //then
             const icon = element.find('.inventory-icon').eq(0);
             const iconSrc = icon.find('img')[0].src;
             expect(strEndsWith(iconSrc, 'assets/images/folder/folder-icon.png')).toBe(true);
             expect(element.find('.inventory-title').eq(0).text().indexOf('folder 1')).toBe(0);
             expect(element.find('.inventory-description').eq(0).text()).toBe('owned by anonymousUser, created ' + momentize('1437020219741') + ', contains 3 preparation(s)');
+
+            expect($(element).find('.folder-icon')[0].hasAttribute("insertion-folder-icon")).toBe(true);
+            expect(element.find('.folder-icon').eq(0).attr("folder")).toBe('$ctrl.item');
+        }));
+
+        it('should check folder icon attributes existence', inject(($filter) => {
+            //when
+            createElement();
+
+            //then
+            expect($(element).find('.folder-icon')[0].hasAttribute("insertion-folder-icon")).toBe(true);
+            expect(element.find('.folder-icon').eq(0).attr("folder")).toBe('$ctrl.item');
         }));
     });
 
