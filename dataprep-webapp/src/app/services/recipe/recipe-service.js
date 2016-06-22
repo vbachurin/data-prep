@@ -74,6 +74,7 @@ export default function RecipeService(state, PreparationService, TransformationS
         getStepIndex: getStepIndex,
         isFirstStep: isFirstStep,
         isLastStep: isLastStep,
+        reset: reset,
 
         //recipe and steps manipulation
         disableStepsAfter: disableStepsAfter,
@@ -379,44 +380,34 @@ export default function RecipeService(state, PreparationService, TransformationS
      * @methodOf data-prep.services.recipe.service:RecipeService
      * @description Refresh recipe items with current preparation steps
      */
-    function refresh() {
+    function refresh(details) {
         recipeStateBeforePreview = null;
+        //steps ids are in reverse order and the last is the 'no-transformation' id
+        var steps = details.steps.slice(0);
+        var initialStepId = steps.shift();
+        initialState = {transformation: {stepId: initialStepId}};
 
-        if (!state.playground.preparation) {
-            return reset();
-        }
+        var oldRecipe = recipe;
+        var newRecipe = _.chain(steps)
+            .zip(details.actions, details.metadata, details.diff)
+            .map(createItem)
+            .value();
+        activeThresholdStep = null;
+        recipe = newRecipe;
 
-        return PreparationService.getDetails(state.playground.preparation.id)
-            .then(function (resp) {
-                //steps ids are in reverse order and the last is the 'no-transformation' id
-                var steps = resp.data.steps.slice(0);
-                var initialStepId = steps.shift();
-                initialState = {transformation: {stepId: initialStepId}};
+        //TODO : Move this in a recipe-bullet-directive
+        //remove "single-maillon-cables-disabled" class of bullet cables when refreshing recipe
+        var allDisabledCables = angular.element('.recipe').eq(0).find('.single-maillon-cables-disabled').toArray();
+        _.each(allDisabledCables, function (cable) {
+            cable.setAttribute('class', '');
+        });
 
-                var oldRecipe = recipe;
-                var newRecipe = _.chain(steps)
-                    .zip(resp.data.actions, resp.data.metadata, resp.data.diff)
-                    .map(createItem)
-                    .value();
-                activeThresholdStep = null;
-                recipeStateBeforePreview = null;
-                recipe = newRecipe;
+        initDynamicParams({
+            'old': oldRecipe,
+            'new': newRecipe
+        });
 
-                //TODO : Move this in a recipe-bullet-directive
-                //remove "single-maillon-cables-disabled" class of bullet cables when refreshing recipe
-                var allDisabledCables = angular.element('.recipe').eq(0).find('.single-maillon-cables-disabled').toArray();
-                _.each(allDisabledCables, function (cable) {
-                    cable.setAttribute('class', '');
-                });
-
-                return {
-                    'old': oldRecipe,
-                    'new': newRecipe
-                };
-            })
-            .then(function (recipes) {
-                initDynamicParams(recipes);
-            });
+        return details;
     }
 
     /**

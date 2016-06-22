@@ -450,10 +450,7 @@ describe('Recipe service', function () {
         stateMock = {playground: {}};
         $provide.constant('state', stateMock);
     }));
-    beforeEach(inject(function($q, PreparationService, TransformationService, FilterAdapterService) {
-        spyOn(PreparationService, 'getDetails').and.returnValue($q.when({
-            data: preparationDetails()
-        }));
+    beforeEach(inject(function($q, TransformationService, FilterAdapterService) {
         spyOn(TransformationService, 'resetParamValue').and.returnValue();
         spyOn(TransformationService, 'initDynamicParameters').and.callFake(function (transformation) {
             transformation.cluster = initialCluster();
@@ -464,25 +461,12 @@ describe('Recipe service', function () {
     }));
 
     describe('refresh', function() {
-        it('should reset recipe item list when no preparation is loaded', inject(function(RecipeService) {
-            //given
-            stateMock.playground.preparation = null;
-            RecipeService.getRecipe()[0] = {};
-            expect(RecipeService.getRecipe().length).toBeTruthy();
-
-            //when
-            RecipeService.refresh();
-
-            //then
-            expect(RecipeService.getRecipe().length).toBe(0);
-        }));
-
         it('should get recipe with row infos when a preparation is loaded', inject(function($rootScope, RecipeService) {
             //given
             stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
 
             //when
-            RecipeService.refresh();
+            RecipeService.refresh(preparationDetails());
             $rootScope.$digest();
 
             //then
@@ -496,7 +480,7 @@ describe('Recipe service', function () {
             stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
 
             //when
-            RecipeService.refresh();
+            RecipeService.refresh(preparationDetails());
             $rootScope.$digest();
 
             //then
@@ -518,7 +502,7 @@ describe('Recipe service', function () {
             stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
 
             //when
-            RecipeService.refresh();
+            RecipeService.refresh(preparationDetails());
             $rootScope.$digest();
 
             //then
@@ -561,7 +545,7 @@ describe('Recipe service', function () {
             stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
 
             //when
-            RecipeService.refresh();
+            RecipeService.refresh(preparationDetails());
             $rootScope.$digest();
 
             //then
@@ -603,7 +587,7 @@ describe('Recipe service', function () {
             stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
 
             //when
-            RecipeService.refresh();
+            RecipeService.refresh(preparationDetails());
             $rootScope.$digest();
 
             //then
@@ -625,7 +609,7 @@ describe('Recipe service', function () {
             stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
 
             //when
-            RecipeService.refresh();
+            RecipeService.refresh(preparationDetails());
             $rootScope.$digest();
 
             //then
@@ -637,13 +621,13 @@ describe('Recipe service', function () {
         it('should reuse dynamic params from previous recipe if ids are the same, on refresh', inject(function($rootScope, RecipeService, TransformationService) {
             //given
             stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
-            RecipeService.refresh();
+            RecipeService.refresh(preparationDetails());
             $rootScope.$digest();
             var oldRecipe = RecipeService.getRecipe();
             expect(TransformationService.initDynamicParameters.calls.count()).toBe(1);
 
             //when
-            RecipeService.refresh();
+            RecipeService.refresh(preparationDetails());
             $rootScope.$digest();
 
             //then
@@ -660,7 +644,7 @@ describe('Recipe service', function () {
             stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
 
             //when
-            RecipeService.refresh();
+            RecipeService.refresh(preparationDetails());
             $rootScope.$digest();
 
             //then
@@ -755,7 +739,7 @@ describe('Recipe service', function () {
         it('should return the initial step when provided step is the first transformation', inject(function($rootScope, RecipeService) {
             //given
             stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
-            RecipeService.refresh();
+            RecipeService.refresh(preparationDetails());
             $rootScope.$digest();
 
             //when
@@ -768,7 +752,7 @@ describe('Recipe service', function () {
         it('should return the wanted step', inject(function($rootScope, RecipeService) {
             //given
             stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
-            RecipeService.refresh();
+            RecipeService.refresh(preparationDetails());
             $rootScope.$digest();
 
             var expectedStep = RecipeService.getRecipe()[1];
@@ -783,7 +767,7 @@ describe('Recipe service', function () {
         it('should return the initial step when index is negative', inject(function($rootScope, RecipeService) {
             //given
             stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
-            RecipeService.refresh();
+            RecipeService.refresh(preparationDetails());
             $rootScope.$digest();
 
             var initialStep = { transformation: {stepId: 'f6e172c33bdacbc69bca9d32b2bd78174712a171' }};
@@ -798,7 +782,7 @@ describe('Recipe service', function () {
         it('should return null when the index is superior to the recipe length', inject(function($rootScope, RecipeService) {
             //given
             stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
-            RecipeService.refresh();
+            RecipeService.refresh(preparationDetails());
             $rootScope.$digest();
 
             //when
@@ -811,7 +795,7 @@ describe('Recipe service', function () {
         it('should return the last step when the index is superior to the recipe length', inject(function($rootScope, RecipeService) {
             //given
             stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
-            RecipeService.refresh();
+            RecipeService.refresh(preparationDetails());
             $rootScope.$digest();
 
             var expectedStep = RecipeService.getRecipe()[6];
@@ -826,7 +810,7 @@ describe('Recipe service', function () {
         it('should return the last active step index', inject(function($rootScope, RecipeService) {
             //given
             stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
-            RecipeService.refresh();
+            RecipeService.refresh(preparationDetails());
             $rootScope.$digest();
 
             RecipeService.disableStepsAfter(RecipeService.getRecipe()[2]);
@@ -841,7 +825,7 @@ describe('Recipe service', function () {
         it('should return last step index when no specific active step has been set', inject(function($rootScope, RecipeService) {
             //given
             stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
-            RecipeService.refresh();
+            RecipeService.refresh(preparationDetails());
             $rootScope.$digest();
 
             //when
@@ -854,7 +838,7 @@ describe('Recipe service', function () {
         it('should return the initial state if the index is 0', inject(function($rootScope, RecipeService) {
             //given
             stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
-            RecipeService.refresh();
+            RecipeService.refresh(preparationDetails());
             $rootScope.$digest();
 
             //when
@@ -867,7 +851,7 @@ describe('Recipe service', function () {
         it('should return the last step if the index is bigger than the recipe size', inject(function($rootScope, RecipeService) {
             //given
             stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
-            RecipeService.refresh();
+            RecipeService.refresh(preparationDetails());
             $rootScope.$digest();
 
             //when
@@ -880,7 +864,7 @@ describe('Recipe service', function () {
         it('should return the step before the one identified by the index', inject(function($rootScope, RecipeService) {
             //given
             stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
-            RecipeService.refresh();
+            RecipeService.refresh(preparationDetails());
             $rootScope.$digest();
 
             //when
@@ -893,7 +877,7 @@ describe('Recipe service', function () {
         it('should return the step index', inject(function($rootScope, RecipeService) {
             //given
             stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
-            RecipeService.refresh();
+            RecipeService.refresh(preparationDetails());
             $rootScope.$digest();
 
             //when
@@ -906,7 +890,7 @@ describe('Recipe service', function () {
         it('should return true when step is the first step', inject(function($rootScope, RecipeService) {
             //given
             stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
-            RecipeService.refresh();
+            RecipeService.refresh(preparationDetails());
             $rootScope.$digest();
 
             //when
@@ -919,7 +903,7 @@ describe('Recipe service', function () {
         it('should return false when step is NOT the first step', inject(function($rootScope, RecipeService) {
             //given
             stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
-            RecipeService.refresh();
+            RecipeService.refresh(preparationDetails());
             $rootScope.$digest();
 
             //when
@@ -932,7 +916,7 @@ describe('Recipe service', function () {
         it('should return true when step is the last step', inject(function($rootScope, RecipeService) {
             //given
             stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
-            RecipeService.refresh();
+            RecipeService.refresh(preparationDetails());
             $rootScope.$digest();
 
             //when
@@ -945,7 +929,7 @@ describe('Recipe service', function () {
         it('should return false when step is NOT the last step', inject(function($rootScope, RecipeService) {
             //given
             stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
-            RecipeService.refresh();
+            RecipeService.refresh(preparationDetails());
             $rootScope.$digest();
 
             //when
@@ -1013,7 +997,7 @@ describe('Recipe service', function () {
         it('should return the initial state if recipe is empty', inject(function($rootScope, RecipeService) {
             //given
             stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
-            RecipeService.refresh();
+            RecipeService.refresh(preparationDetails());
             $rootScope.$digest();
 
             var recipe = RecipeService.getRecipe();

@@ -55,6 +55,9 @@ describe('Playground Service', () => {
             name: 'created preparation name',
         };
 
+        spyOn(PreparationService, 'getDetails').and.returnValue($q.when({
+            data: []
+        }));
         spyOn($state, 'go').and.returnValue();
         spyOn(DatagridService, 'updateData').and.returnValue();
         spyOn(DatasetService, 'getContent').and.returnValue($q.when(datasetColumns));
@@ -157,20 +160,20 @@ describe('Playground Service', () => {
         };
         let assertNewPreparationInitialization;
 
-        beforeEach(inject(($rootScope, RecipeService, TransformationCacheService,
-                           HistoryService,
+        beforeEach(inject(($rootScope, TransformationCacheService,
+                           HistoryService, RecipeService,
                            PreviewService, StateService, ExportService) => {
             spyOn($rootScope, '$emit').and.returnValue();
-
+            spyOn(RecipeService, 'reset').and.returnValue();
             assertNewPreparationInitialization = () => {
                 expect(StateService.resetPlayground).toHaveBeenCalled();
                 expect(StateService.setCurrentDataset).toHaveBeenCalledWith(dataset);
                 expect(StateService.setCurrentData).toHaveBeenCalledWith(datasetColumns);
-                expect(RecipeService.refresh).toHaveBeenCalled();
                 expect(TransformationCacheService.invalidateCache).toHaveBeenCalled();
                 expect(HistoryService.clear).toHaveBeenCalled();
                 expect(PreviewService.reset).toHaveBeenCalledWith(false);
                 expect(ExportService.reset).toHaveBeenCalled();
+                expect(RecipeService.reset).toHaveBeenCalled();
             };
         }));
 
@@ -184,6 +187,7 @@ describe('Playground Service', () => {
 
             // then
             assertNewPreparationInitialization();
+
         }));
 
         it('should manage loading spinner', inject(($rootScope, PlaygroundService) => {
@@ -1206,11 +1210,12 @@ describe('Playground Service', () => {
         let assertNewPlaygroundIsInitWith, assertPreparationStepIsLoadedWith;
 
         beforeEach(inject((StateService, RecipeService, TransformationCacheService, HistoryService, PreviewService, ExportService, DatagridService) => {
+            spyOn(RecipeService, 'reset').and.returnValue();
             assertNewPlaygroundIsInitWith = (dataset) => {
                 expect(StateService.resetPlayground).toHaveBeenCalled();
                 expect(StateService.setCurrentDataset).toHaveBeenCalledWith(dataset);
                 expect(StateService.setCurrentData).toHaveBeenCalledWith(datasetColumns);
-                expect(RecipeService.refresh).toHaveBeenCalled();
+                expect(RecipeService.reset).toHaveBeenCalled();
                 expect(TransformationCacheService.invalidateCache).toHaveBeenCalled();
                 expect(HistoryService.clear).toHaveBeenCalled();
                 expect(PreviewService.reset).toHaveBeenCalledWith(false);
@@ -1428,6 +1433,35 @@ describe('Playground Service', () => {
             }));
         })
     });
+
+    describe('update preparation details', () => {
+        it('should reset recipe', inject(($rootScope, RecipeService, PlaygroundService) => {
+            // given
+            spyOn(RecipeService, 'reset');
+            stateMock.playground.preparation = null;
+
+            // when
+            PlaygroundService.updatePreparationDetails();
+            $rootScope.$digest();
+
+            // then
+            expect(RecipeService.reset).toHaveBeenCalled();
+        }));
+
+        it('should get details for first step', inject(($rootScope, PlaygroundService, RecipeService, PreparationService) => {
+            // given
+            stateMock.playground.preparation = { id: '79db821355a65cd96' };
+
+            // when
+            PlaygroundService.updatePreparationDetails();
+            $rootScope.$digest();
+
+            // then
+            expect(PreparationService.getDetails).toHaveBeenCalledWith('79db821355a65cd96');
+            expect(RecipeService.refresh).toHaveBeenCalled();
+        }));
+    });
+
 
     describe('copy steps', () => {
         beforeEach(inject(($rootScope, $q, PreparationService) => {

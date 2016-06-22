@@ -29,7 +29,6 @@ import PreparationService from './preparation-service';
         [
             'ui.router',
             'data-prep.services.folder',
-            'data-prep.services.preparation',
             'data-prep.services.state',
             'data-prep.services.utils',
         ])

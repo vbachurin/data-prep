@@ -53,11 +53,11 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
 
         //preparation
         createOrUpdatePreparation: createOrUpdatePreparation,
+        updatePreparationDetails: updatePreparationDetails,
         appendStep: appendStep,
         updateStep: updateStep,
         removeStep: removeStep,
         copySteps: copySteps,
-
         //Preview
         updatePreview: updatePreview,
 
@@ -74,8 +74,7 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
         StateService.setCurrentDataset(dataset);
         StateService.setCurrentData(data);
         StateService.setCurrentPreparation(preparation);
-
-        RecipeService.refresh();
+        this.updatePreparationDetails();
         TransformationCacheService.invalidateCache();
         HistoryService.clear();
         PreviewService.reset(false);
@@ -94,18 +93,18 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
         $rootScope.$emit('talend.loading.start');
         return DatasetService.getContent(dataset.id, true)
             .then((data) => checkRecords(data))
-            .then(function (data) {
+            .then((data) => {
                 StateService.setPreparationName(dataset.name);
-                reset(dataset, data);
+                reset.call(this, dataset, data);
                 StateService.hideRecipe();
                 StateService.setNameEditionMode(true);
             })
-            .then(function () {
+            .then(() => {
                 if (OnboardingService.shouldStartTour('playground')) {
                     $timeout(OnboardingService.startTour.bind(null, 'playground'), 300, false);
                 }
             })
-            .finally(function () {
+            .finally(() => {
                 $rootScope.$emit('talend.loading.stop');
             });
     }
@@ -129,13 +128,13 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
 
             $rootScope.$emit('talend.loading.start');
             return PreparationService.getContent(preparation.id, 'head')
-                .then(function (response) {
+                .then((response) => {
                     StateService.setPreparationName(preparation.name);
-                    reset(preparation.dataset ? preparation.dataset : {id: preparation.dataSetId}, response, preparation);
+                    reset.call(this, preparation.dataset ? preparation.dataset : {id: preparation.dataSetId}, response, preparation);
                     StateService.showRecipe();
                     StateService.setNameEditionMode(false);
                 })
-                .finally(function () {
+                .finally(() => {
                     $rootScope.$emit('talend.loading.stop');
                 });
         }
@@ -155,12 +154,12 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
     function loadStep(step) {
         $rootScope.$emit('talend.loading.start');
         return PreparationService.getContent(state.playground.preparation.id, step.transformation.stepId)
-            .then(function (response) {
+            .then((response) => {
                 DatagridService.updateData(response);
                 RecipeService.disableStepsAfter(step);
                 PreviewService.reset(false);
             })
-            .finally(function () {
+            .finally(() => {
                 $rootScope.$emit('talend.loading.stop');
             });
     }
@@ -168,7 +167,7 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
     function getMetadata() {
         if (state.playground.preparation) {
             return PreparationService.getContent(state.playground.preparation.id, 'head')
-                .then(function (response) {
+                .then((response) => {
                     if (!response.metadata.columns[0].statistics.frequencyTable.length) {
                         return $q.reject();
                     }
@@ -178,7 +177,7 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
         }
         else {
             return DatasetService.getMetadata(state.playground.dataset.id)
-                .then(function (response) {
+                .then((response) => {
                     if (!response.columns[0].statistics.frequencyTable.length) {
                         return $q.reject();
                     }
@@ -222,6 +221,33 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
                     preparation.draft = true;
                     return preparation;
                 });
+    }
+
+    /**
+     * @ngdoc method
+     * @name updatePreparationDetails
+     * @methodOf data-prep.services.playground.service:PlaygroundService
+     * @description Get preparation details and update recipe
+     */
+    function updatePreparationDetails() {
+        if (!state.playground.preparation) {
+            RecipeService.reset();
+            return $q.when();
+        }
+
+        return PreparationService.getDetails(state.playground.preparation.id)
+            .then((resp)=> {
+                RecipeService.refresh(resp.data);
+                if (RecipeService.getRecipe().length === 1) { //first step append
+                    StateService.showRecipe();
+                    $state.go('playground.preparation', {prepid: state.playground.preparation.id});
+                }
+                else if (OnboardingService.shouldStartTour('recipe') && RecipeService.getRecipe().length === 3) { //third step append : show onboarding
+                    StateService.showRecipe();
+                    $timeout(OnboardingService.startTour.bind(null, 'recipe'), 300, false);
+                }
+                return resp.data;
+            });
     }
 
     /**
@@ -286,27 +312,29 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
     function setPreparationHead(preparationId, headId, columnToFocus) {
         $rootScope.$emit('talend.loading.start');
 
-        var promise = PreparationService.setHead(preparationId, headId);
+        let promise = PreparationService.setHead(preparationId, headId);
 
         //load a specific step, we must load recipe first to get the step id to load. Then we load grid at this step.
         if (RecipeService.getLastActiveStep() !== RecipeService.getLastStep()) {
             var lastActiveStepIndex = RecipeService.getActiveThresholdStepIndex();
-            promise = promise.then(updateRecipe)
+            promise = promise.then(()=> {
+                    return this.updatePreparationDetails()
+                })
                 // The grid update cannot be done in parallel because the update change the steps ids
                 // We have to wait for the recipe update to complete
-                .then(function () {
-                    var activeStep = RecipeService.getStep(lastActiveStepIndex, true);
+                .then(() => {
+                    let activeStep = RecipeService.getStep(lastActiveStepIndex, true);
                     return loadStep(activeStep);
                 });
         }
         //load the recipe and grid head in parallel
         else {
-            promise = promise.then(function () {
-                return $q.all([updateRecipe(), updatePreparationDatagrid(columnToFocus)]);
+            promise = promise.then(() => {
+                return $q.all([this.updatePreparationDetails(), updatePreparationDatagrid(columnToFocus)]);
             });
         }
 
-        return promise.finally(function () {
+        return promise.finally(() => {
             $rootScope.$emit('talend.loading.stop');
         });
     }
@@ -325,26 +353,26 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
         $rootScope.$emit('talend.loading.start');
 
         return _getCurrentPreparation()
-            //append step
-            .then(function (preparation) {
+        //append step
+            .then((preparation) => {
                 return PreparationService.appendStep(preparation.id, {action: action, parameters: parameters});
             })
             //update recipe and datagrid
-            .then(function () {
-                var columnToFocus = parameters.column_id;
-                return $q.all([updateRecipe(), updatePreparationDatagrid(columnToFocus)]);
+            .then(() => {
+                let columnToFocus = parameters.column_id;
+                return $q.all([this.updatePreparationDetails(), updatePreparationDatagrid(columnToFocus)]);
             })
             //add entry in history for undo/redo
-            .then(function () {
-                var actualHead = RecipeService.getLastStep();
-                var previousHead = RecipeService.getPreviousStep(actualHead);
+            .then(() => {
+                let actualHead = RecipeService.getLastStep();
+                let previousHead = RecipeService.getPreviousStep(actualHead);
 
-                var undo = setPreparationHead.bind(service, state.playground.preparation.id, previousHead.transformation.stepId);
-                var redo = setPreparationHead.bind(service, state.playground.preparation.id, actualHead.transformation.stepId, parameters.column_id);
+                let undo = setPreparationHead.bind(service, state.playground.preparation.id, previousHead.transformation.stepId);
+                let redo = setPreparationHead.bind(service, state.playground.preparation.id, actualHead.transformation.stepId, parameters.column_id);
                 HistoryService.addAction(undo, redo);
             })
             //hide loading screen
-            .finally(function () {
+            .finally(() => {
                 $rootScope.$emit('talend.loading.stop');
             });
     }
@@ -371,26 +399,28 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
         $rootScope.$emit('talend.loading.start');
 
         //save the head before transformation for undo
-        var previousHead = RecipeService.getLastStep().transformation.stepId;
+        let previousHead = RecipeService.getLastStep().transformation.stepId;
         //save the last active step index to load this step after update
-        var lastActiveStepIndex = RecipeService.getActiveThresholdStepIndex();
+        let lastActiveStepIndex = RecipeService.getActiveThresholdStepIndex();
 
         return PreparationService.updateStep(state.playground.preparation.id, step, newParams)
-            .then(updateRecipe)
+            .then(()=> {
+                return this.updatePreparationDetails()
+            })
             //get step id to load and update datagrid with it
-            .then(function () {
-                var activeStep = RecipeService.getStep(lastActiveStepIndex, true);
+            .then(() => {
+                let activeStep = RecipeService.getStep(lastActiveStepIndex, true);
                 return loadStep(activeStep);
             })
             //add entry in history for undo/redo
-            .then(function () {
-                var actualHead = RecipeService.getLastStep().transformation.stepId;
-                var undo = setPreparationHead.bind(service, state.playground.preparation.id, previousHead);
-                var redo = setPreparationHead.bind(service, state.playground.preparation.id, actualHead, newParams.column_id);
+            .then(() => {
+                let actualHead = RecipeService.getLastStep().transformation.stepId;
+                let undo = setPreparationHead.bind(service, state.playground.preparation.id, previousHead);
+                let redo = setPreparationHead.bind(service, state.playground.preparation.id, actualHead, newParams.column_id);
                 HistoryService.addAction(undo, redo);
             })
             //hide loading screen
-            .finally(function () {
+            .finally(() => {
                 $rootScope.$emit('talend.loading.stop');
             });
     }
@@ -408,22 +438,22 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
         $rootScope.$emit('talend.loading.start');
 
         //save the head before transformation for undo
-        var previousHead = RecipeService.getLastStep().transformation.stepId;
+        let previousHead = RecipeService.getLastStep().transformation.stepId;
 
         return PreparationService.removeStep(state.playground.preparation.id, step.transformation.stepId)
             //update recipe and datagrid
-            .then(function () {
-                return $q.all([updateRecipe(), updatePreparationDatagrid()]);
+            .then(() => {
+                return $q.all([this.updatePreparationDetails(), updatePreparationDatagrid()]);
             })
             //add entry in history for undo/redo
-            .then(function () {
-                var actualHead = RecipeService.getLastStep().transformation.stepId;
-                var undo = setPreparationHead.bind(service, state.playground.preparation.id, previousHead, step.actionParameters.parameters.column_id);
-                var redo = setPreparationHead.bind(service, state.playground.preparation.id, actualHead);
+            .then(() => {
+                let actualHead = RecipeService.getLastStep().transformation.stepId;
+                let undo = setPreparationHead.bind(service, state.playground.preparation.id, previousHead, step.actionParameters.parameters.column_id);
+                let redo = setPreparationHead.bind(service, state.playground.preparation.id, actualHead);
                 HistoryService.addAction(undo, redo);
             })
             //hide loading screen
-            .finally(function () {
+            .finally(() => {
                 $rootScope.$emit('talend.loading.stop');
             });
     }
@@ -441,8 +471,10 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
 
         return _getCurrentPreparation()
             .then((preparation) => PreparationService.copySteps(preparation.id, referenceId))
-            .then(() => $q.all([updateRecipe(), updatePreparationDatagrid()]))
-            .finally(() => { $rootScope.$emit('talend.loading.stop') });
+            .then(() => $q.all([this.updatePreparationDetails(), updatePreparationDatagrid()]))
+            .finally(() => {
+                $rootScope.$emit('talend.loading.stop')
+            });
     }
 
     //------------------------------------------------------------------------------------------------------
@@ -458,7 +490,7 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
      *     steps
      */
     function updatePreview(updateStep, params) {
-        var originalParameters = updateStep.actionParameters.parameters;
+        let originalParameters = updateStep.actionParameters.parameters;
         PreparationService.copyImplicitParameters(params, originalParameters);
 
         //Parameters has not changed
@@ -466,8 +498,8 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
             return $q.when();
         }
 
-        var currentStep = RecipeService.getLastActiveStep();
-        var preparationId = state.playground.preparation.id;
+        let currentStep = RecipeService.getLastActiveStep();
+        let preparationId = state.playground.preparation.id;
         PreviewService.getPreviewUpdateRecords(preparationId, currentStep, updateStep, params);
     }
 
@@ -482,19 +514,19 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
      * @description Update the parameters of the dataset and reload
      */
     function changeDatasetParameters(params) {
-        var dataset = state.playground.dataset;
-        var isPreparation = state.playground.preparation;
-        var lastActiveStepIndex = isPreparation ?
+        let dataset = state.playground.dataset;
+        let isPreparation = state.playground.preparation;
+        let lastActiveStepIndex = isPreparation ?
             RecipeService.getActiveThresholdStepIndex() :
             null;
         return DatasetService.updateParameters(dataset, params)
-            .then(function () {
+            .then(() => {
                 if (isPreparation) {
-                    var activeStep = RecipeService.getStep(lastActiveStepIndex, true);
+                    let activeStep = RecipeService.getStep(lastActiveStepIndex, true);
                     return loadStep(activeStep);
                 }
                 else {
-                    initPlayground(dataset);
+                    initPlayground.call(this, dataset);
                 }
             });
     }
@@ -510,31 +542,12 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
      */
     function updatePreparationDatagrid() {
         return PreparationService.getContent(state.playground.preparation.id, 'head')
-            .then(function (response) {
+            .then((response) => {
                 DatagridService.updateData(response);
                 PreviewService.reset(false);
             });
     }
 
-    /**
-     * @ngdoc method
-     * @name updateRecipe
-     * @methodOf data-prep.services.playground.service:PlaygroundService
-     * @description Update the recipe
-     */
-    function updateRecipe() {
-        return RecipeService.refresh()
-            .then(function () {
-                if (RecipeService.getRecipe().length === 1) { //first step append
-                    StateService.showRecipe();
-                    $state.go('playground.preparation', {prepid: state.playground.preparation.id});
-                }
-                else if (OnboardingService.shouldStartTour('recipe') && RecipeService.getRecipe().length === 3) { //third step append : show onboarding
-                    StateService.showRecipe();
-                    $timeout(OnboardingService.startTour.bind(null, 'recipe'), 300, false);
-                }
-            });
-    }
 
     //TODO : temporary fix because asked to.
     //TODO : when error status during import and get dataset content is managed by backend,
