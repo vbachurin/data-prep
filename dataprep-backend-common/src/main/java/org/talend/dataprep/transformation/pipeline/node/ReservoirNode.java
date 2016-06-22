@@ -53,7 +53,9 @@ public class ReservoirNode extends AnalysisNode implements Monitored {
     private long count;
 
     private Analyzer<Analyzers.Result> resultAnalyzer;
+
     private List<ColumnMetadata> filteredColumns;
+
     private Set<String> filteredColumnNames;
 
     public ReservoirNode(Function<List<ColumnMetadata>, Analyzer<Analyzers.Result>> analyzer, //
@@ -151,10 +153,10 @@ public class ReservoirNode extends AnalysisNode implements Monitored {
                 // Send stored records to next steps
                 final ObjectMapper mapper = new ObjectMapper();
                 if (rowMetadata != null && resultAnalyzer != null) {
-                    // Adapt row metadata to infer type (only for non type-forced columns)
+                    // Adapt row metadata to infer type (adapter takes care of type-forced columns)
                     resultAnalyzer.end();
                     final List<ColumnMetadata> columns = rowMetadata.getColumns();
-                    adapter.adapt(columns, resultAnalyzer.getResult(), filter.and(c -> !c.isTypeForced()));
+                    adapter.adapt(columns, resultAnalyzer.getResult(), filter);
                     resultAnalyzer.close();
 
                     final Analyzer<Analyzers.Result> configuredAnalyzer = delayedAnalyzer.apply(filteredColumns);

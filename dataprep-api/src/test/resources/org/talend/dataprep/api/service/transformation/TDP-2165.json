@@ -1,0 +1,19 @@
+{
+  "actions": [
+    {
+      "action": "type_change",
+      "parameters": {
+        "column_id": "0000",
+        "new_type": "integer",
+        "scope": "column"
+      }
+    },
+    {
+      "action": "trim",
+      "parameters": {
+        "column_id": "0001",
+        "scope": "column"
+      }
+    }
+  ]
+}

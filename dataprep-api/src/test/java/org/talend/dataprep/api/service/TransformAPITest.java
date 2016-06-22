@@ -323,4 +323,23 @@ public class TransformAPITest extends ApiServiceTestBase {
         assertThat(transformed, sameJSONAsFile(expectedContent));
     }
 
+    /**
+     * see TDP-2165 (Forced type is applied on wrong column)
+     */
+    @Test
+    public void typeChangeShouldOnlyImpactTargetedColumn() throws Exception {
+        // given
+        final String preparationId = createPreparationFromFile("dataset/dataset_TDP-2165.csv", "testDataset", "text/csv");
+        applyAction(preparationId, IOUtils.toString(this.getClass().getResourceAsStream("transformation/TDP-2165.json")));
+
+        // when
+        final String transformed = given().when() //
+                .expect().statusCode(200).log().ifError() //
+                .get("/api/preparations/{id}/content?version=head", preparationId).asString();
+
+        // then
+        final InputStream expectedContent = this.getClass().getResourceAsStream("dataset/dataset_TDP-2165_expected.json");
+        assertThat(transformed, sameJSONAsFile(expectedContent));
+    }
+
 }

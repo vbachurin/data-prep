@@ -1,0 +1,41 @@
+{
+  "records": [
+    {
+      "0000": "a",
+      "0001": "1",
+      "tdpId": 1
+    },
+    {
+      "0000": "a",
+      "0001": "2",
+      "tdpId": 2
+    },
+    {
+      "0000": "3",
+      "0001": "3",
+      "tdpId": 3
+    }
+  ],
+  "metadata": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "integer",
+        "id": "0000",
+        "domainForced": true,
+        "typeForced": true
+      },
+      {
+        "name": "value",
+        "type": "integer",
+        "id": "0001",
+        "domain": "",
+        "domainLabel": "",
+        "domainFrequency": 0.0,
+        "semanticDomains": [],
+        "domainForced": false,
+        "typeForced": false
+      }
+    ]
+  }
+}
