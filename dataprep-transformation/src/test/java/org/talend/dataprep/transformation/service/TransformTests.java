@@ -87,15 +87,19 @@ public class TransformTests extends TransformationServiceBaseTests {
 
     @Test
     public void testUnknownDataSet() throws Exception {
+        // Given
+        String dataSetId = createDataset("input_dataset.csv", "uppercase", "text/csv");
+        String preparationId = createEmptyPreparationFromDataset(dataSetId, "uppercase prep");
+
         // when
         final Response response = given() //
                 .when() //
-                .get("/apply/preparation/{preparationId}/dataset/{datasetId}/{format}", "no need for preparation id",
+                .get("/apply/preparation/{preparationId}/dataset/{datasetId}/{format}", preparationId,
                         "unknown_dataset_id", "JSON");
 
         // then
-        Assert.assertEquals(500, response.getStatusCode());
-        assertTrue(response.asString().contains("UNABLE_TO_TRANSFORM_DATASET"));
+        Assert.assertEquals(400, response.getStatusCode());
+        assertTrue(response.asString().contains("DATASET_DOES_NOT_EXIST"));
     }
 
     @Test

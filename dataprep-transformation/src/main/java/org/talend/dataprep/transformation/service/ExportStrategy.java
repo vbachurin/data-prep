@@ -177,7 +177,7 @@ public abstract class ExportStrategy {
                 preparationId);
         try (InputStream details = preparationDetailsGet.execute()) {
             return mapper.readerFor(Preparation.class).readValue(details);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new TDPException(UNABLE_TO_READ_PREPARATION, e, build().put("id", preparationId));
         }
 
