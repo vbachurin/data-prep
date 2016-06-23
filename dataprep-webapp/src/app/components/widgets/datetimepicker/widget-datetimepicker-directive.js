@@ -29,7 +29,7 @@
  * @param {string}   rangeItemType If datetimepicker composes a range, need to provide "from" or "to" value
  */
 export default function TalendDatetimePicker($filter) {
-
+    'ngInject';
     return {
         restrict: 'E',
         template: '<input class="datetimepicker" type="text" ng-blur="ctrl.onBlur()" ng-model="ctrl.value" />',
