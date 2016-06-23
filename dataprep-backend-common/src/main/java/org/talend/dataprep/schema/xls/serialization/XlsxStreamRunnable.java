@@ -39,8 +39,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 /**
  * Serialize XLSX file using stream parsing.
  */
-public class XlsxStreamRunnable
-    implements Runnable {
+public class XlsxStreamRunnable implements Runnable {
 
     /** This class' logger. */
     private static final Logger LOG = getLogger(XlsxStreamRunnable.class);
@@ -65,7 +64,7 @@ public class XlsxStreamRunnable
      * @param metadata The dataset metadata to serialize.
      * @param factory The jackson factory to use for the serialization.
      */
-    public XlsxStreamRunnable( OutputStream jsonOutput, InputStream rawContent, DataSetMetadata metadata, JsonFactory factory) {
+    public XlsxStreamRunnable(OutputStream jsonOutput, InputStream rawContent, DataSetMetadata metadata, JsonFactory factory) {
         this.jsonOutput = jsonOutput;
         this.rawContent = rawContent;
         this.metadata = metadata;
@@ -82,29 +81,28 @@ public class XlsxStreamRunnable
 
             // is there any limit?
             long maxRow = this.metadata.getContent().getLimit().isPresent() ? //
-                 this.metadata.getContent().getLimit().get() : Long.MAX_VALUE;
+                    this.metadata.getContent().getLimit().get() : Long.MAX_VALUE;
 
             Workbook workbook = StreamingReader.builder() //
-                .bufferSize(4096) //
-                .rowCacheSize( 1 ) //
-                .open(rawContent);
+                    .bufferSize(4096) //
+                    .rowCacheSize(1) //
+                    .open(rawContent);
 
-            Sheet sheet = StringUtils.isEmpty( metadata.getSheetName() ) ? //
-                workbook.getSheetAt( 0 ) : workbook.getSheet( metadata.getSheetName() );
-
+            Sheet sheet = StringUtils.isEmpty(metadata.getSheetName()) ? //
+                    workbook.getSheetAt(0) : workbook.getSheet(metadata.getSheetName());
 
             generator.writeStartArray();
 
-            for ( Row row : sheet){
+            for (Row row : sheet) {
                 if (!XlsSerializer.isHeaderLine(row.getRowNum(), metadata.getRowMetadata().getColumns())) {
-                    
+
                     generator.writeStartObject();
-                    // data quality Analyzer doesn't like to not have all columms even if we don't have any values
+                    // data quality Analyzer doesn't like to not have all columns even if we don't have any values
                     // so create so field with empty value otherwise we get exceptions
                     int i = 0;
-                    for (ColumnMetadata columnMetadata : metadata.getRowMetadata().getColumns()){
-                        Cell cell = row.getCell( i );
-                        String cellValue = cell == null ? null : cell.getStringCellValue(); //StringUtils.EMPTY
+                    for (ColumnMetadata columnMetadata : metadata.getRowMetadata().getColumns()) {
+                        Cell cell = row.getCell(i);
+                        String cellValue = cell == null ? null : cell.getStringCellValue(); // StringUtils.EMPTY
                         generator.writeFieldName(columnMetadata.getId());
                         if (cellValue != null) {
                             generator.writeString(cellValue);
@@ -115,11 +113,10 @@ public class XlsxStreamRunnable
                     }
                     generator.writeEndObject();
                 }
-                if (row.getRowNum()>maxRow) {
+                if (row.getRowNum() > maxRow) {
                     break;
                 }
             }
-
 
             generator.writeEndArray();
 
@@ -139,14 +136,14 @@ public class XlsxStreamRunnable
         }
     }
 
-
     /**
      * Return a list of empty string from the given size.
+     * 
      * @param size the wanted list size.
      * @return a list of empty string from the given size.
      */
     private List<String> createListWithEmpty(int size) {
-        List<String> list = new ArrayList<>( size);
+        List<String> list = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
             list.add(EMPTY);
         }

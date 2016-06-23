@@ -13,7 +13,7 @@
 
 /**
  *
- * This package contains some classes derivated from this project https://github.com/monitorjbl/excel-streaming-reader
+ * This package contains some classes derived from this project https://github.com/monitorjbl/excel-streaming-reader
  * It's originally an Apache license project so we can import sources here and improve it as well.
  *
  */

@@ -1,23 +1,28 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.schema.xls;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertFalse;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,13 +35,7 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.schema.AbstractSchemaTestUtils;
 import org.talend.dataprep.schema.Schema;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.core.IsNull.notNullValue;
-
 import org.talend.dataprep.schema.SchemaParser;
-
 
 /**
  * Unit test for the XLSSchemaParser class.
@@ -45,12 +44,11 @@ import org.talend.dataprep.schema.SchemaParser;
  */
 public class XlsSchemaParserTest extends AbstractSchemaTestUtils {
 
-    private final static Logger logger = LoggerFactory.getLogger( XlsSerializerTest.class);
+    private final static Logger logger = LoggerFactory.getLogger(XlsSerializerTest.class);
 
     /** The parser to test. */
     @Autowired
     private XlsSchemaParser parser;
-
 
     @Test
     public void should_parse_xls() throws IOException {
@@ -75,50 +73,18 @@ public class XlsSchemaParserTest extends AbstractSchemaTestUtils {
                 "Product to send"); //
     }
 
-    /**
-     * Load the excel file and check the parsed columns name against the given ones.
-     *
-     * @param sourceFileName   the excel file name to load.
-     * @param expectedColsName the expected columns name.
-     * @throws IOException if an error occurs while reading the excel file.
-     */
-    private void checkColumnsName(String sourceFileName, String... expectedColsName) throws IOException {
-        try (InputStream inputStream = this.getClass().getResourceAsStream(sourceFileName)) {
-            checkColumnsName(inputStream, expectedColsName);
-        }
-    }
-
-    /**
-     * Load the excel file and check the parsed columns name against the given ones.
-     *
-     * @param inputStream the excel file name as inputStream
-     * @param expectedColsName the expected columns name.
-     * @throws IOException if an error occurs while reading the excel file.
-     */
-    private void checkColumnsName(InputStream inputStream, String... expectedColsName) throws IOException {
-
-        DataSetMetadata datasetMetadata = ioTestUtils.getSimpleDataSetMetadata();
-
-        Schema result = parser.parse(new SchemaParser.Request(inputStream, datasetMetadata));
-        List<ColumnMetadata> columns = result.getSheetContents().get(0).getColumnMetadatas();
-        final List<String> actual = columns.stream().map(ColumnMetadata::getName).collect(Collectors.toList());
-
-        Assertions.assertThat(actual).containsExactly(expectedColsName);
-    }
-
     @Test
     public void read_xls_TDP_143() throws Exception {
 
         String fileName = "state_table.xls";
 
         try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
-            List<ColumnMetadata> columnMetadatas = parser.parse(getRequest(inputStream, "#852"))
-                    .getSheetContents().get(0).getColumnMetadatas();
+            List<ColumnMetadata> columnMetadatas = parser.parse(getRequest(inputStream, "#852")).getSheetContents().get(0)
+                    .getColumnMetadatas();
             Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize(17);
         }
 
     }
-
 
     @Test
     public void read_xls_TDP_1957() throws Exception {
@@ -126,13 +92,12 @@ public class XlsSchemaParserTest extends AbstractSchemaTestUtils {
         String fileName = "email_with_empty_rows.xlsx";
 
         try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
-            List<ColumnMetadata> columnMetadatas = parser.parse(getRequest(inputStream, "#852"))
-                .getSheetContents().get(0).getColumnMetadatas();
+            List<ColumnMetadata> columnMetadatas = parser.parse(getRequest(inputStream, "#852")).getSheetContents().get(0)
+                    .getColumnMetadatas();
             Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize(2);
         }
 
     }
-
 
     @Test
     public void parse_should_extract_single_sheet_xls() throws Exception {
@@ -188,122 +153,171 @@ public class XlsSchemaParserTest extends AbstractSchemaTestUtils {
         assertFalse(parser.accept(metadata));
     }
 
-
     @Test
     public void very_large_import() throws Exception {
 
         String fileName = "veryhuge.xlsx";
         Path path = Paths.get(fileName);
 
-        if (!Files.exists( path )){
-            logger.info( "file {} not available so skip the test" );
+        if (!Files.exists(path)) {
+            logger.info("file {} not available so skip the test");
             return;
         }
 
         try (InputStream inputStream = Files.newInputStream(path)) {
 
-            String[] cols = {"id", //
-                "first_name", //
-                "last_name", //
-                "email", //
-                "job_title", //
-                "company", //
-                "city", //
-                "state", //
-                "country", //
-                "date", //
-                "campaign_id", //
-                "lead_score", //
-                "registration", //
-                "city", //
-                "birth", //
-                "nbCommands", //
-                "id", //
-                "first_name", //
-                "last_name", //
-                "email", //
-                "job_title", //
-                "company", //
-                "city", //
-                "state", //
-                "country", //
-                "date", //
-                "campaign_id", //
-                "lead_score", //
-                "registration", //
-                "city", //
-                "birth", //
-                "nbCommands", //
-                "id", //
-                "first_name", //
-                "last_name", //
-                "email", //
-                "job_title", //
-                "company", //
-                "city", //
-                "state", //
-                "country", //
-                "date", //
-                "campaign_id", //
-                "lead_score", //
-                "registration", //
-                "city", //
-                "birth", //
-                "nbCommands", //
-                "id", //
-                "first_name", //
-                "last_name", //
-                "email", //
-                "job_title", //
-                "company", //
-                "city", //
-                "state", //
-                "country", //
-                "date", //
-                "campaign_id", //
-                "lead_score", //
-                "registration", //
-                "city", //
-                "birth", //
-                "nbCommands", //
-                "id", //
-                "first_name", //
-                "last_name", //
-                "email", //
-                "job_title", //
-                "company", //
-                "city", //
-                "state", //
-                "country", //
-                "date", //
-                "campaign_id", //
-                "lead_score", //
-                "registration", //
-                "city", //
-                "birth", //
-                "nbCommands", //
-                "id", //
-                "first_name", //
-                "last_name", //
-                "email", //
-                "job_title", //
-                "company", //
-                "city", //
-                "state", //
-                "country", //
-                "date", //
-                "campaign_id", //
-                "lead_score", //
-                "registration", //
-                "city", //
-                "birth", //
-                "nbCommands", //
-                "id", //
-                "first_name", //
-                "last_name", //
-                "email"}; //
+            String[] cols = { "id", //
+                    "first_name", //
+                    "last_name", //
+                    "email", //
+                    "job_title", //
+                    "company", //
+                    "city", //
+                    "state", //
+                    "country", //
+                    "date", //
+                    "campaign_id", //
+                    "lead_score", //
+                    "registration", //
+                    "city", //
+                    "birth", //
+                    "nbCommands", //
+                    "id", //
+                    "first_name", //
+                    "last_name", //
+                    "email", //
+                    "job_title", //
+                    "company", //
+                    "city", //
+                    "state", //
+                    "country", //
+                    "date", //
+                    "campaign_id", //
+                    "lead_score", //
+                    "registration", //
+                    "city", //
+                    "birth", //
+                    "nbCommands", //
+                    "id", //
+                    "first_name", //
+                    "last_name", //
+                    "email", //
+                    "job_title", //
+                    "company", //
+                    "city", //
+                    "state", //
+                    "country", //
+                    "date", //
+                    "campaign_id", //
+                    "lead_score", //
+                    "registration", //
+                    "city", //
+                    "birth", //
+                    "nbCommands", //
+                    "id", //
+                    "first_name", //
+                    "last_name", //
+                    "email", //
+                    "job_title", //
+                    "company", //
+                    "city", //
+                    "state", //
+                    "country", //
+                    "date", //
+                    "campaign_id", //
+                    "lead_score", //
+                    "registration", //
+                    "city", //
+                    "birth", //
+                    "nbCommands", //
+                    "id", //
+                    "first_name", //
+                    "last_name", //
+                    "email", //
+                    "job_title", //
+                    "company", //
+                    "city", //
+                    "state", //
+                    "country", //
+                    "date", //
+                    "campaign_id", //
+                    "lead_score", //
+                    "registration", //
+                    "city", //
+                    "birth", //
+                    "nbCommands", //
+                    "id", //
+                    "first_name", //
+                    "last_name", //
+                    "email", //
+                    "job_title", //
+                    "company", //
+                    "city", //
+                    "state", //
+                    "country", //
+                    "date", //
+                    "campaign_id", //
+                    "lead_score", //
+                    "registration", //
+                    "city", //
+                    "birth", //
+                    "nbCommands", //
+                    "id", //
+                    "first_name", //
+                    "last_name", //
+                    "email" }; //
             checkColumnsName(inputStream, cols);
         }
 
     }
+
+    /**
+     * @see <a href="https://jira.talendforge.org/browse/TDP-1957">TDP-1957</a>
+     */
+    @Test
+    public void TDP_1957_2_lines_but_3_imported() throws Exception {
+        checkColumnsName("TDP-1957.xlsx", "1", "col_0");
+    }
+
+    /**
+     * @see <a href="https://jira.talendforge.org/browse/TDP-1957">TDP-1791</a>
+     */
+    @Test
+    public void TDP_1791_shifted_columns_during_import() throws Exception {
+        checkColumnsName("TDP-1791.xlsx", "col_1", "col_2", "qui teste ?", "Environnement", "date debut", "date fin",
+                "Commentaire suite au test", "col_8", "col_9", "col_10", "col_11", "col_12", "col_13", "col_14", "col_15",
+                "col_16", "col_17", "col_18", "col_19", "col_20");
+    }
+
+    /**
+     * Load the excel file and check the parsed columns name against the given ones.
+     *
+     * @param sourceFileName the excel file name to load.
+     * @param expectedColsName the expected columns name.
+     * @throws IOException if an error occurs while reading the excel file.
+     */
+    private void checkColumnsName(String sourceFileName, String... expectedColsName) throws IOException {
+        try (InputStream inputStream = this.getClass().getResourceAsStream(sourceFileName)) {
+            checkColumnsName(inputStream, expectedColsName);
+        }
+    }
+
+    /**
+     * Load the excel file and check the parsed columns name against the given ones.
+     *
+     * @param inputStream the excel file name as inputStream
+     * @param expectedColsName the expected columns name.
+     * @throws IOException if an error occurs while reading the excel file.
+     */
+    private void checkColumnsName(InputStream inputStream, String... expectedColsName) throws IOException {
+
+        DataSetMetadata datasetMetadata = ioTestUtils.getSimpleDataSetMetadata();
+
+        Schema result = parser.parse(new SchemaParser.Request(inputStream, datasetMetadata));
+        List<ColumnMetadata> columns = result.getSheetContents().get(0).getColumnMetadatas();
+        final List<String> actual = columns.stream().map(ColumnMetadata::getName).collect(Collectors.toList());
+
+        Assertions.assertThat(actual).containsExactly(expectedColsName);
+    }
+
 }

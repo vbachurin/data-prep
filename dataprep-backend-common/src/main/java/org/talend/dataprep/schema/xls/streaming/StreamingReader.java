@@ -30,14 +30,17 @@ import com.monitorjbl.xlsx.exceptions.ReadException;
  */
 public class StreamingReader implements Iterable<Row>, AutoCloseable {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger( StreamingReader.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(StreamingReader.class);
+    private final StreamingWorkbookReader workbook;
 
     private File tmp;
 
-    private final StreamingWorkbookReader workbook;
-
     public StreamingReader(StreamingWorkbookReader workbook) {
         this.workbook = workbook;
+    }
+
+    public static Builder builder() {
+        return new Builder();
     }
 
     /**
@@ -62,14 +65,10 @@ public class StreamingReader implements Iterable<Row>, AutoCloseable {
             workbook.close();
         } finally {
             if (tmp != null) {
-                LOGGER.debug( "Deleting tmp file [{}]", tmp.getAbsolutePath());
+                LOGGER.debug("Deleting tmp file [{}]", tmp.getAbsolutePath());
                 tmp.delete();
             }
         }
-    }
-
-    public static Builder builder() {
-        return new Builder();
     }
 
     public static class Builder {
@@ -77,10 +76,6 @@ public class StreamingReader implements Iterable<Row>, AutoCloseable {
         private int rowCacheSize = 10;
 
         private int bufferSize = 1024;
-
-        private int sheetIndex = 0;
-
-        private String sheetName;
 
         private String password;
 
@@ -149,9 +144,9 @@ public class StreamingReader implements Iterable<Row>, AutoCloseable {
          * @throws ReadException if there is an issue reading the stream
          */
         public Workbook open(InputStream is) {
-            StreamingWorkbookReader workbook = new StreamingWorkbookReader(this);
-            workbook.init(is);
-            return new StreamingWorkbook(workbook);
+            StreamingWorkbookReader wBook = new StreamingWorkbookReader(this);
+            wBook.init(is);
+            return new StreamingWorkbook(wBook);
         }
 
         /**
@@ -163,9 +158,9 @@ public class StreamingReader implements Iterable<Row>, AutoCloseable {
          * @throws ReadException if there is an issue reading the file
          */
         public Workbook open(File file) {
-            StreamingWorkbookReader workbook = new StreamingWorkbookReader(this);
-            workbook.init(file);
-            return new StreamingWorkbook(workbook);
+            StreamingWorkbookReader wBook = new StreamingWorkbookReader(this);
+            wBook.init(file);
+            return new StreamingWorkbook(wBook);
         }
     }
 
