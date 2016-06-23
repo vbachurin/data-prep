@@ -43,4 +43,9 @@ public interface SharedResource {
      */
     String getOwnerId();
 
+    /**
+     * @return the resource id.
+     */
+    String getId();
+
 }
