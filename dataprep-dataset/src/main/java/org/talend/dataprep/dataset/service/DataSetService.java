@@ -53,6 +53,7 @@ import org.talend.dataprep.api.dataset.location.SemanticDomain;
 import org.talend.dataprep.api.service.info.VersionService;
 import org.talend.dataprep.api.user.UserData;
 import org.talend.dataprep.configuration.EncodingSupport;
+import org.talend.dataprep.dataset.event.DataSetMetadataBeforeUpdateEvent;
 import org.talend.dataprep.dataset.event.DataSetRawContentUpdateEvent;
 import org.talend.dataprep.dataset.service.analysis.DataSetAnalyzer;
 import org.talend.dataprep.dataset.service.analysis.asynchronous.AsyncBackgroundAnalysis;
@@ -771,6 +772,7 @@ public class DataSetService extends BaseDataSetService {
         lock.lock();
         try {
             LOG.debug("updateDataSet: {}", dataSetMetadata);
+            publisher.publishEvent(new DataSetMetadataBeforeUpdateEvent(dataSetMetadata));
 
             //
             // Only part of the metadata can be updated, so the original dataset metadata is loaded and updated
@@ -804,6 +806,9 @@ public class DataSetService extends BaseDataSetService {
                     metadataForUpdate.setSheetName(dataSetMetadata.getSheetName());
                     metadataForUpdate.setSchemaParserResult(null);
                 }
+
+                // Location updates
+                metadataForUpdate.setLocation(dataSetMetadata.getLocation());
 
                 // update parameters & encoding (so that user can change import parameters for CSV)
                 metadataForUpdate.getContent().setParameters(dataSetMetadata.getContent().getParameters());

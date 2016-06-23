@@ -4,11 +4,11 @@ import org.springframework.context.ApplicationEvent;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 
 /**
- * An event to indicate a data set content has been changed.
+ * An event to indicate a data set metadata has been updated (and update has completed).
  */
-public class DataSetRawContentUpdateEvent extends ApplicationEvent {
+public class DataSetMetadataBeforeUpdateEvent extends ApplicationEvent {
 
-    public DataSetRawContentUpdateEvent(DataSetMetadata source) {
+    public DataSetMetadataBeforeUpdateEvent(DataSetMetadata source) {
         super(source);
     }
 
