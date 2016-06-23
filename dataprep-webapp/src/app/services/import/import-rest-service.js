@@ -10,19 +10,18 @@
  9 rue Pages 92150 Suresnes, France
 
  ============================================================================*/
-
 /**
  * @ngdoc service
  * @name data-prep.services.import.service:ImportRestService
  * @description Import service. This service provide the entry point to the backend import REST api.<br/>
  */
-export default class ImportRestService {
-    constructor($http, RestURLs) {
-        'ngInject';
-        this.$http = $http;
-        this.url = RestURLs.datasetUrl;
-    }
+export default function ImportRestService ($http, RestURLs) {
+    'ngInject';
 
+    return {
+        importTypes: importTypes,
+        importParameters: importParameters
+    };
     /**
      * @ngdoc method
      * @name importTypes
@@ -30,8 +29,8 @@ export default class ImportRestService {
      * @description Fetch the available import types
      * @returns {Promise}  The GET call promise
      */
-    importTypes() {
-        return this.$http.get(this.url + '/imports');
+    function importTypes() {
+        return $http.get(RestURLs.datasetUrl + '/imports');
     }
 
     /**
@@ -41,7 +40,7 @@ export default class ImportRestService {
      * @description Fetch the available import parameters
      * @returns {Promise}  The GET call promise
      */
-    importParameters(locationType) {
-        return this.$http.get(this.url + '/imports/'+ locationType + '/parameters' );
+    function importParameters(locationType) {
+        return $http.get(RestURLs.datasetUrl + '/imports/'+ locationType + '/parameters' );
     }
 }

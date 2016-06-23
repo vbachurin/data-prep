@@ -50,6 +50,9 @@ export default function DatasetService($q, state, StateService, DatasetListServi
         getDatasetByName: getDatasetByName, //retrieve dataset by name
         getSheetPreview: getSheetPreview,
         loadFilteredDatasets: DatasetRestService.loadFilteredDatasets, //retrieve datasets given a set of filters
+        injectPreparations: injectPreparations,
+        removePreparations: removePreparations,
+
 
         //dataset update
         rename: rename,
@@ -63,7 +66,8 @@ export default function DatasetService($q, state, StateService, DatasetListServi
         //utils
         getUniqueName: getUniqueName,
         createDatasetInfo: createDatasetInfo,
-        checkNameAvailability: checkNameAvailability
+        checkNameAvailability: checkNameAvailability,
+        getLocationParamIteration: getParamIteration
     };
 
     //--------------------------------------------------------------------------------------------------------------
@@ -298,6 +302,30 @@ export default function DatasetService($q, state, StateService, DatasetListServi
 
     /**
      * @ngdoc method
+     * @name getParamIteration
+     * @methodOf data-prep.services.dataset.service:DatasetService
+     * @description function for recursively gather params
+     * @param {object} paramsAccu The parameters values accumulator
+     * @param {array} parameters The parameters array
+     * @returns {object} The parameters
+     */
+    function getParamIteration(paramsAccu, parameters) {
+        if (parameters) {
+            _.forEach(parameters, (paramItem) => {
+                paramsAccu[paramItem.name] = typeof (paramItem.value) !== 'undefined' ? paramItem.value : paramItem.default;
+
+                // deal with select inline parameters
+                if (paramItem.type === 'select') {
+                    let selectedValue = _.find(paramItem.configuration.values, {value: paramItem.value});
+                    getParamIteration(paramsAccu, selectedValue.parameters);
+                }
+            });
+        }
+        return paramsAccu;
+    }
+
+    /**
+     * @ngdoc method
      * @name updateParameters
      * @methodOf data-prep.services.dataset.service:DatasetService
      * @param {object} metadata The dataset metadata
@@ -360,7 +388,7 @@ export default function DatasetService($q, state, StateService, DatasetListServi
     //--------------------------------------------------------------------------------------------------------------
     //TODO remove this and review the datasets model to NOT change the original object. This is done here to
     // avoid cyclic ref
-    function _removePreparations(metadata) {
+    function removePreparations(metadata) {
         const preparations = {
             defaultPreparation: metadata.defaultPreparation,
             preparations: metadata.preparations,
@@ -374,7 +402,7 @@ export default function DatasetService($q, state, StateService, DatasetListServi
 
     //TODO remove this and review the datasets model to NOT change the original object. This is done here to
     // avoid cyclic ref
-    function _injectPreparations(metadata, preparations) {
+    function injectPreparations(metadata, preparations) {
         metadata.defaultPreparation = preparations.defaultPreparation;
         metadata.preparations = preparations.preparations;
     }
@@ -391,7 +419,7 @@ export default function DatasetService($q, state, StateService, DatasetListServi
     function rename(metadata, name) {
         const oldName = metadata.name;
         StateService.setDatasetName(metadata.id, name);
-        const preparations = _removePreparations(metadata);
+        const preparations = removePreparations(metadata);
 
         return DatasetRestService.updateMetadata(metadata)
             .catch((error) => {
@@ -399,7 +427,7 @@ export default function DatasetService($q, state, StateService, DatasetListServi
                 return $q.reject(error);
             })
             .finally(() => {
-                _injectPreparations(metadata, preparations)
+                injectPreparations(metadata, preparations)
             });
     }
 }

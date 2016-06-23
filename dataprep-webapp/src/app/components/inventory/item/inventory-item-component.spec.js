@@ -729,7 +729,7 @@ describe('InventoryItem directive', () => {
             scope.rename = () => {};
             scope.open = () => {};
             scope.remove = () => {};
-            
+
             createElement = () => {
                 element = angular.element(`
                     <inventory-item 
@@ -801,11 +801,11 @@ describe('InventoryItem directive', () => {
             expect(element.find('.inventory-description').eq(0).text()).toBe('This is a recipe');
         });
     });
-    
+
     describe('insertion points', () => {
         beforeEach(inject(($rootScope, $compile) => {
             scope = $rootScope.$new();
-            
+
             createElement = () => {
                 element = angular.element('<inventory-item item="folder" type="folder"></inventory-item>');
                 $compile(element)(scope);
