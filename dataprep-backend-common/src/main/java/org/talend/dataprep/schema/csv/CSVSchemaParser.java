@@ -153,8 +153,8 @@ public class CSVSchemaParser implements SchemaParser {
             while ((line = csvStreamReader.readLine()) != null) {
                 if (!line.isEmpty() && sampleLines.size() < SMALL_SAMPLE_LIMIT) {
                     sampleLines.add(line);
+                    processLine(line, separatorMap, validSepartors, csvStreamReader.getLineCount());
                 }
-                processLine(line, separatorMap, validSepartors, csvStreamReader.getLineCount());
             }
             return chooseSeparator(new ArrayList<>(separatorMap.values()), csvStreamReader.getLineCount(), sampleLines,
                     forcedSeparator);

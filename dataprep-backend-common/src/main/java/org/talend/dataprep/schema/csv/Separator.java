@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.commons.math3.util.Pair;
 import org.talend.dataprep.api.type.Type;
@@ -33,7 +34,7 @@ public class Separator {
     private int totalCount = 0;
 
     /** Current line count. */
-    private Map<Integer, Long> countPerLine = new HashMap<>();
+    private Map<Integer, Long> countPerLine = new TreeMap<>();
 
     /** This separator score. */
     private double score = Double.MAX_VALUE;
