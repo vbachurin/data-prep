@@ -147,7 +147,7 @@ public class DateParser {
      * @param patterns the patterns to use.
      * @return the parsed date-time
      */
-    LocalDateTime parseDateFromPatterns(String value, List<DatePattern> patterns) {
+    public LocalDateTime parseDateFromPatterns(String value, List<DatePattern> patterns) {
 
         // take care of the null value
         if (value == null) {
@@ -180,7 +180,7 @@ public class DateParser {
      *
      * @param patternsFrequency the column to get the patterns from.
      */
-    List<DatePattern> getPatterns(List<PatternFrequency> patternsFrequency) {
+    public List<DatePattern> getPatterns(List<PatternFrequency> patternsFrequency) {
         final Set<String> distinctPatterns = new HashSet<>(patternsFrequency.size());
 
         return patternsFrequency.stream().filter(patternFreqItem -> isNotEmpty(patternFreqItem.getPattern()))

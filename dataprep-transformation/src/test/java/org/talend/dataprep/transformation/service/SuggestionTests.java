@@ -210,7 +210,6 @@ public class SuggestionTests extends TransformationServiceBaseTests {
                 .asString();
 
         // then
-        System.out.println(response);
         assertEquals(expectedSuggestions, response, false);
     }
 

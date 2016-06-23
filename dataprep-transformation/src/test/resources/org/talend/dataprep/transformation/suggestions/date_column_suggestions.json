@@ -359,6 +359,9 @@
         "default": ""
       },
       {
+        "name": "from_pattern_mode"
+      },
+      {
         "name": "new_pattern",
         "type": "select",
         "implicit": false,

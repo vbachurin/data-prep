@@ -59,8 +59,8 @@ public class ChangeDatePatternTest extends BaseDateTests {
 
     @Test
     public void testParameters() throws Exception {
-        // 4 predefined patterns + custom = 5
-        assertThat(action.getParameters().size(), is(5));
+        // 4 predefined patterns + custom = 6
+        assertThat(action.getParameters().size(), is(6));
     }
 
     @Test
@@ -202,6 +202,26 @@ public class ChangeDatePatternTest extends BaseDateTests {
 
         // then
         final DataSetRow expectedRow = getRow("toto", "NA", "tata");
+        assertEquals(expectedRow.values(), row.values());
+    }
+
+    /**
+     * @see <a href="https://jira.talendforge.org/browse/TDP-1657">Jira TDP-1657</a>
+     */
+    @Test
+    public void should_process_row_with_user_set_pattern_TDP_1657() throws Exception {
+        // given
+        DataSetRow row = getRow("toto", "Apr-25-09", "tata");
+        setStatistics(row, "0001", ChangeDatePatternTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
+
+        parameters.put(ChangeDatePattern.FROM_MODE, ChangeDatePattern.FROM_MODE_CUSTOM);
+        parameters.put(ChangeDatePattern.FROM_CUSTOM_PATTERN, "MMM-dd-yy");
+
+        // when
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
+
+        // then
+        final DataSetRow expectedRow = getRow("toto", "25 - Apr - 2009", "tata");
         assertEquals(expectedRow.values(), row.values());
     }
 

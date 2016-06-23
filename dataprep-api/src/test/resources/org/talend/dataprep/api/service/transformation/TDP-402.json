@@ -5,6 +5,7 @@
       "parameters": {
         "column_id": "0004",
         "column_name": "date-of-birth",
+        "from_pattern_mode": "unknown_separators",
         "new_pattern": "dd-MM-yyyy",
         "scope": "column"
       }
