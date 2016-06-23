@@ -414,7 +414,7 @@ public class DataSetService extends BaseDataSetService {
             final Marker marker = Markers.dataset(dataSetId);
             LOG.debug(marker, "Get data set #{}", dataSetId);
             try {
-                DataSetMetadata dataSetMetadata = dataSetMetadataRepository.getForContent(dataSetId);
+                DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
                 assertDataSetMetadata(dataSetMetadata, dataSetId);
                 // Build the result
                 DataSet dataSet = new DataSet();
