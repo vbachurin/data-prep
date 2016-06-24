@@ -25,6 +25,7 @@
  </talend-button-dropdown>
  * @param {string} buttonIcon The icon to display in the main button
  * @param {string} buttonText The text to display in the main button
+ * @param {string} buttonTitle The tooltip to display in the main button
  * @param {function} buttonAction The callback to execute on main button click
  */
 export default function TalendButtonDropdown($timeout) {
@@ -33,7 +34,7 @@ export default function TalendButtonDropdown($timeout) {
         restrict: 'E',
         transclude: true,
         template: '<div class="button-dropdown">' +
-            '<button class="button-dropdown-main" ng-click="buttonDropdownCtrl.buttonAction()">' +
+            '<button class="button-dropdown-main" ng-click="buttonDropdownCtrl.buttonAction()" title="{{buttonDropdownCtrl.buttonTitle}}">' +
                 '<div class="button-dropdown-main-container">' +
                     '<i   ng-if="::buttonDropdownCtrl.buttonIcon" class="button-dropdown-main-icon" data-icon="{{::buttonDropdownCtrl.buttonIcon}}"></i>' +
                     '<div ng-if="::buttonDropdownCtrl.buttonText" class="button-dropdown-main-text" ng-bind="buttonDropdownCtrl.buttonText"><div>' +
@@ -48,6 +49,7 @@ export default function TalendButtonDropdown($timeout) {
         scope: {
             buttonIcon: '@',
             buttonText: '@',
+            buttonTitle: '@',
             buttonAction: '&',
             closeOnSelect: '<'
         },
