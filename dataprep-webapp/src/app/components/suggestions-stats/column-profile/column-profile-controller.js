@@ -65,7 +65,7 @@ export default function ColumnProfileCtrl($translate, $timeout, state, Statistic
         const isDateRange = selectedColumn.type === 'date';
 
         if (!interval.label) {
-            const formatDate = d3.time.format('%m/%d/%Y');
+            const formatDate = d3.time.format('%m-%d-%Y');
             const formatNumber = d3.format(',');
             const min = isDateRange ? formatDate(new Date(interval.min)) : formatNumber(interval.min);
             const max = isDateRange ? formatDate(new Date(interval.max)) : formatNumber(interval.max);

@@ -37,17 +37,19 @@ export default function TransformChoiceParam($rootScope, $compile) {
                     return optionValue.parameters && optionValue.parameters.length;
                 })
                 .forEach(function (optionValue) {
-                    var isolatedScope = $rootScope.$new(true);
+                    const isolatedScope = $rootScope.$new(true);
                     isolatedScope.parameter = ctrl.parameter;
                     isolatedScope.optionValue = optionValue;
 
-                    var template = '<transform-params ' +
+                    const template = '<transform-params ' +
                         'parameters="optionValue.parameters" ' +
                         'ng-if="parameter.value === optionValue.value" ' +
                         '></transform-params>';
                     $compile(template)(isolatedScope, function (cloned) {
                         iElement.append(cloned);
                     });
+
+                    scope.$on('$destroy', () => { isolatedScope.$destroy(); });
                 })
                 .value();
         }

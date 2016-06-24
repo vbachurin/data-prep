@@ -1,15 +1,15 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
 
 /**
  * @ngdoc directive
@@ -18,30 +18,29 @@
  * @restrict E
  * @usage
  <talend-datetime-picker
-         ng-model="ctrl.value"
-         datetimepicker-on-select="ctrl.onSelect"
-         range-item-type="from|to"
-         is-date-time
- ></talend-datetimepicker>
- * @param {string}   value Disable the ENTER key support
- * @param {function} datetimepickerOnSelect Event handler when date is picked
- * @param {function} onBlur Event handler when input is on blur
- * @param {string}   rangeItemType If datetimepicker composes a range, need to provide "from" or "to" value
+     ng-model="ctrl.value"
+     on-select="ctrl.onSelect"
+     on-blur="ctrl.onBlur"
+     format="DD/MM/YYYY"
+     is-date-time></talend-datetimepicker>
+ * @param {string}   value Variable to bind input ngModel
+ * @param {function} onSelect Event handler when date is picked
+ * @param {function} onBlur Event handler when input is blurred
+ * @param {string} format MomentJS date format
  */
-export default function TalendDatetimePicker($filter) {
+export default function TalendDatetimePicker($timeout) {
     'ngInject';
+    
     return {
         restrict: 'E',
         template: '<input class="datetimepicker" type="text" ng-blur="ctrl.onBlur()" ng-model="ctrl.value" />',
         scope: {
             value: '=ngModel',
-            datetimepickerOnSelect: '&',
-            onBlur: '&ngBlur',
-            rangeItemType: '@'
+            onSelect: '&',
+            onBlur: '&'
         },
         bindToController: true,
-        controller: () => {
-        },
+        controller: () => {},
         controllerAs: 'ctrl',
         link: function (scope, iElement, iAttrs, ctrl) {
             Date.parseDate = function (input, format) {
@@ -51,35 +50,24 @@ export default function TalendDatetimePicker($filter) {
                 return moment(this).format(format);
             };
 
-            let format = iAttrs.format ? iAttrs.format : 'MM/DD/YYYY';
-            let formatTime = iAttrs.formatTime ? iAttrs.formatTime : 'HH:mm:ss';
-            let formatDate = iAttrs.formatDate ? iAttrs.formatDate : 'MM/DD/YYYY';
-            let options = {};
+            const format = iAttrs.format ? iAttrs.format : 'DD/MM/YYYY HH:mm:ss';
+            const formatTime = iAttrs.formatTime ? iAttrs.formatTime : 'HH:mm:ss';
+            const formatDate = iAttrs.formatDate ? iAttrs.formatDate : 'DD/MM/YYYY';
 
-            if (ctrl.datetimepickerOnSelect) {
-                options.onSelectDate = (date) => {
-                    ctrl.value = date;
-                    ctrl.datetimepickerOnSelect({
-                        timeStamp: date.getTime(),
-                        rangeType: ctrl.rangeItemType
-                    });
-                };
+            function onSelectDate() {
+                $timeout(() => {
+                    ctrl.onSelect();
+                });
             }
 
-            if (!_.has(iAttrs, 'isDateTime')) {
-                options.timepicker = false;
-            }
-
-            let input = iElement.find('.datetimepicker');
+            const input = iElement.find('.datetimepicker');
             input.datetimepicker({
-                ...options,
-                ...{
-                    lang: 'en',
-                    format: format,
-                    formatDate: formatDate,
-                    formatTime: formatTime,
-                    allowBlank: false
-                }
+                lang: 'en',
+                format: format,
+                formatDate: formatDate,
+                formatTime: formatTime,
+                timepicker: _.has(iAttrs, 'isDateTime'),
+                onSelectDate: onSelectDate
             });
 
             input.bind('keydown', (event) => {
@@ -90,15 +78,7 @@ export default function TalendDatetimePicker($filter) {
                 }
             });
 
-            if (ctrl.rangeItemType) {
-                // Only date time values need to be filtered
-                scope.$watch(
-                    () => ctrl.value,
-                    (newValue) => {
-                        ctrl.value = $filter('date')(newValue, 'MM/dd/yyyy')
-                    }
-                );
-            }
+            scope.$on('$destroy', () => { input.datetimepicker('destroy'); })
         }
     };
 }

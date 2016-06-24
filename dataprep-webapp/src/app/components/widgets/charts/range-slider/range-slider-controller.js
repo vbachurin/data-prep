@@ -11,174 +11,371 @@
 
  ============================================================================*/
 
+const DATE_FORMAT = 'MM-DD-YYYY';
+const D3_DATE_FORMAT = '%m-%d-%Y';
+const D3_NUMBER_DECIMAL = ',';
+const D3_DATE_FORMATTER = d3.time.format(D3_DATE_FORMAT);
+const D3_NUMBER_FORMATTER = d3.format(D3_NUMBER_DECIMAL);
+
+const NUMBER_FORMATTER = {
+    format: (value) => D3_NUMBER_FORMATTER(value)
+};
+const DATE_FORMATTER = {
+    parse: (string) => D3_DATE_FORMATTER.parse(string),
+    format: (timestamp) => D3_DATE_FORMATTER(new Date(timestamp))
+};
+
+/**
+ * Checks max interval >= the max of data values and  if the min interval < max interval
+ */
+function adaptSelection(selection, maxValue) {
+    return {
+        min: selection.min,
+        max: selection.max,
+        isMaxReached: selection.max >= maxValue || selection.min >= selection
+    };
+}
+
+/**
+ * Check if date is correct
+ */
+function dateIsCorrect(value) {
+    return DATE_FORMATTER.parse(value);
+}
+
+/**
+ * Check if number is correct
+ */
+function numberIsCorrect(value) {
+    return /^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$/.test(value.trim());
+}
+
+/**
+ * Check if string has comma
+ */
+function hasComma(value) {
+    return value.indexOf(',') > -1;
+}
+
+/**
+ * Return the number of decimal digit
+ */
+function getNbDecimalDigit(num) {
+    const match = ('' + num).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
+    return Math.max(
+        0,
+        // Number of digits right of decimal point.
+        (match[1] ? match[1].length : 0) -
+        // Adjust for scientific notation.
+        (match[2] ? +match[2] : 0));
+}
+
 /**
  * @ngdoc controller
  * @name talend.widget.controller:RangeSliderCtrl
  * @description The rangeSlider controller
  */
-export default function RangeSliderCtrl() {
-    var vm = this;
+export default class RangeSliderCtrl {
+    constructor() {
+        this.dateFormat = DATE_FORMAT;
+    }
+    
+    // -----------------------------------------------------------------------------------------------------------------
+    // --------------------------------------------------UTILS----------------------------------------------------------
+    // -----------------------------------------------------------------------------------------------------------------
+    /**
+     * @ngdoc method
+     * @name isDateType
+     * @methodOf talend.widget.controller:RangeSliderCtrl
+     * @description Check if the range limits are date types
+     **/
+    isDateType() {
+        return this.rangeLimits.type === 'date';
+    }
 
     /**
      * @ngdoc method
-     * @name formatDate
-     * @propertyOf talend.widget.controller:RangeSliderCtrl
-     * @description format date with D3
-     */
-    vm.formatDate = d3.time.format('%m/%d/%Y');
-
-    /**
-     * @ngdoc method
-     * @name adaptFilterInterval
-     * @propertyOf talend.widget.controller:RangeSliderCtrl
-     * @description checks max interval >= the max of data values and  if the min interval < max interval
-     * @params {Object} filterToApply the filter to apply
-     * @returns {Object}
-     */
-    vm.adaptFilterInterval = function adaptFilterInterval(filterToTrigger) {
-        filterToTrigger = filterToTrigger.min > filterToTrigger.max ?
-        {min: filterToTrigger.max, max: filterToTrigger.min} :
-            filterToTrigger;
-
-        filterToTrigger.isMaxReached = filterToTrigger.max >= vm.rangeLimits.max;
-        return filterToTrigger;
-    };
-
-    /**
-     * @ngdoc method
-     * @name areMinMaxNumbers
-     * @propertyOf talend.widget.controller:RangeSliderCtrl
-     * @description checks if both of the entered values are numbers
-     * @returns {boolean}
-     */
-    vm.areMinMaxNumbers = function areMinMaxNumbers() {
-        var isMinNumber = vm.toNumber(vm.minMaxModel.minModel);
-        var isMaxNumber = vm.toNumber(vm.minMaxModel.maxModel);
-        return !(isMinNumber === null || isMaxNumber === null);
-    };
-
-    /**
-     * @ngdoc method
-     * @name areMinMaxDates
-     * @propertyOf talend.widget.controller:RangeSliderCtrl
-     * @description checks if both of the entered values are dates
-     * @returns {boolean}
-     */
-    vm.areMinMaxDates = function areMinMaxDates() {
-        const isMinDate = vm.toDate(vm.minMaxModel.minModel);
-        const isMaxDate = vm.toDate(vm.minMaxModel.maxModel);
-        return !(isMinDate === null || isMaxDate === null);
-    };
-
-    /**
-     * @ngdoc method
-     * @name toNumber
-     * @propertyOf talend.widget.controller:RangeSliderCtrl
-     * @description converts the entered string to a number returns null if not a valid number
-     * @param {string} value The value to transform
-     */
-    vm.toNumber = function toNumber(value) {
-        value = value.trim();
-        if (/^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$/.test(value)) {
-            return Number(value);
-        }
-        return null;
-    };
-
-    /**
-     * @ngdoc method
-     * @name toDate
-     * @propertyOf talend.widget.controller:RangeSliderCtrl
-     * @description converts a timeStamp as String to a date object
-     * @param {String} dateString to transform
-     * @returns {*} Valid date or null
-     */
-    vm.toDate = function toDate(dateString) {
-        return isNaN(new Date(dateString).getTime()) ? null : new Date(dateString);
-    };
-
-    /**
-     * @ngdoc method
-     * @name setDateTimeToMidnight
-     * @propertyOf talend.widget.controller:RangeSliderCtrl
-     * @description given a timestamp, it sets it to midnight, the same day
-     * @param {Number} timeStamp to set
-     * @returns {number} date timestamp
-     */
-    vm.setDateTimeToMidnight = function setDateTimeToMidnight(timeStamp) {
-        const dateToSetTimeToMidnight = new Date(timeStamp);
-        dateToSetTimeToMidnight.setHours(0, 0, 0, 0);
-        return dateToSetTimeToMidnight.getTime();
-    };
-
-    /**
-     * @ngdoc method
-     * @name checkCommaExistence
-     * @propertyOf talend.widget.controller:RangeSliderCtrl
-     * @description check if the entered values contain a comma
-     */
-    vm.checkCommaExistence = function checkCommaExistence(minMaxStr) {
-        return minMaxStr.indexOf(',') > -1;
-    };
-
-    /**
-     * @ngdoc method
-     * @name decimalPlaces
-     * @propertyOf talend.widget.controller:RangeSliderCtrl
-     * @description Return the decimal index
-     */
-    vm.decimalPlaces = function decimalPlaces(num) {
-        var match = ('' + num).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
-        return Math.max(
-            0,
-            // Number of digits right of decimal point.
-            (match[1] ? match[1].length : 0) -
-                // Adjust for scientific notation.
-            (match[2] ? +match[2] : 0));
-    };
-
-    /**
-     * @ngdoc method
-     * @name adaptRangeValues
-     * @propertyOf talend.widget.controller:RangeSliderCtrl
-     * @description Adapt the entered values to respect the rules :
-     * <ul>
-     *     <li>The entered min value < the entered max value</li>
-     *     <li>The entered min value is within the range defined by 'minimum' and 'maximum'</li>
-     * </ul>
-     * @param enteredMin The min input value
-     * @param enteredMax The max input value
-     * @param minimum The minimum value in the range
-     * @param maximum The maximum value in the range
-     */
-    vm.adaptRangeValues = function adaptRangeValues(enteredMin, enteredMax, minimum, maximum) {
-        //switch entered values if necessary
-        if (enteredMin > enteredMax) {
-            var _aux = enteredMin;
-            enteredMin = enteredMax;
-            enteredMax = _aux;
-        }
-
-        //maximum limits
-        if (enteredMax > maximum) {
-            enteredMax = maximum;
-        }
-        else if (enteredMax < minimum) {
-            enteredMax = minimum;
-        }
-
-        //minimum limits
-        if (enteredMin > maximum) {
-            enteredMin = maximum;
-        }
-        else if (enteredMin < minimum) {
-            enteredMin = minimum;
-        }
-
-        //final extent without delta
+     * @name adaptToInputValue
+     * @methodOf talend.widget.controller:RangeSliderCtrl
+     * @description Adapt values to input format, i.e. strings. The dates are formatted to the default format
+     * @param {Object} values The values to adapt
+     * @return {Object} The adapted values
+     **/
+    adaptToInputValue(values) {
         return {
-            min: enteredMin,
-            max: enteredMax
+            min: this.isDateType() ? DATE_FORMATTER.format(values.min) : '' + values.min,
+            max: this.isDateType() ? DATE_FORMATTER.format(values.max) : '' + values.max
         };
-    };
+    }
+
+    /**
+     * @ngdoc method
+     * @name adaptFromInputValue
+     * @methodOf talend.widget.controller:RangeSliderCtrl
+     * @description Adapt values from input to model format (timestamp for dates, number otherwise)
+     * @param {Object} values The values to adapt
+     * @return {Object} The adapted values
+     **/
+    adaptFromInputValue(values) {
+        return {
+            min: this.isDateType() ? +DATE_FORMATTER.parse(values.min) : +values.min,
+            max: this.isDateType() ? +DATE_FORMATTER.parse(values.max) : +values.max,
+        }
+    }
+
+    /**
+     * @ngdoc method
+     * @name getLimitsText
+     * @methodOf talend.widget.controller:RangeSliderCtrl
+     * @description Get the min and max labels
+     * @return {Object} The adapted values
+     **/
+    getLimitsText() {
+        const minText = this.isDateType() ?
+            DATE_FORMATTER.format(this.rangeLimits.min) :
+            NUMBER_FORMATTER.format(this.rangeLimits.min);
+        const maxText = this.isDateType() ?
+            DATE_FORMATTER.format(this.rangeLimits.max) :
+            NUMBER_FORMATTER.format(this.rangeLimits.max);
+        return { minText, maxText };
+    }
+
+    /**
+     * @ngdoc method
+     * @name adaptToInboundValues
+     * @methodOf talend.widget.controller:RangeSliderCtrl
+     * @description Adapt values to be within [min, max] interval
+     * @param {Object} values The values to adapt
+     * @return {Object} The adapted values
+     **/
+    adaptToInboundValues(values) {
+        return {
+            min: Math.max(this.rangeLimits.min, values.min),
+            max: Math.min(this.rangeLimits.max, values.max)
+        };
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // --------------------------------------------------MODEL----------------------------------------------------------
+    // -----------------------------------------------------------------------------------------------------------------
+    /**
+     * @ngdoc method
+     * @name initModel
+     * @methodOf talend.widget.controller:RangeSliderCtrl
+     * @description Initialize the model (last brush and input values) and configuration
+     **/
+    initModel() {
+        const minBrush = typeof this.rangeLimits.minBrush !== 'undefined' ? this.rangeLimits.minBrush : this.rangeLimits.min;
+        const maxBrush = typeof this.rangeLimits.maxBrush !== 'undefined' ? this.rangeLimits.maxBrush : this.rangeLimits.max;
+        const minFilter = typeof this.rangeLimits.minFilterVal !== 'undefined' ? this.rangeLimits.minFilterVal : this.rangeLimits.min;
+        const maxFilter = typeof this.rangeLimits.maxFilterVal !== 'undefined' ? this.rangeLimits.maxFilterVal : this.rangeLimits.max;
+
+        this.nbDecimals = Math.max(getNbDecimalDigit(minBrush), getNbDecimalDigit(maxBrush));
+
+        this.lastValues = {
+            // the brush values
+            brush: {
+                min: minBrush,
+                max: maxBrush
+            },
+            // the input values
+            input: {
+                min: minFilter,
+                max: maxFilter
+            }
+        };
+    }
+
+    /**
+     * @ngdoc method
+     * @name setLastBrushValues
+     * @methodOf talend.widget.controller:RangeSliderCtrl
+     * @description Update last brush values
+     * @params {Object} values The new brush values
+     **/
+    setLastBrushValues(values) {
+        this.lastValues.brush.min = values.min;
+        this.lastValues.brush.max = values.max;
+    }
+
+    /**
+     * @ngdoc method
+     * @name setLastInputValues
+     * @methodOf talend.widget.controller:RangeSliderCtrl
+     * @description Update last input values
+     * @params {Object} values The new input values
+     **/
+    setLastInputValues(values) {
+        this.lastValues.input.min = values.min;
+        this.lastValues.input.max = values.max;
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // --------------------------------------------------BRUSH----------------------------------------------------------
+    // -----------------------------------------------------------------------------------------------------------------
+    /**
+     * @ngdoc method
+     * @name updateBrush
+     * @methodOf talend.widget.controller:RangeSliderCtrl
+     * @description Update current brush values with an animation on transition
+     * @params {Object} values The new brush values
+     **/
+    updateBrush(values) {
+        let {min, max} = values;
+        if(min === max) {
+            const exp = '1e-' + (this.nbDecimals + 2);
+            max = max + Number(exp);
+        }
+
+        this.brushg
+            .transition()
+            .call(this.brush.extent([min, max]));
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // --------------------------------------------------INPUT----------------------------------------------------------
+    // -----------------------------------------------------------------------------------------------------------------
+    /**
+     * @ngdoc method
+     * @name setInputValue
+     * @methodOf talend.widget.controller:RangeSliderCtrl
+     * @description Update current input values
+     * @params {Object} values The new input values
+     **/
+    setInputValue(values) {
+        this.minMaxModel = this.adaptToInputValue(values);
+    }
+
+    /**
+     * @ngdoc method
+     * @name resetInputValues
+     * @methodOf talend.widget.controller:RangeSliderCtrl
+     * @description Reset current input values to the last registered values
+     **/
+    resetInputValues() {
+        this.hideMsgErr();
+        this.setInputValue(this.lastValues.input);
+    }
+
+    /**
+     * @ngdoc method
+     * @name showMsgErr
+     * @methodOf talend.widget.controller:RangeSliderCtrl
+     * @description Show error messages
+     **/
+    showMsgErr() {
+        this.invalidNumber = true;
+        const minMaxStr = this.minMaxModel.min + this.minMaxModel.max;
+        this.invalidNumberWithComma = hasComma(minMaxStr);
+    }
+
+    /**
+     * @ngdoc method
+     * @name hideMsgErr
+     * @methodOf talend.widget.controller:RangeSliderCtrl
+     * @description Hide error messages
+     **/
+    hideMsgErr() {
+        this.invalidNumber = false;
+        this.invalidNumberWithComma = false;
+    }
+
+    /**
+     * @ngdoc method
+     * @name inputsAreValid
+     * @methodOf talend.widget.controller:RangeSliderCtrl
+     * @description Check if inputs values are valid (date and number with wanted format)
+     **/
+    inputsAreValid() {
+        const check = this.isDateType() ? dateIsCorrect : numberIsCorrect;
+        return check(this.minMaxModel.min) && check(this.minMaxModel.max);
+    }
+
+    /**
+     * @ngdoc method
+     * @name validateInputs
+     * @methodOf talend.widget.controller:RangeSliderCtrl
+     * @description Check inputs and show/hide error messages
+     **/
+    validateInputs() {
+        if (this.inputsAreValid()) {
+            this.hideMsgErr();
+        }
+        else {
+            this.showMsgErr();
+        }
+    }
+
+    /**
+     * @ngdoc method
+     * @name handleKey
+     * @methodOf talend.widget.controller:RangeSliderCtrl
+     * @description Keydown event on inputs
+     * @param {Object} event The key event
+     **/
+    handleKey(event) {
+        switch (event.keyCode) {
+            case 13:
+                this.onInputChange();
+                break;
+            case 27:
+                this.resetInputValues();
+                break;
+        }
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------PROPAGATION-------------------------------------------------------
+    // -----------------------------------------------------------------------------------------------------------------
+    /**
+     * @ngdoc method
+     * @name onChange
+     * @methodOf talend.widget.controller:RangeSliderCtrl
+     * @description Propagate new values to the parent component
+     * @param {Object} values The values to propagate
+     **/
+    onChange(values) {
+        const interval = adaptSelection(values, this.rangeLimits.max);
+        this.onBrushEnd({ interval });
+    }
+
+    /**
+     * @ngdoc method
+     * @name onBrushChange
+     * @methodOf talend.widget.controller:RangeSliderCtrl
+     * @description When user change brush values with the mouse, 
+     * we propagate it in the last registered values and to the parent component
+     **/
+    onBrushChange(values) {
+        this.setLastBrushValues(values);
+        this.setLastInputValues(values);
+        this.onChange(values);
+    }
+
+    /**
+     * @ngdoc method
+     * @name onInputChange
+     * @methodOf talend.widget.controller:RangeSliderCtrl
+     * @description Whe user validate (blur or enter) an input,
+     * we propagate it in the last registered values and to the parent component, and update the brush
+     * If the values are invalid, they are reset to the last registered values
+     **/
+    onInputChange() {
+        if (this.inputsAreValid()) {
+            const adaptedValue = this.adaptFromInputValue(this.minMaxModel);
+            if (adaptedValue.min === this.lastValues.input.min &&
+                adaptedValue.max === this.lastValues.input.max) {
+                return;
+            }
+
+            const adaptedBrushValues = this.adaptToInboundValues(adaptedValue);
+            this.updateBrush(adaptedBrushValues);
+            this.setLastBrushValues(adaptedBrushValues);
+            this.setLastInputValues(adaptedValue);
+            this.onChange(adaptedValue);
+        }
+        else {
+            this.resetInputValues();
+        }
+    }
 }

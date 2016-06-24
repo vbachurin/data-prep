@@ -14,47 +14,44 @@
   -->
 
 <div class="range-slider-id"></div>
+
 <form class="range-inputs-cls"
       name="rangesForm"
-      ng-if="rangeSliderCtrl.showRangeInputs"
-      ng-switch="rangeSliderCtrl.isDateType">
+      ng-if="rangeSliderCtrl.rangeLimits"
+      ng-switch="rangeSliderCtrl.rangeLimits.type">
 
     <span class="range-label-input">
         <!-- did  not use input type="number because the ng-model of '25,' is '25' " -->
         <b translate-once="MIN"></b>&nbsp;
 
         <input type="text"
-               ng-model="rangeSliderCtrl.minMaxModel.minModel"
-               ng-switch-when="false"
-               ng-blur="rangeSliderCtrl.prepareInputFilter()"
-               ng-keydown="rangeSliderCtrl.stopPropagation($event)"
-               ng-keyup="rangeSliderCtrl.handleKey('min')($event)"/>
+               ng-model="rangeSliderCtrl.minMaxModel.min"
+               ng-switch-default
+               ng-blur="rangeSliderCtrl.onInputChange()"
+               ng-change="rangeSliderCtrl.validateInputs()"
+               ng-keydown="rangeSliderCtrl.handleKey($event)"/>
 
-        <talend-datetime-picker ng-model="rangeSliderCtrl.minMaxModel.minModel"
-                                ng-switch-when="true"
-                                ng-keydown="rangeSliderCtrl.stopPropagation($event)"
-                                ng-keyup="rangeSliderCtrl.handleKey('min')($event)"
-                                datetimepicker-on-select="rangeSliderCtrl.prepareInputFilter(timeStamp, rangeType)"
-                                ng-blur="rangeSliderCtrl.prepareInputFilter()"
-                                range-item-type="from">
+        <talend-datetime-picker ng-model="rangeSliderCtrl.minMaxModel.min"
+                                ng-switch-when="date"
+                                on-blur="rangeSliderCtrl.onInputChange()"
+                                on-select="rangeSliderCtrl.onInputChange()"
+                                format="{{::rangeSliderCtrl.dateFormat}}">
         </talend-datetime-picker>
     </span>
     <span class="range-label-input">
         <b translate-once="MAX"></b>&nbsp;
         <input type="text"
-               ng-model="rangeSliderCtrl.minMaxModel.maxModel"
-               ng-switch-when="false"
-               ng-blur="rangeSliderCtrl.prepareInputFilter()"
-               ng-keydown="rangeSliderCtrl.stopPropagation($event)"
-               ng-keyup="rangeSliderCtrl.handleKey('max')($event)"/>
+               ng-model="rangeSliderCtrl.minMaxModel.max"
+               ng-switch-default
+               ng-blur="rangeSliderCtrl.onInputChange()"
+               ng-change="rangeSliderCtrl.validateInputs()"
+               ng-keydown="rangeSliderCtrl.handleKey($event)"/>
 
-        <talend-datetime-picker ng-model="rangeSliderCtrl.minMaxModel.maxModel"
-                                ng-switch-when="true"
-                                ng-keydown="rangeSliderCtrl.stopPropagation($event)"
-                                ng-keyup="rangeSliderCtrl.handleKey('max')($event)"
-                                datetimepicker-on-select="rangeSliderCtrl.prepareInputFilter(timeStamp, rangeType)"
-                                ng-blur="rangeSliderCtrl.prepareInputFilter()"
-                                range-item-type="to">
+        <talend-datetime-picker ng-model="rangeSliderCtrl.minMaxModel.max"
+                                ng-switch-when="date"
+                                on-blur="rangeSliderCtrl.onInputChange()"
+                                on-select="rangeSliderCtrl.onInputChange()"
+                                format="{{::rangeSliderCtrl.dateFormat}}">
         </talend-datetime-picker>
     </span>
 
@@ -63,11 +60,10 @@
 </form>
 <div class="error-message">
         <span class="error"
-              ng-show="rangeSliderCtrl.invalidNumber"
-              translate-once="INVALID_VALUE_RANGE_SLIDER"
-                ><!--ng-pattern has not been used because we need to check the case where the user has type a comma ',' --></span>
+              ng-if="rangeSliderCtrl.invalidNumber"
+              translate-once="INVALID_VALUE_RANGE_SLIDER"></span>
 
         <span class="error"
-              ng-show="rangeSliderCtrl.invalidNumberWithComma"
+              ng-if="rangeSliderCtrl.invalidNumberWithComma"
               translate-once="INVALID_VALUE_RANGE_SLIDER_CONTENT"></span>
 </div>

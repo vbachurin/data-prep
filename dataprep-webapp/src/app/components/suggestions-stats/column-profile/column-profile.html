@@ -75,6 +75,7 @@
         </div>
 
         <range-slider id="rangeSliderId"
+                      ng-if="columnProfileCtrl.state.playground.statistics.rangeLimits.min !== columnProfileCtrl.state.playground.statistics.rangeLimits.max"
                       width="300"
                       height="65"
                       range-limits="columnProfileCtrl.state.playground.statistics.rangeLimits"
