@@ -124,9 +124,9 @@
            translate-values="{type: $ctrl.type, name: $ctrl.item.name}"
            ng-click="$ctrl.processCertification($ctrl.item)"></a>
 
-        <a ng-if="!$ctrl.item.draft &&
-                    $ctrl.toggleFavoriteEnabled &&
-                    ($ctrl.item.favorite !== undefined)"
+    </div>
+    <div class="inventory-action-favorite">
+        <a ng-if="!$ctrl.item.draft && $ctrl.toggleFavoriteEnabled"
            data-icon="f"
            class="btn-icon favorite"
            translate-once-title="FAVORITE_ACTION"

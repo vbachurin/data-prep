@@ -29,6 +29,39 @@
     display: none;
   }
 
+  .inventory-action-favorite{
+    @include flex-grow(0);
+    @include flex-shrink(0);
+
+    @include display(flex);
+    @include align-items(center);
+    @include justify-content(flex-end);
+
+    .btn-icon {
+      @include flex-row();
+      @include align-items(center);
+
+      opacity: 1;
+
+      height: 45px;
+      border-radius: 5px;
+      padding: 0 10px;
+      margin: 0 5px;
+
+      color: $white;
+      font-family: $iconsfont;
+      font-size: 1.1em;
+
+      &:hover {
+        background-color: $background-blue;
+      }
+    }
+
+    .favorite-true {
+      color: $orange;
+    }
+  }
+
   .inventory-text {
     @include flex-grow(1);
   }
@@ -80,11 +113,6 @@
         &:hover {
           background-color: $background-blue;
         }
-      }
-
-      .favorite-true {
-        opacity: 1;
-        color: orange;
       }
 
       .inventory-actions-related-item {
