@@ -38,6 +38,8 @@ export default function DatasetService($q, state, StateService, DatasetListServi
         updateColumn: DatasetRestService.updateColumn,
         processCertification: DatasetListService.processCertification,
         toggleFavorite: DatasetListService.toggleFavorite,
+        isRemoveEnabled: isRemoveEnabled,
+        isProcessCertificationEnabled: isProcessCertificationEnabled,
 
         //content
         getMetadata: DatasetRestService.getMetadata,
@@ -128,6 +130,26 @@ export default function DatasetService($q, state, StateService, DatasetListServi
                 StorageService.removeAllAggregations(dataset.id);
                 return response;
             });
+    }
+
+    /**
+     * @ngdoc method
+     * @name isProcessCertificationEnabled
+     * @methodOf data-prep.services.dataset.service:DatasetService
+     * @description check if Process Certification is enabled
+     */
+    function isProcessCertificationEnabled() {
+       return false;
+    }
+
+    /**
+     * @ngdoc method
+     * @name isRemoveEnabled
+     * @methodOf data-prep.services.dataset.service:DatasetService
+     * @description check if Remove is enabled
+     */
+    function isRemoveEnabled() {
+        return true;
     }
 
     //--------------------------------------------------------------------------------------------------------------

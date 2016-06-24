@@ -42,7 +42,7 @@
 
     .inventory-text {
       .inventory-title {
-        @include ellipsis(320px);
+        @include ellipsis(300px);
       }
       .edit-btn {
         display: block;
@@ -188,7 +188,7 @@
     padding-left: 10px;
 
     .inventory-title {
-      @include ellipsis(800px);
+      @include ellipsis(750px);
       padding: 3px 0;
       cursor: pointer;
 

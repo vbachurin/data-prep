@@ -33,7 +33,13 @@
  *      related-inventories-type="preparation"
  *      toggle-favorite="datasetListCtrl.datasetService.toggleFavorite"
  *      type="dataset"
- *      update="datasetListCtrl.uploadUpdatedDatasetFile">
+ *      update="datasetListCtrl.uploadUpdatedDatasetFile"
+ *      copy-enabled="true"
+ *      open-enabled="true"
+ *      process-certification-enabled="true"
+ *      remove-enabled="true"
+ *      toggle-favorite-enabled="true"
+ *      process-certification-enabled="true">
  * </inventory-item>
  *
  * @param {function}    copy copy or remove an inventory item
@@ -45,12 +51,16 @@
  * @param {function}    processCertification attributes certification to the inventory item
  * @param {function}    remove the inventory item
  * @param {function}    rename the inventory item
- * @param {boolean}     true if the item is shared
+ * @param {boolean}     isItemShared true if the item is shared
  * @param {array}       relatedInventories related inventory items
  * @param {string}      relatedInventoriesType of the related inventory item
  * @param {function}    toggleFavorite the inventory item
  * @param {string}      type of the inventory item
  * @param {function}    update the inventory item with the given fileModel
+ * @param {boolean}     processCertificationEnabled true if certify is enabled
+ * @param {boolean}     removeEnabled true if remove is enabled
+ * @param {boolean}     toggleFavoriteEnabled true if toogle is enabled
+ *
  */
 const InventoryItemcomponent = {
     templateUrl: 'app/components/inventory/item/inventory-item.html',
@@ -70,7 +80,10 @@ const InventoryItemcomponent = {
         relatedInventoriesType: '@',
         toggleFavorite: '=',
         type: '@',
-        update: '='
+        update: '=',
+        processCertificationEnabled: '<',
+        removeEnabled: '<',
+        toggleFavoriteEnabled: '<'
     }
 };
 

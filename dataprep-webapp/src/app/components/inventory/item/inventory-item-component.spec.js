@@ -231,6 +231,9 @@ describe('InventoryItem directive', () => {
                     'remove="remove" ' +
                     'toggle-favorite="toggleFavorite" ' +
                     'update="update" ' +
+                    'process-certification-enabled="true"'+
+                    'toggle-favorite-enabled="toggleFavorite"' +
+                    'remove-enabled="true"' +
                     '></inventory-item>');
                 $compile(element)(scope);
                 scope.$digest();
@@ -624,6 +627,9 @@ describe('InventoryItem directive', () => {
                     'remove="remove" ' +
                     'toggle-favorite="toggleFavorite" ' +
                     'update="update" ' +
+                    'process-certification-enabled="true"'+
+                    'toggle-favorite-enabled="toggleFavorite"' +
+                    'remove-enabled="true"' +
                     '></inventory-item>');
                 $compile(element)(scope);
                 scope.$digest();

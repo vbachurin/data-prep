@@ -92,8 +92,8 @@
         </talend-file-selector>
 
         <div ng-if="!$ctrl.item.draft &&
-                    (($ctrl.update && $ctrl.item.type !== 'application/vnd.remote-ds.job') || ($ctrl.relatedInventories)) &&
-                    ($ctrl.copy || $ctrl.remove)"
+                    (($ctrl.update && $ctrl.item.type !== 'application/vnd.remote-ds.job') || ($ctrl.relatedInventories.length > 0)) &&
+                    ($ctrl.copy || $ctrl.removeEnabled)"
              class="divider">
         </div>
 
@@ -104,7 +104,7 @@
            translate-values="{type: $ctrl.type, name: $ctrl.item.name}"
            ng-click="$ctrl.copy($ctrl.item)"></a>
 
-        <a ng-if="$ctrl.remove && !$ctrl.isItemShared($ctrl.item)"
+        <a ng-if="$ctrl.removeEnabled && !$ctrl.isItemShared($ctrl.item)"
            data-icon="e"
            class="btn-icon"
            translate-once-title="DELETE_ACTION"
@@ -112,12 +112,12 @@
            ng-click="$ctrl.remove($ctrl.item)"></a>
 
         <div ng-if="!$ctrl.item.draft &&
-                    ($ctrl.copy || $ctrl.remove) &&
-                    ($ctrl.processCertification || $ctrl.toggleFavorite)"
+                    ($ctrl.copy || $ctrl.removeEnabled) &&
+                    ($ctrl.processCertificationEnabled || $ctrl.toggleFavoriteEnabled)"
              class="divider">
         </div>
 
-        <a ng-if="!$ctrl.item.draft && $ctrl.processCertification"
+        <a ng-if="!$ctrl.item.draft && $ctrl.processCertificationEnabled"
            data-icon="n"
            class="btn-icon"
            translate-once-title="CERTIFY_ACTION"
@@ -125,7 +125,7 @@
            ng-click="$ctrl.processCertification($ctrl.item)"></a>
 
         <a ng-if="!$ctrl.item.draft &&
-                    $ctrl.toggleFavorite &&
+                    $ctrl.toggleFavoriteEnabled &&
                     ($ctrl.item.favorite !== undefined)"
            data-icon="f"
            class="btn-icon favorite"
