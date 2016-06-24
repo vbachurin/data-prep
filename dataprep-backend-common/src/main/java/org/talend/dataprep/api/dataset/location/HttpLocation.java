@@ -66,6 +66,11 @@ public class HttpLocation extends AbstractUrlLocation implements DataSetLocation
         return formatFamily.getMediaType();
     }
 
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
     /**
      * @see Object#toString()
      */

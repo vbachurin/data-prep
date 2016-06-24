@@ -54,4 +54,10 @@ public interface DataSetLocation extends Serializable {
     @JsonIgnore
     // Ignored so it not stored in JSON
     String toMediaType(FormatFamily formatFamily);
+
+    /**
+     * @return <code>true</code> if location may be used for creating a dataset, <code>false</code> otherwise. This method
+     * may be used to filter out locations based on current logged user's roles.
+     */
+    boolean isEnabled();
 }

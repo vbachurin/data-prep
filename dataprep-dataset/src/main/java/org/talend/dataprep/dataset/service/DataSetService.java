@@ -1047,6 +1047,7 @@ public class DataSetService extends BaseDataSetService {
     public List<Import> listSupportedImports() {
         return locations.stream() //
                 .filter(l -> enabledImports.contains(l.getLocationType())) //
+                .filter(l -> l.isEnabled()) //
                 .map(l -> { //
                     final boolean defaultImport = LocalStoreLocation.NAME.equals(l.getLocationType());
                     if (l.isDynamic()) {

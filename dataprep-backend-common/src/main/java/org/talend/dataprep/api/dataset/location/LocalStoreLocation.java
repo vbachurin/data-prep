@@ -61,6 +61,11 @@ public class LocalStoreLocation implements DataSetLocation {
         return formatFamily.getMediaType();
     }
 
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
     /**
      * @see Object#equals(Object)
      */
