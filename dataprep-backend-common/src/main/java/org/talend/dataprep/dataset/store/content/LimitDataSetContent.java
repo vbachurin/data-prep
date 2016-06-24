@@ -60,6 +60,21 @@ class LimitDataSetContent implements DataSetContentLimit {
         }
 
         @Override
+        public InputStream getAsRaw(DataSetMetadata dataSetMetadata, long limit) {
+            return store.getAsRaw(dataSetMetadata, limit);
+        }
+
+        @Override
+        protected InputStream get(DataSetMetadata dataSetMetadata, long limit) {
+            return store.get(dataSetMetadata, limit);
+        }
+
+        @Override
+        public Stream<DataSetRow> stream(DataSetMetadata dataSetMetadata, long limit) {
+            return store.stream(dataSetMetadata, limit);
+        }
+
+        @Override
         public void delete(DataSetMetadata dataSetMetadata) {
             store.delete(dataSetMetadata);
         }

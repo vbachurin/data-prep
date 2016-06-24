@@ -52,21 +52,24 @@ public class XlsRunnable implements Runnable {
     /** The dataset metadata. */
     private final DataSetMetadata metadata;
 
+    private final long limit;
+
     /** A json factory to use for the serialization. */
     private final JsonFactory jsonFactory;
 
     /**
      * Constructor.
-     * 
-     * @param rawContent the raw excel file content.
+     *  @param rawContent the raw excel file content.
      * @param jsonOutput Where to serialize the json.
      * @param metadata The dataset metadata.
+     * @param limit
      * @param factory A json factory to use for the serialization.
      */
-    public XlsRunnable(InputStream rawContent, OutputStream jsonOutput, DataSetMetadata metadata, JsonFactory factory) {
+    public XlsRunnable(InputStream rawContent, OutputStream jsonOutput, DataSetMetadata metadata, long limit, JsonFactory factory) {
         this.rawContent = rawContent;
         this.jsonOutput = jsonOutput;
         this.metadata = metadata;
+        this.limit = limit;
         this.jsonFactory = factory;
     }
 
@@ -149,6 +152,9 @@ public class XlsRunnable implements Runnable {
             }
             generator.writeEndObject();
 
+            if (limit > 0 && i > limit) {
+                break;
+            }
         }
     }
 }

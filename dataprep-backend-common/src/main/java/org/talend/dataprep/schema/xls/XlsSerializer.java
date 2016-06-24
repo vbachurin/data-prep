@@ -27,9 +27,9 @@ import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.schema.Serializer;
 import org.talend.dataprep.schema.xls.serialization.XlsRunnable;
+import org.talend.dataprep.schema.xls.serialization.XlsxStreamRunnable;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.talend.dataprep.schema.xls.serialization.XlsxStreamRunnable;
 
 @Service("serializer#xls")
 public class XlsSerializer implements Serializer {
@@ -42,12 +42,21 @@ public class XlsSerializer implements Serializer {
     @Resource(name = "serializer#excel#executor")
     private TaskExecutor executor;
 
+    public static boolean isHeaderLine(int lineIndex, List<ColumnMetadata> columns) {
+        boolean headerLine = false;
+        for (ColumnMetadata columnMetadata : columns) {
+            if (lineIndex < columnMetadata.getHeaderSize()) {
+                headerLine = true;
+            }
+        }
+        return headerLine;
+    }
 
     /**
-     * @see Serializer#serialize(InputStream, DataSetMetadata)
+     * @see Serializer#serialize(InputStream, DataSetMetadata, long)
      */
     @Override
-    public InputStream serialize(InputStream givenInputStream, DataSetMetadata metadata) {
+    public InputStream serialize(InputStream givenInputStream, DataSetMetadata metadata, long limit) {
         try {
 
             PipedInputStream pipe = new PipedInputStream();
@@ -66,7 +75,7 @@ public class XlsSerializer implements Serializer {
             inputStream.reset();
 
             Runnable runnable = newExcelFormat ? //
-                serializeNew(inputStream, metadata, jsonOutput) : serializeOld(inputStream, metadata, jsonOutput);
+                    serializeNew(inputStream, metadata, limit, jsonOutput) : serializeOld(inputStream, metadata, limit, jsonOutput);
 
             // Serialize asynchronously for better performance (especially if caller doesn't consume all, see sampling).
             executor.execute(runnable);
@@ -77,26 +86,13 @@ public class XlsSerializer implements Serializer {
         }
     }
 
-    public static boolean isHeaderLine(int lineIndex, List<ColumnMetadata> columns) {
-        boolean headerLine = false;
-        for (ColumnMetadata columnMetadata : columns) {
-            if (lineIndex < columnMetadata.getHeaderSize()) {
-                headerLine = true;
-            }
-        }
-        return headerLine;
+    private Runnable serializeNew(InputStream rawContent, DataSetMetadata metadata, long limit, PipedOutputStream jsonOutput) {
+        return new XlsxStreamRunnable(jsonOutput, rawContent, metadata, limit, mapper.getFactory());
     }
 
-
-    private Runnable serializeNew(InputStream rawContent, DataSetMetadata metadata, PipedOutputStream jsonOutput) {
-        return new XlsxStreamRunnable( jsonOutput, rawContent, metadata, mapper.getFactory());
+    private Runnable serializeOld(InputStream rawContent, DataSetMetadata metadata, long limit, PipedOutputStream jsonOutput)
+            throws IOException {
+        return new XlsRunnable(rawContent, jsonOutput, metadata, limit, mapper.getFactory());
     }
-
-    private Runnable serializeOld(InputStream rawContent, DataSetMetadata metadata, PipedOutputStream jsonOutput)
-        throws IOException {
-        return new XlsRunnable(rawContent, jsonOutput, metadata,  mapper.getFactory());
-    }
-
-
 
 }

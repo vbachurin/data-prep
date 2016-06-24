@@ -53,21 +53,24 @@ public class XlsxStreamRunnable implements Runnable {
     /** The dataset metadata to serialize. */
     private final DataSetMetadata metadata;
 
+    private final long limit;
+
     /** The jackson factory to use for the serialization. */
     private final JsonFactory jsonFactory;
 
     /**
      * Constructor.
-     *
-     * @param jsonOutput Where to serialize the json.
+     *  @param jsonOutput Where to serialize the json.
      * @param rawContent The xlsx raw input.
      * @param metadata The dataset metadata to serialize.
+     * @param limit A limit to indicate to serializer when to stop. Use -1 for "no limit".
      * @param factory The jackson factory to use for the serialization.
      */
-    public XlsxStreamRunnable(OutputStream jsonOutput, InputStream rawContent, DataSetMetadata metadata, JsonFactory factory) {
+    public XlsxStreamRunnable(OutputStream jsonOutput, InputStream rawContent, DataSetMetadata metadata, long limit, JsonFactory factory) {
         this.jsonOutput = jsonOutput;
         this.rawContent = rawContent;
         this.metadata = metadata;
+        this.limit = limit;
         this.jsonFactory = factory;
     }
 
@@ -78,10 +81,6 @@ public class XlsxStreamRunnable implements Runnable {
     public void run() {
         try {
             JsonGenerator generator = jsonFactory.createGenerator(jsonOutput);
-
-            // is there any limit?
-            long maxRow = this.metadata.getContent().getLimit().isPresent() ? //
-                    this.metadata.getContent().getLimit().get() : Long.MAX_VALUE;
 
             Workbook workbook = StreamingReader.builder() //
                     .bufferSize(4096) //
@@ -113,7 +112,7 @@ public class XlsxStreamRunnable implements Runnable {
                     }
                     generator.writeEndObject();
                 }
-                if (row.getRowNum() > maxRow) {
+                if (limit > 0 && row.getRowNum() > limit) {
                     break;
                 }
             }

@@ -67,9 +67,41 @@ public abstract class DataSetContentStore {
      * rows in stream).
      */
     protected InputStream get(DataSetMetadata dataSetMetadata) {
+        return get(dataSetMetadata, -1);
+    }
+
+    /**
+     * Returns the {@link DataSetMetadata data set} content as <b>JSON</b> format. Whether data set content was JSON or
+     * not, method is expected to provide a JSON output. It's up to the implementation to:
+     * <ul>
+     * <li>Convert data content to JSON.</li>
+     * <li>Throw an exception if data set is not ready for read (content type missing).</li>
+     * </ul>
+     * Implementations are also encouraged to implement method with no blocking code.
+     *
+     * @param dataSetMetadata The {@link DataSetMetadata data set} to read content from.
+     * @param limit A limit to pass to content supplier (use -1 for "no limit). Used as parameter for both raw content supplier
+     * and JSON serializer.
+     * @return A valid <b>JSON</b> stream. It is a JSON array where each element in the array contains a single data set
+     * row (it does not mean there's a line in input stream per data set row, a data set row might be split on multiple
+     * rows in stream).
+     */
+    protected InputStream get(DataSetMetadata dataSetMetadata, long limit) {
         DataSetContent content = dataSetMetadata.getContent();
         Serializer serializer = factory.getFormatFamily(content.getFormatFamilyId()).getSerializer();
-        return serializer.serialize(getAsRaw(dataSetMetadata), dataSetMetadata);
+        return serializer.serialize(getAsRaw(dataSetMetadata, limit), dataSetMetadata, limit);
+    }
+
+    /**
+     * Similarly to {@link #get(DataSetMetadata)} returns the content of the data set but as a {@link Stream stream} of
+     * {@link DataSetRow rows} instead of JSON content. Same as calling {@link #get(DataSetMetadata)} (DataSetMetadata, long)}
+     * with limit = -1.
+     *
+     * @param dataSetMetadata The {@link DataSetMetadata data set} to read rows from.
+     * @return A valid <b>{@link DataSetRow}</b> stream.
+     */
+    public Stream<DataSetRow> stream(DataSetMetadata dataSetMetadata) {
+        return stream(dataSetMetadata, -1);
     }
 
     /**
@@ -77,10 +109,12 @@ public abstract class DataSetContentStore {
      * {@link DataSetRow rows} instead of JSON content.
      *
      * @param dataSetMetadata The {@link DataSetMetadata data set} to read rows from.
+     * @param limit A limit to pass to raw content supplier (use -1 for "no limit). Used as parameter to call
+     * {@link #get(DataSetMetadata, long)}.
      * @return A valid <b>{@link DataSetRow}</b> stream.
      */
-    public Stream<DataSetRow> stream(DataSetMetadata dataSetMetadata) {
-        final InputStream inputStream = get(dataSetMetadata);
+    public Stream<DataSetRow> stream(DataSetMetadata dataSetMetadata, long limit) {
+        final InputStream inputStream = get(dataSetMetadata, limit);
         final DataSetRowIterator iterator = new DataSetRowIterator(inputStream, true);
         final Iterable<DataSetRow> rowIterable = () -> iterator;
         Stream<DataSetRow> dataSetRowStream = StreamSupport.stream(rowIterable.spliterator(), false);
@@ -98,12 +132,24 @@ public abstract class DataSetContentStore {
 
     /**
      * Returns the {@link DataSetMetadata data set} content as "raw" (i.e. the content supplied by user upon data set
-     * creation).
+     * creation). Same as calling {@link #getAsRaw(DataSetMetadata)} (DataSetMetadata, long)} with limit = -1.
      *
      * @param dataSetMetadata The {@link DataSetMetadata data set} to read content from.
      * @return The content associated with <code>dataSetMetadata</code>.
      */
-    public abstract InputStream getAsRaw(DataSetMetadata dataSetMetadata);
+    public InputStream getAsRaw(DataSetMetadata dataSetMetadata) {
+        return getAsRaw(dataSetMetadata, -1);
+    }
+
+    /**
+     * Returns the {@link DataSetMetadata data set} content as "raw" (i.e. the content supplied by user upon data set
+     * creation).
+     *
+     * @param dataSetMetadata The {@link DataSetMetadata data set} to read content from.
+     * @param limit A limit to pass to raw content supplier (use -1 for "no limit).
+     * @return The content associated with <code>dataSetMetadata</code>.
+     */
+    public abstract InputStream getAsRaw(DataSetMetadata dataSetMetadata, long limit);
 
     /**
      * Deletes the {@link DataSetMetadata data set}. No recovery operation is expected.

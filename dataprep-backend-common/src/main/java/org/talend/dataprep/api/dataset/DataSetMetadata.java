@@ -23,7 +23,7 @@ import org.springframework.data.annotation.Transient;
 import org.talend.dataprep.api.share.Owner;
 import org.talend.dataprep.api.share.SharedResource;
 import org.talend.dataprep.schema.Schema;
-import org.talend.dataprep.schema.csv.CSVSerializer;
+import org.talend.dataprep.schema.Serializer;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -117,7 +117,7 @@ public class DataSetMetadata implements Serializable, SharedResource {
      * indicates what encoding should be used to read raw content. Defaults to UTF-8 but may be changed depending on
      * content.
      *
-     * @see CSVSerializer#serialize(java.io.InputStream, org.talend.dataprep.api.dataset.DataSetMetadata)
+     * @see Serializer#serialize(java.io.InputStream, DataSetMetadata, long)
      */
     @JsonProperty("encoding")
     private String encoding = "UTF-8";

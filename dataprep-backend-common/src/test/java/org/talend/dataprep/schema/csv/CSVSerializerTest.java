@@ -55,7 +55,7 @@ public class CSVSerializerTest extends AbstractSchemaTestUtils {
         DataSetMetadata datasetMetadata = ioTestUtils.getSimpleDataSetMetadata("first name", "last name");
         datasetMetadata.getContent().setNbLinesInHeader(1);
 
-        InputStream input = serializer.serialize(inputStream, datasetMetadata);
+        InputStream input = serializer.serialize(inputStream, datasetMetadata, -1);
         String actual = IOUtils.toString(input);
 
         InputStream expected = this.getClass().getResourceAsStream("simple.csv_expected.json");
@@ -68,7 +68,7 @@ public class CSVSerializerTest extends AbstractSchemaTestUtils {
         DataSetMetadata datasetMetadata = ioTestUtils.getSimpleDataSetMetadata("character", "actor", "active");
         datasetMetadata.getContent().setNbLinesInHeader(1);
 
-        InputStream input = serializer.serialize(inputStream, datasetMetadata);
+        InputStream input = serializer.serialize(inputStream, datasetMetadata, -1);
         String actual = IOUtils.toString(input);
 
         InputStream expected = this.getClass().getResourceAsStream("missing_values.csv_expected.json");
@@ -81,7 +81,7 @@ public class CSVSerializerTest extends AbstractSchemaTestUtils {
         DataSetMetadata datasetMetadata = ioTestUtils.getSimpleDataSetMetadata("name", "email");
         datasetMetadata.getContent().setNbLinesInHeader(1);
 
-        InputStream input = serializer.serialize(inputStream, datasetMetadata);
+        InputStream input = serializer.serialize(inputStream, datasetMetadata, -1);
         String actual = IOUtils.toString(input);
 
         InputStream expected = this.getClass().getResourceAsStream("additional_values.csv_expected.json");
@@ -94,7 +94,7 @@ public class CSVSerializerTest extends AbstractSchemaTestUtils {
         DataSetMetadata datasetMetadata = ioTestUtils.getSimpleDataSetMetadata("first name", "last name");
         datasetMetadata.getContent().setNbLinesInHeader(2);
 
-        InputStream input = serializer.serialize(inputStream, datasetMetadata);
+        InputStream input = serializer.serialize(inputStream, datasetMetadata, -1);
         String actual = IOUtils.toString(input);
 
         InputStream expected = this.getClass().getResourceAsStream("simple.csv_expected.json");
@@ -108,7 +108,7 @@ public class CSVSerializerTest extends AbstractSchemaTestUtils {
         datasetMetadata.getContent().setNbLinesInHeader(1);
         datasetMetadata.setEncoding("x-MacRoman");
 
-        InputStream input = serializer.serialize(inputStream, datasetMetadata);
+        InputStream input = serializer.serialize(inputStream, datasetMetadata, -1);
         String actual = IOUtils.toString(input);
 
         // strange json because schema has not been detected
@@ -126,7 +126,7 @@ public class CSVSerializerTest extends AbstractSchemaTestUtils {
         DataSetMetadata datasetMetadata = ioTestUtils.getSimpleDataSetMetadata("City");
         datasetMetadata.getContent().setNbLinesInHeader(1);
 
-        InputStream input = serializer.serialize(inputStream, datasetMetadata);
+        InputStream input = serializer.serialize(inputStream, datasetMetadata, -1);
         String actual = IOUtils.toString(input);
 
         String expected = "[{\"0000\":\"Carson City\\\\Seine\"}]";

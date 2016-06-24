@@ -44,7 +44,7 @@ public class CSVSerializer implements Serializer {
     TaskExecutor executor;
 
     @Override
-    public InputStream serialize(InputStream rawContent, DataSetMetadata metadata) {
+    public InputStream serialize(InputStream rawContent, DataSetMetadata metadata, long limit) {
         try {
             PipedInputStream pipe = new PipedInputStream();
             PipedOutputStream jsonOutput = new PipedOutputStream(pipe);

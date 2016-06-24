@@ -27,7 +27,8 @@ public interface Serializer {
      * 
      * @param rawContent The data set content to process.
      * @param metadata Data set metadata (use it for column names).
+     * @param limit A limit for the serialize (pass -1 for "no limit").
      * @return A {@link java.io.InputStream} to the JSON transformation of the <code>rawContent</code>.
      */
-    InputStream serialize(InputStream rawContent, DataSetMetadata metadata);
+    InputStream serialize(InputStream rawContent, DataSetMetadata metadata, long limit);
 }

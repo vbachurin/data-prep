@@ -68,7 +68,7 @@ public class HtmlSerializerTest extends AbstractSchemaTestUtils {
 
             request.getMetadata().getRowMetadata().setColumns(result.getSheetContents().get(0).getColumnMetadatas());
 
-            InputStream jsonStream = htmlSerializer.serialize(inputStream, request.getMetadata());
+            InputStream jsonStream = htmlSerializer.serialize(inputStream, request.getMetadata(), -1);
 
             String json = IOUtils.toString(jsonStream);
 
@@ -110,7 +110,7 @@ public class HtmlSerializerTest extends AbstractSchemaTestUtils {
             Assert.assertThat(columns.size(), is(98));
             request.getMetadata().getRowMetadata().setColumns(columns);
 
-            InputStream jsonStream = htmlSerializer.serialize(inputStream, request.getMetadata());
+            InputStream jsonStream = htmlSerializer.serialize(inputStream, request.getMetadata(), -1);
 
             String json = IOUtils.toString(jsonStream);
             ObjectMapper mapper = new ObjectMapper();

@@ -80,7 +80,7 @@ public class LocalFileContentStore extends DataSetContentStore {
     }
 
     @Override
-    public InputStream getAsRaw(DataSetMetadata dataSetMetadata) {
+    public InputStream getAsRaw(DataSetMetadata dataSetMetadata, long limit) {
         try {
             return new FileInputStream(getFile(dataSetMetadata));
         } catch (FileNotFoundException e) {

@@ -61,6 +61,12 @@ public class ContentStoreRouter extends DataSetContentStore {
         return target.get(dataSetMetadata);
     }
 
+    @Override
+    protected InputStream get(DataSetMetadata dataSetMetadata, long limit) {
+        DataSetContentStore target = wrapStore(dataSetMetadata);
+        return target.get(dataSetMetadata, limit);
+    }
+
     /**
      * @see DataSetContentStore#getAsRaw(DataSetMetadata)
      */
@@ -68,6 +74,12 @@ public class ContentStoreRouter extends DataSetContentStore {
     public InputStream getAsRaw(DataSetMetadata dataSetMetadata) {
         DataSetContentStore target = wrapStore(dataSetMetadata);
         return target.getAsRaw(dataSetMetadata);
+    }
+
+    @Override
+    public InputStream getAsRaw(DataSetMetadata dataSetMetadata, long limit) {
+        DataSetContentStore target = wrapStore(dataSetMetadata);
+        return target.getAsRaw(dataSetMetadata, limit);
     }
 
     /**
@@ -81,7 +93,6 @@ public class ContentStoreRouter extends DataSetContentStore {
 
     @Override
     public Stream<DataSetRow> stream(DataSetMetadata dataSetMetadata) {
-
         DataSetContentStore target = wrapStore(dataSetMetadata);
         return target.stream(dataSetMetadata);
     }

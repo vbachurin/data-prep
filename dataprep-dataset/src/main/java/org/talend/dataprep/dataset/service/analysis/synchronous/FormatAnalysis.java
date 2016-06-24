@@ -91,7 +91,7 @@ public class FormatAnalysis implements SynchronousDataSetAnalyzer {
             if (metadata != null) {
 
                 Format detectedFormat;
-                try (InputStream content = store.getAsRaw(metadata)) {
+                try (InputStream content = store.getAsRaw(metadata, 10)) { // 10 line should be enough to detect format
                     detectedFormat = detector.detect(content);
                 } catch (IOException e) {
                     throw new TDPException(DataSetErrorCodes.UNABLE_TO_READ_DATASET_CONTENT, e);

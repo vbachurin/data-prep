@@ -15,7 +15,6 @@ package org.talend.dataprep.schema.html;
 
 import java.io.*;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -45,7 +44,7 @@ public class HtmlSerializer implements Serializer {
     private TaskExecutor executor;
 
     @Override
-    public InputStream serialize(InputStream rawContent, DataSetMetadata metadata) {
+    public InputStream serialize(InputStream rawContent, DataSetMetadata metadata, long limit) {
         try {
             PipedInputStream pipe = new PipedInputStream();
             PipedOutputStream jsonOutput = new PipedOutputStream(pipe);

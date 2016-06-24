@@ -46,7 +46,7 @@ public class HttpContentStore extends DataSetContentStore {
      * @see DataSetContentStore#getAsRaw(DataSetMetadata)
      */
     @Override
-    public InputStream getAsRaw(DataSetMetadata dataSetMetadata) {
+    public InputStream getAsRaw(DataSetMetadata dataSetMetadata, long limit) {
         HttpLocation location = (HttpLocation) dataSetMetadata.getLocation();
         HttpGet get = new HttpGet(location.getUrl());
         get.setHeader("Accept","*/*");
