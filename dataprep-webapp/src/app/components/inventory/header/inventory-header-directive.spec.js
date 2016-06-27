@@ -23,7 +23,8 @@ describe('Inventory header directive', () => {
             'SORT_ORDER': 'order',
             'NAME_SORT': 'name',
             'ASC_ORDER': 'asc',
-            'ADD_PREPARATION': 'Add Preparation'
+            'ADD_PREPARATION': 'Add Preparation',
+            "CREATE_FOLDER": "Create Folder",
         });
         $translateProvider.preferredLanguage('en');
     }));
@@ -81,6 +82,17 @@ describe('Inventory header directive', () => {
 
             // then
             expect(element.find('#add-folder-button').length).toBe(1);
+        });
+
+        it('should transform "add folder" button label into uppercase', () => {
+            // given
+            const options = { createFolder: true };
+
+            // when
+            createElement(options);
+
+            // then
+            expect(element.find('#add-folder-button').eq(0).text()).toBe('Create Folder');
         });
 
         it('should NOT render "add folder" button', () => {
