@@ -124,7 +124,7 @@ export default function VerticalBarchart($timeout) {
 
             function getBottomMargin (){
                 const labelLength = getRangeLabel(scope.primaryData[0]).length;
-                return labelLength * 7;// the longer the label is, the more space we need
+                return labelLength * 8;// the longer the label is, the more space we need
             }
 
             //------------------------------------------------------------------------------------------------------

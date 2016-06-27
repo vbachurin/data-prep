@@ -91,7 +91,7 @@ describe('verticalBarchart directive', function () {
             $timeout.flush(100);
 
             //then
-            expect(+element.find('.vertical-barchart-cls').attr('height')).toBe(400 + statsData[0].data.label.length * 7);
+            expect(+element.find('.vertical-barchart-cls').attr('height')).toBe(400 + statsData[0].data.label.length * 8);
         }));
 
         it('should render svg container with adapted bottom margin: without X-axis', inject(function ($timeout) {
