@@ -76,7 +76,11 @@ public enum CommonErrorCodes implements ErrorCode {
     /**
      * Error thrown when receiving content from a job takes too long.
      */
-    NO_DATA_RECEIVED_FROM_TAC(BAD_GATEWAY.value());
+    NO_DATA_RECEIVED_FROM_TAC(BAD_GATEWAY.value()),
+    /**
+     * Job is already running: TAC only allows one run of the task.
+     */
+    JOB_ALREADY_RUNNING(BAD_GATEWAY.value());
 
     /** The http status to use. */
     private int httpStatus;
