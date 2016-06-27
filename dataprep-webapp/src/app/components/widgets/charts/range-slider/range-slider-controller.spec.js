@@ -95,8 +95,8 @@ describe('Range slider controller', () => {
 
                 // when
                 const adaptedValues = ctrl.adaptToInputValue({
-                    min: 1466978400000,
-                    max: 1530050400000,
+                    min: + new Date('2016/06/27'),
+                    max: + new Date('2018/06/27'),
                 });
 
                 // then
@@ -139,8 +139,8 @@ describe('Range slider controller', () => {
 
                 // then
                 expect(adaptedValues).toEqual({
-                    min: 1466978400000,
-                    max: 1530050400000,
+                    min: + new Date('2016/06/27'),
+                    max: + new Date('2018/06/27'),
                 });
             });
         });
@@ -170,8 +170,8 @@ describe('Range slider controller', () => {
                 const ctrl = createController();
                 ctrl.rangeLimits = {
                     type: 'date',
-                    min: 1466978400000,
-                    max: 1530050400000,
+                    min: + new Date('2016/06/27'),
+                    max: + new Date('2018/06/27'),
                 };
 
                 // when
@@ -438,8 +438,8 @@ describe('Range slider controller', () => {
 
                 // when
                 ctrl.setInputValue({
-                    min: 1466978400000,
-                    max: 1530050400000,
+                    min: + new Date('2016/06/27'),
+                    max: + new Date('2018/06/27'),
                 });
 
                 // then

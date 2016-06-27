@@ -257,9 +257,9 @@ describe('Range slider directive', () => {
             // given
             scope.rangeLimits = {
                 type: 'date',
-                min: 1466978400000,
-                max: 1530050400000,
-                minFilterVal: 1466978400000,
+                min: + new Date('2016/06/27'),
+                max: + new Date('2018/06/27'),
+                minFilterVal: + new Date('2016/06/27'),
             };
             
             // when
@@ -274,9 +274,9 @@ describe('Range slider directive', () => {
             // given
             scope.rangeLimits = {
                 type: 'date',
-                min: 1466978400000,
-                max: 1530050400000,
-                maxFilterVal: 1530050400000,
+                min: + new Date('2016/06/27'),
+                max: + new Date('2018/06/27'),
+                maxFilterVal: + new Date('2018/06/27'),
             };
 
             // when
