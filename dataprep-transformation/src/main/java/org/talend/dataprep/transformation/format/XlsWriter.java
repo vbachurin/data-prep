@@ -116,7 +116,7 @@ public class XlsWriter implements TransformerWriter {
                                         cell.setCellValue(Double.valueOf(val));
                                     }
                                 } catch (NumberFormatException e) {
-                                    LOGGER.warn("skip NumberFormatException and use string for value {} row {} cell {}", //
+                                    LOGGER.debug("Skip NumberFormatException and use string for value '{}' row '{}' column '{}'", //
                                             val, rowIdx - 1, cellIdx - 1);
                                     cell.setCellValue(val);
                                 }

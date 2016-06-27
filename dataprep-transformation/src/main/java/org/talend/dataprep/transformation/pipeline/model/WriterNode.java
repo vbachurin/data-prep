@@ -104,7 +104,8 @@ public class WriterNode extends BasicNode implements Monitored {
             LOGGER.debug("New metadata cache entry -> {}.", key.getKey());
             stream.close();
         } catch (IOException e) {
-            LOGGER.error("Unable to cache metadata for step #{}", stepId, e);
+            LOGGER.error("Unable to cache metadata for preparation #{} @ step #{}", preparationId, stepId);
+            LOGGER.debug("Unable to cache metadata due to exception.", e);
         }
 
         super.signal(signal);
