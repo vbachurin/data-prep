@@ -122,6 +122,11 @@ public class Pipeline implements Node, RuntimeNode {
 
         private AnalyzerService analyzerService;
 
+        private int actionIndex = 0;
+
+        // TODO This boolean is used to detect full run execution, a cleaner/separate state for this would be nicer.
+        private boolean hasMonitoring = false;
+
         public static Builder builder() {
             return new Builder();
         }
@@ -167,6 +172,7 @@ public class Pipeline implements Node, RuntimeNode {
         }
 
         public Builder withMonitor(Supplier<Node> monitorSupplier) {
+            hasMonitoring = true;
             this.monitorSupplier = monitorSupplier;
             return this;
         }
@@ -251,6 +257,14 @@ public class Pipeline implements Node, RuntimeNode {
         }
 
         private void addReservoirStatistics(Action action, ActionAnalysis analysis, NodeBuilder builder) {
+            if (actionIndex == 0 && !hasMonitoring) {
+                LOGGER.debug("No need for statistics, action '{}' is the first action in pipeline.", action);
+                return;
+            } else if (actionIndex == 0) { // hasMonitoring = true
+                LOGGER.debug(
+                        "Recomputing statistics, action '{}' is the first action in pipeline but running on all data (including unknown values).",
+                        action);
+            }
             if (allowMetadataChange) {
                 if (actionToMetadata.get(action).getBehavior().contains(ActionMetadata.Behavior.NEED_STATISTICS)) {
                     if (actionRegistry != null) {
@@ -287,6 +301,7 @@ public class Pipeline implements Node, RuntimeNode {
                 addReservoirStatistics(action, analysis, current);
                 current.to(new CompileNode(action, context.create(action.getRowAction())));
                 current.to(new ActionNode(action, context.in(action.getRowAction())));
+                actionIndex++; // Keep track of the being applied action (to decide whether recomputing stats is worth it).
             }
             // Analyze (delayed)
             if (analysis.needDelayedAnalysis && needGlobalStatistics) {
