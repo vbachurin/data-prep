@@ -354,6 +354,24 @@ public class CSVSchemaParserTest extends AbstractSchemaTestUtils {
     }
 
     @Test
+    public void TDP_2171() throws IOException {
+        try (InputStream inputStream = this.getClass().getResourceAsStream("TDP-2171.csv")) {
+            // We do know the format and therefore we go directly to the CSV schema guessing
+            SchemaParser.Request request = getRequest(inputStream, "#1");
+            request.getMetadata().setEncoding("UTF-8");
+
+            Schema schema = csvSchemaParser.parse(request);
+
+            final Map<String, String> parameters = request.getMetadata().getContent().getParameters();
+            char actual = parameters.get(CSVFormatFamily.SEPARATOR_PARAMETER).charAt(0);
+
+            List<String> header = csvFormatUtils.retrieveHeader(parameters);
+            assertEquals(',', actual);
+            assertEquals(92, header.size());
+        }
+    }
+
+    @Test
     public void should_accept_csv_update() throws Exception {
         final DataSetMetadata metadata = metadataBuilder.metadata().id("toto").formatFamilyId("formatGuess#csv").build();
         assertTrue(csvSchemaParser.accept(metadata));
