@@ -59,11 +59,12 @@ public class CSVSchemaParser implements SchemaParser {
     private static final int SMALL_SAMPLE_LIMIT = 10;
 
     /** A list of supported separators for a CSV content */
-    public static final List<Character> DEFAULT_VALID_SEPARATORS = Collections.unmodifiableList(Arrays.asList(' ', '\t', ',', ';'));
+    public static final List<Character> DEFAULT_VALID_SEPARATORS = Collections
+            .unmodifiableList(Arrays.asList(' ', '\t', ',', ';'));
 
     @Override
     public boolean accept(DataSetMetadata metadata) {
-        if (metadata == null || metadata.getContent() == null){
+        if (metadata == null || metadata.getContent() == null) {
             return false;
         }
         return StringUtils.equals(metadata.getContent().getFormatFamilyId(), CSVFormatFamily.BEAN_ID);
@@ -153,8 +154,8 @@ public class CSVSchemaParser implements SchemaParser {
             while ((line = csvStreamReader.readLine()) != null) {
                 if (!line.isEmpty() && sampleLines.size() < SMALL_SAMPLE_LIMIT) {
                     sampleLines.add(line);
-                    processLine(line, separatorMap, validSepartors, csvStreamReader.getLineCount());
                 }
+                processLine(line, separatorMap, validSepartors, csvStreamReader.getLineCount());
             }
             return chooseSeparator(new ArrayList<>(separatorMap.values()), csvStreamReader.getLineCount(), sampleLines,
                     forcedSeparator);
@@ -247,7 +248,6 @@ public class CSVSchemaParser implements SchemaParser {
                 .get();
     }
 
-
     /**
      * A helper class to parse CSV file during separator guessing or updating
      */
@@ -285,20 +285,24 @@ public class CSVSchemaParser implements SchemaParser {
 
         /**
          * Constructs an CSVReaderStream object.
+         * 
          * @param inputStream the specified base input stream
          * @param encoding the encoding of the file
-         * @param sizeLimit  maximum size that can be read from the file
+         * @param sizeLimit maximum size that can be read from the file
          * @param lineLimit the maximum number of lines that can be read from the file
          * @throws UnsupportedEncodingException
          */
-        public CSVStreamReader(InputStream inputStream, String encoding, long sizeLimit, int lineLimit) throws UnsupportedEncodingException {
+        public CSVStreamReader(InputStream inputStream, String encoding, long sizeLimit, int lineLimit)
+                throws UnsupportedEncodingException {
             this.sizeLimit = sizeLimit;
             this.lineLimit = lineLimit;
-            this.reader =  new LineNumberReader(encoding != null ? new InputStreamReader(inputStream, encoding) : new InputStreamReader(inputStream));
+            this.reader = new LineNumberReader(
+                    encoding != null ? new InputStreamReader(inputStream, encoding) : new InputStreamReader(inputStream));
         }
 
         /**
          * Returns the portion of a line that is not in quote as a string.
+         * 
          * @return he portion of a line that is not in quote as a string
          * @throws IOException
          */
@@ -318,6 +322,7 @@ public class CSVSchemaParser implements SchemaParser {
 
         /**
          * Processes a line and only returns the portion of a line that is not in quote as a string.
+         * 
          * @param line the line as read from the input stream
          * @return the portion of a line that is not in quote as a string
          */
@@ -333,12 +338,10 @@ public class CSVSchemaParser implements SchemaParser {
                 char c = line.charAt(i);
 
                 if ('"' == c) {
-                    BooleanUtils.negate(inQuote);
+                    inQuote = BooleanUtils.negate(inQuote);
                 }
 
-                if (BooleanUtils.isFalse(inQuote)) {
-                    sb.append(c);
-                }
+                sb.append(c);
             }
             return sb.toString();
         }
