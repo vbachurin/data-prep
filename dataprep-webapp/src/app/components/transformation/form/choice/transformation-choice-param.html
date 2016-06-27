@@ -24,8 +24,9 @@
                     ng-options="option.value as option.label for option in choiceParamCtrl.parameter.configuration.values"
                     can-be-blank="{{::choiceParamCtrl.parameter.canBeBlank}}"></select>
 
-            <div ng-switch-when="true"
-                   ng-repeat="option in choiceParamCtrl.parameter.configuration.values track by option.value">
+            <div class="param-input-radio"
+                 ng-switch-when="true"
+                 ng-repeat="option in choiceParamCtrl.parameter.configuration.values track by option.value">
                 <label>
                     <input type="radio"
                            ng-value="option.value"
