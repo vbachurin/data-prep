@@ -51,12 +51,7 @@ public class CreateDataSet extends GenericCommand<String> {
         execute(() -> onExecute(name, tag, contentType, dataSetContent));
         onError(e -> {
             if (e instanceof TDPException) {
-                // Go for a pass-through for "UNSUPPORTED CONTENT"
-                final TDPException tdpException = (TDPException) e;
-                final ErrorCode errorCode = tdpException.getCode();
-                if (errorCode.getCode().equals(DataSetErrorCodes.UNSUPPORTED_CONTENT.getCode())) {
-                    return passthrough().apply(e);
-                }
+                return passthrough().apply(e);
             }
             return new TDPException(APIErrorCodes.UNABLE_TO_CREATE_DATASET, e);
         });
