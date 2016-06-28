@@ -226,6 +226,46 @@ public class ChangeDatePatternTest extends BaseDateTests {
     }
 
     @Test
+    public void test_TDP_2255_not_working_with_timezone_in_format() throws Exception {
+        // given
+        DataSetRow row = getRow("toto", "Apr-25-09", "tata");
+        setStatistics(row, "0001", ChangeDatePatternTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
+
+        parameters.put(ChangeDatePattern.FROM_MODE, ChangeDatePattern.FROM_MODE_CUSTOM);
+        parameters.put(ChangeDatePattern.FROM_CUSTOM_PATTERN, "MMM-dd-yy");
+
+        parameters.put(ChangeDatePattern.NEW_PATTERN, "custom");
+        parameters.put(ChangeDatePattern.CUSTOM_PATTERN, "yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+
+        // when
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
+
+        // then
+        final DataSetRow expectedRow = getRow("toto", "Apr-25-09", "tata");
+        assertEquals(expectedRow.values(), row.values());
+    }
+
+    @Test
+    public void test_TDP_2255_should_work_without_timezone_in_format() throws Exception {
+        // given
+        DataSetRow row = getRow("toto", "Apr-25-09", "tata");
+        setStatistics(row, "0001", ChangeDatePatternTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
+
+        parameters.put(ChangeDatePattern.FROM_MODE, ChangeDatePattern.FROM_MODE_CUSTOM);
+        parameters.put(ChangeDatePattern.FROM_CUSTOM_PATTERN, "MMM-dd-yy");
+
+        parameters.put(ChangeDatePattern.NEW_PATTERN, "custom");
+        parameters.put(ChangeDatePattern.CUSTOM_PATTERN, "yyyy-MM-dd'T'HH:mm:ss.SSS");
+
+        // when
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
+
+        // then
+        final DataSetRow expectedRow = getRow("toto", "2009-04-25T00:00:00.000", "tata");
+        assertEquals(expectedRow.values(), row.values());
+    }
+
+    @Test
     public void should_process_row_when_value_is_empty() throws Exception {
         // given
         DataSetRow row = getRow("toto", "", "tata");
