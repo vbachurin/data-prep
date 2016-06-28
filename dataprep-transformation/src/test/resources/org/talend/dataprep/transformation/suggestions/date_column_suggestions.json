@@ -611,12 +611,12 @@
           "multiple": false
         },
         "default": "now_server_side",
-        "label": "Untill"
+        "label": "Until"
       }
     ],
     "category": "dates",
     "docUrl": "",
-    "label": "Calculate Time untill",
+    "label": "Calculate Time until",
     "actionScope": [],
     "dynamic": false
   },
