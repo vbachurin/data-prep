@@ -1045,7 +1045,7 @@ public class DataSetService extends BaseDataSetService {
     @Timed
     @PublicAPI
     public List<Import> listSupportedImports() {
-        return locations.stream() //
+        final List<Import> supportedImports = locations.stream() //
                 .filter(l -> enabledImports.contains(l.getLocationType())) //
                 .filter(DataSetLocation::isEnabled) //
                 .map(l -> { //
@@ -1076,6 +1076,10 @@ public class DataSetService extends BaseDataSetService {
                     }
                 }) //
                 .collect(Collectors.toList());
+
+        LOG.debug("found {} supported import type", supportedImports.size());
+
+        return supportedImports;
     }
 
 }
