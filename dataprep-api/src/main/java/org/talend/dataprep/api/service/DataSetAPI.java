@@ -69,7 +69,7 @@ public class DataSetAPI extends APIService {
      * @param dataSetContent the dataset content from the http request body.
      * @return The dataset id.
      */
-    @RequestMapping(value = "/api/datasets", method = POST, consumes = ALL_VALUE, produces = {TEXT_PLAIN_VALUE, APPLICATION_JSON_VALUE})
+    @RequestMapping(value = "/api/datasets", method = POST, consumes = ALL_VALUE, produces = TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Create a data set", consumes = TEXT_PLAIN_VALUE, produces = TEXT_PLAIN_VALUE, notes = "Create a new data set based on content provided in POST body. For documentation purposes, body is typed as 'text/plain' but operation accepts binary content too. Returns the id of the newly created data set.")
     public String create(
             @ApiParam(value = "User readable name of the data set (e.g. 'Finance Report 2015', 'Test Data Set').") @RequestParam(defaultValue = "", required = false) String name,
