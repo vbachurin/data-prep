@@ -18,7 +18,7 @@
     <div class="inventory-icon"
          title="{{$ctrl.open ? ('OPEN_ACTION' | translate: $ctrl.getTooltipContent(false)) : ''}}"
          ng-switch="$ctrl.type"
-         ng-click="$ctrl.open($ctrl.item)">
+         ng-click="$ctrl.open($ctrl.item, $event)">
 
         <div ng-switch-when="dataset" ng-switch="$ctrl.itemType($ctrl.item)">
             <img src="/assets/images/inventory/csv_file.png" ng-switch-when="text/csv"/>
@@ -49,7 +49,7 @@
               class="inventory-title"
               ng-bind-html="$ctrl.item.name"
               title="{{$ctrl.item.tooltipName}}"
-              ng-click="$ctrl.open($ctrl.item)"></span>
+              ng-click="$ctrl.open($ctrl.item, $event)"></span>
         <div class="inventory-description"
              ng-bind-html="$ctrl.details | translate:$ctrl.item">
         </div>
@@ -65,7 +65,7 @@
                                 close-on-select="true">
             <ul class="inventory-actions-related-item-menu"
                 ng-if="$ctrl.relatedInventories.length">
-                <li ng-click="$ctrl.open($ctrl.item)">
+                <li ng-click="$ctrl.open($ctrl.item, $event)">
                     <span data-icon="K" >&nbsp;</span>
                     <span class="dropdown-container-middle" translate-once="CREATE_NEW_PREP"></span>
                 </li>
