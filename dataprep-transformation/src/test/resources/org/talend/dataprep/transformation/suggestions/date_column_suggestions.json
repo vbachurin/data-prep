@@ -611,13 +611,12 @@
           "multiple": false
         },
         "default": "now_server_side",
-        "label": "Since"
+        "label": "Untill"
       }
     ],
     "category": "dates",
-    "description": "Calculate elapsed time since a date, in the desired unit (year, month, day, hour)",
     "docUrl": "",
-    "label": "Calculate Time since",
+    "label": "Calculate Time untill",
     "actionScope": [],
     "dynamic": false
   },
