@@ -1,7 +1,7 @@
 package org.talend.dataprep.configuration;
 
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import static org.springframework.http.HttpHeaders.*;
+
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.Collections;
@@ -72,6 +72,13 @@ public class Async {
                     if (!servletResponse.isCommitted()) {
                         servletResponse.reset();
                         servletResponse.setStatus(tdpException.getCode().getHttpStatus());
+
+                        // add CORS headers
+                        servletResponse.addHeader(ACCESS_CONTROL_EXPOSE_HEADERS, "Authorization");
+                        servletResponse.addHeader(ACCESS_CONTROL_ALLOW_HEADERS,
+                                "x-requested-with, Content-Type, accept, Authorization");
+                        servletResponse.addHeader(ACCESS_CONTROL_ALLOW_ORIGIN, "*");
+
                         try {
                             Writer writer;
                             try {
