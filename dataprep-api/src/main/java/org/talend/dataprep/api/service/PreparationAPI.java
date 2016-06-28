@@ -114,7 +114,7 @@ public class PreparationAPI extends APIService {
     }
 
     //@formatter:off
-    @RequestMapping(value = "/api/preparations", method = POST, consumes = APPLICATION_JSON_VALUE, produces = TEXT_PLAIN_VALUE)
+    @RequestMapping(value = "/api/preparations", method = POST, consumes = APPLICATION_JSON_VALUE, produces = {TEXT_PLAIN_VALUE, APPLICATION_JSON_VALUE})
     @ApiOperation(value = "Create a new preparation for preparation content in body.", notes = "Returns the created preparation id.")
     @Timed
     public String createPreparation(
