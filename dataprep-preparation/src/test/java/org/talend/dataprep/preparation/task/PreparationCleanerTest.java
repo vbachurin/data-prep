@@ -22,6 +22,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.context.WebApplicationContext;
 import org.talend.dataprep.api.preparation.Preparation;
+import org.talend.dataprep.api.preparation.PreparationActions;
 import org.talend.dataprep.api.preparation.Step;
 import org.talend.dataprep.preparation.BasePreparationTest;
 
@@ -114,5 +115,33 @@ public class PreparationCleanerTest extends BasePreparationTest {
 
         //then
         assertNotNull(repository.get(rootStep.getId(), Step.class));
+    }
+
+    @Test
+    public void removeOrphanSteps_should_remove_orphan_step_content() {
+        //given
+        final String version = versionService.version().getVersionId();
+        final PreparationActions content = new PreparationActions(version);
+        final Step step = new Step(rootStep.getId(), content.getId(), version);
+
+        repository.add(step);
+        repository.add(content);
+
+        //when: after 0 hour - should not remove
+        cleaner.removeOrphanSteps();
+        assertNotNull(repository.get(step.getId(), Step.class));
+        assertNotNull(repository.get(content.getId(), PreparationActions.class));
+
+        //when: after 1 hour - should not remove
+        cleaner.removeOrphanSteps();
+        assertNotNull(repository.get(step.getId(), Step.class));
+        assertNotNull(repository.get(content.getId(), PreparationActions.class));
+
+        //when: after 2 hours
+        cleaner.removeOrphanSteps();
+
+        //then
+        assertNull(repository.get(step.getId(), Step.class));
+        assertNull(repository.get(content.getId(), PreparationActions.class));
     }
 }

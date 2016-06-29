@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.preparation.Identifiable;
 import org.talend.dataprep.api.preparation.Preparation;
+import org.talend.dataprep.api.preparation.PreparationActions;
 import org.talend.dataprep.api.preparation.Step;
 import org.talend.dataprep.util.StringsHelper;
 
@@ -85,4 +86,18 @@ public interface PreparationRepository {
     void clear();
 
     void remove(Identifiable object);
+
+    /**
+     * Find a preparation that use the dataset
+     * @param datasetId The dataset id.
+     * @return A preparation that use the dataset.
+     */
+    Preparation findOneByDataset(String datasetId);
+
+    /**
+     * Find a preparation step action that use the dataset (ex: lookup)
+     * @param datasetId The dataset id.
+     * @return A preparation action that use the dataset.
+     */
+    PreparationActions findOneStepActionByDataset(String datasetId);
 }

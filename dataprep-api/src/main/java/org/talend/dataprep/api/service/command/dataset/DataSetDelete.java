@@ -13,13 +13,6 @@
 
 package org.talend.dataprep.api.service.command.dataset;
 
-import static org.talend.dataprep.command.Defaults.asNull;
-import static org.talend.dataprep.exception.error.APIErrorCodes.DATASET_STILL_IN_USE;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.slf4j.Logger;
@@ -28,14 +21,13 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.talend.daikon.exception.ExceptionContext;
-import org.talend.dataprep.api.preparation.Preparation;
-import org.talend.dataprep.api.service.command.preparation.PreparationListForDataSet;
+import org.talend.dataprep.api.service.command.preparation.CheckDatasetUsage;
 import org.talend.dataprep.command.GenericCommand;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.APIErrorCodes;
-import org.talend.dataprep.exception.error.CommonErrorCodes;
 
-import com.fasterxml.jackson.core.type.TypeReference;
+import static org.talend.dataprep.command.Defaults.asNull;
+import static org.talend.dataprep.exception.error.APIErrorCodes.DATASET_STILL_IN_USE;
 
 /**
  * Delete the dataset if it's not used by any preparation.
@@ -44,54 +36,49 @@ import com.fasterxml.jackson.core.type.TypeReference;
 @Scope("request")
 public class DataSetDelete extends GenericCommand<Void> {
 
-    /** This class' logger. */
+    /**
+     * This class' logger.
+     */
     private static final Logger LOG = LoggerFactory.getLogger(DataSetDelete.class);
-
-    /** Dataset id. */
-    private final String dataSetId;
 
     /**
      * Default constructor.
      *
      * @param dataSetId The dataset id to delete.
      */
-    private DataSetDelete(String dataSetId) {
+    private DataSetDelete(final String dataSetId) {
         super(GenericCommand.DATASET_GROUP);
-        this.dataSetId = dataSetId;
         execute(() -> onExecute(dataSetId));
-        onError(e -> new TDPException(APIErrorCodes.UNABLE_TO_DELETE_DATASET, e,
-                ExceptionContext.build().put("dataSetId", dataSetId)));
+        onError(e -> new TDPException(
+                APIErrorCodes.UNABLE_TO_DELETE_DATASET,
+                e,
+                ExceptionContext.build().put("dataSetId", dataSetId)
+        ));
         on(HttpStatus.OK).then(asNull());
     }
 
-    private HttpRequestBase onExecute(String dataSetId) {
+    private HttpRequestBase onExecute(final String dataSetId) {
+        final boolean isDatasetUsed = isDatasetUsed(dataSetId);
+
+        // if the dataset is used by preparation(s), the deletion is forbidden
+        if (isDatasetUsed) {
+            LOG.debug("DataSet {} is used by {} preparation(s) and cannot be deleted", dataSetId);
+            final ExceptionContext context = ExceptionContext.build().put("dataSetId", dataSetId);
+            throw new TDPException(DATASET_STILL_IN_USE, context);
+        }
+        return new HttpDelete(datasetServiceUrl + "/datasets/" + dataSetId);
+    }
+
+    private boolean isDatasetUsed(final String dataSetId) {
+        final CheckDatasetUsage checkDatasetUsage = context.getBean(CheckDatasetUsage.class, dataSetId);
         try {
-            List<Preparation> preparations = getPreparationsForDataSet();
-            // if the dataset is used by preparation(s), the deletion is forbidden
-            if (!preparations.isEmpty()) {
-                LOG.debug("DataSet {} is used by {} preparation(s) and cannot be deleted", dataSetId, preparations.size());
-                final ExceptionContext context = ExceptionContext.build() //
-                        .put("dataSetId", dataSetId) //
-                        .put("preparations", preparations);
-                throw new TDPException(DATASET_STILL_IN_USE, context);
+            checkDatasetUsage.execute();
+            return true;
+        } catch (final TDPException e) {
+            if (e.getCode().getHttpStatus() == 404) {
+                return false;
             }
-            return new HttpDelete(datasetServiceUrl + "/datasets/" + dataSetId);
-        } catch (IOException e) {
-            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
+            throw e;
         }
     }
-
-    /**
-     * @return List of preparation(s) that use this dataset or en empty list if there's none.
-     */
-    private List<Preparation> getPreparationsForDataSet() throws IOException {
-        // execute preparation api
-        PreparationListForDataSet preparationsForDataSet = context.getBean(PreparationListForDataSet.class, dataSetId);
-        try (InputStream jsonInput = preparationsForDataSet.execute()) {
-            // parse and return the response
-            return objectMapper.readValue(jsonInput, new TypeReference<List<Preparation>>() {
-            });
-        }
-    }
-
 }
