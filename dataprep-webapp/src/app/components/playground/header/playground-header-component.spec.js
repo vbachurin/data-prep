@@ -28,12 +28,14 @@ describe('Playground header component', () => {
                     preview="preview"
                     lookup-visible="lookupVisible"
                     feedback-visible="feedbackVisible"
+                    preparation-picker="preparationPicker"
                     parameters-visible="parametersVisible"
                     on-parameters="onParameters()"
                     on-lookup="onLookup()"
                     on-onboarding="onOnboarding()"
                     on-feedback="onFeedback()"
-                    on-close="onClose()"></playground-header>`);
+                    on-close="onClose()"
+                    on-preparation-picker="showPreparationPicker()"></playground-header>`);
             $compile(element)(scope);
             scope.$digest();
         };
@@ -167,7 +169,7 @@ describe('Playground header component', () => {
             expect(scope.onOnboarding).toHaveBeenCalled();
         });
 
-        it('should not render  feedback icon', () => {
+        it('should not render feedback icon', () => {
             //when
             scope.feedbackVisible = false;
             createElement();
@@ -183,6 +185,29 @@ describe('Playground header component', () => {
 
             //then
             expect(element.find('#playground-feedback-icon').length).toBe(1);
+        });
+
+        it('should render preparation picker icon', () => {
+            //when
+            scope.preparationPicker = true;
+            createElement();
+
+            //then
+            expect(element.find('#playground-preparation-picker-icon').length).toBe(1);
+        });
+
+        it('should call showPreparationPicker callback', () => {
+            //given
+            scope.showPreparationPicker = jasmine.createSpy('showPreparationPicker');
+            scope.preparationPicker = true;
+            createElement();
+            const icon = element.find('#playground-preparation-picker-icon').eq(0);
+
+            //when
+            icon.click();
+
+            //then
+            expect(scope.showPreparationPicker).toHaveBeenCalled();
         });
 
         it('should call feedback callback', () => {
