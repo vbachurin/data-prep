@@ -31,6 +31,7 @@ import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.preparation.PreparationActions;
 import org.talend.dataprep.api.preparation.Step;
 import org.talend.dataprep.preparation.store.PreparationRepository;
+import org.talend.dataprep.transformation.api.action.metadata.datablending.Lookup;
 
 /**
  * In memory Preparation repository.
@@ -39,15 +40,21 @@ import org.talend.dataprep.preparation.store.PreparationRepository;
 @ConditionalOnProperty(name = "preparation.store", havingValue = "in-memory", matchIfMissing = true)
 public class InMemoryPreparationRepository implements PreparationRepository {
 
-    /** The root step. */
+    /**
+     * The root step.
+     */
     @Resource(name = "rootStep")
     private Step rootStep;
 
-    /** The default root content. */
+    /**
+     * The default root content.
+     */
     @Resource(name = "rootContent")
     private PreparationActions rootContent;
 
-    /** Map where preparations are stored. */
+    /**
+     * Map where preparations are stored.
+     */
     private final Map<String, Identifiable> store = new HashMap<>();
 
     /**
@@ -132,6 +139,39 @@ public class InMemoryPreparationRepository implements PreparationRepository {
             return;
         }
         store.remove(object.id());
+    }
+
+    /**
+     * @see PreparationRepository#findOneByDataset
+     */
+    @Override
+    public Preparation findOneByDataset(String datasetId) {
+        if (StringUtils.isEmpty(datasetId)) {
+            return null;
+        }
+
+        return listAll(Preparation.class).stream()
+                .filter(p -> datasetId.equals(p.getDataSetId()))
+                .findFirst()
+                .orElse(null);
+    }
+
+    /**
+     * @see PreparationRepository#findOneStepActionByDataset
+     */
+    @Override
+    public PreparationActions findOneStepActionByDataset(String datasetId) {
+        if (StringUtils.isEmpty(datasetId)) {
+            return null;
+        }
+
+        final String datasetParamName = Lookup.Parameters.LOOKUP_DS_ID.getKey();
+        return listAll(PreparationActions.class).stream()
+                .filter(actions -> actions.getActions()
+                        .stream()
+                        .anyMatch(act -> datasetId.equals(act.getParameters().get(datasetParamName))))
+                .findFirst()
+                .orElse(null);
     }
 
 }

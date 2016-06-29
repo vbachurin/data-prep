@@ -1291,6 +1291,71 @@ public class PreparationServiceTest extends BasePreparationTest {
     }
 
     // -----------------------------------------------------------------------------------------------------------------
+    // ----------------------------------------------------CHECKS-------------------------------------------------------
+    // -----------------------------------------------------------------------------------------------------------------
+    @Test
+    public void shouldReturnHTTP404WhenNoPreparationUseDataset() throws Exception {
+        // given
+        final String datasetId = "3214a6748bc4f9674c85";
+        final String preparationId = createPreparation("other_dataset", "My preparation");
+        applyTransformation(preparationId, "upper_case.json");
+
+        repository.get(preparationId, Preparation.class);
+
+        // when
+        final Response response = when().head("/preparations/use/dataset/{id}", datasetId);
+
+        // then
+        assertThat(response.getStatusCode(), is(404));
+    }
+
+    @Test
+    public void shouldReturnHTTP203WhenPreparationIsOnDataset() throws Exception {
+        // given
+        final String datasetId = "3214a6748bc4f9674c85";
+        final String preparationId = createPreparation(datasetId, "My preparation");
+        applyTransformation(preparationId, "upper_case.json");
+
+        repository.get(preparationId, Preparation.class);
+
+        // when
+        final Response response = when().head("/preparations/use/dataset/{id}", datasetId);
+
+        // then
+        assertThat(response.getStatusCode(), is(204));
+    }
+
+    @Test
+    public void shouldReturnHTTP203WhenPreparationHasLookupOnDataset() throws Exception {
+        // given
+        final String datasetId = "3214a6748bc4f9674c85";
+        final String preparationId = createPreparation(datasetId, "My preparation");
+        applyTransformation(preparationId, "upper_case.json");
+
+        final Map<String, String> parametersOnDataset = new HashMap<>();
+        parametersOnDataset.put("lookup_ds_id", datasetId);
+        final Map<String, String> parametersWithoutDataset = new HashMap<>();
+        parametersWithoutDataset.put("other", "other");
+
+        final List<Action> action1 = new ArrayList<>(1);
+        action1.add(Action.Builder.builder().withParameters(parametersWithoutDataset).build());
+        final List<Action> action2 = new ArrayList<>(1);
+        action2.add(Action.Builder.builder().withParameters(parametersOnDataset).build());
+
+        final PreparationActions prepAction1 = new PreparationActions().append(action1);
+        final PreparationActions prepAction2 = new PreparationActions().append(action2);
+
+        repository.add(prepAction1);
+        repository.add(prepAction2);
+
+        // when
+        final Response response = when().head("/preparations/use/dataset/{id}", datasetId);
+
+        // then
+        assertThat(response.getStatusCode(), is(204));
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
     // -----------------------------------------------------UTILS-------------------------------------------------------
     // -----------------------------------------------------------------------------------------------------------------
 

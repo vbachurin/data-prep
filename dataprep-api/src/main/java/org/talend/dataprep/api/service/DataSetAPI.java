@@ -440,5 +440,4 @@ public class DataSetAPI extends APIService {
         HystrixCommand<InputStream> retrieveImports = getCommand(DataSetGetImports.class);
         return CommandHelper.toStreaming(retrieveImports);
     }
-
 }

@@ -28,6 +28,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.preparation.Preparation;
+import org.talend.dataprep.api.preparation.PreparationActions;
 import org.talend.dataprep.api.preparation.PreparationUtils;
 import org.talend.dataprep.api.preparation.Step;
 import org.talend.dataprep.preparation.store.PreparationRepository;
@@ -105,7 +106,12 @@ public class PreparationCleaner {
     private void cleanSteps() {
         orphansStepsTags.entrySet().stream()
                 .filter(entry -> entry.getValue() >= orphanTime)
-                .forEach(entry -> repository.remove(entry.getKey()));
+                .forEach(entry -> {
+                    final Step step = entry.getKey();
+                    final PreparationActions content = repository.get(step.getContent(), PreparationActions.class);
+                    repository.remove(content);
+                    repository.remove(step);
+                });
     }
 
     /**

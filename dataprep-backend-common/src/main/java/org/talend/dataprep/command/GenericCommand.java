@@ -217,7 +217,10 @@ public class GenericCommand<T> extends HystrixCommand<T> {
             final int statusCode = res.getStatusLine().getStatusCode();
             String content = StringUtils.EMPTY;
             try {
-                content = IOUtils.toString(res.getEntity().getContent());
+                if(res.getEntity() != null) {
+                    content = IOUtils.toString(res.getEntity().getContent());
+                }
+
                 JsonErrorCode code = objectMapper.readerFor(JsonErrorCode.class).readValue(content);
                 code.setHttpStatus(statusCode);
                 final TDPException cause = new TDPException(code);

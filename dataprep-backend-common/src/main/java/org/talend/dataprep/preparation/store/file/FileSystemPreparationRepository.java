@@ -45,9 +45,12 @@ import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.preparation.store.PreparationRepository;
 import org.talend.dataprep.security.Security;
+import org.talend.dataprep.transformation.api.action.metadata.datablending.Lookup;
 import org.talend.dataprep.util.FilesHelper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import static org.apache.commons.lang.StringUtils.startsWith;
 
 
 /**
@@ -176,7 +179,7 @@ public class FileSystemPreparationRepository implements PreparationRepository {
         }
         Collection<T> result;
         try (final Stream<File> stream = Arrays.stream(files)) {
-             result = stream.filter(file -> StringUtils.startsWith(file.getName(), clazz.getSimpleName()))
+             result = stream.filter(file -> startsWith(file.getName(), clazz.getSimpleName()))
                     .map(file -> get(file.getName(), clazz))                   // read all files
                     .filter(entry -> entry != null)                            // filter out null entries
                     .filter(entry -> clazz.isAssignableFrom(entry.getClass())) // filter out the unwanted objects (should not be necessary but you never know)
@@ -217,6 +220,61 @@ public class FileSystemPreparationRepository implements PreparationRepository {
         final File file = getIdentifiableFile(object);
         FilesHelper.deleteQuietly(file);
         LOG.debug("preparation #{} removed", object.id());
+    }
+
+    /**
+     * @see PreparationRepository#findOneByDataset
+     */
+    @Override
+    public Preparation findOneByDataset(String datasetId) {
+        if (StringUtils.isEmpty(datasetId)) {
+            return null;
+        }
+
+        File[] files = getRootFolder().listFiles();
+        if(files == null) {
+            LOG.error("error listing preparations");
+            files = new File[0];
+        }
+
+        try (final Stream<File> stream = Arrays.stream(files)) {
+            return stream
+                    .filter(file -> startsWith(file.getName(), Preparation.class.getSimpleName()))  // only preparations
+                    .map(file -> get(file.getName(), Preparation.class))                            // read the file
+                    .filter(prep -> prep != null)                                                   // filter out null entries
+                    .filter(prep -> datasetId.equals(prep.getDataSetId()))                          // filter preps on other datasets
+                    .findFirst()
+                    .orElse(null);
+        }
+    }
+
+    /**
+     * @see PreparationRepository#findOneStepActionByDataset
+     */
+    @Override
+    public PreparationActions findOneStepActionByDataset(String datasetId) {
+        if (StringUtils.isEmpty(datasetId)) {
+            return null;
+        }
+
+        File[] files = getRootFolder().listFiles();
+        if(files == null) {
+            LOG.error("error listing preparations");
+            files = new File[0];
+        }
+
+        try (final Stream<File> stream = Arrays.stream(files)) {
+            final String datasetParamName = Lookup.Parameters.LOOKUP_DS_ID.getKey();
+            return stream
+                    .filter(file -> startsWith(file.getName(), PreparationActions.class.getSimpleName()))   // only preparations
+                    .map(file -> get(file.getName(), PreparationActions.class))                             // read the file
+                    .filter(actions -> actions != null)                                                     // filter out null entries
+                    .filter(actions -> actions.getActions()
+                            .stream()
+                            .anyMatch(act -> datasetId.equals(act.getParameters().get(datasetParamName))))    // filter out non lookup on this dataset actions
+                    .findFirst()
+                    .orElse(null);
+        }
     }
 
     private File getIdentifiableFile(Identifiable object) {
