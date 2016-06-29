@@ -33,6 +33,7 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
     'ngInject';
 
     const vm = this;
+    vm.$stateParams = $stateParams;
     vm.state = state;
     vm.recipeService = RecipeService;
 
