@@ -57,7 +57,10 @@ public class PipelineConsoleDump extends Visitor {
 
     @Override
     public void visitNode(Node node) {
-        builder.append("UNKNOWN NODE").append('\n');
+        if (node instanceof Monitored) {
+            buildMonitorInformation((Monitored) node);
+        }
+        builder.append("UNKNOWN NODE (").append(node.getClass().getName()).append(")").append('\n');
         super.visitNode(node);
     }
 

@@ -102,6 +102,8 @@ public class Pipeline implements Node, RuntimeNode {
 
         private RowMetadata rowMetadata;
 
+        private boolean completeMetadata;
+
         private ActionRegistry actionRegistry;
 
         private TransformationContext context;
@@ -123,9 +125,6 @@ public class Pipeline implements Node, RuntimeNode {
         private AnalyzerService analyzerService;
 
         private int actionIndex = 0;
-
-        // TODO This boolean is used to detect full run execution, a cleaner/separate state for this would be nicer.
-        private boolean hasMonitoring = false;
 
         public static Builder builder() {
             return new Builder();
@@ -151,8 +150,9 @@ public class Pipeline implements Node, RuntimeNode {
             return this;
         }
 
-        public Builder withInitialMetadata(RowMetadata rowMetadata) {
+        public Builder withInitialMetadata(RowMetadata rowMetadata, boolean completeMetadata) {
             this.rowMetadata = rowMetadata;
+            this.completeMetadata = completeMetadata;
             return this;
         }
 
@@ -172,7 +172,6 @@ public class Pipeline implements Node, RuntimeNode {
         }
 
         public Builder withMonitor(Supplier<Node> monitorSupplier) {
-            hasMonitoring = true;
             this.monitorSupplier = monitorSupplier;
             return this;
         }
@@ -257,7 +256,7 @@ public class Pipeline implements Node, RuntimeNode {
         }
 
         private void addReservoirStatistics(Action action, ActionAnalysis analysis, NodeBuilder builder) {
-            if (actionIndex == 0 && !hasMonitoring) {
+            if (actionIndex == 0 && completeMetadata) {
                 LOGGER.debug("No need for statistics, action '{}' is the first action in pipeline.", action);
                 return;
             } else if (actionIndex == 0) { // hasMonitoring = true

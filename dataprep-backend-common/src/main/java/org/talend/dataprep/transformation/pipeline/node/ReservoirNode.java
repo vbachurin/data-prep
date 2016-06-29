@@ -80,10 +80,13 @@ public class ReservoirNode extends AnalysisNode implements Monitored {
     public void receive(DataSetRow row, RowMetadata metadata) {
         final long start = System.currentTimeMillis();
         try {
+            final boolean needRefresh = rowMetadata == null || !metadata.equals(rowMetadata);
             List<ColumnMetadata> columns = metadata.getColumns();
             if (!columns.isEmpty()) {
-                filteredColumns = columns.stream().filter(filter).collect(Collectors.toList());
-                filteredColumnNames = filteredColumns.stream().map(ColumnMetadata::getId).collect(Collectors.toSet());
+                if (filteredColumns == null || needRefresh) {
+                    filteredColumns = columns.stream().filter(filter).collect(Collectors.toList());
+                    filteredColumnNames = filteredColumns.stream().map(ColumnMetadata::getId).collect(Collectors.toSet());
+                }
             } else {
                 // No column in row metadata, guess all type, starting from string columns.
                 ColumnMetadata.Builder builder = ColumnMetadata.Builder.column().type(Type.STRING);
@@ -99,40 +102,50 @@ public class ReservoirNode extends AnalysisNode implements Monitored {
             }
             rowMetadata = metadata;
             // Analyze non deleted rows
-            if (!row.isDeleted()) {
-                // Lazy initialization of the result analyzer
-                if (resultAnalyzer == null) {
-                    resultAnalyzer = analyzer.apply(filteredColumns);
-                }
-                final String[] values = row.order(columns)
-                        .toArray(DataSetRow.SKIP_TDP_ID.and(e -> filteredColumnNames.contains(e.getKey())));
-                try {
-                    resultAnalyzer.analyze(values);
-                } catch (Exception e) {
-                    LOGGER.debug("Unable to analyze row '{}'.", Arrays.toString(values), e);
-                }
-            }
+            analyze(row, columns);
             // Store rows for end of stream signal.
-            try {
-                generator.writeStartObject();
-                columns.stream().forEach(column -> {
-                    try {
-                        generator.writeStringField(column.getId(), row.get(column.getId()));
-                    } catch (IOException e) {
-                        throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
-                    }
-                });
-                if (row.isDeleted()) {
-                    generator.writeBooleanField("_deleted", true);
-                }
-                generator.writeEndObject();
-            } catch (IOException e) {
-                throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
-            }
-
+            store(row, columns);
         } finally {
             totalTime += System.currentTimeMillis() - start;
             count++;
+        }
+    }
+
+    // Store row in temporary file
+    private void store(DataSetRow row, List<ColumnMetadata> columns) {
+        try {
+            generator.writeStartObject();
+            columns.stream().forEach(column -> {
+                try {
+                    generator.writeStringField(column.getId(), row.get(column.getId()));
+                } catch (IOException e) {
+                    throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
+                }
+            });
+            if (row.isDeleted()) {
+                generator.writeBooleanField("_deleted", true);
+            }
+            generator.writeEndObject();
+        } catch (IOException e) {
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
+        }
+    }
+
+    // Analyze row using lazily configured analyzer
+    private void analyze(DataSetRow row, List<ColumnMetadata> columns) {
+        if (!row.isDeleted()) {
+            // Lazy initialization of the result analyzer
+            if (resultAnalyzer == null) {
+                resultAnalyzer = analyzer.apply(filteredColumns);
+            }
+            final String[] values = row.filter(filteredColumns) //
+                    .order(columns) //
+                    .toArray(DataSetRow.SKIP_TDP_ID.and(e -> filteredColumnNames.contains(e.getKey())));
+            try {
+                resultAnalyzer.analyze(values);
+            } catch (Exception e) {
+                LOGGER.debug("Unable to analyze row '{}'.", Arrays.toString(values), e);
+            }
         }
     }
 
@@ -165,7 +178,9 @@ public class ReservoirNode extends AnalysisNode implements Monitored {
                         final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
                         dataSet.getRecords().forEach(r -> {
                             if (!r.isDeleted()) {
-                                final String[] values = r.order(columns).toArray(DataSetRow.SKIP_TDP_ID.and(e -> filteredColumnNames.contains(e.getKey())));
+                                final String[] values = r.filter(filteredColumns) //
+                                        .order(columns) //
+                                        .toArray(DataSetRow.SKIP_TDP_ID.and(e -> filteredColumnNames.contains(e.getKey())));
                                 configuredAnalyzer.analyze(values);
                             }
                         });

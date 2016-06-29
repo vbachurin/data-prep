@@ -61,7 +61,7 @@ public class ActionTestWorkbench {
         final TestOutputNode outputNode = new TestOutputNode(input);
         Pipeline pipeline = Pipeline.Builder.builder() //
                 .withActionRegistry(actionRegistry)
-                .withInitialMetadata(rowMetadata) //
+                .withInitialMetadata(rowMetadata, true) //
                 .withActions(allActions) //
                 .withContext(context) //
                 .withInlineAnalysis(inlineAnalysis)

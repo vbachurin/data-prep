@@ -123,7 +123,7 @@ class PipelineDiffTransformer implements Transformer {
                 .withAnalyzerService(analyzerService) //
                 .withActionRegistry(actionRegistry) //
                 .withActions(actionParser.parse(actions)) //
-                .withInitialMetadata(rowMetadata) //
+                .withInitialMetadata(rowMetadata, true) //
                 .withOutput(() -> output) //
                 .withContext(transformationContext) //
                 .withInlineAnalysis(analyzerService::schemaAnalysis) //
