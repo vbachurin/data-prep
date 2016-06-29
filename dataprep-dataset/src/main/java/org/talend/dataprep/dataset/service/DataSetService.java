@@ -268,7 +268,7 @@ public class DataSetService extends BaseDataSetService {
         try (Stream<DataSetMetadata> stream = stream(iterator, false)) {
             // @formatter:off
             final Comparator<DataSetMetadata> comparator = getDataSetMetadataComparator(sort, order);
-            return stream.filter(metadata -> !metadata.getLifecycle().importing()) // NOSONAR
+            final List<DataSetMetadata> collect = stream.filter(metadata -> !metadata.getLifecycle().importing()) // NOSONAR
                     .map(metadata -> {
                         if (userData != null) {
                             metadata.setFavorite(userData.getFavoritesDatasets().contains(metadata.getId()));
@@ -277,10 +277,12 @@ public class DataSetService extends BaseDataSetService {
                     })
                     .filter(metadata -> !favorite || metadata.isFavorite())
                     .filter(metadata -> !certified || Certification.CERTIFIED.equals(metadata.getGovernance().getCertificationStep()))
-                    .filter (metadata -> StringUtils.isEmpty(name) || StringUtils.containsIgnoreCase(metadata.getName(), name))
+                    .filter(metadata -> StringUtils.isEmpty(name) || StringUtils.containsIgnoreCase(metadata.getName(), name))
                     .sorted(comparator)
                     .limit(limit ? datasetListLimit : Long.MAX_VALUE)
                     .collect(Collectors.toList());
+            LOG.debug("found {} datasets [favorite: {}, certified: {}, name: {}, limit: {}]", collect.size(), favorite, certified, name, limit);
+            return collect;
             // @formatter:on
         }
     }
