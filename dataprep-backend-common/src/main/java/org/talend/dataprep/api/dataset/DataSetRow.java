@@ -1,15 +1,15 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.api.dataset;
 
@@ -41,7 +41,7 @@ public class DataSetRow implements Cloneable {
     private RowMetadata rowMetadata;
 
     /** Values of the dataset row. */
-    private SortedMap<String, String> values = new TreeMap<>();
+    private Map<String, String> values = new TreeMap<>();
 
     /** True if this row is deleted. */
     private boolean deleted;
@@ -83,6 +83,10 @@ public class DataSetRow implements Cloneable {
      */
     public RowMetadata getRowMetadata() {
         return rowMetadata;
+    }
+
+    public void setRowMetadata(RowMetadata rowMetadata) {
+        this.rowMetadata = rowMetadata;
     }
 
     /**
@@ -282,9 +286,12 @@ public class DataSetRow implements Cloneable {
             throw new IllegalArgumentException("Expected " + values.size() + " columns but got " + columns.size());
         }
 
-        List<String> idIndexes = columns.stream().map(ColumnMetadata::getId).collect(Collectors.toList());
-        SortedMap<String, String> orderedValues = new TreeMap<>((id1, id2) -> idIndexes.indexOf(id1) - idIndexes.indexOf(id2));
-        orderedValues.putAll(values);
+        Map<String, String> orderedValues = new LinkedHashMap<>();
+        for (ColumnMetadata column : columns) {
+            final String id = column.getId();
+            orderedValues.put(id, values.get(id));
+        }
+
         final DataSetRow dataSetRow = new DataSetRow(rowMetadata);
         dataSetRow.values = orderedValues;
         return dataSetRow;
@@ -367,8 +374,18 @@ public class DataSetRow implements Cloneable {
         return this;
     }
 
-    public void setRowMetadata(RowMetadata rowMetadata) {
-        this.rowMetadata = rowMetadata;
+    public DataSetRow filter(List<ColumnMetadata> filteredColumns) {
+        final Set<String> columnsToKeep = filteredColumns.stream().map(ColumnMetadata::getId).collect(Collectors.toSet());
+        final Set<ColumnMetadata> columnsToDelete = rowMetadata.getColumns().stream() //
+                .filter(c -> !columnsToKeep.contains(c.getId())) //
+                .collect(Collectors.toSet());
+        final RowMetadata clone = rowMetadata.clone();
+        final LinkedHashMap<String, String> filteredValues = new LinkedHashMap<>(this.values);
+        for (ColumnMetadata columnMetadata : columnsToDelete) {
+            filteredValues.remove(columnMetadata.getId());
+            clone.deleteColumnById(columnMetadata.getId());
+        }
+        return new DataSetRow(clone, filteredValues);
     }
 
     /**

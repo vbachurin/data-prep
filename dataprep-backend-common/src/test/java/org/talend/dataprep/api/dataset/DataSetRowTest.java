@@ -308,4 +308,20 @@ public class DataSetRowTest {
         assertEquals("2", strings[0]);
     }
 
+    @Test
+    public void testFilter() throws Exception {
+        DataSetRow row = createRow(defaultValues(), false);
+        List<ColumnMetadata> filter = new ArrayList<ColumnMetadata>() {
+
+            {
+                add(column().computedId("0001").type(Type.STRING).build());
+                add(column().computedId("0002").type(Type.STRING).build());
+            }
+        };
+        assertThat(row.getRowMetadata().getColumns().size(), is(4));
+        final DataSetRow newRow = row.filter(filter);
+        assertThat(newRow.getRowMetadata().getColumns().size(), is(2));
+    }
+
+
 }

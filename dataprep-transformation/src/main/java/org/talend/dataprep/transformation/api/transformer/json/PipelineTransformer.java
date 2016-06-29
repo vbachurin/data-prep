@@ -44,26 +44,32 @@ public class PipelineTransformer implements Transformer {
     @Override
     public void transform(DataSet input, Configuration configuration) {
         final RowMetadata rowMetadata = input.getMetadata().getRowMetadata();
-        final TransformerWriter writer = writerRegistrationService.getWriter(configuration.formatId(), configuration.output(), configuration.getArguments());
-        final Pipeline pipeline = Pipeline.Builder.builder()
-                .withAnalyzerService(analyzerService) //
+        final TransformerWriter writer = writerRegistrationService.getWriter(configuration.formatId(), configuration.output(),
+                configuration.getArguments());
+        final Pipeline pipeline = Pipeline.Builder.builder().withAnalyzerService(analyzerService) //
                 .withActionRegistry(actionRegistry)
                 .withActions(actionParser.parse(configuration.getActions()))
-                .withInitialMetadata(rowMetadata)
+                .withInitialMetadata(rowMetadata, configuration.volume() == Configuration.Volume.SMALL)
                 .withInlineAnalysis(analyzerService::schemaAnalysis)
                 .withDelayedAnalysis(columns -> {
                     if (columns.isEmpty()) {
                         return NullAnalyzer.INSTANCE;
                     } else {
-                        return analyzerService.full(columns);
+                        return analyzerService.build(columns, //
+                                AnalyzerService.Analysis.QUALITY, //
+                                AnalyzerService.Analysis.CARDINALITY, //
+                                AnalyzerService.Analysis.FREQUENCY, //
+                                AnalyzerService.Analysis.PATTERNS, //
+                                AnalyzerService.Analysis.LENGTH, //
+                                AnalyzerService.Analysis.QUANTILES, //
+                                AnalyzerService.Analysis.SUMMARY, //
+                                AnalyzerService.Analysis.HISTOGRAM);
                     }
-                })
-                .withMonitor(configuration.getMonitor())
-                .withFilter(configuration.getFilter())
+                }) //
+                .withMonitor(configuration.getMonitor()).withFilter(configuration.getFilter())
                 .withFilterOut(configuration.getOutFilter())
                 .withOutput(() -> new WriterNode(writer, contentCache, configuration.getPreparationId(), configuration.stepId()))
-                .withContext(configuration.getTransformationContext())
-                .withStatisticsAdapter(adapter)
+                .withContext(configuration.getTransformationContext()).withStatisticsAdapter(adapter)
                 .withGlobalStatistics(configuration.isGlobalStatistics())
                 .allowMetadataChange(configuration.isAllowMetadataChange())
                 .build();
@@ -77,6 +83,6 @@ public class PipelineTransformer implements Transformer {
 
     @Override
     public boolean accept(Configuration configuration) {
-        return Configuration.class.equals(configuration.getClass()) && configuration.volume() == Configuration.Volume.SMALL;
+        return Configuration.class.equals(configuration.getClass());
     }
 }
