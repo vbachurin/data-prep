@@ -11,7 +11,7 @@
 
   ============================================================================*/
 
-describe('InventoryItem directive', () => {
+describe('InventoryItem component', () => {
     'use strict';
 
     function strEndsWith(str, suffix) {
@@ -186,7 +186,6 @@ describe('InventoryItem directive', () => {
             const iconSrc = icon.find('img')[0].src;
             expect(strEndsWith(iconSrc, '/assets/images/inventory/job_file.png')).toBe(true);
         });
-
 
         it('should not display update for job dattaset', () => {
                 // when
@@ -436,52 +435,40 @@ describe('InventoryItem directive', () => {
                 // given
                 createElement();
                 const icon = element.find('.inventory-icon');
+                const event = angular.element.Event('click');
 
                 // when
-                icon.click();
+                icon.eq(0).trigger(event);
 
                 // then
-                expect(ctrl.open).toHaveBeenCalledWith(dataset);
-            });
-            it('should open the related inventory item on file icon click', () => {
-                // given
-                scope.preparations = [{}, {}];
-                scope.dataset = {id: 'dataset1'};
-                createElement();
-                const icon = element.find('.inventory-icon');
-
-                // when
-                icon.click();
-
-                // then
-                expect(ctrl.open).toHaveBeenCalledWith(scope.dataset);
+                expect(ctrl.open).toHaveBeenCalledWith(dataset, event);
             });
 
             it('should open inventory item on inventory title click', () => {
                 // given
                 createElement();
                 const title = element.find('.inventory-title');
+                const click = angular.element.Event('click');
 
                 // when
-                const click = angular.element.Event('click');
                 title.trigger(click);
 
                 // then
                 expect(ctrl.open).toHaveBeenCalledWith(dataset, click);
             });
-            it('should open the related inventory item on inventory title click', () => {
+
+            it('should open inventory item on readonly inventory title click', () => {
                 // given
-                scope.preparations = [{}, {}];
-                scope.dataset = {id: 'dataset1'};
+                scope.isItemShared = jasmine.createSpy('isItemShared').and.returnValue(true);
                 createElement();
-                const title = element.find('.inventory-title');
+                const click = angular.element.Event('click');
+                const title = element.find('.inventory-text > span').eq(0);
 
                 // when
-                const click = angular.element.Event('click');
                 title.trigger(click);
 
                 // then
-                expect(ctrl.open).toHaveBeenCalledWith(scope.dataset, click);
+                expect(ctrl.open).toHaveBeenCalledWith(dataset, click);
             });
 
             it('should open inventory item on element dblclick', () => {
@@ -494,19 +481,6 @@ describe('InventoryItem directive', () => {
 
                 // then
                 expect(ctrl.open).toHaveBeenCalledWith(dataset);
-            });
-            it('should open the related inventory item on element dblclick', () => {
-                // given
-                scope.preparations = [{}, {}];
-                scope.dataset = {id: 'dataset1'};
-                createElement();
-                const inventory = element.find('.inventory-item');
-
-                // when
-                inventory.dblclick();
-
-                // then
-                expect(ctrl.open).toHaveBeenCalledWith(scope.dataset);
             });
             it('should open related inventory item on bottle click', () => {
                 // given
@@ -525,9 +499,10 @@ describe('InventoryItem directive', () => {
                 scope.preparations = [{}, {}];
                 createElement();
                 const newPreparation = element.find('.inventory-actions-related-item-menu > li').eq(0);
+                const event = angular.element.Event('click');
 
                 // when
-                newPreparation.click();
+                newPreparation.trigger(event);
 
                 // then
                 expect(ctrl.open).toHaveBeenCalledWith(dataset);
