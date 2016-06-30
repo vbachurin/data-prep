@@ -45,7 +45,46 @@ describe('Preparation list controller', () => {
         spyOn(MessageService, 'success').and.returnValue(null);
         spyOn(MessageService, 'error').and.returnValue(null);
         spyOn($state, 'go').and.returnValue();
+
+        spyOn(StateService, 'setFetchingInventoryPreparations').and.returnValue();
+        spyOn(FolderService, 'init').and.returnValue($q.when());
     }));
+
+    describe('init', () => {
+        it('should call setFetchingInventoryPreparations when init starts', inject((StateService) => {
+            //given
+            var ctrl = createController();
+
+            //when
+            ctrl.$onInit();
+
+            //then
+            expect(StateService.setFetchingInventoryPreparations).toHaveBeenCalledWith(true);
+        }));
+
+        it('should call folder init', inject((FolderService) => {
+            //given
+            var ctrl = createController();
+
+            //when
+            ctrl.$onInit();
+
+            //then
+            expect(FolderService.init).toHaveBeenCalled();
+        }));
+
+        it('should call setFetchingInventoryPreparations when init ends', inject(($rootScope, StateService) => {
+            //given
+            var ctrl = createController();
+
+            //when
+            ctrl.$onInit();
+            $rootScope.$digest();
+
+            //then
+            expect(StateService.setFetchingInventoryPreparations).toHaveBeenCalledWith(false);
+        }));
+    });
 
     describe('remove', () => {
         it('should show confirmation dialog', inject(($q, TalendConfirmService) => {

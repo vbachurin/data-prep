@@ -65,12 +65,15 @@ describe('DatasetList component', () => {
     beforeEach(angular.mock.module('htmlTemplates'));
     beforeEach(angular.mock.module('data-prep.dataset-list', ($provide) => {
         stateMock = {
-            inventory: { datasets: datasets }
+            inventory: {
+                datasets: datasets,
+                isFetchingDatasets: false
+            }
         };
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(inject(($rootScope, $compile) => {
+    beforeEach(inject(($rootScope, $compile, StateService, DatasetService, PreparationService) => {
         scope = $rootScope.$new();
 
         createElement = () => {
@@ -78,6 +81,10 @@ describe('DatasetList component', () => {
             $compile(element)(scope);
             scope.$digest();
         };
+
+        spyOn(StateService, 'setFetchingInventoryDatasets').and.returnValue();
+        spyOn(DatasetService, 'init').and.returnValue();
+        spyOn(PreparationService, 'refreshPreparations').and.returnValue();
     }));
 
     afterEach(() => {
@@ -124,5 +131,117 @@ describe('DatasetList component', () => {
         expect(element.find('.inventory-item').eq(0).find('.inventory-actions-related-item-menu > li').length).toBe(3);
         expect(element.find('.inventory-item').eq(1).find('.inventory-actions-related-item-menu > li').length).toBe(2);
         expect(element.find('.inventory-item').eq(2).find('.inventory-actions-related-item-menu > li').length).toBe(0);
+    }));
+
+    it('should not render loading flask', inject(() => {
+        expect(element.find('.continuous-rotate').length).toBe(0);
+        expect(element.find('.continuous-rotate-text').length).toBe(0);
+    }));
+});
+
+
+describe('DatasetList component loading', () => {
+    let scope, createElement, element, stateMock;
+
+    beforeEach(angular.mock.module('htmlTemplates'));
+    beforeEach(angular.mock.module('data-prep.dataset-list', ($provide) => {
+        stateMock = {
+            inventory: {
+                isFetchingDatasets: true
+            }
+        };
+        $provide.constant('state', stateMock);
+    }));
+
+    beforeEach(inject(($rootScope, $compile, StateService, DatasetService, PreparationService) => {
+        scope = $rootScope.$new();
+
+        createElement = () => {
+            element = angular.element('<dataset-list></dataset-list>');
+            $compile(element)(scope);
+            scope.$digest();
+        };
+
+        spyOn(StateService, 'setFetchingInventoryDatasets').and.returnValue();
+        spyOn(DatasetService, 'init').and.returnValue();
+        spyOn(PreparationService, 'refreshPreparations').and.returnValue();
+    }));
+
+    afterEach(() => {
+        scope.$destroy();
+        element.remove();
+    });
+
+    it('should render loading flask', inject(() => {
+        //when
+        createElement();
+
+        //then
+        expect(element.find('.continuous-rotate').length).toBe(1);
+        expect(element.find('.continuous-rotate-text').length).toBe(1);
+    }));
+
+    it('should hide loading flask when fetching datasets finishes', inject(() => {
+        //given
+        createElement();
+        expect(element.find('.continuous-rotate').length).toBe(1);
+        expect(element.find('.continuous-rotate-text').length).toBe(1);
+
+        //when
+        stateMock.inventory.isFetchingDatasets = false;
+        scope.$digest();
+
+        //then
+        expect(element.find('.continuous-rotate').length).toBe(0);
+        expect(element.find('.continuous-rotate-text').length).toBe(0);
+    }));
+});
+
+describe('DatasetList component with no datasets', () => {
+    let scope, createElement, element, stateMock;
+
+    beforeEach(angular.mock.module('htmlTemplates'));
+    beforeEach(angular.mock.module('data-prep.dataset-list', ($provide) => {
+        stateMock = {
+            inventory: {
+                isFetchingDatasets: false
+            }
+        };
+        $provide.constant('state', stateMock);
+    }));
+
+    beforeEach(angular.mock.module('pascalprecht.translate', ($translateProvider) => {
+        $translateProvider.translations('en', {
+            'CLICK_ADD_DATASETS': 'There are no datasets to display. Click on \'Add Dataset\' to add a dataset.'
+        });
+        $translateProvider.preferredLanguage('en');
+    }));
+
+    beforeEach(inject(($rootScope, $compile, StateService, DatasetService, PreparationService) => {
+        scope = $rootScope.$new();
+
+        createElement = () => {
+            element = angular.element('<dataset-list></dataset-list>');
+            $compile(element)(scope);
+            scope.$digest();
+        };
+
+        spyOn(StateService, 'setFetchingInventoryDatasets').and.returnValue();
+        spyOn(DatasetService, 'init').and.returnValue();
+        spyOn(PreparationService, 'refreshPreparations').and.returnValue();
+    }));
+
+    afterEach(() => {
+        scope.$destroy();
+        element.remove();
+    });
+
+    it('should render no datset message', inject(() => {
+        //when
+        createElement();
+
+        //then
+        expect(element.find('.inventory-info-content').length).toBe(1);
+        expect(element.find('.inventory-info-content').eq(0).text()).toBe('There are no datasets to display. Click on \'Add Dataset\' to add a dataset.');
     }));
 });

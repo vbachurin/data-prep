@@ -75,44 +75,29 @@
                         views: {
                             'home-content-header': {template: '<dataset-header></dataset-header>'},
                             'home-content': {template: '<dataset-list></dataset-list>'},
-                        },
+                        }
+                    })
+                    .state('nav.index.preparations', {
+                        url: '/preparations/{folderId:.*}',
+                        views: {
+                            'home-content-header': { template: '<preparation-header></preparation-header>' },
+                            'home-content': { template: '<preparation-list></preparation-list>' },
+                        }
+                    })
+                    .state('playground', {
+                        url: '/playground',
+                        template: '<playground></playground>',
+                        abstract: true,
                         resolve: {
                             inventory: ($q, DatasetService, PreparationService) => {
                                 'ngInject';
                                 return $q.all([
-                                    DatasetService.init(),
-                                    PreparationService.refreshPreparations(),
+                                    DatasetService.getDatasets(),
+                                    PreparationService.getPreparations(),
                                 ]);
+                            },
                         },
-                    },
-                })
-                .state('nav.index.preparations', {
-                    url: '/preparations/{folderId:.*}',
-                    views: {
-                        'home-content-header': { template: '<preparation-header></preparation-header>' },
-                        'home-content': { template: '<preparation-list></preparation-list>' },
-                    },
-                    resolve: {
-                        inventory: ($stateParams, FolderService) => {
-                            'ngInject';
-                            return FolderService.init($stateParams.folderId);
-                        },
-                    },
-                })
-                .state('playground', {
-                    url: '/playground',
-                    template: '<playground></playground>',
-                    abstract: true,
-                    resolve: {
-                        inventory: ($q, DatasetService, PreparationService) => {
-                            'ngInject';
-                            return $q.all([
-                                DatasetService.getDatasets(),
-                                PreparationService.getPreparations(),
-                            ]);
-                        },
-                    },
-                })
+                    })
                 .state('playground.preparation', {url: '/preparation?prepid'})
                 .state('playground.dataset', {url: '/dataset?datasetid'});
                 $urlRouterProvider.otherwise('/index/preparations/');

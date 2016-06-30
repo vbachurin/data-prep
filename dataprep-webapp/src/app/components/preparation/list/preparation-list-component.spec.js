@@ -93,6 +93,7 @@ describe('Preparation list component', () => {
     beforeEach(angular.mock.module('data-prep.preparation-list', ($provide) => {
         stateMock = {
             inventory: {
+                isFetchingPreparations : false,
                 folder: {
                     content: {
                         folders: folders,
@@ -106,13 +107,16 @@ describe('Preparation list component', () => {
 
     beforeEach(angular.mock.module('htmlTemplates'));
 
-    beforeEach(inject(($rootScope, $compile) => {
+    beforeEach(inject(($q, $rootScope, $compile, StateService, FolderService) => {
         scope = $rootScope.$new();
         createElement = () => {
             element = angular.element('<preparation-list></preparation-list>');
             $compile(element)(scope);
             scope.$digest();
         };
+
+        spyOn(StateService, 'setFetchingInventoryPreparations').and.returnValue();
+        spyOn(FolderService, 'init').and.returnValue($q.when());
     }));
 
     afterEach(inject(() => {
@@ -145,5 +149,112 @@ describe('Preparation list component', () => {
         expect(itemTitles.eq(0).text()).toBe('titi');
         expect(itemTitles.eq(1).text()).toBe('toto');
         expect(itemTitles.eq(2).text()).toBe('tutu');
+    }));
+});
+
+describe('Preparation list component loading', () => {
+    'use strict';
+    let scope, createElement, element, stateMock;
+
+    beforeEach(angular.mock.module('data-prep.preparation-list', ($provide) => {
+        stateMock = {
+            inventory: {
+                isFetchingPreparations : true,
+            }
+        };
+        $provide.constant('state', stateMock);
+    }));
+
+    beforeEach(angular.mock.module('htmlTemplates'));
+
+    beforeEach(inject(($q, $rootScope, $compile, StateService, FolderService) => {
+        scope = $rootScope.$new();
+        createElement = () => {
+            element = angular.element('<preparation-list></preparation-list>');
+            $compile(element)(scope);
+            scope.$digest();
+        };
+
+        spyOn(StateService, 'setFetchingInventoryPreparations').and.returnValue();
+        spyOn(FolderService, 'init').and.returnValue($q.when());
+    }));
+
+    afterEach(inject(() => {
+        scope.$destroy();
+        element.remove();
+    }));
+
+    it('should render loading flask', inject(() => {
+        //when
+        createElement();
+
+        //then
+        expect(element.find('.continuous-rotate').length).toBe(1);
+        expect(element.find('.continuous-rotate-text').length).toBe(1);
+    }));
+
+    it('should hide loading flask when fetching finishes', inject(() => {
+        //given
+        createElement();
+        expect(element.find('.continuous-rotate').length).toBe(1);
+        expect(element.find('.continuous-rotate-text').length).toBe(1);
+
+        //when
+        stateMock.inventory.isFetchingPreparations = false;
+        scope.$digest();
+
+        //then
+        expect(element.find('.continuous-rotate').length).toBe(0);
+        expect(element.find('.continuous-rotate-text').length).toBe(0);
+    }));
+});
+
+
+describe('Preparation list component with no preparations', () => {
+    'use strict';
+    let scope, createElement, element, stateMock;
+
+    beforeEach(angular.mock.module('data-prep.preparation-list', ($provide) => {
+        stateMock = {
+            inventory: {
+                isFetchingPreparations : false,
+            }
+        };
+        $provide.constant('state', stateMock);
+    }));
+
+    beforeEach(angular.mock.module('pascalprecht.translate', ($translateProvider) => {
+        $translateProvider.translations('en', {
+            'CLICK_ADD_PREPARATIONS': 'There are no preparations in this folder. Click on \'Add Preparation\' to add a preparation.'
+        });
+        $translateProvider.preferredLanguage('en');
+    }));
+
+    beforeEach(angular.mock.module('htmlTemplates'));
+
+    beforeEach(inject(($q, $rootScope, $compile, StateService, FolderService) => {
+        scope = $rootScope.$new();
+        createElement = () => {
+            element = angular.element('<preparation-list></preparation-list>');
+            $compile(element)(scope);
+            scope.$digest();
+        };
+
+        spyOn(StateService, 'setFetchingInventoryPreparations').and.returnValue();
+        spyOn(FolderService, 'init').and.returnValue($q.when());
+    }));
+
+    afterEach(inject(() => {
+        scope.$destroy();
+        element.remove();
+    }));
+
+    it('should render no preparation message', inject(() => {
+        //when
+        createElement();
+
+        //then
+        expect(element.find('.inventory-info-content').length).toBe(1);
+        expect(element.find('.inventory-info-content').eq(0).text()).toBe('There are no preparations in this folder. Click on \'Add Preparation\' to add a preparation.');
     }));
 });
