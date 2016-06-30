@@ -160,7 +160,7 @@ public class FormatAnalysis implements SynchronousDataSetAnalyzer {
     /**
      * Update the dataset schema information from its metadata.
      * 
-     * @param original the orginal dataset metadata.
+     * @param original the original dataset metadata.
      * @param updated the dataset to update.
      */
     public void update(DataSetMetadata original, DataSetMetadata updated) {
@@ -192,7 +192,7 @@ public class FormatAnalysis implements SynchronousDataSetAnalyzer {
 
         final Marker marker = Markers.dataset(dataSetId);
         LOG.debug(marker, "Parsing column information...");
-        try (InputStream content = store.getAsRaw(metadata)) {
+        try (InputStream content = store.getAsRaw(metadata, 10)) {
             SchemaParser parser = format.getFormatFamily().getSchemaGuesser();
 
             Schema schema = parser.parse(new SchemaParser.Request(content, metadata));

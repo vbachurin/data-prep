@@ -425,7 +425,7 @@ public class DataSetService extends BaseDataSetService {
                     completeWithUserData(dataSetMetadata);
                     dataSet.setMetadata(dataSetMetadata);
                 }
-                dataSet.setRecords(contentStore.stream(dataSetMetadata));
+                dataSet.setRecords(contentStore.stream(dataSetMetadata, -1)); // Disable line limit
                 return dataSet;
             } finally {
                 LOG.debug(marker, "Get done.");
