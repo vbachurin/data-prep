@@ -257,4 +257,28 @@ describe('Inventory state service', () => {
             expect(inventoryState.preparationsOrder).toBe('desc');
         }));
     });
+
+    describe('loading', () => {
+        it('should set FetchingDatasets', inject((inventoryState, InventoryStateService) => {
+            //given
+            inventoryState.isFetchingDatasets = false;
+
+            //when
+            InventoryStateService.setFetchingDatasets(true);
+
+            //then
+            expect(inventoryState.isFetchingDatasets).toBe(true);
+        }));
+
+        it('should set FetchingPreparations', inject((inventoryState, InventoryStateService) => {
+            //given
+            inventoryState.isFetchingPreparations = false;
+
+            //when
+            InventoryStateService.setFetchingPreparations(true);
+
+            //then
+            expect(inventoryState.isFetchingPreparations).toBe(true);
+        }));
+    });
 });

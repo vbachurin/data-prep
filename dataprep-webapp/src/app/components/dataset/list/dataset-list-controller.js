@@ -27,12 +27,13 @@
  * @requires data-prep.services.utils.service:MessageService
  */
 export default class DatasetListCtrl {
-    constructor(state, StateService,                                // app state
+    constructor($q, state, StateService,                                // app state
                 DatasetService, PreparationService,                 // inventory
                 UploadWorkflowService, UpdateWorkflowService,       // inventory workflow
                 TalendConfirmService, MessageService) {             // utils
         'ngInject';
 
+        this.$q = $q;
         this.state = state;
         this.StateService = StateService;
         this.DatasetService = DatasetService;
@@ -51,6 +52,16 @@ export default class DatasetListCtrl {
         this.clone = this.clone.bind(this);
 
         this.renamingList = [];
+    }
+
+    $onInit() {
+        this.StateService.setFetchingInventoryDatasets(true);
+        this.$q.all([
+            this.DatasetService.init(),
+            this.PreparationService.refreshPreparations()
+        ]).then(() => {
+            this.StateService.setFetchingInventoryDatasets(false);
+        });
     }
 
     /**

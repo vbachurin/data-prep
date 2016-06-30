@@ -131,6 +131,9 @@ export function StateService(RouteStateService, routeState, //
         setBreadcrumb: InventoryStateService.setBreadcrumb,
         setBreadcrumbChildren: InventoryStateService.setBreadcrumbChildren,
 
+        setFetchingInventoryDatasets: InventoryStateService.setFetchingDatasets,
+        setFetchingInventoryPreparations: InventoryStateService.setFetchingPreparations,
+
         //feedback
         showFeedback: FeedbackStateService.show,
         hideFeedback: FeedbackStateService.hide,

@@ -13,7 +13,9 @@
   ~ ============================================================================
   -->
 
-<div id="dataset-inventory-list" class="inventory-list">
+<div id="dataset-inventory-list"
+     class="inventory-list"
+     ng-if="$ctrl.state.inventory.datasets.length && !$ctrl.state.inventory.isFetchingDatasets">
     <inventory-item
             id="dataset_{{$index}}"
             ng-repeat="dataset in $ctrl.state.inventory.datasets track by dataset.id"
@@ -36,4 +38,18 @@
             remove-enabled="$ctrl.DatasetService.isRemoveEnabled(dataset)"
             toggle-favorite-enabled="true">
     </inventory-item>
+</div>
+
+<div ng-if="!$ctrl.state.inventory.datasets.length &&
+            !$ctrl.state.inventory.isFetchingDatasets"
+     class="inventory-feedback-datasets-list">
+    <div class="inventory-info-content" translate-once="CLICK_ADD_DATASETS"></div>
+</div>
+
+<div ng-if="$ctrl.state.inventory.isFetchingDatasets"
+     class="inventory-feedback-datasets-list">
+    <div class="inventory-info-content">
+        <div class="continuous-rotate"><i data-icon="c" class="icon"></i></div>
+        <div class="continuous-rotate-text" translate-once="LOADING"></div>
+    </div>
 </div>

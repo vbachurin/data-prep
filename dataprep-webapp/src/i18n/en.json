@@ -66,6 +66,8 @@
   "NO_CHILD": "Empty",
   "COPY": " Copy",
   "NO_RESULTS": "No results",
+  "CLICK_ADD_DATASETS": "There are no datasets to display. Click on 'Add Dataset' to add a dataset.",
+  "CLICK_ADD_PREPARATIONS": "There are no preparations in this folder. Click on 'Add Preparation' to add a preparation.",
 
   "_comment": "Preparations",
   "LAST_MODIFICATION": "last change",

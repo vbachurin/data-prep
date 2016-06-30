@@ -13,7 +13,9 @@
   ~ ============================================================================
   -->
 
-<div id="preparation-inventory-list" class="inventory-list">
+<div id="preparation-inventory-list"
+     class="inventory-list"
+     ng-if="($ctrl.state.inventory.folder.content.folders.length || $ctrl.state.inventory.folder.content.preparations.length) && !$ctrl.state.inventory.isFetchingPreparations">
 
     <inventory-item
             id="folder_{{$index}}"
@@ -39,6 +41,21 @@
             copy="$ctrl.openCopyMoveModal"
             remove-enabled="true">
     </inventory-item>
+</div>
+
+<div ng-if="!$ctrl.state.inventory.folder.content.preparations.length &&
+            !$ctrl.state.inventory.folder.content.folders.length &&
+            !$ctrl.state.inventory.isFetchingPreparations"
+     class="inventory-feedback-preparations-list">
+    <div class="inventory-info-content" translate-once="CLICK_ADD_PREPARATIONS"></div>
+</div>
+
+<div ng-if="$ctrl.state.inventory.isFetchingPreparations"
+     class="inventory-feedback-preparations-list">
+    <div class="inventory-info-content">
+        <div class="continuous-rotate"><i data-icon="c" class="icon"></i></div>
+        <div class="continuous-rotate-text" translate-once="LOADING"></div>
+    </div>
 </div>
 
 <talend-modal fullscreen="false"

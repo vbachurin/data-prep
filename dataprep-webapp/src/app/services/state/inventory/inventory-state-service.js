@@ -50,6 +50,9 @@ export const inventoryState = {
     },
     breadcrumb: [],
     breadcrumbChildren: {},
+
+    isFetchingDatasets: false,
+    isFetchingPreparations: false,
 };
 
 
@@ -72,7 +75,32 @@ export function InventoryStateService() {
 
         setPreparationsSort: setPreparationsSort,
         setPreparationsOrder: setPreparationsOrder,
+
+        setFetchingDatasets: setFetchingDatasets,
+        setFetchingPreparations: setFetchingPreparations,
     };
+
+    /**
+     * @ngdoc method
+     * @name setFetchingDatasets
+     * @methodOf data-prep.services.state.service:InventoryStateService
+     * @param {boolean} bool isFetchingDatasets flag
+     * @description Set isFetchingDatasets in Inventory
+     */
+    function setFetchingDatasets(bool) {
+        inventoryState.isFetchingDatasets = bool;
+    }
+
+    /**
+     * @ngdoc method
+     * @name setFetchingPreparations
+     * @methodOf data-prep.services.state.service:InventoryStateService
+     * @param {boolean} bool setFetchingPreparations flag
+     * @description Set isFetchingPreparations in Inventory
+     */
+    function setFetchingPreparations(bool) {
+        inventoryState.isFetchingPreparations = bool;
+    }
 
     /**
      * @ngdoc method

@@ -46,6 +46,13 @@ export default class PreparationListCtrl {
         this.removeFolder = this.removeFolder.bind(this);
     }
 
+    $onInit() {
+        this.StateService.setFetchingInventoryPreparations(true);
+        this.FolderService.init(this.$stateParams.folderId)
+            .then(() => {
+                this.StateService.setFetchingInventoryPreparations(false);
+            });
+    }
     /**
      * @ngdoc method
      * @name delete

@@ -28,7 +28,7 @@ describe('Dataset list controller', () => {
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(inject(($rootScope, $componentController, StateService, MessageService) => {
+    beforeEach(inject(($rootScope, $componentController, StateService, MessageService, DatasetService, PreparationService) => {
         scope = $rootScope.$new();
 
         createController = () => $componentController('datasetList', { $scope: scope });
@@ -36,7 +36,49 @@ describe('Dataset list controller', () => {
         spyOn(MessageService, 'error').and.returnValue();
         spyOn(MessageService, 'success').and.returnValue();
         spyOn(StateService, 'setDatasetName').and.returnValue();
+
+        spyOn(StateService, 'setFetchingInventoryDatasets').and.returnValue();
+        spyOn(DatasetService, 'init').and.returnValue();
+        spyOn(PreparationService, 'refreshPreparations').and.returnValue();
     }));
+
+    describe('init', () => {
+
+        it('should call setFetchingInventoryDatasets when init starts', inject((StateService) => {
+            //given
+            var ctrl = createController();
+
+            //when
+            ctrl.$onInit();
+
+            //then
+            expect(StateService.setFetchingInventoryDatasets).toHaveBeenCalledWith(true);
+        }));
+
+        it('should call dataset init and refreshPreparations', inject((DatasetService, PreparationService) => {
+            //given
+            var ctrl = createController();
+
+            //when
+            ctrl.$onInit();
+
+            //then
+            expect(DatasetService.init).toHaveBeenCalled();
+            expect(PreparationService.refreshPreparations).toHaveBeenCalled();
+        }));
+
+        it('should call setFetchingInventoryDatasets when init ends', inject(($rootScope, StateService) => {
+            //given
+            var ctrl = createController();
+
+            //when
+            ctrl.$onInit();
+            $rootScope.$digest();
+
+            //then
+            expect(StateService.setFetchingInventoryDatasets).toHaveBeenCalledWith(false);
+        }));
+    });
 
     describe('update dataset content', () => {
         it('should upload selected file', inject((UpdateWorkflowService) => {
