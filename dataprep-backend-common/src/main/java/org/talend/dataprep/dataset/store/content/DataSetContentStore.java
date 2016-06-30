@@ -18,6 +18,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.talend.dataprep.api.dataset.DataSetContent;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
@@ -32,6 +33,9 @@ import org.talend.dataprep.schema.Serializer;
  * Base class for DataSet content stores.
  */
 public abstract class DataSetContentStore {
+
+    @Value("${dataset.records.limit}")
+    private long sampleSize;
 
     /** Format guesser factory. */
     @Autowired
@@ -67,7 +71,7 @@ public abstract class DataSetContentStore {
      * rows in stream).
      */
     protected InputStream get(DataSetMetadata dataSetMetadata) {
-        return get(dataSetMetadata, -1);
+        return get(dataSetMetadata, sampleSize);
     }
 
     /**
@@ -101,7 +105,7 @@ public abstract class DataSetContentStore {
      * @return A valid <b>{@link DataSetRow}</b> stream.
      */
     public Stream<DataSetRow> stream(DataSetMetadata dataSetMetadata) {
-        return stream(dataSetMetadata, -1);
+        return stream(dataSetMetadata, sampleSize);
     }
 
     /**
@@ -138,7 +142,7 @@ public abstract class DataSetContentStore {
      * @return The content associated with <code>dataSetMetadata</code>.
      */
     public InputStream getAsRaw(DataSetMetadata dataSetMetadata) {
-        return getAsRaw(dataSetMetadata, -1);
+        return getAsRaw(dataSetMetadata, sampleSize);
     }
 
     /**
