@@ -11,7 +11,7 @@
 //
 //  ============================================================================
 
-package org.talend.dataprep.dataset.service.locator;
+package org.talend.dataprep.api.dataset.location.locator;
 
 import java.io.IOException;
 import java.io.InputStream;

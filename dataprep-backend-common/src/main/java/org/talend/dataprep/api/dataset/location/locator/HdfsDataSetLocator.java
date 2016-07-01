@@ -11,10 +11,11 @@
 //
 //  ============================================================================
 
-package org.talend.dataprep.dataset.service.locator;
+package org.talend.dataprep.api.dataset.location.locator;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.io.InputStream;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -22,8 +23,8 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetLocation;
 import org.talend.dataprep.api.dataset.location.HdfsLocation;
 
-import java.io.IOException;
-import java.io.InputStream;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Dataset locator for remote hdfs datasets.

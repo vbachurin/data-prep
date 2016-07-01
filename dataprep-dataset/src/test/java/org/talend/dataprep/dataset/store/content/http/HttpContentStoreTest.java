@@ -21,7 +21,6 @@ import static org.junit.Assert.assertThat;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.location.HttpLocation;
 import org.talend.dataprep.dataset.DataSetBaseTest;
-import org.talend.dataprep.dataset.service.locator.HttpDataSetLocator;
 
 /**
  * Unit test for the remote http datasets.
