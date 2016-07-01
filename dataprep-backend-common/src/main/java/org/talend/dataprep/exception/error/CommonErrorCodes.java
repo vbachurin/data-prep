@@ -60,7 +60,7 @@ public enum CommonErrorCodes implements ErrorCode {
     /**
      * Error thrown when data prep fails to list available tasks (for running remote jobs).
      */
-    UNABLE_TO_LIST_REMOTE_TASKS(INTERNAL_SERVER_ERROR.value()),
+    UNABLE_TO_LIST_REMOTE_TASKS(INTERNAL_SERVER_ERROR.value(), "error"),
     /**
      * Invalid credentials: TAC doesn't recognize the user/password as valid ones.
      */
