@@ -298,6 +298,19 @@ describe('Import controller', () => {
             const paramsExpected = { name: 'my dataset', url: '', type: 'hdfs' };
             expect(DatasetService.create).toHaveBeenCalledWith(paramsExpected, 'application/vnd.remote-ds.hdfs', { name: 'my dataset.csv' });
         }));
+
+        it('should close modal if import is successful', inject(($q, DatasetService) => {
+            // given
+            spyOn(DatasetService, 'checkNameAvailability').and.returnValue($q.when());
+            expect(ctrl.datasetNameModal).toBeFalsy();
+
+            // when
+            ctrl.import(StateMock.import.importTypes[0]);
+            scope.$digest();
+
+            // then
+            expect(ctrl.showModal).toBe(false);
+        }));
     });
 
     describe('onImportNameValidation', () => {
