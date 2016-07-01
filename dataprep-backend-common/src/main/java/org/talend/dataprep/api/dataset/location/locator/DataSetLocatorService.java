@@ -11,11 +11,7 @@
 //
 // ============================================================================
 
-package org.talend.dataprep.dataset.service.locator;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
+package org.talend.dataprep.api.dataset.location.locator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +19,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.talend.dataprep.api.dataset.DataSetLocation;
 import org.talend.dataprep.api.dataset.location.LocalStoreLocation;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
 
 /**
  * Service that retrieve dataset location from dataset locators.

@@ -46,6 +46,8 @@ import com.netflix.hystrix.HystrixCommand;
 @Scope("prototype")
 public class EnrichedPreparationDetails extends ChainedCommand<InputStream, InputStream> {
 
+    private static final String JOB_TYPE = "job";
+
     /** Used to retrieve the dataset metadata. */
     @Autowired
     private SecurityProxy securityProxy;
@@ -114,7 +116,7 @@ public class EnrichedPreparationDetails extends ChainedCommand<InputStream, Inpu
             final DataSetMetadata metadata = dataSet.getMetadata();
 
             // update the full run flag
-            boolean allowFullRun = metadata.getContent().getLimit().isPresent();
+            boolean allowFullRun = JOB_TYPE.equals(metadata.getLocation().getLocationType()) || metadata.getContent().getLimit().isPresent();
             preparationJsonRootNode.put("allowFullRun", allowFullRun);
 
             return IOUtils.toInputStream(preparationJsonRootNode.toString());
