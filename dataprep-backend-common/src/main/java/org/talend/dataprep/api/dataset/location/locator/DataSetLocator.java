@@ -11,13 +11,13 @@
 //
 //  ============================================================================
 
-package org.talend.dataprep.dataset.service.locator;
-
-import java.io.IOException;
-import java.io.InputStream;
+package org.talend.dataprep.api.dataset.location.locator;
 
 import org.talend.dataprep.api.dataset.DataSetLocation;
 import org.talend.dataprep.api.dataset.json.DataSetLocationMapping;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Interface for dataset locators.

@@ -11,26 +11,34 @@
 //
 //  ============================================================================
 
-package org.talend.dataprep.dataset.service.locator;
+package org.talend.dataprep.api.dataset.location.locator;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.talend.dataprep.api.dataset.DataSetLocation;
+import org.talend.dataprep.api.dataset.location.HttpLocation;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.talend.dataprep.api.dataset.DataSetLocation;
-import org.talend.dataprep.api.dataset.location.HttpLocation;
-import org.talend.dataprep.dataset.DataSetBaseTest;
+import static org.junit.Assert.*;
 
 /**
  * Unit test for the HttpDataSetLocator.
  * 
  * @see HttpDataSetLocator
  */
-public class HttpDataSetLocatorTest extends DataSetBaseTest {
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringApplicationConfiguration(classes = HdfsDataSetLocatorTest.class)
+@Configuration
+@ComponentScan(basePackages = "org.talend.dataprep")
+public class HttpDataSetLocatorTest {
 
     /** The dataset locator to test. */
     @Autowired
