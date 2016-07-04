@@ -341,43 +341,4 @@ describe('Dataset list controller', () => {
             expect(MessageService.success).toHaveBeenCalledWith('COPY_SUCCESS_TITLE', 'COPY_SUCCESS');
         }));
     });
-
-    describe('share', () => {
-        it('should be a shared dataset', inject(() => {
-            //given
-            const dataset = { id: '13a82cf7a16b87', sharedDataSet: true };
-            const ctrl = createController();
-
-            //when
-            var itemShared = ctrl.isItemShared(dataset);
-
-            //then
-            expect(itemShared).toBe(true);
-        }));
-
-        it('should not be a shared dataset', inject(() => {
-            //given
-            const dataset = { id: '13a82cf7a16b87', sharedDataSet: false };
-            const ctrl = createController();
-
-            //when
-            var itemShared = ctrl.isItemShared(dataset);
-
-            //then
-            expect(itemShared).toBe(false);
-        }));
-
-        it('should not be a shared dataset when no share information is available', inject(() => {
-            //given
-            const dataset = { id: '13a82cf7a16b87'};
-            const ctrl = createController();
-
-            //when
-            var itemShared = ctrl.isItemShared(dataset);
-
-            //then
-            expect(itemShared).toBe(false);
-        }));
-
-    });
 });

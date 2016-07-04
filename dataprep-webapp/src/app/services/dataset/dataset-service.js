@@ -40,6 +40,7 @@ export default function DatasetService($q, state, StateService, DatasetListServi
         toggleFavorite: DatasetListService.toggleFavorite,
         isRemoveEnabled: isRemoveEnabled,
         isProcessCertificationEnabled: isProcessCertificationEnabled,
+        isRenameEnabled: isRenameEnabled,
 
         //content
         getMetadata: DatasetRestService.getMetadata,
@@ -149,6 +150,16 @@ export default function DatasetService($q, state, StateService, DatasetListServi
      * @description check if Remove is enabled
      */
     function isRemoveEnabled() {
+        return true;
+    }
+
+    /**
+     * @ngdoc method
+     * @name isRenameEnabled
+     * @methodOf data-prep.services.dataset.service:DatasetService
+     * @description check if Rename is enabled
+     */
+    function isRenameEnabled() {
         return true;
     }
 

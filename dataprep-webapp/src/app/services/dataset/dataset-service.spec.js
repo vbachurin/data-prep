@@ -521,7 +521,7 @@ describe('Dataset Service', () => {
                     return $q.resolve();
                 });
             }));
-            
+
             it('should get unique dataset name', inject(($rootScope, DatasetService) => {
                 // given
                 const name = 'my dataset';
@@ -550,7 +550,7 @@ describe('Dataset Service', () => {
                 expect(uniqueName).toBe('my second dataset (2)');
             }));
         });
-        
+
         describe('checkNameAvailability', () => {
             it('should resolve on name availability', inject(($rootScope, $q, DatasetRestService, DatasetService) => {
                 // given
@@ -652,6 +652,24 @@ describe('Dataset Service', () => {
             expect(result[0]).toEqual({ preparation: preparations[0], dataset: datasets[1] });
             expect(result[1]).toEqual({ preparation: preparations[1], dataset: datasets[2] });
             expect(result[2]).toEqual({ preparation: preparations[2], dataset: datasets[1] });
+        }));
+    });
+
+
+    describe('actions enabled', () => {
+        it('should disable ProcessCertification', inject((DatasetService) => {
+            // then
+            expect(DatasetService.isProcessCertificationEnabled()).toBeFalsy();
+        }));
+
+        it('should enable remove', inject((DatasetService) => {
+            // then
+            expect(DatasetService.isRemoveEnabled()).toBeTruthy();
+        }));
+
+        it('should disable rename', inject((DatasetService) => {
+            // then
+            expect(DatasetService.isRenameEnabled()).toBeTruthy();
         }));
     });
 });

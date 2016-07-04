@@ -19,7 +19,7 @@ describe('InventoryItem component', () => {
     }
 
     let scope,  createElement, element, ctrl;
-    
+
     const dataset = {
         'id': '12ce6c32-bf80-41c8-92e5-66d70f22ec1f',
         'name': 'US States',
@@ -57,17 +57,6 @@ describe('InventoryItem component', () => {
         'id': '12ce6c32-bf80-41c8-92e5-66d70f22ec1f',
         'name': 'US States',
         'type': 'application/vnd.remote-ds.job'
-    };
-
-    const shared_dataset = {
-        'id': '39f6a264-1eb7-4f72-9680-98acc9933bab',
-        'name': 'US States shared',
-        'type': 'text/csv',
-        'created': '1437020219748',
-        'owner': {
-            'displayName': "anonymous user"
-        },
-        'sharedDataset': 'true'
     };
 
     const preparation = {
@@ -135,7 +124,7 @@ describe('InventoryItem component', () => {
                 scope.dataset = newDataSet;
 
                 element = angular.element(`
-                    <inventory-item 
+                    <inventory-item
                         item="dataset"
                         details="DATASET_DETAILS"
                         type="dataset"></inventory-item>
@@ -156,7 +145,7 @@ describe('InventoryItem component', () => {
             const iconSrc = icon.find('img')[0].src;
             expect(strEndsWith(iconSrc, '/assets/images/inventory/csv_file.png')).toBe(true);
         });
-        
+
         it('should select XLS icon', () => {
             // when
             createElement(xls_dataset);
@@ -207,7 +196,6 @@ describe('InventoryItem component', () => {
             scope.copy = () =>{};
             scope.processCertif = () =>{};
             scope.rename = () =>{};
-            scope.isItemShared = () =>{};
             scope.open = () =>{};
             scope.update = () =>{};
             scope.remove = () =>{};
@@ -226,13 +214,13 @@ describe('InventoryItem component', () => {
                     'process-certification="processCertif" ' +
                     'copy="copy" ' +
                     'rename="rename" ' +
-                    'is-item-shared="isItemShared" ' +
+                    'rename-enabled="rename"' +
                     'remove="remove" ' +
                     'toggle-favorite="toggleFavorite" ' +
                     'update="update" ' +
                     'process-certification-enabled="true"'+
                     'toggle-favorite-enabled="toggleFavorite"' +
-                    'remove-enabled="true"' +
+                    'remove-enabled="remove"' +
                     '></inventory-item>');
                 $compile(element)(scope);
                 scope.$digest();
@@ -417,6 +405,35 @@ describe('InventoryItem component', () => {
                 const title = element.find('a').eq(3).attr('title');
                 expect(title.indexOf(dataset.name) >= 0).toBeTruthy();
             });
+
+
+            it('should display READONLY title', () => {
+                // given
+                scope.rename = null;
+
+                // when
+                createElement();
+
+                // then
+                const title = element.find('.inventory-text > span').eq(0).text().trim();
+                expect(title).toBe(dataset.name);
+            });
+
+            it('should NOT display remove icon', () => {
+                // given
+                scope.remove = null;
+
+                // when
+                createElement();
+
+                var links = element.find('a');
+
+                // then
+                for (var i=0; i<links.length; i++) {
+                    const icon = element.find('a').eq(i).attr('data-icon');
+                    expect(icon).not.toBe('e');
+                }
+            });
         });
 
         describe('actions on inventory components', () => {
@@ -458,8 +475,9 @@ describe('InventoryItem component', () => {
             });
 
             it('should open inventory item on readonly inventory title click', () => {
+                scope.rename = null;
+
                 // given
-                scope.isItemShared = jasmine.createSpy('isItemShared').and.returnValue(true);
                 createElement();
                 const click = angular.element.Event('click');
                 const title = element.find('.inventory-text > span').eq(0);
@@ -568,97 +586,6 @@ describe('InventoryItem component', () => {
 
     });
 
-    describe('shared dataset', () => {
-
-        beforeEach(inject(($rootScope, $compile) => {
-            scope = $rootScope.$new();
-
-            scope.dataset = shared_dataset;
-            scope.openDataset = () =>{};
-            scope.openRelatedInventory = () =>{};
-            scope.copy = () =>{};
-            scope.processCertif = () =>{};
-            scope.rename = () =>{};
-            scope.isItemShared = () =>{return true};
-            scope.open = () =>{};
-            scope.update = () =>{};
-            scope.remove = () =>{};
-            scope.openRelatedInv = () =>{};
-            scope.toggleFavorite = () =>{};
-            scope.preparations = [];
-            createElement = () => {
-                element = angular.element('<inventory-item ' +
-                    'item="dataset" ' +
-                    'details="DATASET_DETAILS" ' +
-                    'type="dataset" ' +
-                    'related-inventories="preparations" ' +
-                    'related-inventories-type="preparation" ' +
-                    'open-related-inventory="openRelatedInventory" ' +
-                    'open="open" ' +
-                    'process-certification="processCertif" ' +
-                    'copy="copy" ' +
-                    'rename="rename" ' +
-                    'is-item-shared="isItemShared" ' +
-                    'remove="remove" ' +
-                    'toggle-favorite="toggleFavorite" ' +
-                    'update="update" ' +
-                    'process-certification-enabled="true"'+
-                    'toggle-favorite-enabled="toggleFavorite"' +
-                    'remove-enabled="true"' +
-                    '></inventory-item>');
-                $compile(element)(scope);
-                scope.$digest();
-                ctrl = element.controller('inventoryItem');
-                return element;
-            };
-        }));
-
-        describe('display inventory components', () => {
-
-            it('should display inventory details', inject(($filter) => {
-                // given
-                const momentize = $filter('TDPMoment');
-
-                // when
-                createElement();
-
-                // then
-                expect(element.find('.inventory-description').eq(0).text()).toBe('owned by anonymous user, created ' + momentize('1437020219748') + ', contains  lines');
-            }));
-
-            it('should display READONLY title', () => {
-                // when
-                createElement();
-
-                // then
-                const title = element.find('.inventory-text > span').eq(0).text().trim();
-                expect(title).toBe(shared_dataset.name);
-            });
-
-            it('should display 2 dividers', () => {
-                // when
-                createElement();
-
-                // then
-                expect(element.find('.divider').length).toBe(2);
-            });
-
-            it('should NOT display remove icon', () => {
-                // when
-                createElement();
-
-                var links = element.find('a');
-
-                // then
-                for (var i=0; i<links.length; i++) {
-                    const icon = element.find('a').eq(i).attr('data-icon');
-                    expect(icon).not.toBe('e');
-                }
-            });
-        });
-
-    });
-
     describe('preparation', () => {
         beforeEach(inject(($rootScope, $compile) => {
             scope = $rootScope.$new();
@@ -715,7 +642,7 @@ describe('InventoryItem component', () => {
 
             createElement = () => {
                 element = angular.element(`
-                    <inventory-item 
+                    <inventory-item
                         item="folder"
                         details="FOLDER_DETAILS"
                         type="folder"
@@ -803,7 +730,7 @@ describe('InventoryItem component', () => {
 
             // when
             createElement();
-            
+
             // then
             const actions = element.find('.inventory-actions').eq(0);
             expect(actions[0].hasAttribute('insertion-inventory-actions')).toBe(true);

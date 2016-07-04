@@ -38,6 +38,7 @@
  *      open-enabled="true"
  *      process-certification-enabled="true"
  *      remove-enabled="true"
+ *      rename-enabled="true"
  *      toggle-favorite-enabled="true"
  *      process-certification-enabled="true">
  * </inventory-item>
@@ -51,7 +52,7 @@
  * @param {function}    processCertification attributes certification to the inventory item
  * @param {function}    remove the inventory item
  * @param {function}    rename the inventory item
- * @param {boolean}     isItemShared true if the item is shared
+ * @param {boolean}     renameEnabled true if rename is enabled
  * @param {array}       relatedInventories related inventory items
  * @param {string}      relatedInventoriesType of the related inventory item
  * @param {function}    toggleFavorite the inventory item
@@ -75,7 +76,6 @@ const InventoryItemcomponent = {
         processCertification: '=',
         remove: '=',
         rename: '=',
-        isItemShared: '=',
         relatedInventories: '=',
         relatedInventoriesType: '@',
         toggleFavorite: '=',
@@ -83,8 +83,9 @@ const InventoryItemcomponent = {
         update: '=',
         processCertificationEnabled: '<',
         removeEnabled: '<',
-        toggleFavoriteEnabled: '<'
+        toggleFavoriteEnabled: '<',
+        renameEnabled: '<'
     }
 };
 
-export default InventoryItemcomponent; 
+export default InventoryItemcomponent;

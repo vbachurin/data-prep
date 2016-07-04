@@ -37,7 +37,7 @@
 
     <!-- Descriptions -->
     <div class="inventory-text">
-        <talend-editable-text ng-if="$ctrl.open && $ctrl.rename && !$ctrl.isItemShared($ctrl.item)"
+        <talend-editable-text ng-if="$ctrl.renameEnabled"
                               text="$ctrl.item.name"
                               text-class="inventory-title"
                               text-title="{{'OPEN_ACTION' | translate: $ctrl.getTooltipContent(false)}}"
@@ -45,7 +45,7 @@
                               on-validate="$ctrl.rename($ctrl.item, text)"
                               validate-only-on-change>
         </talend-editable-text>
-        <span ng-if="!$ctrl.open || !$ctrl.rename || $ctrl.isItemShared($ctrl.item)"
+        <span ng-if="!$ctrl.renameEnabled"
               class="inventory-title"
               ng-bind-html="$ctrl.item.name"
               title="{{$ctrl.item.tooltipName}}"
@@ -104,7 +104,7 @@
            translate-values="{type: $ctrl.type, name: $ctrl.item.name}"
            ng-click="$ctrl.copy($ctrl.item)"></a>
 
-        <a ng-if="$ctrl.removeEnabled && !$ctrl.isItemShared($ctrl.item)"
+        <a ng-if="$ctrl.removeEnabled"
            data-icon="e"
            class="btn-icon"
            translate-once-title="DELETE_ACTION"
