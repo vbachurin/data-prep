@@ -791,6 +791,8 @@ public class PreparationServiceTest extends BasePreparationTest {
 
         final String preparationId = createPreparationWithAPI("{\"name\": \"test_name\", \"dataSetId\": \"1234\"}");
         final Collection<Preparation> preparations = repository.listAll(Preparation.class);
+        final Collection<Step> steps = repository.listAll(Step.class);
+        final Collection<PreparationActions> actions = repository.listAll(PreparationActions.class);
         assertThat(repository.listAll(Preparation.class).size(), is(1));
 
         final Preparation preparation = preparations.iterator().next();
@@ -805,6 +807,49 @@ public class PreparationServiceTest extends BasePreparationTest {
         assertThat(repository.listAll(Preparation.class).size(), is(0));
         assertThat(folderRepository.findFolderEntries(preparationId, PREPARATION).iterator().hasNext(), is(false));
     }
+
+    @Test
+    public void testDeleteCleanUp() throws Exception {
+        // given
+        assertThat(repository.listAll(Preparation.class).size(), is(0));
+        final String preparationId = createPreparationWithAPI("{\"name\": \"test_name\", \"dataSetId\": \"1234\"}");
+        applyTransformation(preparationId, "copy_lastname.json");
+
+        assertThat(repository.listAll(Preparation.class).size(), is(1));
+        assertThat(repository.listAll(Step.class).size(), is(2));
+        assertThat(repository.listAll(PreparationActions.class).size(), is(2));
+
+        // when
+        when().delete("/preparations/{id}", preparationId).then().statusCode(HttpStatus.OK.value());
+
+        // then
+        assertThat(repository.listAll(Preparation.class).size(), is(0));
+        assertThat(repository.listAll(Step.class).size(), is(1));
+        assertThat(repository.listAll(PreparationActions.class).size(), is(1));
+    }
+
+    @Test
+    public void testDeleteCleanUpWithSharedSteps() throws Exception {
+        // given
+        assertThat(repository.listAll(Preparation.class).size(), is(0));
+        final String preparationId1 = createPreparationWithAPI("{\"name\": \"test_name\", \"dataSetId\": \"1234\"}");
+        applyTransformation(preparationId1, "copy_lastname.json");
+        final String preparationId2 = createPreparationWithAPI("{\"name\": \"test_name\", \"dataSetId\": \"1234\"}");
+        applyTransformation(preparationId2, "copy_lastname.json");
+
+        assertThat(repository.listAll(Preparation.class).size(), is(2));
+        assertThat(repository.listAll(Step.class).size(), is(2));
+        assertThat(repository.listAll(PreparationActions.class).size(), is(2));
+
+        // when
+        when().delete("/preparations/{id}", preparationId1).then().statusCode(HttpStatus.OK.value());
+
+        // then
+        assertThat(repository.listAll(Preparation.class).size(), is(1));
+        assertThat(repository.listAll(Step.class).size(), is(2));
+        assertThat(repository.listAll(PreparationActions.class).size(), is(2));
+    }
+
 
     @Test
     public void update() throws Exception {
