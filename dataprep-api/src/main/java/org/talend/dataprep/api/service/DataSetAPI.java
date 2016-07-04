@@ -164,13 +164,14 @@ public class DataSetAPI extends APIService {
 
     @RequestMapping(value = "/api/datasets/{id}", method = GET, consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get a data set by id.", produces = APPLICATION_JSON_VALUE, notes = "Get a data set based on given id.")
-    public StreamingResponseBody get(@ApiParam(value = "Id of the data set to get") @PathVariable(value = "id") String id) {
+    public StreamingResponseBody get(@ApiParam(value = "Id of the data set to get") @PathVariable(value = "id") String id,
+                                     @ApiParam(value = "Whether output should be the full data set (true) or not (false).") @RequestParam(value = "fullContent", defaultValue = "false", required = false) boolean fullContent) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Requesting dataset #{} (pool: {})...", id, getConnectionStats());
         }
         try {
             HystrixCommand<InputStream> retrievalCommand;
-            if (limit.limitContentSize()) {
+            if (limit.limitContentSize() || fullContent) {
                 retrievalCommand = getCommand(DataSetGet.class, id);
             } else {
                 retrievalCommand = getCommand(DataSetSampleGet.class, id);
