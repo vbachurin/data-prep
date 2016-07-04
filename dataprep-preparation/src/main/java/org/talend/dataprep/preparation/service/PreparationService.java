@@ -39,6 +39,7 @@ import org.talend.dataprep.lock.store.LockedResource.LockUserInfo;
 import org.talend.dataprep.lock.store.LockedResourceRepository;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.preparation.store.PreparationRepository;
+import org.talend.dataprep.preparation.task.PreparationCleaner;
 import org.talend.dataprep.security.Security;
 import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
 import org.talend.dataprep.transformation.api.action.validation.ActionMetadataValidation;
@@ -126,6 +127,9 @@ public class PreparationService {
 
     @Autowired
     private LockedResourceRepository lockedResourceRepository;
+
+    @Autowired
+    PreparationCleaner preparationCleaner;
 
     /**
      * Create a preparation from the http request body.
@@ -483,6 +487,7 @@ public class PreparationService {
         }
         // Ensure that the preparation is not locked elsewhere
         lock(id);
+        preparationCleaner.removePreparationOrphanSteps(preparationToDelete.getId());
         preparationRepository.remove(preparationToDelete);
 
         // delete the associated folder entries
