@@ -92,7 +92,7 @@ public abstract class BaseTransformationService {
         // Full run execution (depends on the export parameters).
         try {
             final List<ExportStrategy> orderedStrategies = sampleExportStrategies.stream() //
-                    .sorted((s1, s2) -> s1.order() - s2.order()) //
+                    .sorted((s1, s2) -> Integer.compare(s1.order(), s2.order())) //
                     .collect(Collectors.toList());
             final Optional<ExportStrategy> electedStrategy = orderedStrategies.stream()
                     .filter(exportStrategy -> exportStrategy.accept(parameters)) //

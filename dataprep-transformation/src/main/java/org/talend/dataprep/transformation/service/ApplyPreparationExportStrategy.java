@@ -32,7 +32,7 @@ public class ApplyPreparationExportStrategy extends StandardExportStrategy {
 
     @Override
     public int order() {
-        return 2;
+        return 3;
     }
 
     @Override

@@ -36,7 +36,7 @@ public class OptimizedExportStrategy extends StandardExportStrategy {
 
     @Override
     public int order() {
-        return Integer.MIN_VALUE; // Ensure this is the first strategy tried.
+        return 0; // Ensure this is the first strategy tried.
     }
 
     @Override
