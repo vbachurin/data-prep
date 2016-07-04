@@ -36,10 +36,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.talend.dataprep.api.folder.Folder;
 import org.talend.dataprep.api.folder.FolderEntry;
-import org.talend.dataprep.api.preparation.*;
 import org.talend.dataprep.lock.store.LockedResource;
 import org.talend.dataprep.preparation.BasePreparationTest;
 import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
+import org.talend.dataprep.util.SortAndOrderHelper;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -47,7 +47,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.path.json.JsonPath;
 import com.jayway.restassured.response.Response;
-import org.talend.dataprep.util.SortAndOrderHelper;
 
 /**
  * Unit test for the preparation service.
@@ -791,6 +790,8 @@ public class PreparationServiceTest extends BasePreparationTest {
 
         final String preparationId = createPreparationWithAPI("{\"name\": \"test_name\", \"dataSetId\": \"1234\"}");
         final Collection<Preparation> preparations = repository.listAll(Preparation.class);
+        final Collection<Step> steps = repository.listAll(Step.class);
+        final Collection<PreparationActions> actions = repository.listAll(PreparationActions.class);
         assertThat(repository.listAll(Preparation.class).size(), is(1));
 
         final Preparation preparation = preparations.iterator().next();
@@ -804,6 +805,48 @@ public class PreparationServiceTest extends BasePreparationTest {
         // then
         assertThat(repository.listAll(Preparation.class).size(), is(0));
         assertThat(folderRepository.findFolderEntries(preparationId, PREPARATION).iterator().hasNext(), is(false));
+    }
+
+    @Test
+    public void testDeleteCleanUp() throws Exception {
+        // given
+        assertThat(repository.listAll(Preparation.class).size(), is(0));
+        final String preparationId = createPreparationWithAPI("{\"name\": \"test_name\", \"dataSetId\": \"1234\"}");
+        applyTransformation(preparationId, "copy_lastname.json");
+
+        assertThat(repository.listAll(Preparation.class).size(), is(1));
+        assertThat(repository.listAll(Step.class).size(), is(2));
+        assertThat(repository.listAll(PreparationActions.class).size(), is(2));
+
+        // when
+        when().delete("/preparations/{id}", preparationId).then().statusCode(HttpStatus.OK.value());
+
+        // then
+        assertThat(repository.listAll(Preparation.class).size(), is(0));
+        assertThat(repository.listAll(Step.class).size(), is(1));
+        assertThat(repository.listAll(PreparationActions.class).size(), is(1));
+    }
+
+    @Test
+    public void testDeleteCleanUpWithSharedSteps() throws Exception {
+        // given
+        assertThat(repository.listAll(Preparation.class).size(), is(0));
+        final String preparationId1 = createPreparationWithAPI("{\"name\": \"test_name\", \"dataSetId\": \"1234\"}");
+        applyTransformation(preparationId1, "copy_lastname.json");
+        final String preparationId2 = createPreparationWithAPI("{\"name\": \"test_name\", \"dataSetId\": \"1234\"}");
+        applyTransformation(preparationId2, "copy_lastname.json");
+
+        assertThat(repository.listAll(Preparation.class).size(), is(2));
+        assertThat(repository.listAll(Step.class).size(), is(2));
+        assertThat(repository.listAll(PreparationActions.class).size(), is(2));
+
+        // when
+        when().delete("/preparations/{id}", preparationId1).then().statusCode(HttpStatus.OK.value());
+
+        // then
+        assertThat(repository.listAll(Preparation.class).size(), is(1));
+        assertThat(repository.listAll(Step.class).size(), is(2));
+        assertThat(repository.listAll(PreparationActions.class).size(), is(2));
     }
 
     @Test
