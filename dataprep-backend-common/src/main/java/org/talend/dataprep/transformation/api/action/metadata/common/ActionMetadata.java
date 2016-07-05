@@ -44,13 +44,41 @@ public abstract class ActionMetadata {
     private MessagesBundle messagesBundle;
 
     public enum Behavior {
+        /**
+         * Action changes all values in row (e.g. {@link org.talend.dataprep.transformation.api.action.metadata.delete.DeleteLines}).
+         */
         VALUES_ALL,
+        /**
+         * Action change only the type of the column (not its data) like {@link org.talend.dataprep.transformation.api.action.metadata.column.TypeChange}.
+         */
         METADATA_CHANGE_TYPE,
+        /**
+         * Action change only the name of the column (not its data) like {@link org.talend.dataprep.transformation.api.action.metadata.column.Rename}.
+         */
         METADATA_CHANGE_NAME,
+        /**
+         * Action creates new columns (like {@link org.talend.dataprep.transformation.api.action.metadata.text.Split}).
+         */
         METADATA_CREATE_COLUMNS,
+        /**
+         * Action creates new columns & value but based on an original column.
+         */
         METADATA_COPY_COLUMNS,
+        /**
+         * Action deletes column.
+         */
         METADATA_DELETE_COLUMNS,
+        /**
+         * Action modifies values in this working column.
+         */
         VALUES_COLUMN,
+        /**
+         * Action modifies values in this working column <b>and</b> in all columns used in the action's parameters.
+         */
+        VALUES_MULTIPLE_COLUMNS,
+        /**
+         * Action requires up-to-date statistics before it can be executed.
+         */
         NEED_STATISTICS
     }
 

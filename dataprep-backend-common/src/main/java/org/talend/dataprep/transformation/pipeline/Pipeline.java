@@ -16,6 +16,8 @@ import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.dataset.statistics.StatisticsAdapter;
 import org.talend.dataprep.api.preparation.Action;
+import org.talend.dataprep.parameters.Parameter;
+import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataprep.quality.AnalyzerService;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
@@ -224,6 +226,17 @@ public class Pipeline implements Node, RuntimeNode {
                         case VALUES_COLUMN:
                             final String modifiedColumnId = action.getParameters().get(ImplicitParameters.COLUMN_ID.getKey());
                             modifiedColumns.add(modifiedColumnId);
+                            break;
+                        case VALUES_MULTIPLE_COLUMNS:
+                            // Add the action's source column
+                            modifiedColumns.add(action.getParameters().get(ImplicitParameters.COLUMN_ID.getKey()));
+                            // ... then add all column parameter (COLUMN_ID is string, not column)
+                            final List<Parameter> parameters = actionMetadata.getParameters();
+                            modifiedColumns.addAll(parameters.stream() //
+                                    .filter(parameter -> ParameterType
+                                            .valueOf(parameter.getType().toUpperCase()) == ParameterType.COLUMN) //
+                                    .map(parameter -> action.getParameters().get(parameter.getName())) //
+                                    .collect(Collectors.toList()));
                             break;
                         case METADATA_COPY_COLUMNS:
                             // TODO Ignore column copy from analysis (metadata did not change)
