@@ -95,6 +95,7 @@
     @include size(2em);
     background: $modal-background;
     cursor: pointer;
+    z-index: 1;
 
     &:after,
     &:before {
