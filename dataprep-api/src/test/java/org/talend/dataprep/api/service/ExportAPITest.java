@@ -57,6 +57,33 @@ public class ExportAPITest extends ApiServiceTestBase {
         assertEquals(expectedExport, export);
     }
 
+    /**
+     * @see <a href="https://jira.talendforge.org/browse/TDP-2313">TDP-2313_trying_to_export_a_dataset_does_not_work</a>
+     * @throws Exception
+     */
+    @Test
+    public void TDP_2313() throws Exception {
+        // given
+        final String datasetId = createDataset("export/export_dataset.csv", "testExport", "text/csv");
+
+        final String expectedExport = IOUtils
+                .toString(this.getClass().getResourceAsStream("export/expected_export_default_separator.csv"));
+
+        // when
+        final String export = given() //
+                .formParam("exportType", "CSV") //
+                .formParam("preparationId", "") //
+                .formParam("stepId", "") //
+                .formParam("datasetId", datasetId)
+                .when() //
+                .expect().statusCode(200).log().ifError() //
+                .get("/api/export") //
+                .asString();
+
+        // then
+        assertEquals(expectedExport, export);
+    }
+
     @Test
     public void checkHeaders() throws Exception {
         // given

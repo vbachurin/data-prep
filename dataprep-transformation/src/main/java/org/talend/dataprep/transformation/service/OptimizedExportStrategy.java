@@ -47,6 +47,10 @@ public class OptimizedExportStrategy extends StandardExportStrategy {
         if (parameters.getContent() != null) {
             return false;
         }
+
+        if (StringUtils.isEmpty(parameters.getPreparationId())){
+            return false;
+        }
         final OptimizedPreparationInput optimizedPreparationInput = new OptimizedPreparationInput(parameters);
         return optimizedPreparationInput.applicable();
     }
