@@ -44,15 +44,6 @@ export default class HomeCtrl {
          * @type {string}
          */
         this.showRightPanelIcon = 'u';
-
-        /**
-         * @ngdoc property
-         * @name uploadingDatasets
-         * @propertyOf data-prep.home.controller:HomeCtrl
-         * @description The current uploading datasets
-         * @type {object[]}
-         */
-        this.uploadingDatasets = state.dataset.uploadingDatasets;
     }
 
     $onInit() {

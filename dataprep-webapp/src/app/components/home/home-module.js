@@ -12,6 +12,8 @@
  ============================================================================*/
 
 import HomeComponent from './home-component';
+import HomeDatasetComponent from './dataset/home-dataset-component';
+import HomePreparationComponent from './preparation/home-preparation-component';
 
 (() => {
     'use strict';
@@ -49,5 +51,7 @@ import HomeComponent from './home-component';
             'data-prep.services.state',
             'data-prep.import',
         ])
-        .component('home', HomeComponent);
+        .component('home', HomeComponent)
+        .component('homeDataset', HomeDatasetComponent)
+        .component('homePreparation', HomePreparationComponent);
 })();

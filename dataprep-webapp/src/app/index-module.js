@@ -73,15 +73,13 @@
                     .state('nav.index.datasets', {
                         url: '/datasets',
                         views: {
-                            'home-content-header': {template: '<dataset-header></dataset-header>'},
-                            'home-content': {template: '<dataset-list></dataset-list>'},
+                            'home-content': {template: '<home-dataset></home-dataset>'}
                         }
                     })
                     .state('nav.index.preparations', {
                         url: '/preparations/{folderId:.*}',
                         views: {
-                            'home-content-header': { template: '<preparation-header></preparation-header>' },
-                            'home-content': { template: '<preparation-list></preparation-list>' },
+                            'home-content': { template: '<home-preparation></home-preparation>'}
                         }
                     })
                     .state('playground', {

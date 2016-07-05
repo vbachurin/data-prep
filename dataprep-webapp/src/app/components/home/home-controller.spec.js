@@ -42,14 +42,6 @@ describe('Home controller', () => {
         $window.localStorage.removeItem(DATA_INVENTORY_PANEL_KEY);
     }));
 
-    it('should init upload list to empty array', () => {
-        //when
-        ctrl = createController();
-
-        //then
-        expect(ctrl.uploadingDatasets).toEqual([]);
-    });
-
     it('should init right panel state with value from local storage', inject(($window) => {
         //given
         $window.localStorage.setItem(DATA_INVENTORY_PANEL_KEY, 'true');
@@ -66,7 +58,7 @@ describe('Home controller', () => {
         beforeEach(inject( () => {
             ctrl = createController();
         }));
-        
+
         describe('right panel management', () => {
             it('should toggle right panel flag', inject(() => {
                 //given

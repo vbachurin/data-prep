@@ -42,17 +42,23 @@ $footer-height: 49px;
             }
         }
     }
+    .home-content {
+        @include flex-grow(1);
+    }
 
     .home-main {
         @extend .flex-center;
         @extend .flex-column;
 
-        #inventory-list-header,
-        #upload-list-container {
+        height: 100%;
+        width: 100%;
+
+        .inventory-list-header,
+        .upload-list-container {
             @include flex-shrink(0);
         }
 
-        #inventory-list-container {
+        .inventory-list-container {
             @include flex-flexible();
             position: relative;
         }
