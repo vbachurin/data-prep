@@ -1,20 +1,19 @@
 {
   "actions": [
     {
-      "action": "uppercase",
+      "action": "change_date_pattern",
       "parameters": {
         "column_id": "0000",
-        "column_name": "name",
+        "column_name": "date",
         "scope": "column"
       }
     },
     {
-      "action": "rename_column",
+      "action": "lookup",
       "parameters": {
-        "new_column_name": "blah blah blah",
         "column_id": "0001",
-        "column_name": "count",
-        "scope": "column"
+        "column_name": "blah blah blah",
+        "scope": "dataset"
       }
     }
   ]

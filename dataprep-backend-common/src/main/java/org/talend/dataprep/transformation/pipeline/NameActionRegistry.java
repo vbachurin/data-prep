@@ -1,18 +1,24 @@
 package org.talend.dataprep.transformation.pipeline;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 
+import java.util.List;
+
 @Component
-public class SpringActionRegistry implements ActionRegistry { // NOSONAR
+public class NameActionRegistry implements ActionRegistry { // NOSONAR
 
     @Autowired
-    ApplicationContext applicationContext;
+    private List<ActionMetadata> actions;
 
     @Override
     public ActionMetadata get(String name) {
-        return applicationContext.getBean(ActionMetadata.ACTION_BEAN_PREFIX + name, ActionMetadata.class);
+        for (ActionMetadata action : actions) {
+            if (action.getName().equals(name)) {
+                return action;
+            }
+        }
+        return null;
     }
 }

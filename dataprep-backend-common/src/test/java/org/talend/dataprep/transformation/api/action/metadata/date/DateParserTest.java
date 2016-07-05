@@ -13,8 +13,13 @@
 
 package org.talend.dataprep.transformation.api.action.metadata.date;
 
-import static org.junit.Assert.assertEquals;
-import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.*;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.statistics.PatternFrequency;
+import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -26,12 +31,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.api.dataset.statistics.PatternFrequency;
-import org.talend.dataprep.api.type.Type;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Unit test for the DateParser class.
@@ -51,8 +51,8 @@ public class DateParserTest extends BaseDateTests {
     @Test
     public void getPatterns_should_remove_invalid_or_empty_then_sort_patterns() throws IOException {
         // given
-        final DataSetRow row = getRow("toto", "04/25/1999", "tata");
-        setStatistics(row, "0001", ChangeDatePatternTest.class.getResourceAsStream("statistics_with_different_test_cases.json")); //contains valid, invalid, empty patterns
+        final DataSetRow row = ActionMetadataTestUtils.getRow("toto", "04/25/1999", "tata");
+        ActionMetadataTestUtils.setStatistics(row, "0001", ChangeDatePatternTest.class.getResourceAsStream("statistics_with_different_test_cases.json")); //contains valid, invalid, empty patterns
         final List<PatternFrequency> patternFrequencies = row.getRowMetadata().getById("0001").getStatistics().getPatternFrequencies();
 
         // when
@@ -104,7 +104,7 @@ public class DateParserTest extends BaseDateTests {
 
     @Test
     public void shouldComputePatternFromDQ() {
-        final ColumnMetadata column = getColumn(Type.DATE);
+        final ColumnMetadata column = ActionMetadataTestUtils.getColumn(Type.DATE);
         assertEquals(new DatePattern("d/M/yyyy", 1), action.guessPattern("01/02/2015", column));
         assertEquals(new DatePattern("yyyy-MM-dd", 1), action.guessPattern("2015-01-02", column));
         assertEquals(new DatePattern("9999", 1), action.guessPattern("2015", column));
@@ -113,26 +113,26 @@ public class DateParserTest extends BaseDateTests {
 
     @Test(expected = DateTimeException.class)
     public void shouldNotComputePatternFromDQBecauseEmptyValue() {
-        final ColumnMetadata column = getColumn(Type.DATE);
+        final ColumnMetadata column = ActionMetadataTestUtils.getColumn(Type.DATE);
         action.guessPattern("", column);
     }
 
     @Test(expected = DateTimeException.class)
     public void shouldNotComputePatternFromDQBecauseNullValue() {
-        final ColumnMetadata column = getColumn(Type.DATE);
+        final ColumnMetadata column = ActionMetadataTestUtils.getColumn(Type.DATE);
         action.guessPattern(null, column);
     }
 
     @Test(expected = DateTimeException.class)
     public void shouldNotComputePatternFromDQBecauseInvalidValue() {
-        final ColumnMetadata column = getColumn(Type.DATE);
+        final ColumnMetadata column = ActionMetadataTestUtils.getColumn(Type.DATE);
         action.guessPattern("not a date", column);
     }
 
     @Test
     public void shouldUpdateColumnStatisticsWithNewDatePattern() {
         // given
-        ColumnMetadata column = getColumn(Type.DATE);
+        ColumnMetadata column = ActionMetadataTestUtils.getColumn(Type.DATE);
         column.getStatistics().getPatternFrequencies().add(new PatternFrequency("yyyy", 19));
 
         // when

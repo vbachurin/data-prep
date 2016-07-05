@@ -13,20 +13,15 @@
 
 package org.talend.dataprep.transformation.api.action.metadata.date;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.talend.dataprep.api.dataset.ColumnMetadata;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.dataset.statistics.Statistics;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.metadata.AbstractMetadataBaseTest;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Base class for all date related unit tests.
@@ -41,7 +36,7 @@ public abstract class BaseDateTests extends AbstractMetadataBaseTest {
 
         ObjectMapper mapper = new ObjectMapper();
         final Statistics statistics = mapper.readerFor(Statistics.class)
-                .readValue(CompareDatesTest.class.getResourceAsStream(statisticsFileName));
+                .readValue(ChangeDatePatternTest.class.getResourceAsStream(statisticsFileName));
 
         Map<String, String> values = new HashMap<>();
         values.put("0000", "lorem bacon");

@@ -27,7 +27,6 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.quality.AnalyzerService;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionFactory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ReplaceOnValueHelper;
-import org.talend.dataprep.transformation.api.action.metadata.date.CompareDatesTest;
 import org.talend.dataprep.transformation.pipeline.ActionRegistry;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -68,7 +67,7 @@ public abstract class AbstractMetadataBaseTest {
         ColumnMetadata column = createMetadata(id, name, type);
         ObjectMapper mapper = new ObjectMapper();
         final Statistics statistics = mapper.readerFor(Statistics.class)
-                .readValue(CompareDatesTest.class.getResourceAsStream(statisticsFileName));
+                .readValue(getClass().getResourceAsStream("/org/talend/dataprep/transformation/api/action/metadata/date/" + statisticsFileName));
         column.setStatistics(statistics);
         return column;
     }

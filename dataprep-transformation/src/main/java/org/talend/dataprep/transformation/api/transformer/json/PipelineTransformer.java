@@ -14,7 +14,7 @@ import org.talend.dataprep.transformation.api.transformer.Transformer;
 import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
 import org.talend.dataprep.transformation.api.transformer.configuration.Configuration;
 import org.talend.dataprep.transformation.format.WriterRegistrationService;
-import org.talend.dataprep.transformation.pipeline.ActionRegistry;
+import org.talend.dataprep.transformation.api.action.ActionRegistry;
 import org.talend.dataprep.transformation.pipeline.Pipeline;
 import org.talend.dataprep.transformation.pipeline.model.WriterNode;
 

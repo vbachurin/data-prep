@@ -26,6 +26,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -62,10 +63,6 @@ public class Lookup extends ActionMetadata implements DataSetAction {
 
     /** This class' logger. */
     private static final Logger LOGGER = LoggerFactory.getLogger(Lookup.class);
-
-    /** DataSet service url. */
-    @Value("${dataset.service.url}")
-    private String datasetServiceUrl;
 
     /** Lookup parameters */
     public enum Parameters {
@@ -159,10 +156,13 @@ public class Lookup extends ActionMetadata implements DataSetAction {
             }
             //
             LookupRowMatcher rowMatcher = context.get("rowMatcher", //
-                        (p) -> {
-                       String dataSetId = p.get(LOOKUP_DS_ID.getKey());
-                       return applicationContext.getBean(LookupRowMatcher.class, dataSetId);
-            });
+                    new Function<Map<String, String>, LookupRowMatcher>() {
+
+                        @Override public LookupRowMatcher apply(Map<String, String> p) {
+                            String dataSetId = p.get(LOOKUP_DS_ID.getKey());
+                            return applicationContext.getBean(LookupRowMatcher.class, dataSetId);
+                        }
+                    });
             // Create lookup result columns
             final Map<String, String> parameters = context.getParameters();
             final String columnId = parameters.get(COLUMN_ID.getKey());
