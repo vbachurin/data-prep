@@ -1,14 +1,6 @@
 {
   "actions": [
     {
-      "action": "change_date_pattern",
-      "parameters": {
-        "column_id": "0000",
-        "column_name": "date",
-        "scope": "column"
-      }
-    },
-    {
       "action": "lookup",
       "parameters": {
         "column_id": "0001",

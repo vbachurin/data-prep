@@ -110,7 +110,7 @@ public class ChangeDatePatternTest extends BaseDateTests {
     public void should_process_row() throws Exception {
         // given
         final DataSetRow row = getRow("toto", "04/25/1999", "tata");
-        setStatistics(row, "0001", ChangeDatePatternTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
+        setStatistics(row, "0001", getDateTestJsonAsStream("statistics_MM_dd_yyyy.json"));
 
         // when
         ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
@@ -124,7 +124,7 @@ public class ChangeDatePatternTest extends BaseDateTests {
     public void test_TDP_1108_invalid_pattern() throws Exception {
         // given
         final DataSetRow row = getRow("toto", "04/25/1999", "tata");
-        setStatistics(row, "0001", ChangeDatePatternTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
+        setStatistics(row, "0001", getDateTestJsonAsStream("statistics_MM_dd_yyyy.json"));
         parameters.put(ChangeDatePattern.NEW_PATTERN, "custom");
         parameters.put(ChangeDatePattern.CUSTOM_PATTERN, "ff");
 
@@ -140,7 +140,7 @@ public class ChangeDatePatternTest extends BaseDateTests {
     public void test_TDP_1108_empty_pattern() throws Exception {
         // given
         final DataSetRow row = getRow("toto", "04/25/1999", "tata");
-        setStatistics(row, "0001", ChangeDatePatternTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
+        setStatistics(row, "0001", getDateTestJsonAsStream("statistics_MM_dd_yyyy.json"));
         parameters.put(ChangeDatePattern.NEW_PATTERN, "custom");
         parameters.put(ChangeDatePattern.CUSTOM_PATTERN, "");
 
@@ -156,7 +156,7 @@ public class ChangeDatePatternTest extends BaseDateTests {
     public void should_set_new_pattern_as_most_used_one() throws Exception {
         // given
         final DataSetRow row = getRow("toto", "04/25/1999", "tata");
-        setStatistics(row, "0001", ChangeDatePatternTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
+        setStatistics(row, "0001", getDateTestJsonAsStream("statistics_MM_dd_yyyy.json"));
 
         // when
         ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
@@ -181,7 +181,7 @@ public class ChangeDatePatternTest extends BaseDateTests {
     public void should_process_row_when_value_does_not_match_most_frequent_pattern() throws Exception {
         // given
         DataSetRow row = getRow("toto", "04-25-09", "tata");
-        setStatistics(row, "0001", ChangeDatePatternTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
+        setStatistics(row, "0001", getDateTestJsonAsStream("statistics_MM_dd_yyyy.json"));
 
         // when
         ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
@@ -195,7 +195,7 @@ public class ChangeDatePatternTest extends BaseDateTests {
     public void should_process_row_when_value_does_not_match_any_pattern() throws Exception {
         // given
         DataSetRow row = getRow("toto", "NA", "tata");
-        setStatistics(row, "0001", ChangeDatePatternTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
+        setStatistics(row, "0001", getDateTestJsonAsStream("statistics_MM_dd_yyyy.json"));
 
         // when
         ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
@@ -212,7 +212,7 @@ public class ChangeDatePatternTest extends BaseDateTests {
     public void should_process_row_with_user_set_pattern_TDP_1657() throws Exception {
         // given
         DataSetRow row = getRow("toto", "Apr-25-09", "tata");
-        setStatistics(row, "0001", ChangeDatePatternTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
+        setStatistics(row, "0001", getDateTestJsonAsStream("statistics_MM_dd_yyyy.json"));
 
         parameters.put(ChangeDatePattern.FROM_MODE, ChangeDatePattern.FROM_MODE_CUSTOM);
         parameters.put(ChangeDatePattern.FROM_CUSTOM_PATTERN, "MMM-dd-yy");
@@ -229,7 +229,7 @@ public class ChangeDatePatternTest extends BaseDateTests {
     public void test_TDP_2255_not_working_with_timezone_in_format() throws Exception {
         // given
         DataSetRow row = getRow("toto", "Apr-25-09", "tata");
-        setStatistics(row, "0001", ChangeDatePatternTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
+        setStatistics(row, "0001", getDateTestJsonAsStream("statistics_MM_dd_yyyy.json"));
 
         parameters.put(ChangeDatePattern.FROM_MODE, ChangeDatePattern.FROM_MODE_CUSTOM);
         parameters.put(ChangeDatePattern.FROM_CUSTOM_PATTERN, "MMM-dd-yy");
@@ -249,7 +249,7 @@ public class ChangeDatePatternTest extends BaseDateTests {
     public void test_TDP_2255_should_work_without_timezone_in_format() throws Exception {
         // given
         DataSetRow row = getRow("toto", "Apr-25-09", "tata");
-        setStatistics(row, "0001", ChangeDatePatternTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
+        setStatistics(row, "0001", getDateTestJsonAsStream("statistics_MM_dd_yyyy.json"));
 
         parameters.put(ChangeDatePattern.FROM_MODE, ChangeDatePattern.FROM_MODE_CUSTOM);
         parameters.put(ChangeDatePattern.FROM_CUSTOM_PATTERN, "MMM-dd-yy");
@@ -269,7 +269,7 @@ public class ChangeDatePatternTest extends BaseDateTests {
     public void should_process_row_when_value_is_empty() throws Exception {
         // given
         DataSetRow row = getRow("toto", "", "tata");
-        setStatistics(row, "0001", ChangeDatePatternTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
+        setStatistics(row, "0001", getDateTestJsonAsStream("statistics_MM_dd_yyyy.json"));
 
         // when
         ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));

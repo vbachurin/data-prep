@@ -20,6 +20,7 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.metadata.AbstractMetadataBaseTest;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,7 +37,7 @@ public abstract class BaseDateTests extends AbstractMetadataBaseTest {
 
         ObjectMapper mapper = new ObjectMapper();
         final Statistics statistics = mapper.readerFor(Statistics.class)
-                .readValue(ChangeDatePatternTest.class.getResourceAsStream(statisticsFileName));
+                .readValue(getDateTestJsonAsStream(statisticsFileName));
 
         Map<String, String> values = new HashMap<>();
         values.put("0000", "lorem bacon");
@@ -53,6 +54,10 @@ public abstract class BaseDateTests extends AbstractMetadataBaseTest {
         row.getRowMetadata().getById("0002").setName("steps");
 
         return row;
+    }
+
+    protected InputStream getDateTestJsonAsStream(String testFileName) {
+        return BaseDateTests.class.getResourceAsStream(testFileName);
     }
 
 }

@@ -36,11 +36,6 @@ import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 
-/**
- * Unit test for the ChangeDatePattern action.
- *
- * @see ChangeDatePattern
- */
 public class ModifyDateTest extends BaseDateTests {
 
     /** The action to test. */
@@ -92,7 +87,7 @@ public class ModifyDateTest extends BaseDateTests {
         //given
         Map<String, String> missingParameters = new HashMap<>();
         missingParameters.put("column_id", "0000");
-        missingParameters.put(ChangeDatePattern.NEW_PATTERN, "toto");
+        missingParameters.put(ModifyDate.NEW_PATTERN, "toto");
 
         //when
         ActionTestWorkbench.test(new DataSetRow(Collections.emptyMap()), actionRegistry, factory.create(action, missingParameters));
@@ -112,7 +107,7 @@ public class ModifyDateTest extends BaseDateTests {
     public void should_process_row() throws Exception {
         // given
         final DataSetRow row = getRow("toto", "04/25/1999", "tata");
-        setStatistics(row, "0001", ModifyDateTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
+        setStatistics(row, "0001", getDateTestJsonAsStream("statistics_MM_dd_yyyy.json"));
 
         // when
         ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
@@ -126,7 +121,7 @@ public class ModifyDateTest extends BaseDateTests {
     public void should_not_process_row_wrong_amount() throws Exception {
         // given
         final DataSetRow row = getRow("toto", "04/25/1999", "tata");
-        setStatistics(row, "0001", ModifyDateTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
+        setStatistics(row, "0001", getDateTestJsonAsStream("statistics_MM_dd_yyyy.json"));
         parameters.put(CONSTANT_VALUE, "ouf");
 
         // when
@@ -141,7 +136,7 @@ public class ModifyDateTest extends BaseDateTests {
     public void should_process_row_alternate_unit() throws Exception {
         // given
         final DataSetRow row = getRow("toto", "04/25/1999", "tata");
-        setStatistics(row, "0001", ModifyDateTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
+        setStatistics(row, "0001", getDateTestJsonAsStream("statistics_MM_dd_yyyy.json"));
         parameters.put(TIME_UNIT_PARAMETER, MONTHS.name());
 
         // when
@@ -156,7 +151,7 @@ public class ModifyDateTest extends BaseDateTests {
     public void should_process_row_alternate_amount() throws Exception {
         // given
         final DataSetRow row = getRow("toto", "04/25/1999", "tata");
-        setStatistics(row, "0001", ModifyDateTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
+        setStatistics(row, "0001", getDateTestJsonAsStream("statistics_MM_dd_yyyy.json"));
         parameters.put(CONSTANT_VALUE, "4");
 
         // when
@@ -171,7 +166,7 @@ public class ModifyDateTest extends BaseDateTests {
     public void should_process_row_other_column() throws Exception {
         // given
         final DataSetRow row = getRow("toto", "04/25/1999", "5");
-        setStatistics(row, "0001", ModifyDateTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
+        setStatistics(row, "0001", getDateTestJsonAsStream("statistics_MM_dd_yyyy.json"));
         parameters.remove(CONSTANT_VALUE);
         parameters.put(MODE_PARAMETER, OTHER_COLUMN_MODE);
         parameters.put(SELECTED_COLUMN_PARAMETER, "0002");
@@ -189,7 +184,7 @@ public class ModifyDateTest extends BaseDateTests {
     public void should_process_row_other_column_bigger_number() throws Exception {
         // given
         final DataSetRow row = getRow("toto", "04/25/1999", "162");
-        setStatistics(row, "0001", ModifyDateTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
+        setStatistics(row, "0001", getDateTestJsonAsStream("statistics_MM_dd_yyyy.json"));
         parameters.put(MODE_PARAMETER, OTHER_COLUMN_MODE);
         parameters.put(SELECTED_COLUMN_PARAMETER, "0002");
         parameters.put(TIME_UNIT_PARAMETER, DAYS.name());
@@ -206,7 +201,7 @@ public class ModifyDateTest extends BaseDateTests {
     public void should_process_row_other_column_float_number() throws Exception {
         // given
         final DataSetRow row = getRow("toto", "04/25/1999", "5.0");
-        setStatistics(row, "0001", ModifyDateTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
+        setStatistics(row, "0001", getDateTestJsonAsStream("statistics_MM_dd_yyyy.json"));
         parameters.put(MODE_PARAMETER, OTHER_COLUMN_MODE);
         parameters.put(SELECTED_COLUMN_PARAMETER, "0002");
         parameters.put(TIME_UNIT_PARAMETER, DAYS.name());
@@ -223,7 +218,7 @@ public class ModifyDateTest extends BaseDateTests {
     public void should_process_row_other_column_float_number_round() throws Exception {
         // given
         final DataSetRow row = getRow("toto", "04/25/1999", "5.2");
-        setStatistics(row, "0001", ModifyDateTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
+        setStatistics(row, "0001", getDateTestJsonAsStream("statistics_MM_dd_yyyy.json"));
         parameters.put(MODE_PARAMETER, OTHER_COLUMN_MODE);
         parameters.put(SELECTED_COLUMN_PARAMETER, "0002");
         parameters.put(TIME_UNIT_PARAMETER, DAYS.name());
@@ -240,7 +235,7 @@ public class ModifyDateTest extends BaseDateTests {
     public void should_not_process_row_other_column_wrong_amount() throws Exception {
         // given
         final DataSetRow row = getRow("toto", "04/25/1999", "ah");
-        setStatistics(row, "0001", ModifyDateTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
+        setStatistics(row, "0001", getDateTestJsonAsStream("statistics_MM_dd_yyyy.json"));
         parameters.put(MODE_PARAMETER, OTHER_COLUMN_MODE);
         parameters.put(SELECTED_COLUMN_PARAMETER, "0002");
         parameters.put(TIME_UNIT_PARAMETER, DAYS.name());
@@ -257,7 +252,7 @@ public class ModifyDateTest extends BaseDateTests {
     public void should_process_row_when_value_does_not_match_most_frequent_pattern() throws Exception {
         // given
         DataSetRow row = getRow("toto", "04-25-09", "tata");
-        setStatistics(row, "0001", ModifyDateTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
+        setStatistics(row, "0001", getDateTestJsonAsStream("statistics_MM_dd_yyyy.json"));
 
         // when
         ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
@@ -271,7 +266,7 @@ public class ModifyDateTest extends BaseDateTests {
     public void should_process_row_when_value_does_not_match_any_pattern() throws Exception {
         // given
         DataSetRow row = getRow("toto", "NA", "tata");
-        setStatistics(row, "0001", ModifyDateTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
+        setStatistics(row, "0001", getDateTestJsonAsStream("statistics_MM_dd_yyyy.json"));
 
         // when
         ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
@@ -285,7 +280,7 @@ public class ModifyDateTest extends BaseDateTests {
     public void should_process_row_when_value_is_empty() throws Exception {
         // given
         DataSetRow row = getRow("toto", "", "tata");
-        setStatistics(row, "0001", ModifyDateTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
+        setStatistics(row, "0001", getDateTestJsonAsStream("statistics_MM_dd_yyyy.json"));
 
         // when
         ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));

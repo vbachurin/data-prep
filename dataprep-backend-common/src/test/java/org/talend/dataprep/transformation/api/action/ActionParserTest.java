@@ -100,11 +100,9 @@ public class ActionParserTest {
         List<Action> actualActions = actionParser.parse(json);
 
         // then
-        assertTrue(actualActions.size() == 2);
-        Action firstAction = actualActions.get(0);
-        assertEquals("change_date_pattern", firstAction.getName());
-        Action secondAction = actualActions.get(1);
-        assertEquals("lookup", secondAction.getName());
+        assertTrue(actualActions.size() == 1);
+        Action actionParsed = actualActions.get(0);
+        assertEquals("lookup", actionParsed.getName());
     }
 
 

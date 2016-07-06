@@ -39,11 +39,6 @@ import org.talend.dataprep.transformation.api.action.metadata.category.ActionCat
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-/**
- * Unit test for the ChangeDatePattern action.
- *
- * @see ChangeDatePattern
- */
 public class ExtractDateTokensTest extends BaseDateTests {
 
     /** The action to test. */
@@ -55,7 +50,7 @@ public class ExtractDateTokensTest extends BaseDateTests {
     @Before
     public void init() throws IOException {
         parameters = ActionMetadataTestUtils
-                .parseParameters(ExtractDateTokensTest.class.getResourceAsStream("extractDateTokensAction.json"));
+                .parseParameters(getDateTestJsonAsStream("extractDateTokensAction.json"));
     }
 
     @Test
@@ -79,7 +74,7 @@ public class ExtractDateTokensTest extends BaseDateTests {
         values.put("0002", "tata");
 
         final DataSetRow row = new DataSetRow(values);
-        setStatistics(row, "0001", ChangeDatePatternTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
+        setStatistics(row, "0001", getDateTestJsonAsStream("statistics_MM_dd_yyyy.json"));
 
         final Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "toto");
@@ -105,7 +100,7 @@ public class ExtractDateTokensTest extends BaseDateTests {
         values.put("0001", "04/25/1999 15:45");
         values.put("0002", "tata");
         final DataSetRow row = new DataSetRow(values);
-        setStatistics(row, "0001", ChangeDatePatternTest.class.getResourceAsStream("statistics_MM_dd_yyyy_HH_mm.json"));
+        setStatistics(row, "0001", getDateTestJsonAsStream("statistics_MM_dd_yyyy_HH_mm.json"));
 
         final Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "toto");
@@ -134,7 +129,7 @@ public class ExtractDateTokensTest extends BaseDateTests {
         values.put("0001", "04-25-09");
         values.put("0002", "tata");
         final DataSetRow row = new DataSetRow(values);
-        setStatistics(row, "0001", ChangeDatePatternTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
+        setStatistics(row, "0001", getDateTestJsonAsStream("statistics_MM_dd_yyyy.json"));
 
         final Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "toto");
@@ -163,7 +158,7 @@ public class ExtractDateTokensTest extends BaseDateTests {
         values.put("0001", "NA");
         values.put("0002", "tata");
         final DataSetRow row = new DataSetRow(values);
-        setStatistics(row, "0001", ChangeDatePatternTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
+        setStatistics(row, "0001", getDateTestJsonAsStream("statistics_MM_dd_yyyy.json"));
 
         final Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "toto");
@@ -190,7 +185,7 @@ public class ExtractDateTokensTest extends BaseDateTests {
         input.add(createMetadata("0002"));
         final RowMetadata rowMetadata = new RowMetadata(input);
         ObjectMapper mapper = new ObjectMapper();
-        final Statistics statistics = mapper.readerFor(Statistics.class).readValue(ChangeDatePatternTest.class.getResourceAsStream("statistics_yyyy-MM-dd.json"));
+        final Statistics statistics = mapper.readerFor(Statistics.class).readValue(getDateTestJsonAsStream("statistics_yyyy-MM-dd.json"));
         input.get(1).setStatistics(statistics);
 
         // when
