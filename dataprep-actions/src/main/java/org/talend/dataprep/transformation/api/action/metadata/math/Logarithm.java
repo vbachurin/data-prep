@@ -12,17 +12,17 @@
 //  ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
-import static org.talend.dataprep.transformation.api.action.metadata.math.Logarithm.LOGARITHM_NAME;
-
 import org.apache.commons.math3.util.FastMath;
 import org.springframework.stereotype.Component;
 import org.talend.daikon.number.BigDecimalParser;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+
+import static org.talend.dataprep.transformation.api.action.metadata.math.Logarithm.LOGARITHM_NAME;
 
 /**
  * Create a new column with Logarithm
  */
-@Component(ActionMetadata.ACTION_BEAN_PREFIX + LOGARITHM_NAME)
+@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + LOGARITHM_NAME)
 public class Logarithm extends AbstractMathNoParameterAction {
 
     protected static final String LOGARITHM_NAME = "logarithm_numbers";

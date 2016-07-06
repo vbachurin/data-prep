@@ -12,10 +12,11 @@
 //  ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
-import java.math.RoundingMode;
-
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+
+import java.math.RoundingMode;
 
 /**
  * Returns the smallest (closest to negative infinity) value that is greater than or equal to the value and is equal to
@@ -23,7 +24,7 @@ import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetad
  * 
  * @see RoundingMode#CEILING
  */
-@Component(RoundCeil.ACTION_BEAN_PREFIX + RoundCeil.ACTION_NAME)
+@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + RoundCeil.ACTION_NAME)
 public class RoundCeil extends AbstractRound {
 
     /** The action name. */

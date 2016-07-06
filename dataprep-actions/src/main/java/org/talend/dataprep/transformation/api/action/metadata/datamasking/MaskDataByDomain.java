@@ -13,11 +13,6 @@
 
 package org.talend.dataprep.transformation.api.action.metadata.datamasking;
 
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,14 +26,20 @@ import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.context.ActionContext.ActionStatus;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataquality.datamasking.semantic.ValueDataMasker;
+
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Mask sensitive data according to the semantic category.
  */
-@Component(MaskDataByDomain.ACTION_BEAN_PREFIX + MaskDataByDomain.ACTION_NAME)
-public class MaskDataByDomain extends ActionMetadata implements ColumnAction {
+@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + MaskDataByDomain.ACTION_NAME)
+public class MaskDataByDomain extends ActionMetadataAdapter implements ColumnAction {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MaskDataByDomain.class);
 

@@ -13,21 +13,22 @@
 
 package org.talend.dataprep.transformation.api.action.metadata.delete;
 
-import static org.talend.dataprep.transformation.api.action.metadata.category.ActionScope.EMPTY;
-
-import java.util.Collections;
-import java.util.List;
-
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
+
+import java.util.Collections;
+import java.util.List;
+
+import static org.talend.dataprep.transformation.api.action.metadata.category.ActionScope.EMPTY;
 
 /**
  * Delete row when value is empty.
  */
-@Component(DeleteEmpty.ACTION_BEAN_PREFIX + DeleteEmpty.DELETE_EMPTY_ACTION_NAME)
+@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + DeleteEmpty.DELETE_EMPTY_ACTION_NAME)
 public class DeleteEmpty extends AbstractDelete implements ColumnAction {
 
     /**

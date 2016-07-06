@@ -13,23 +13,21 @@
 
 package org.talend.dataprep.transformation.api.action.metadata.date;
 
-import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
-import org.talend.dataprep.transformation.api.action.metadata.common.*;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataprep.parameters.SelectParameter;
+import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
+import org.talend.dataprep.transformation.api.action.metadata.common.*;
 
-@Component(CompareDates.ACTION_BEAN_PREFIX + CompareDates.ACTION_NAME)
+import java.time.LocalDateTime;
+import java.util.Map;
+
+@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + CompareDates.ACTION_NAME)
 public class CompareDates extends AbstractCompareAction implements ColumnAction, OtherColumnParameters, CompareAction {
 
     /**

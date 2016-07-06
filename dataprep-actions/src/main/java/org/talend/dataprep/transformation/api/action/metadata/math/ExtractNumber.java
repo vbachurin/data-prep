@@ -12,13 +12,6 @@
 // ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
-import java.math.BigDecimal;
-import java.text.CharacterIterator;
-import java.text.DecimalFormat;
-import java.text.StringCharacterIterator;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.stereotype.Component;
@@ -30,7 +23,15 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
+
+import java.math.BigDecimal;
+import java.text.CharacterIterator;
+import java.text.DecimalFormat;
+import java.text.StringCharacterIterator;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This will extract the numeric part
@@ -53,8 +54,8 @@ import org.talend.dataprep.transformation.api.action.metadata.common.ColumnActio
  *     <li>pico p 0.000000000001</li>
  * </ul>
  */
-@Component(ActionMetadata.ACTION_BEAN_PREFIX + ExtractNumber.EXTRACT_NUMBER_ACTION_NAME)
-public class ExtractNumber extends ActionMetadata implements ColumnAction {
+@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + ExtractNumber.EXTRACT_NUMBER_ACTION_NAME)
+public class ExtractNumber extends ActionMetadataAdapter implements ColumnAction {
 
     /** Name of the action. */
     public static final String EXTRACT_NUMBER_ACTION_NAME = "extract_number"; //$NON-NLS-1$

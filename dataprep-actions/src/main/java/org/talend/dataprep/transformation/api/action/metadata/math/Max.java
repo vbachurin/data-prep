@@ -12,18 +12,18 @@
 //  ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
-import static org.talend.dataprep.transformation.api.action.metadata.math.Max.MAX_NAME;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.math3.util.FastMath;
 import org.springframework.stereotype.Component;
 import org.talend.daikon.number.BigDecimalParser;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+
+import static org.talend.dataprep.transformation.api.action.metadata.math.Max.MAX_NAME;
 
 /**
  * Calculate Max with a constant or an other column 
  */
-@Component(ActionMetadata.ACTION_BEAN_PREFIX + MAX_NAME)
+@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + MAX_NAME)
 public class Max extends AbstractMathOneParameterAction {
 
     protected static final String MAX_NAME = "max_numbers";

@@ -12,12 +12,6 @@
 // ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
-
 import org.talend.daikon.number.BigDecimalParser;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -26,14 +20,21 @@ import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
 
 import static org.talend.dataprep.parameters.ParameterType.INTEGER;
 
 /**
  * Abstract class for Math operation on {@link Type#NUMERIC} values
  */
-public abstract class AbstractRound extends ActionMetadata implements ColumnAction {
+public abstract class AbstractRound extends ActionMetadataAdapter implements ColumnAction {
 
     /** Number of digit after the decimal symbol. */
     protected static final String PRECISION = "precision"; //$NON-NLS-1$

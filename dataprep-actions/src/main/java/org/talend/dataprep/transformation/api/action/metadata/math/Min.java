@@ -12,18 +12,18 @@
 //  ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
-import static org.talend.dataprep.transformation.api.action.metadata.math.Min.MIN_NAME;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.math3.util.FastMath;
 import org.springframework.stereotype.Component;
 import org.talend.daikon.number.BigDecimalParser;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+
+import static org.talend.dataprep.transformation.api.action.metadata.math.Min.MIN_NAME;
 
 /**
  * Calculate Min with a constant or an other column 
  */
-@Component(ActionMetadata.ACTION_BEAN_PREFIX + MIN_NAME)
+@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + MIN_NAME)
 public class Min extends AbstractMathOneParameterAction {
 
     protected static final String MIN_NAME = "min_numbers";

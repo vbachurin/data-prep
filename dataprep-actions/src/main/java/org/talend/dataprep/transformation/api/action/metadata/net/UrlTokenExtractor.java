@@ -13,9 +13,9 @@
 
 package org.talend.dataprep.transformation.api.action.metadata.net;
 
-import java.net.URI;
-
 import org.talend.dataprep.api.type.Type;
+
+import java.net.URI;
 
 /**
  * Interface for all url token extractor.

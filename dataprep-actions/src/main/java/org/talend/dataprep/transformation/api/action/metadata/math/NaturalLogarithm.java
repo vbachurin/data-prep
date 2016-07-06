@@ -12,19 +12,17 @@
 //  ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
-import static org.talend.dataprep.transformation.api.action.metadata.math.NaturalLogarithm.NATURAL_LOGARITHM_NAME;
-
-import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.math3.util.FastMath;
 import org.springframework.stereotype.Component;
 import org.talend.daikon.number.BigDecimalParser;
-import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+
+import static org.talend.dataprep.transformation.api.action.metadata.math.NaturalLogarithm.NATURAL_LOGARITHM_NAME;
 
 /**
  * Create a new column with Natural Logarithm
  */
-@Component(ActionMetadata.ACTION_BEAN_PREFIX + NATURAL_LOGARITHM_NAME)
+@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + NATURAL_LOGARITHM_NAME)
 public class NaturalLogarithm extends AbstractMathNoParameterAction {
 
     protected static final String NATURAL_LOGARITHM_NAME = "natural_logarithm_numbers";

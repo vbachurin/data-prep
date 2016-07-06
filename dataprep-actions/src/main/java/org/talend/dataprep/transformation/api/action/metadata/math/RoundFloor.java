@@ -12,10 +12,11 @@
 //  ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
-import java.math.RoundingMode;
-
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+
+import java.math.RoundingMode;
 
 /**
  * This will compute the largest (closest to positive infinity) value that is less than or equal to the cell value and
@@ -23,7 +24,7 @@ import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetad
  *
  * @see RoundingMode#FLOOR
  */
-@Component(RoundFloor.ACTION_BEAN_PREFIX + RoundFloor.ACTION_NAME)
+@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + RoundFloor.ACTION_NAME)
 public class RoundFloor extends AbstractRound {
 
     /**

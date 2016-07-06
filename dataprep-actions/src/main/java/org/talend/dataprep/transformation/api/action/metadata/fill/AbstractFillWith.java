@@ -13,15 +13,6 @@
 
 package org.talend.dataprep.transformation.api.action.metadata.fill;
 
-import java.time.DateTimeException;
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.time.format.DateTimeFormatter;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,16 +24,25 @@ import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.OtherColumnParameters;
-import org.talend.dataprep.transformation.api.action.metadata.date.DateParser;
-import org.talend.dataprep.transformation.api.action.metadata.date.DatePattern;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataprep.parameters.SelectParameter;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+import org.talend.dataprep.transformation.api.action.metadata.common.OtherColumnParameters;
+import org.talend.dataprep.transformation.api.action.metadata.date.DateParser;
+import org.talend.dataprep.transformation.api.action.metadata.date.DatePattern;
 
-public abstract class AbstractFillWith extends ActionMetadata implements OtherColumnParameters {
+import java.time.DateTimeException;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.format.DateTimeFormatter;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+public abstract class AbstractFillWith extends ActionMetadataAdapter implements OtherColumnParameters {
 
     public static final String DEFAULT_VALUE_PARAMETER = "default_value"; //$NON-NLS-1$
 

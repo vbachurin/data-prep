@@ -19,6 +19,7 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 
 import java.util.Collections;
@@ -27,7 +28,7 @@ import java.util.Set;
 /**
  * Abstract Action for math operations
  */
-public abstract class AbstractMathAction extends ActionMetadata implements ColumnAction {
+public abstract class AbstractMathAction extends ActionMetadataAdapter implements ColumnAction {
 
     protected static final String ERROR_RESULT = StringUtils.EMPTY;
 

@@ -36,6 +36,7 @@ import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ScopeCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataprep.transformation.pipeline.ActionRegistry;
 
@@ -120,7 +121,7 @@ public class ActionMetadataValidationTest {
         }
     }
 
-    private static class ActionMetadataExtendingColumn extends ActionMetadata implements ColumnAction {
+    private static class ActionMetadataExtendingColumn extends ActionMetadataAdapter implements ColumnAction {
 
         @Override
         public String getName() {

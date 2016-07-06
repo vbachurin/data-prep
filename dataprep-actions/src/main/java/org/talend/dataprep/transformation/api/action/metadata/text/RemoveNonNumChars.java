@@ -13,9 +13,6 @@
 
 package org.talend.dataprep.transformation.api.action.metadata.text;
 
-import java.util.EnumSet;
-import java.util.Set;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -24,10 +21,14 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 
-@Component(RemoveNonNumChars.ACTION_BEAN_PREFIX + RemoveNonNumChars.ACTION_NAME)
-public class RemoveNonNumChars extends ActionMetadata implements ColumnAction {
+import java.util.EnumSet;
+import java.util.Set;
+
+@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + RemoveNonNumChars.ACTION_NAME)
+public class RemoveNonNumChars extends ActionMetadataAdapter implements ColumnAction {
 
     /**
      * The action name.

@@ -13,8 +13,6 @@
 
 package org.talend.dataprep.transformation.api.action.metadata.column;
 
-import java.util.*;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,17 +26,19 @@ import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
-import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
-import org.talend.dataprep.transformation.api.action.metadata.common.OtherColumnParameters;
+import org.talend.dataprep.transformation.api.action.metadata.common.*;
+
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Swap columns values
  */
-@Component(Swap.ACTION_BEAN_PREFIX + Swap.SWAP_COLUMN_ACTION_NAME)
+@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + Swap.SWAP_COLUMN_ACTION_NAME)
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class Swap extends ActionMetadata implements ColumnAction, OtherColumnParameters {
+public class Swap extends ActionMetadataAdapter implements ColumnAction, OtherColumnParameters {
 
     /**
      * The action name.

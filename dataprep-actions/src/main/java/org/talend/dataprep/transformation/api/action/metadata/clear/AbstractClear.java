@@ -13,20 +13,20 @@
 
 package org.talend.dataprep.transformation.api.action.metadata.clear;
 
-import java.util.EnumSet;
-import java.util.Set;
-
 import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
+
+import java.util.EnumSet;
+import java.util.Set;
 
 /**
  * Abstract class used as base class for clear cells actions.
  */
-public abstract class AbstractClear extends ActionMetadata implements ColumnAction {
+public abstract class AbstractClear extends ActionMetadataAdapter implements ColumnAction {
 
     @Override
     public void applyOnColumn(DataSetRow row, ActionContext context) {

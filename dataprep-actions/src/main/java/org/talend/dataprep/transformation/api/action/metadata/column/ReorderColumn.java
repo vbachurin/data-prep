@@ -13,14 +13,6 @@
 
 package org.talend.dataprep.transformation.api.action.metadata.column;
 
-import static org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata.Behavior.VALUES_COLUMN;
-
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -38,16 +30,17 @@ import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.DataSetAction;
-import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
-import org.talend.dataprep.transformation.api.action.metadata.common.OtherColumnParameters;
+import org.talend.dataprep.transformation.api.action.metadata.common.*;
+
+import java.util.*;
+
+import static org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata.Behavior.VALUES_COLUMN;
 
 /**
  * This action reorder columns. The column will be move to the selected column. All other columns will be moved as well.
  */
-@Component(ReorderColumn.ACTION_BEAN_PREFIX + ReorderColumn.REORDER_ACTION_NAME)
-public class ReorderColumn extends ActionMetadata implements DataSetAction {
+@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + ReorderColumn.REORDER_ACTION_NAME)
+public class ReorderColumn extends ActionMetadataAdapter implements DataSetAction {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReorderColumn.class);
 

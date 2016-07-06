@@ -13,15 +13,6 @@
 
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
-import static java.math.RoundingMode.HALF_UP;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -33,22 +24,32 @@ import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
-import org.talend.dataprep.transformation.api.action.metadata.common.OtherColumnParameters;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataprep.parameters.SelectParameter;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
+import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
+import org.talend.dataprep.transformation.api.action.metadata.common.OtherColumnParameters;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static java.math.RoundingMode.HALF_UP;
 
 /**
  * Concat action concatenates 2 columns into a new one. The new column name will be "column_source + selected_column."
  * The new column content is "prefix + column_source + separator + selected_column + suffix"
  */
-@Component(NumericOperations.ACTION_BEAN_PREFIX + NumericOperations.ACTION_NAME)
+@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + NumericOperations.ACTION_NAME)
 @Scope("prototype")
-public class NumericOperations extends ActionMetadata implements ColumnAction, OtherColumnParameters {
+public class NumericOperations extends ActionMetadataAdapter implements ColumnAction, OtherColumnParameters {
 
     /**
      * The action name.

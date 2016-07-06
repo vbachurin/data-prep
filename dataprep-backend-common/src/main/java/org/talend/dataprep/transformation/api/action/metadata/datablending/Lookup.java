@@ -32,7 +32,6 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
@@ -44,6 +43,7 @@ import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
 import org.talend.dataprep.transformation.api.action.metadata.common.DataSetAction;
 import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
 import org.talend.dataprep.parameters.Parameter;
@@ -54,9 +54,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * Lookup action used to blend a (or a part of a) dataset into another one.
  */
-@Component(Lookup.ACTION_BEAN_PREFIX + Lookup.LOOKUP_ACTION_NAME)
+@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + Lookup.LOOKUP_ACTION_NAME)
 @Scope("prototype")
-public class Lookup extends ActionMetadata implements DataSetAction {
+public class Lookup extends ActionMetadataAdapter implements DataSetAction {
 
     /** The action name. */
     public static final String LOOKUP_ACTION_NAME = "lookup"; //$NON-NLS-1$

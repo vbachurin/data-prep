@@ -14,80 +14,41 @@
 package org.talend.dataprep.transformation.api.action.metadata.common;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.i18n.MessagesBundle;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionScope;
 import org.talend.dataprep.transformation.api.action.metadata.category.ScopeCategory;
+import org.talend.dataprep.util.MessagesBundleContext;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
  * Model an action to perform on a dataset.
+ * <p>
+ * An "action" is created for each row, see
+ * {@link ActionFactory#create(ActionMetadata, Map)}.
+ * <p>
+ * The actions are called from the
  */
-public interface ActionMetadata {
+public abstract class ActionMetadataAdapter implements ActionMetadata {
 
-    enum Behavior {
-        /**
-         * Action changes all values in row (e.g. deleting a lines).
-         */
-        VALUES_ALL,
-        /**
-         * Action change only the type of the column (not its data) like changing type.
-         */
-        METADATA_CHANGE_TYPE,
-        /**
-         * Action change only the name of the column (not its data) like column renaming.
-         */
-        METADATA_CHANGE_NAME,
-        /**
-         * Action creates new columns (like splitting).
-         */
-        METADATA_CREATE_COLUMNS,
-        /**
-         * Action creates new columns & value but based on an original column.
-         */
-        METADATA_COPY_COLUMNS,
-        /**
-         * Action deletes column.
-         */
-        METADATA_DELETE_COLUMNS,
-        /**
-         * Action modifies values in this working column.
-         */
-        VALUES_COLUMN,
-        /**
-         * Action modifies values in this working column <b>and</b> in all columns used in the action's parameters.
-         */
-        VALUES_MULTIPLE_COLUMNS,
-        /**
-         * Action requires up-to-date statistics before it can be executed.
-         */
-        NEED_STATISTICS
+    public static final String ACTION_BEAN_PREFIX = "action#"; //$NON-NLS-1$
+
+    @Autowired
+    private MessagesBundle messagesBundle;
+
+    @Override
+    public ActionMetadataAdapter adapt(ColumnMetadata column) {
+        return this;
     }
-
-    /**
-     * <p>
-     * Adapts the current action metadata to the column. This method may return <code>this</code> if no action specific
-     * change should be done. It may return a different instance with information from column (like a default value
-     * inferred from column's name).
-     * </p>
-     * <p>
-     * Implementations are also expected to return <code>this</code> if {@link #acceptColumn(ColumnMetadata)} returns
-     * <code>false</code>.
-     * </p>
-     *
-     * @param column A {@link ColumnMetadata column} information.
-     * @return <code>this</code> if any of the following is true:
-     * <ul>
-     * <li>no change is required.</li>
-     * <li>column type is not {@link #acceptColumn(ColumnMetadata) accepted} for current action.</li>
-     * </ul>
-     * OR a new action metadata with information extracted from <code>column</code>.
-     */
-    ActionMetadata adapt(ColumnMetadata column);
 
     /**
      * <p>
@@ -99,18 +60,23 @@ public interface ActionMetadata {
      * @return <code>this</code> if no change is required. OR a new action metadata with information extracted from
      * <code>scope</code>.
      */
-    ActionMetadata adapt(final ScopeCategory scope);
+    @Override
+    public ActionMetadataAdapter adapt(final ScopeCategory scope) {
+        return this;
+    }
 
     /**
      * @return A unique name used to identify action.
      */
-    String getName();
+    @Override
+    public abstract String getName();
 
     /**
      * @return A 'category' for the action used to group similar actions (eg. 'math', 'repair'...).
      * @see org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory
      */
-    String getCategory();
+    @Override
+    public abstract String getCategory();
 
     /**
      * Return true if the action can be applied to the given column metadata.
@@ -118,25 +84,35 @@ public interface ActionMetadata {
      * @param column the column metadata to transform.
      * @return true if the action can be applied to the given column metadata.
      */
-    boolean acceptColumn(final ColumnMetadata column);
+    @Override
+    public abstract boolean acceptColumn(final ColumnMetadata column);
 
     /**
      * @return The label of the action, translated in the user locale.
      * @see MessagesBundle
      */
-    String getLabel();
+    @Override
+    public String getLabel() {
+        return getMessagesBundle().getString("action." + getName() + ".label");
+    }
 
     /**
      * @return The description of the action, translated in the user locale.
      * @see MessagesBundle
      */
-    String getDescription();
+    @Override
+    public String getDescription() {
+        return getMessagesBundle().getString("action." + getName() + ".desc");
+    }
 
     /**
      * @return The url of the optionnal help page.
      * @see MessagesBundle
      */
-    String getDocUrl();
+    @Override
+    public String getDocUrl() {
+        return getMessagesBundle().getString("action." + getName() + ".url", StringUtils.EMPTY);
+    }
 
     /**
      * Defines the list of scopes this action belong to.
@@ -146,16 +122,21 @@ public interface ActionMetadata {
      * @return list of scopes of this action
      * @see ActionScope
      */
-    List<String> getActionScope();
+    @Override
+    public List<String> getActionScope() {
+        return new ArrayList<>();
+    }
 
     /**
-     * TODO: a correct description.
+     * TODO Only here for JSON serialization purposes.
      *
      * @return True if the action is dynamic (i.e the parameters depends on the context
      * (dataset/preparation/previous_actions)
      */
-    // Only here for JSON serialization purposes.
-    boolean isDynamic();
+    @Override
+    public boolean isDynamic() {
+        return false;
+    }
 
     /**
      * Return true if the action can be applied to the given scope.
@@ -163,33 +144,82 @@ public interface ActionMetadata {
      * @param scope the scope to test
      * @return true if the action can be applied to the given scope.
      */
-    boolean acceptScope(final ScopeCategory scope);
+    @Override
+    public final boolean acceptScope(final ScopeCategory scope) {
+        switch (scope) {
+        case CELL:
+            return this instanceof CellAction;
+        case LINE:
+            return this instanceof RowAction;
+        case COLUMN:
+            return this instanceof ColumnAction;
+        case DATASET:
+            return this instanceof DataSetAction;
+        default:
+            return false;
+        }
+    }
 
     /**
      * Called by transformation process <b>before</b> the first transformation occurs. This method allows action
      * implementation to compute reusable objects in actual transformation execution. Implementations may also indicate
      * that action is not applicable and should be discarded (
-     * {@link org.talend.dataprep.transformation.api.action.context.ActionContext.ActionStatus#CANCELED}.
+     * {@link ActionContext.ActionStatus#CANCELED}.
      *
      * @param actionContext The action context that contains the parameters and allows compile step to change action
      *                      status.
      * @see ActionContext#setActionStatus(ActionContext.ActionStatus)
      */
-    void compile(ActionContext actionContext);
+    @Override
+    public void compile(ActionContext actionContext) {
+        final RowMetadata input = actionContext.getRowMetadata();
+        final ScopeCategory scope = actionContext.getScope();
+        if (scope != null) {
+            switch (scope) {
+            case CELL:
+            case COLUMN:
+                // Stop action if: there's actually column information in input AND column is not found
+                if (input != null && !input.getColumns().isEmpty() && input.getById(actionContext.getColumnId()) == null) {
+                    actionContext.setActionStatus(ActionContext.ActionStatus.CANCELED);
+                    return;
+                }
+                break;
+            case LINE:
+            case DATASET:
+            default:
+                break;
+            }
+        }
+        actionContext.setActionStatus(ActionContext.ActionStatus.OK);
+    }
 
     /**
      * @return <code>true</code> if there should be an implicit filtering before the action gets executed. Actions that
      * don't want to take care of filtering should return <code>true</code> (default). Implementations may override this
      * method and return <code>false</code> if they want to handle themselves filtering.
      */
-    boolean implicitFilter();
+    @Override
+    public boolean implicitFilter() {
+        return true;
+    }
 
     /**
      * @return The list of parameters required for this Action to be executed.
      **/
-    List<Parameter> getParameters();
+    @Override
+    public List<Parameter> getParameters() {
+        return ImplicitParameters.getParameters();
+    }
 
     @JsonIgnore
-    Set<Behavior> getBehavior();
+    @Override
+    public abstract Set<ActionMetadata.Behavior> getBehavior();
 
+    @JsonIgnore
+    protected MessagesBundle getMessagesBundle() {
+        if (this.messagesBundle == null) {
+            this.messagesBundle = MessagesBundleContext.get();
+        }
+        return this.messagesBundle;
+    }
 }

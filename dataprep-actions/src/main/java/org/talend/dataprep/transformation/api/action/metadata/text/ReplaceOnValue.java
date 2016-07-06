@@ -13,8 +13,15 @@
 
 package org.talend.dataprep.transformation.api.action.metadata.text;
 
-import static org.apache.commons.lang.StringUtils.EMPTY;
-import static org.talend.dataprep.parameters.ParameterType.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.parameters.Parameter;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
+import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
+import org.talend.dataprep.transformation.api.action.metadata.common.*;
 
 import java.security.InvalidParameterException;
 import java.util.EnumSet;
@@ -23,24 +30,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.CellAction;
-import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
-import org.talend.dataprep.transformation.api.action.metadata.common.ReplaceOnValueHelper;
-import org.talend.dataprep.parameters.Parameter;
+import static org.apache.commons.lang.StringUtils.EMPTY;
+import static org.talend.dataprep.parameters.ParameterType.*;
 
 /**
  * Replace the content or part of a cell by a value.
  */
-@Component(ReplaceOnValue.ACTION_BEAN_PREFIX + ReplaceOnValue.REPLACE_ON_VALUE_ACTION_NAME)
-public class ReplaceOnValue extends ActionMetadata implements ColumnAction, CellAction {
+@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + ReplaceOnValue.REPLACE_ON_VALUE_ACTION_NAME)
+public class ReplaceOnValue extends ActionMetadataAdapter implements ColumnAction, CellAction {
 
     public static final String REGEX_HELPER_KEY = "regex_helper";
 

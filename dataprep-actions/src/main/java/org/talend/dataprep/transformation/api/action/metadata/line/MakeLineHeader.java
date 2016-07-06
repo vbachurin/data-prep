@@ -13,11 +13,6 @@
 
 package org.talend.dataprep.transformation.api.action.metadata.line;
 
-import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.DATA_CLEANSING;
-import static org.talend.dataprep.parameters.ParameterType.BOOLEAN;
-
-import java.util.*;
-
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -26,11 +21,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
 import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
 import org.talend.dataprep.transformation.api.action.metadata.common.RowAction;
-import org.talend.dataprep.parameters.Parameter;
+
+import java.util.*;
+
+import static org.talend.dataprep.parameters.ParameterType.BOOLEAN;
+import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.DATA_CLEANSING;
 
 /**
  * This action does two things:
@@ -39,8 +39,8 @@ import org.talend.dataprep.parameters.Parameter;
  * <li>Delete this row</li>
  * </ul>
  */
-@Component(MakeLineHeader.ACTION_BEAN_PREFIX + MakeLineHeader.ACTION_NAME)
-public class MakeLineHeader extends ActionMetadata implements RowAction {
+@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + MakeLineHeader.ACTION_NAME)
+public class MakeLineHeader extends ActionMetadataAdapter implements RowAction {
 
     public static final String ACTION_NAME = "make_line_header";
 
@@ -64,7 +64,7 @@ public class MakeLineHeader extends ActionMetadata implements RowAction {
     }
 
     @Override
-    protected boolean implicitFilter() {
+    public boolean implicitFilter() {
         return false;
     }
 

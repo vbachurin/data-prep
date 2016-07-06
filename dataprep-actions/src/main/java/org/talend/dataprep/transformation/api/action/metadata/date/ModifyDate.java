@@ -13,26 +13,13 @@
 
 package org.talend.dataprep.transformation.api.action.metadata.date;
 
-import java.time.DateTimeException;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.talend.daikon.exception.ExceptionContext;
 import org.talend.daikon.number.BigDecimalParser;
-import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.api.dataset.RowMetadata;
-import org.talend.dataprep.api.dataset.statistics.PatternFrequency;
-import org.talend.dataprep.api.dataset.statistics.Statistics;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.parameters.Parameter;
@@ -40,17 +27,24 @@ import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataprep.parameters.SelectParameter;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.metadata.common.OtherColumnParameters;
 
+import java.time.DateTimeException;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import static org.talend.dataprep.transformation.api.action.metadata.common.OtherColumnParameters.*;
-import static org.talend.dataprep.transformation.api.action.metadata.common.OtherColumnParameters.CONSTANT_MODE;
-import static org.talend.dataprep.transformation.api.action.metadata.common.OtherColumnParameters.SELECTED_COLUMN_PARAMETER;
 
 /**
  * Change the date pattern on a 'date' column.
  */
-@Component(ModifyDate.ACTION_BEAN_PREFIX + ModifyDate.ACTION_NAME)
+@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + ModifyDate.ACTION_NAME)
 public class ModifyDate extends AbstractDate implements ColumnAction, DatePatternParamModel {
 
     /** Action name. */

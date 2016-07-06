@@ -13,16 +13,6 @@
 
 package org.talend.dataprep.transformation.api.action.metadata.text;
 
-import static org.apache.commons.lang.BooleanUtils.toStringTrueFalse;
-import static org.apache.commons.lang.StringUtils.EMPTY;
-import static org.talend.dataprep.api.type.Type.BOOLEAN;
-import static org.talend.dataprep.parameters.ParameterType.INTEGER;
-
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.stereotype.Component;
@@ -30,20 +20,30 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
-import org.talend.dataprep.transformation.api.action.metadata.common.OtherColumnParameters;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataprep.parameters.SelectParameter;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
+import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
+import org.talend.dataprep.transformation.api.action.metadata.common.OtherColumnParameters;
+
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static org.apache.commons.lang.BooleanUtils.toStringTrueFalse;
+import static org.apache.commons.lang.StringUtils.EMPTY;
+import static org.talend.dataprep.api.type.Type.BOOLEAN;
+import static org.talend.dataprep.parameters.ParameterType.INTEGER;
 
 /**
  * Create a new column with Boolean result <code>true</code> if the Levenstein distance is less or equals the parameter
  */
-@Component(FuzzyMatching.ACTION_BEAN_PREFIX + FuzzyMatching.ACTION_NAME)
-public class FuzzyMatching extends ActionMetadata implements ColumnAction {
+@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + FuzzyMatching.ACTION_NAME)
+public class FuzzyMatching extends ActionMetadataAdapter implements ColumnAction {
 
     /**
      * The action name.

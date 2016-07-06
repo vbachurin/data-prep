@@ -13,15 +13,6 @@
 
 package org.talend.dataprep.transformation.api.action.metadata.text;
 
-import static org.apache.commons.lang.StringUtils.EMPTY;
-import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.SPLIT;
-import static org.talend.dataprep.parameters.ParameterType.INTEGER;
-import static org.talend.dataprep.parameters.ParameterType.STRING;
-
-import java.util.*;
-
-import javax.annotation.Nonnull;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,17 +21,26 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.SelectParameter;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
+
+import javax.annotation.Nonnull;
+import java.util.*;
+
+import static org.apache.commons.lang.StringUtils.EMPTY;
+import static org.talend.dataprep.parameters.ParameterType.INTEGER;
+import static org.talend.dataprep.parameters.ParameterType.STRING;
+import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.SPLIT;
 
 /**
  * Split a cell value on a separator.
  */
-@Component(Split.ACTION_BEAN_PREFIX + Split.SPLIT_ACTION_NAME)
-public class Split extends ActionMetadata implements ColumnAction {
+@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + Split.SPLIT_ACTION_NAME)
+public class Split extends ActionMetadataAdapter implements ColumnAction {
 
     /** The action name. */
     public static final String SPLIT_ACTION_NAME = "split"; //$NON-NLS-1$

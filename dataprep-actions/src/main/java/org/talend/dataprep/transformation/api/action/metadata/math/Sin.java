@@ -12,17 +12,17 @@
 //  ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
-import static org.talend.dataprep.transformation.api.action.metadata.math.Sin.SIN_NAME;
-
 import org.apache.commons.math3.util.FastMath;
 import org.springframework.stereotype.Component;
 import org.talend.daikon.number.BigDecimalParser;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+
+import static org.talend.dataprep.transformation.api.action.metadata.math.Sin.SIN_NAME;
 
 /**
  * Create a new column with Sin
  */
-@Component(ActionMetadata.ACTION_BEAN_PREFIX + SIN_NAME)
+@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + SIN_NAME)
 public class Sin extends AbstractMathNoParameterAction {
 
     protected static final String SIN_NAME = "sin_numbers";

@@ -13,15 +13,6 @@
 
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
-import static org.talend.daikon.number.BigDecimalParser.*;
-import static org.talend.dataprep.parameters.ParameterType.STRING;
-
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
-import java.util.*;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,18 +22,28 @@ import org.talend.daikon.number.BigDecimalParser;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.parameters.Parameter;
+import org.talend.dataprep.parameters.SelectParameter;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
-import org.talend.dataprep.parameters.Parameter;
-import org.talend.dataprep.parameters.SelectParameter;
+
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
+import java.util.*;
+
+import static org.talend.daikon.number.BigDecimalParser.*;
+import static org.talend.dataprep.parameters.ParameterType.STRING;
 
 /**
  * Change the pattern on a 'number' column.
  */
-@Component(ChangeNumberFormat.ACTION_BEAN_PREFIX + ChangeNumberFormat.ACTION_NAME)
-public class ChangeNumberFormat extends ActionMetadata implements ColumnAction {
+@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + ChangeNumberFormat.ACTION_NAME)
+public class ChangeNumberFormat extends ActionMetadataAdapter implements ColumnAction {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ChangeNumberFormat.class);
 

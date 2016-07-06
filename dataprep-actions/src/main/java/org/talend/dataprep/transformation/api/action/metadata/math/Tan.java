@@ -12,17 +12,17 @@
 //  ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
-import static org.talend.dataprep.transformation.api.action.metadata.math.Tan.TAN_NAME;
-
 import org.apache.commons.math3.util.FastMath;
 import org.springframework.stereotype.Component;
 import org.talend.daikon.number.BigDecimalParser;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+
+import static org.talend.dataprep.transformation.api.action.metadata.math.Tan.TAN_NAME;
 
 /**
  * Create a new column with Tangent
  */
-@Component(ActionMetadata.ACTION_BEAN_PREFIX + TAN_NAME)
+@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + TAN_NAME)
 public class Tan extends AbstractMathNoParameterAction {
 
     protected static final String TAN_NAME = "tan_numbers";

@@ -13,16 +13,6 @@
 
 package org.talend.dataprep.transformation.api.action.metadata.column;
 
-import static org.apache.commons.lang.StringUtils.EMPTY;
-import static org.talend.dataprep.transformation.api.action.metadata.category.ActionScope.COLUMN_METADATA;
-
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.annotation.Nonnull;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -31,21 +21,31 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.parameters.Parameter;
+import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
-import org.talend.dataprep.parameters.Parameter;
-import org.talend.dataprep.parameters.ParameterType;
+
+import javax.annotation.Nonnull;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
+
+import static org.apache.commons.lang.StringUtils.EMPTY;
+import static org.talend.dataprep.transformation.api.action.metadata.category.ActionScope.COLUMN_METADATA;
 
 /**
  * Rename a column.
  *
  * If the column to rename does not exist or the new name is already used, nothing happen.
  */
-@Component(Rename.ACTION_BEAN_PREFIX + Rename.RENAME_ACTION_NAME)
+@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + Rename.RENAME_ACTION_NAME)
 @Scope(value = "prototype")
-public class Rename extends ActionMetadata implements ColumnAction {
+public class Rename extends ActionMetadataAdapter implements ColumnAction {
 
     /** Action name. */
     public static final String RENAME_ACTION_NAME = "rename_column"; //$NON-NLS-1$
@@ -123,7 +123,7 @@ public class Rename extends ActionMetadata implements ColumnAction {
      * @return A rename action with <code>column</code> name as default name.
      */
     @Override
-    public ActionMetadata adapt(ColumnMetadata column) {
+    public Rename adapt(ColumnMetadata column) {
         if (column == null) {
             return this;
         }

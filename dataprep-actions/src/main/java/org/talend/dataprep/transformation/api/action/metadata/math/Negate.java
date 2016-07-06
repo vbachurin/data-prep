@@ -12,16 +12,16 @@
 //  ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
-import static org.talend.dataprep.transformation.api.action.metadata.math.Negate.NEGATE_NAME;
-
 import org.springframework.stereotype.Component;
 import org.talend.daikon.number.BigDecimalParser;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+
+import static org.talend.dataprep.transformation.api.action.metadata.math.Negate.NEGATE_NAME;
 
 /**
  * Create a new column with negate value
  */
-@Component(ActionMetadata.ACTION_BEAN_PREFIX + NEGATE_NAME)
+@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + NEGATE_NAME)
 public class Negate extends AbstractMathNoParameterAction {
 
     protected static final String NEGATE_NAME = "negate_numbers";

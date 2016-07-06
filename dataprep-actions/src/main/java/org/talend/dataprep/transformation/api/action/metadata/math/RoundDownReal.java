@@ -12,17 +12,18 @@
 //  ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
-import java.math.RoundingMode;
-
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+
+import java.math.RoundingMode;
 
 /**
  * Round towards zero. Never increments the digit prior to a discarded fraction (i.e. truncates)
  * 
  * @see RoundingMode#DOWN
  */
-@Component(RoundDownReal.ACTION_BEAN_PREFIX + RoundDownReal.ACTION_NAME)
+@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + RoundDownReal.ACTION_NAME)
 public class RoundDownReal extends AbstractRound {
 
     /** The action name.

@@ -12,17 +12,17 @@
 //  ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
-import static org.talend.dataprep.transformation.api.action.metadata.math.Exponential.EXPONENTIAL_NAME;
-
 import org.apache.commons.math3.util.FastMath;
 import org.springframework.stereotype.Component;
 import org.talend.daikon.number.BigDecimalParser;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+
+import static org.talend.dataprep.transformation.api.action.metadata.math.Exponential.EXPONENTIAL_NAME;
 
 /**
  * Create a new column with Exponential
  */
-@Component(ActionMetadata.ACTION_BEAN_PREFIX + EXPONENTIAL_NAME)
+@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + EXPONENTIAL_NAME)
 public class Exponential extends AbstractMathNoParameterAction {
 
     protected static final String EXPONENTIAL_NAME = "exponential_numbers";

@@ -13,11 +13,6 @@
 
 package org.talend.dataprep.transformation.api.action.metadata.clear;
 
-import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.DATA_CLEANSING;
-
-import java.util.List;
-import java.util.Map;
-
 import org.elasticsearch.common.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -26,19 +21,25 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
-import org.talend.dataprep.transformation.api.action.metadata.common.ReplaceOnValueHelper;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataprep.parameters.SelectParameter;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
+import org.talend.dataprep.transformation.api.action.metadata.common.ReplaceOnValueHelper;
+
+import java.util.List;
+import java.util.Map;
+
+import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.DATA_CLEANSING;
 
 /**
  * Clear cell when value is matching.
  */
 
-@Component(ClearMatching.ACTION_BEAN_PREFIX + ClearMatching.ACTION_NAME)
+@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + ClearMatching.ACTION_NAME)
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ClearMatching extends AbstractClear implements ColumnAction {
 
@@ -105,7 +106,7 @@ public class ClearMatching extends AbstractClear implements ColumnAction {
     }
 
     @Override
-    public ActionMetadata adapt(ColumnMetadata column) {
+    public ClearMatching adapt(ColumnMetadata column) {
         if (column == null || !acceptColumn(column)) {
             return this;
         }

@@ -13,20 +13,20 @@
 
 package org.talend.dataprep.transformation.api.action.metadata.fill;
 
-import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.DATA_CLEANSING;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 
 import java.util.Set;
 
-@Component(ActionMetadata.ACTION_BEAN_PREFIX + FillInvalid.FILL_INVALID_ACTION_NAME)
+import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.DATA_CLEANSING;
+
+@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + FillInvalid.FILL_INVALID_ACTION_NAME)
 @Scope(value = "prototype")
 public class FillInvalid extends AbstractFillWith implements ColumnAction {
 
@@ -105,7 +105,7 @@ public class FillInvalid extends AbstractFillWith implements ColumnAction {
     }
 
     @Override
-    public ActionMetadata adapt(ColumnMetadata column) {
+    public FillInvalid adapt(ColumnMetadata column) {
         if (column == null || !acceptColumn(column)) {
             return this;
         }

@@ -13,10 +13,6 @@
 
 package org.talend.dataprep.transformation.api.action.metadata.column;
 
-import static org.talend.dataprep.transformation.api.action.metadata.category.ActionScope.COLUMN_METADATA;
-
-import java.util.*;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.daikon.exception.ExceptionContext;
@@ -26,19 +22,24 @@ import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataprep.parameters.SelectParameter;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
+import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
+
+import java.util.*;
+
+import static org.talend.dataprep.transformation.api.action.metadata.category.ActionScope.COLUMN_METADATA;
 
 /**
  * duplicate a column
  */
-@Component(CreateNewColumn.ACTION_BEAN_PREFIX + CreateNewColumn.ACTION_NAME)
-public class CreateNewColumn extends ActionMetadata implements ColumnAction {
+@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + CreateNewColumn.ACTION_NAME)
+public class CreateNewColumn extends ActionMetadataAdapter implements ColumnAction {
 
     /**
      * The action name.

@@ -13,18 +13,6 @@
 
 package org.talend.dataprep.transformation.api.action.metadata.text;
 
-import static org.apache.commons.lang.StringUtils.EMPTY;
-import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.SPLIT;
-import static org.talend.dataprep.parameters.ParameterType.INTEGER;
-import static org.talend.dataprep.parameters.ParameterType.STRING;
-
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
-
-import javax.annotation.Nonnull;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrBuilder;
 import org.slf4j.Logger;
@@ -34,17 +22,29 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.SelectParameter;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
+
+import javax.annotation.Nonnull;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+
+import static org.apache.commons.lang.StringUtils.EMPTY;
+import static org.talend.dataprep.parameters.ParameterType.INTEGER;
+import static org.talend.dataprep.parameters.ParameterType.STRING;
+import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.SPLIT;
 
 /**
  * Extract tokens from a String cell value based on regex matching groups.
  */
-@Component(ExtractStringTokens.ACTION_BEAN_PREFIX + ExtractStringTokens.EXTRACT_STRING_TOKENS_ACTION_NAME)
-public class ExtractStringTokens extends ActionMetadata implements ColumnAction {
+@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + ExtractStringTokens.EXTRACT_STRING_TOKENS_ACTION_NAME)
+public class ExtractStringTokens extends ActionMetadataAdapter implements ColumnAction {
 
     /** The action name. */
     public static final String EXTRACT_STRING_TOKENS_ACTION_NAME = "extract_string_tokens"; //$NON-NLS-1$

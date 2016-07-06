@@ -12,10 +12,6 @@
 //  ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
-import java.math.BigDecimal;
-import java.util.EnumSet;
-import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
@@ -26,15 +22,19 @@ import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
+
+import java.math.BigDecimal;
+import java.util.EnumSet;
+import java.util.Set;
 
 /**
  * This will compute the absolute value for numerical columns.
  */
-@Component(ActionMetadata.ACTION_BEAN_PREFIX + Absolute.ABSOLUTE_ACTION_NAME)
+@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + Absolute.ABSOLUTE_ACTION_NAME)
 @Scope(value = "prototype")
-public class Absolute extends ActionMetadata implements ColumnAction {
+public class Absolute extends ActionMetadataAdapter implements ColumnAction {
 
     public static final String ABSOLUTE_ACTION_NAME = "absolute"; //$NON-NLS-1$
 
@@ -127,7 +127,7 @@ public class Absolute extends ActionMetadata implements ColumnAction {
     }
 
     @Override
-    public ActionMetadata adapt(ColumnMetadata column) {
+    public Absolute adapt(ColumnMetadata column) {
         if (column == null || !acceptColumn(column)) {
             return this;
         }

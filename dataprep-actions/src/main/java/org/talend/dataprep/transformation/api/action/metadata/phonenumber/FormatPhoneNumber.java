@@ -12,13 +12,6 @@
 // ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata.phonenumber;
 
-import static org.apache.commons.lang.StringUtils.EMPTY;
-import static org.talend.dataprep.transformation.api.action.metadata.common.OtherColumnParameters.*;
-
-import java.util.*;
-
-import javax.annotation.Nonnull;
-
 import org.elasticsearch.common.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,16 +24,23 @@ import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataprep.parameters.SelectParameter;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.metadata.common.OtherColumnParameters;
 import org.talend.dataquality.standardization.phone.PhoneNumberHandlerBase;
 
+import javax.annotation.Nonnull;
+import java.util.*;
+
+import static org.apache.commons.lang.StringUtils.EMPTY;
+import static org.talend.dataprep.transformation.api.action.metadata.common.OtherColumnParameters.CONSTANT_MODE;
+import static org.talend.dataprep.transformation.api.action.metadata.common.OtherColumnParameters.OTHER_COLUMN_MODE;
+
 /**
  * Format a validated phone number to a specified format.
  */
-@Component(FormatPhoneNumber.ACTION_BEAN_PREFIX + FormatPhoneNumber.ACTION_NAME)
-public class FormatPhoneNumber extends ActionMetadata implements ColumnAction {
+@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + FormatPhoneNumber.ACTION_NAME)
+public class FormatPhoneNumber extends ActionMetadataAdapter implements ColumnAction {
 
     /**
      * Action name.

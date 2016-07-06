@@ -13,13 +13,6 @@
 
 package org.talend.dataprep.transformation.api.action.metadata.column;
 
-import static org.talend.dataprep.transformation.api.action.metadata.category.ActionScope.COLUMN_METADATA;
-
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -28,13 +21,21 @@ import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
+
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
+
+import static org.talend.dataprep.transformation.api.action.metadata.category.ActionScope.COLUMN_METADATA;
 
 /**
  * Deletes a column from a dataset. This action is available from column headers</b>
  */
-@Component(DeleteColumn.ACTION_BEAN_PREFIX + DeleteColumn.DELETE_COLUMN_ACTION_NAME)
-public class DeleteColumn extends ActionMetadata implements ColumnAction {
+@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + DeleteColumn.DELETE_COLUMN_ACTION_NAME)
+public class DeleteColumn extends ActionMetadataAdapter implements ColumnAction {
 
     /**
      * The action name.
