@@ -51,6 +51,7 @@
     </properties>
     <modules>
         <module>../dataprep-backend-common</module>
+        <module>../dataprep-actions</module>
         <module>../dataprep-dataset</module>
         <module>../dataprep-transformation</module>
         <module>../dataprep-preparation</module>
@@ -173,6 +174,11 @@
             <dependency>
                 <groupId>org.talend.dataprep</groupId>
                 <artifactId>dataprep-backend-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.talend.dataprep</groupId>
+                <artifactId>dataprep-actions</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
