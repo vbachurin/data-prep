@@ -27,16 +27,11 @@ import org.talend.dataprep.util.MessagesBundleContext;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
- * Model an action to perform on a dataset.
- * <p>
- * An "action" is created for each row, see
- * {@link ActionFactory#create(ActionMetadata, Map)}.
- * <p>
- * The actions are called from the
+ * Adapter for {@link ActionMetadata} to have default implementation and behavior for actions. Every dataprep actions
+ * derive from it but it is not an obligation.
  */
 public abstract class ActionMetadataAdapter implements ActionMetadata {
 
