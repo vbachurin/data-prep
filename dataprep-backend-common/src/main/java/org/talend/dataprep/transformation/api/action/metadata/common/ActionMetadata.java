@@ -45,19 +45,19 @@ public abstract class ActionMetadata {
 
     public enum Behavior {
         /**
-         * Action changes all values in row (e.g. {@link org.talend.dataprep.transformation.api.action.metadata.delete.DeleteLines}).
+         * Action changes all values in row (e.g. deleting a lines).
          */
         VALUES_ALL,
         /**
-         * Action change only the type of the column (not its data) like {@link org.talend.dataprep.transformation.api.action.metadata.column.TypeChange}.
+         * Action change only the type of the column (not its data) like changing type.
          */
         METADATA_CHANGE_TYPE,
         /**
-         * Action change only the name of the column (not its data) like {@link org.talend.dataprep.transformation.api.action.metadata.column.Rename}.
+         * Action change only the name of the column (not its data) like column renaming.
          */
         METADATA_CHANGE_NAME,
         /**
-         * Action creates new columns (like {@link org.talend.dataprep.transformation.api.action.metadata.text.Split}).
+         * Action creates new columns (like splitting).
          */
         METADATA_CREATE_COLUMNS,
         /**
