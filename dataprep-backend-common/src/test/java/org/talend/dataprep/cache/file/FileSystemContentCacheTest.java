@@ -78,6 +78,16 @@ public class FileSystemContentCacheTest {
     }
 
     @Test
+    public void testEvictWithNoPut() throws Exception {
+        ContentCacheKey key = new DummyCacheKey("tutu");
+        Assert.assertThat(cache.has(key), is(false));
+        // evict() a key that does not exist
+        cache.evict(key);
+        // ... has() must return false
+        Assert.assertThat(cache.has(key), is(false));
+    }
+
+    @Test
     public void testEvict() throws Exception {
         ContentCacheKey key = new DummyCacheKey("tutu");
         // Put a content in cache...
