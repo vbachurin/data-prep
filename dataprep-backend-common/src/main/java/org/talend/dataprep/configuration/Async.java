@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.AsyncListenableTaskExecutor;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.async.CallableProcessingInterceptorAdapter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
@@ -37,6 +38,12 @@ public class Async {
                 final RequestMappingHandlerAdapter handlerAdapter = (RequestMappingHandlerAdapter) bean;
                 handlerAdapter.setCallableInterceptors(Collections.singletonList(new TDPExceptionInterceptor()));
                 SimpleAsyncTaskExecutor asyncTaskExecutor = new SimpleAsyncTaskExecutor();
+                // Set async thread pool
+                final ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
+                threadPoolTaskExecutor.setQueueCapacity(50);
+                threadPoolTaskExecutor.setMaxPoolSize(50);
+                threadPoolTaskExecutor.initialize();
+                asyncTaskExecutor.setThreadFactory(threadPoolTaskExecutor);
                 // Add message bundle
                 final AsyncListenableTaskExecutor messageBundle = MessageBundleTaskExecutor.messageBundle(asyncTaskExecutor);
                 // Add authentication
