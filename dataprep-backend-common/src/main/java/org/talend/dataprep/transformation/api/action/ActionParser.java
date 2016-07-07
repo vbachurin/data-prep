@@ -20,8 +20,8 @@ import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.preparation.Actions;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionFactory;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.actions.common.ActionFactory;
+import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.transformation.pipeline.ActionRegistry;
 
 import java.util.ArrayList;

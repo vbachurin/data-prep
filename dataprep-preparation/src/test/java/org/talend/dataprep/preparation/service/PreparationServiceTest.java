@@ -39,7 +39,7 @@ import org.talend.dataprep.api.folder.FolderEntry;
 import org.talend.dataprep.api.preparation.*;
 import org.talend.dataprep.lock.store.LockedResource;
 import org.talend.dataprep.preparation.BasePreparationTest;
-import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
+import org.talend.dataprep.transformation.actions.common.ImplicitParameters;
 import org.talend.dataprep.util.SortAndOrderHelper;
 
 import com.fasterxml.jackson.core.type.TypeReference;

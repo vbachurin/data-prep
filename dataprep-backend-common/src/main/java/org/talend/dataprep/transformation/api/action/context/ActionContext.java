@@ -24,8 +24,8 @@ import org.slf4j.LoggerFactory;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.category.ScopeCategory;
-import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
+import org.talend.dataprep.transformation.actions.category.ScopeCategory;
+import org.talend.dataprep.transformation.actions.common.ImplicitParameters;
 
 /**
  * Context for an action within a transformation. Hence, several instance of the same action can have their own context.

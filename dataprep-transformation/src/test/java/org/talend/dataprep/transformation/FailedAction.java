@@ -16,8 +16,11 @@ package org.talend.dataprep.transformation;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
+import org.talend.dataprep.transformation.actions.common.CellAction;
+import org.talend.dataprep.transformation.actions.common.ColumnAction;
+import org.talend.dataprep.transformation.actions.common.DataSetAction;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.api.action.metadata.common.*;
 
 import java.util.EnumSet;
 import java.util.Set;

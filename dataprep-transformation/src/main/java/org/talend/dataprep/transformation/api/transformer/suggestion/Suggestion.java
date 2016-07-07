@@ -13,7 +13,7 @@
 
 package org.talend.dataprep.transformation.api.transformer.suggestion;
 
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 
 public class Suggestion {
 

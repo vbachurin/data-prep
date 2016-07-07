@@ -2,7 +2,7 @@ package org.talend.dataprep.transformation.pipeline;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 
 import java.util.List;
 

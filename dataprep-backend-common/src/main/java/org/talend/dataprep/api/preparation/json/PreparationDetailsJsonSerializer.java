@@ -30,7 +30,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.preparation.*;
 import org.talend.dataprep.preparation.store.PreparationRepository;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;

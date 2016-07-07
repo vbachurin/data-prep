@@ -23,10 +23,10 @@ import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.statistics.PatternFrequency;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.metadata.math.RemoveFractionalPart;
-import org.talend.dataprep.transformation.api.action.metadata.math.RoundCeil;
-import org.talend.dataprep.transformation.api.action.metadata.math.RoundFloor;
-import org.talend.dataprep.transformation.api.action.metadata.math.RoundHalfUp;
+import org.talend.dataprep.transformation.actions.math.RemoveFractionalPart;
+import org.talend.dataprep.transformation.actions.math.RoundCeil;
+import org.talend.dataprep.transformation.actions.math.RoundFloor;
+import org.talend.dataprep.transformation.actions.math.RoundHalfUp;
 import org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule;
 
 public class IntegerRuleTest {

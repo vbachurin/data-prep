@@ -33,9 +33,9 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
+import org.talend.dataprep.transformation.actions.common.ActionMetadata;
+import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
+import org.talend.dataprep.transformation.actions.common.ColumnAction;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = ActionMetadataValidationTest.class)

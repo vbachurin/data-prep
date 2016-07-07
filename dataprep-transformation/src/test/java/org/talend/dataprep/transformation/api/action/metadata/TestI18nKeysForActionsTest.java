@@ -24,7 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.transformation.FailedAction;
 import org.talend.dataprep.transformation.TransformationBaseTest;
 import org.talend.dataprep.transformation.TransformationFailureAction;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.SelectParameter;
 

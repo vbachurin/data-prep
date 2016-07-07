@@ -22,13 +22,13 @@ import java.util.Set;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.transformation.api.action.metadata.datamasking.MaskDataByDomain;
-import org.talend.dataprep.transformation.api.action.metadata.date.ChangeDatePattern;
-import org.talend.dataprep.transformation.api.action.metadata.date.ComputeTimeSince;
-import org.talend.dataprep.transformation.api.action.metadata.date.ExtractDateTokens;
-import org.talend.dataprep.transformation.api.action.metadata.net.ExtractEmailDomain;
-import org.talend.dataprep.transformation.api.action.metadata.net.ExtractUrlTokens;
-import org.talend.dataprep.transformation.api.action.metadata.phonenumber.FormatPhoneNumber;
+import org.talend.dataprep.transformation.actions.datamasking.MaskDataByDomain;
+import org.talend.dataprep.transformation.actions.date.ChangeDatePattern;
+import org.talend.dataprep.transformation.actions.date.ComputeTimeSince;
+import org.talend.dataprep.transformation.actions.date.ExtractDateTokens;
+import org.talend.dataprep.transformation.actions.net.ExtractEmailDomain;
+import org.talend.dataprep.transformation.actions.net.ExtractUrlTokens;
+import org.talend.dataprep.transformation.actions.phonenumber.FormatPhoneNumber;
 import org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule;
 import org.talend.dataquality.semantic.classifier.SemanticCategoryEnum;
 

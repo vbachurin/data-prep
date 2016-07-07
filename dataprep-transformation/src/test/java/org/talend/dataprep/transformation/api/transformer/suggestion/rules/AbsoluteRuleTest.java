@@ -22,8 +22,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.metadata.math.Absolute;
-import org.talend.dataprep.transformation.api.action.metadata.math.RoundCeil;
+import org.talend.dataprep.transformation.actions.math.Absolute;
+import org.talend.dataprep.transformation.actions.math.RoundCeil;
 import org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule;
 
 public class AbsoluteRuleTest {

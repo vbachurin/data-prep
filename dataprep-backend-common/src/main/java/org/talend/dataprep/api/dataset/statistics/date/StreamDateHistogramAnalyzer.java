@@ -23,7 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.quality.AnalyzerService;
-import org.talend.dataprep.transformation.api.action.metadata.date.DateParser;
+import org.talend.dataprep.transformation.actions.date.DateParser;
 import org.talend.dataquality.statistics.type.DataTypeEnum;
 import org.talend.dataquality.statistics.type.TypeInferenceUtils;
 import org.talend.dataquality.common.inference.Analyzer;

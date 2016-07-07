@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 
 /**
  * Transformation context used by ActionMetadata to store/access contextual values while running.

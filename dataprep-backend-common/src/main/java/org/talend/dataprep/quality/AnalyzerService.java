@@ -39,7 +39,7 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.api.type.TypeUtils;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
-import org.talend.dataprep.transformation.api.action.metadata.date.DateParser;
+import org.talend.dataprep.transformation.actions.date.DateParser;
 import org.talend.dataprep.transformation.api.transformer.json.NullAnalyzer;
 import org.talend.dataquality.common.inference.Analyzer;
 import org.talend.dataquality.common.inference.Analyzers;

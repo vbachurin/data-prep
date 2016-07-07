@@ -18,7 +18,8 @@ import java.util.function.Predicate;
 
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.actions.common.ActionFactory;
+import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 
 @FunctionalInterface
 public interface FilterService {
@@ -31,7 +32,7 @@ public interface FilterService {
      * @param rowMetadata Row metadata to used to obtain information (valid/invalid, types...)
      * @return A {@link Predicate} to be used to filter rows in actions. Empty or <code>null</code> returns a
      * "match all" predicate (i.e. no filtering).
-     * @see org.talend.dataprep.transformation.api.action.metadata.common.ActionFactory#create(ActionMetadata, Map)
+     * @see ActionFactory#create(ActionMetadata, Map)
      */
     Predicate<DataSetRow> build(String filterAsString, RowMetadata rowMetadata);
 }

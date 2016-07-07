@@ -17,7 +17,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule;
 
 public class GenericRule implements SuggestionEngineRule {
