@@ -21,7 +21,7 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ScopeCategory;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.RowAction;
 
 import java.util.EnumSet;
@@ -33,9 +33,9 @@ import static org.talend.dataprep.transformation.api.action.metadata.category.Sc
 /**
  * Delete the line which id matches TdpId in context. This id/filtering is managed by ActionMetadata.
  */
-@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + Delete.DELETE_ACTION_NAME)
+@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + Delete.DELETE_ACTION_NAME)
 @Scope(value = "prototype")
-public class Delete extends ActionMetadataAdapter implements RowAction {
+public class Delete extends AbstractActionMetadata implements RowAction {
 
     public static final String DELETE_ACTION_NAME = "delete";
     public static final String DELETE_SINGLE_LINE = "delete_single_line";

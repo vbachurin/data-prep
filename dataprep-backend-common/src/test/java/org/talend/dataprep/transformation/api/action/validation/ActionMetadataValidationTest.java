@@ -17,7 +17,6 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.talend.dataprep.exception.error.CommonErrorCodes.*;
 
 import java.util.HashMap;
@@ -34,11 +33,9 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.api.action.metadata.category.ScopeCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
-import org.talend.dataprep.transformation.pipeline.ActionRegistry;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = ActionMetadataValidationTest.class)
@@ -121,7 +118,7 @@ public class ActionMetadataValidationTest {
         }
     }
 
-    private static class ActionMetadataExtendingColumn extends ActionMetadataAdapter implements ColumnAction {
+    private static class ActionMetadataExtendingColumn extends AbstractActionMetadata implements ColumnAction {
 
         @Override
         public String getName() {

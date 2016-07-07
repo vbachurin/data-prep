@@ -25,7 +25,7 @@ import org.talend.dataprep.parameters.SelectParameter;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 
 import java.util.EnumSet;
@@ -33,8 +33,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + Padding.ACTION_NAME)
-public class Padding extends ActionMetadataAdapter implements ColumnAction {
+@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + Padding.ACTION_NAME)
+public class Padding extends AbstractActionMetadata implements ColumnAction {
 
     /**
      * The action name.

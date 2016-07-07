@@ -21,7 +21,7 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 
 import java.util.EnumSet;
@@ -31,8 +31,8 @@ import java.util.regex.Pattern;
 /**
  * Trim leading and trailing spaces.
  */
-@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + Trim.TRIM_ACTION_NAME)
-public class Trim extends ActionMetadataAdapter implements ColumnAction {
+@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + Trim.TRIM_ACTION_NAME)
+public class Trim extends AbstractActionMetadata implements ColumnAction {
 
     /**
      * The action name.

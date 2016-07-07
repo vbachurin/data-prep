@@ -36,9 +36,9 @@ import java.util.Set;
 /**
  * Swap columns values
  */
-@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + Swap.SWAP_COLUMN_ACTION_NAME)
+@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + Swap.SWAP_COLUMN_ACTION_NAME)
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class Swap extends ActionMetadataAdapter implements ColumnAction, OtherColumnParameters {
+public class Swap extends AbstractActionMetadata implements ColumnAction, OtherColumnParameters {
 
     /**
      * The action name.

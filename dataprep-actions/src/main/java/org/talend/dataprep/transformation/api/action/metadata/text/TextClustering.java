@@ -20,14 +20,14 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 
 import java.util.EnumSet;
 import java.util.Set;
 
-@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + TextClustering.TEXT_CLUSTERING)
-public class TextClustering extends ActionMetadataAdapter implements ColumnAction {
+@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + TextClustering.TEXT_CLUSTERING)
+public class TextClustering extends AbstractActionMetadata implements ColumnAction {
 
     /**
      * The action name.

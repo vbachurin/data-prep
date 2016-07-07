@@ -20,7 +20,7 @@ import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 
 import java.math.BigDecimal;
@@ -34,7 +34,7 @@ import static org.talend.dataprep.parameters.ParameterType.INTEGER;
 /**
  * Abstract class for Math operation on {@link Type#NUMERIC} values
  */
-public abstract class AbstractRound extends ActionMetadataAdapter implements ColumnAction {
+public abstract class AbstractRound extends AbstractActionMetadata implements ColumnAction {
 
     /** Number of digit after the decimal symbol. */
     protected static final String PRECISION = "precision"; //$NON-NLS-1$

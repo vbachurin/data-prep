@@ -26,7 +26,7 @@ import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataprep.parameters.SelectParameter;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.metadata.common.ReplaceOnValueHelper;
 
@@ -39,7 +39,7 @@ import static org.talend.dataprep.transformation.api.action.metadata.category.Ac
  * Clear cell when value is matching.
  */
 
-@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + ClearMatching.ACTION_NAME)
+@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + ClearMatching.ACTION_NAME)
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ClearMatching extends AbstractClear implements ColumnAction {
 

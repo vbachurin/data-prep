@@ -27,7 +27,7 @@ import org.talend.dataprep.parameters.SelectParameter;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 
 import java.math.BigDecimal;
@@ -42,8 +42,8 @@ import static org.talend.dataprep.parameters.ParameterType.STRING;
 /**
  * Change the pattern on a 'number' column.
  */
-@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + ChangeNumberFormat.ACTION_NAME)
-public class ChangeNumberFormat extends ActionMetadataAdapter implements ColumnAction {
+@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + ChangeNumberFormat.ACTION_NAME)
+public class ChangeNumberFormat extends AbstractActionMetadata implements ColumnAction {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ChangeNumberFormat.class);
 

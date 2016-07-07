@@ -25,7 +25,7 @@ import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataprep.parameters.SelectParameter;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.metadata.common.OtherColumnParameters;
 
@@ -42,8 +42,8 @@ import static org.talend.dataprep.parameters.ParameterType.INTEGER;
 /**
  * Create a new column with Boolean result <code>true</code> if the Levenstein distance is less or equals the parameter
  */
-@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + FuzzyMatching.ACTION_NAME)
-public class FuzzyMatching extends ActionMetadataAdapter implements ColumnAction {
+@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + FuzzyMatching.ACTION_NAME)
+public class FuzzyMatching extends AbstractActionMetadata implements ColumnAction {
 
     /**
      * The action name.

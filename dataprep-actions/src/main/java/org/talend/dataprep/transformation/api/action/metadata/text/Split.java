@@ -25,7 +25,7 @@ import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.SelectParameter;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 
 import javax.annotation.Nonnull;
@@ -39,8 +39,8 @@ import static org.talend.dataprep.transformation.api.action.metadata.category.Ac
 /**
  * Split a cell value on a separator.
  */
-@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + Split.SPLIT_ACTION_NAME)
-public class Split extends ActionMetadataAdapter implements ColumnAction {
+@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + Split.SPLIT_ACTION_NAME)
+public class Split extends AbstractActionMetadata implements ColumnAction {
 
     /** The action name. */
     public static final String SPLIT_ACTION_NAME = "split"; //$NON-NLS-1$

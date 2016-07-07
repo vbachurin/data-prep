@@ -33,7 +33,7 @@ import java.util.Set;
  * Adapter for {@link ActionMetadata} to have default implementation and behavior for actions. Every dataprep actions
  * derive from it but it is not an obligation.
  */
-public abstract class ActionMetadataAdapter implements ActionMetadata {
+public abstract class AbstractActionMetadata implements ActionMetadata {
 
     public static final String ACTION_BEAN_PREFIX = "action#"; //$NON-NLS-1$
 
@@ -41,7 +41,7 @@ public abstract class ActionMetadataAdapter implements ActionMetadata {
     private MessagesBundle messagesBundle;
 
     @Override
-    public ActionMetadataAdapter adapt(ColumnMetadata column) {
+    public AbstractActionMetadata adapt(ColumnMetadata column) {
         return this;
     }
 
@@ -56,7 +56,7 @@ public abstract class ActionMetadataAdapter implements ActionMetadata {
      * <code>scope</code>.
      */
     @Override
-    public ActionMetadataAdapter adapt(final ScopeCategory scope) {
+    public AbstractActionMetadata adapt(final ScopeCategory scope) {
         return this;
     }
 

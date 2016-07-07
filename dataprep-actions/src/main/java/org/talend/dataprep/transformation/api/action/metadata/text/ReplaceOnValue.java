@@ -36,8 +36,8 @@ import static org.talend.dataprep.parameters.ParameterType.*;
 /**
  * Replace the content or part of a cell by a value.
  */
-@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + ReplaceOnValue.REPLACE_ON_VALUE_ACTION_NAME)
-public class ReplaceOnValue extends ActionMetadataAdapter implements ColumnAction, CellAction {
+@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + ReplaceOnValue.REPLACE_ON_VALUE_ACTION_NAME)
+public class ReplaceOnValue extends AbstractActionMetadata implements ColumnAction, CellAction {
 
     public static final String REGEX_HELPER_KEY = "regex_helper";
 

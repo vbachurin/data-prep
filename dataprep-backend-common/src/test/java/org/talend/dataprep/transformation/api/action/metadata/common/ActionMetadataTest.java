@@ -290,7 +290,7 @@ public class ActionMetadataTest extends AbstractMetadataBaseTest {
 
 @Component("action#CellTransformation")
 @Profile("test")
-class CellTransformation extends ActionMetadataAdapter implements CellAction {
+class CellTransformation extends AbstractActionMetadata implements CellAction {
 
     @Override
     public String getName() {
@@ -322,7 +322,7 @@ class CellTransformation extends ActionMetadataAdapter implements CellAction {
 
 @Component("action#LineTransformation")
 @Profile("test")
-class LineTransformation extends ActionMetadataAdapter implements RowAction {
+class LineTransformation extends AbstractActionMetadata implements RowAction {
 
     @Override
     public String getName() {
@@ -354,7 +354,7 @@ class LineTransformation extends ActionMetadataAdapter implements RowAction {
 
 @Component("action#ColumnTransformation")
 @Profile("test")
-class ColumnTransformation extends ActionMetadataAdapter implements ColumnAction {
+class ColumnTransformation extends AbstractActionMetadata implements ColumnAction {
 
     @Override
     public String getName() {
@@ -386,7 +386,7 @@ class ColumnTransformation extends ActionMetadataAdapter implements ColumnAction
 
 @Component("action#TableTransformation")
 @Profile("test")
-class TableTransformation extends ActionMetadataAdapter implements DataSetAction {
+class TableTransformation extends AbstractActionMetadata implements DataSetAction {
 
     @Override
     public String getName() {

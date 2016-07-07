@@ -25,7 +25,7 @@ import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 
 import javax.annotation.Nonnull;
@@ -37,7 +37,7 @@ import java.util.*;
 /**
  * Change the date pattern on a 'date' column.
  */
-@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + ExtractDateTokens.ACTION_NAME)
+@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + ExtractDateTokens.ACTION_NAME)
 public class ExtractDateTokens extends AbstractDate implements ColumnAction {
 
     /** Action name. */

@@ -23,7 +23,7 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
 import org.talend.dataprep.transformation.api.action.metadata.common.RowAction;
 
@@ -39,8 +39,8 @@ import static org.talend.dataprep.transformation.api.action.metadata.category.Ac
  * <li>Delete this row</li>
  * </ul>
  */
-@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + MakeLineHeader.ACTION_NAME)
-public class MakeLineHeader extends ActionMetadataAdapter implements RowAction {
+@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + MakeLineHeader.ACTION_NAME)
+public class MakeLineHeader extends AbstractActionMetadata implements RowAction {
 
     public static final String ACTION_NAME = "make_line_header";
 

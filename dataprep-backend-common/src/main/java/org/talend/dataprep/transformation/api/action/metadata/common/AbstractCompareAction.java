@@ -33,7 +33,8 @@ import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataprep.parameters.SelectParameter;
 
-public abstract class AbstractCompareAction extends ActionMetadataAdapter implements ColumnAction, OtherColumnParameters, CompareAction {
+public abstract class AbstractCompareAction extends AbstractActionMetadata
+        implements ColumnAction, OtherColumnParameters, CompareAction {
 
     public static final int ERROR_COMPARE_RESULT = Integer.MIN_VALUE;
 

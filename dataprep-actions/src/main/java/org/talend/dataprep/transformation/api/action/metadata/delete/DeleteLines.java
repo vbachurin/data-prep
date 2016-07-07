@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 
 import java.util.EnumSet;
@@ -31,8 +31,8 @@ import static org.talend.dataprep.transformation.api.action.metadata.category.Ac
  * With no filter, it will delete all lines!
  *
  */
-@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + DeleteLines.DELETE_LINES_ACTION_NAME)
-public class DeleteLines extends ActionMetadataAdapter implements ColumnAction {
+@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + DeleteLines.DELETE_LINES_ACTION_NAME)
+public class DeleteLines extends AbstractActionMetadata implements ColumnAction {
 
     static final String DELETE_LINES_ACTION_NAME = "delete_lines";
 

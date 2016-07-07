@@ -15,14 +15,14 @@ package org.talend.dataprep.transformation.api.action.metadata.math;
 import org.apache.commons.math3.util.FastMath;
 import org.springframework.stereotype.Component;
 import org.talend.daikon.number.BigDecimalParser;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 
 import static org.talend.dataprep.transformation.api.action.metadata.math.Cos.COS_NAME;
 
 /**
  * Create a new column with Cos
  */
-@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + COS_NAME)
+@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + COS_NAME)
 public class Cos extends AbstractMathNoParameterAction {
 
     protected static final String COS_NAME = "cos_numbers";

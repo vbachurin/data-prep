@@ -27,7 +27,7 @@ import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataprep.parameters.SelectParameter;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 
 import java.time.DateTimeException;
@@ -43,7 +43,7 @@ import static org.apache.commons.lang.StringUtils.EMPTY;
 /**
  * Change the date pattern on a 'date' column.
  */
-@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + ChangeDatePattern.ACTION_NAME)
+@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + ChangeDatePattern.ACTION_NAME)
 public class ChangeDatePattern extends AbstractDate implements ColumnAction, DatePatternParamModel {
 
     /** Action name. */

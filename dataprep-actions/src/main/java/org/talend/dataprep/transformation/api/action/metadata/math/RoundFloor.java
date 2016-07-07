@@ -14,7 +14,7 @@ package org.talend.dataprep.transformation.api.action.metadata.math;
 
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 
 import java.math.RoundingMode;
 
@@ -24,7 +24,7 @@ import java.math.RoundingMode;
  *
  * @see RoundingMode#FLOOR
  */
-@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + RoundFloor.ACTION_NAME)
+@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + RoundFloor.ACTION_NAME)
 public class RoundFloor extends AbstractRound {
 
     /**

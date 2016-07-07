@@ -24,7 +24,7 @@ import java.math.BigDecimal;
 import java.util.EnumSet;
 import java.util.Set;
 
-@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + CompareNumbers.ACTION_NAME)
+@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + CompareNumbers.ACTION_NAME)
 public class CompareNumbers extends AbstractCompareAction implements ColumnAction, OtherColumnParameters, CompareAction {
 
     /**

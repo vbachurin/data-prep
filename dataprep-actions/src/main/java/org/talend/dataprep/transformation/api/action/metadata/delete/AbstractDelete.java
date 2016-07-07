@@ -16,7 +16,7 @@ package org.talend.dataprep.transformation.api.action.metadata.delete;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 
 import java.util.EnumSet;
@@ -27,7 +27,7 @@ import static org.talend.dataprep.transformation.api.action.metadata.category.Ac
 /**
  * Abstract class used as base class for delete actions.
  */
-public abstract class AbstractDelete extends ActionMetadataAdapter implements ColumnAction {
+public abstract class AbstractDelete extends AbstractActionMetadata implements ColumnAction {
 
     /**
      * @see ActionMetadata#getCategory()

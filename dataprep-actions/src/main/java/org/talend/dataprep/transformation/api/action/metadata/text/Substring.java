@@ -23,7 +23,7 @@ import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataprep.parameters.SelectParameter;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
 
@@ -35,8 +35,8 @@ import java.util.Set;
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.STRINGS;
 
-@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + Substring.SUBSTRING_ACTION_NAME)
-public class Substring extends ActionMetadataAdapter implements ColumnAction {
+@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + Substring.SUBSTRING_ACTION_NAME)
+public class Substring extends AbstractActionMetadata implements ColumnAction {
 
     /**
      * The action name.

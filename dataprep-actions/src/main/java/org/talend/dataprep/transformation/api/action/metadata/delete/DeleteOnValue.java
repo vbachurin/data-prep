@@ -20,7 +20,7 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ReplaceOnValueHelper;
 
 import javax.annotation.Nonnull;
@@ -35,7 +35,7 @@ import static org.talend.dataprep.parameters.ParameterType.REGEX;
 /**
  * Delete row on a given value.
  */
-@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + DeleteOnValue.DELETE_ON_VALUE_ACTION_NAME)
+@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + DeleteOnValue.DELETE_ON_VALUE_ACTION_NAME)
 public class DeleteOnValue extends AbstractDelete {
 
     /**

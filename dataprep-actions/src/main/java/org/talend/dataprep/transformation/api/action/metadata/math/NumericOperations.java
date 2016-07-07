@@ -30,7 +30,7 @@ import org.talend.dataprep.parameters.SelectParameter;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.metadata.common.OtherColumnParameters;
 
@@ -47,9 +47,9 @@ import static java.math.RoundingMode.HALF_UP;
  * Concat action concatenates 2 columns into a new one. The new column name will be "column_source + selected_column."
  * The new column content is "prefix + column_source + separator + selected_column + suffix"
  */
-@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + NumericOperations.ACTION_NAME)
+@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + NumericOperations.ACTION_NAME)
 @Scope("prototype")
-public class NumericOperations extends ActionMetadataAdapter implements ColumnAction, OtherColumnParameters {
+public class NumericOperations extends AbstractActionMetadata implements ColumnAction, OtherColumnParameters {
 
     /**
      * The action name.

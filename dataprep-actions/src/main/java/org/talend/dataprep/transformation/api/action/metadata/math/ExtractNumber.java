@@ -23,7 +23,7 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 
 import java.math.BigDecimal;
@@ -54,8 +54,8 @@ import java.util.concurrent.ConcurrentHashMap;
  *     <li>pico p 0.000000000001</li>
  * </ul>
  */
-@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + ExtractNumber.EXTRACT_NUMBER_ACTION_NAME)
-public class ExtractNumber extends ActionMetadataAdapter implements ColumnAction {
+@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + ExtractNumber.EXTRACT_NUMBER_ACTION_NAME)
+public class ExtractNumber extends AbstractActionMetadata implements ColumnAction {
 
     /** Name of the action. */
     public static final String EXTRACT_NUMBER_ACTION_NAME = "extract_number"; //$NON-NLS-1$

@@ -27,7 +27,7 @@ import org.talend.dataprep.transformation.api.action.metadata.common.*;
 import java.time.LocalDateTime;
 import java.util.Map;
 
-@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + CompareDates.ACTION_NAME)
+@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + CompareDates.ACTION_NAME)
 public class CompareDates extends AbstractCompareAction implements ColumnAction, OtherColumnParameters, CompareAction {
 
     /**

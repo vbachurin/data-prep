@@ -21,7 +21,7 @@ import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 
 import java.util.Collections;
@@ -35,8 +35,8 @@ import static org.talend.dataprep.transformation.api.action.metadata.category.Ac
 /**
  * duplicate a column
  */
-@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + CopyColumnMetadata.COPY_ACTION_NAME)
-public class CopyColumnMetadata extends ActionMetadataAdapter implements ColumnAction {
+@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + CopyColumnMetadata.COPY_ACTION_NAME)
+public class CopyColumnMetadata extends AbstractActionMetadata implements ColumnAction {
 
     /**
      * The action name.

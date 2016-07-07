@@ -20,10 +20,10 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataquality.semantic.classifier.SemanticCategoryEnum;
 
-public abstract class AbstractDate extends ActionMetadataAdapter {
+public abstract class AbstractDate extends AbstractActionMetadata {
 
     /** Component that parses dates. */
     @Autowired

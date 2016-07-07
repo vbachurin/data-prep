@@ -22,7 +22,7 @@ import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 
 import java.math.BigDecimal;
@@ -32,9 +32,9 @@ import java.util.Set;
 /**
  * This will compute the absolute value for numerical columns.
  */
-@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + Absolute.ABSOLUTE_ACTION_NAME)
+@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + Absolute.ABSOLUTE_ACTION_NAME)
 @Scope(value = "prototype")
-public class Absolute extends ActionMetadataAdapter implements ColumnAction {
+public class Absolute extends AbstractActionMetadata implements ColumnAction {
 
     public static final String ABSOLUTE_ACTION_NAME = "absolute"; //$NON-NLS-1$
 

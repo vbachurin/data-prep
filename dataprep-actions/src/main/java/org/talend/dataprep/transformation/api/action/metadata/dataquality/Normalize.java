@@ -20,7 +20,7 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 
 import java.text.Normalizer;
@@ -30,8 +30,8 @@ import java.util.Set;
 /**
  * Lower case a column in a dataset row.
  */
-@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + Normalize.ACTION_NAME)
-public class Normalize extends ActionMetadataAdapter implements ColumnAction {
+@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + Normalize.ACTION_NAME)
+public class Normalize extends AbstractActionMetadata implements ColumnAction {
 
     /**
      * Action name.

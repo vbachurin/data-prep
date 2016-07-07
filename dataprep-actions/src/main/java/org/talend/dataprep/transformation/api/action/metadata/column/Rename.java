@@ -26,7 +26,7 @@ import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 
 import javax.annotation.Nonnull;
@@ -43,9 +43,9 @@ import static org.talend.dataprep.transformation.api.action.metadata.category.Ac
  *
  * If the column to rename does not exist or the new name is already used, nothing happen.
  */
-@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + Rename.RENAME_ACTION_NAME)
+@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + Rename.RENAME_ACTION_NAME)
 @Scope(value = "prototype")
-public class Rename extends ActionMetadataAdapter implements ColumnAction {
+public class Rename extends AbstractActionMetadata implements ColumnAction {
 
     /** Action name. */
     public static final String RENAME_ACTION_NAME = "rename_column"; //$NON-NLS-1$

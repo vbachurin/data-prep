@@ -22,7 +22,7 @@ import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 
 import java.util.EnumSet;
@@ -33,8 +33,8 @@ import java.util.Set;
  * Change the domain of a column. <b>This action is not displayed in the UI it's here to ease recording it as a Step
  * It's available from column headers</b>
  */
-@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + DomainChange.DOMAIN_CHANGE_ACTION_NAME)
-public class DomainChange extends ActionMetadataAdapter implements ColumnAction {
+@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + DomainChange.DOMAIN_CHANGE_ACTION_NAME)
+public class DomainChange extends AbstractActionMetadata implements ColumnAction {
 
     /**
      * The action name.

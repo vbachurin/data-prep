@@ -39,8 +39,8 @@ import static org.talend.dataprep.transformation.api.action.metadata.common.Acti
 /**
  * This action reorder columns. The column will be move to the selected column. All other columns will be moved as well.
  */
-@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + ReorderColumn.REORDER_ACTION_NAME)
-public class ReorderColumn extends ActionMetadataAdapter implements DataSetAction {
+@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + ReorderColumn.REORDER_ACTION_NAME)
+public class ReorderColumn extends AbstractActionMetadata implements DataSetAction {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReorderColumn.class);
 

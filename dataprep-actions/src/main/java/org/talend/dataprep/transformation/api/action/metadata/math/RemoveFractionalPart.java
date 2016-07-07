@@ -15,7 +15,7 @@ package org.talend.dataprep.transformation.api.action.metadata.math;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
 
 import java.math.RoundingMode;
@@ -26,7 +26,7 @@ import java.util.List;
  * 
  * @see RoundingMode#DOWN
  */
-@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + RemoveFractionalPart.ACTION_NAME)
+@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + RemoveFractionalPart.ACTION_NAME)
 public class RemoveFractionalPart extends AbstractRound {
 
     /** The action name. */

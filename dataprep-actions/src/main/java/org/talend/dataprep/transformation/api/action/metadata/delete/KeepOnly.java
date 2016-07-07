@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 
 import java.util.EnumSet;
@@ -25,8 +25,8 @@ import java.util.Set;
 
 import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.FILTERED;
 
-@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + KeepOnly.KEEP_ONLY_ACTION_NAME)
-public class KeepOnly extends ActionMetadataAdapter implements ColumnAction {
+@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + KeepOnly.KEEP_ONLY_ACTION_NAME)
+public class KeepOnly extends AbstractActionMetadata implements ColumnAction {
 
     static final String KEEP_ONLY_ACTION_NAME = "keep_only";
 

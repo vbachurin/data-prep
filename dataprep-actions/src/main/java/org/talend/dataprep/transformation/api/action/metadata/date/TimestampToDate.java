@@ -23,7 +23,7 @@ import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
 
@@ -35,8 +35,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + TimestampToDate.ACTION_NAME)
-public class TimestampToDate extends ActionMetadataAdapter implements ColumnAction, DatePatternParamModel {
+@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + TimestampToDate.ACTION_NAME)
+public class TimestampToDate extends AbstractActionMetadata implements ColumnAction, DatePatternParamModel {
 
     /**
      * The action name.

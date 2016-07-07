@@ -21,7 +21,7 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.metadata.common.ReplaceOnValueHelper;
 
@@ -35,8 +35,8 @@ import static org.talend.dataprep.api.type.Type.STRING;
 import static org.talend.dataprep.parameters.ParameterType.REGEX;
 import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.STRINGS;
 
-@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + Cut.CUT_ACTION_NAME)
-public class Cut extends ActionMetadataAdapter implements ColumnAction {
+@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + Cut.CUT_ACTION_NAME)
+public class Cut extends AbstractActionMetadata implements ColumnAction {
 
     @Autowired
     private ReplaceOnValueHelper regexParametersHelper;

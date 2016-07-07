@@ -19,7 +19,7 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.delete.AbstractDelete;
 
 import java.math.BigDecimal;
@@ -29,7 +29,7 @@ import static org.talend.dataprep.api.type.Type.NUMERIC;
 /**
  * Delete row on a given value.
  */
-@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + DeleteNegativeValues.ACTION_NAME)
+@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + DeleteNegativeValues.ACTION_NAME)
 public class DeleteNegativeValues extends AbstractDelete {
 
     /**

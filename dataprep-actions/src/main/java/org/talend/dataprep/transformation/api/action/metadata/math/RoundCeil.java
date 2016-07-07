@@ -14,7 +14,7 @@ package org.talend.dataprep.transformation.api.action.metadata.math;
 
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 
 import java.math.RoundingMode;
 
@@ -24,7 +24,7 @@ import java.math.RoundingMode;
  * 
  * @see RoundingMode#CEILING
  */
-@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + RoundCeil.ACTION_NAME)
+@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + RoundCeil.ACTION_NAME)
 public class RoundCeil extends AbstractRound {
 
     /** The action name. */

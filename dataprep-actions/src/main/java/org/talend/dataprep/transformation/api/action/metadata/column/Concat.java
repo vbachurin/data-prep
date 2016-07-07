@@ -28,7 +28,7 @@ import org.talend.dataprep.parameters.SelectParameter;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.metadata.common.OtherColumnParameters;
 
@@ -41,8 +41,8 @@ import java.util.Set;
  * Concat action concatenates 2 columns into a new one. The new column name will be "column_source + selected_column."
  * The new column content is "prefix + column_source + separator + selected_column + suffix"
  */
-@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + Concat.CONCAT_ACTION_NAME)
-public class Concat extends ActionMetadataAdapter implements ColumnAction, OtherColumnParameters {
+@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + Concat.CONCAT_ACTION_NAME)
+public class Concat extends AbstractActionMetadata implements ColumnAction, OtherColumnParameters {
 
     /**
      * The action name.

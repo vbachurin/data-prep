@@ -26,7 +26,7 @@ import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.context.ActionContext.ActionStatus;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataquality.datamasking.semantic.ValueDataMasker;
 
@@ -38,8 +38,8 @@ import java.util.stream.Collectors;
 /**
  * Mask sensitive data according to the semantic category.
  */
-@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + MaskDataByDomain.ACTION_NAME)
-public class MaskDataByDomain extends ActionMetadataAdapter implements ColumnAction {
+@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + MaskDataByDomain.ACTION_NAME)
+public class MaskDataByDomain extends AbstractActionMetadata implements ColumnAction {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MaskDataByDomain.class);
 

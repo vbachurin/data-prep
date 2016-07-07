@@ -15,14 +15,14 @@ package org.talend.dataprep.transformation.api.action.metadata.math;
 import org.apache.commons.math3.util.FastMath;
 import org.springframework.stereotype.Component;
 import org.talend.daikon.number.BigDecimalParser;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataAdapter;
+import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 
 import static org.talend.dataprep.transformation.api.action.metadata.math.NaturalLogarithm.NATURAL_LOGARITHM_NAME;
 
 /**
  * Create a new column with Natural Logarithm
  */
-@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + NATURAL_LOGARITHM_NAME)
+@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + NATURAL_LOGARITHM_NAME)
 public class NaturalLogarithm extends AbstractMathNoParameterAction {
 
     protected static final String NATURAL_LOGARITHM_NAME = "natural_logarithm_numbers";
