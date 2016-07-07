@@ -79,7 +79,7 @@
                     .state('nav.index.preparations', {
                         url: '/preparations/{folderId:.*}',
                         views: {
-                            'home-content': { template: '<home-preparation></home-preparation>'}
+                            'home-content': {template: '<home-preparation></home-preparation>'}
                         }
                     })
                     .state('playground', {

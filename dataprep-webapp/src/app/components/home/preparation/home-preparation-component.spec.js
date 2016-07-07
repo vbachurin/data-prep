@@ -44,15 +44,15 @@ describe('Home Preparation Component', () => {
     });
 
 
-    it('should render preparation-header', inject(() => {
+    it('should render preparation-header', () => {
         //when
         createElement();
 
         //then
         expect(element.find('preparation-header').length).toBe(1);
-    }));
+    });
 
-    it('should NOT render preparation-header', inject(() => {
+    it('should NOT render preparation-header', () => {
         //given
         StateMock.inventory.isFetchingPreparations = true;
 
@@ -61,14 +61,14 @@ describe('Home Preparation Component', () => {
 
         //then
         expect(element.find('preparation-header').length).toBe(0);
-    }));
+    });
 
-    it('should render preparation-list', inject(() => {
+    it('should render preparation-list', () => {
         //when
         createElement();
 
         //then
         expect(element.find('preparation-list').length).toBe(1);
-    }));
+    });
 
 });

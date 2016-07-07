@@ -47,15 +47,15 @@ describe('Home Dataset Component', () => {
     });
 
 
-    it('should NOT render dataset-upload-list', inject(() => {
+    it('should NOT render dataset-upload-list', () => {
         //when
         createElement();
 
         //then
         expect(element.find('dataset-upload-list').length).toBe(0);
-    }));
+    });
 
-    it('should render dataset-upload-list', inject(() => {
+    it('should render dataset-upload-list', () => {
         //given
         StateMock.dataset.uploadingDatasets = [{id: 'datasetId'}];
 
@@ -64,17 +64,17 @@ describe('Home Dataset Component', () => {
 
         //then
         expect(element.find('dataset-upload-list').length).toBe(1);
-    }));
+    });
 
-    it('should render dataset-header', inject(() => {
+    it('should render dataset-header', () => {
         //when
         createElement();
 
         //then
         expect(element.find('dataset-header').length).toBe(1);
-    }));
+    });
 
-    it('should NOT render dataset-header', inject(() => {
+    it('should NOT render dataset-header', () => {
         //given
         StateMock.inventory.isFetchingDatasets = true;
 
@@ -83,14 +83,14 @@ describe('Home Dataset Component', () => {
 
         //then
         expect(element.find('dataset-header').length).toBe(0);
-    }));
+    });
 
-    it('should render dataset-list', inject(() => {
+    it('should render dataset-list', () => {
         //when
         createElement();
 
         //then
         expect(element.find('dataset-list').length).toBe(1);
-    }));
+    });
 
 });

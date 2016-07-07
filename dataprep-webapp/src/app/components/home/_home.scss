@@ -42,25 +42,29 @@ $footer-height: 49px;
             }
         }
     }
-    .home-content {
-        @include flex-grow(1);
-    }
 
-    .home-main {
-        @extend .flex-center;
-        @extend .flex-column;
+    .home {
 
-        height: 100%;
-        width: 100%;
-
-        .inventory-list-header,
-        .upload-list-container {
-            @include flex-shrink(0);
+        &-content {
+            @include flex-grow(1);
         }
 
-        .inventory-list-container {
-            @include flex-flexible();
-            position: relative;
+        &-main {
+            @extend .flex-center;
+            @extend .flex-column;
+
+            height: 100%;
+            width: 100%;
+
+            .inventory-list-header,
+            .upload-list-container {
+                @include flex-shrink(0);
+            }
+
+            .inventory-list-container {
+                @include flex-flexible();
+                position: relative;
+            }
         }
     }
 
