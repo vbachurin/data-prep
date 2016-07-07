@@ -160,6 +160,8 @@ export default function ImportCtrl($document,
             .catch(() => {
                 vm.datasetName = name;
                 vm.datasetNameModal = true;
+            }).finally(() => {
+                vm.showModal = false;
             });
     };
 
