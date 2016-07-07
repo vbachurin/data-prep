@@ -25,8 +25,8 @@ import java.util.Set;
 /**
  * A unit test action: only use to test unexpected action failures.
  */
-@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + TransformationFailureAction.TRANSFORMATION_FAILURE_ACTION)
-public class TransformationFailureAction extends ActionMetadata implements ColumnAction, CellAction, DataSetAction {
+@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + TransformationFailureAction.TRANSFORMATION_FAILURE_ACTION)
+public class TransformationFailureAction extends AbstractActionMetadata implements ColumnAction, CellAction, DataSetAction {
 
     public static final String TRANSFORMATION_FAILURE_ACTION = "testtransformationfailure";
 

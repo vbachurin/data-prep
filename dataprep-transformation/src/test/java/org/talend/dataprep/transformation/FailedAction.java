@@ -25,8 +25,8 @@ import java.util.Set;
 /**
  * A unit test action: only use to test unexpected action failures.
  */
-@Component(ActionMetadataAdapter.ACTION_BEAN_PREFIX + FailedAction.FAILED_ACTION)
-public class FailedAction extends ActionMetadata implements ColumnAction, CellAction, DataSetAction {
+@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + FailedAction.FAILED_ACTION)
+public class FailedAction extends AbstractActionMetadata implements ColumnAction, CellAction, DataSetAction {
 
     public static final String FAILED_ACTION = "testfailedaction";
 
