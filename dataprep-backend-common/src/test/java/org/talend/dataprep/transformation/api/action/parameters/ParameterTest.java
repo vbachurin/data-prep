@@ -36,7 +36,7 @@ public class ParameterTest extends ParameterBaseTest {
 
         // when
         StringWriter out = new StringWriter();
-        builder.build().writer().writeValue(out, expected);
+        mapper.writer().writeValue(out, expected);
 
         // then
         assertThat(out.toString(), sameJSONAs(IOUtils.toString(this.getClass().getResourceAsStream("textParameter.json"))));

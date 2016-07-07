@@ -31,7 +31,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.talend.dataprep.api.dataset.*;
 import org.talend.dataprep.api.dataset.location.HttpLocation;
@@ -51,7 +50,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class DataSetJSONTest {
 
     @Autowired
-    private Jackson2ObjectMapperBuilder builder;
+    private ObjectMapper mapper;
 
     @Autowired
     private DataSetMetadataBuilder metadataBuilder;
@@ -63,7 +62,6 @@ public class DataSetJSONTest {
      */
     public DataSet from(InputStream json) {
         try {
-            final ObjectMapper mapper = builder.build();
             JsonParser parser = mapper.getFactory().createParser(json);
             return mapper.readerFor(DataSet.class).readValue(parser);
         } catch (Exception e) {
@@ -81,7 +79,7 @@ public class DataSetJSONTest {
             throw new IllegalArgumentException("Writer cannot be null.");
         }
         try {
-            builder.build().writer().writeValue(writer, dataSet);
+            mapper.writer().writeValue(writer, dataSet);
         } catch (Exception e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_SERIALIZE_TO_JSON, e);
         }
@@ -199,7 +197,6 @@ public class DataSetJSONTest {
         String[] columnNames = new String[] {"id", "firstname", "lastname", "state", "registration", "city", "birth", "nbCommands", "avgAmount"};
 
         final InputStream input = this.getClass().getResourceAsStream("dataSetRowMetadata.json");
-        final ObjectMapper mapper = builder.build();
         try (JsonParser parser = mapper.getFactory().createParser(input)) {
             final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
             final Iterator<DataSetRow> iterator = dataSet.getRecords().iterator();

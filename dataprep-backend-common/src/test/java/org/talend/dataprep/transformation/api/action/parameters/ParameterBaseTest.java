@@ -18,8 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Base class for all parameter tests.
@@ -31,6 +32,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public abstract class ParameterBaseTest {
 
     @Autowired
-    protected Jackson2ObjectMapperBuilder builder;
+    protected ObjectMapper mapper;
 
 }

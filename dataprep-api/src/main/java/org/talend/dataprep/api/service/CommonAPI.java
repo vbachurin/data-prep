@@ -22,7 +22,6 @@ import java.io.OutputStream;
 import java.util.Iterator;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,6 +38,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.HystrixCommand;
+
 import io.swagger.annotations.ApiOperation;
 
 /**
@@ -48,7 +48,7 @@ import io.swagger.annotations.ApiOperation;
 public class CommonAPI extends APIService {
 
     @Autowired
-    private Jackson2ObjectMapperBuilder builder;
+    private ObjectMapper mapper;
 
     /**
      * Describe the supported error codes.
@@ -64,7 +64,7 @@ public class CommonAPI extends APIService {
 
         JsonFactory factory = new JsonFactory();
         JsonGenerator generator = factory.createGenerator(output);
-        generator.setCodec(builder.build());
+        generator.setCodec(mapper);
 
         // start the errors array
         generator.writeStartArray();
@@ -131,8 +131,7 @@ public class CommonAPI extends APIService {
      * @throws IOException if an error occurs.
      */
     private void writeErrorsFromApi(JsonGenerator generator, InputStream input) throws IOException {
-        final ObjectMapper objectMapper = builder.build();
-        Iterator<JsonErrorCodeDescription> iterator = objectMapper.readerFor(JsonErrorCodeDescription.class).readValues(input);
+        Iterator<JsonErrorCodeDescription> iterator = mapper.readerFor(JsonErrorCodeDescription.class).readValues(input);
         while (iterator.hasNext()) {
             final JsonErrorCodeDescription description = iterator.next();
             generator.writeObject(description);

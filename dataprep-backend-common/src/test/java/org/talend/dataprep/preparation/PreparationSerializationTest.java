@@ -29,11 +29,12 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.talend.dataprep.api.preparation.*;
 import org.talend.dataprep.api.service.info.VersionService;
 import org.talend.dataprep.preparation.store.PreparationRepository;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = PreparationTest.class)
@@ -43,7 +44,7 @@ import org.talend.dataprep.preparation.store.PreparationRepository;
 public class PreparationSerializationTest {
 
     @Autowired
-    Jackson2ObjectMapperBuilder builder;
+    private ObjectMapper mapper;
 
     @Autowired
     PreparationRepository repository;
@@ -64,7 +65,7 @@ public class PreparationSerializationTest {
         Preparation preparation = new Preparation("534fceed35b633160f2e2469f7ac7c14d75177b7", versionService.version().getVersionId());
         preparation.setCreationDate(0L);
         final StringWriter output = new StringWriter();
-        builder.build().writer().writeValue(output, preparation);
+        mapper.writeValue(output, preparation);
         final InputStream expected = PreparationSerializationTest.class.getResourceAsStream("emptyPreparation.json");
         assertThat(output.toString(), sameJSONAsFile(expected));
     }
@@ -75,7 +76,7 @@ public class PreparationSerializationTest {
         preparation.setName("MyName");
         preparation.setCreationDate(0L);
         final StringWriter output = new StringWriter();
-        builder.build().writer().writeValue(output, preparation);
+        mapper.writer().writeValue(output, preparation);
         final InputStream expected = PreparationSerializationTest.class.getResourceAsStream("namePreparation.json");
         assertThat(output.toString(), sameJSONAsFile(expected));
     }
@@ -86,7 +87,7 @@ public class PreparationSerializationTest {
         preparation.setDataSetId("12345");
         preparation.setCreationDate(0L);
         final StringWriter output = new StringWriter();
-        builder.build().writer().writeValue(output, preparation);
+        mapper.writer().writeValue(output, preparation);
         final InputStream expected = PreparationSerializationTest.class.getResourceAsStream("dataSetPreparation.json");
         assertThat(output.toString(), sameJSONAsFile(expected));
     }
@@ -98,7 +99,7 @@ public class PreparationSerializationTest {
         preparation.setAuthor("myAuthor");
         preparation.setCreationDate(0L);
         final StringWriter output = new StringWriter();
-        builder.build().writer().writeValue(output, preparation);
+        mapper.writer().writeValue(output, preparation);
         final InputStream expected = PreparationSerializationTest.class.getResourceAsStream("authorPreparation.json");
         assertThat(output.toString(), sameJSONAsFile(expected));
     }
@@ -109,7 +110,7 @@ public class PreparationSerializationTest {
         preparation.setAuthor("myAuthor");
         preparation.setCreationDate(0L);
         final StringWriter output = new StringWriter();
-        builder.build().writer().writeValue(output, new PreparationDetails(preparation));
+        mapper.writer().writeValue(output, new PreparationDetails(preparation));
         final InputStream expected = PreparationSerializationTest.class.getResourceAsStream("preparationDetailsSteps.json");
         assertThat(output.toString(), sameJSONAsFile(expected));
     }
@@ -127,7 +128,7 @@ public class PreparationSerializationTest {
         Preparation preparation = new Preparation("b7368bd7e4de38ff954636d0ac0438c7fb56a208", "12345", s1.id(), version);
         preparation.setCreationDate(0L);
         final StringWriter output = new StringWriter();
-        builder.build().writer().writeValue(output, new PreparationDetails(preparation));
+        mapper.writer().writeValue(output, new PreparationDetails(preparation));
         final InputStream expected = PreparationSerializationTest.class.getResourceAsStream("preparationDetailsWithStepsAndActions.json");
         assertThat(output.toString(), sameJSONAsFile(expected));
     }

@@ -19,7 +19,6 @@ import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.talend.dataprep.api.dataset.DataSetContent;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -28,6 +27,8 @@ import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.schema.FormatFamily;
 import org.talend.dataprep.schema.Serializer;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Base class for DataSet content stores.
@@ -43,7 +44,7 @@ public abstract class DataSetContentStore {
 
     /** DataPrep ready jackson builder. */
     @Autowired
-    protected Jackson2ObjectMapperBuilder builder;
+    protected ObjectMapper mapper;
 
     /**
      * Stores (persists) a data set raw content to a storage. The only expectation is for {@link #get(DataSetMetadata)}

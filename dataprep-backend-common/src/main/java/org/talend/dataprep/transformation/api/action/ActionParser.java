@@ -20,7 +20,6 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.preparation.Actions;
@@ -28,6 +27,8 @@ import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionFactory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Parse the actions a dataset and prepare the closures to apply.
@@ -40,7 +41,7 @@ public class ActionParser {
 
     /** The dataprep ready jackson builder. */
     @Autowired
-    private Jackson2ObjectMapperBuilder builder;
+    private ObjectMapper mapper;
 
     /** The dataprep spring application context. */
     @Autowired
@@ -62,7 +63,7 @@ public class ActionParser {
         }
         try {
             // Parse action JSON
-            final Actions parsedActions = builder.build().readerFor(Actions.class).readValue(actions);
+            final Actions parsedActions = mapper.readerFor(Actions.class).readValue(actions);
             // Create closures from parsed actions
             final List<Action> allActions = parsedActions.getActions();
             final List<Action> builtActions = new ArrayList<>(allActions.size() + 1);

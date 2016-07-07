@@ -23,12 +23,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.exception.TDPException;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Utility class for CSV format handling.
@@ -40,7 +40,7 @@ public class CSVFormatUtils {
      * Dataprep ready jackson builder.
      */
     @Autowired
-    private Jackson2ObjectMapperBuilder builder;
+    private ObjectMapper mapper;
 
     /**
      * Retrieve properties (separator, header and the headerNbLines) associated with a dataset content and put them in a
@@ -65,7 +65,7 @@ public class CSVFormatUtils {
         List<String> header;
         try {
             String jsonMap = parameters.get(HEADER_COLUMNS_PARAMETER);
-            header = builder.build().readValue(jsonMap, new TypeReference<List<String>>() {
+            header = mapper.readValue(jsonMap, new TypeReference<List<String>>() {
             });
         } catch (Exception e) { // NOSONAR no need to log or throw the exception here
             return Collections.emptyList();
@@ -87,7 +87,7 @@ public class CSVFormatUtils {
         parameters.put(SEPARATOR_PARAMETER, separator);
         String jsonHeader;
         try {
-            jsonHeader = builder.build().writeValueAsString(header);
+            jsonHeader = mapper.writeValueAsString(header);
         } catch (Exception e) {
             throw new TDPException(UNABLE_TO_SERIALIZE_TO_JSON, e);
         }

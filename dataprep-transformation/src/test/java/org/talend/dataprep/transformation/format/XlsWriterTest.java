@@ -34,7 +34,6 @@ import org.talend.dataprep.transformation.api.transformer.TransformerFactory;
 import org.talend.dataprep.transformation.api.transformer.configuration.Configuration;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Unit test for the XlsWriter.
@@ -59,7 +58,6 @@ public class XlsWriterTest extends BaseFormatTest {
                     .build();
             final Transformer exporter = factory.get(configuration);
             final InputStream inputStream = XlsWriterTest.class.getResourceAsStream("export_dataset.json");
-            final ObjectMapper mapper = builder.build();
             try (JsonParser parser = mapper.getFactory().createParser(inputStream)) {
                 final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
                 exporter.transform(dataSet, configuration);
@@ -139,7 +137,6 @@ public class XlsWriterTest extends BaseFormatTest {
                     .build();
             final Transformer exporter = factory.get(configuration);
             final InputStream inputStream = XlsWriterTest.class.getResourceAsStream("tdp_1528_backslash_not_exported.json");
-            final ObjectMapper mapper = builder.build();
             try (JsonParser parser = mapper.getFactory().createParser(inputStream)) {
                 final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
                 exporter.transform(dataSet, configuration);

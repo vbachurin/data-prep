@@ -13,21 +13,20 @@
 
 package org.talend.dataprep.api.dataset.location.locator;
 
+import static org.junit.Assert.*;
+
+import java.io.IOException;
+import java.io.InputStream;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.talend.dataprep.api.dataset.DataSetLocation;
 import org.talend.dataprep.api.dataset.location.HttpLocation;
-
-import java.io.IOException;
-import java.io.InputStream;
-
-import static org.junit.Assert.*;
 
 /**
  * Unit test for the HttpDataSetLocator.
@@ -44,9 +43,6 @@ public class HttpDataSetLocatorTest {
     @Autowired
     HttpDataSetLocator locator;
 
-    /** Jackson builder. */
-    @Autowired
-    private Jackson2ObjectMapperBuilder builder;
 
     @Test
     public void should_accept_media_type() {

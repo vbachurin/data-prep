@@ -25,7 +25,6 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
@@ -46,10 +45,6 @@ public class CutTest extends AbstractMetadataBaseTest {
     @Autowired
     private Cut action;
 
-    /** The dataprep ready jackson builder. */
-    @Autowired
-    public Jackson2ObjectMapperBuilder builder;
-    
     /** The action parameters. */
     private Map<String, String> parameters;
 

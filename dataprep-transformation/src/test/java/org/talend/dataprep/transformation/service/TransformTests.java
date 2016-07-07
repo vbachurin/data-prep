@@ -23,7 +23,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.cache.ContentCache;
@@ -39,10 +38,6 @@ public class TransformTests extends TransformationServiceBaseTests {
     /** Content cache for the tests. */
     @Autowired
     private ContentCache contentCache;
-
-    /** The dataprep ready to use jackson object mapper. */
-    @Autowired
-    private Jackson2ObjectMapperBuilder builder;
 
     @Before
     public void customSetUp() throws Exception {
@@ -167,7 +162,7 @@ public class TransformTests extends TransformationServiceBaseTests {
                 .when() //
                 .get("/datasets/{id}/metadata", dsId) //
                 .asString();
-        final DataSetMetadata metadata = builder.build().readerFor(DataSetMetadata.class).readValue(dataSetMetadataContent);
+        final DataSetMetadata metadata = mapper.readerFor(DataSetMetadata.class).readValue(dataSetMetadataContent);
 
         final Preparation preparation = getPreparation(prepId);
         final String headId = preparation.getSteps().get(preparation.getSteps().size() - 1);

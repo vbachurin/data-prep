@@ -23,8 +23,6 @@ import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.talend.dataprep.transformation.preview.api.PreviewParameters;
 
 import com.jayway.restassured.http.ContentType;
@@ -33,10 +31,6 @@ import com.jayway.restassured.http.ContentType;
  * Diff integration tests.
  */
 public class DiffTests extends TransformationServiceBaseTests {
-
-    /** The dataprep ready to use jackson object mapper. */
-    @Autowired
-    protected Jackson2ObjectMapperBuilder builder;
 
     @Test
     public void should_return_preview() throws Exception {
@@ -50,7 +44,7 @@ public class DiffTests extends TransformationServiceBaseTests {
         // when
         final String response = given() //
                 .contentType(ContentType.JSON) //
-                .body(builder.build().writer().writeValueAsString(input)) //
+                .body(mapper.writer().writeValueAsString(input)) //
                 .when().expect().statusCode(200).log().ifError() //
                 .post("/transform/preview") //
                 .asString();
@@ -81,7 +75,7 @@ public class DiffTests extends TransformationServiceBaseTests {
         // when
         final String response = given() //
                 .contentType(ContentType.JSON) //
-                .body(builder.build().writer().writeValueAsString(input)) //
+                .body(mapper.writer().writeValueAsString(input)) //
                 .when().expect().statusCode(200).log().ifError() //
                 .post("/transform/preview") //
                 .asString();
@@ -103,7 +97,7 @@ public class DiffTests extends TransformationServiceBaseTests {
         // when
         final String response = given() //
                 .contentType(ContentType.JSON) //
-                .body(builder.build().writer().writeValueAsString(input)) //
+                .body(mapper.writer().writeValueAsString(input)) //
                 .when().expect().statusCode(200).log().ifError() //
                 .post("/transform/diff/metadata")
                 .asString();
@@ -125,7 +119,7 @@ public class DiffTests extends TransformationServiceBaseTests {
         // when
         final String response = given() //
                 .contentType(ContentType.JSON) //
-                .body(builder.build().writer().writeValueAsString(input)) //
+                .body(mapper.writer().writeValueAsString(input)) //
                 .when().expect().statusCode(200).log().ifError() //
                 .post("/transform/diff/metadata")
                 .asString();

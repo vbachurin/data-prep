@@ -25,19 +25,14 @@ import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.format.export.ExportFormat;
 import org.talend.dataprep.transformation.TransformationBaseTest;
 import org.talend.dataprep.transformation.api.transformer.configuration.Configuration;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class TransformerFactoryTest extends TransformationBaseTest {
-
-    @Autowired
-    Jackson2ObjectMapperBuilder builder;
 
     @Autowired
     private TransformerFactory factory;
@@ -59,7 +54,6 @@ public class TransformerFactoryTest extends TransformationBaseTest {
                 TransformerFactoryTest.class
                 .getResourceAsStream("expected_export_preparation_uppercase_firstname.csv"));
 
-        final ObjectMapper mapper = builder.build();
         final InputStream inputStream = TransformerFactoryTest.class.getResourceAsStream("../../format/export_dataset.json");
         try (JsonParser parser = mapper.getFactory().createParser(inputStream)) {
             final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);

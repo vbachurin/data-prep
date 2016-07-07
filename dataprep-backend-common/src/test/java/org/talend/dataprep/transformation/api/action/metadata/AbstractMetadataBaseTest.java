@@ -20,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.statistics.Statistics;
@@ -29,10 +28,10 @@ import org.talend.dataprep.quality.AnalyzerService;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionFactory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ReplaceOnValueHelper;
 import org.talend.dataprep.transformation.api.action.metadata.date.CompareDatesTest;
+import org.talend.dataprep.transformation.pipeline.ActionRegistry;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.talend.dataprep.transformation.pipeline.ActionRegistry;
 
 /**
  * Base class for all related unit tests that deal with metadata
@@ -48,7 +47,7 @@ public abstract class AbstractMetadataBaseTest {
 
     /** The dataprep ready jackson builder. */
     @Autowired
-    public Jackson2ObjectMapperBuilder builder;
+    public ObjectMapper mapper;
 
     @Autowired
     public ActionFactory factory;
@@ -59,7 +58,7 @@ public abstract class AbstractMetadataBaseTest {
     protected String generateJson(String token, String operator) {
         ReplaceOnValueHelper r = new ReplaceOnValueHelper(token, operator);
         try {
-            return builder.build().writeValueAsString(r);
+            return mapper.writeValueAsString(r);
         } catch (JsonProcessingException e) {
             return "";
         }

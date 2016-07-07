@@ -24,7 +24,6 @@ import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.context.TestPropertySource;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.dataset.DataSetBaseTest;
@@ -44,10 +43,6 @@ public class FileSystemDataSetMetadataRepositoryTest extends DataSetBaseTest {
     /** The repository to test. */
     @Autowired
     private FileSystemDataSetMetadataRepository repository;
-
-    /** DataPrep jackson ready to use builder. */
-    @Autowired
-    Jackson2ObjectMapperBuilder builder;
 
     @After
     public void clear() {
@@ -103,7 +98,7 @@ public class FileSystemDataSetMetadataRepositoryTest extends DataSetBaseTest {
         repository.add(metadata);
 
         // when
-        DataSetMetadata update = builder.build().readerFor(DataSetMetadata.class)
+        DataSetMetadata update = mapper.readerFor(DataSetMetadata.class)
                 .readValue(this.getClass().getResourceAsStream("dataset_2.json"));
         update = metadataBuilder.metadata().copy(update).id(id).build();
 
@@ -230,7 +225,7 @@ public class FileSystemDataSetMetadataRepositoryTest extends DataSetBaseTest {
      * @throws IOException if an error occurs reading the json source file.
      */
     public DataSetMetadata getMetadata(String id) throws IOException {
-        DataSetMetadata original = builder.build().readerFor(DataSetMetadata.class)
+        DataSetMetadata original = mapper.readerFor(DataSetMetadata.class)
                 .readValue(this.getClass().getResourceAsStream("dataset.json"));
         return metadataBuilder.metadata().copy(original).id(id).build();
     }

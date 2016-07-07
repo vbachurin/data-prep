@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.api.user.UserData;
@@ -35,6 +34,8 @@ import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.user.store.UserDataRepository;
 import org.talend.dataprep.util.FilesHelper;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * User data repository implementation backed on the file system.
@@ -52,7 +53,7 @@ public class FileSystemUserDataRepository implements UserDataRepository<UserData
 
     /** The dataprep ready jackson builder. */
     @Autowired
-    private Jackson2ObjectMapperBuilder builder;
+    private ObjectMapper mapper;
 
     /**
      * Make sure the root folder is there.
@@ -79,7 +80,7 @@ public class FileSystemUserDataRepository implements UserDataRepository<UserData
         }
 
         try (GZIPInputStream input = new GZIPInputStream(new FileInputStream(inputFile))) {
-            return builder.build().readerFor(UserData.class).readValue(input);
+            return mapper.readerFor(UserData.class).readValue(input);
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_READ_USER_DATA, e, ExceptionContext.build().put("id", userId));
         }
@@ -98,7 +99,7 @@ public class FileSystemUserDataRepository implements UserDataRepository<UserData
         final File outputFile = getFile(userData.getUserId());
 
         try (GZIPOutputStream output = new GZIPOutputStream(new FileOutputStream(outputFile))) {
-            builder.build().writer().writeValue(output, userData);
+            mapper.writer().writeValue(output, userData);
         } catch (IOException e) {
             LOG.error("Error saving {}", userData, e);
             throw new TDPException(CommonErrorCodes.UNABLE_TO_SAVE_USER_DATA, e);

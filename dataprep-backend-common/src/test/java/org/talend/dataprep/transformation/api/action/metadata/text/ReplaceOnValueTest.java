@@ -29,16 +29,15 @@ import java.util.Map;
 import org.hamcrest.collection.IsIterableContainingInAnyOrder;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.AbstractMetadataBaseTest;
 import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
 import org.talend.dataprep.transformation.api.action.metadata.common.ReplaceOnValueHelper;
-import org.talend.dataprep.parameters.Parameter;
 
 /**
  * Test class for Replace value action
@@ -47,10 +46,6 @@ public class ReplaceOnValueTest extends AbstractMetadataBaseTest {
 
     @Autowired
     private ReplaceOnValue action;
-
-    /** The dataprep ready jackson builder. */
-    @Autowired
-    public Jackson2ObjectMapperBuilder builder;
 
     private ActionContext buildPatternActionContext(String regex, String replacement, boolean replace) {
         ActionContext context = new ActionContext(new TransformationContext());

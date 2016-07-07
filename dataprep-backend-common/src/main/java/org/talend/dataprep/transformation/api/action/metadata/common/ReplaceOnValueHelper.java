@@ -21,11 +21,11 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Utils class to ease manipulation of parameters of type ParameterType.REGEX.
@@ -36,7 +36,7 @@ public class ReplaceOnValueHelper {
     /** The dataprep ready jackson builder. */
     @Autowired
     @Lazy // needed to prevent a circular dependency
-    public Jackson2ObjectMapperBuilder builder;
+    private ObjectMapper mapper;
 
     /** The regex mode parameter name. */
     public static final String REGEX_MODE = "regex";
@@ -96,7 +96,7 @@ public class ReplaceOnValueHelper {
             throw new InvalidParameterException(jsonString + " is not a valid json");
         }
         try {
-            final ReplaceOnValueHelper replaceOnValueHelper = builder.build().readValue(jsonString, ReplaceOnValueHelper.class);
+            final ReplaceOnValueHelper replaceOnValueHelper = mapper.readValue(jsonString, ReplaceOnValueHelper.class);
             replaceOnValueHelper.setStrict(strict);
             if (replaceOnValueHelper.isValid()) {
                 return replaceOnValueHelper;

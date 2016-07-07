@@ -19,8 +19,6 @@ import java.io.IOException;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.talend.dataprep.transformation.TransformationBaseTest;
 import org.talend.dataprep.transformation.aggregation.operation.NumberContext;
 
@@ -28,10 +26,6 @@ import org.talend.dataprep.transformation.aggregation.operation.NumberContext;
  * Unit test for the aggregation result json serialization.
  */
 public class AggregationResultTest extends TransformationBaseTest {
-
-    /** The data-prep ready jackson module. */
-    @Autowired
-    private Jackson2ObjectMapperBuilder builder;
 
     @Test
     public void shouldSerialize() throws IOException {
@@ -44,7 +38,7 @@ public class AggregationResultTest extends TransformationBaseTest {
         result.put("tutu", new NumberContext(753d));
 
         // when
-        String actual = builder.build().writer().writeValueAsString(result);
+        String actual = mapper.writer().writeValueAsString(result);
 
         // then
         Assert.assertThat(actual, sameJSONAsFile(this.getClass().getResourceAsStream("aggregation_result.json")));

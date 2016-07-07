@@ -20,6 +20,8 @@ import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.talend.dataprep.api.dataset.DataSetMetadataBuilder;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 /**
  * Base class for all unit/integration tests for transformation.
  */
@@ -30,4 +32,8 @@ public abstract class TransformationBaseTest {
 
     @Autowired
     protected DataSetMetadataBuilder metadataBuilder;
+
+    @Autowired
+    protected ObjectMapper mapper;
 }
+

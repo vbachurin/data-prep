@@ -22,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.talend.dataprep.api.service.command.info.VersionCommand;
@@ -33,7 +32,9 @@ import org.talend.dataprep.info.Version;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.security.PublicAPI;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.HystrixCommand;
+
 import io.swagger.annotations.ApiOperation;
 
 @RestController
@@ -41,7 +42,7 @@ import io.swagger.annotations.ApiOperation;
 public class VersionServiceAPI extends APIService {
 
     @Autowired
-    Jackson2ObjectMapperBuilder builder;
+    ObjectMapper mapper;
 
     @Value("${transformation.service.url}")
     protected String transformationServiceUrl;
@@ -82,7 +83,7 @@ public class VersionServiceAPI extends APIService {
     private Version callVersionService(String serviceUrl, String serviceName) {
         HystrixCommand<InputStream> versionCommand = getCommand(VersionCommand.class, serviceUrl);
         try (InputStream content = versionCommand.execute()) {
-            final Version version = builder.build().readerFor(Version.class).readValue(content);
+            final Version version = mapper.readerFor(Version.class).readValue(content);
             version.setServiceName(serviceName);
             return version;
         } catch (IOException e) {

@@ -23,7 +23,6 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
@@ -32,6 +31,7 @@ import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Scope("prototype")
 @Component("writer#" + JSON)
@@ -39,7 +39,7 @@ public class JsonWriter implements TransformerWriter {
 
     /** The data-prep ready jackson module. */
     @Autowired
-    private Jackson2ObjectMapperBuilder builder;
+    private ObjectMapper mapper;
 
     /** Where this writer should write. */
     private final OutputStream output;
@@ -73,7 +73,7 @@ public class JsonWriter implements TransformerWriter {
      */
     @PostConstruct
     private void init() throws IOException {
-        this.generator = builder.build().getFactory().createGenerator(output);
+        this.generator = mapper.getFactory().createGenerator(output);
     }
 
     @Override
