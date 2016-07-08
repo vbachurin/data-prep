@@ -11,24 +11,6 @@
 
   ============================================================================*/
 
-@include keyframes(fadeIn) {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@include keyframes(slide) {
-  from {
-    right: -100vw;
-  }
-  to {
-    right: 0;
-  }
-}
-
 typeahead {
   display: block;
   position: relative;
@@ -43,12 +25,8 @@ typeahead {
     z-index: 20;
 
     position: absolute;
-    top: 35px;
+    top: 100%;
     right: 0;
-
-    &.ng-enter {
-      @include animation(fadeIn 0.25s ease-in, slide 0.25s ease);
-    }
 
     .highlighted {
       font-weight: 900;
