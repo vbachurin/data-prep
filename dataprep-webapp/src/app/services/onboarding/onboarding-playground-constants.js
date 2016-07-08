@@ -28,7 +28,7 @@ const playgroundTour = [
     {
         element: '#datagrid .quality-bar',
         title: '<center>Quality bar</center>',
-        content: 'Use this quality bar to identify:<ul><li> - valid records (in green),</li><li> - empty records (in white),</li><li> - invalid records (in orange).</li></ul>Click one of the record types to apply functions on it.',
+        content: 'Use this quality bar to identify and filter:<ul><li> - valid records (in green),</li><li> - empty records (in white),</li><li> - invalid records (in orange).</li></ul>Click one of the record types to apply functions on it.',
         position: 'right'
     },
     {
@@ -40,7 +40,7 @@ const playgroundTour = [
     {
         element: '#help-stats',
         title: '<center>Data profiling</center>',
-        content: 'In this panel, you will find some analysis of your data to help you have a better idea of its content.<br/>You can also click the profiled data to create a filter.',
+        content: 'Click the profiled data to create a filter.<br/>This panel gives you some analysis of your data to help you have a better idea of its content.',
         position: 'left'
     },
     {
