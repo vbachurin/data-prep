@@ -18,8 +18,6 @@ import java.util.Iterator;
 
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.monitorjbl.xlsx.exceptions.OpenException;
 import com.monitorjbl.xlsx.exceptions.ReadException;
@@ -30,10 +28,7 @@ import com.monitorjbl.xlsx.exceptions.ReadException;
  */
 public class StreamingReader implements Iterable<Row>, AutoCloseable {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(StreamingReader.class);
     private final StreamingWorkbookReader workbook;
-
-    private File tmp;
 
     public StreamingReader(StreamingWorkbookReader workbook) {
         this.workbook = workbook;
@@ -61,14 +56,7 @@ public class StreamingReader implements Iterable<Row>, AutoCloseable {
      */
     @Override
     public void close() {
-        try {
-            workbook.close();
-        } finally {
-            if (tmp != null) {
-                LOGGER.debug("Deleting tmp file [{}]", tmp.getAbsolutePath());
-                tmp.delete();
-            }
-        }
+        workbook.close();
     }
 
     public static class Builder {

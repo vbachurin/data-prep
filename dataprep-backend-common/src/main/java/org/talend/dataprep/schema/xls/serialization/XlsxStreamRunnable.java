@@ -81,46 +81,42 @@ public class XlsxStreamRunnable implements Runnable {
     public void run() {
         try {
             JsonGenerator generator = jsonFactory.createGenerator(jsonOutput);
-
             Workbook workbook = StreamingReader.builder() //
                     .bufferSize(4096) //
                     .rowCacheSize(1) //
                     .open(rawContent);
-
-            Sheet sheet = StringUtils.isEmpty(metadata.getSheetName()) ? //
-                    workbook.getSheetAt(0) : workbook.getSheet(metadata.getSheetName());
-
-            generator.writeStartArray();
-
-            for (Row row : sheet) {
-                if (!XlsSerializer.isHeaderLine(row.getRowNum(), metadata.getRowMetadata().getColumns())) {
-
-                    generator.writeStartObject();
-                    // data quality Analyzer doesn't like to not have all columns even if we don't have any values
-                    // so create so field with empty value otherwise we get exceptions
-                    int i = 0;
-                    for (ColumnMetadata columnMetadata : metadata.getRowMetadata().getColumns()) {
-                        Cell cell = row.getCell(i);
-                        String cellValue = cell == null ? null : cell.getStringCellValue(); // StringUtils.EMPTY
-                        generator.writeFieldName(columnMetadata.getId());
-                        if (cellValue != null) {
-                            generator.writeString(cellValue);
-                        } else {
-                            generator.writeNull();
+            try {
+                Sheet sheet = StringUtils.isEmpty(metadata.getSheetName()) ? //
+                        workbook.getSheetAt(0) : workbook.getSheet(metadata.getSheetName());
+                generator.writeStartArray();
+                for (Row row : sheet) {
+                    if (!XlsSerializer.isHeaderLine(row.getRowNum(), metadata.getRowMetadata().getColumns())) {
+                        generator.writeStartObject();
+                        // data quality Analyzer doesn't like to not have all columns even if we don't have any values
+                        // so create so field with empty value otherwise we get exceptions
+                        int i = 0;
+                        for (ColumnMetadata columnMetadata : metadata.getRowMetadata().getColumns()) {
+                            Cell cell = row.getCell(i);
+                            String cellValue = cell == null ? null : cell.getStringCellValue(); // StringUtils.EMPTY
+                            generator.writeFieldName(columnMetadata.getId());
+                            if (cellValue != null) {
+                                generator.writeString(cellValue);
+                            } else {
+                                generator.writeNull();
+                            }
+                            i++;
                         }
-                        i++;
+                        generator.writeEndObject();
                     }
-                    generator.writeEndObject();
+                    if (limit > 0 && row.getRowNum() > limit) {
+                        break;
+                    }
                 }
-                if (limit > 0 && row.getRowNum() > limit) {
-                    break;
-                }
+                generator.writeEndArray();
+                generator.flush();
+            } finally {
+                workbook.close();
             }
-
-            generator.writeEndArray();
-
-            generator.flush();
-
         } catch (Exception e) {
             // Consumer may very well interrupt consumption of stream (in case of limit(n) use for sampling).
             // This is not an issue as consumer is allowed to partially consumes results, it's up to the
@@ -133,20 +129,6 @@ public class XlsxStreamRunnable implements Runnable {
                 LOG.error("Unable to close output", e);
             }
         }
-    }
-
-    /**
-     * Return a list of empty string from the given size.
-     * 
-     * @param size the wanted list size.
-     * @return a list of empty string from the given size.
-     */
-    private List<String> createListWithEmpty(int size) {
-        List<String> list = new ArrayList<>(size);
-        for (int i = 0; i < size; i++) {
-            list.add(EMPTY);
-        }
-        return list;
     }
 
 }
