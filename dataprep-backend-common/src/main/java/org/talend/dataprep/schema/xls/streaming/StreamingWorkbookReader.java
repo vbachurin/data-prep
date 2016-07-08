@@ -45,13 +45,16 @@ import org.apache.poi.xssf.model.SharedStringsTable;
 import org.apache.poi.xssf.model.StylesTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.talend.dataprep.util.FilesHelper;
 
 import com.monitorjbl.xlsx.exceptions.OpenException;
 import com.monitorjbl.xlsx.exceptions.ReadException;
 
 public class StreamingWorkbookReader implements Iterable<Sheet>, AutoCloseable {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger( StreamingWorkbookReader.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(StreamingWorkbookReader.class);
+
+    private static final QName SHEET_NAME_ATT_QNAME = new QName("name");
 
     private final List<StreamingSheet> sheets;
 
@@ -62,8 +65,6 @@ public class StreamingWorkbookReader implements Iterable<Sheet>, AutoCloseable {
     private File tmp;
 
     private OPCPackage pkg;
-
-    private static final QName SHEET_NAME_ATT_QNAME = new QName( "name" );
 
     /**
      * This constructor exists only so the StreamingReader can instantiate a StreamingWorkbook using its own reader
@@ -85,6 +86,20 @@ public class StreamingWorkbookReader implements Iterable<Sheet>, AutoCloseable {
         this.builder = builder;
     }
 
+    private static File writeInputStreamToFile(InputStream is, int bufferSize) throws IOException {
+        File f = Files.createTempFile("tmp-", ".xlsx").toFile();
+        try (FileOutputStream fos = new FileOutputStream(f)) {
+            int read;
+            byte[] bytes = new byte[bufferSize];
+            while ((read = is.read(bytes)) != -1) {
+                fos.write(bytes, 0, read);
+            }
+            is.close();
+            fos.close();
+            return f;
+        }
+    }
+
     public StreamingSheetReader first() {
         return sheets.get(0).getReader();
     }
@@ -93,17 +108,19 @@ public class StreamingWorkbookReader implements Iterable<Sheet>, AutoCloseable {
         File f = null;
         try {
             f = writeInputStreamToFile(is, builder.getBufferSize());
-            LOGGER.debug( "Created temp file [{}", f.getAbsolutePath() );
+            LOGGER.debug("Created temp file [{}", f.getAbsolutePath());
 
             init(f);
             tmp = f;
         } catch (IOException e) {
             throw new ReadException("Unable to read input stream", e);
         } catch (RuntimeException e) {
-            f.delete();
+            FilesHelper.deleteQuietly(f);
             throw e;
         }
     }
+
+    // to override https://bz.apache.org/bugzilla/show_bug.cgi?id=57699
 
     public void init(File f) {
         try {
@@ -120,8 +137,6 @@ public class StreamingWorkbookReader implements Iterable<Sheet>, AutoCloseable {
 
             XSSFReader reader = new XSSFReader(pkg);
 
-
-
             SharedStringsTable sst = reader.getSharedStringsTable();
             StylesTable styles = reader.getStylesTable();
 
@@ -134,8 +149,6 @@ public class StreamingWorkbookReader implements Iterable<Sheet>, AutoCloseable {
             throw new ReadException("Unable to read workbook - Decryption failed", e);
         }
     }
-
-    // to override https://bz.apache.org/bugzilla/show_bug.cgi?id=57699
 
     void loadSheets(XSSFReader reader, SharedStringsTable sst, StylesTable stylesTable, int rowCacheSize)
             throws IOException, InvalidFormatException, XMLStreamException {
@@ -153,28 +166,28 @@ public class StreamingWorkbookReader implements Iterable<Sheet>, AutoCloseable {
 
         XMLEventReader parser = XMLInputFactory.newInstance().createXMLEventReader(workBookData);
         boolean parsingsSheets = false;
-        while ( parser.hasNext() ){
+        while (parser.hasNext()) {
             XMLEvent event = parser.nextEvent();
-            switch ( event.getEventType() ){
-                case XMLStreamConstants.START_ELEMENT:
-                    StartElement startElement = event.asStartElement();
-                    String tagLocalName = startElement.getName().getLocalPart();
-                    if ("sheets".equals( tagLocalName )){
-                        parsingsSheets = true;
-                        continue;
+            switch (event.getEventType()) {
+            case XMLStreamConstants.START_ELEMENT:
+                StartElement startElement = event.asStartElement();
+                String tagLocalName = startElement.getName().getLocalPart();
+                if ("sheets".equals(tagLocalName)) {
+                    parsingsSheets = true;
+                    continue;
+                }
+                if (parsingsSheets && "sheet".equals(tagLocalName)) {
+                    Attribute attribute = startElement.getAttributeByName(SHEET_NAME_ATT_QNAME);
+                    if (attribute != null) {
+                        sheetNames.add(attribute.getValue());
                     }
-                    if (parsingsSheets && "sheet".equals( tagLocalName )) {
-                        Attribute attribute = startElement.getAttributeByName( SHEET_NAME_ATT_QNAME );
-                        if (attribute != null) {
-                            sheetNames.add(attribute.getValue());
-                        }
-                    }
+                }
 
-                    break;
-                case XMLStreamConstants.END_ELEMENT:
-                    if ("sheets".equals( event.asEndElement().getName().getLocalPart() )){
-                        return;
-                    }
+                break;
+            case XMLStreamConstants.END_ELEMENT:
+                if ("sheets".equals(event.asEndElement().getName().getLocalPart())) {
+                    return;
+                }
             }
         }
     }
@@ -205,23 +218,9 @@ public class StreamingWorkbookReader implements Iterable<Sheet>, AutoCloseable {
             pkg.revert();
         } finally {
             if (tmp != null) {
-                LOGGER.debug( "Deleting tmp file [{}]", tmp.getAbsolutePath());
-                tmp.delete();
+                LOGGER.debug("Deleting tmp file [{}]", tmp.getAbsolutePath());
+                FilesHelper.deleteQuietly(tmp);
             }
-        }
-    }
-
-    private static File writeInputStreamToFile(InputStream is, int bufferSize) throws IOException {
-        File f = Files.createTempFile("tmp-", ".xlsx").toFile();
-        try (FileOutputStream fos = new FileOutputStream(f)) {
-            int read;
-            byte[] bytes = new byte[bufferSize];
-            while ((read = is.read(bytes)) != -1) {
-                fos.write(bytes, 0, read);
-            }
-            is.close();
-            fos.close();
-            return f;
         }
     }
 
