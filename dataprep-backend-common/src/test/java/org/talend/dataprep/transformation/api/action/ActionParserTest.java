@@ -14,6 +14,7 @@
 package org.talend.dataprep.transformation.api.action;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -93,24 +94,15 @@ public class ActionParserTest {
 
     @Test
     public void should_return_expected_actions() throws IOException {
-        // given
-        DataSetRow actualRow = getDataSetRow();
-
         String json = IOUtils.toString(ActionParserTest.class.getResourceAsStream("actions.json"));
-        List<Action> actualActions = actionParser.parse(json);
 
         // when
-        final Action[] actions = actualActions.toArray(new Action[actualActions.size()]);
-        ActionTestWorkbench.test(actualRow, actionRegistry, actions);
+        List<Action> actualActions = actionParser.parse(json);
 
         // then
-        RowMetadata expectedMetadata = getRowMetadata();
-        expectedMetadata.getById("0001").setName("blah blah blah");
-        assertEquals(expectedMetadata, actualRow.getRowMetadata());
-
-        DataSetRow expectedRow = getDataSetRow();
-        expectedRow.set("0000", "TOTO");
-        assertEquals(expectedRow, actualRow);
+        assertTrue(actualActions.size() == 1);
+        Action actionParsed = actualActions.get(0);
+        assertEquals("lookup", actionParsed.getName());
     }
 
 

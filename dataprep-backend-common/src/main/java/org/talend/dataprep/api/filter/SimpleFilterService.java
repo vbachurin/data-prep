@@ -39,7 +39,7 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.date.DateManipulator;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
-import org.talend.dataprep.transformation.api.action.metadata.date.DateParser;
+import org.talend.dataprep.transformation.actions.date.DateParser;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

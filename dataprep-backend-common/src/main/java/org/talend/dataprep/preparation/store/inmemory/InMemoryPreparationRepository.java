@@ -31,7 +31,7 @@ import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.preparation.PreparationActions;
 import org.talend.dataprep.api.preparation.Step;
 import org.talend.dataprep.preparation.store.PreparationRepository;
-import org.talend.dataprep.transformation.api.action.metadata.datablending.Lookup;
+import org.talend.dataprep.transformation.actions.datablending.Lookup;
 
 /**
  * In memory Preparation repository.

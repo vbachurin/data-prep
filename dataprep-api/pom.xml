@@ -27,6 +27,10 @@
     <name>dataprep-api</name>
     <dependencies>
         <dependency>
+            <groupId>org.talend.dataprep</groupId>
+            <artifactId>dataprep-actions</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.github.zafarkhaja</groupId>
             <artifactId>java-semver</artifactId>
         </dependency>

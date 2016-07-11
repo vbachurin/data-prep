@@ -23,7 +23,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.statistics.PatternFrequency;
-import org.talend.dataprep.transformation.api.action.metadata.text.*;
+import org.talend.dataprep.transformation.actions.text.*;
 import org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule;
 
 @Component

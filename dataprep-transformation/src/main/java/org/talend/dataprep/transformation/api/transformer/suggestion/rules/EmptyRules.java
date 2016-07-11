@@ -20,8 +20,8 @@ import static org.talend.dataprep.transformation.api.transformer.suggestion.rule
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.delete.DeleteEmpty;
-import org.talend.dataprep.transformation.api.action.metadata.fill.FillIfEmpty;
+import org.talend.dataprep.transformation.actions.delete.DeleteEmpty;
+import org.talend.dataprep.transformation.actions.fill.FillIfEmpty;
 import org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule;
 
 @Component

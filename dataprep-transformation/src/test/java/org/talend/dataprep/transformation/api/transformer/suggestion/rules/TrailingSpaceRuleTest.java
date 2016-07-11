@@ -23,8 +23,8 @@ import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.statistics.PatternFrequency;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.metadata.text.ProperCase;
-import org.talend.dataprep.transformation.api.action.metadata.text.Trim;
+import org.talend.dataprep.transformation.actions.text.ProperCase;
+import org.talend.dataprep.transformation.actions.text.Trim;
 import org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule;
 
 public class TrailingSpaceRuleTest {

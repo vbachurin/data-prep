@@ -31,6 +31,10 @@
     </properties>
     <dependencies>
         <dependency>
+            <groupId>org.talend.dataprep</groupId>
+            <artifactId>dataprep-actions</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.talend.dataquality</groupId>
             <artifactId>dataquality-statistics</artifactId>
         </dependency>

@@ -14,14 +14,14 @@
 package org.talend.dataprep.transformation.api.action.validation;
 
 import static org.talend.dataprep.exception.error.CommonErrorCodes.*;
-import static org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters.SCOPE;
+import static org.talend.dataprep.transformation.actions.common.ImplicitParameters.SCOPE;
 
 import java.util.Map;
 
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.transformation.api.action.metadata.category.ScopeCategory;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.actions.category.ScopeCategory;
+import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 
 @Component
 public class ActionMetadataValidation {

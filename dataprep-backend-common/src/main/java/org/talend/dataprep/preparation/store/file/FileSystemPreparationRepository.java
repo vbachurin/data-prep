@@ -45,7 +45,7 @@ import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.preparation.store.PreparationRepository;
 import org.talend.dataprep.security.Security;
-import org.talend.dataprep.transformation.api.action.metadata.datablending.Lookup;
+import org.talend.dataprep.transformation.actions.datablending.Lookup;
 import org.talend.dataprep.util.FilesHelper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;

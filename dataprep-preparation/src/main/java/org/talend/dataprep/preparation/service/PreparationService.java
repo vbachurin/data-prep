@@ -62,7 +62,7 @@ import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.preparation.store.PreparationRepository;
 import org.talend.dataprep.preparation.task.PreparationCleaner;
 import org.talend.dataprep.security.Security;
-import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
+import org.talend.dataprep.transformation.actions.common.ImplicitParameters;
 import org.talend.dataprep.transformation.api.action.validation.ActionMetadataValidation;
 import org.talend.dataprep.transformation.pipeline.ActionRegistry;
 

@@ -20,6 +20,7 @@ import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
 
+import org.hamcrest.StringDescription;
 import uk.co.datumedge.hamcrest.json.SameJSONAs;
 
 public class SameJSONFile {
@@ -33,8 +34,8 @@ public class SameJSONFile {
      * @param stream A stream that contains the expected json.
      * @return a SameJSONAs to use like in assertThat(contentAsString, sameJSONAsFile("t-shirt_100.csv.expected.json"));
      */
-    public static SameJSONAs<String> sameJSONAsFile(InputStream stream) throws IOException {
-        return (SameJSONAs<String>) sameJSONAs(IOUtils.toString(stream)).allowingExtraUnexpectedFields()
-                .allowingAnyArrayOrdering();
+    public static SameJSONAs<? super String> sameJSONAsFile(InputStream stream) throws IOException {
+        String expected = IOUtils.toString(stream);
+        return sameJSONAs(expected).allowingExtraUnexpectedFields().allowingAnyArrayOrdering();
     }
 }
