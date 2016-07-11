@@ -1,33 +1,21 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.transformation.actions.date;
 
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.api.dataset.RowMetadata;
-import org.talend.dataprep.api.dataset.statistics.Statistics;
-import org.talend.dataprep.parameters.Parameter;
-import org.talend.dataprep.parameters.ParameterType;
-import org.talend.dataprep.parameters.SelectParameter;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.actions.common.ActionMetadata;
-import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
-import org.talend.dataprep.transformation.actions.common.ColumnAction;
+import static org.talend.dataprep.api.type.Type.INTEGER;
+import static org.talend.dataprep.transformation.actions.common.OtherColumnParameters.OTHER_COLUMN_MODE;
+import static org.talend.dataprep.transformation.actions.common.OtherColumnParameters.SELECTED_COLUMN_PARAMETER;
 
 import java.time.DateTimeException;
 import java.time.LocalDateTime;
@@ -40,9 +28,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.talend.dataprep.api.type.Type.INTEGER;
-import static org.talend.dataprep.transformation.actions.common.OtherColumnParameters.OTHER_COLUMN_MODE;
-import static org.talend.dataprep.transformation.actions.common.OtherColumnParameters.SELECTED_COLUMN_PARAMETER;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.dataset.statistics.Statistics;
+import org.talend.dataprep.parameters.Parameter;
+import org.talend.dataprep.parameters.ParameterType;
+import org.talend.dataprep.parameters.SelectParameter;
+import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
+import org.talend.dataprep.transformation.actions.common.ActionMetadata;
+import org.talend.dataprep.transformation.actions.common.ColumnAction;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
 @Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + ComputeTimeSince.TIME_SINCE_ACTION_NAME)
 public class ComputeTimeSince extends AbstractDate implements ColumnAction {
@@ -52,10 +52,25 @@ public class ComputeTimeSince extends AbstractDate implements ColumnAction {
      */
     public static final String TIME_SINCE_ACTION_NAME = "compute_time_since"; //$NON-NLS-1$
 
+    /**
+     * Parameter to set which date to compare to. 3 modes: 'now at runtime', specific date defined by user, took from
+     * another column.
+     */
+    protected static final String SINCE_WHEN_PARAMETER = "since_when";
+
+    protected static final String SPECIFIC_DATE_MODE = "specific_date";
+
+    /**
+     * The unit in which show the period.
+     */
+    protected static final String TIME_UNIT_PARAMETER = "time_unit"; //$NON-NLS-1$
+
+    protected static final String SPECIFIC_DATE_PARAMETER = "specific_date"; //$NON-NLS-1$
+
     private static final String DATE_PATTERN = "dd/MM/yyyy HH:mm:ss";
 
-    private static final DateTimeFormatter DEFAULT_FORMATTER = DateTimeFormatter.ofPattern( DATE_PATTERN);
-
+    private static final DateTimeFormatter DEFAULT_FORMATTER = DateTimeFormatter.ofPattern(DATE_PATTERN);
+    
     /**
      * The new column prefix.
      */
@@ -66,21 +81,7 @@ public class ComputeTimeSince extends AbstractDate implements ColumnAction {
      */
     private static final String SUFFIX = "_in_"; //$NON-NLS-1$
 
-    /**
-     * Parameter to set which date to compare to. 3 modes: 'now at runtime', specific date defined by user, took from another column.
-     */
-    protected static final String SINCE_WHEN_PARAMETER = "since_when";
-
     private static final String NOW_SERVER_SIDE_MODE = "now_server_side";
-
-    protected static final String SPECIFIC_DATE_MODE = "specific_date";
-
-    /**
-     * The unit in which show the period.
-     */
-    protected static final String TIME_UNIT_PARAMETER = "time_unit"; //$NON-NLS-1$
-
-    protected static final String SPECIFIC_DATE_PARAMETER = "specific_date"; //$NON-NLS-1$
 
     /**
      * This class' logger.
@@ -115,16 +116,18 @@ public class ComputeTimeSince extends AbstractDate implements ColumnAction {
                 .name(SINCE_WHEN_PARAMETER) //
                 .canBeBlank(false) //
                 .item(NOW_SERVER_SIDE_MODE) //
-                .item(SPECIFIC_DATE_MODE, new Parameter(SPECIFIC_DATE_PARAMETER, //
-                        ParameterType.DATE, //
-                        StringUtils.EMPTY, //
-                        false, //
-                        false)) //
-                .item(OTHER_COLUMN_MODE, new Parameter(SELECTED_COLUMN_PARAMETER, //
-                        ParameterType.COLUMN, //
-                        StringUtils.EMPTY, //
-                        false, //
-                        false)) //
+                .item(SPECIFIC_DATE_MODE,
+                        new Parameter(SPECIFIC_DATE_PARAMETER, //
+                                ParameterType.DATE, //
+                                StringUtils.EMPTY, //
+                                false, //
+                                false)) //
+                .item(OTHER_COLUMN_MODE,
+                        new Parameter(SELECTED_COLUMN_PARAMETER, //
+                                ParameterType.COLUMN, //
+                                StringUtils.EMPTY, //
+                                false, //
+                                false)) //
                 .defaultValue(NOW_SERVER_SIDE_MODE) //
                 .build());
 
@@ -140,21 +143,19 @@ public class ComputeTimeSince extends AbstractDate implements ColumnAction {
             String columnId = context.getColumnId();
             TemporalUnit unit = ChronoUnit.valueOf(parameters.get(TIME_UNIT_PARAMETER).toUpperCase());
             ColumnMetadata column = context.getRowMetadata().getById(columnId);
-            context.column("result",
-                    (r) -> {
-                        final ColumnMetadata c = ColumnMetadata.Builder //
-                                .column() //
-                                .copy(column)//
-                                .computedId(StringUtils.EMPTY) //
-                                .name(PREFIX + column.getName() + SUFFIX + unit.toString().toLowerCase()) //
-                                .computedId(null) // remove the id
-                                .statistics(new Statistics()) // clear the statistics
-                                .type(INTEGER)//
-                                .build();
-                        context.getRowMetadata().insertAfter(columnId, c);
-                        return c;
-                    }
-            );
+            context.column("result", (r) -> {
+                final ColumnMetadata c = ColumnMetadata.Builder //
+                        .column() //
+                        .copy(column)//
+                        .computedId(StringUtils.EMPTY) //
+                        .name(PREFIX + column.getName() + SUFFIX + unit.toString().toLowerCase()) //
+                        .computedId(null) // remove the id
+                        .statistics(new Statistics()) // clear the statistics
+                        .type(INTEGER)//
+                        .build();
+                context.getRowMetadata().insertAfter(columnId, c);
+                return c;
+            });
         }
     }
 

@@ -13,7 +13,12 @@
 
 package org.talend.dataprep.transformation.actions.clear;
 
-import org.elasticsearch.common.lang3.StringUtils;
+import static org.talend.dataprep.transformation.actions.category.ActionCategory.DATA_CLEANSING;
+
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
@@ -24,16 +29,11 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataprep.parameters.SelectParameter;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
+import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ColumnAction;
 import org.talend.dataprep.transformation.actions.common.ReplaceOnValueHelper;
-
-import java.util.List;
-import java.util.Map;
-
-import static org.talend.dataprep.transformation.actions.category.ActionCategory.DATA_CLEANSING;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
 /**
  * Clear cell when value is matching.

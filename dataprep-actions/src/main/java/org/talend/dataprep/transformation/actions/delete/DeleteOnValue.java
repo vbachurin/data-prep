@@ -13,24 +13,25 @@
 
 package org.talend.dataprep.transformation.actions.delete;
 
+import static org.apache.commons.lang.StringUtils.EMPTY;
+import static org.talend.dataprep.api.type.Type.NUMERIC;
+import static org.talend.dataprep.api.type.Type.STRING;
+import static org.talend.dataprep.parameters.ParameterType.REGEX;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Nonnull;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.parameters.Parameter;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
+import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ReplaceOnValueHelper;
-
-import javax.annotation.Nonnull;
-import java.util.List;
-import java.util.Map;
-
-import static org.apache.commons.lang.StringUtils.EMPTY;
-import static org.talend.dataprep.api.type.Type.NUMERIC;
-import static org.talend.dataprep.api.type.Type.STRING;
-import static org.talend.dataprep.parameters.ParameterType.REGEX;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
 /**
  * Delete row on a given value.
@@ -42,10 +43,12 @@ public class DeleteOnValue extends AbstractDelete {
      * The action name.
      */
     public static final String DELETE_ON_VALUE_ACTION_NAME = "delete_on_value"; //$NON-NLS-1$
+
     /**
      * Name of the parameter needed.
      */
     public static final String VALUE_PARAMETER = "value"; //$NON-NLS-1$
+
     @Autowired
     private ReplaceOnValueHelper regexParametersHelper;
 

@@ -13,6 +13,9 @@
 
 package org.talend.dataprep.transformation.actions.date;
 
+import java.time.LocalDateTime;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,11 +24,8 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataprep.parameters.SelectParameter;
-import org.talend.dataprep.transformation.actions.common.*;
 import org.talend.dataprep.transformation.actions.category.ActionCategory;
-
-import java.time.LocalDateTime;
-import java.util.Map;
+import org.talend.dataprep.transformation.actions.common.*;
 
 @Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + CompareDates.ACTION_NAME)
 public class CompareDates extends AbstractCompareAction implements ColumnAction, OtherColumnParameters, CompareAction {
@@ -35,10 +35,10 @@ public class CompareDates extends AbstractCompareAction implements ColumnAction,
      */
     public static final String ACTION_NAME = "compare_dates"; //$NON-NLS-1$
 
-    //-----------------------------------------
+    // -----------------------------------------
     // Overriding the default as we need
     // different labels for dates
-    //-----------------------------------------
+    // -----------------------------------------
     public static final String EQ = "date.eq";
 
     public static final String NE = "date.ne";
@@ -93,10 +93,11 @@ public class CompareDates extends AbstractCompareAction implements ColumnAction,
 
     /**
      * see constants
+     * 
      * @return
      */
     @Override
-    protected SelectParameter getCompareModeSelectParameter(){
+    protected SelectParameter getCompareModeSelectParameter() {
 
         //@formatter:off
         return SelectParameter.Builder.builder() //

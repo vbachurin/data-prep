@@ -1,17 +1,29 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.transformation.actions.text;
+
+import static org.apache.commons.lang.StringUtils.EMPTY;
+import static org.talend.dataprep.parameters.ParameterType.INTEGER;
+import static org.talend.dataprep.parameters.ParameterType.STRING;
+import static org.talend.dataprep.transformation.actions.category.ActionCategory.SPLIT;
+
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+
+import javax.annotation.Nonnull;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrBuilder;
@@ -24,21 +36,10 @@ import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.SelectParameter;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
+import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ColumnAction;
-
-import javax.annotation.Nonnull;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
-
-import static org.apache.commons.lang.StringUtils.EMPTY;
-import static org.talend.dataprep.parameters.ParameterType.INTEGER;
-import static org.talend.dataprep.parameters.ParameterType.STRING;
-import static org.talend.dataprep.transformation.actions.category.ActionCategory.SPLIT;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
 /**
  * Extract tokens from a String cell value based on regex matching groups.
@@ -49,27 +50,20 @@ public class ExtractStringTokens extends AbstractActionMetadata implements Colum
     /** The action name. */
     public static final String EXTRACT_STRING_TOKENS_ACTION_NAME = "extract_string_tokens"; //$NON-NLS-1$
 
-    protected static final String MODE_PARAMETER = "extract_mode";
-
-    protected static final String MULTIPLE_COLUMNS_MODE = "multiple_columns";
-
-    protected static final String SINGLE_COLUMN_MODE = "single_column";
-
     /** The column appendix. */
     public static final String APPENDIX = "_part_"; //$NON-NLS-1$
-
+    protected static final String MODE_PARAMETER = "extract_mode";
+    protected static final String MULTIPLE_COLUMNS_MODE = "multiple_columns";
+    protected static final String SINGLE_COLUMN_MODE = "single_column";
     /** Regex action parameter. */
     protected static final String PARAMETER_REGEX = "regex"; //$NON-NLS-1$
-
-    /** Key to put compiled pattern in action context. */
-    private static final String PATTERN = "pattern"; //$NON-NLS-1$
-
     /** Number of items produces by the action. */
     protected static final String LIMIT = "limit"; //$NON-NLS-1$
-
     /** Separator for single column mode. */
     protected static final String PARAMETER_SEPARATOR = "concat_separator"; //$NON-NLS-1$
 
+    /** Key to put compiled pattern in action context. */
+    private static final String PATTERN = "pattern"; //$NON-NLS-1$
     /** This class' logger. */
     private static final Logger LOGGER = LoggerFactory.getLogger(ExtractStringTokens.class);
 
@@ -146,7 +140,8 @@ public class ExtractStringTokens extends AbstractActionMetadata implements Colum
             final String columnId = context.getColumnId();
 
             // create the new columns
-            int limit = (parameters.get(MODE_PARAMETER).equals(MULTIPLE_COLUMNS_MODE) ? Integer.parseInt(parameters.get(LIMIT)) : 1);
+            int limit = (parameters.get(MODE_PARAMETER).equals(MULTIPLE_COLUMNS_MODE) ? Integer.parseInt(parameters.get(LIMIT))
+                    : 1);
 
             final RowMetadata rowMetadata = context.getRowMetadata();
             final ColumnMetadata column = rowMetadata.getById(columnId);
@@ -209,7 +204,7 @@ public class ExtractStringTokens extends AbstractActionMetadata implements Colum
 
         if (parameters.get(MODE_PARAMETER).equals(MULTIPLE_COLUMNS_MODE)) {
             for (int i = 0; i < newColumns.size(); i++) {
-                if (i<extractedValues.size()) {
+                if (i < extractedValues.size()) {
                     row.set(newColumns.get(i), extractedValues.get(i));
                 } else {
                     // If we found less tokens than limit, we complete with empty entries

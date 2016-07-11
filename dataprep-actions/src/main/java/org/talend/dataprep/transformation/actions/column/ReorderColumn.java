@@ -13,6 +13,10 @@
 
 package org.talend.dataprep.transformation.actions.column;
 
+import static org.talend.dataprep.transformation.actions.common.ActionMetadata.Behavior.VALUES_COLUMN;
+
+import java.util.*;
+
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -28,13 +32,9 @@ import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.ParameterType;
+import org.talend.dataprep.transformation.actions.category.ActionCategory;
 import org.talend.dataprep.transformation.actions.common.*;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.actions.category.ActionCategory;
-
-import java.util.*;
-
-import static org.talend.dataprep.transformation.actions.common.ActionMetadata.Behavior.VALUES_COLUMN;
 
 /**
  * This action reorder columns. The column will be move to the selected column. All other columns will be moved as well.
@@ -42,12 +42,12 @@ import static org.talend.dataprep.transformation.actions.common.ActionMetadata.B
 @Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + ReorderColumn.REORDER_ACTION_NAME)
 public class ReorderColumn extends AbstractActionMetadata implements DataSetAction {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ReorderColumn.class);
-
     /**
      * The action name.
      */
     public static final String REORDER_ACTION_NAME = "reorder"; //$NON-NLS-1$
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReorderColumn.class);
 
     /**
      * @see ActionMetadata#getName()
@@ -138,7 +138,8 @@ public class ReorderColumn extends AbstractActionMetadata implements DataSetActi
             }
         } catch (Exception e) {
             LOGGER.debug("cannot swap columns: {}", e.getMessage());
-            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, ExceptionContext.build().put("message", e.getMessage()));
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION,
+                    ExceptionContext.build().put("message", e.getMessage()));
         }
     }
 

@@ -1,17 +1,30 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.transformation.actions.text;
+
+import static org.apache.commons.lang.BooleanUtils.toStringTrueFalse;
+import static org.apache.commons.lang.StringUtils.EMPTY;
+import static org.talend.dataprep.api.type.Type.BOOLEAN;
+import static org.talend.dataprep.api.type.Type.STRING;
+import static org.talend.dataprep.parameters.ParameterType.REGEX;
+
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.annotation.Nonnull;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,31 +34,16 @@ import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.SelectParameter;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.actions.category.ActionCategory;
-import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
+import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ColumnAction;
 import org.talend.dataprep.transformation.actions.common.ReplaceOnValueHelper;
-
-import javax.annotation.Nonnull;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import static org.apache.commons.lang.BooleanUtils.toStringTrueFalse;
-import static org.apache.commons.lang.StringUtils.EMPTY;
-import static org.talend.dataprep.api.type.Type.BOOLEAN;
-import static org.talend.dataprep.api.type.Type.STRING;
-import static org.talend.dataprep.parameters.ParameterType.REGEX;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
 @Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + MatchesPattern.MATCHES_PATTERN_ACTION_NAME)
 public class MatchesPattern extends AbstractActionMetadata implements ColumnAction {
 
-    @Autowired
-    private ReplaceOnValueHelper regexParametersHelper;
-    
     /**
      * The action name.
      */
@@ -55,21 +53,22 @@ public class MatchesPattern extends AbstractActionMetadata implements ColumnActi
      * The column appendix.
      */
     public static final String APPENDIX = "_matching"; //$NON-NLS-1$
-
     /**
      * The pattern shown to the user as a list. An item in this list is the value 'other', which allow the user to
      * manually enter his pattern.
      */
     public static final String PATTERN_PARAMETER = "proposed_pattern"; //$NON-NLS-1$
 
+    public static final String CUSTOM = "custom";
+
+    public static final String REGEX_HELPER_KEY = "regex_helper";
     /**
      * The pattern manually specified by the user. Should be used only if PATTERN_PARAMETER value is 'other'.
      */
     protected static final String MANUAL_PATTERN_PARAMETER = "manual_pattern"; //$NON-NLS-1$
 
-    public static final String CUSTOM = "custom";
-
-    public static final String REGEX_HELPER_KEY = "regex_helper";
+    @Autowired
+    private ReplaceOnValueHelper regexParametersHelper;
 
     /**
      * @see ActionMetadata#getName()
@@ -181,7 +180,8 @@ public class MatchesPattern extends AbstractActionMetadata implements ColumnActi
      *
      * @param value the value to test
      * @param actionContext context expected to contain the compiled pattern to match the value against.
-     * @return true if 'value' matches 'pattern', false if not or if 'pattern' is not a valid pattern or is null or empty
+     * @return true if 'value' matches 'pattern', false if not or if 'pattern' is not a valid pattern or is null or
+     * empty
      */
     protected boolean computeNewValue(String value, ActionContext actionContext) {
         // There are direct calls to this method from unit tests, normally such checks are done during transformation.

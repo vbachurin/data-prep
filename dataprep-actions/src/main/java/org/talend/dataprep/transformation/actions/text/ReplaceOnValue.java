@@ -1,27 +1,20 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.transformation.actions.text;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.parameters.Parameter;
-import org.talend.dataprep.transformation.actions.common.*;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.actions.category.ActionCategory;
+import static org.apache.commons.lang.StringUtils.EMPTY;
+import static org.talend.dataprep.parameters.ParameterType.*;
 
 import java.security.InvalidParameterException;
 import java.util.EnumSet;
@@ -30,8 +23,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import static org.apache.commons.lang.StringUtils.EMPTY;
-import static org.talend.dataprep.parameters.ParameterType.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.parameters.Parameter;
+import org.talend.dataprep.transformation.actions.category.ActionCategory;
+import org.talend.dataprep.transformation.actions.common.*;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
 /**
  * Replace the content or part of a cell by a value.
@@ -40,21 +40,17 @@ import static org.talend.dataprep.parameters.ParameterType.*;
 public class ReplaceOnValue extends AbstractActionMetadata implements ColumnAction, CellAction {
 
     public static final String REGEX_HELPER_KEY = "regex_helper";
+    /** The action name. */
+    public static final String REPLACE_ON_VALUE_ACTION_NAME = "replace_on_value"; //$NON-NLS-1$
+    /** Value to match. */
+    public static final String CELL_VALUE_PARAMETER = "cell_value"; //$NON-NLS-1$
+    /** Replace Value. */
+    public static final String REPLACE_VALUE_PARAMETER = "replace_value"; //$NON-NLS-1$
+    /** Scope Value (replace the entire cell or only the part that matches). */
+    public static final String REPLACE_ENTIRE_CELL_PARAMETER = "replace_entire_cell"; //$NON-NLS-1$
 
     @Autowired
     private ReplaceOnValueHelper regexParametersHelper;
-
-    /** The action name. */
-    public static final String REPLACE_ON_VALUE_ACTION_NAME = "replace_on_value"; //$NON-NLS-1$
-
-    /** Value to match. */
-    public static final String CELL_VALUE_PARAMETER = "cell_value"; //$NON-NLS-1$
-
-    /** Replace Value. */
-    public static final String REPLACE_VALUE_PARAMETER = "replace_value"; //$NON-NLS-1$
-
-    /** Scope Value (replace the entire cell or only the part that matches). */
-    public static final String REPLACE_ENTIRE_CELL_PARAMETER = "replace_entire_cell"; //$NON-NLS-1$
 
     /**
      * @see ActionMetadata#getName()
@@ -103,7 +99,7 @@ public class ReplaceOnValue extends AbstractActionMetadata implements ColumnActi
             String rawParam = parameters.get(CELL_VALUE_PARAMETER);
 
             try {
-                actionContext.get(REGEX_HELPER_KEY,(p) -> regexParametersHelper.build(rawParam, false));
+                actionContext.get(REGEX_HELPER_KEY, (p) -> regexParametersHelper.build(rawParam, false));
             } catch (IllegalArgumentException e) {
                 actionContext.setActionStatus(ActionContext.ActionStatus.CANCELED);
             }
@@ -173,11 +169,11 @@ public class ReplaceOnValue extends AbstractActionMetadata implements ColumnActi
 
             if (matches) {
                 if (replaceOnValueParameter.getOperator().equals(ReplaceOnValueHelper.REGEX_MODE)) {
-                    final Pattern pattern = replaceEntireCell ? replaceOnValueParameter.getPattern() : Pattern
-                            .compile(replaceOnValueParameter.getToken());
+                    final Pattern pattern = replaceEntireCell ? replaceOnValueParameter.getPattern()
+                            : Pattern.compile(replaceOnValueParameter.getToken());
                     try {
                         return pattern.matcher(originalValue).replaceAll(replacement);
-                    }catch (IndexOutOfBoundsException e){
+                    } catch (IndexOutOfBoundsException e) {
                         // catch to fix TDP_1227 PB#1
                         return originalValue;
                     }

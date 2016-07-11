@@ -1,17 +1,25 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.transformation.actions.text;
+
+import static org.apache.commons.lang.StringUtils.EMPTY;
+import static org.talend.dataprep.transformation.actions.category.ActionCategory.STRINGS;
+
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -21,19 +29,11 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataprep.parameters.SelectParameter;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
+import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ColumnAction;
 import org.talend.dataprep.transformation.actions.common.ImplicitParameters;
-
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import static org.apache.commons.lang.StringUtils.EMPTY;
-import static org.talend.dataprep.transformation.actions.category.ActionCategory.STRINGS;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
 @Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + Substring.SUBSTRING_ACTION_NAME)
 public class Substring extends AbstractActionMetadata implements ColumnAction {
@@ -42,21 +42,19 @@ public class Substring extends AbstractActionMetadata implements ColumnAction {
      * The action name.
      */
     public static final String SUBSTRING_ACTION_NAME = "substring"; //$NON-NLS-1$
+    protected static final String FROM_MODE_PARAMETER = "from_mode"; //$NON-NLS-1$
+    protected static final String FROM_BEGINNING = "from_beginning"; //$NON-NLS-1$
+    protected static final String FROM_INDEX_PARAMETER = "from_index"; //$NON-NLS-1$
+    protected static final String FROM_N_BEFORE_END_PARAMETER = "from_n_before_end"; //$NON-NLS-1$
+    protected static final String TO_MODE_PARAMETER = "to_mode"; //$NON-NLS-1$
+    protected static final String TO_END = "to_end"; //$NON-NLS-1$
+    protected static final String TO_INDEX_PARAMETER = "to_index"; //$NON-NLS-1$
+    protected static final String TO_N_BEFORE_END_PARAMETER = "to_n_before_end"; //$NON-NLS-1$
 
     /**
      * The column appendix.
      */
     private static final String APPENDIX = "_substring"; //$NON-NLS-1$
-
-    protected static final String FROM_MODE_PARAMETER = "from_mode"; //$NON-NLS-1$
-    protected static final String FROM_BEGINNING = "from_beginning"; //$NON-NLS-1$
-    protected static final String FROM_INDEX_PARAMETER = "from_index"; //$NON-NLS-1$
-    protected static final String FROM_N_BEFORE_END_PARAMETER = "from_n_before_end"; //$NON-NLS-1$
-
-    protected static final String TO_MODE_PARAMETER = "to_mode"; //$NON-NLS-1$
-    protected static final String TO_END = "to_end"; //$NON-NLS-1$
-    protected static final String TO_INDEX_PARAMETER = "to_index"; //$NON-NLS-1$
-    protected static final String TO_N_BEFORE_END_PARAMETER = "to_n_before_end"; //$NON-NLS-1$
 
     /**
      * @see ActionMetadata#getName()
@@ -107,7 +105,10 @@ public class Substring extends AbstractActionMetadata implements ColumnAction {
                 .name(FROM_MODE_PARAMETER) //
                 .item(FROM_BEGINNING, toCompleteParameters) // has all the "To" choices
                 .item(FROM_INDEX_PARAMETER, fromIndexParameters, toCompleteParameters) // has all the "To" choices
-                .item(FROM_N_BEFORE_END_PARAMETER, fromNBeforeEndParameters, toParametersWithoutIndexSelection) // cannot choose "To index"
+                .item(FROM_N_BEFORE_END_PARAMETER, fromNBeforeEndParameters, toParametersWithoutIndexSelection) // cannot
+                                                                                                                // choose
+                                                                                                                // "To
+                                                                                                                // index"
                 .defaultValue(FROM_BEGINNING) //
                 .build();
 

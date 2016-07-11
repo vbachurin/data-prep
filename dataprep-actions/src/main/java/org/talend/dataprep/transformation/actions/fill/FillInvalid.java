@@ -13,6 +13,10 @@
 
 package org.talend.dataprep.transformation.actions.fill;
 
+import static org.talend.dataprep.transformation.actions.category.ActionCategory.DATA_CLEANSING;
+
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
@@ -22,22 +26,14 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ColumnAction;
 
-import java.util.Set;
-
-import static org.talend.dataprep.transformation.actions.category.ActionCategory.DATA_CLEANSING;
-
 @Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + FillInvalid.FILL_INVALID_ACTION_NAME)
 @Scope(value = "prototype")
 public class FillInvalid extends AbstractFillWith implements ColumnAction {
 
-    private static final String FILL_INVALID_BOOLEAN = "fillinvalidwithdefaultboolean"; //$NON-NLS-1$
-
-    private static final String FILL_INVALID_DATE = "fillinvalidwithdefaultdate"; //$NON-NLS-1$
-
-    private static final String FILL_INVALID_NUMERIC = "fillinvalidwithdefaultnumeric"; //$NON-NLS-1$
-
     public static final String FILL_INVALID_ACTION_NAME = "fillinvalidwithdefault"; //$NON-NLS-1$
-
+    private static final String FILL_INVALID_BOOLEAN = "fillinvalidwithdefaultboolean"; //$NON-NLS-1$
+    private static final String FILL_INVALID_DATE = "fillinvalidwithdefaultdate"; //$NON-NLS-1$
+    private static final String FILL_INVALID_NUMERIC = "fillinvalidwithdefaultnumeric"; //$NON-NLS-1$
     private static final String ACTION_PREFIX = "action.";
 
     private static final String ACTION_DESCRIPTION = ".desc";

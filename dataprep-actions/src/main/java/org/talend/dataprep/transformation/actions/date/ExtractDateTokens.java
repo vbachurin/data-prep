@@ -1,17 +1,24 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.transformation.actions.date;
+
+import java.time.DateTimeException;
+import java.time.temporal.ChronoField;
+import java.time.temporal.TemporalAccessor;
+import java.util.*;
+
+import javax.annotation.Nonnull;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -23,16 +30,10 @@ import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.ParameterType;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
+import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ColumnAction;
-
-import javax.annotation.Nonnull;
-import java.time.DateTimeException;
-import java.time.temporal.ChronoField;
-import java.time.temporal.TemporalAccessor;
-import java.util.*;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
 /**
  * Change the date pattern on a 'date' column.
@@ -85,10 +86,9 @@ public class ExtractDateTokens extends AbstractDate implements ColumnAction {
     /** False constant value. */
     private static final String FALSE = "false";
 
-
-    private static final DateFieldMappingBean[] DATE_FIELDS = new DateFieldMappingBean[]{//
-            new DateFieldMappingBean(YEAR, ChronoField.YEAR),//
-            new DateFieldMappingBean(MONTH, ChronoField.MONTH_OF_YEAR),//
+    private static final DateFieldMappingBean[] DATE_FIELDS = new DateFieldMappingBean[] { //
+            new DateFieldMappingBean(YEAR, ChronoField.YEAR), //
+            new DateFieldMappingBean(MONTH, ChronoField.MONTH_OF_YEAR), //
             new DateFieldMappingBean(DAY, ChronoField.DAY_OF_MONTH), //
             new DateFieldMappingBean(HOUR_12, ChronoField.HOUR_OF_AMPM), //
             new DateFieldMappingBean(AM_PM, ChronoField.AMPM_OF_DAY), //
@@ -207,7 +207,9 @@ public class ExtractDateTokens extends AbstractDate implements ColumnAction {
     }
 
     private static class DateFieldMappingBean {
+
         private final String key;
+
         private final ChronoField field;
 
         public DateFieldMappingBean(String key, ChronoField field) {

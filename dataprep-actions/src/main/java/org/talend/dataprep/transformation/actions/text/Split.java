@@ -1,17 +1,26 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.transformation.actions.text;
+
+import static org.apache.commons.lang.StringUtils.EMPTY;
+import static org.talend.dataprep.parameters.ParameterType.INTEGER;
+import static org.talend.dataprep.parameters.ParameterType.STRING;
+import static org.talend.dataprep.transformation.actions.category.ActionCategory.SPLIT;
+
+import java.util.*;
+
+import javax.annotation.Nonnull;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -23,18 +32,10 @@ import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.SelectParameter;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
+import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ColumnAction;
-
-import javax.annotation.Nonnull;
-import java.util.*;
-
-import static org.apache.commons.lang.StringUtils.EMPTY;
-import static org.talend.dataprep.parameters.ParameterType.INTEGER;
-import static org.talend.dataprep.parameters.ParameterType.STRING;
-import static org.talend.dataprep.transformation.actions.category.ActionCategory.SPLIT;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
 /**
  * Split a cell value on a separator.
@@ -48,22 +49,17 @@ public class Split extends AbstractActionMetadata implements ColumnAction {
     /** The split column appendix. */
     public static final String SPLIT_APPENDIX = "_split_"; //$NON-NLS-1$
 
+    public static final String NEW_COLUMNS_CONTEXT = "newColumns";
     /** The selected separator within the provided list. */
     protected static final String SEPARATOR_PARAMETER = "separator"; //$NON-NLS-1$
-
     /** The string separator specified by the user. Should be used only if SEPARATOR_PARAMETER value is 'other'. */
     protected static final String MANUAL_SEPARATOR_PARAMETER_STRING = "manual_separator_string"; //$NON-NLS-1$
-
     /** The regex separator specified by the user. Should be used only if SEPARATOR_PARAMETER value is 'other'. */
     protected static final String MANUAL_SEPARATOR_PARAMETER_REGEX = "manual_separator_regex"; //$NON-NLS-1$
-
     /** Number of items produces by the split. */
     protected static final String LIMIT = "limit"; //$NON-NLS-1$
-
     /** This class' logger. */
     private static final Logger LOGGER = LoggerFactory.getLogger(Split.class);
-
-    public static final String NEW_COLUMNS_CONTEXT = "newColumns";
 
     /**
      * @see ActionMetadata#getName()
@@ -137,18 +133,16 @@ public class Split extends AbstractActionMetadata implements ColumnAction {
             lastColumnId.push(columnId);
             for (int i = 0; i < limit; i++) {
                 final int newColumnIndex = i + 1;
-                newColumns.add(context.column(column.getName() + SPLIT_APPENDIX + i,
-                        r -> {
-                            final ColumnMetadata c = ColumnMetadata.Builder //
-                                    .column() //
-                                    .type(Type.STRING) //
-                                    .computedId(StringUtils.EMPTY) //
-                                    .name(column.getName() + SPLIT_APPENDIX + newColumnIndex) //
-                                    .build();
-                            lastColumnId.push(rowMetadata.insertAfter(lastColumnId.pop(), c));
-                            return c;
-                        }
-                ));
+                newColumns.add(context.column(column.getName() + SPLIT_APPENDIX + i, r -> {
+                    final ColumnMetadata c = ColumnMetadata.Builder //
+                            .column() //
+                            .type(Type.STRING) //
+                            .computedId(StringUtils.EMPTY) //
+                            .name(column.getName() + SPLIT_APPENDIX + newColumnIndex) //
+                            .build();
+                    lastColumnId.push(rowMetadata.insertAfter(lastColumnId.pop(), c));
+                    return c;
+                }));
             }
             context.get(NEW_COLUMNS_CONTEXT, p -> newColumns); // Save new column names for apply
         }

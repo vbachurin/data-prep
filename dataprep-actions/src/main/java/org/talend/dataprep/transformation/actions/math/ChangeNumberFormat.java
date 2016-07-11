@@ -13,6 +13,15 @@
 
 package org.talend.dataprep.transformation.actions.math;
 
+import static org.talend.daikon.number.BigDecimalParser.*;
+import static org.talend.dataprep.parameters.ParameterType.STRING;
+
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
+import java.util.*;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,20 +33,11 @@ import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.SelectParameter;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.actions.category.ActionCategory;
-import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
+import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ColumnAction;
-
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
-import java.util.*;
-
-import static org.talend.daikon.number.BigDecimalParser.*;
-import static org.talend.dataprep.parameters.ParameterType.STRING;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
 /**
  * Change the pattern on a 'number' column.
@@ -45,61 +45,46 @@ import static org.talend.dataprep.parameters.ParameterType.STRING;
 @Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + ChangeNumberFormat.ACTION_NAME)
 public class ChangeNumberFormat extends AbstractActionMetadata implements ColumnAction {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ChangeNumberFormat.class);
-
     /** Action name. */
     public static final String ACTION_NAME = "change_number_format"; //$NON-NLS-1$
-
     /** Parameter to define original decimal & grouping separators. */
     public static final String FROM_SEPARATORS = "from_separators";
-
     /**
      * The pattern shown to the user as a list. An item in this list is the value 'custom', which allow the user to
      * manually enter his pattern.
      */
     public static final String TARGET_PATTERN = "target_pattern"; //$NON-NLS-1$
+    /**
+     * Keys used in the values of different parameters:
+     */
+    public static final String CUSTOM = "custom";
+    public static final String US_SEPARATORS = "us_separators";
+    public static final String EU_SEPARATORS = "eu_separators";
+    public static final String CH_SEPARATORS = "ch_separators";
+    public static final String US_PATTERN = "us_pattern";
+    public static final String EU_PATTERN = "eu_pattern";
+    public static final String CH_PATTERN = "ch_pattern";
+    public static final String SCIENTIFIC = "scientific";
+    /**
+     * Constants to build parameters name by concat:
+     */
+    public static final String FROM = "from";
+    public static final String TARGET = "target";
+    public static final String GROUPING = "_grouping";
+    public static final String DECIMAL = "_decimal";
+    public static final String SEPARATOR = "_separator";
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ChangeNumberFormat.class);
 
     /**
      * Key to store the compiled format in action context.
      */
     private static final String COMPILED_TARGET_FORMAT = "compiled_number_format";
 
-    /**
-     * Keys used in the values of different parameters:
-     */
-    public static final String CUSTOM = "custom";
-
     private static final String UNKNOWN_SEPARATORS = "unknown_separators";
-
-    public static final String US_SEPARATORS = "us_separators";
-
-    public static final String EU_SEPARATORS = "eu_separators";
-
-    public static final String CH_SEPARATORS = "ch_separators";
-
-    public static final String US_PATTERN = "us_pattern";
-
-    public static final String EU_PATTERN = "eu_pattern";
-
-    public static final String CH_PATTERN = "ch_pattern";
-
-    public static final String SCIENTIFIC = "scientific";
 
     private static final DecimalFormat CH_DECIMAL_PATTERN = new DecimalFormat("#,##0.##",
             DecimalFormatSymbols.getInstance(new Locale("FR", "CH")));
-
-    /**
-     * Constants to build parameters name by concat:
-     */
-    public static final String FROM = "from";
-
-    public static final String TARGET = "target";
-
-    public static final String GROUPING = "_grouping";
-
-    public static final String DECIMAL = "_decimal";
-
-    public static final String SEPARATOR = "_separator";
 
     /**
      * @see ActionMetadata#getName()

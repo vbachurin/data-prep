@@ -1,17 +1,22 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.transformation.actions.column;
+
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
@@ -25,17 +30,12 @@ import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataprep.parameters.SelectParameter;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.actions.category.ActionCategory;
-import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
+import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ColumnAction;
 import org.talend.dataprep.transformation.actions.common.OtherColumnParameters;
-
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
 /**
  * Concat action concatenates 2 columns into a new one. The new column name will be "column_source + selected_column."
@@ -108,9 +108,7 @@ public class Concat extends AbstractActionMetadata implements ColumnAction, Othe
 
         parameters.add(new Parameter(PREFIX_PARAMETER, ParameterType.STRING, StringUtils.EMPTY));
 
-        parameters.add(SelectParameter.Builder
-                .builder()
-                .name(MODE_PARAMETER)
+        parameters.add(SelectParameter.Builder.builder().name(MODE_PARAMETER)
                 .item(OTHER_COLUMN_MODE,
                         new Parameter(SELECTED_COLUMN_PARAMETER, ParameterType.COLUMN, StringUtils.EMPTY, //
                                 false, false, StringUtils.EMPTY, getMessagesBundle()),
@@ -188,16 +186,15 @@ public class Concat extends AbstractActionMetadata implements ColumnAction, Othe
 
             // both not empty is default
             boolean addSeparator = StringUtils.equals(separatorCondition, ALWAYS) //
-                    ||  ( ( StringUtils.equals(separatorCondition, BOTH_NOT_EMPTY ) || StringUtils.isBlank(separatorCondition) ) //
+                    || ((StringUtils.equals(separatorCondition, BOTH_NOT_EMPTY) || StringUtils.isBlank(separatorCondition)) //
                             && StringUtils.isNotBlank(sourceValue) //
                             && StringUtils.isNotBlank(selectedColumnValue) //
-                        );
-
+            );
 
             if (addSeparator) {
                 newValue.append(getParameter(parameters, SEPARATOR_PARAMETER, StringUtils.EMPTY));
             }
-            if (StringUtils.isNotBlank(selectedColumnValue)){
+            if (StringUtils.isNotBlank(selectedColumnValue)) {
                 newValue.append(selectedColumnValue);
             }
 
@@ -219,7 +216,7 @@ public class Concat extends AbstractActionMetadata implements ColumnAction, Othe
             return prefix + sourceColumnName + suffix;
         }
     }
-    
+
     /**
      * Check that the selected column parameter is correct in case we concatenate with another column: defined in the
      * parameters and there's a matching column. If the parameter is invalid, an exception is thrown.
@@ -228,11 +225,10 @@ public class Concat extends AbstractActionMetadata implements ColumnAction, Othe
      * @param rowMetadata the row metadata where to look for the column.
      */
     private void checkSelectedColumnParameter(Map<String, String> parameters, RowMetadata rowMetadata) {
-        if (parameters.get(MODE_PARAMETER).equals(OTHER_COLUMN_MODE)
-                && (!parameters.containsKey(SELECTED_COLUMN_PARAMETER) || rowMetadata.getById(
-                        parameters.get(SELECTED_COLUMN_PARAMETER)) == null)) {
-            throw new TDPException(CommonErrorCodes.BAD_ACTION_PARAMETER, ExceptionContext.build().put("paramName",
-                    SELECTED_COLUMN_PARAMETER));
+        if (parameters.get(MODE_PARAMETER).equals(OTHER_COLUMN_MODE) && (!parameters.containsKey(SELECTED_COLUMN_PARAMETER)
+                || rowMetadata.getById(parameters.get(SELECTED_COLUMN_PARAMETER)) == null)) {
+            throw new TDPException(CommonErrorCodes.BAD_ACTION_PARAMETER,
+                    ExceptionContext.build().put("paramName", SELECTED_COLUMN_PARAMETER));
         }
     }
 

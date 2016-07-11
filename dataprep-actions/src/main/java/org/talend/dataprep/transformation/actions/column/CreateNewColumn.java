@@ -1,17 +1,21 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.transformation.actions.column;
+
+import static org.talend.dataprep.transformation.actions.category.ActionScope.COLUMN_METADATA;
+
+import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
@@ -25,15 +29,11 @@ import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataprep.parameters.SelectParameter;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.actions.category.ActionCategory;
-import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
+import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ColumnAction;
-
-import java.util.*;
-
-import static org.talend.dataprep.transformation.actions.category.ActionScope.COLUMN_METADATA;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
 /**
  * duplicate a column
@@ -93,7 +93,6 @@ public class CreateNewColumn extends AbstractActionMetadata implements ColumnAct
         return true;
     }
 
-
     /**
      * @see ActionMetadata#getActionScope()
      */
@@ -101,7 +100,6 @@ public class CreateNewColumn extends AbstractActionMetadata implements ColumnAct
     public List<String> getActionScope() {
         return Collections.singletonList(COLUMN_METADATA.getDisplayName());
     }
-
 
     /**
      * @see ActionMetadata#getParameters()
@@ -111,8 +109,8 @@ public class CreateNewColumn extends AbstractActionMetadata implements ColumnAct
         final List<Parameter> parameters = super.getParameters();
 
         Parameter constantParameter = new Parameter(DEFAULT_VALUE_PARAMETER, //
-                        ParameterType.STRING, //
-                        StringUtils.EMPTY);
+                ParameterType.STRING, //
+                StringUtils.EMPTY);
 
         //@formatter:off
         parameters.add(SelectParameter.Builder.builder()
@@ -162,17 +160,17 @@ public class CreateNewColumn extends AbstractActionMetadata implements ColumnAct
         String newColumn = context.column("new_column");
 
         String newValue = "";
-        switch (parameters.get(MODE_PARAMETER)){
-            case EMPTY_MODE:
-                newValue = "";
-                break;
-            case CONSTANT_MODE:
-                newValue = parameters.get(DEFAULT_VALUE_PARAMETER);
-                break;
-            case COLUMN_MODE:
-                ColumnMetadata selectedColumn = rowMetadata.getById(parameters.get(SELECTED_COLUMN_PARAMETER));
-                newValue = row.get(selectedColumn.getId());
-                break;
+        switch (parameters.get(MODE_PARAMETER)) {
+        case EMPTY_MODE:
+            newValue = "";
+            break;
+        case CONSTANT_MODE:
+            newValue = parameters.get(DEFAULT_VALUE_PARAMETER);
+            break;
+        case COLUMN_MODE:
+            ColumnMetadata selectedColumn = rowMetadata.getById(parameters.get(SELECTED_COLUMN_PARAMETER));
+            newValue = row.get(selectedColumn.getId());
+            break;
         default:
         }
 
@@ -197,18 +195,18 @@ public class CreateNewColumn extends AbstractActionMetadata implements ColumnAct
      */
     private void checkParameters(Map<String, String> parameters, RowMetadata rowMetadata) {
         if (!parameters.containsKey(MODE_PARAMETER)) {
-            throw new TDPException(CommonErrorCodes.BAD_ACTION_PARAMETER, ExceptionContext.build().put("paramName",
-                    MODE_PARAMETER));
+            throw new TDPException(CommonErrorCodes.BAD_ACTION_PARAMETER,
+                    ExceptionContext.build().put("paramName", MODE_PARAMETER));
         }
 
         if (parameters.get(MODE_PARAMETER).equals(CONSTANT_MODE) && !parameters.containsKey(DEFAULT_VALUE_PARAMETER)) {
-            throw new TDPException(CommonErrorCodes.BAD_ACTION_PARAMETER, ExceptionContext.build().put("paramName",
-                    DEFAULT_VALUE_PARAMETER));
+            throw new TDPException(CommonErrorCodes.BAD_ACTION_PARAMETER,
+                    ExceptionContext.build().put("paramName", DEFAULT_VALUE_PARAMETER));
         }
-        if (parameters.get(MODE_PARAMETER).equals(COLUMN_MODE) &&
-                (!parameters.containsKey(SELECTED_COLUMN_PARAMETER) || rowMetadata.getById(parameters.get(SELECTED_COLUMN_PARAMETER)) == null)) {
-            throw new TDPException(CommonErrorCodes.BAD_ACTION_PARAMETER, ExceptionContext.build().put("paramName",
-                    SELECTED_COLUMN_PARAMETER));
+        if (parameters.get(MODE_PARAMETER).equals(COLUMN_MODE) && (!parameters.containsKey(SELECTED_COLUMN_PARAMETER)
+                || rowMetadata.getById(parameters.get(SELECTED_COLUMN_PARAMETER)) == null)) {
+            throw new TDPException(CommonErrorCodes.BAD_ACTION_PARAMETER,
+                    ExceptionContext.build().put("paramName", SELECTED_COLUMN_PARAMETER));
         }
     }
 

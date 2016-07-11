@@ -13,6 +13,11 @@
 
 package org.talend.dataprep.transformation.actions.line;
 
+import static org.talend.dataprep.parameters.ParameterType.BOOLEAN;
+import static org.talend.dataprep.transformation.actions.category.ActionCategory.DATA_CLEANSING;
+
+import java.util.*;
+
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -22,15 +27,10 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.parameters.Parameter;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ImplicitParameters;
 import org.talend.dataprep.transformation.actions.common.RowAction;
-
-import java.util.*;
-
-import static org.talend.dataprep.parameters.ParameterType.BOOLEAN;
-import static org.talend.dataprep.transformation.actions.category.ActionCategory.DATA_CLEANSING;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
 /**
  * This action does two things:

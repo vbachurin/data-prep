@@ -13,6 +13,11 @@
 
 package org.talend.dataprep.transformation.actions.datamasking;
 
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,18 +27,13 @@ import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.dataset.statistics.PatternFrequency;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.actions.category.ActionCategory;
+import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
+import org.talend.dataprep.transformation.actions.common.ActionMetadata;
+import org.talend.dataprep.transformation.actions.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.context.ActionContext.ActionStatus;
-import org.talend.dataprep.transformation.actions.category.ActionCategory;
-import org.talend.dataprep.transformation.actions.common.ActionMetadata;
-import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
-import org.talend.dataprep.transformation.actions.common.ColumnAction;
 import org.talend.dataquality.datamasking.semantic.ValueDataMasker;
-
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Mask sensitive data according to the semantic category.
@@ -41,13 +41,12 @@ import java.util.stream.Collectors;
 @Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + MaskDataByDomain.ACTION_NAME)
 public class MaskDataByDomain extends AbstractActionMetadata implements ColumnAction {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MaskDataByDomain.class);
-
     /**
      * Action name.
      */
     public static final String ACTION_NAME = "mask_data_by_domain"; //$NON-NLS-1$
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(MaskDataByDomain.class);
     /**
      * Key for storing in ActionContext:
      */

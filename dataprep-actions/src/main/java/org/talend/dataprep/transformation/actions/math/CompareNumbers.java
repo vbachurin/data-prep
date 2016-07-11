@@ -13,16 +13,16 @@
 
 package org.talend.dataprep.transformation.actions.math;
 
+import java.math.BigDecimal;
+import java.util.EnumSet;
+import java.util.Set;
+
 import org.springframework.stereotype.Component;
 import org.talend.daikon.number.BigDecimalParser;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.actions.common.*;
 import org.talend.dataprep.transformation.actions.category.ActionCategory;
-
-import java.math.BigDecimal;
-import java.util.EnumSet;
-import java.util.Set;
+import org.talend.dataprep.transformation.actions.common.*;
 
 @Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + CompareNumbers.ACTION_NAME)
 public class CompareNumbers extends AbstractCompareAction implements ColumnAction, OtherColumnParameters, CompareAction {
@@ -56,8 +56,6 @@ public class CompareNumbers extends AbstractCompareAction implements ColumnActio
     public String getCategory() {
         return ActionCategory.NUMBERS.getDisplayName();
     }
-
-
 
     @Override
     protected int doCompare(ComparisonRequest comparisonRequest) {

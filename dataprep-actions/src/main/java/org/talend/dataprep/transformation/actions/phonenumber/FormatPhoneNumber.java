@@ -12,7 +12,15 @@
 // ============================================================================
 package org.talend.dataprep.transformation.actions.phonenumber;
 
-import org.elasticsearch.common.lang3.StringUtils;
+import static org.apache.commons.lang.StringUtils.EMPTY;
+import static org.talend.dataprep.transformation.actions.common.OtherColumnParameters.CONSTANT_MODE;
+import static org.talend.dataprep.transformation.actions.common.OtherColumnParameters.OTHER_COLUMN_MODE;
+
+import java.util.*;
+
+import javax.annotation.Nonnull;
+
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -22,19 +30,12 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataprep.parameters.SelectParameter;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.actions.category.ActionCategory;
 import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ColumnAction;
 import org.talend.dataprep.transformation.actions.common.OtherColumnParameters;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataquality.standardization.phone.PhoneNumberHandlerBase;
-
-import javax.annotation.Nonnull;
-import java.util.*;
-
-import static org.apache.commons.lang.StringUtils.EMPTY;
-import static org.talend.dataprep.transformation.actions.common.OtherColumnParameters.CONSTANT_MODE;
-import static org.talend.dataprep.transformation.actions.common.OtherColumnParameters.OTHER_COLUMN_MODE;
 
 /**
  * Format a validated phone number to a specified format.
@@ -150,7 +151,7 @@ public class FormatPhoneNumber extends AbstractActionMetadata implements ColumnA
                                         new Parameter(MANUAL_REGION_PARAMETER_STRING, ParameterType.STRING, EMPTY))
                                 .defaultValue(US_REGION_CODE).build()) //
 
-                .defaultValue(CONSTANT_MODE).build());
+        .defaultValue(CONSTANT_MODE).build());
 
         parameters.add(SelectParameter.Builder.builder().name(FORMAT_TYPE_PARAMETER) //
                 .item(TYPE_INTERNATIONAL) //

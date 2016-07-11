@@ -13,6 +13,15 @@
 
 package org.talend.dataprep.transformation.actions.math;
 
+import static java.math.RoundingMode.HALF_UP;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -27,21 +36,12 @@ import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataprep.parameters.SelectParameter;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.actions.category.ActionCategory;
-import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
+import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ColumnAction;
 import org.talend.dataprep.transformation.actions.common.OtherColumnParameters;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import static java.math.RoundingMode.HALF_UP;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
 /**
  * Concat action concatenates 2 columns into a new one. The new column name will be "column_source + selected_column."
@@ -55,21 +55,28 @@ public class NumericOperations extends AbstractActionMetadata implements ColumnA
      * The action name.
      */
     public static final String ACTION_NAME = "numeric_ops"; //$NON-NLS-1$
+
     /**
      * Mode: tells if operand is taken from another column or is a constant
      */
     public static final String MODE_PARAMETER = "mode"; //$NON-NLS-1$
+
     /**
      * The operator to use.
      */
     public static final String OPERATOR_PARAMETER = "operator"; //$NON-NLS-1$
+
     /**
      * The operand to use.
      */
     public static final String OPERAND_PARAMETER = "operand"; //$NON-NLS-1$
+
     private static final String PLUS = "+";
+
     private static final String MINUS = "-";
+
     private static final String MULTIPLY = "x";
+
     private static final String DIVIDE = "/";
 
     /**

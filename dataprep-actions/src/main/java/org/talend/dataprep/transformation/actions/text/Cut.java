@@ -1,17 +1,27 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.transformation.actions.text;
+
+import static org.apache.commons.lang.StringUtils.EMPTY;
+import static org.talend.dataprep.api.type.Type.STRING;
+import static org.talend.dataprep.parameters.ParameterType.REGEX;
+import static org.talend.dataprep.transformation.actions.category.ActionCategory.STRINGS;
+
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,39 +29,27 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.parameters.Parameter;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
+import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ColumnAction;
 import org.talend.dataprep.transformation.actions.common.ReplaceOnValueHelper;
-
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import static org.apache.commons.lang.StringUtils.EMPTY;
-import static org.talend.dataprep.api.type.Type.STRING;
-import static org.talend.dataprep.parameters.ParameterType.REGEX;
-import static org.talend.dataprep.transformation.actions.category.ActionCategory.STRINGS;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
 @Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + Cut.CUT_ACTION_NAME)
 public class Cut extends AbstractActionMetadata implements ColumnAction {
-
-    @Autowired
-    private ReplaceOnValueHelper regexParametersHelper;
 
     /**
      * The action name.
      */
     public static final String CUT_ACTION_NAME = "cut"; //$NON-NLS-1$
-
     /**
      * The pattern "where to cut" parameter name
      */
     public static final String PATTERN_PARAMETER = "pattern"; //$NON-NLS-1$
-
     public static final String REGEX_HELPER_KEY = "regex_helper";
+
+    @Autowired
+    private ReplaceOnValueHelper regexParametersHelper;
 
     /**
      * @see ActionMetadata#getName()

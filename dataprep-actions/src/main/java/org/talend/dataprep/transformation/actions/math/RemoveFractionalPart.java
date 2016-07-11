@@ -12,14 +12,14 @@
 // ============================================================================
 package org.talend.dataprep.transformation.actions.math;
 
-import org.springframework.stereotype.Component;
-import org.talend.dataprep.parameters.Parameter;
-import org.talend.dataprep.transformation.actions.common.ActionMetadata;
-import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
-import org.talend.dataprep.transformation.actions.common.ImplicitParameters;
-
 import java.math.RoundingMode;
 import java.util.List;
+
+import org.springframework.stereotype.Component;
+import org.talend.dataprep.parameters.Parameter;
+import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
+import org.talend.dataprep.transformation.actions.common.ActionMetadata;
+import org.talend.dataprep.transformation.actions.common.ImplicitParameters;
 
 /**
  * Round towards zero. Never increments the digit prior to a discarded fraction (i.e. truncates)

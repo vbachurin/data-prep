@@ -13,6 +13,16 @@
 
 package org.talend.dataprep.transformation.actions.text;
 
+import static org.apache.commons.lang.BooleanUtils.toStringTrueFalse;
+import static org.apache.commons.lang.StringUtils.EMPTY;
+import static org.talend.dataprep.api.type.Type.BOOLEAN;
+import static org.talend.dataprep.parameters.ParameterType.INTEGER;
+
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.stereotype.Component;
@@ -23,21 +33,11 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataprep.parameters.SelectParameter;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.actions.category.ActionCategory;
 import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ColumnAction;
 import org.talend.dataprep.transformation.actions.common.OtherColumnParameters;
-
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import static org.apache.commons.lang.BooleanUtils.toStringTrueFalse;
-import static org.apache.commons.lang.StringUtils.EMPTY;
-import static org.talend.dataprep.api.type.Type.BOOLEAN;
-import static org.talend.dataprep.parameters.ParameterType.INTEGER;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
 /**
  * Create a new column with Boolean result <code>true</code> if the Levenstein distance is less or equals the parameter
@@ -81,7 +81,8 @@ public class FuzzyMatching extends AbstractActionMetadata implements ColumnActio
         parameters.add(SelectParameter.Builder.builder() //
                 .name(OtherColumnParameters.MODE_PARAMETER) //
                 .item(OtherColumnParameters.CONSTANT_MODE, //
-                        new Parameter(VALUE_PARAMETER, ParameterType.STRING, EMPTY, false, true, StringUtils.EMPTY, getMessagesBundle())) //
+                        new Parameter(VALUE_PARAMETER, ParameterType.STRING, EMPTY, false, true, StringUtils.EMPTY,
+                                getMessagesBundle())) //
                 .item(OtherColumnParameters.OTHER_COLUMN_MODE, //
                         new Parameter(OtherColumnParameters.SELECTED_COLUMN_PARAMETER, //
                                 ParameterType.COLUMN, //
@@ -154,5 +155,5 @@ public class FuzzyMatching extends AbstractActionMetadata implements ColumnActio
     public Set<Behavior> getBehavior() {
         return EnumSet.of(Behavior.METADATA_CREATE_COLUMNS);
     }
-    
+
 }
