@@ -140,7 +140,7 @@ export default function OnboardingService($timeout, $state, $window, state, reci
     function startTour(tour) {
         if ($state.current.name === 'nav.index.datasets') {
             previousRoute = 'datasetsList';
-            $state.go('nav.index.preparations', {folderId: state.inventory.homeFolderId});
+            $state.go('nav.index.preparations', { folderId: state.inventory.homeFolderId });
         }
         $timeout(function () {
             introJs()

@@ -47,65 +47,65 @@
         })
 
         // Router config
-            .config(($stateProvider, $urlRouterProvider, $urlMatcherFactoryProvider) => {
-                'ngInject';
+        .config(($stateProvider, $urlRouterProvider, $urlMatcherFactoryProvider) => {
+            'ngInject';
 
-                // override the built-in string type (which is performing the slash encoding)
-                // by registering 'string' type
-                const originalStringMatcher = $urlMatcherFactoryProvider.type('string');
-                const overriddenStringMatcher = _.extend({}, originalStringMatcher, {
-                    encode: (val) => (val !== null ? val.toString() : val),
-                    decode: (val) => (val !== null ? val.toString() : val),
-                });
-                $urlMatcherFactoryProvider.type('string', overriddenStringMatcher);
+            // override the built-in string type (which is performing the slash encoding)
+            // by registering 'string' type
+            const originalStringMatcher = $urlMatcherFactoryProvider.type('string');
+            const overriddenStringMatcher = _.extend({}, originalStringMatcher, {
+                encode: (val) => (val !== null ? val.toString() : val),
+                decode: (val) => (val !== null ? val.toString() : val),
+            });
+            $urlMatcherFactoryProvider.type('string', overriddenStringMatcher);
 
-                // route definitions
-                $stateProvider
-                    .state('nav', {
-                        abstract: true,
-                        template: '<navbar></navbar>',
-                    })
-                    .state('nav.index', {
-                        abstract: true,
-                        url: '/index',
-                        template: '<home></home>',
-                    })
-                    .state('nav.index.datasets', {
-                        url: '/datasets',
-                        views: {
-                            'home-content': {template: '<home-dataset></home-dataset>'}
-                        }
-                    })
-                    .state('nav.index.preparations', {
-                        url: '/preparations/{folderId:.*}',
-                        views: {
-                            'home-content': {template: '<home-preparation></home-preparation>'}
-                        }
-                    })
-                    .state('playground', {
-                        url: '/playground',
-                        template: '<playground></playground>',
-                        abstract: true,
-                        resolve: {
-                            inventory: ($q, DatasetService, PreparationService) => {
-                                'ngInject';
-                                return $q.all([
-                                    DatasetService.getDatasets(),
-                                    PreparationService.getPreparations(),
-                                ]);
-                            },
+            // route definitions
+            $stateProvider
+                .state('nav', {
+                    abstract: true,
+                    template: '<navbar></navbar>',
+                })
+                .state('nav.index', {
+                    abstract: true,
+                    url: '/index',
+                    template: '<home></home>',
+                })
+                .state('nav.index.datasets', {
+                    url: '/datasets',
+                    views: {
+                        'home-content': { template: '<home-dataset></home-dataset>' }
+                    }
+                })
+                .state('nav.index.preparations', {
+                    url: '/preparations/{folderId:.*}',
+                    views: {
+                        'home-content': { template: '<home-preparation></home-preparation>' }
+                    }
+                })
+                .state('playground', {
+                    url: '/playground',
+                    template: '<playground></playground>',
+                    abstract: true,
+                    resolve: {
+                        inventory: ($q, DatasetService, PreparationService) => {
+                            'ngInject';
+                            return $q.all([
+                                DatasetService.getDatasets(),
+                                PreparationService.getPreparations(),
+                            ]);
                         },
-                    })
-                .state('playground.preparation', {url: '/preparation?prepid'})
-                .state('playground.dataset', {url: '/dataset?datasetid'});
-                $urlRouterProvider.otherwise('/index/preparations/');
+                    },
+                })
+                .state('playground.preparation', { url: '/preparation?prepid' })
+                .state('playground.dataset', { url: '/dataset?datasetid' });
+            $urlRouterProvider.otherwise('/index/preparations/');
         })
 
         // Language to use at startup (for now only english)
         .run(($window, $translate) => {
             'ngInject';
             $translate.use('en');
-            });
+        });
 
     window.fetchConfiguration = function fetchConfiguration() {
         const initInjector = angular.injector(['ng']);
@@ -114,7 +114,7 @@
         return $http.get('/assets/config/config.json')
             .then((config) => {
                 app
-                // Debug config
+                    // Debug config
                     .config(($compileProvider) => {
                         'ngInject';
                         $compileProvider.debugInfoEnabled(config.data.enableDebug);
@@ -130,7 +130,6 @@
                         ImportService.initImport();
                         ExportService.refreshTypes();
                         DatasetService.refreshSupportedEncodings();
-
                     });
 
                 angular.module('data-prep.services.utils')

@@ -14,7 +14,9 @@
 describe('Datagrid tooltip service', function() {
     'use strict';
 
-    var gridMock, stateMock, dataViewMock;
+    var gridMock;
+    var stateMock;
+    var dataViewMock;
 
     //invisible ruler mock
     var RulerMock = {
@@ -41,19 +43,19 @@ describe('Datagrid tooltip service', function() {
 
     //columns metadata
     var columns = [
-        {id: '0000', name: 'col0'},
-        {id: '0001', name: 'col1'},
-        {id: '0002', name: 'col2'},
-        {id: '0003', name: 'col3'},
-        {id: '0004', name: 'col4'},
-        {id: 'tdpId', name: '#'}
+        { id: '0000', name: 'col0' },
+        { id: '0001', name: 'col1' },
+        { id: '0002', name: 'col2' },
+        { id: '0003', name: 'col3' },
+        { id: '0004', name: 'col4' },
+        { id: 'tdpId', name: '#' }
     ];
 
     beforeEach(angular.mock.module('data-prep.datagrid', function ($provide) {
         dataViewMock = new DataViewMock();
-        stateMock = {playground: {grid: {
-            dataView: dataViewMock
-        }}};
+        stateMock = { playground: { grid: {
+                    dataView: dataViewMock
+        } } };
 
         $provide.constant('state', stateMock);
     }));
@@ -109,7 +111,7 @@ describe('Datagrid tooltip service', function() {
 
             //when
             var mouseEnterHandler = gridMock.onMouseEnter.subscribe.calls.argsFor(0)[0];
-            var event = {clientX: 500, clientY: 300};
+            var event = { clientX: 500, clientY: 300 };
             mouseEnterHandler(event);
 
             //then
@@ -133,14 +135,14 @@ describe('Datagrid tooltip service', function() {
             //given
             DatagridTooltipService.init(gridMock);
 
-            var box = {left: 400, right: 500, top: 10, bottom: 40}; //width: 100
-            var cell = {row: 1, cell: 0};                           // contains 'tata'
+            var box = { left: 400, right: 500, top: 10, bottom: 40 }; //width: 100
+            var cell = { row: 1, cell: 0 };                           // contains 'tata'
             gridMock.initCellMock(cell, box);
 
 
             //when
             var mouseEnterHandler = gridMock.onMouseEnter.subscribe.calls.argsFor(0)[0];
-            var event = {clientX: 500, clientY: 300};
+            var event = { clientX: 500, clientY: 300 };
             mouseEnterHandler(event);
 
             //then
@@ -164,20 +166,20 @@ describe('Datagrid tooltip service', function() {
             //given
             DatagridTooltipService.init(gridMock);
 
-            var box = {left: 400, right: 500, top: 10, bottom: 40}; //width: 100
-            var cell = {row: 1, cell: 1}; // contains '  tetetetetetetetetetetetetetetetetetetete '
+            var box = { left: 400, right: 500, top: 10, bottom: 40 }; //width: 100
+            var cell = { row: 1, cell: 1 }; // contains '  tetetetetetetetetetetetetetetetetetetete '
             gridMock.initCellMock(cell, box);
 
             //when
             var mouseEnterHandler = gridMock.onMouseEnter.subscribe.calls.argsFor(0)[0];
-            var event = {clientX: 500, clientY: 300};
+            var event = { clientX: 500, clientY: 300 };
             mouseEnterHandler(event);
             jasmine.clock().tick(300);
             $timeout.flush();
 
             //then
             expect(DatagridTooltipService.tooltip).toEqual({
-                position: {x: 500, y: 300},
+                position: { x: 500, y: 300 },
                 htmlStr: '<span class="hiddenChars">  </span>tetetetetetetetetetetetetetetetetetetete<span class="hiddenChars"> </span>'
             });
             expect(DatagridTooltipService.showTooltip).toBeTruthy();
@@ -187,13 +189,13 @@ describe('Datagrid tooltip service', function() {
             //given
             DatagridTooltipService.init(gridMock);
 
-            var box = {left: 400, right: 500, top: 10, bottom: 40}; //width: 100
-            var cell = {row: 1, cell: 2}; // contains 'titititititititititititititititititi'
+            var box = { left: 400, right: 500, top: 10, bottom: 40 }; //width: 100
+            var cell = { row: 1, cell: 2 }; // contains 'titititititititititititititititititi'
             gridMock.initCellMock(cell, box);
 
             //when
             var mouseEnterHandler = gridMock.onMouseEnter.subscribe.calls.argsFor(0)[0];
-            var event = {clientX: 500, clientY: 300};
+            var event = { clientX: 500, clientY: 300 };
             mouseEnterHandler(event);
 
             //then
@@ -206,7 +208,7 @@ describe('Datagrid tooltip service', function() {
 
             //then
             expect(DatagridTooltipService.tooltip).toEqual({
-                position: {x: 500, y: 300},
+                position: { x: 500, y: 300 },
                 htmlStr: 'titititititititititititititititititi'
             });
             expect(DatagridTooltipService.showTooltip).toBeTruthy();
@@ -216,12 +218,12 @@ describe('Datagrid tooltip service', function() {
             //given
             DatagridTooltipService.init(gridMock);
 
-            var cell = {row: 1, cell: 3}; // contains 'toto<span class="hiddenCharsBreakLine">&nbsp;</span>\ntoto'
+            var cell = { row: 1, cell: 3 }; // contains 'toto<span class="hiddenCharsBreakLine">&nbsp;</span>\ntoto'
             gridMock.initCellMock(cell);
 
             //when
             var mouseEnterHandler = gridMock.onMouseEnter.subscribe.calls.argsFor(0)[0];
-            var event = {clientX: 500, clientY: 300};
+            var event = { clientX: 500, clientY: 300 };
             mouseEnterHandler(event);
 
             //then
@@ -234,7 +236,7 @@ describe('Datagrid tooltip service', function() {
 
             //then
             expect(DatagridTooltipService.tooltip).toEqual({
-                position: {x: 500, y: 300},
+                position: { x: 500, y: 300 },
                 htmlStr: 'toto↵\ntoto'
             });
             expect(DatagridTooltipService.showTooltip).toBeTruthy();
@@ -244,14 +246,14 @@ describe('Datagrid tooltip service', function() {
             //given
             DatagridTooltipService.init(gridMock);
 
-            var box = {left: 400, right: 500, top: 10, bottom: 40}; //width: 100
-            var cell = {row: 1, cell: 4};                           // contains ''
+            var box = { left: 400, right: 500, top: 10, bottom: 40 }; //width: 100
+            var cell = { row: 1, cell: 4 };                           // contains ''
             gridMock.initCellMock(cell, box);
 
 
             //when
             var mouseEnterHandler = gridMock.onMouseEnter.subscribe.calls.argsFor(0)[0];
-            var event = {clientX: 500, clientY: 300};
+            var event = { clientX: 500, clientY: 300 };
             mouseEnterHandler(event);
 
             //then
@@ -274,13 +276,13 @@ describe('Datagrid tooltip service', function() {
         it('should show tooltip after a 300ms delay with column tdpId', inject(function($timeout, DatagridTooltipService) {
             //given
             DatagridTooltipService.init(gridMock);
-            var box = {left: 400, right: 500, top: 10, bottom: 40}; //width: 100
-            var cell = {row: 1, cell: 5}; //contains 16678678678686786788888888888888888886872
+            var box = { left: 400, right: 500, top: 10, bottom: 40 }; //width: 100
+            var cell = { row: 1, cell: 5 }; //contains 16678678678686786788888888888888888886872
             gridMock.initCellMock(cell, box);
 
             //when
             var mouseEnterHandler = gridMock.onMouseEnter.subscribe.calls.argsFor(0)[0];
-            var event = {clientX: 500, clientY: 300};
+            var event = { clientX: 500, clientY: 300 };
             mouseEnterHandler(event);
 
             //then
@@ -293,7 +295,7 @@ describe('Datagrid tooltip service', function() {
 
             //then
             expect(DatagridTooltipService.tooltip).toEqual({
-                position: {x: 500, y: 300},
+                position: { x: 500, y: 300 },
                 htmlStr: '1.6678678678686786e+40'
             });
             expect(DatagridTooltipService.showTooltip).toBeTruthy();
@@ -324,13 +326,13 @@ describe('Datagrid tooltip service', function() {
             //given
             DatagridTooltipService.init(gridMock);
 
-            var box = {left: 400, right: 500, top: 10, bottom: 40}; //width: 100
-            var cell = {row: 1, cell: 2};                           // contains 'titititititititititititititititititi'
+            var box = { left: 400, right: 500, top: 10, bottom: 40 }; //width: 100
+            var cell = { row: 1, cell: 2 };                           // contains 'titititititititititititititititititi'
             gridMock.initCellMock(cell, box);
 
             //when : trigger a tooltip and flush 299ms (1ms before actual tooltip show)
             var mouseEnterHandler = gridMock.onMouseEnter.subscribe.calls.argsFor(0)[0];
-            var event = {clientX: 500, clientY: 300};
+            var event = { clientX: 500, clientY: 300 };
             mouseEnterHandler(event);
             jasmine.clock().tick(300);
 
@@ -352,5 +354,4 @@ describe('Datagrid tooltip service', function() {
             }
         }));
     });
-
 });

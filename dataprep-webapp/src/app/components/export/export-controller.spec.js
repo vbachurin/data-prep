@@ -14,7 +14,11 @@
 describe('Export controller', () => {
     'use strict';
 
-    let scope, createController, form, stateMock, exportTypes;
+    let scope;
+    let createController;
+    let form;
+    let stateMock;
+    let exportTypes;
 
     const currentParameters = { exportType: 'XLSX' };
 

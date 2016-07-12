@@ -25,9 +25,9 @@ import ExportService from './export-service';
      * @requires data-prep.services.utils
      */
     angular.module('data-prep.services.export', [
-            'data-prep.services.transformation',
-            'data-prep.services.utils'
-        ])
+        'data-prep.services.transformation',
+        'data-prep.services.utils'
+    ])
         .service('ExportRestService', ExportRestService)
         .service('ExportService', ExportService);
 })();

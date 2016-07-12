@@ -32,9 +32,9 @@ class FolderSelectionCtrl {
             .then((tree) => this._initTree(tree));
     }
 
-    //------------------------------------------------------------------------------------------------------------------
-    //---------------------------------------------- INITIALIZATION ----------------------------------------------------
-    //------------------------------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // ---------------------------------------------- INITIALIZATION ------------------------------
+    // --------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
      * @name _initTree
@@ -42,13 +42,15 @@ class FolderSelectionCtrl {
      **/
     _initTree(tree) {
         this.tree = tree;
- 
+
         if (this.selectedFolder) {
             const id = this.selectedFolder.id;
             const hierarchy = this._locate([], this.tree, (tree) => tree.folder.id === id);
-            
-            if(hierarchy) {
-                hierarchy.forEach((node) => { node.folder.opened = true; });
+
+            if (hierarchy) {
+                hierarchy.forEach((node) => {
+                    node.folder.opened = true;
+                });
                 this.selectedFolder = hierarchy.pop().folder;
                 this.selectedFolder.selected = true;
             }
@@ -62,19 +64,19 @@ class FolderSelectionCtrl {
             this.selectedFolder.selected = true;
         }
     }
-    
+
 
     _locate(accu, node, predicate) {
         const nextAccu = accu.concat(node);
-        if(predicate(node)) {
+        if (predicate(node)) {
             return nextAccu;
         }
-        
-        if(node.children.length) {
-            for(let childKey in node.children) {
+
+        if (node.children.length) {
+            for (let childKey in node.children) {
                 const child = node.children[childKey];
                 const pathToFolder = this._locate(accu, child, predicate);
-                if(pathToFolder) {
+                if (pathToFolder) {
                     return nextAccu.concat(pathToFolder);
                 }
             }
@@ -83,12 +85,12 @@ class FolderSelectionCtrl {
 
     _search(accu, node, name) {
         let nextAccu = accu;
-        if(node.folder.name.toLowerCase().indexOf(name.toLowerCase()) > -1) {
+        if (node.folder.name.toLowerCase().indexOf(name.toLowerCase()) > -1) {
             nextAccu = nextAccu.concat(node);
         }
 
-        if(node.children.length) {
-            for(let childKey in node.children) {
+        if (node.children.length) {
+            for (let childKey in node.children) {
                 const child = node.children[childKey];
                 nextAccu = this._search(nextAccu, child, name);
             }
@@ -96,9 +98,9 @@ class FolderSelectionCtrl {
         return nextAccu;
     }
 
-    //------------------------------------------------------------------------------------------------------------------
-    //-------------------------------------------- ACTIONS ON FOLDERS --------------------------------------------------
-    //------------------------------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // -------------------------------------------- ACTIONS ON FOLDERS ----------------------------
+    // --------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
      * @name toggle
@@ -123,9 +125,9 @@ class FolderSelectionCtrl {
         this.selectedFolder.selected = true;
     }
 
-    //------------------------------------------------------------------------------------------------------------------
-    //------------------------------------------------ SEARCH FOLDERS --------------------------------------------------
-    //------------------------------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // ------------------------------------------------ SEARCH FOLDERS ----------------------------
+    // --------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
      * @name performSearch
@@ -134,15 +136,18 @@ class FolderSelectionCtrl {
      **/
     performSearch() {
         if (this.searchFolderQuery) {
-            this.lastTreeSelection = this.lastTreeSelection || this.selectedFolder; //save tree selection
+            //save tree selection
+            this.lastTreeSelection = this.lastTreeSelection || this.selectedFolder;
             this.searchItems = this._search([], this.tree, this.searchFolderQuery);
-            if(this.searchItems.length) {
+            if (this.searchItems.length) {
                 this.chooseFolder(this.searchItems[0].folder);
             }
         }
         else {
-            this.searchItems = null;                    // reset search result
-            this.chooseFolder(this.lastTreeSelection);  // reset last tree selection as selected node
+            // reset search result
+            this.searchItems = null;
+            // reset last tree selection as selected node
+            this.chooseFolder(this.lastTreeSelection);
             this.lastTreeSelection = null;
         }
     }

@@ -25,13 +25,14 @@
  */
 export default class DatagridGridService {
 
-    constructor($timeout, state, StateService, DatagridService,
-        DatagridStyleService, DatagridColumnService, DatagridSizeService, DatagridExternalService, DatagridTooltipService) {
+    constructor($timeout, state, StateService,
+        DatagridService, DatagridStyleService, DatagridColumnService,
+        DatagridSizeService, DatagridExternalService, DatagridTooltipService) {
         'ngInject';
 
         this.grid = null;
         this.changeActiveTimeout = null;
-        
+
         this.$timeout = $timeout;
         this.state = state;
         this.StateService = StateService;
@@ -104,7 +105,7 @@ export default class DatagridGridService {
      */
     navigateToFocusedColumn() {
         if (this.DatagridService.focusedColumn) {
-            const columnIndex = _.findIndex(this.grid.getColumns(), {id: this.DatagridService.focusedColumn});
+            const columnIndex = _.findIndex(this.grid.getColumns(), { id: this.DatagridService.focusedColumn });
             const renderedRows = this.grid.getRenderedRange();
             const centerRow = +((renderedRows.bottom - renderedRows.top) / 2).toFixed(0);
             this.grid.scrollCellIntoView(renderedRows.top + centerRow, columnIndex, false);
@@ -144,7 +145,7 @@ export default class DatagridGridService {
             asyncEditorLoading: true,
             asyncEditorLoadDelay: 150
         };
-        this.grid = new Slick.Grid(elementId, this.state.playground.grid.dataView, [{id: 'tdpId'}], options);
+        this.grid = new Slick.Grid(elementId, this.state.playground.grid.dataView, [{ id: 'tdpId' }], options);
 
         //listeners
         this._attachLongTableListeners();

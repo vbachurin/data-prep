@@ -26,15 +26,15 @@ export default function FilterSearch() {
         bindToController: true,
         controllerAs: 'filterCtrl',
         controller: 'FilterSearchCtrl',
-        link: function (scope, iElement, attrs, ctrl) {
-            iElement.bind('keydown', function (e) {
+        link: (scope, iElement, attrs, ctrl) => {
+            iElement.bind('keydown', (e) => {
                 if (e.keyCode === 27) {
                     e.stopPropagation();
                 }
             });
 
-            var inputElement = iElement.find('input');
-            inputElement[0].onblur = function () {
+            const inputElement = iElement.find('input');
+            inputElement[0].onblur = () => {
                 ctrl.filterSearch = '';
             };
         }

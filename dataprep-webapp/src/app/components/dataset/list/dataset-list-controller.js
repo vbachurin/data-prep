@@ -28,9 +28,9 @@
  */
 export default class DatasetListCtrl {
     constructor($q, state, StateService,                                // app state
-                DatasetService, PreparationService,                 // inventory
-                UploadWorkflowService, UpdateWorkflowService,       // inventory workflow
-                TalendConfirmService, MessageService) {             // utils
+        DatasetService, PreparationService,                 // inventory
+        UploadWorkflowService, UpdateWorkflowService,       // inventory workflow
+        TalendConfirmService, MessageService) {             // utils
         'ngInject';
 
         this.$q = $q;
@@ -43,7 +43,7 @@ export default class DatasetListCtrl {
         this.TalendConfirmService = TalendConfirmService;
         this.MessageService = MessageService;
 
-        //TODO refacto inventory item to take function and remove this
+        // TODO refacto inventory item to take function and remove this
         this.uploadUpdatedDatasetFile = this.uploadUpdatedDatasetFile.bind(this);
         this.processCertification = this.processCertification.bind(this);
         this.remove = this.remove.bind(this);
@@ -82,11 +82,12 @@ export default class DatasetListCtrl {
      * @param {object} dataset The dataset to delete
      */
     remove(dataset) {
-        this.TalendConfirmService.confirm(
-            {disableEnter: true},
-            ['DELETE_PERMANENTLY', 'NO_UNDONE_CONFIRM'],
-            {type: 'dataset', name: dataset.name}
-            )
+        this.TalendConfirmService
+            .confirm(
+                { disableEnter: true },
+                ['DELETE_PERMANENTLY', 'NO_UNDONE_CONFIRM'],
+                { type: 'dataset', name: dataset.name }
+        )
             .then(() => this.DatasetService.delete(dataset))
             .then(() => this.MessageService.success(
                 'REMOVE_SUCCESS_TITLE',
@@ -118,7 +119,10 @@ export default class DatasetListCtrl {
         }
 
         if (this.DatasetService.getDatasetByName(cleanName)) {
-            this.MessageService.error('DATASET_NAME_ALREADY_USED_TITLE', 'DATASET_NAME_ALREADY_USED');
+            this.MessageService.error(
+                'DATASET_NAME_ALREADY_USED_TITLE',
+                'DATASET_NAME_ALREADY_USED'
+            );
             return;
         }
 
@@ -129,7 +133,7 @@ export default class DatasetListCtrl {
                 this.MessageService.success(
                     'DATASET_RENAME_SUCCESS_TITLE',
                     'DATASET_RENAME_SUCCESS'
-                )
+                );
             })
             .finally(() => {
                 const index = this.renamingList.indexOf(dataset);

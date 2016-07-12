@@ -52,4 +52,3 @@ const playgroundTour = [
 ];
 
 export default playgroundTour;
-

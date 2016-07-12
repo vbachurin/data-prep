@@ -35,17 +35,17 @@ export default function TalendButtonDropdown($timeout) {
         transclude: true,
         template: '<div class="button-dropdown">' +
             '<button class="button-dropdown-main" ng-click="buttonDropdownCtrl.buttonAction()" title="{{buttonDropdownCtrl.buttonTitle}}">' +
-                '<div class="button-dropdown-main-container">' +
-                    '<i   ng-if="::buttonDropdownCtrl.buttonIcon" class="button-dropdown-main-icon" data-icon="{{::buttonDropdownCtrl.buttonIcon}}"></i>' +
-                    '<div ng-if="::buttonDropdownCtrl.buttonText" class="button-dropdown-main-text" ng-bind="buttonDropdownCtrl.buttonText"><div>' +
-                '</div>' +
+            '<div class="button-dropdown-main-container">' +
+            '<i   ng-if="::buttonDropdownCtrl.buttonIcon" class="button-dropdown-main-icon" data-icon="{{::buttonDropdownCtrl.buttonIcon}}"></i>' +
+            '<div ng-if="::buttonDropdownCtrl.buttonText" class="button-dropdown-main-text" ng-bind="buttonDropdownCtrl.buttonText"><div>' +
+            '</div>' +
             '</button>' +
             '<div class="line-separator"></div>' +
             '<talend-dropdown close-on-select="buttonDropdownCtrl.closeOnSelect">' +
-                '<button class="button-dropdown-side dropdown-action dropdown-container"></button>' +
-                '<ng-transclude class="dropdown-menu"></ng-transclude>' +
+            '<button class="button-dropdown-side dropdown-action dropdown-container"></button>' +
+            '<ng-transclude class="dropdown-menu"></ng-transclude>' +
             '</talend-dropdown>' +
-        '</div>',
+            '</div>',
         scope: {
             buttonIcon: '@',
             buttonText: '@',
@@ -54,7 +54,8 @@ export default function TalendButtonDropdown($timeout) {
             closeOnSelect: '<'
         },
         bindToController: true,
-        controller: () => {},
+        controller: () => {
+        },
         controllerAs: 'buttonDropdownCtrl',
         link: (scope, iElement, attrs) => {
             if (!attrs.buttonAction) {

@@ -12,7 +12,6 @@
  ============================================================================*/
 
 describe('Folder selection controller', () => {
-
     let createController;
     let scope;
     let tree;
@@ -31,21 +30,21 @@ describe('Folder selection controller', () => {
 
     beforeEach(inject(($q, FolderService) => {
         tree = {
-            folder: {                                           // HOME
+            folder: { // HOME
                 id: '1',
                 name: 'HOME',
                 path: '/',
             },
             children: [
                 {
-                    folder: {                                   // /folder1
+                    folder: { // /folder1
                         id: '2',
                         name: 'folder1',
                         path: '/folder1',
                     },
                     children: [
                         {
-                            folder: {                           // /folder1/subfolder1
+                            folder: { // /folder1/subfolder1
                                 id: '4',
                                 name: 'subfolder1',
                                 path: '/folder1/subfolder1',
@@ -53,7 +52,7 @@ describe('Folder selection controller', () => {
                             children: [],
                         },
                         {
-                            folder: {                           // /folder1/subfolder2
+                            folder: { // /folder1/subfolder2
                                 id: '5',
                                 name: 'subfolder2',
                                 path: '/folder1/subfolder2',
@@ -63,14 +62,14 @@ describe('Folder selection controller', () => {
                     ]
                 },
                 {
-                    folder: {                                   // /folder2
+                    folder: { // /folder2
                         id: '3',
                         name: 'folder2',
                         path: '/folder2',
                     },
                     children: [
                         {
-                            folder: {                           // /folder2/subfolder3
+                            folder: { // /folder2/subfolder3
                                 id: '6',
                                 name: 'subfolder3',
                                 path: '/folder2/subfolder3',
@@ -232,7 +231,7 @@ describe('Folder selection controller', () => {
             // then
             expect(ctrl.searchItems).toEqual([tree.children[0], tree.children[0].children[0]]);
         });
-        
+
         it('should init perform search with empty array when search result is empty', () => {
             // given
             ctrl.searchFolderQuery = 'toto';

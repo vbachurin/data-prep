@@ -77,7 +77,7 @@ export default function FolderRestService($http, RestURLs) {
         if (sortOrder) {
             options.push(`order=${sortOrder}`);
         }
-        if(options.length) {
+        if (options.length) {
             url = `${url}?${options.join('&')}`;
         }
 
@@ -117,7 +117,7 @@ export default function FolderRestService($http, RestURLs) {
      * @returns {Promise} The GET promise
      */
     function tree() {
-        return $http.get(`${RestURLs.folderUrl}/tree`).then((res) => res.data); 
+        return $http.get(`${RestURLs.folderUrl}/tree`).then((res) => res.data);
     }
 
     /**

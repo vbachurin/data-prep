@@ -16,12 +16,12 @@ describe('Inventory Service', () => {
 
     let results = {
         data: {
-            folders: [{name : 'folder test', lastModificationDate: 1}],
-            preparations: [{name : 'prep test', lastModificationDate: 2}],
+            folders: [{ name : 'folder test', lastModificationDate: 1 }],
+            preparations: [{ name : 'prep test', lastModificationDate: 2 }],
             datasets: [{
                 name : 'dataset test',
                 lastModificationDate: 3,
-                author: 'toto' ,
+                author: 'toto',
                 created: 1,
                 records: 100,
                 path: 'home',
@@ -44,7 +44,7 @@ describe('Inventory Service', () => {
         //given
         let result= null;
         let expectedResult = [
-            {inventoryType: 'dataset',
+            { inventoryType: 'dataset',
                 author: 'toto',
                 created: 1,
                 records: 100,
@@ -56,9 +56,9 @@ describe('Inventory Service', () => {
                 tooltipName: 'dataset test',
                 owner: {
                     id: 'charles'
-                }},
-            {name : 'prep <span class="highlighted">test</span>', lastModificationDate: 2, inventoryType: 'preparation', tooltipName: 'prep test'},
-            {name : 'folder <span class="highlighted">test</span>', lastModificationDate: 1, inventoryType: 'folder', tooltipName: 'folder test'}
+            } },
+            { name : 'prep <span class="highlighted">test</span>', lastModificationDate: 2, inventoryType: 'preparation', tooltipName: 'prep test' },
+            { name : 'folder <span class="highlighted">test</span>', lastModificationDate: 1, inventoryType: 'folder', tooltipName: 'folder test' }
         ];
 
         //when

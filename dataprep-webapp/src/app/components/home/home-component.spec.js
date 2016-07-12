@@ -14,7 +14,9 @@
 describe('Home directive', () => {
     'use strict';
 
-    let scope, createElement, element;
+    let scope;
+    let createElement;
+    let element;
 
     beforeEach(angular.mock.module('data-prep.home'));
     beforeEach(angular.mock.module('htmlTemplates'));

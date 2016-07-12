@@ -26,7 +26,7 @@ export default function InventoryItemCtrl() {
      * @params item the inventory item
      * @description return the item type (MIME type) or the tag (if present).
      */
-    vm.itemType = function itemType (item) {
+    vm.itemType = function itemType(item) {
         return item.tag ? item.tag : item.type;
     };
 
@@ -53,13 +53,13 @@ export default function InventoryItemCtrl() {
      */
     vm.getTooltipContent = function getTooltipContent(isRelatedInventory) {
         return isRelatedInventory && vm.relatedInventories && vm.relatedInventories.length ?
-        {
-            type: vm.relatedInventoriesType,
-            name: vm.relatedInventories[0].name
-        } :
-        {
-            type: vm.type,
-            name: vm.item.tooltipName ? vm.item.tooltipName : vm.item.name
-        };
+            {
+                type: vm.relatedInventoriesType,
+                name: vm.relatedInventories[0].name
+            } :
+            {
+                type: vm.type,
+                name: vm.item.tooltipName ? vm.item.tooltipName : vm.item.name
+            };
     };
 }

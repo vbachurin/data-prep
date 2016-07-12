@@ -14,7 +14,8 @@
 describe('Recipe controller', function () {
     'use strict';
 
-    var createController, scope;
+    var createController;
+    var scope;
     var lastActiveStep = { inactive: false };
     var stateMock;
 
@@ -233,7 +234,6 @@ describe('Recipe controller', function () {
     });
 
     describe('step parameters', function () {
-
         it('should return that step has dynamic parameters when it has cluster', function () {
             //given
             var ctrl = createController();
@@ -571,10 +571,9 @@ describe('Recipe controller', function () {
 
             //then
             expect(PlaygroundService.updateStep).toHaveBeenCalled();
-            const callArgs = PlaygroundService.updateStep.calls.argsFor(0); 
+            const callArgs = PlaygroundService.updateStep.calls.argsFor(0);
             expect(callArgs[0]).toBe(stepWithMultipleFilters);
             expect(callArgs[1].filter).toEqual({ contains: { field: '0002', value: ['toto'] } });
-            
         }));
     });
 
@@ -596,7 +595,8 @@ describe('Recipe controller', function () {
                 phrase: ['toto']
             }
         };
-        var stepDeleteLinesWithSingleFilter, stepWithMultipleFilters;
+        var stepDeleteLinesWithSingleFilter;
+        var stepWithMultipleFilters;
 
         beforeEach(inject(function (FilterAdapterService) {
             spyOn(FilterAdapterService, 'toTree').and.returnValue({

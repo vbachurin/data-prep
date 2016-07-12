@@ -26,8 +26,7 @@ describe('Onboarding service', function () {
         onexit: function () {
             return this;
         },
-        start: function () {
-        }
+        start: function () {}
     };
 
     beforeEach(angular.mock.module('data-prep.services.onboarding', ($provide) => {
@@ -68,7 +67,7 @@ describe('Onboarding service', function () {
 
     it('should return false when tour has already been completed', inject(function ($window, OnboardingService) {
         //given
-        $window.localStorage.setItem(TOUR_OPTIONS_KEY, JSON.stringify({preparation: true}));
+        $window.localStorage.setItem(TOUR_OPTIONS_KEY, JSON.stringify({ preparation: true }));
 
         //when
         var result = OnboardingService.shouldStartTour('preparation');
@@ -208,7 +207,7 @@ describe('Onboarding service', function () {
         OnboardingService.startTour('preparation');
 
         //then
-        expect($state.go).toHaveBeenCalledWith('nav.index.preparations', {folderId: stateMock.inventory.homeFolderId});
+        expect($state.go).toHaveBeenCalledWith('nav.index.preparations', { folderId: stateMock.inventory.homeFolderId });
     }));
 
     it('should redirect BACK to "datasets" after redirecting to "preparations" ', inject(($timeout, $state, OnboardingService) => {
@@ -218,7 +217,7 @@ describe('Onboarding service', function () {
         };
 
         OnboardingService.startTour('preparation');
-        expect($state.go).toHaveBeenCalledWith('nav.index.preparations', {folderId: stateMock.inventory.homeFolderId})
+        expect($state.go).toHaveBeenCalledWith('nav.index.preparations', { folderId: stateMock.inventory.homeFolderId })
 
         //when
         $timeout.flush(200);

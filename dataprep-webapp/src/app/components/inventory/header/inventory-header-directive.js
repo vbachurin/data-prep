@@ -30,5 +30,5 @@ export default function InventoryHeaderDirective() {
         link: function (scope, iElement, iAttrs, ctrl) {
             ctrl.canCreateFolder = iAttrs.onFolderCreation;
         },
-    }
+    };
 }

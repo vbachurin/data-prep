@@ -55,7 +55,8 @@ export default class PreparationHeaderCtrl {
      * @ngdoc method
      * @name sort
      * @methodOf data-prep.preparation-header.controller:PreparationHeaderCtrl
-     * @description sort dataset in order (ASC or DESC) by calling refreshDatasets from DatasetService
+     * @description sort dataset in order (ASC or DESC)
+     * by calling refreshDatasets from DatasetService
      * @param {object} order Sort order ASC(ascending) or DESC(descending)
      */
     updateSortOrder(order) {
@@ -82,8 +83,11 @@ export default class PreparationHeaderCtrl {
         const currentFolderId = this.state.inventory.folder.metadata.id;
         return this.FolderService.create(currentFolderId, folderName)
             .then((response) => {
-                this.StateService.setPreviousRoute('nav.index.preparations', {folderId: currentFolderId});
-                this.$state.go('nav.index.preparations', {folderId: response.data.id});
+                this.StateService.setPreviousRoute(
+                    'nav.index.preparations',
+                    { folderId: currentFolderId }
+                );
+                this.$state.go('nav.index.preparations', { folderId: response.data.id });
             });
     }
 }

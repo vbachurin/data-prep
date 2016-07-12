@@ -41,7 +41,8 @@ export default function TalendSearchInput() {
                     if (value) {
                         clearButton.css('display', 'block');
                         searchIcon.css('display', 'none');
-                    } else {
+                    }
+                    else {
                         searchIcon.css('display', 'block');
                         clearButton.css('display', 'none');
                     }

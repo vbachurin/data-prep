@@ -13,7 +13,9 @@
 
 describe('Transformation menu directive', function () {
     'use strict';
-    var scope, createElement, element;
+    var scope;
+    var createElement;
+    var element;
 
     var column = {
         semanticDomains: [],
@@ -44,7 +46,7 @@ describe('Transformation menu directive', function () {
 
     it('should render a simple action', function () {
         //given
-        scope.menu = [{label: 'uppercase'}];
+        scope.menu = [{ label: 'uppercase' }];
 
         //when
         var element = createElement();
@@ -129,7 +131,7 @@ describe('Transformation menu directive', function () {
     it('should render multiple menu items', function () {
         //given
         scope.menu = [
-            {label: 'uppercase'},
+            { label: 'uppercase' },
             {
                 name: 'menuWithChoice',
                 label: 'menu with choice',
@@ -179,7 +181,7 @@ describe('Transformation menu directive', function () {
     it('should display selected item parameters', function () {
         //given
         scope.menu = [
-            {label: 'uppercase'},
+            { label: 'uppercase' },
             {
                 name: 'menuWithChoice',
                 label: 'menu with choice',

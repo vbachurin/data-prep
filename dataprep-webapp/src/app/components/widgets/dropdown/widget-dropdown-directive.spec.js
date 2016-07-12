@@ -14,7 +14,8 @@
 'use strict';
 
 describe('Dropdown directive', function () {
-    var scope, element;
+    var scope;
+    var element;
 
     beforeEach(angular.mock.module('talend.widget'));
     beforeEach(angular.mock.module('htmlTemplates'));
@@ -35,9 +36,7 @@ describe('Dropdown directive', function () {
     });
 
     describe('closeable dropdown', function () {
-
         beforeEach(inject(function ($rootScope, $compile) {
-
             scope = $rootScope.$new();
 
             var html = '<talend-dropdown id="dropdown1">' +
@@ -158,7 +157,7 @@ describe('Dropdown directive', function () {
         it('should stop mousedown propagation on dropdown-menu mousedown', function () {
             //given
             var bodyMouseDown = false;
-            var  mouseDownCallBack = function () {
+            var mouseDownCallBack = function () {
                 bodyMouseDown = true;
             };
             angular.element('body').mousedown(mouseDownCallBack);

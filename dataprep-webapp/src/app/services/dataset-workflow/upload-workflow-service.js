@@ -70,11 +70,11 @@ export default function UploadWorkflowService($state, $window, StateService, Dat
         }
         else {
             if (shouldBeBlankTab) {
-                $window.open($state.href('playground.dataset', {datasetid: dataset.id}, {absolute: true}), '_blank');
+                $window.open($state.href('playground.dataset', { datasetid: dataset.id }, { absolute: true }), '_blank');
             }
             else {
                 StateService.setPreviousRoute('nav.index.datasets');
-                $state.go('playground.dataset', {datasetid: dataset.id});
+                $state.go('playground.dataset', { datasetid: dataset.id });
             }
         }
     };

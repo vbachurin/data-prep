@@ -109,7 +109,7 @@ describe('Transformation cache service', () => {
             }
         ];
     };
-    const column = {id: '0002', name: 'Firstname'};
+    const column = { id: '0002', name: 'Firstname' };
 
     beforeEach(angular.mock.module('data-prep.services.transformation'));
 

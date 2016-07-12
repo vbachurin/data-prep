@@ -29,6 +29,7 @@ export default function DatasetUploadList() {
         },
         bindToController: true,
         controllerAs: 'uploadListCtrl',
-        controller: () => {}
+        controller: () => {
+        }
     };
 }

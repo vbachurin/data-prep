@@ -14,14 +14,15 @@
 describe('Typeahead widget controller', () => {
     'use strict';
 
-    let createController, scope;
+    let createController;
+    let scope;
 
     beforeEach(angular.mock.module('talend.widget'));
 
     beforeEach(inject(($rootScope, $componentController) => {
         scope = $rootScope.$new();
 
-        createController = () => $componentController('typeahead', {$scope: scope});
+        createController = () => $componentController('typeahead', { $scope: scope });
     }));
 
     describe('on change', () => {
@@ -35,7 +36,7 @@ describe('Typeahead widget controller', () => {
             ctrl.onChange();
 
             //then
-            expect(ctrl.search).toHaveBeenCalledWith({value: 'toto'});
+            expect(ctrl.search).toHaveBeenCalledWith({ value: 'toto' });
         });
 
         it('should show result block', () => {

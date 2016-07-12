@@ -12,11 +12,12 @@
  ============================================================================*/
 
 describe('Filter Item Value Component', () => {
-
     beforeEach(angular.mock.module('data-prep.filter-item-value'));
     beforeEach(angular.mock.module('htmlTemplates'));
 
-    let createElement, scope, element;
+    let createElement;
+    let scope;
+    let element;
 
     beforeEach(inject(($rootScope, $compile) => {
         scope = $rootScope.$new();
@@ -81,7 +82,6 @@ describe('Filter Item Value Component', () => {
     });
 
     describe('removable option', () => {
-
         it('should render remove button', () => {
             //given
             scope.removable = true;

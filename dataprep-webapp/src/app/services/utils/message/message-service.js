@@ -36,7 +36,7 @@ export default class MessageService {
      * @description Translate and show the toast
      */
     _pop(message) {
-        const {type, title, content, args, timeout} = message;
+        const { type, title, content, args, timeout } = message;
         return this.$translate([title, content], args)
             .then((translations) => this.toaster.pop(type, translations[title], translations[content], timeout));
     }
@@ -50,9 +50,9 @@ export default class MessageService {
      */
     _bufferPop(message) {
         message.key = message.title + message.content;
-        const messageAlreadyPending =  _.find(this.pendingMessages, {key: message.key});
+        const messageAlreadyPending =  _.find(this.pendingMessages, { key: message.key });
 
-        if(messageAlreadyPending) {
+        if (messageAlreadyPending) {
             return;
         }
         this.pendingMessages.push(message);

@@ -14,9 +14,12 @@
 describe('History service', function() {
     'use strict';
 
-    var firstUndoAction, firstRedoAction;
-    var secondUndoAction, secondRedoAction;
-    var errorUndoAction, errorRedoAction;
+    var firstUndoAction;
+    var firstRedoAction;
+    var secondUndoAction;
+    var secondRedoAction;
+    var errorUndoAction;
+    var errorRedoAction;
 
     beforeEach(angular.mock.module('data-prep.services.history'));
     beforeEach(inject(($q) => {

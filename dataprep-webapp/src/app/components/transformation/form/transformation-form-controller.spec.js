@@ -14,7 +14,10 @@
 describe('Transform params controller', function () {
     'use strict';
 
-    var createController, scope, extractedParams, transformation;
+    var createController;
+    var scope;
+    var extractedParams;
+    var transformation;
 
     beforeEach(angular.mock.module('data-prep.transformation-form'));
 
@@ -30,7 +33,7 @@ describe('Transform params controller', function () {
             ctrlFn.instance.onSubmit = function(args) {
                 extractedParams = args.params;
             };
-            ctrlFn.instance.paramForm = {$commitViewValue: jasmine.createSpy('$commitViewValue')};
+            ctrlFn.instance.paramForm = { $commitViewValue: jasmine.createSpy('$commitViewValue') };
             return ctrlFn();
         };
     }));
@@ -41,8 +44,8 @@ describe('Transform params controller', function () {
             name: 'uppercase',
             category: 'case',
             parameters: [
-                {name: 'param1', type: 'text', default: ''},
-                {name: 'param2', type: 'integer', default: '5'}
+                { name: 'param1', type: 'text', default: '' },
+                { name: 'param2', type: 'integer', default: '5' }
             ]
         };
         var ctrl = createController(transformation);
@@ -62,8 +65,8 @@ describe('Transform params controller', function () {
             name: 'uppercase',
             category: 'case',
             parameters: [
-                {name: 'param1', type: 'text', default: ''},
-                {name: 'param2', type: 'integer', default: '5'}
+                { name: 'param1', type: 'text', default: '' },
+                { name: 'param2', type: 'integer', default: '5' }
             ]
         };
         var ctrl = createController(transformation);
@@ -71,7 +74,7 @@ describe('Transform params controller', function () {
         ctrl.transformWithParam();
 
         //then
-        expect(extractedParams).toEqual({ param1: '', param2: '5'});
+        expect(extractedParams).toEqual({ param1: '', param2: '5' });
     });
 
     it('should extract simple choice param', function() {
@@ -85,8 +88,8 @@ describe('Transform params controller', function () {
                     type: 'select',
                     configuration: {
                         values: [
-                            {name: 'regex', value: 'regex'},
-                            {name: 'index', value: 'index'}
+                            { name: 'regex', value: 'regex' },
+                            { name: 'index', value: 'index' }
                         ]
                     }
                 }
@@ -99,7 +102,7 @@ describe('Transform params controller', function () {
         ctrl.transformWithParam();
 
         //then
-        expect(extractedParams).toEqual({ mode: 'index'});
+        expect(extractedParams).toEqual({ mode: 'index' });
     });
 
     it('should extract parameterized choice params', function() {
@@ -117,11 +120,11 @@ describe('Transform params controller', function () {
                                 name: 'regex',
                                 value: 'regex',
                                 parameters : [
-                                    {name: 'regex', type: 'text', default: '', value: 'param1Value'},
-                                    {name: 'comment', type: 'text', default: '', value: 'my comment'}
+                                    { name: 'regex', type: 'text', default: '', value: 'param1Value' },
+                                    { name: 'comment', type: 'text', default: '', value: 'my comment' }
                                 ]
                             },
-                            {name: 'index', value: 'index'}
+                            { name: 'index', value: 'index' }
                         ]
                     }
                 }
@@ -134,7 +137,7 @@ describe('Transform params controller', function () {
         ctrl.transformWithParam();
 
         //then
-        expect(extractedParams).toEqual({ mode: 'regex', regex: 'param1Value', comment: 'my comment'});
+        expect(extractedParams).toEqual({ mode: 'regex', regex: 'param1Value', comment: 'my comment' });
     });
 
     it('should extract parameters and parameterized choice transformation select', function() {
@@ -144,8 +147,8 @@ describe('Transform params controller', function () {
             name: 'split',
             category: 'split',
             parameters: [
-                {name: 'param1', type: 'text', default: ''},
-                {name: 'param2', type: 'integer', default: '5'},
+                { name: 'param1', type: 'text', default: '' },
+                { name: 'param2', type: 'integer', default: '5' },
                 {
                     name: 'mode',
                     type: 'select',
@@ -155,11 +158,11 @@ describe('Transform params controller', function () {
                                 name: 'regex',
                                 value: 'regex',
                                 parameters : [
-                                    {name: 'regex', type: 'text', default: '', value: 'param1Value'},
-                                    {name: 'comment', type: 'text', default: '', value: 'my comment'}
+                                    { name: 'regex', type: 'text', default: '', value: 'param1Value' },
+                                    { name: 'comment', type: 'text', default: '', value: 'my comment' }
                                 ]
                             },
-                            {name: 'index', value: 'index'}
+                            { name: 'index', value: 'index' }
                         ]
                     }
                 }
@@ -174,7 +177,7 @@ describe('Transform params controller', function () {
         ctrl.transformWithParam();
 
         //then
-        expect(extractedParams).toEqual({ mode: 'regex', regex: 'param1Value', comment: 'my comment', param1: 'param1Value', param2: 4});
+        expect(extractedParams).toEqual({ mode: 'regex', regex: 'param1Value', comment: 'my comment', param1: 'param1Value', param2: 4 });
     });
 
     it('should extract cluster parameters', function() {
@@ -297,8 +300,8 @@ describe('Transform params controller', function () {
             name: 'uppercase',
             category: 'case',
             parameters: [
-                {name: 'param1', type: 'text', default: ''},
-                {name: 'param2', type: 'integer', default: '5'}
+                { name: 'param1', type: 'text', default: '' },
+                { name: 'param2', type: 'integer', default: '5' }
             ]
         };
         var ctrl = createController();
@@ -324,8 +327,8 @@ describe('Transform params controller', function () {
             name: 'uppercase',
             category: 'case',
             parameters: [
-                {name: 'param1', type: 'text', default: ''},
-                {name: 'param2', type: 'integer', default: '5'}
+                { name: 'param1', type: 'text', default: '' },
+                { name: 'param2', type: 'integer', default: '5' }
             ]
         };
         var ctrl = createController();

@@ -20,7 +20,8 @@ import TransformMenu from './transformation-menu-directive';
     /**
      * @ngdoc object
      * @name data-prep.transformation-menu
-     * @description This module contains the controller and directives to manage the transformation menu items
+     * @description This module contains the controller
+     * and directives to manage the transformation menu items
      * @requires talend.widget
      * @requires data-prep.transformation-form
      * @requires data-prep.type-transformation-menu
@@ -35,7 +36,7 @@ import TransformMenu from './transformation-menu-directive';
             'data-prep.type-transformation-menu',
             'data-prep.services.playground',
             'data-prep.services.transformation',
-            'data-prep.services.state'
+            'data-prep.services.state',
         ])
         .controller('TransformMenuCtrl', TransformMenuCtrl)
         .directive('transformMenu', TransformMenu);

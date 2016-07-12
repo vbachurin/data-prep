@@ -14,7 +14,9 @@
 describe('Lookup datagrid header controller', function () {
     'use strict';
 
-    var createController, scope, stateMock;
+    var createController;
+    var scope;
+    var stateMock;
 
     beforeEach(angular.mock.module('data-prep.lookup', function ($provide) {
         stateMock = {

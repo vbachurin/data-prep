@@ -12,7 +12,10 @@
  ============================================================================*/
 
 describe('Inventory Tile Component', () => {
-    let htmlConfig, scope, createElement, element;
+    let htmlConfig;
+    let scope;
+    let createElement;
+    let element;
 
     beforeEach(angular.mock.module('pascalprecht.translate', ($translateProvider) => {
         $translateProvider.translations('en_US', {

@@ -13,14 +13,15 @@
 
 describe('Transformation params directive', function () {
     'use strict';
-    var scope, createElement;
+    var scope;
+    var createElement;
     var stateMock;
 
     beforeEach(angular.mock.module('data-prep.transformation-form', function ($provide) {
-        stateMock = {playground: {
-            data: {metadata: {columns: []}},
-            grid: {selectedColumn: '0001'}
-        }};
+        stateMock = { playground: {
+                data: { metadata: { columns: [] } },
+                grid: { selectedColumn: '0001' }
+        } };
         $provide.constant('state', stateMock);
     }));
     beforeEach(angular.mock.module('htmlTemplates'));
@@ -93,8 +94,8 @@ describe('Transformation params directive', function () {
                 'type': 'select',
                 'configuration': {
                     'values': [
-                        {name: 'noParamChoice1', value: 'noParamChoice1'},
-                        {name: 'noParamChoice2', value: 'noParamChoice2'}
+                        { name: 'noParamChoice1', value: 'noParamChoice1' },
+                        { name: 'noParamChoice2', value: 'noParamChoice2' }
                     ]
                 },
                 'default': ''
@@ -146,5 +147,4 @@ describe('Transformation params directive', function () {
         //then
         expect(element.find('transform-column-param').length).toBe(1);
     });
-
 });

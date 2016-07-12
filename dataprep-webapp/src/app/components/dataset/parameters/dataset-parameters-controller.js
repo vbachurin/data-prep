@@ -17,7 +17,7 @@
  * @description Dataset parameters controller
  */
 export default function DatasetParametersCtrl() {
-    var vm = this;
+    const vm = this;
 
     /**
      * @ngdoc method
@@ -26,7 +26,8 @@ export default function DatasetParametersCtrl() {
      * @description Check if the current separator is in the list of separators
      */
     vm.separatorIsInList = function separatorIsInList() {
-        return vm.parameters.separator && _.find(vm.configuration.separators, {value: vm.parameters.separator});
+        return vm.parameters.separator &&
+            _.find(vm.configuration.separators, { value: vm.parameters.separator });
     };
 
     /**

@@ -21,7 +21,6 @@ export const feedbackState = {
  * @description Manage the state of the feedback
  */
 export function FeedbackStateService() {
-
     return {
         show: show,
         hide: hide

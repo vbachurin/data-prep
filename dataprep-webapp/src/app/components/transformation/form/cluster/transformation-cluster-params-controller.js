@@ -17,7 +17,7 @@
  * @description Transformation cluster parameters controller.
  */
 export default function TransformClusterParamsCtrl() {
-    var vm = this;
+    const vm = this;
 
     /**
      * @ngdoc property
@@ -33,8 +33,8 @@ export default function TransformClusterParamsCtrl() {
      * @methodOf data-prep.transformation-form.controller:TransformClusterParamsCtrl
      * @description Refresh all cluster "active" flag to the state of the global activation checkbox
      */
-    vm.refreshClusterState = function () {
-        _.forEach(vm.details.clusters, function (cluster) {
+    vm.refreshClusterState = function refreshClusterState() {
+        _.forEach(vm.details.clusters, (cluster) => {
             cluster.active = vm.allCheckboxState;
         });
     };
@@ -45,8 +45,8 @@ export default function TransformClusterParamsCtrl() {
      * @methodOf data-prep.transformation-form.controller:TransformClusterParamsCtrl
      * @description Initialize all cluster "active" flag
      */
-    vm.initClusterState = function () {
-        _.forEach(vm.details.clusters, function (cluster) {
+    vm.initClusterState = function initClusterState() {
+        _.forEach(vm.details.clusters, (cluster) => {
             cluster.active = cluster.initialActive;
         });
     };
@@ -57,10 +57,8 @@ export default function TransformClusterParamsCtrl() {
      * @methodOf data-prep.transformation-form.controller:TransformClusterParamsCtrl
      * @description Refresh the global activation checkbox
      */
-    vm.refreshToggleCheckbox = function () {
-        var inactiveCluster = _.find(vm.details.clusters, function (cluster) {
-            return !cluster.active;
-        });
+    vm.refreshToggleCheckbox = function refreshToggleCheckbox() {
+        const inactiveCluster = _.find(vm.details.clusters, (cluster) => !cluster.active);
         vm.allCheckboxState = !inactiveCluster;
     };
 
@@ -70,13 +68,13 @@ export default function TransformClusterParamsCtrl() {
      * @methodOf data-prep.transformation-form.controller:TransformClusterParamsCtrl
      * @description Initialize parameters values and checkbox state if needed
      */
-    var initParamsValues = function initParamsValues() {
-        _.forEach(vm.details.clusters, function (cluster) {
-            _.forEach(cluster.parameters, function (param) {
+    function initParamsValues() {
+        _.forEach(vm.details.clusters, (cluster) => {
+            _.forEach(cluster.parameters, (param) => {
                 param.default = true;
             });
         });
-    };
+    }
 
     /**
      * @ngdoc method
@@ -84,8 +82,8 @@ export default function TransformClusterParamsCtrl() {
      * @methodOf data-prep.transformation-form.controller:TransformClusterParamsCtrl
      * @description Initialize clusters activation flag
      */
-    var initActivationFlags = function initActivationFlags() {
-        var hasInitialActive = _.find(vm.details.clusters, function (cluster) {
+    function initActivationFlags() {
+        const hasInitialActive = _.find(vm.details.clusters, (cluster) => {
             return typeof cluster.initialActive !== 'undefined';
         });
 
@@ -95,7 +93,7 @@ export default function TransformClusterParamsCtrl() {
         else {
             vm.initClusterState();
         }
-    };
+    }
 
     /**
      * @ngdoc method
@@ -103,11 +101,11 @@ export default function TransformClusterParamsCtrl() {
      * @methodOf data-prep.transformation-form.controller:TransformSimpleParamsCtrl
      * @description [PRIVATE] Init params input type, depending on param type
      */
-    var initReplaceList = function () {
-        _.forEach(vm.details.clusters, function (cluster) {
+    function initReplaceList() {
+        _.forEach(vm.details.clusters, (cluster) => {
             cluster.replace.list = _.map(cluster.parameters, 'name');
         });
-    };
+    }
 
     initParamsValues();
     initReplaceList();

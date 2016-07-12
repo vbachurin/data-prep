@@ -91,7 +91,7 @@ export default function PreparationService($q, $state, $window, $stateParams, st
      * @returns {promise} The POST promise
      */
     function create(datasetId, name, destinationFolder) {
-        StateService.setPreviousRoute('nav.index.preparations', {folderId: $stateParams.folderId});
+        StateService.setPreviousRoute('nav.index.preparations', { folderId: $stateParams.folderId });
         return PreparationListService.create(datasetId, name, destinationFolder)
             .then((preparation) => {
                 //get all dataset aggregations per columns from localStorage and save them for the new preparation
@@ -176,7 +176,7 @@ export default function PreparationService($q, $state, $window, $stateParams, st
         return PreparationRestService.updateStep(
             preparationId,
             step.transformation.stepId,
-            {action: step.transformation.name, parameters: parameters}
+            { action: step.transformation.name, parameters: parameters }
         );
     }
 
@@ -208,10 +208,11 @@ export default function PreparationService($q, $state, $window, $stateParams, st
             shouldBeBlankTab = true;
         }
         if (shouldBeBlankTab) {
-            $window.open($state.href('playground.preparation', {prepid: preparation.id}, {absolute: true}), '_blank');
-        } else {
-            StateService.setPreviousRoute('nav.index.preparations', {folderId: $stateParams.folderId});
-            $state.go('playground.preparation', {prepid: preparation.id});
+            $window.open($state.href('playground.preparation', { prepid: preparation.id }, { absolute: true }), '_blank');
+        }
+        else {
+            StateService.setPreviousRoute('nav.index.preparations', { folderId: $stateParams.folderId });
+            $state.go('playground.preparation', { prepid: preparation.id });
         }
     }
 }

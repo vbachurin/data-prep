@@ -14,7 +14,8 @@
 describe('Loading directive', function () {
     'use strict';
 
-    var scope, element;
+    var scope;
+    var element;
 
     beforeEach(angular.mock.module('talend.widget'));
     beforeEach(angular.mock.module('htmlTemplates'));

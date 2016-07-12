@@ -199,7 +199,6 @@ describe('Lookup service', () => {
         spyOn(StateService, 'setLookupActions').and.returnValue();
         spyOn(StateService, 'setLookupAddMode').and.returnValue();
         spyOn(StateService, 'setLookupUpdateMode').and.returnValue();
-
     }));
 
     describe('init lookup', () => {

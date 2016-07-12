@@ -16,14 +16,14 @@ describe('Column types Service', function () {
 
     var $httpBackend;
     var types = [
-        {'id': 'ANY', 'name': 'any', 'labelKey': 'ANY'},
-        {'id': 'STRING', 'name': 'string', 'labelKey': 'STRING'},
-        {'id': 'NUMERIC', 'name': 'numeric', 'labelKey': 'NUMERIC'},
-        {'id': 'INTEGER', 'name': 'integer', 'labelKey': 'INTEGER'},
-        {'id': 'DOUBLE', 'name': 'double', 'labelKey': 'DOUBLE'},
-        {'id': 'FLOAT', 'name': 'float', 'labelKey': 'FLOAT'},
-        {'id': 'BOOLEAN', 'name': 'boolean', 'labelKey': 'BOOLEAN'},
-        {'id': 'DATE', 'name': 'date', 'labelKey': 'DATE'}
+        { 'id': 'ANY', 'name': 'any', 'labelKey': 'ANY' },
+        { 'id': 'STRING', 'name': 'string', 'labelKey': 'STRING' },
+        { 'id': 'NUMERIC', 'name': 'numeric', 'labelKey': 'NUMERIC' },
+        { 'id': 'INTEGER', 'name': 'integer', 'labelKey': 'INTEGER' },
+        { 'id': 'DOUBLE', 'name': 'double', 'labelKey': 'DOUBLE' },
+        { 'id': 'FLOAT', 'name': 'float', 'labelKey': 'FLOAT' },
+        { 'id': 'BOOLEAN', 'name': 'boolean', 'labelKey': 'BOOLEAN' },
+        { 'id': 'DATE', 'name': 'date', 'labelKey': 'DATE' }
     ];
 
     beforeEach(angular.mock.module('data-prep.services.dataset'));
@@ -38,7 +38,7 @@ describe('Column types Service', function () {
         var result = null;
         $httpBackend
             .expectGET(RestURLs.typesUrl)
-            .respond(200, {data: types});
+            .respond(200, { data: types });
 
         //when
         ColumnTypesService.getTypes().then(function (response) {
@@ -56,7 +56,7 @@ describe('Column types Service', function () {
         var result = null;
         $httpBackend
             .expectGET(RestURLs.typesUrl)
-            .respond(200, {data: types});
+            .respond(200, { data: types });
 
         ColumnTypesService.getTypes();
         $httpBackend.flush();

@@ -85,8 +85,8 @@ export default function FilterAdapterService(state) {
             removeFilterFn: removeFilterFn
         };
 
-        filter.__defineGetter__('value', getFilterValueGetter.bind(filter));
-        filter.__defineSetter__('value', (value) => getFilterValueSetter.call(filter, value));
+        filter.__defineGetter__('value', getFilterValueGetter.bind(filter)); // eslint-disable-line no-underscore-dangle
+        filter.__defineSetter__('value', (value) => getFilterValueSetter.call(filter, value)); // eslint-disable-line no-underscore-dangle
         filter.toTree = getFilterTree.bind(filter);
         return filter;
     }
@@ -116,7 +116,7 @@ export default function FilterAdapterService(state) {
                 return this.args.patterns;
         }
     }
-    
+
     /**
      * @ngdoc method
      * @name getFilterValueSetter
@@ -179,7 +179,7 @@ export default function FilterAdapterService(state) {
                                 field: colId,
                                 value: filterValue.value
                             }
-                        }
+                        };
                     })
                     .reduce(reduceOrFn);
             case EXACT:
@@ -190,7 +190,7 @@ export default function FilterAdapterService(state) {
                                 field: colId,
                                 value: filterValue.value
                             }
-                        }
+                        };
                     })
                     .reduce(reduceOrFn);
             case INVALID_RECORDS:
@@ -211,7 +211,7 @@ export default function FilterAdapterService(state) {
                         field: colId
                     }
                 };
-            case INSIDE_RANGE:
+            case INSIDE_RANGE: {
                 const argsType = args.type;
                 return value
                     .map(filterValue => {
@@ -231,9 +231,10 @@ export default function FilterAdapterService(state) {
                                 type: argsType,
                                 label: filterValue.label
                             }
-                        }
+                        };
                     })
                     .reduce(reduceOrFn);
+            }
             case MATCHES:
                 return value
                     .map(filterValue => {
@@ -242,7 +243,7 @@ export default function FilterAdapterService(state) {
                                 field: colId,
                                 value: filterValue.value
                             }
-                        }
+                        };
                     })
                     .reduce(reduceOrFn);
         }
@@ -300,7 +301,6 @@ export default function FilterAdapterService(state) {
      * @returns {Array} The filters definition array
      */
     function fromTree(tree) {
-
         //no tree, no filter
         if (!tree) {
             return;
@@ -353,8 +353,9 @@ export default function FilterAdapterService(state) {
      * @returns {Object} The resulting filter definition
      */
     function leafToFilter(leaf) {
-
-        var type, args, condition;
+        var type;
+        var args;
+        var condition;
         var editable = false;
 
         if ('contains' in leaf) {
@@ -423,7 +424,7 @@ export default function FilterAdapterService(state) {
         }
 
         var colId = condition.field;
-        var filteredColumn = _.find(state.playground.data.metadata.columns, {id: colId});
+        var filteredColumn = _.find(state.playground.data.metadata.columns, { id: colId });
         var colName = (filteredColumn && filteredColumn.name) || colId;
         return createFilter(type, colId, colName, editable, args, null, null);
     }

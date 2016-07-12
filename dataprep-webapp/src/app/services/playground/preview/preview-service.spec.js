@@ -1,39 +1,41 @@
 describe('Preview Service', () => {
     'use strict';
 
-    let stateMock, dataViewMock, shouldPreviewReturnError;
-    const gridRangeIndex = {top: 1, bottom: 5};
+    let stateMock;
+    let dataViewMock;
+    let shouldPreviewReturnError;
+    const gridRangeIndex = { top: 1, bottom: 5 };
     const displayedTdpIds = [1, 3, 6, 7, 8];
     const originalData = {
         records: [
-            {tdpId: 0, firstname: 'Tata'},
-            {tdpId: 1, firstname: 'Tete'},
-            {tdpId: 2, firstname: 'Titi'},
-            {tdpId: 3, firstname: 'Toto'},
-            {tdpId: 4, firstname: 'Tutu'},
-            {tdpId: 5, firstname: 'Tyty'},
-            {tdpId: 6, firstname: 'Papa'},
-            {tdpId: 7, firstname: 'Pepe'},
-            {tdpId: 8, firstname: 'Pipi'},
-            {tdpId: 9, firstname: 'Popo'},
-            {tdpId: 10, firstname: 'Pupu'},
-            {tdpId: 11, firstname: 'Pypy'}
+            { tdpId: 0, firstname: 'Tata' },
+            { tdpId: 1, firstname: 'Tete' },
+            { tdpId: 2, firstname: 'Titi' },
+            { tdpId: 3, firstname: 'Toto' },
+            { tdpId: 4, firstname: 'Tutu' },
+            { tdpId: 5, firstname: 'Tyty' },
+            { tdpId: 6, firstname: 'Papa' },
+            { tdpId: 7, firstname: 'Pepe' },
+            { tdpId: 8, firstname: 'Pipi' },
+            { tdpId: 9, firstname: 'Popo' },
+            { tdpId: 10, firstname: 'Pupu' },
+            { tdpId: 11, firstname: 'Pypy' }
         ],
-        metadata: {columns: [{id: '0000', name: 'lastname'}, {id: '0001', name: 'firstname'}]}
+        metadata: { columns: [{ id: '0000', name: 'lastname' }, { id: '0001', name: 'firstname' }] }
     };
 
     //diff result corresponding to gridRangeIndex
     const diff = {
         data: {
             records: [
-                {tdpId: 1, firstname: 'Tete'},
-                {tdpId: 2, firstname: 'Titi Bis', __tdpRowDiff: 'new'}, //insert new row
-                {tdpId: 3, firstname: 'Toto', __tdpRowDiff: 'delete'}, //row is deleted in preview
-                {tdpId: 6, firstname: 'Papa'},
-                {tdpId: 7, firstname: 'Pepe 2', __tdpDiff: {firstname: 'update'}}, //firstname is updated in preview
-                {tdpId: 8, firstname: 'Pipi'}
+                { tdpId: 1, firstname: 'Tete' },
+                { tdpId: 2, firstname: 'Titi Bis', __tdpRowDiff: 'new' }, //insert new row
+                { tdpId: 3, firstname: 'Toto', __tdpRowDiff: 'delete' }, //row is deleted in preview
+                { tdpId: 6, firstname: 'Papa' },
+                { tdpId: 7, firstname: 'Pepe 2', __tdpDiff: { firstname: 'update' } }, //firstname is updated in preview
+                { tdpId: 8, firstname: 'Pipi' }
             ],
-            metadata: {columns: [{id: '0000', name: 'lastname'}, {id: '0001', name: 'firstname'}]}
+            metadata: { columns: [{ id: '0000', name: 'lastname' }, { id: '0001', name: 'firstname' }] }
         }
     };
 
@@ -41,7 +43,7 @@ describe('Preview Service', () => {
     const reverterExecutor = {};
 
     beforeEach(angular.mock.module('data-prep.services.playground', ($provide) => {
-        stateMock = {playground: {grid: {}}};
+        stateMock = { playground: { grid: {} } };
         $provide.constant('state', stateMock);
     }));
 
@@ -95,12 +97,12 @@ describe('Preview Service', () => {
             //given
             const preparationId = '86c4135ab218646f54';
             const currentStep = {
-                column: {id: '0001'},
-                transformation: {stepId: '1'}
+                column: { id: '0001' },
+                transformation: { stepId: '1' }
             };
             const previewStep = {
-                column: {id: '0000'},
-                transformation: {stepId: '2'}
+                column: { id: '0000' },
+                transformation: { stepId: '2' }
             };
 
             //when
@@ -126,12 +128,12 @@ describe('Preview Service', () => {
             //given
             const preparationId = '86c4135ab218646f54';
             const currentStep = {
-                column: {id: '0001'},
-                transformation: {stepId: '1'}
+                column: { id: '0001' },
+                transformation: { stepId: '1' }
             };
             const previewStep = {
-                column: {id: '0000'},
-                transformation: {stepId: '2'}
+                column: { id: '0000' },
+                transformation: { stepId: '2' }
             };
             shouldPreviewReturnError = true;
             let rejected = false;
@@ -151,12 +153,12 @@ describe('Preview Service', () => {
             //given
             const preparationId = '86c4135ab218646f54';
             const currentStep = {
-                column: {id: '0001'},
-                transformation: {stepId: '1'}
+                column: { id: '0001' },
+                transformation: { stepId: '1' }
             };
             const previewStep = {
-                column: {id: '0000'},
-                transformation: {stepId: '2'}
+                column: { id: '0000' },
+                transformation: { stepId: '2' }
             };
             const focusColumnId = '0000';
 
@@ -172,12 +174,12 @@ describe('Preview Service', () => {
             //given
             const preparationId = '86c4135ab218646f54';
             const currentStep = {
-                column: {id: '0001'},
-                transformation: {stepId: '1'}
+                column: { id: '0001' },
+                transformation: { stepId: '1' }
             };
             const previewStep = {
-                column: {id: '0000'},
-                transformation: {stepId: '2'}
+                column: { id: '0000' },
+                transformation: { stepId: '2' }
             };
 
             PreviewService.getPreviewDiffRecords(preparationId, currentStep, previewStep, null);
@@ -199,16 +201,16 @@ describe('Preview Service', () => {
             //given
             const preparationId = '86c4135ab218646f54';
             const currentStep = {
-                column: {id: '0001'},
-                transformation: {stepId: '1'},
-                actionParameters: {action: 'fillEmptyWithValue'}
+                column: { id: '0001' },
+                transformation: { stepId: '1' },
+                actionParameters: { action: 'fillEmptyWithValue' }
             };
             const updateStep = {
-                column: {id: '0000'},
-                transformation: {stepId: '2'},
-                actionParameters: {action: 'fillEmptyWithValue'}
+                column: { id: '0000' },
+                transformation: { stepId: '2' },
+                actionParameters: { action: 'fillEmptyWithValue' }
             };
-            const newParams = {value: '--'};
+            const newParams = { value: '--' };
 
             //when
             PreviewService.getPreviewUpdateRecords(preparationId, currentStep, updateStep, newParams);
@@ -237,16 +239,16 @@ describe('Preview Service', () => {
             //given
             const preparationId = '86c4135ab218646f54';
             const currentStep = {
-                column: {id: '0001'},
-                transformation: {stepId: '1'},
-                actionParameters: {action: 'fillEmptyWithValue'}
+                column: { id: '0001' },
+                transformation: { stepId: '1' },
+                actionParameters: { action: 'fillEmptyWithValue' }
             };
             const updateStep = {
-                column: {id: '0000'},
-                transformation: {stepId: '2'},
-                actionParameters: {action: 'fillEmptyWithValue'}
+                column: { id: '0000' },
+                transformation: { stepId: '2' },
+                actionParameters: { action: 'fillEmptyWithValue' }
             };
-            const newParams = {value: '--'};
+            const newParams = { value: '--' };
 
             shouldPreviewReturnError = true;
             let rejected = false;
@@ -266,16 +268,16 @@ describe('Preview Service', () => {
             //given
             const preparationId = '86c4135ab218646f54';
             const currentStep = {
-                column: {id: '0001'},
-                transformation: {stepId: '1'},
-                actionParameters: {action: 'fillEmptyWithValue'}
+                column: { id: '0001' },
+                transformation: { stepId: '1' },
+                actionParameters: { action: 'fillEmptyWithValue' }
             };
             const updateStep = {
-                column: {id: '0000'},
-                transformation: {stepId: '2'},
-                actionParameters: {action: 'fillEmptyWithValue'}
+                column: { id: '0000' },
+                transformation: { stepId: '2' },
+                actionParameters: { action: 'fillEmptyWithValue' }
             };
-            const newParams = {value: '--'};
+            const newParams = { value: '--' };
 
             //when
             PreviewService.getPreviewUpdateRecords(preparationId, currentStep, updateStep, newParams);
@@ -289,16 +291,16 @@ describe('Preview Service', () => {
             //given
             const preparationId = '86c4135ab218646f54';
             const currentStep = {
-                column: {id: '0001'},
-                transformation: {stepId: '1'},
-                actionParameters: {action: 'fillEmptyWithValue'}
+                column: { id: '0001' },
+                transformation: { stepId: '1' },
+                actionParameters: { action: 'fillEmptyWithValue' }
             };
             const updateStep = {
-                column: {id: '0000'},
-                transformation: {stepId: '2'},
-                actionParameters: {action: 'fillEmptyWithValue'}
+                column: { id: '0000' },
+                transformation: { stepId: '2' },
+                actionParameters: { action: 'fillEmptyWithValue' }
             };
-            const newParams = {value: '--'};
+            const newParams = { value: '--' };
 
             PreviewService.getPreviewUpdateRecords(preparationId, currentStep, updateStep, newParams);
             const previewArgs = PreparationService.getPreviewUpdate.calls.mostRecent().args;
@@ -422,12 +424,12 @@ describe('Preview Service', () => {
 
         beforeEach(inject(($rootScope, PreviewService) => {
             const currentStep = {
-                column: {id: '0001'},
-                transformation: {stepId: '1'}
+                column: { id: '0001' },
+                transformation: { stepId: '1' }
             };
             const previewStep = {
-                column: {id: '0000'},
-                transformation: {stepId: '2'}
+                column: { id: '0000' },
+                transformation: { stepId: '2' }
             };
 
             PreviewService.getPreviewDiffRecords(preparationId, currentStep, previewStep, null);

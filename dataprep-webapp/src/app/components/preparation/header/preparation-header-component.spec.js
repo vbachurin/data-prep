@@ -12,16 +12,19 @@
   ============================================================================*/
 
 describe('Preparation header component', () => {
-    let scope, createElement, element, stateMock;
+    let scope;
+    let createElement;
+    let element;
+    let stateMock;
 
     const sortList = [
-        {id: 'name', name: 'NAME_SORT', property: 'name'},
-        {id: 'date', name: 'DATE_SORT', property: 'created'}
+        { id: 'name', name: 'NAME_SORT', property: 'name' },
+        { id: 'date', name: 'DATE_SORT', property: 'created' }
     ];
 
     const orderList = [
-        {id: 'asc', name: 'ASC_ORDER'},
-        {id: 'desc', name: 'DESC_ORDER'}
+        { id: 'asc', name: 'ASC_ORDER' },
+        { id: 'desc', name: 'DESC_ORDER' }
     ];
 
     beforeEach(angular.mock.module('pascalprecht.translate', ($translateProvider) => {

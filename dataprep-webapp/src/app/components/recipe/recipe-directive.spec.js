@@ -13,17 +13,18 @@
 
 describe('Recipe directive', function () {
     'use strict';
-    var scope, element;
+    var scope;
+    var element;
 
     var recipe = [
         {
-            column: {id: '0', name: 'col1'},
+            column: { id: '0', name: 'col1' },
             transformation: {
                 stepId: '13a24e8765ef4',
                 name: 'split',
                 label: 'Split',
                 category: 'split',
-                parameters: [{name: 'pattern', type: 'string'}],
+                parameters: [{ name: 'pattern', type: 'string' }],
                 items: []
             },
             actionParameters: {
@@ -36,7 +37,7 @@ describe('Recipe directive', function () {
             }
         },
         {
-            column: {id: '1', name: 'col2'},
+            column: { id: '1', name: 'col2' },
             transformation: {
                 stepId: '9876fb498e36543ab51',
                 name: 'uppercase',
@@ -54,15 +55,15 @@ describe('Recipe directive', function () {
             inactive: true
         },
         {
-            column: {id: '1', name: 'col2'},
+            column: { id: '1', name: 'col2' },
             transformation: {
                 stepId: '456bb784a9674e532fc446',
                 name: 'replace_on_value',
                 label: 'Replace value',
                 category: 'quickfix',
                 parameters: [
-                    {name: 'cell_value', type: 'string'},
-                    {name: 'replace_value', type: 'string'}
+                    { name: 'cell_value', type: 'string' },
+                    { name: 'replace_value', type: 'string' }
                 ]
             },
             actionParameters: {
@@ -76,7 +77,7 @@ describe('Recipe directive', function () {
             inactive: true
         },
         {
-            column: {id: '2', name: 'col3'},
+            column: { id: '2', name: 'col3' },
             transformation: {
                 stepId: '8876fb498e3625ab53',
                 name: 'textclustering',
@@ -133,8 +134,8 @@ describe('Recipe directive', function () {
             inactive: true
         },
         {
-            column: {id: undefined, name: undefined},
-            row: {id: 125},
+            column: { id: undefined, name: undefined },
+            row: { id: 125 },
             transformation: {
                 stepId: '3213ca58454a58d436',
                 name: 'delete',
@@ -153,13 +154,13 @@ describe('Recipe directive', function () {
             inactive: true
         },
         {
-            column: {id: '0', name: 'col1'},
+            column: { id: '0', name: 'col1' },
             transformation: {
                 stepId: 'preview step',
                 name: 'split',
                 label: 'Split',
                 category: 'split',
-                parameters: [{name: 'pattern', type: 'string'}],
+                parameters: [{ name: 'pattern', type: 'string' }],
                 items: []
             },
             actionParameters: {

@@ -12,8 +12,10 @@
  ============================================================================*/
 
 describe('Datagrid header directive', () => {
-
-    let scope, createElement, element, ctrl;
+    let scope;
+    let createElement;
+    let element;
+    let ctrl;
     const body = angular.element('body');
     const column = {
         'id': '0001',
@@ -89,7 +91,7 @@ describe('Datagrid header directive', () => {
         element.find('.grid-header-caret').click();
         const dropdown = element.find('sc-dropdown').eq(0);
         expect(dropdown.hasClass('show')).toBe(true);
-        
+
         //when
         ctrl.transformationsRetrieveError = true;
         scope.$digest();

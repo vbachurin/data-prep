@@ -14,7 +14,9 @@
 describe('Feedback controller', function () {
     'use strict';
 
-    var createController, scope, $stateMock;
+    var createController;
+    var scope;
+    var $stateMock;
 
     beforeEach(angular.mock.module('data-prep.feedback'));
 
@@ -41,7 +43,6 @@ describe('Feedback controller', function () {
             spyOn(MessageService, 'success').and.returnValue(false);
             spyOn(StorageService, 'saveFeedbackUserMail');
             spyOn(StorageService, 'getFeedbackUserMail').and.returnValue('test mail');
-
         }));
 
         it('should initialize feedback', inject(function () {
@@ -61,7 +62,7 @@ describe('Feedback controller', function () {
                 description: 'test'
             };
             var ctrl = createController();
-            ctrl.feedbackForm = {$commitViewValue: jasmine.createSpy('$commitViewValue').and.returnValue()};
+            ctrl.feedbackForm = { $commitViewValue: jasmine.createSpy('$commitViewValue').and.returnValue() };
             ctrl.feedback = feedback;
 
             //given
@@ -81,7 +82,7 @@ describe('Feedback controller', function () {
                 description: 'test'
             };
             var ctrl = createController();
-            ctrl.feedbackForm = {$commitViewValue: jasmine.createSpy('$commitViewValue').and.returnValue()};
+            ctrl.feedbackForm = { $commitViewValue: jasmine.createSpy('$commitViewValue').and.returnValue() };
             ctrl.feedback = feedback;
             ctrl.isSendingFeedback = false;
 
@@ -104,7 +105,7 @@ describe('Feedback controller', function () {
                 description: 'test'
             };
             var ctrl = createController();
-            ctrl.feedbackForm = {$commitViewValue: jasmine.createSpy('$commitViewValue').and.returnValue()};
+            ctrl.feedbackForm = { $commitViewValue: jasmine.createSpy('$commitViewValue').and.returnValue() };
             ctrl.feedback = feedback;
             ctrl.state.feedback.visible = true;
 
@@ -126,7 +127,7 @@ describe('Feedback controller', function () {
                 description: 'test'
             };
             var ctrl = createController();
-            ctrl.feedbackForm = {$commitViewValue: jasmine.createSpy('$commitViewValue').and.returnValue()};
+            ctrl.feedbackForm = { $commitViewValue: jasmine.createSpy('$commitViewValue').and.returnValue() };
             ctrl.feedback = feedback;
             ctrl.state.feedback.visible = true;
 
@@ -148,7 +149,7 @@ describe('Feedback controller', function () {
                 description: 'test'
             };
             var ctrl = createController();
-            ctrl.feedbackForm = {$commitViewValue: jasmine.createSpy('$commitViewValue').and.returnValue()};
+            ctrl.feedbackForm = { $commitViewValue: jasmine.createSpy('$commitViewValue').and.returnValue() };
             ctrl.feedback = feedback;
 
             //given
@@ -169,7 +170,7 @@ describe('Feedback controller', function () {
                 description: 'test'
             };
             var ctrl = createController();
-            ctrl.feedbackForm = {$commitViewValue: jasmine.createSpy('$commitViewValue').and.returnValue()};
+            ctrl.feedbackForm = { $commitViewValue: jasmine.createSpy('$commitViewValue').and.returnValue() };
             ctrl.feedback = feedback;
             ctrl.state.feedback.displayFeedback = true;
 

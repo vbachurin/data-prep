@@ -63,7 +63,7 @@ export default function DatasetRestService($rootScope, $upload, $http, RestURLs)
             headers: {
                 'Content-Type': contentType
             },
-            data: file ? file : parameters
+            data: file || parameters,
         };
         return $upload.http(req);
     }
@@ -138,7 +138,7 @@ export default function DatasetRestService($rootScope, $upload, $http, RestURLs)
             timeout: deferredAbort.promise
         });
     }
-    
+
     /**
      * @ngdoc method
      * @name search
@@ -257,7 +257,7 @@ export default function DatasetRestService($rootScope, $upload, $http, RestURLs)
         return $http.get(RestURLs.datasetUrl + '/preview/' + datasetId + '?metadata=true' + (sheetName ? '&sheetName=' + encodeURIComponent(sheetName) : ''))
             .then((response) => response.data)
             .finally(() => {
-                $rootScope.$emit('talend.loading.stop')
+                $rootScope.$emit('talend.loading.stop');
             });
     }
 

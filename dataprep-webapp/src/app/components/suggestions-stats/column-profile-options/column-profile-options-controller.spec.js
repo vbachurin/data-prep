@@ -14,7 +14,8 @@
 describe('Column profile options controller', () => {
     'use strict';
 
-    let createController, scope;
+    let createController;
+    let scope;
 
     const numericColumns = [
         { id: '0', name: 'revenue' },

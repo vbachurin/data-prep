@@ -14,7 +14,10 @@
 describe('Playground directive', () => {
     'use strict';
 
-    let scope, createElement, element, ctrl;
+    let scope;
+    let createElement;
+    let element;
+    let ctrl;
     let stateMock;
 
     const metadata = {
@@ -128,7 +131,6 @@ describe('Playground directive', () => {
             //then
             const title = element.find('.steps-header').eq(0).find('talend-editable-text');
             expect(title.length).toBe(1);
-
         });
 
         it('should toggle recipe on click on the On/Off switch', inject((RecipeBulletService, RecipeService) => {

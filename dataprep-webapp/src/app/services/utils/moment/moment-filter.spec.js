@@ -34,9 +34,9 @@ describe('Moment filter', function () {
         date.setDate(date.getDate() - 7);
 
         var dateAsString = date.getFullYear() + '/' +
-            (date.getMonth() < 9 ? '0' : '') + (date.getMonth() + 1) + '/' +
-            (date.getDate() < 10 ? '0' : '') + date.getDate() +
-            ' ' + date.getHours() + ':' + date.getMinutes();
+        (date.getMonth() < 9 ? '0' : '') + (date.getMonth() + 1) + '/' +
+        (date.getDate() < 10 ? '0' : '') + date.getDate() +
+        ' ' + date.getHours() + ':' + date.getMinutes();
 
         // when
         var result = $filter('TDPMoment')(dateAsString, 'YYYY/MM/DD HH:mm');

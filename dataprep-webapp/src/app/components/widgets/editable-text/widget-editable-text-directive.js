@@ -38,7 +38,6 @@ import TalendEditableTextCtrl from './widget-editable-text-controller';
  * @param {any} validateOnlyOnChange If this attribute is present, the onValidate callback is triggered only when value has changed
  */
 export default function TalendEditableText() {
-
     return {
         restrict: 'E',
         templateUrl: 'app/components/widgets/editable-text/editable-text.html',

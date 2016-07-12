@@ -13,7 +13,8 @@
 
 describe('Transformation cluster params directive', function () {
     'use strict';
-    var scope, createElement;
+    var scope;
+    var createElement;
 
     var clusterDetails = function () {
         return {

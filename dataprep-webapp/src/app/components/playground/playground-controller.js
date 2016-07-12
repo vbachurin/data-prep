@@ -27,9 +27,9 @@
  * @requires data-prep.services.utils.service:MessageService
  */
 export default function PlaygroundCtrl($timeout, $state, $stateParams, state, StateService,
-                                       PlaygroundService, DatasetService, PreparationService,
-                                       PreviewService, RecipeService, RecipeBulletService,
-                                       OnboardingService, LookupService, MessageService) {
+    PlaygroundService, DatasetService, PreparationService,
+    PreviewService, RecipeService, RecipeBulletService,
+    OnboardingService, LookupService, MessageService) {
     'ngInject';
 
     const vm = this;
@@ -83,7 +83,7 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
     vm.applySteps = function applySteps(preparationId) {
         return PlaygroundService.copySteps(preparationId)
             .then(() => {
-                vm.displayPreparationPicker = false
+                vm.displayPreparationPicker = false;
             });
     };
 
@@ -100,7 +100,7 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
         const cleanName = name.trim();
         if (!vm.changeNameInProgress && cleanName) {
             changeName(cleanName)
-                .then((preparation) => $state.go('playground.preparation', {prepid: preparation.id}));
+                .then((preparation) => $state.go('playground.preparation', { prepid: preparation.id }));
         }
     };
 
@@ -182,15 +182,19 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
         const prepId = state.playground.preparation.id;
         const destinationId = vm.destinationFolder.id;
         const cleanName = vm.state.playground.preparationName.trim();
-        if(destinationId !== state.inventory.homeFolderId) {
-            operation = PreparationService.move(prepId, state.inventory.homeFolderId, destinationId, cleanName)
+        if (destinationId !== state.inventory.homeFolderId) {
+            operation = PreparationService.move(prepId, state.inventory.homeFolderId, destinationId, cleanName);
         }
         else {
             operation = PreparationService.setName(prepId, cleanName);
         }
         return operation
-            .then(() => { vm.close(); })
-            .finally(() => { StateService.setIsSavingPreparation(false); });
+            .then(() => {
+                vm.close();
+            })
+            .finally(() => {
+                StateService.setIsSavingPreparation(false);
+            });
     };
 
     /**
@@ -270,9 +274,9 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
      * @param {string} prepid The preparation id
      */
     function loadPreparation(prepid) {
-        const preparation = _.find(state.inventory.preparations, {id: prepid});
+        const preparation = _.find(state.inventory.preparations, { id: prepid });
         if (!preparation) {
-            errorGoBack({type: 'preparation'});
+            errorGoBack({ type: 'preparation' });
         }
         else {
             PlaygroundService.load(preparation)
@@ -281,7 +285,7 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
                         fetchStatistics();
                     }
                 })
-                .catch(() => errorGoBack({type: 'preparation'}));
+                .catch(() => errorGoBack({ type: 'preparation' }));
         }
     }
 
@@ -292,9 +296,9 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
      * @param {string} datasetid The dataset id
      */
     function loadDataset(datasetid) {
-        const dataset = _.find(state.inventory.datasets, {id: datasetid});
+        const dataset = _.find(state.inventory.datasets, { id: datasetid });
         if (!dataset) {
-            errorGoBack({type: 'dataset'});
+            errorGoBack({ type: 'dataset' });
         }
         else {
             PlaygroundService.initPlayground(dataset)
@@ -303,7 +307,7 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
                         fetchStatistics();
                     }
                 })
-                .catch(() => errorGoBack({type: 'dataset'}));
+                .catch(() => errorGoBack({ type: 'dataset' }));
         }
     }
 
@@ -335,4 +339,3 @@ Object.defineProperty(PlaygroundCtrl.prototype,
         set: () => {
         }
     });
-

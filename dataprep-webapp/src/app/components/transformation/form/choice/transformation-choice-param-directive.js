@@ -31,7 +31,7 @@ export default function TransformChoiceParam($rootScope, $compile) {
         bindToController: true,
         controllerAs: 'choiceParamCtrl',
         controller: 'TransformChoiceParamCtrl',
-        link: function (scope, iElement, iAttrs, ctrl) {
+        link: (scope, iElement, iAttrs, ctrl) => {
             _.chain(ctrl.parameter.configuration.values)
                 .filter(function (optionValue) {
                     return optionValue.parameters && optionValue.parameters.length;
@@ -49,7 +49,9 @@ export default function TransformChoiceParam($rootScope, $compile) {
                         iElement.append(cloned);
                     });
 
-                    scope.$on('$destroy', () => { isolatedScope.$destroy(); });
+                    scope.$on('$destroy', () => {
+                        isolatedScope.$destroy();
+                    });
                 })
                 .value();
         }

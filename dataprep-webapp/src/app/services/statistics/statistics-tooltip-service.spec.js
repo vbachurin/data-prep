@@ -13,7 +13,7 @@ describe('Statistics Tooltip service', function () {
     beforeEach(angular.mock.module('data-prep.services.statistics', function ($provide) {
         stateMock = {
             playground: {
-                filter: {gridFilters: []},
+                filter: { gridFilters: [] },
                 statistics:{
                     histogram:{
                         aggregation:null
@@ -134,7 +134,6 @@ describe('Statistics Tooltip service', function () {
     });
 
     describe('with filters', function () {
-
         it('should create tooltip for simple record', inject(function ($rootScope, StatisticsTooltipService) {
             //given
             stateMock.playground.filter.gridFilters = [{}];

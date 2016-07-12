@@ -15,27 +15,28 @@ class DatasetsFiltersCtrl {
     constructor() {
         'ngInject';
 
-        this.datasetsFilters = [//The order is important
+        // The order is important
+        this.datasetsFilters = [
             {
                 value: 'RECENT_DATASETS',
                 imageUrl: '/assets/images/inventory/recent-datasets.png',
-                description:'RECENT_DATASETS_DESCRIPTION',
+                description: 'RECENT_DATASETS_DESCRIPTION',
                 isSelected: true
             },
             {
                 value: 'FAVORITE_DATASETS',
                 icon: 'f',
-                description:'FAVORITE_DATASETS_DESCRIPTION'
+                description: 'FAVORITE_DATASETS_DESCRIPTION'
             },
             {
                 value: 'CERTIFIED_DATASETS',
                 imageUrl: '/assets/images/inventory/certified_no_shadow.png',
-                description:'CERTIFIED_DATASETS_DESCRIPTION'
+                description: 'CERTIFIED_DATASETS_DESCRIPTION'
             },
             {
                 value: 'ALL_DATASETS',
                 imageUrl: '/assets/images/inventory/all-datasets.png',
-                description:'ALL_DATASETS_DESCRIPTION'
+                description: 'ALL_DATASETS_DESCRIPTION'
             }
         ];
 
@@ -43,13 +44,13 @@ class DatasetsFiltersCtrl {
     }
 
     selectFilter(filter) {
-        if(this.importing){
+        if (this.importing) {
             return;
         }
         this.selectedFilter.isSelected = false;
         this.selectedFilter = filter;
         this.selectedFilter.isSelected = true;
-        this.onFilterSelect({filter: filter.value});
+        this.onFilterSelect({ filter: filter.value });
     }
 }
 

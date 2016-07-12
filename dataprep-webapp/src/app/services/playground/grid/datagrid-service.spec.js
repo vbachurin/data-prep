@@ -14,7 +14,8 @@
 describe('Datagrid service', () => {
     'use strict';
 
-    let stateMock, dataViewMock;
+    let stateMock;
+    let dataViewMock;
 
     const originalData = {
         records: [
@@ -292,7 +293,6 @@ describe('Datagrid service', () => {
                 firstname: 'Pepe 2',
                 __tdpDiff: { firstname: 'update' }
             });
-
         }));
 
         it('should set focus on created columns when applying executor', inject((DatagridService) => {

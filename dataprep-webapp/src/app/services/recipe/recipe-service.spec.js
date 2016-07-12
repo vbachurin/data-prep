@@ -212,8 +212,8 @@ describe('Recipe service', function () {
                             'label': 'parameter.default_value.label',
                             'configuration': {
                                 'values': [
-                                    {'name': 'True', 'value': 'True'},
-                                    {'name': 'False', 'value': 'False'}
+                                    { 'name': 'True', 'value': 'True' },
+                                    { 'name': 'False', 'value': 'False' }
                                 ]
                             },
                             'default': 'True'
@@ -447,7 +447,7 @@ describe('Recipe service', function () {
     var stateMock;
 
     beforeEach(angular.mock.module('data-prep.services.recipe', function($provide) {
-        stateMock = {playground: {}};
+        stateMock = { playground: {} };
         $provide.constant('state', stateMock);
     }));
     beforeEach(inject(function($q, TransformationService, FilterAdapterService) {
@@ -463,7 +463,7 @@ describe('Recipe service', function () {
     describe('refresh', function() {
         it('should get recipe with row infos when a preparation is loaded', inject(function($rootScope, RecipeService) {
             //given
-            stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
+            stateMock.playground.preparation = { id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4' };
 
             //when
             RecipeService.refresh(preparationDetails());
@@ -477,7 +477,7 @@ describe('Recipe service', function () {
 
         it('should get recipe with no params when a preparation is loaded', inject(function($rootScope, RecipeService) {
             //given
-            stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
+            stateMock.playground.preparation = { id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4' };
 
             //when
             RecipeService.refresh(preparationDetails());
@@ -499,7 +499,7 @@ describe('Recipe service', function () {
 
         it('should get recipe from preparation and init recipe simple params', inject(function($rootScope, RecipeService) {
             //given
-            stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
+            stateMock.playground.preparation = { id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4' };
 
             //when
             RecipeService.refresh(preparationDetails());
@@ -542,7 +542,7 @@ describe('Recipe service', function () {
 
         it('should get recipe from preparation and init recipe choices', inject(function($rootScope, RecipeService) {
             //given
-            stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
+            stateMock.playground.preparation = { id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4' };
 
             //when
             RecipeService.refresh(preparationDetails());
@@ -556,35 +556,35 @@ describe('Recipe service', function () {
             expect(recipe[5].transformation.stepId).toBe('2aba0e60054728f046d35315830bce9abc3c5249');
             expect(recipe[5].transformation.name).toBe('fillemptywithdefaultboolean');
             expect(recipe[5].transformation.parameters).toEqual([
-                    {
-                        name: 'default_value',
-                        type: 'select',
-                        description: 'parameter.default_value.desc',
-                        label: 'parameter.default_value.label',
-                        configuration: {
-                            values: [
-                                {
-                                    name: 'True',
-                                    value: 'True'
-                                },
-                                {
-                                    name: 'False',
-                                    value: 'False'
-                                }
-                            ]
-                        },
-                        default: 'True',
-                        value: 'True',
-                        initialValue: 'True',
-                        inputType: 'text'
-                    }
-                ]
+                {
+                    name: 'default_value',
+                    type: 'select',
+                    description: 'parameter.default_value.desc',
+                    label: 'parameter.default_value.label',
+                    configuration: {
+                        values: [
+                            {
+                                name: 'True',
+                                value: 'True'
+                            },
+                            {
+                                name: 'False',
+                                value: 'False'
+                            }
+                        ]
+                    },
+                    default: 'True',
+                    value: 'True',
+                    initialValue: 'True',
+                    inputType: 'text'
+                }
+            ]
             );
         }));
 
         it('should get recipe from preparation and init dynamic params', inject(function(FilterService, $rootScope, RecipeService, TransformationService) {
             //given
-            stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
+            stateMock.playground.preparation = { id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4' };
 
             //when
             RecipeService.refresh(preparationDetails());
@@ -606,7 +606,7 @@ describe('Recipe service', function () {
 
         it('should init step filters from backend tree', inject(function(FilterAdapterService, $rootScope, RecipeService) {
             //given
-            stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
+            stateMock.playground.preparation = { id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4' };
 
             //when
             RecipeService.refresh(preparationDetails());
@@ -620,7 +620,7 @@ describe('Recipe service', function () {
 
         it('should reuse dynamic params from previous recipe if ids are the same, on refresh', inject(function($rootScope, RecipeService, TransformationService) {
             //given
-            stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
+            stateMock.playground.preparation = { id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4' };
             RecipeService.refresh(preparationDetails());
             $rootScope.$digest();
             var oldRecipe = RecipeService.getRecipe();
@@ -641,7 +641,7 @@ describe('Recipe service', function () {
 
         it('should save steps actions parameters', inject(function($rootScope, RecipeService) {
             //given
-            stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
+            stateMock.playground.preparation = { id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4' };
 
             //when
             RecipeService.refresh(preparationDetails());
@@ -649,21 +649,20 @@ describe('Recipe service', function () {
 
             //then
             var recipe = RecipeService.getRecipe();
-            expect(recipe[0].actionParameters).toEqual({ action: 'uppercase', parameters: { column_name: 'country', filter: { valid: { field: '0000' }}}});
-            expect(recipe[1].actionParameters).toEqual({ action: 'fillemptywithdefault', parameters: { default_value: 'M', column_name: 'gender' }});
+            expect(recipe[0].actionParameters).toEqual({ action: 'uppercase', parameters: { column_name: 'country', filter: { valid: { field: '0000' } } } });
+            expect(recipe[1].actionParameters).toEqual({ action: 'fillemptywithdefault', parameters: { default_value: 'M', column_name: 'gender' } });
             expect(recipe[2].actionParameters).toEqual({ action: 'negate', parameters: { column_name: 'campain' } });
-            expect(recipe[3].actionParameters).toEqual({ action: 'cut', parameters: { pattern: '.', column_name: 'first_item' }});
-            expect(recipe[4].actionParameters).toEqual({ action: 'textclustering', parameters: { Texa: 'Texas', Tixass: 'Texas', 'Tex@s': 'Texas', Massachusetts: 'Massachussets', Masachusetts: 'Massachussets', Massachussetts: 'Massachussets', Massachusets: 'Massachussets', Masachussets: 'Massachussets', column_id: '1', column_name: 'uglystate' }});
-            expect(recipe[5].actionParameters).toEqual({ action: 'fillemptywithdefaultboolean', parameters: { default_value: 'True', column_name: 'campain' }});
+            expect(recipe[3].actionParameters).toEqual({ action: 'cut', parameters: { pattern: '.', column_name: 'first_item' } });
+            expect(recipe[4].actionParameters).toEqual({ action: 'textclustering', parameters: { Texa: 'Texas', Tixass: 'Texas', 'Tex@s': 'Texas', Massachusetts: 'Massachussets', Masachusetts: 'Massachussets', Massachussetts: 'Massachussets', Massachusets: 'Massachussets', Masachussets: 'Massachussets', column_id: '1', column_name: 'uglystate' } });
+            expect(recipe[5].actionParameters).toEqual({ action: 'fillemptywithdefaultboolean', parameters: { default_value: 'True', column_name: 'campain' } });
         }));
     });
 
     describe('utils modifier', function() {
-
         it('should reset current values to initial saved values in param', inject(function(RecipeService, TransformationService) {
             //given
             var recipeItem = {
-                column: {id: 'colId'},
+                column: { id: 'colId' },
                 transformation: {
                     stepId: '329ccf0cce42db4dc0ffa9f389c05ff7d75c1748',
                     name: 'cut',
@@ -672,8 +671,8 @@ describe('Recipe service', function () {
                             name: 'mode',
                             type: 'LIST',
                             values: [
-                                {name: 'regex'},
-                                {name: 'index'}
+                                { name: 'regex' },
+                                { name: 'index' }
                             ]
                         }
                     ],
@@ -701,10 +700,10 @@ describe('Recipe service', function () {
 
         it('should reset current values to initial saved values in param', inject(function(RecipeService) {
             //given
-            var recipe = [{transformation: {stepId: '0'}},
-                {transformation: {stepId: '1'}},
-                {transformation: {stepId: '2'}},
-                {transformation: {stepId: '3'}}];
+            var recipe = [{ transformation: { stepId: '0' } },
+                { transformation: { stepId: '1' } },
+                { transformation: { stepId: '2' } },
+                { transformation: { stepId: '3' } }];
             RecipeService.getRecipe().push(recipe[0], recipe[1], recipe[2], recipe[3]);
 
             //when
@@ -720,13 +719,12 @@ describe('Recipe service', function () {
     });
 
     describe('getter/checker', function() {
-
         it('should return the step before provided step', inject(function(RecipeService) {
             //given
-            var recipe = [{transformation: {stepId: '0'}},
-                {transformation: {stepId: '1'}},
-                {transformation: {stepId: '2'}},
-                {transformation: {stepId: '3'}}];
+            var recipe = [{ transformation: { stepId: '0' } },
+                { transformation: { stepId: '1' } },
+                { transformation: { stepId: '2' } },
+                { transformation: { stepId: '3' } }];
             RecipeService.getRecipe().push(recipe[0], recipe[1], recipe[2], recipe[3]);
 
             //when
@@ -738,7 +736,7 @@ describe('Recipe service', function () {
 
         it('should return the initial step when provided step is the first transformation', inject(function($rootScope, RecipeService) {
             //given
-            stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
+            stateMock.playground.preparation = { id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4' };
             RecipeService.refresh(preparationDetails());
             $rootScope.$digest();
 
@@ -751,7 +749,7 @@ describe('Recipe service', function () {
 
         it('should return the wanted step', inject(function($rootScope, RecipeService) {
             //given
-            stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
+            stateMock.playground.preparation = { id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4' };
             RecipeService.refresh(preparationDetails());
             $rootScope.$digest();
 
@@ -766,11 +764,11 @@ describe('Recipe service', function () {
 
         it('should return the initial step when index is negative', inject(function($rootScope, RecipeService) {
             //given
-            stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
+            stateMock.playground.preparation = { id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4' };
             RecipeService.refresh(preparationDetails());
             $rootScope.$digest();
 
-            var initialStep = { transformation: {stepId: 'f6e172c33bdacbc69bca9d32b2bd78174712a171' }};
+            var initialStep = { transformation: { stepId: 'f6e172c33bdacbc69bca9d32b2bd78174712a171' } };
 
             //when
             var result = RecipeService.getStep(-1, false);
@@ -781,7 +779,7 @@ describe('Recipe service', function () {
 
         it('should return null when the index is superior to the recipe length', inject(function($rootScope, RecipeService) {
             //given
-            stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
+            stateMock.playground.preparation = { id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4' };
             RecipeService.refresh(preparationDetails());
             $rootScope.$digest();
 
@@ -794,7 +792,7 @@ describe('Recipe service', function () {
 
         it('should return the last step when the index is superior to the recipe length', inject(function($rootScope, RecipeService) {
             //given
-            stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
+            stateMock.playground.preparation = { id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4' };
             RecipeService.refresh(preparationDetails());
             $rootScope.$digest();
 
@@ -809,7 +807,7 @@ describe('Recipe service', function () {
 
         it('should return the last active step index', inject(function($rootScope, RecipeService) {
             //given
-            stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
+            stateMock.playground.preparation = { id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4' };
             RecipeService.refresh(preparationDetails());
             $rootScope.$digest();
 
@@ -824,7 +822,7 @@ describe('Recipe service', function () {
 
         it('should return last step index when no specific active step has been set', inject(function($rootScope, RecipeService) {
             //given
-            stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
+            stateMock.playground.preparation = { id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4' };
             RecipeService.refresh(preparationDetails());
             $rootScope.$digest();
 
@@ -837,7 +835,7 @@ describe('Recipe service', function () {
 
         it('should return the initial state if the index is 0', inject(function($rootScope, RecipeService) {
             //given
-            stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
+            stateMock.playground.preparation = { id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4' };
             RecipeService.refresh(preparationDetails());
             $rootScope.$digest();
 
@@ -845,12 +843,12 @@ describe('Recipe service', function () {
             var step = RecipeService.getStepBefore(0);
 
             //then
-            expect(step).toEqual({ transformation: {stepId: 'f6e172c33bdacbc69bca9d32b2bd78174712a171' }});
+            expect(step).toEqual({ transformation: { stepId: 'f6e172c33bdacbc69bca9d32b2bd78174712a171' } });
         }));
 
         it('should return the last step if the index is bigger than the recipe size', inject(function($rootScope, RecipeService) {
             //given
-            stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
+            stateMock.playground.preparation = { id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4' };
             RecipeService.refresh(preparationDetails());
             $rootScope.$digest();
 
@@ -863,7 +861,7 @@ describe('Recipe service', function () {
 
         it('should return the step before the one identified by the index', inject(function($rootScope, RecipeService) {
             //given
-            stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
+            stateMock.playground.preparation = { id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4' };
             RecipeService.refresh(preparationDetails());
             $rootScope.$digest();
 
@@ -876,7 +874,7 @@ describe('Recipe service', function () {
 
         it('should return the step index', inject(function($rootScope, RecipeService) {
             //given
-            stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
+            stateMock.playground.preparation = { id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4' };
             RecipeService.refresh(preparationDetails());
             $rootScope.$digest();
 
@@ -889,7 +887,7 @@ describe('Recipe service', function () {
 
         it('should return true when step is the first step', inject(function($rootScope, RecipeService) {
             //given
-            stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
+            stateMock.playground.preparation = { id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4' };
             RecipeService.refresh(preparationDetails());
             $rootScope.$digest();
 
@@ -902,7 +900,7 @@ describe('Recipe service', function () {
 
         it('should return false when step is NOT the first step', inject(function($rootScope, RecipeService) {
             //given
-            stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
+            stateMock.playground.preparation = { id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4' };
             RecipeService.refresh(preparationDetails());
             $rootScope.$digest();
 
@@ -915,7 +913,7 @@ describe('Recipe service', function () {
 
         it('should return true when step is the last step', inject(function($rootScope, RecipeService) {
             //given
-            stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
+            stateMock.playground.preparation = { id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4' };
             RecipeService.refresh(preparationDetails());
             $rootScope.$digest();
 
@@ -928,7 +926,7 @@ describe('Recipe service', function () {
 
         it('should return false when step is NOT the last step', inject(function($rootScope, RecipeService) {
             //given
-            stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
+            stateMock.playground.preparation = { id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4' };
             RecipeService.refresh(preparationDetails());
             $rootScope.$digest();
 
@@ -942,10 +940,10 @@ describe('Recipe service', function () {
         it('should return all actions from step', inject(function(RecipeService) {
             //given
             var recipe = [
-                {transformation: {stepId: '0'}, actionParameters: {action: 'action0'}},
-                {transformation: {stepId: '1'}, actionParameters: {action: 'action1'}},
-                {transformation: {stepId: '2'}, actionParameters: {action: 'action2'}},
-                {transformation: {stepId: '3'}, actionParameters: {action: 'action3'}}
+                { transformation: { stepId: '0' }, actionParameters: { action: 'action0' } },
+                { transformation: { stepId: '1' }, actionParameters: { action: 'action1' } },
+                { transformation: { stepId: '2' }, actionParameters: { action: 'action2' } },
+                { transformation: { stepId: '3' }, actionParameters: { action: 'action3' } }
             ];
             RecipeService.getRecipe().push(recipe[0], recipe[1], recipe[2], recipe[3]);
 
@@ -963,10 +961,10 @@ describe('Recipe service', function () {
         it('should return the last step', inject(function(RecipeService) {
             //given
             var recipe = [
-                {transformation: {stepId: '0'}, actionParameters: {action: 'action0'}},
-                {transformation: {stepId: '1'}, actionParameters: {action: 'action1'}},
-                {transformation: {stepId: '2'}, actionParameters: {action: 'action2'}},
-                {transformation: {stepId: '3'}, actionParameters: {action: 'action3'}}
+                { transformation: { stepId: '0' }, actionParameters: { action: 'action0' } },
+                { transformation: { stepId: '1' }, actionParameters: { action: 'action1' } },
+                { transformation: { stepId: '2' }, actionParameters: { action: 'action2' } },
+                { transformation: { stepId: '3' }, actionParameters: { action: 'action3' } }
             ];
             RecipeService.getRecipe().push(recipe[0], recipe[1], recipe[2], recipe[3]);
 
@@ -980,10 +978,10 @@ describe('Recipe service', function () {
         it('should return the last step', inject(function(RecipeService) {
             //given
             var recipe = [
-                {transformation: {stepId: '0'}, actionParameters: {action: 'action0'}},
-                {transformation: {stepId: '1'}, actionParameters: {action: 'action1'}},
-                {transformation: {stepId: '2'}, actionParameters: {action: 'action2'}},
-                {transformation: {stepId: '3'}, actionParameters: {action: 'action3'}}
+                { transformation: { stepId: '0' }, actionParameters: { action: 'action0' } },
+                { transformation: { stepId: '1' }, actionParameters: { action: 'action1' } },
+                { transformation: { stepId: '2' }, actionParameters: { action: 'action2' } },
+                { transformation: { stepId: '3' }, actionParameters: { action: 'action3' } }
             ];
             RecipeService.getRecipe().push(recipe[0], recipe[1], recipe[2], recipe[3]);
 
@@ -996,7 +994,7 @@ describe('Recipe service', function () {
 
         it('should return the initial state if recipe is empty', inject(function($rootScope, RecipeService) {
             //given
-            stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
+            stateMock.playground.preparation = { id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4' };
             RecipeService.refresh(preparationDetails());
             $rootScope.$digest();
 
@@ -1007,21 +1005,23 @@ describe('Recipe service', function () {
             var lastStep = RecipeService.getLastStep();
 
             //then
-            expect(lastStep).toEqual({ transformation: {stepId: 'f6e172c33bdacbc69bca9d32b2bd78174712a171' }});
+            expect(lastStep).toEqual({ transformation: { stepId: 'f6e172c33bdacbc69bca9d32b2bd78174712a171' } });
         }));
     });
 
     describe('early preview', function() {
         var originalRecipe;
-        var column, transformation, params;
+        var column;
+        var transformation;
+        var params;
 
         beforeEach(inject(function(RecipeService) {
             //init recipe
             originalRecipe = RecipeService.getRecipe();
 
-            originalRecipe.push({transformation: {id: '1'}});
-            originalRecipe.push({transformation: {id: '2'}});
-            originalRecipe.push({transformation: {id: '3'}});
+            originalRecipe.push({ transformation: { id: '1' } });
+            originalRecipe.push({ transformation: { id: '2' } });
+            originalRecipe.push({ transformation: { id: '3' } });
 
             RecipeService.disableStepsAfter(RecipeService.getRecipe()[0]);
 
@@ -1035,9 +1035,9 @@ describe('Recipe service', function () {
                 label: 'Replace value that match...',
                 description: 'Replace cells that match the value',
                 parameters: [
-                    {name: 'value', type: 'string'},
-                    {name: 'replace', type: 'string'},
-                    {name: 'dummy param', type: 'select'}
+                    { name: 'value', type: 'string' },
+                    { name: 'replace', type: 'string' },
+                    { name: 'dummy param', type: 'select' }
                 ],
                 dynamic: false
             };
@@ -1071,7 +1071,7 @@ describe('Recipe service', function () {
                     id: column.id,
                     name: column.name
                 },
-                row: {id: undefined},
+                row: { id: undefined },
                 transformation: {
                     stepId: 'early preview',
                     name: transformation.name,

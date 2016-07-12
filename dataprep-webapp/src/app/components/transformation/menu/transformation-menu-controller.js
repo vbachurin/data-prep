@@ -1,15 +1,15 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
 
 /**
  * @ngdoc controller
@@ -21,24 +21,27 @@
 export default function TransformMenuCtrl(state, PlaygroundService, TransformationService) {
     'ngInject';
 
-    var vm = this;
+    const vm = this;
 
     /**
      * @ngdoc method
      * @name initDynamicParams
      * @methodOf data-prep.transformation-menu.controller:TransformMenuCtrl
-     * @description [PRIVATE] Fetch the transformation dynamic parameters and inject them into transformation menu params
+     * @description [PRIVATE] Fetch the transformation dynamic parameters
+     * and inject them into transformation menu params
      * @param {object} menu The dynamic transformation
      * @returns {promise} The GET request promise
      */
-    var initDynamicParams = function (menu) {
-        var infos = {
+    function initDynamicParams(menu) {
+        const infos = {
             columnId: vm.column.id,
             datasetId: state.playground.dataset.id,
-            preparationId: state.playground.preparation ? state.playground.preparation.id : null
+            preparationId: state.playground.preparation ?
+                state.playground.preparation.id :
+                null
         };
         return TransformationService.initDynamicParameters(menu, infos);
-    };
+    }
 
     /**
      * @ngdoc method
@@ -60,7 +63,7 @@ export default function TransformMenuCtrl(state, PlaygroundService, Transformati
             vm.selectedMenu = menu;
             vm.selectedScope = scope;
 
-            //get new parameters
+            // get new parameters
             initDynamicParams(menu).finally(function () {
                 vm.dynamicFetchInProgress = false;
             });
@@ -81,11 +84,12 @@ export default function TransformMenuCtrl(state, PlaygroundService, Transformati
      * @ngdoc method
      * @name select
      * @methodOf data-prep.transformation-menu.controller:TransformMenuCtrl
-     * @description Create a closure for a specific menu/scope, that only take the parameters to perform the transformation
+     * @description Create a closure for a specific menu/scope,
+     * that only take the parameters to perform the transformation
      * @param {object} menu The transformation to perform
      * @param {string} scope The transformation scope to perform
      */
-    vm.appendClosure = function (menu, scope) {
+    vm.appendClosure = function appendClosure(menu, scope) {
         return function (params) {
             params = params || {};
             params.scope = scope;

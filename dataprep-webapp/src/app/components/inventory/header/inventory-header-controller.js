@@ -38,11 +38,9 @@ export default class InventoryHeaderCtrl {
      */
     addFolder() {
         this.folderNameForm.$commitViewValue();
-        this.onFolderCreation({
-                name: this.folderName
-            })
+        this.onFolderCreation({ name: this.folderName })
             .then(() => {
-                this.folderNameModal = false
+                this.folderNameModal = false;
             });
     }
 

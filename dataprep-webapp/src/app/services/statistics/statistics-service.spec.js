@@ -933,7 +933,6 @@ describe('Statistics service', function () {
     });
 
     describe('Update Statistics : The statistics values', function () {
-
         beforeEach(inject(function () {
             stateMock.playground.grid.selectedColumn = {
                 'id': '0001',
@@ -1084,7 +1083,7 @@ describe('Statistics service', function () {
     });
 
     describe('Update Statistics : Statistics routing (basic / aggregations)', function () {
-        var currentColumn = {                               // the selected column
+        var currentColumn = { // the selected column
             'id': '0001',
             'name': 'city',
             'domain': '',
@@ -2611,8 +2610,7 @@ describe('Statistics service', function () {
     });
 
     describe('Update Filtered Statistics', function () {
-
-        var currentColumn = {                               // the selected column
+        var currentColumn = { // the selected column
             'id': '0001',
             'name': 'city',
             'domain': '',
@@ -2930,5 +2928,4 @@ describe('Statistics service', function () {
             expect(workerWrapper.cancel).toHaveBeenCalled();
         }));
     });
-
 });

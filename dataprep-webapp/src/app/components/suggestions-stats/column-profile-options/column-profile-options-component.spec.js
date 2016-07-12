@@ -14,7 +14,9 @@
 describe('Column profile options component', () => {
     'use strict';
 
-    let createElement, scope, element;
+    let createElement;
+    let scope;
+    let element;
 
     beforeEach(angular.mock.module('pascalprecht.translate', ($translateProvider) => {
         $translateProvider.translations('en_US', {

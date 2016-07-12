@@ -14,7 +14,9 @@
 describe('Transform Regex param controller', function () {
     'use strict';
 
-    var createController, scope, parameter;
+    var createController;
+    var scope;
+    var parameter;
 
     beforeEach(angular.mock.module('data-prep.transformation-form'));
 
@@ -32,7 +34,7 @@ describe('Transform Regex param controller', function () {
 
     it('should init value with default value when there is no defined value', function () {
         //given
-        parameter = {name: 'param1', type: 'regex', default: 'azerty'};
+        parameter = { name: 'param1', type: 'regex', default: 'azerty' };
 
         //when
         var ctrl = createController();
@@ -43,7 +45,7 @@ describe('Transform Regex param controller', function () {
 
     it('should NOT init value when it is defined', function () {
         //given
-        parameter = {name: 'param1', type: 'regex', value: 'qwerty', default: 'azerty'};
+        parameter = { name: 'param1', type: 'regex', value: 'qwerty', default: 'azerty' };
 
         //when
         var ctrl = createController();

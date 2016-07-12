@@ -1,15 +1,15 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
 
 /**
  * @ngdoc service
@@ -36,6 +36,7 @@ export default class LookupService {
 
         this.loadFromAction = this.loadFromAction.bind(this);
     }
+
     /**
      * @ngdoc method
      * @name initLookups
@@ -89,7 +90,6 @@ export default class LookupService {
                         this._initLookupState(lookupAction, lookupDsContent, undefined);
                     });
             });
-
     }
 
     /**
@@ -108,7 +108,7 @@ export default class LookupService {
                 });
 
                 //change column selection to focus on step target
-                const selectedColumn = _.find(this.state.playground.data.metadata.columns, {id: step.actionParameters.parameters.column_id});
+                const selectedColumn = _.find(this.state.playground.data.metadata.columns, { id: step.actionParameters.parameters.column_id });
                 this.StateService.setGridSelection(selectedColumn);
 
                 //lookup already loaded
@@ -154,7 +154,7 @@ export default class LookupService {
             .filter('addedToLookup') //filter addedToLookup = true
             .map((dataset) => { //map dataset to action
                 return _.find(this.state.playground.lookup.actions, (action) => {
-                    return _.find(action.parameters, {'name': 'lookup_ds_id'}).default === dataset.id;
+                    return _.find(action.parameters, { name: 'lookup_ds_id' }).default === dataset.id;
                 });
             })
             .filter((action) => action) //remove falsy action (added dataset but no action with this dataset)
@@ -184,7 +184,7 @@ export default class LookupService {
                     dataset.id === nextStep.actionParameters.parameters.lookup_ds_id;
             });
 
-            dataset.enableToAddToLookup = lookupStep ? false : true;
+            dataset.enableToAddToLookup = !lookupStep;
         });
     }
 
@@ -209,7 +209,7 @@ export default class LookupService {
 
                     const datasetsToAdd = _.chain(actionsList)
                         .map((action) => { //map action to dataset
-                            return _.find(this.state.inventory.datasets, {'id': this._getDsId(action)});
+                            return _.find(this.state.inventory.datasets, { id: this._getDsId(action) });
                         })
                         .filter((dataset) => { //remove falsy dataset
                             return dataset;
@@ -239,7 +239,7 @@ export default class LookupService {
      * @description Extract the dataset id from lookup action
      */
     _getDsId(lookup) {
-        return _.find(lookup.parameters, {'name': 'lookup_ds_id'}).default;
+        return _.find(lookup.parameters, { name: 'lookup_ds_id' }).default;
     }
 
     /**
@@ -268,10 +268,10 @@ export default class LookupService {
      */
     _getSelectedColumnLastLookup() {
         const selectedColumn = this.state.playground.grid.selectedColumn;
-        return selectedColumn && _.findLast(this.RecipeService.getRecipe(), (nextStep) => {
-            return nextStep.column.id === selectedColumn.id &&
-                nextStep.transformation.name === 'lookup';
-        });
+        return selectedColumn &&
+            _.findLast(this.RecipeService.getRecipe(), (nextStep) => {
+                return nextStep.column.id === selectedColumn.id && nextStep.transformation.name === 'lookup';
+            });
     }
 
     /**
@@ -284,11 +284,12 @@ export default class LookupService {
     _getSelectedColumnLookup(lookupAction) {
         const datasetId = this._getDsId(lookupAction);
         const selectedColumn = this.state.playground.grid.selectedColumn;
-        return selectedColumn && _.findLast(this.RecipeService.getRecipe(), (nextStep) => {
-            return nextStep.column.id === selectedColumn.id &&
-                nextStep.transformation.name === 'lookup' &&
-                nextStep.actionParameters.parameters.lookup_ds_id === datasetId;
-        });
+        return selectedColumn &&
+            _.findLast(this.RecipeService.getRecipe(), (nextStep) => {
+                return nextStep.column.id === selectedColumn.id &&
+                    nextStep.transformation.name === 'lookup' &&
+                    nextStep.actionParameters.parameters.lookup_ds_id === datasetId;
+            });
     }
 
     /**
@@ -302,7 +303,7 @@ export default class LookupService {
 
         //Consolidate addedDatasets: if lookup datasets of a step are not save in localStorage, we add them
         _.chain(this.RecipeService.getRecipe())
-            .filter((step) =>  step.actionParameters.action === 'lookup')
+            .filter((step) => step.actionParameters.action === 'lookup')
             .forEach((step) => {
                 if (addedDatasets.indexOf(step.actionParameters.parameters.lookup_ds_id) === -1) {
                     addedDatasets.push(step.actionParameters.parameters.lookup_ds_id);
@@ -317,14 +318,16 @@ export default class LookupService {
                 return _.find(this.state.playground.lookup.datasets, { id: datasetId });
             })
             .filter((dataset) => dataset) //remove falsy dataset
-            .forEach((dataset) => { dataset.addedToLookup = true })
+            .forEach((dataset) => {
+                dataset.addedToLookup = true;
+            })
             .value();
 
         //Get actions
         const actionsToAdd = _.chain(addedDatasets)
             .map((datasetId) => { //map dataset to action
                 return _.find(this.state.playground.lookup.actions, (action) => {
-                    return _.find(action.parameters, {'name': 'lookup_ds_id'}).default === datasetId;
+                    return _.find(action.parameters, { name: 'lookup_ds_id' }).default === datasetId;
                 });
             })
             .filter((action) => action) //remove falsy action

@@ -14,7 +14,8 @@
 describe('Disable right click directive', function() {
     'use strict';
 
-    var element, createElement;
+    var element;
+    var createElement;
 
     beforeEach(angular.mock.module('data-prep.services.utils'));
 

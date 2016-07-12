@@ -43,24 +43,24 @@ import PlaygroundHeader from './header/playground-header-component';
      */
     angular.module('data-prep.playground',
         [
-                "pascalprecht.translate",
-                "talend.widget",
-                "ui.router",
-                "data-prep.datagrid",
-                "data-prep.dataset-parameters",
-                "data-prep.documentation-search",
-                "data-prep.export",
-                "data-prep.filter-bar",
-                "data-prep.history-control",
-                "data-prep.lookup",
-                "data-prep.preparation-picker",
-                "data-prep.recipe",
-                "data-prep.services.onboarding",
-                "data-prep.services.playground",
-                "data-prep.services.preparation",
-                "data-prep.services.recipe",
-                "data-prep.services.state",
-                "data-prep.suggestions-stats"
+            'pascalprecht.translate',
+            'talend.widget',
+            'ui.router',
+            'data-prep.datagrid',
+            'data-prep.dataset-parameters',
+            'data-prep.documentation-search',
+            'data-prep.export',
+            'data-prep.filter-bar',
+            'data-prep.history-control',
+            'data-prep.lookup',
+            'data-prep.preparation-picker',
+            'data-prep.recipe',
+            'data-prep.services.onboarding',
+            'data-prep.services.playground',
+            'data-prep.services.preparation',
+            'data-prep.services.recipe',
+            'data-prep.services.state',
+            'data-prep.suggestions-stats'
         ])
         .controller('PlaygroundCtrl', PlaygroundCtrl)
         .directive('playground', Playground)

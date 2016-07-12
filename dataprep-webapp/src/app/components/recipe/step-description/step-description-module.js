@@ -21,7 +21,8 @@ import StepDescription from './step-description-component';
      * @name data-prep.step-description
      * @description This module creates the recipe step details
      */
-    angular.module('data-prep.step-description', [
+    angular.module('data-prep.step-description',
+        [
             'pascalprecht.translate',
             'ngSanitize',
         ])

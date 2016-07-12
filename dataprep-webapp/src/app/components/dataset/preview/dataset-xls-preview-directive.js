@@ -27,7 +27,7 @@ export default function DatasetXlsPreview($timeout) {
         bindToController: true,
         controllerAs: 'previewCtrl',
         controller: 'DatasetXlsPreviewCtrl',
-        link: function (scope, iElement, iAttrs, ctrl) {
+        link: (scope, iElement, iAttrs, ctrl) => {
             $timeout(() => {
                 ctrl.initGrid();
             }, 100);

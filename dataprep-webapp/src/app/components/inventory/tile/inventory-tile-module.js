@@ -13,13 +13,11 @@
 import inventoryTile from './inventory-tile-directive';
 
 (() => {
-
     /**
      * @ngdoc object
      * @name data-prep.inventory-tile
      * @description This module contains the inventory tile used for preparation display
      */
-
     angular.module('data-prep.inventory-tile', ['data-prep.services.utils'])
         .directive('inventoryTile', inventoryTile);
 })();

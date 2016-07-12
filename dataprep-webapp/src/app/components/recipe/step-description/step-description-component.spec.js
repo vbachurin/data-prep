@@ -13,8 +13,9 @@
 
 
 describe('Step Description Component', () => {
-
-    let scope, createElement, element;
+    let scope;
+    let createElement;
+    let element;
 
     beforeEach(angular.mock.module('data-prep.step-description'));
 

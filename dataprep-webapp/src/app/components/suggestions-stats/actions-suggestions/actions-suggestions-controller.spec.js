@@ -14,17 +14,18 @@
 describe('Actions suggestions-stats controller', function () {
     'use strict';
 
-    var createController, scope;
+    var createController;
+    var scope;
 
     var stateMock;
 
     beforeEach(angular.mock.module('data-prep.actions-suggestions', function($provide) {
-        stateMock = {playground: {filter: {}}};
+        stateMock = { playground: { filter: {} } };
         $provide.constant('state', stateMock);
     }));
 
     beforeEach(inject(function ($rootScope, $controller, $q, PlaygroundService, TransformationService,
-                                EarlyPreviewService, TransformationApplicationService) {
+        EarlyPreviewService, TransformationApplicationService) {
         scope = $rootScope.$new();
 
         createController = function () {
@@ -46,7 +47,7 @@ describe('Actions suggestions-stats controller', function () {
             it('should render all transformations when applyTransformationOnFilters flag is true', function() {
                 //given
                 stateMock.playground.filter.applyTransformationOnFilters = true;
-                var transformation = {category: 'filtered'};
+                var transformation = { category: 'filtered' };
                 var ctrl = createController();
 
                 //when
@@ -59,7 +60,7 @@ describe('Actions suggestions-stats controller', function () {
             it('should render transformations when category is not "filtered"', function() {
                 //given
                 stateMock.playground.filter.applyTransformationOnFilters = false;
-                var transformation = {category: 'quickfix'};
+                var transformation = { category: 'quickfix' };
                 var ctrl = createController();
 
                 //when
@@ -72,7 +73,7 @@ describe('Actions suggestions-stats controller', function () {
             it('should NOT render transformations when category is "filtered" and applyTransformationOnFilters flag is false', function() {
                 //given
                 stateMock.playground.filter.applyTransformationOnFilters = false;
-                var transformation = {category: 'filtered'};
+                var transformation = { category: 'filtered' };
                 var ctrl = createController();
 
                 //when
@@ -89,7 +90,7 @@ describe('Actions suggestions-stats controller', function () {
                 stateMock.playground.filter.applyTransformationOnFilters = true;
                 var categoryTransformations = {
                     category: 'suggestion',
-                    transformations: [{category: 'filtered'}]
+                    transformations: [{ category: 'filtered' }]
                 };
                 var ctrl = createController();
 
@@ -105,7 +106,7 @@ describe('Actions suggestions-stats controller', function () {
                 stateMock.playground.filter.applyTransformationOnFilters = false;
                 var categoryTransformations = {
                     category: 'quickfix',
-                    transformations: [{category: 'filtered'}]
+                    transformations: [{ category: 'filtered' }]
                 };
                 var ctrl = createController();
 
@@ -121,7 +122,7 @@ describe('Actions suggestions-stats controller', function () {
                 stateMock.playground.filter.applyTransformationOnFilters = false;
                 var categoryTransformations = {
                     category: 'suggestion',
-                    transformations: [{category: 'suggestion'}]
+                    transformations: [{ category: 'suggestion' }]
                 };
                 var ctrl = createController();
 
@@ -137,7 +138,7 @@ describe('Actions suggestions-stats controller', function () {
                 stateMock.playground.filter.applyTransformationOnFilters = false;
                 var categoryTransformations = {
                     category: 'suggestion',
-                    transformations: [{category: 'filtered'}]
+                    transformations: [{ category: 'filtered' }]
                 };
                 var ctrl = createController();
 

@@ -12,7 +12,9 @@
  ============================================================================*/
 
 describe('Documentation Search component', () => {
-    let scope, createElement, element;
+    let scope;
+    let createElement;
+    let element;
 
     beforeEach(angular.mock.module('data-prep.documentation-search'));
     beforeEach(angular.mock.module('htmlTemplates'));

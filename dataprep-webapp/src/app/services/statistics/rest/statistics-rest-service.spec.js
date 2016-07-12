@@ -29,11 +29,11 @@ describe('Statistics REST service', function () {
         var params = {};
         var response = {
             data: [
-                {'data': 'Lansing', 'occurrences': 15},
-                {'data': 'Helena', 'occurrences': 5},
-                {'data': 'Baton Rouge', 'occurrences': 64},
-                {'data': 'Annapolis', 'occurrences': 4},
-                {'data': 'Pierre', 'occurrences': 104}
+                { 'data': 'Lansing', 'occurrences': 15 },
+                { 'data': 'Helena', 'occurrences': 5 },
+                { 'data': 'Baton Rouge', 'occurrences': 64 },
+                { 'data': 'Annapolis', 'occurrences': 4 },
+                { 'data': 'Pierre', 'occurrences': 104 }
             ]
         };
 
@@ -58,11 +58,11 @@ describe('Statistics REST service', function () {
         var params = {};
         var response = {
             data: [
-                {'data': 'Lansing', 'occurrences': 15},
-                {'data': 'Helena', 'occurrences': 5},
-                {'data': 'Baton Rouge', 'occurrences': 64},
-                {'data': 'Annapolis', 'occurrences': 4},
-                {'data': 'Pierre', 'occurrences': 104}
+                { 'data': 'Lansing', 'occurrences': 15 },
+                { 'data': 'Helena', 'occurrences': 5 },
+                { 'data': 'Baton Rouge', 'occurrences': 64 },
+                { 'data': 'Annapolis', 'occurrences': 4 },
+                { 'data': 'Pierre', 'occurrences': 104 }
             ]
         };
 
@@ -89,11 +89,11 @@ describe('Statistics REST service', function () {
         var params = {};
         var response = {
             data: [
-                {'data': 'Lansing', 'occurrences': 15},
-                {'data': 'Helena', 'occurrences': 5},
-                {'data': 'Baton Rouge', 'occurrences': 64},
-                {'data': 'Annapolis', 'occurrences': 4},
-                {'data': 'Pierre', 'occurrences': 104}
+                { 'data': 'Lansing', 'occurrences': 15 },
+                { 'data': 'Helena', 'occurrences': 5 },
+                { 'data': 'Baton Rouge', 'occurrences': 64 },
+                { 'data': 'Annapolis', 'occurrences': 4 },
+                { 'data': 'Pierre', 'occurrences': 104 }
             ]
         };
 
@@ -114,5 +114,4 @@ describe('Statistics REST service', function () {
         StatisticsRestService.getAggregations(params);
         $rootScope.$digest();
     }));
-
 });

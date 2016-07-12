@@ -34,7 +34,8 @@ import TransformFormCtrl from './transformation-form-controller';
     /**
      * @ngdoc object
      * @name data-prep.transformation-form
-     * @description This module contains the controller and directives to manage transformation parameters
+     * @description This module contains the controller
+     * and directives to manage transformation parameters
      * @requires data-prep.services.state
      * @requires data-prep.services.utils.service
      * @requires data-prep.validation

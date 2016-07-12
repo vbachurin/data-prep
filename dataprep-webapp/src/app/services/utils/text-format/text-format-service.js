@@ -1,15 +1,15 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
 
 /**
  * @ngdoc service
@@ -26,9 +26,9 @@ export default function TextFormatService() {
         highlight: highlight
     };
 
-    //--------------------------------------------------------------------------------------------------------------
-    //-----------------------------------------------------Regex----------------------------------------------------
-    //--------------------------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // ---------------------------------------------Regex------------------------------------------
+    // --------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
      * @name escapeRegex
@@ -45,21 +45,23 @@ export default function TextFormatService() {
      * @ngdoc method
      * @name escapeRegExpExceptStar
      * @methodOf data-prep.services.utils:TextFormatService
-     * @description Escape all regexp characters except * wildcard, and adapt * wildcard to regexp (* --> .*)
+     * @description Escape all regexp characters except * wildcard,
+     * and adapt * wildcard to regexp (* --> .*)
      * @param {string} str The string to escape
      */
     function escapeRegexpExceptStar(str) {
         return str.replace(/[\-\[\]\/\{\}\(\)\+\?\.\\\^\$\|]/g, '\\$&').replace(/\*/g, '.*');
     }
 
-    //--------------------------------------------------------------------------------------------------------------
-    //-----------------------------------------------------GRID-----------------------------------------------------
-    //--------------------------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // ----------------------------------------------GRID------------------------------------------
+    // --------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
      * @name adaptToGridConstraints
      * @methodOf data-prep.services.utils:TextFormatService
-     * @description Adapt value to the lookup-datagrid display constraint (show spaces, escape, etc)
+     * @description Adapt value to the lookup-datagrid display constraint
+     * (show spaces, escape, etc)
      * @param {string} value The value to adapt
      */
     function adaptToGridConstraints(value) {
@@ -67,7 +69,7 @@ export default function TextFormatService() {
             return value;
         }
 
-        var constraints = [
+        const constraints = [
             escapeHtmlTags,
             addLineBreaks,
             addTrailingAndLeadingSpacesDivs
@@ -80,9 +82,9 @@ export default function TextFormatService() {
         return value;
     }
 
-    //--------------------------------------------------------------------------------------------------------------
-    //-----------------------------------------------GRID CONSTRAINTS-----------------------------------------------
-    //--------------------------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // ---------------------------------------GRID CONSTRAINTS-------------------------------------
+    // --------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
      * @name addLineBreaks
@@ -91,7 +93,7 @@ export default function TextFormatService() {
      * @param {string} value The value to adapt
      */
     function addLineBreaks(value) {
-        return value.replace(new RegExp('\n', 'g'), '↵\n'); //eslint-disable-line no-control-regex
+        return value.replace(new RegExp('\n', 'g'), '↵\n'); // eslint-disable-line no-control-regex
     }
 
     /**
@@ -102,12 +104,17 @@ export default function TextFormatService() {
      * @param {string} value The value to adapt
      */
     function addTrailingAndLeadingSpacesDivs(value) {
-        var returnStr = '';
-        var hiddenCharsRegExpMatch = value.match(/(^\s*)?([\s\S]*?)(\s*$)/);
+        let returnStr = '';
+        const hiddenCharsRegExpMatch = value.match(/(^\s*)?([\s\S]*?)(\s*$)/);
 
         //leading hidden chars found
         if (hiddenCharsRegExpMatch[1]) {
-            returnStr = '<span class="hiddenChars">' + hiddenCharsRegExpMatch[1].replace(new RegExp('\t', 'g'), '    ') + '</span>'; //eslint-disable-line no-control-regex
+            returnStr = '<span class="hiddenChars">' +
+                hiddenCharsRegExpMatch[1].replace(
+                    new RegExp('\t', 'g'), // eslint-disable-line no-control-regex
+                    '    '
+                ) +
+                '</span>';
         }
 
         //trimmed value
@@ -115,7 +122,12 @@ export default function TextFormatService() {
 
         //trailing hidden chars
         if (hiddenCharsRegExpMatch[3]) {
-            returnStr += '<span class="hiddenChars">' + hiddenCharsRegExpMatch[3].replace(new RegExp('\t', 'g'), '    ') + '</span>'; //eslint-disable-line no-control-regex
+            returnStr += '<span class="hiddenChars">' +
+                hiddenCharsRegExpMatch[3].replace(
+                    new RegExp('\t', 'g'), // eslint-disable-line no-control-regex
+                    '    '
+                ) +
+                '</span>';
         }
         return returnStr;
     }
@@ -139,16 +151,16 @@ export default function TextFormatService() {
      * @param {string} pattern The pattern
      */
     function convertPatternToRegexp(pattern) {
-        var regexp = '';
-        for (var i = 0, len = pattern.length; i < len; i++) {
+        let regexp = '';
+        for (let i = 0, len = pattern.length; i < len; i++) {
             switch (pattern[i]) {
                 case 'A':
                     regexp += '[A-Z]';
                     break;
-                case'a':
+                case 'a':
                     regexp += '[a-z]';
                     break;
-                case'9':
+                case '9':
                     regexp += '[0-9]';
                     break;
                 default:
@@ -166,25 +178,29 @@ export default function TextFormatService() {
      * @param {string} javaDateFormat The Java Date Format
      */
     function convertJavaDateFormatToMomentDateFormat(javaDateFormat) {
-        var openQuote = false;
-        var pattern = javaDateFormat;
+        let openQuote = false;
+        let pattern = javaDateFormat;
 
-        // simple quote (') is used in java petterns to escape things. In moment, we use brackets ([])
-        // escaped quotes ('') should be converted to simple quote
-        // words between quotes ('content') should be converted to words between brackets ([content])
-        pattern = pattern.replace(/\'\'/g, '#tdpQuote')     //escape ('') to a unique replacement word
-            .replace(/\'/g, function () {                    //deal with word between quotes --> words between brackets
+        // * simple quote (') is used in java petterns to escape things.
+        // In moment, we use brackets ([])
+        // * escaped quotes ('') should be converted to simple quote
+        // * words between quotes ('content') should be converted
+        // to words between brackets ([content])
+        pattern = pattern
+            .replace(/\'\'/g, '#tdpQuote') // escape ('') to a unique replacement word
+            .replace(/\'/g, () => {        // deal with word between quotes --> words between brackets
                 openQuote = !openQuote;
                 return openQuote ? '[' : ']';
             })
-            .replace(/#tdpQuote/g, '\'');                   //replace original ('') to simple quotes
+            .replace(/#tdpQuote/g, '\'');  // replace original ('') to simple quotes
 
         // toMomentFormatString will modify all the characters (even those between branckets)
-        // we save those escaped parts, convert the pattern and replace the parts that should be escaped
-        var patternEscapedParts = pattern.match(/\[.*\]/g);
+        // we save those escaped parts, convert the pattern and replace the parts
+        // that should be escaped
+        const patternEscapedParts = pattern.match(/\[.*\]/g);
         pattern = moment().toMomentFormatString(pattern);
-        var escapedPartIndex = 0;
-        pattern = pattern.replace(/\[.*\]/g, function () {
+        let escapedPartIndex = 0;
+        pattern = pattern.replace(/\[.*\]/g, () => {
             return patternEscapedParts[escapedPartIndex++];
         });
 

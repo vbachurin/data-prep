@@ -14,7 +14,9 @@
 describe('Inventory Item controller', function () {
     'use strict';
 
-    var createController, scope, ctrl;
+    var createController;
+    var scope;
+    var ctrl;
 
     beforeEach(angular.mock.module('data-prep.inventory-item'));
 
@@ -85,7 +87,7 @@ describe('Inventory Item controller', function () {
 
         it('should process the tooltip data to compile it for related inventories', inject(function () {
             //given
-            ctrl.relatedInventories = [{name:'prep1'}, {name:'prep2'}];
+            ctrl.relatedInventories = [{ name:'prep1' }, { name:'prep2' }];
             ctrl.relatedInventoriesType = 'preparation';
 
             //when

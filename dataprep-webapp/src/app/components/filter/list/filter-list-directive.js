@@ -33,7 +33,7 @@ export default function FilterList() {
             filters: '=',
             onFilterChange: '&',
             onFilterRemove: '&',
-            enabled: "<"
+            enabled: '<',
         },
         bindToController: true,
         controllerAs: 'filterCtrl',

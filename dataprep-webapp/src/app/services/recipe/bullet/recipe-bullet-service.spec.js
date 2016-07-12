@@ -14,19 +14,19 @@
 describe('Recipe Bullet service', function () {
     'use strict';
 
-    var previousStep = {column:{id:'0003'}};
-    var lastActiveStep = {inactive: false};
+    var previousStep = { column:{ id:'0003' } };
+    var lastActiveStep = { inactive: false };
 
     var preparationId = '4635fa41864b74ef64';
     var stateMock;
 
     beforeEach(angular.mock.module('data-prep.services.recipe', function($provide) {
-        stateMock = {playground: {preparation: {id: preparationId}}};
+        stateMock = { playground: { preparation: { id: preparationId } } };
         $provide.constant('state', stateMock);
     }));
 
     beforeEach(inject(function ($rootScope, $q, $timeout,
-                                PlaygroundService, RecipeBulletService, RecipeService, PreparationService, PreviewService) {
+        PlaygroundService, RecipeBulletService, RecipeService, PreparationService, PreviewService) {
         spyOn($rootScope, '$emit').and.returnValue();
         spyOn(RecipeService, 'getPreviousStep').and.returnValue(previousStep);
         spyOn(RecipeService, 'getActiveThresholdStepIndex').and.returnValue(3);
@@ -47,10 +47,10 @@ describe('Recipe Bullet service', function () {
         //given
         var recipe = RecipeService.getRecipe();
         recipe.push(
-            {id: '1', column:{id:'0002'}},
-            {id: '2', column:{id:'0005'}},
-            {id: '3', column:{id:'0004'}},
-            {id: '4', column:{id:'0005'}}
+            { id: '1', column:{ id:'0002' } },
+            { id: '2', column:{ id:'0005' } },
+            { id: '3', column:{ id:'0004' } },
+            { id: '4', column:{ id:'0005' } }
         );
         RecipeService.disableStepsAfter(recipe[0]);
 
@@ -68,10 +68,10 @@ describe('Recipe Bullet service', function () {
         //given
         var recipe = RecipeService.getRecipe();
         recipe.push(
-            {id: '1', column:{id:'0002'}},
-            {id: '2', column:{id:'0005'}},
-            {id: '3', column:{id:'0004'}},
-            {id: '4', column:{id:'0005'}}
+            { id: '1', column:{ id:'0002' } },
+            { id: '2', column:{ id:'0005' } },
+            { id: '3', column:{ id:'0004' } },
+            { id: '4', column:{ id:'0005' } }
         );
 
         //when
@@ -84,8 +84,8 @@ describe('Recipe Bullet service', function () {
     it('should deactivate all the recipe', inject(function (RecipeService, PlaygroundService, RecipeBulletService) {
         //given
         var recipe = RecipeService.getRecipe();
-        var step1 = {inactive: false, column:{id:'0005'}};
-        var step2 = {inactive: false, column:{id:'0004'}};
+        var step1 = { inactive: false, column:{ id:'0005' } };
+        var step2 = { inactive: false, column:{ id:'0004' } };
         recipe.push(step1);
         recipe.push(step2);
 
@@ -99,8 +99,8 @@ describe('Recipe Bullet service', function () {
     it('should reactivate all the recipe', inject(function (RecipeService, PlaygroundService, RecipeBulletService) {
         //given
         var recipe = RecipeService.getRecipe();
-        var step1 = {inactive: true, column:{id:'0005'}};
-        var step2 = {inactive: true, column:{id:'0004'}};
+        var step1 = { inactive: true, column:{ id:'0005' } };
+        var step2 = { inactive: true, column:{ id:'0004' } };
         recipe.push(step1);
         recipe.push(step2);
 
@@ -114,8 +114,8 @@ describe('Recipe Bullet service', function () {
     it('should reactivate the recipe at the last active step before deactivation action', inject(function (RecipeService, PlaygroundService, RecipeBulletService) {
         //given
         var recipe = RecipeService.getRecipe();
-        var step1 = {inactive: true, column:{id:'0005'}};
-        var step2 = {inactive: true, column:{id:'0004'}};
+        var step1 = { inactive: true, column:{ id:'0005' } };
+        var step2 = { inactive: true, column:{ id:'0004' } };
         recipe.push(step1);
         recipe.push(step2);
 
@@ -132,10 +132,10 @@ describe('Recipe Bullet service', function () {
         //given
         var recipe = RecipeService.getRecipe();
         recipe.push(
-            {id: '0', column:{id:'0005'}},
-            {id: '1', column:{id:'0004'}},
-            {id: '2', column:{id:'0000'}},
-            {id: '3', column:{id:'0001'}}
+            { id: '0', column:{ id:'0005' } },
+            { id: '1', column:{ id:'0004' } },
+            { id: '2', column:{ id:'0000' } },
+            { id: '3', column:{ id:'0001' } }
         );
 
         //when
@@ -150,7 +150,7 @@ describe('Recipe Bullet service', function () {
 
     it('should cancel current preview on mouse hover end after a delay of 100ms', inject(function ($timeout, PreviewService, RecipeBulletService) {
         //given
-        var step = {column: {id: '0001'}};
+        var step = { column: { id: '0001' } };
 
         //when
         RecipeBulletService.stepHoverEnd(step);
@@ -163,7 +163,7 @@ describe('Recipe Bullet service', function () {
 
     it('should cancel pending preview action on mouse hover end', inject(function ($timeout, PreviewService, RecipeBulletService) {
         //given
-        var step = {column: {id: '0001'}};
+        var step = { column: { id: '0001' } };
 
         //when
         RecipeBulletService.stepHoverEnd(step);
@@ -177,7 +177,7 @@ describe('Recipe Bullet service', function () {
     describe('load specific step', function() {
         it('should load current step content if the step is first inactive', inject(function (PlaygroundService, RecipeBulletService) {
             //given
-            var step = {inactive: true, column:{id:'0001'}};
+            var step = { inactive: true, column:{ id:'0001' } };
 
             //when
             RecipeBulletService.toggleStep(step);
@@ -188,7 +188,7 @@ describe('Recipe Bullet service', function () {
 
         it('should load previous step content if the step is first active', inject(function (PlaygroundService, RecipeBulletService) {
             //given
-            var step = {inactive: false, column:{id:'0001'}};
+            var step = { inactive: false, column:{ id:'0001' } };
 
             //when
             RecipeBulletService.toggleStep(step);

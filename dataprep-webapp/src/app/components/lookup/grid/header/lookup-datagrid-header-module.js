@@ -20,7 +20,8 @@ import LookupDatagridHeader from './lookup-datagrid-header-directive';
     /**
      * @ngdoc object
      * @name data-prep.lookup-datagrid-header
-     * @description This module contains the controller and directives to manage the lookup-datagrid header with transformation menu
+     * @description This module contains the controller
+     * and directives to manage the lookup-datagrid header with transformation menu
      * @requires talend.module:widget
      * @requires data-prep.transformation-menu
      * @requires data-prep.services.utils
@@ -34,7 +35,7 @@ import LookupDatagridHeader from './lookup-datagrid-header-directive';
             'data-prep.transformation-menu',
             'data-prep.services.utils',
             'data-prep.services.playground',
-            'data-prep.services.transformation'
+            'data-prep.services.transformation',
         ])
         .controller('LookupDatagridHeaderCtrl', LookupDatagridHeaderCtrl)
         .directive('lookupDatagridHeader', LookupDatagridHeader);

@@ -132,8 +132,8 @@ describe('Transformation Service', function () {
                 label: 'Change case to uppercase',
                 category: 'case',
                 parameters: [
-                    {name: 'column_name', type: 'string', implicit: true},
-                    {name: 'column_id', type: 'string', implicit: true}
+                    { name: 'column_name', type: 'string', implicit: true },
+                    { name: 'column_id', type: 'string', implicit: true }
                 ]
             },
             {
@@ -141,8 +141,8 @@ describe('Transformation Service', function () {
                 label: 'Change case to lowercase',
                 category: 'case',
                 parameters: [
-                    {name: 'column_name', type: 'string', implicit: true},
-                    {name: 'column_id', type: 'string', implicit: true}
+                    { name: 'column_name', type: 'string', implicit: true },
+                    { name: 'column_id', type: 'string', implicit: true }
                 ]
             },
             {
@@ -150,9 +150,9 @@ describe('Transformation Service', function () {
                 label: 'Remove part of the text',
                 category: 'split',
                 parameters: [
-                    {name: 'column_name', type: 'string', implicit: true},
-                    {name: 'column_id', type: 'string', implicit: true},
-                    {name: 'value', type: 'string'}
+                    { name: 'column_name', type: 'string', implicit: true },
+                    { name: 'column_id', type: 'string', implicit: true },
+                    { name: 'value', type: 'string' }
                 ]
             },
             {
@@ -160,14 +160,14 @@ describe('Transformation Service', function () {
                 label: 'Cut in parts',
                 category: 'split',
                 parameters: [
-                    {name: 'column_name', type: 'string', implicit: true},
-                    {name: 'column_id', type: 'string', implicit: true},
+                    { name: 'column_name', type: 'string', implicit: true },
+                    { name: 'column_id', type: 'string', implicit: true },
                     {
                         name: 'mode',
                         type: 'select',
                         configuration: {
                             values: [
-                                {name: 'noparam', value: 'noparam'},
+                                { name: 'noparam', value: 'noparam' },
                                 {
                                     name: 'regex',
                                     value: 'regex',
@@ -222,10 +222,10 @@ describe('Transformation Service', function () {
     beforeEach(angular.mock.module('data-prep.services.transformation'));
 
     beforeEach(inject(function ($q, TransformationRestService) {
-        spyOn(TransformationRestService, 'getLineTransformations').and.returnValue($q.when({data: transformationsRestMock()}));
-        spyOn(TransformationRestService, 'getColumnTransformations').and.returnValue($q.when({data: transformationsRestMock()}));
-        spyOn(TransformationRestService, 'getColumnSuggestions').and.returnValue($q.when({data: transformationsRestMock()}));
-        spyOn(TransformationRestService, 'getDynamicParameters').and.returnValue($q.when({data: textClusteringParams()}));
+        spyOn(TransformationRestService, 'getLineTransformations').and.returnValue($q.when({ data: transformationsRestMock() }));
+        spyOn(TransformationRestService, 'getColumnTransformations').and.returnValue($q.when({ data: transformationsRestMock() }));
+        spyOn(TransformationRestService, 'getColumnSuggestions').and.returnValue($q.when({ data: transformationsRestMock() }));
+        spyOn(TransformationRestService, 'getDynamicParameters').and.returnValue($q.when({ data: textClusteringParams() }));
     }));
 
     describe('dynamic parameters', function() {
@@ -314,11 +314,11 @@ describe('Transformation Service', function () {
                         {
                             name: 'regex',
                             parameters: [
-                                {name: 'regex', type: 'text', initialValue: 'param1Value'},
-                                {name: 'comment', type: 'text', initialValue: 'my comment'}
+                                { name: 'regex', type: 'text', initialValue: 'param1Value' },
+                                { name: 'comment', type: 'text', initialValue: 'my comment' }
                             ]
                         },
-                        {name: 'index'}
+                        { name: 'index' }
                     ]
                 }
             ];
@@ -486,9 +486,9 @@ describe('Transformation Service', function () {
             //given
             var transformation = {
                 parameters: [
-                    {name: 'column_id', type: 'text', value: 'col', implicit: true},
-                    {name: 'pattern', type: 'text', default: 'toto'},
-                    {name: 'patternBool', type: 'boolean', default: 'false'}
+                    { name: 'column_id', type: 'text', value: 'col', implicit: true },
+                    { name: 'pattern', type: 'text', default: 'toto' },
+                    { name: 'patternBool', type: 'boolean', default: 'false' }
                 ]
             };
 
@@ -522,10 +522,10 @@ describe('Transformation Service', function () {
                                     name: 'regex',
                                     value: 'regex',
                                     parameters: [
-                                        {name: 'pattern', type: 'text', default: 'toto'}
+                                        { name: 'pattern', type: 'text', default: 'toto' }
                                     ]
                                 },
-                                {name: 'index', value: 'index'}
+                                { name: 'index', value: 'index' }
                             ]
                         },
                         default: 'index'
@@ -704,7 +704,7 @@ describe('Transformation Service', function () {
             it('should get column transformations', inject(function ($rootScope, TransformationService, TransformationRestService) {
                 //given
                 var allTransformations = null;
-                var column = {id: '0002'};
+                var column = { id: '0002' };
 
                 //when
                 TransformationService.getColumnTransformations(column)
@@ -725,7 +725,7 @@ describe('Transformation Service', function () {
             it('should sort them by label and group them by category', inject(function ($rootScope, TransformationService) {
                 //given
                 var allCategories = null;
-                var column = {id: '0002'};
+                var column = { id: '0002' };
 
                 //when
                 TransformationService.getColumnTransformations(column)
@@ -747,7 +747,7 @@ describe('Transformation Service', function () {
             it('should remove implicit parameters', inject(function ($rootScope, TransformationService) {
                 //given
                 var allTransformations = null;
-                var column = {id: '0002'};
+                var column = { id: '0002' };
 
                 //when
                 TransformationService.getColumnTransformations(column)
@@ -767,7 +767,7 @@ describe('Transformation Service', function () {
             it('should inject input types', inject(function ($rootScope, TransformationService) {
                 //given
                 var allTransformations = null;
-                var column = {id: '0002'};
+                var column = { id: '0002' };
 
                 //when
                 TransformationService.getColumnTransformations(column)
@@ -786,7 +786,7 @@ describe('Transformation Service', function () {
             it('should inject UI labels', inject(function ($rootScope, TransformationService) {
                 //given
                 var allTransformations = null;
-                var column = {id: '0002'};
+                var column = { id: '0002' };
 
                 //when
                 TransformationService.getColumnTransformations(column)
@@ -807,7 +807,7 @@ describe('Transformation Service', function () {
             it('should get column suggestions', inject(function ($rootScope, TransformationService, TransformationRestService) {
                 //given
                 var suggestions = null;
-                var column = {id: '0002'};
+                var column = { id: '0002' };
 
                 //when
                 TransformationService.getColumnSuggestions(column)
@@ -828,7 +828,7 @@ describe('Transformation Service', function () {
             it('should remove implicit parameters', inject(function ($rootScope, TransformationService, TransformationRestService) {
                 //given
                 var suggestions = null;
-                var column = {id: '0002'};
+                var column = { id: '0002' };
 
                 //when
                 TransformationService.getColumnSuggestions(column)
@@ -849,7 +849,7 @@ describe('Transformation Service', function () {
             it('should inject input types', inject(function ($rootScope, TransformationService, TransformationRestService) {
                 //given
                 var suggestions = null;
-                var column = {id: '0002'};
+                var column = { id: '0002' };
 
                 //when
                 TransformationService.getColumnSuggestions(column)
@@ -869,7 +869,7 @@ describe('Transformation Service', function () {
             it('should inject UI labels', inject(function ($rootScope, TransformationService, TransformationRestService) {
                 //given
                 var transformations = null;
-                var column = {id: '0002'};
+                var column = { id: '0002' };
 
                 //when
                 TransformationService.getColumnSuggestions(column)

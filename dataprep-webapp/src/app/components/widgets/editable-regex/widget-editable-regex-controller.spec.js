@@ -14,7 +14,8 @@
 describe('Editable regex widget controller', function() {
     'use strict';
 
-    var scope, createController;
+    var scope;
+    var createController;
 
     beforeEach(angular.mock.module('talend.widget'));
 
@@ -86,7 +87,7 @@ describe('Editable regex widget controller', function() {
 
         //when
         var ctrl = createController();
-        ctrl.setSelectedType({operator:'regex'});
+        ctrl.setSelectedType({ operator:'regex' });
 
         //then
         expect(ctrl.value.operator).toBe('regex');

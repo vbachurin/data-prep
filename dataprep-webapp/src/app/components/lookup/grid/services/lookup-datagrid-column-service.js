@@ -109,7 +109,7 @@ export default function LookupDatagridColumnService(state, $rootScope, $compile,
     function createHeader(col) {
         var headerScope = $rootScope.$new(true);
         headerScope.column = col;
-        headerScope.added = _.find(state.playground.lookup.columnCheckboxes, {id: col.id});
+        headerScope.added = _.find(state.playground.lookup.columnCheckboxes, { id: col.id });
         var headerElement = angular.element('<lookup-datagrid-header column="column" added="added"></lookup-datagrid-header>');
         $compile(headerElement)(headerScope);
 

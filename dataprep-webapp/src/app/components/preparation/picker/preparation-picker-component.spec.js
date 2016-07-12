@@ -12,13 +12,14 @@
  ============================================================================*/
 
 describe('Preparation Picker Component', () => {
-
-    let createElement, scope, element;
+    let createElement;
+    let scope;
+    let element;
 
     const datasets = [
-        {id: 'de3cc32a-b624-484e-b8e7-dab9061a009c', name: 'my dataset'},
-        {id: '4d0a2718-bec6-4614-ad6c-8b3b326ff6c9', name: 'my second dataset'},
-        {id: '555a2718-bec6-4614-ad6c-8b3b326ff6c7', name: 'my second dataset (1)'}
+        { id: 'de3cc32a-b624-484e-b8e7-dab9061a009c', name: 'my dataset' },
+        { id: '4d0a2718-bec6-4614-ad6c-8b3b326ff6c9', name: 'my second dataset' },
+        { id: '555a2718-bec6-4614-ad6c-8b3b326ff6c7', name: 'my second dataset (1)' }
     ];
 
     const candidatePreparations = [

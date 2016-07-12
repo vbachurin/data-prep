@@ -22,7 +22,7 @@
  * @requires data-prep.lookup.service:LookupDatagridTooltipService
  */
 export default function LookupDatagridGridService($timeout, $window, state, StateService, LookupDatagridStyleService,
-                                                  LookupDatagridColumnService, LookupDatagridTooltipService) {
+    LookupDatagridColumnService, LookupDatagridTooltipService) {
     'ngInject';
 
     var grid = null;
@@ -97,7 +97,7 @@ export default function LookupDatagridGridService($timeout, $window, state, Stat
     function attachColumnListeners() {
         function attachColumnCallback(args) {
             var columnId = args.column.id;
-            var column = _.find(grid.getColumns(), {id: columnId});
+            var column = _.find(grid.getColumns(), { id: columnId });
             updateSelectedLookupColumn(column);
         }
 
@@ -153,7 +153,7 @@ export default function LookupDatagridGridService($timeout, $window, state, Stat
             frozenColumn: 0,
             forceFitColumns: true
         };
-        grid = new Slick.Grid(elementId, state.playground.lookup.dataView, [{id: 'tdpId'}], options);
+        grid = new Slick.Grid(elementId, state.playground.lookup.dataView, [{ id: 'tdpId' }], options);
 
         //listeners
         attachDataChangeListeners();

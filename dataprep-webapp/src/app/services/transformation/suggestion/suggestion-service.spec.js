@@ -25,7 +25,7 @@ describe('Suggestion Service', function() {
         it('should init column suggestions', inject(function(SuggestionService, ColumnSuggestionService) {
             //given
             expect(ColumnSuggestionService.initTransformations).not.toHaveBeenCalled();
-            var column = {id: '0001'};
+            var column = { id: '0001' };
 
             //when
             SuggestionService.setColumn(column);
@@ -37,7 +37,7 @@ describe('Suggestion Service', function() {
         it('should init line suggestions', inject(function(SuggestionService, LineSuggestionService) {
             //given
             expect(LineSuggestionService.initTransformations).not.toHaveBeenCalled();
-            var line = {tdpId: 125};
+            var line = { tdpId: 125 };
 
             //when
             SuggestionService.setLine(line);
@@ -114,5 +114,4 @@ describe('Suggestion Service', function() {
             expect(SuggestionService.tab).toBe(4);
         }));
     });
-
 });

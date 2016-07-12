@@ -15,5 +15,5 @@ import BreadcrumbComponent from './breadcrumb-component';
 
 (() => {
     angular.module('data-prep.breadcrumb', ['talend.sunchoke.dropdown'])
-        .component('breadcrumb', BreadcrumbComponent)
+        .component('breadcrumb', BreadcrumbComponent);
 })();

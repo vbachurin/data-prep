@@ -14,7 +14,9 @@
 'use strict';
 
 describe('Button Loader directive', function () {
-    var scope, element, createElement;
+    var scope;
+    var element;
+    var createElement;
 
     beforeEach(angular.mock.module('talend.widget'));
     beforeEach(angular.mock.module('htmlTemplates'));
@@ -29,7 +31,7 @@ describe('Button Loader directive', function () {
 
         createElement = function () {
             var html =
-                '<talend-button-loader' +
+            '<talend-button-loader' +
                 '   button-class="{{buttonClass}}" ' +
                 '   disable-condition="disabled" ' +
                 '   loading="loading" ' +

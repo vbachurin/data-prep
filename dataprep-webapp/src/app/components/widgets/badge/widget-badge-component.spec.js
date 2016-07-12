@@ -14,7 +14,9 @@
 describe('Talend Badge Component', () => {
     'use strict';
 
-    let scope, createElement, element;
+    let scope;
+    let createElement;
+    let element;
 
     beforeEach(angular.mock.module('talend.widget'));
     beforeEach(angular.mock.module('htmlTemplates'));

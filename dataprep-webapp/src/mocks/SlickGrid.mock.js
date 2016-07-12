@@ -35,34 +35,50 @@ function SlickGridMock () {
         cssStyleConfig: {},
 
         //slickGrid events
-        onActiveCellChanged: {subscribe: function() {}},
-        onBeforeHeaderCellDestroy: {subscribe: function() {}},
-        onClick: {subscribe: function() {}},
-        onColumnsReordered: {subscribe: function() {}},
-        onColumnsResized: {subscribe: function() {}},
-        onHeaderCellRendered: {subscribe: function() {}},
-        onHeaderClick: {subscribe: function() {}},
-        onMouseEnter: {subscribe: function() {}},
-        onMouseLeave: {subscribe: function() {}},
-        onScroll: {subscribe: function() {}},
-        onHeaderContextMenu: {subscribe: function() {}},
+        onActiveCellChanged: { subscribe: function() {} },
+        onBeforeHeaderCellDestroy: { subscribe: function() {} },
+        onClick: { subscribe: function() {} },
+        onColumnsReordered: { subscribe: function() {} },
+        onColumnsResized: { subscribe: function() {} },
+        onHeaderCellRendered: { subscribe: function() {} },
+        onHeaderClick: { subscribe: function() {} },
+        onMouseEnter: { subscribe: function() {} },
+        onMouseLeave: { subscribe: function() {} },
+        onScroll: { subscribe: function() {} },
+        onHeaderContextMenu: { subscribe: function() {} },
 
         //slickGrid functions
         autosizeColumns: function() {},
         invalidate: function() {},
         invalidateRows: function() {},
-        getActiveCell: function() {return this.activeCell;},
-        getColumns: function() {return this.columns;},
-        getCellEditor: function() {return this.cellEditor;},
-        getCellFromEvent: function() {return this.cell;},
-        getCellNodeBox: function() {return this.box;},
-        getRenderedRange: function() {return this.range;},
+        getActiveCell: function() {
+            return this.activeCell;
+        },
+        getColumns: function() {
+            return this.columns;
+        },
+        getCellEditor: function() {
+            return this.cellEditor;
+        },
+        getCellFromEvent: function() {
+            return this.cell;
+        },
+        getCellNodeBox: function() {
+            return this.box;
+        },
+        getRenderedRange: function() {
+            return this.range;
+        },
         render: function() {},
         resetActiveCell: function() {},
         resizeCanvas: function() {},
         scrollCellIntoView: function() {},
-        setColumns: function(columns) {this.columns = columns;},
-        setCellCssStyles: function(cssStyle, config) {this.cssStyleConfig[cssStyle] = config;},
+        setColumns: function(columns) {
+            this.columns = columns;
+        },
+        setCellCssStyles: function(cssStyle, config) {
+            this.cssStyleConfig[cssStyle] = config;
+        },
         scrollRowToTop: function() {},
         updateRowCount: function() {}
     };

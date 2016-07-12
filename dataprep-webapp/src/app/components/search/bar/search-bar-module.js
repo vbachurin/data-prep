@@ -30,4 +30,3 @@ import SearchBarComponent from './search-bar-component';
         ])
         .component('searchBar', SearchBarComponent);
 })();
-

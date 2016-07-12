@@ -25,7 +25,7 @@ describe('Documentation Service', () => {
     beforeEach(angular.mock.module('data-prep.services.documentation'));
 
     beforeEach(inject(($q, DocumentationRestService) => {
-        spyOn(DocumentationRestService, 'search').and.returnValue($q.when({data: thcResult}));
+        spyOn(DocumentationRestService, 'search').and.returnValue($q.when({ data: thcResult }));
     }));
 
     it('should call documentation search rest service and process data', inject(($rootScope, DocumentationService) => {
@@ -76,5 +76,4 @@ describe('Documentation Service', () => {
         //then
         expect(result).toEqual(expectedResult);
     }));
-
 });

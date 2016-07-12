@@ -14,7 +14,10 @@
 describe('Navbar directive', function() {
     'use strict';
 
-    var scope, createElement, element, stateMock;
+    var scope;
+    var createElement;
+    var element;
+    var stateMock;
 
     beforeEach(angular.mock.module('htmlTemplates'));
 

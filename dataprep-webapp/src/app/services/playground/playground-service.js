@@ -30,17 +30,17 @@
  * @requires data-prep.services.export.service:ExportService
  */
 export default function PlaygroundService($state, $rootScope, $q, $translate, $timeout,
-                                          state, StateService,
-                                          DatasetService, DatagridService,
-                                          PreparationService, PreviewService,
-                                          RecipeService, TransformationCacheService,
-                                          StatisticsService, HistoryService,
-                                          OnboardingService, MessageService, ExportService) {
+    state, StateService,
+    DatasetService, DatagridService,
+    PreparationService, PreviewService,
+    RecipeService, TransformationCacheService,
+    StatisticsService, HistoryService,
+    OnboardingService, MessageService, ExportService) {
     'ngInject';
 
     const INVENTORY_SUFFIX = ' ' + $translate.instant('PREPARATION');
 
-    function _wrapInventoryName(invName) {
+    function wrapInventoryName(invName) {
         return invName + INVENTORY_SUFFIX;
     }
 
@@ -125,12 +125,11 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
      */
     function load(preparation) {
         if (!state.playground.preparation || state.playground.preparation.id !== preparation.id) {
-
             $rootScope.$emit('talend.loading.start');
             return PreparationService.getContent(preparation.id, 'head')
                 .then((response) => {
                     StateService.setPreparationName(preparation.name);
-                    reset.call(this, preparation.dataset ? preparation.dataset : {id: preparation.dataSetId}, response, preparation);
+                    reset.call(this, preparation.dataset ? preparation.dataset : { id: preparation.dataSetId }, response, preparation);
                     StateService.showRecipe();
                     StateService.setNameEditionMode(false);
                 })
@@ -206,17 +205,17 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
     //------------------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
-     * @name _getCurrentPreparation
+     * @name getCurrentPreparation
      * @methodOf data-prep.services.playground.service:PlaygroundService
      * @description Return the current preparation, wrapped in a promise.
      * If there is no preparation yet, a new one is created, tagged as draft
      * @returns {Promise} The process promise
      */
-    function _getCurrentPreparation() {
+    function getCurrentPreparation() {
         //create the preparation and taf it draft if it does not exist
         return state.playground.preparation ?
             $q.when(state.playground.preparation) :
-            createOrUpdatePreparation(_wrapInventoryName(state.playground.dataset.name))
+            createOrUpdatePreparation(wrapInventoryName(state.playground.dataset.name))
                 .then((preparation) => {
                     preparation.draft = true;
                     return preparation;
@@ -240,7 +239,7 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
                 RecipeService.refresh(resp.data);
                 if (RecipeService.getRecipe().length === 1) { //first step append
                     StateService.showRecipe();
-                    $state.go('playground.preparation', {prepid: state.playground.preparation.id});
+                    $state.go('playground.preparation', { prepid: state.playground.preparation.id });
                 }
                 else if (OnboardingService.shouldStartTour('recipe') && RecipeService.getRecipe().length === 3) { //third step append : show onboarding
                     StateService.showRecipe();
@@ -269,7 +268,7 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
                 var redo = performCreateOrUpdatePreparation.bind(service, name);
                 HistoryService.addAction(undo, redo);
                 return preparation;
-            })
+            });
         }
         return promise;
     }
@@ -294,7 +293,7 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
                 return preparation;
             })
             .then((preparation) => {
-                $state.go('playground.preparation', {prepid: state.playground.preparation.id});
+                $state.go('playground.preparation', { prepid: state.playground.preparation.id });
                 return preparation;
             });
     }
@@ -317,9 +316,8 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
         //load a specific step, we must load recipe first to get the step id to load. Then we load grid at this step.
         if (RecipeService.getLastActiveStep() !== RecipeService.getLastStep()) {
             var lastActiveStepIndex = RecipeService.getActiveThresholdStepIndex();
-            promise = promise.then(()=> {
-                    return this.updatePreparationDetails()
-                })
+            promise = promise
+                .then(()=> this.updatePreparationDetails())
                 // The grid update cannot be done in parallel because the update change the steps ids
                 // We have to wait for the recipe update to complete
                 .then(() => {
@@ -352,10 +350,10 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
         /*jshint camelcase: false */
         $rootScope.$emit('talend.loading.start');
 
-        return _getCurrentPreparation()
-        //append step
+        return getCurrentPreparation()
+            //append step
             .then((preparation) => {
-                return PreparationService.appendStep(preparation.id, {action: action, parameters: parameters});
+                return PreparationService.appendStep(preparation.id, { action: action, parameters: parameters });
             })
             //update recipe and datagrid
             .then(() => {
@@ -387,7 +385,6 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
      * actions history
      */
     function updateStep(step, newParams) {
-
         PreviewService.cancelPreview();
         PreparationService.copyImplicitParameters(newParams, step.actionParameters.parameters);
 
@@ -399,24 +396,22 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
         $rootScope.$emit('talend.loading.start');
 
         //save the head before transformation for undo
-        let previousHead = RecipeService.getLastStep().transformation.stepId;
+        const previousHead = RecipeService.getLastStep().transformation.stepId;
         //save the last active step index to load this step after update
-        let lastActiveStepIndex = RecipeService.getActiveThresholdStepIndex();
+        const lastActiveStepIndex = RecipeService.getActiveThresholdStepIndex();
 
         return PreparationService.updateStep(state.playground.preparation.id, step, newParams)
-            .then(()=> {
-                return this.updatePreparationDetails()
-            })
+            .then(()=> this.updatePreparationDetails())
             //get step id to load and update datagrid with it
             .then(() => {
-                let activeStep = RecipeService.getStep(lastActiveStepIndex, true);
+                const activeStep = RecipeService.getStep(lastActiveStepIndex, true);
                 return loadStep(activeStep);
             })
             //add entry in history for undo/redo
             .then(() => {
-                let actualHead = RecipeService.getLastStep().transformation.stepId;
-                let undo = setPreparationHead.bind(service, state.playground.preparation.id, previousHead);
-                let redo = setPreparationHead.bind(service, state.playground.preparation.id, actualHead, newParams.column_id);
+                const actualHead = RecipeService.getLastStep().transformation.stepId;
+                const undo = setPreparationHead.bind(service, state.playground.preparation.id, previousHead);
+                const redo = setPreparationHead.bind(service, state.playground.preparation.id, actualHead, newParams.column_id);
                 HistoryService.addAction(undo, redo);
             })
             //hide loading screen
@@ -469,17 +464,17 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
     function copySteps(referenceId) {
         $rootScope.$emit('talend.loading.start');
 
-        return _getCurrentPreparation()
+        return getCurrentPreparation()
             .then((preparation) => PreparationService.copySteps(preparation.id, referenceId))
             .then(() => $q.all([this.updatePreparationDetails(), updatePreparationDatagrid()]))
             .finally(() => {
-                $rootScope.$emit('talend.loading.stop')
+                $rootScope.$emit('talend.loading.stop');
             });
     }
 
-    //------------------------------------------------------------------------------------------------------
-    //--------------------------------------------------PREVIEW---------------------------------------------
-    //------------------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // ----------------------------------------------PREVIEW---------------------------------------
+    // --------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
      * @name updatePreview

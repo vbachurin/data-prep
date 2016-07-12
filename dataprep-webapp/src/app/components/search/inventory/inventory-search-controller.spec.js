@@ -14,19 +14,20 @@
 describe('Inventory Search controller', () => {
     'use strict';
 
-    let component, scope;
+    let component;
+    let scope;
 
     beforeEach(angular.mock.module('data-prep.inventory-search'));
 
     beforeEach(inject(($rootScope, $componentController) => {
         scope = $rootScope.$new();
-        component = $componentController('inventorySearch', {$scope: scope});
+        component = $componentController('inventorySearch', { $scope: scope });
     }));
 
     describe('search ', () => {
         it('should call inventory search service', inject(($q,InventoryService, DocumentationService) => {
             const results = [{}, {}];
-            const docResults = [{url: 'url', name: 'name', description: 'description'}];
+            const docResults = [{ url: 'url', name: 'name', description: 'description' }];
             spyOn(InventoryService, 'search').and.returnValue($q.when(results));
             spyOn(DocumentationService, 'search').and.returnValue($q.when(docResults));
 
@@ -40,7 +41,7 @@ describe('Inventory Search controller', () => {
 
         it('should call documentation search service', inject(($q, InventoryService, DocumentationService) => {
             const results = [{}, {}];
-            const docResults = [{url: 'url', name: 'name', description: 'description'}];
+            const docResults = [{ url: 'url', name: 'name', description: 'description' }];
             spyOn(InventoryService, 'search').and.returnValue($q.when(results));
             spyOn(DocumentationService, 'search').and.returnValue($q.when(docResults));
 
@@ -54,7 +55,7 @@ describe('Inventory Search controller', () => {
 
         it('should set results', inject(($q, InventoryService, DocumentationService) => {
             const results = [{}, {}];
-            const docResults = [{url: 'url', name: 'name', description: 'description'}];
+            const docResults = [{ url: 'url', name: 'name', description: 'description' }];
             spyOn(InventoryService, 'search').and.returnValue($q.when(results));
             spyOn(DocumentationService, 'search').and.returnValue($q.when(docResults));
 
@@ -68,7 +69,7 @@ describe('Inventory Search controller', () => {
 
         it('should NOT set results when they are out of date', inject(($q, InventoryService, DocumentationService) => {
             const results = [{}, {}];
-            const docResults = [{url: 'url', name: 'name', description: 'description'}];
+            const docResults = [{ url: 'url', name: 'name', description: 'description' }];
             spyOn(InventoryService, 'search').and.returnValue($q.when(results));
             spyOn(DocumentationService, 'search').and.returnValue($q.when(docResults));
 

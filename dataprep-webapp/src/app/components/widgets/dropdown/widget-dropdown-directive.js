@@ -178,7 +178,7 @@ export default function TalendDropdown($window, $timeout) {
                 }
 
                 iElement.on('click', (e) => {
-                    if(e.target.classList.contains('dropdown-close')) {
+                    if (e.target.classList.contains('dropdown-close')) {
                         hideMenu();
                     }
                 });

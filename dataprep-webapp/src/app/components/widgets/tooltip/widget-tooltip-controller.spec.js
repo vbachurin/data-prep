@@ -14,7 +14,8 @@
 describe('Tooltip widget controller', function () {
     'use strict';
 
-    var createController, scope;
+    var createController;
+    var scope;
 
     beforeEach(angular.mock.module('talend.widget'));
 
@@ -32,8 +33,8 @@ describe('Tooltip widget controller', function () {
     it('should update position', function() {
         //given
         var ctrl = createController();
-        var horizontalPosition = {left: 1, right: 2};
-        var verticalPosition = {top: 3, bottom: 4};
+        var horizontalPosition = { left: 1, right: 2 };
+        var verticalPosition = { top: 3, bottom: 4 };
 
         //when
         ctrl.updatePosition(horizontalPosition, verticalPosition);

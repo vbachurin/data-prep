@@ -28,7 +28,6 @@ export default function HistoryControl($document, HistoryService) {
         },
         controllerAs: 'historyCtrl',
         link: function (scope) {
-
             function historyListener(event) {
                 //CTRL+Z
                 if (event.keyCode === 90 && event.ctrlKey) {
@@ -42,8 +41,8 @@ export default function HistoryControl($document, HistoryService) {
 
             $document.on('keydown', historyListener);
 
-            scope.$on('$destroy', function () {
-                $document.off('keydown', historyListener)
+            scope.$on('$destroy', () => {
+                $document.off('keydown', historyListener);
             });
         }
     };

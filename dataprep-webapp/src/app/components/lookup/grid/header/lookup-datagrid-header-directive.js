@@ -37,11 +37,12 @@ export default function LookupDatagridHeader($timeout) {
         bindToController: true,
         controllerAs: 'lookupDatagridHeaderCtrl',
         controller: 'LookupDatagridHeaderCtrl',
-        link: function (scope, iElement) {
-            var addToLookupDiv, addToLookupCheckbox;
-            $timeout(function () {
+        link: (scope, iElement) => {
+            let addToLookupDiv;
+            let addToLookupCheckbox;
+            $timeout(() => {
                 addToLookupDiv = iElement.find('.add-to-lookup');
-                addToLookupDiv.on('click', function (e) {
+                addToLookupDiv.on('click', (e) => {
                     e.stopPropagation();
                     addToLookupCheckbox = addToLookupDiv.find('input[type=checkbox]');
                     if (addToLookupCheckbox) {

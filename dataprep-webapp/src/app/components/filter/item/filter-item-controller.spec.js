@@ -14,11 +14,14 @@
 describe('Filter item controller', () => {
     'use strict';
 
-    let createController, scope;
+    let createController;
+    let scope;
 
-    let filter,
-        editable, onEditFn,
-        removable, onRemoveFn;
+    let filter;
+    let editable;
+    let onEditFn;
+    let removable;
+    let onRemoveFn;
 
     beforeEach(angular.mock.module('data-prep.filter-item'));
     beforeEach(angular.mock.module('pascalprecht.translate', $translateProvider => {

@@ -24,7 +24,8 @@ import OnboardingService from './onboarding-service';
      * @name data-prep.services.onboarding
      * @description This module contains the services to manage onboarding tours
      */
-    angular.module('data-prep.services.onboarding', [
+    angular.module('data-prep.services.onboarding',
+        [
             'ui.router',
             'data-prep.services.state'
         ])

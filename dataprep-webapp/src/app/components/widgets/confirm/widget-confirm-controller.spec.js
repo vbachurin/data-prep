@@ -14,7 +14,9 @@
 describe('Confirm directive', function() {
     'use strict';
 
-    var ctrl, createController, scope;
+    var ctrl;
+    var createController;
+    var scope;
 
     beforeEach(angular.mock.module('talend.widget'));
 

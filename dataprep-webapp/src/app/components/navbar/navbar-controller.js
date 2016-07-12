@@ -39,7 +39,7 @@ export default function NavbarCtrl($timeout, $state, state, version, copyRights,
         !$state.params.prepid &&
         !$state.params.datasetid &&
         OnboardingService.shouldStartTour(tourId)) {
-            OnboardingService.startTour(tourId);
+        OnboardingService.startTour(tourId);
     }
 
     //--------------------------------------------------------------------------------------------------------------

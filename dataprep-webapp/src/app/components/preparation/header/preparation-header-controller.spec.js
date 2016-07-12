@@ -12,17 +12,18 @@
  ============================================================================*/
 
 describe('Preparation Header controller', () => {
-
-    let createController, scope, stateMock;
+    let createController;
+    let scope;
+    let stateMock;
 
     const sortList = [
-        {id: 'name', name: 'NAME_SORT', property: 'name'},
-        {id: 'date', name: 'DATE_SORT', property: 'created'}
+        { id: 'name', name: 'NAME_SORT', property: 'name' },
+        { id: 'date', name: 'DATE_SORT', property: 'created' }
     ];
 
     const orderList = [
-        {id: 'asc', name: 'ASC_ORDER'},
-        {id: 'desc', name: 'DESC_ORDER'}
+        { id: 'asc', name: 'ASC_ORDER' },
+        { id: 'desc', name: 'DESC_ORDER' }
     ];
 
     beforeEach(angular.mock.module('data-prep.preparation-header', ($provide) => {
@@ -43,7 +44,7 @@ describe('Preparation Header controller', () => {
     beforeEach(inject(($rootScope, $componentController, $q, StorageService, StateService) => {
         scope = $rootScope.$new();
 
-        createController = () => $componentController('preparationHeader', {$scope: scope});
+        createController = () => $componentController('preparationHeader', { $scope: scope });
 
         spyOn(StorageService, 'setPreparationsSort').and.returnValue();
         spyOn(StorageService, 'setPreparationsOrder').and.returnValue();
@@ -231,7 +232,7 @@ describe('Preparation Header controller', () => {
         it('should go to new folder', inject(($q, $state, FolderService, StateService) => {
             //given
             const ctrl = createController();
-            spyOn(FolderService, 'create').and.returnValue($q.when({data: {id: '123456'}}));
+            spyOn(FolderService, 'create').and.returnValue($q.when({ data: { id: '123456' } }));
             spyOn(StateService, 'setPreviousRoute').and.returnValue($q.when());
             spyOn($state, 'go');
 
@@ -240,8 +241,8 @@ describe('Preparation Header controller', () => {
             scope.$digest();
 
             //then
-            expect(StateService.setPreviousRoute).toHaveBeenCalledWith('nav.index.preparations', {folderId: 'L215L2ZvbGRlcg=='});
-            expect($state.go).toHaveBeenCalledWith('nav.index.preparations', {folderId: '123456'});
+            expect(StateService.setPreviousRoute).toHaveBeenCalledWith('nav.index.preparations', { folderId: 'L215L2ZvbGRlcg==' });
+            expect($state.go).toHaveBeenCalledWith('nav.index.preparations', { folderId: '123456' });
         }));
     });
 });

@@ -135,8 +135,7 @@ export default function TalendModal($timeout) {
         },
         bindToController: true,
         controllerAs: 'talendModalCtrl',
-        controller: function () {
-        },
+        controller: function () {},
         link: {
             post: function (scope, iElement, iAttrs, ctrl) {
                 var body = angular.element('body').eq(0);
@@ -186,7 +185,7 @@ export default function TalendModal($timeout) {
                 var attachListeners = function () {
                     innerElement.on('click', function (e) {
                         e.stopPropagation();
-                        if(e.target.classList.contains('talend-modal-close')) {
+                        if (e.target.classList.contains('talend-modal-close')) {
                             hideModal();
                         }
                     });
@@ -209,7 +208,6 @@ export default function TalendModal($timeout) {
                  */
                 var attachKeyMap = function () {
                     innerElement.bind('keydown', function (e) {
-
                         // hide modal on 'ESC' keydown
                         if (e.keyCode === 27 && !ctrl.disableCloseOnBackgroundClick) {
                             hideModal();
@@ -263,8 +261,8 @@ export default function TalendModal($timeout) {
                                 inputs.select();
                             }
                         }, 0, false);
-
-                    } else if (oldValue) {
+                    }
+                    else if (oldValue) {
                         ctrl.onClose();
                         deregisterAndFocusOnLastModal(innerElement);
                     }

@@ -28,7 +28,7 @@
  * @restrict E
  */
 export default function LookupDatagrid($timeout, state, LookupDatagridGridService, LookupDatagridColumnService,
-                                       LookupDatagridStyleService, LookupDatagridTooltipService) {
+    LookupDatagridStyleService, LookupDatagridTooltipService) {
     'ngInject';
 
     return {
@@ -81,7 +81,7 @@ export default function LookupDatagrid($timeout, state, LookupDatagridGridServic
                     columnTimeout = $timeout(function () {
                         columns = LookupDatagridColumnService.createColumns(data.metadata.columns);
 
-                        selectedColumn = stateSelectedColumn ? _.find(columns, {id: stateSelectedColumn.id}) : null;
+                        selectedColumn = stateSelectedColumn ? _.find(columns, { id: stateSelectedColumn.id }) : null;
 
                         LookupDatagridStyleService.updateColumnClass(columns, selectedColumn);
                         grid.setColumns(columns); // IMPORTANT : this set columns in the grid
@@ -118,4 +118,3 @@ export default function LookupDatagrid($timeout, state, LookupDatagridGridServic
         }
     };
 }
-

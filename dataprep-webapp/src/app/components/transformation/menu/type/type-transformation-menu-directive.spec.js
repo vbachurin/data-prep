@@ -13,17 +13,19 @@
 
 describe('Transformation menu directive', function () {
     'use strict';
-    var scope, createElement, element;
+    var scope;
+    var createElement;
+    var element;
 
     var types = [
-        {'id': 'ANY', 'name': 'any', 'labelKey': 'ANY'},
-        {'id': 'STRING', 'name': 'string', 'labelKey': 'STRING'},
-        {'id': 'NUMERIC', 'name': 'numeric', 'labelKey': 'NUMERIC'},
-        {'id': 'INTEGER', 'name': 'integer', 'labelKey': 'INTEGER'},
-        {'id': 'DOUBLE', 'name': 'double', 'labelKey': 'DOUBLE'},
-        {'id': 'FLOAT', 'name': 'float', 'labelKey': 'FLOAT'},
-        {'id': 'BOOLEAN', 'name': 'boolean', 'labelKey': 'BOOLEAN'},
-        {'id': 'DATE', 'name': 'date', 'labelKey': 'DATE'}
+        { 'id': 'ANY', 'name': 'any', 'labelKey': 'ANY' },
+        { 'id': 'STRING', 'name': 'string', 'labelKey': 'STRING' },
+        { 'id': 'NUMERIC', 'name': 'numeric', 'labelKey': 'NUMERIC' },
+        { 'id': 'INTEGER', 'name': 'integer', 'labelKey': 'INTEGER' },
+        { 'id': 'DOUBLE', 'name': 'double', 'labelKey': 'DOUBLE' },
+        { 'id': 'FLOAT', 'name': 'float', 'labelKey': 'FLOAT' },
+        { 'id': 'BOOLEAN', 'name': 'boolean', 'labelKey': 'BOOLEAN' },
+        { 'id': 'DATE', 'name': 'date', 'labelKey': 'DATE' }
     ];
 
     beforeEach(angular.mock.module('data-prep.transformation-menu'));
@@ -49,10 +51,10 @@ describe('Transformation menu directive', function () {
             domainFrequency: 18,
             type: 'string',
             semanticDomains: [
-                {id: '', label: '', frequency: 15},
-                {id: 'CITY', label: 'CITY', frequency: 18},
-                {id: 'REGION', label: 'REGION', frequency: 6},
-                {id: 'COUNTRY', label: 'COUNTRY', frequency: 17}
+                { id: '', label: '', frequency: 15 },
+                { id: 'CITY', label: 'CITY', frequency: 18 },
+                { id: 'REGION', label: 'REGION', frequency: 6 },
+                { id: 'COUNTRY', label: 'COUNTRY', frequency: 17 }
             ]
         };
 

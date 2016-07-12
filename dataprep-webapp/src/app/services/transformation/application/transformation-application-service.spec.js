@@ -3,7 +3,7 @@ describe('Transformation Application Service', function () {
     var stateMock;
 
     beforeEach(angular.mock.module('data-prep.services.transformation', ($provide) => {
-        stateMock = {playground: {grid: {}}};
+        stateMock = { playground: { grid: {} } };
         stateMock.playground.filter = {
             applyTransformationOnFilters: true,
             gridFilters: [88]
@@ -26,10 +26,10 @@ describe('Transformation Application Service', function () {
     describe('Append Step', () => {
         it('should call appendStep with column', inject((TransformationApplicationService, PlaygroundService) => {
             //given
-            var transformation = {name: 'tolowercase'};
+            var transformation = { name: 'tolowercase' };
             var scope = 'column';
-            var params = {param: 'value'};
-            stateMock.playground.grid.selectedColumn = {id: '0001', name: 'firstname'};
+            var params = { param: 'value' };
+            stateMock.playground.grid.selectedColumn = { id: '0001', name: 'firstname' };
             stateMock.playground.filter.applyTransformationOnFilters = false;
 
             //when
@@ -48,10 +48,10 @@ describe('Transformation Application Service', function () {
 
         it('should call appendStep with row', inject((TransformationApplicationService, PlaygroundService) => {
             //given
-            var transformation = {name: 'tolowercase'};
+            var transformation = { name: 'tolowercase' };
             var scope = 'line';
-            var params = {param: 'value'};
-            stateMock.playground.grid.selectedLine = {tdpId: 125};
+            var params = { param: 'value' };
+            stateMock.playground.grid.selectedLine = { tdpId: 125 };
             stateMock.playground.filter.applyTransformationOnFilters = false;
 
             //when
@@ -70,9 +70,9 @@ describe('Transformation Application Service', function () {
 
         it('should call appendStep without param', inject((TransformationApplicationService, PlaygroundService) => {
             //given
-            var transformation = {name: 'tolowercase'};
+            var transformation = { name: 'tolowercase' };
             var scope = 'column';
-            stateMock.playground.grid.selectedColumn = {id: '0001', name: 'firstname'};
+            stateMock.playground.grid.selectedColumn = { id: '0001', name: 'firstname' };
             stateMock.playground.filter.applyTransformationOnFilters = false;
 
             //when
@@ -90,9 +90,9 @@ describe('Transformation Application Service', function () {
 
         it('should call appendStep with filter', inject((TransformationApplicationService, PlaygroundService) => {
             //given
-            var transformation = {name: 'tolowercase'};
+            var transformation = { name: 'tolowercase' };
             var scope = 'column';
-            stateMock.playground.grid.selectedColumn = {id: '0001', name: 'firstname'};
+            stateMock.playground.grid.selectedColumn = { id: '0001', name: 'firstname' };
             stateMock.playground.filter.applyTransformationOnFilters = true;
 
             //when
@@ -116,11 +116,11 @@ describe('Transformation Application Service', function () {
 
         it('should create an append closure', inject((TransformationApplicationService, PlaygroundService) => {
             //given
-            var transformation = {name: 'tolowercase'};
+            var transformation = { name: 'tolowercase' };
             var scope = 'column';
-            var params = {param: 'value'};
-            stateMock.playground.grid.selectedColumn = {id: '0001', name: 'firstname'};
-            stateMock.playground.grid.selectedLine = {tdpId: 125};
+            var params = { param: 'value' };
+            stateMock.playground.grid.selectedColumn = { id: '0001', name: 'firstname' };
+            stateMock.playground.grid.selectedLine = { tdpId: 125 };
             stateMock.playground.filter.applyTransformationOnFilters = false;
 
             //when
@@ -142,13 +142,13 @@ describe('Transformation Application Service', function () {
     describe('Edit Cell', () => {
         it('should append step on cell scope', inject((TransformationApplicationService, PlaygroundService) => {
             //given
-            const rowItem = {tdpId: 58, '0000': 'McDonald', '0001': 'Ronald'};
-            const column = {id: '0001', name: 'firstname'};
+            const rowItem = { tdpId: 58, '0000': 'McDonald', '0001': 'Ronald' };
+            const column = { id: '0001', name: 'firstname' };
             const newValue = 'Donald';
             const updateAllCellWithValue = false; // only selected cell
 
-            stateMock.playground.grid.selectedLine = {tdpId: 58};
-            stateMock.playground.grid.selectedColumn = {id: '0001', name: 'firstname'};
+            stateMock.playground.grid.selectedLine = { tdpId: 58 };
+            stateMock.playground.grid.selectedColumn = { id: '0001', name: 'firstname' };
             stateMock.playground.filter.applyTransformationOnFilters = false;
 
             //when
@@ -171,13 +171,13 @@ describe('Transformation Application Service', function () {
 
         it('should append step on column scope', inject((TransformationApplicationService, PlaygroundService) => {
             //given
-            const rowItem = {tdpId: 58, '0000': 'McDonald', '0001': 'Ronald'};
-            const column = {id: '0001', name: 'firstname'};
+            const rowItem = { tdpId: 58, '0000': 'McDonald', '0001': 'Ronald' };
+            const column = { id: '0001', name: 'firstname' };
             const newValue = 'Donald';
             const updateAllCellWithValue = true; // all cells in column
 
-            stateMock.playground.grid.selectedLine = {tdpId: 58};
-            stateMock.playground.grid.selectedColumn = {id: '0001', name: 'firstname'};
+            stateMock.playground.grid.selectedLine = { tdpId: 58 };
+            stateMock.playground.grid.selectedColumn = { id: '0001', name: 'firstname' };
             stateMock.playground.filter.applyTransformationOnFilters = false;
 
             //when
@@ -200,13 +200,13 @@ describe('Transformation Application Service', function () {
 
         it('should append step with filters', inject((TransformationApplicationService, PlaygroundService) => {
             //given
-            const rowItem = {tdpId: 58, '0000': 'McDonald', '0001': 'Ronald'};
-            const column = {id: '0001', name: 'firstname'};
+            const rowItem = { tdpId: 58, '0000': 'McDonald', '0001': 'Ronald' };
+            const column = { id: '0001', name: 'firstname' };
             const newValue = 'Donald';
             const updateAllCellWithValue = true;
 
-            stateMock.playground.grid.selectedLine = {tdpId: 58};
-            stateMock.playground.grid.selectedColumn = {id: '0001', name: 'firstname'};
+            stateMock.playground.grid.selectedLine = { tdpId: 58 };
+            stateMock.playground.grid.selectedColumn = { id: '0001', name: 'firstname' };
             stateMock.playground.filter.applyTransformationOnFilters = true; // apply on filter
 
             //when

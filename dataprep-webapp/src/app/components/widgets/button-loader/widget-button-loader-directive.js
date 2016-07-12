@@ -41,7 +41,8 @@ export default function TalendButtonLoader() {
             loadingClass: '@'
         },
         bindToController: true,
-        controller: () => {},
+        controller: () => {
+        },
         controllerAs: 'buttonLoaderCtrl'
     };
 }

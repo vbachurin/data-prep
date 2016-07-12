@@ -39,7 +39,6 @@ export default function TypeTransformMenuCtrl($scope, PlaygroundService, ColumnT
             vm.types = _.filter(types, function (type) {
                 return ignoredTypes.indexOf(type.id.toLowerCase()) === -1;
             });
-
         });
 
     /**
@@ -86,7 +85,7 @@ export default function TypeTransformMenuCtrl($scope, PlaygroundService, ColumnT
     vm.changeType = function changeType(type) {
         var originalType = vm.column.type;
         var originalDomain = getOriginalDomain();
-        setColumnDomainAndType({id: '', label: '', frequency: 0}, type.id);
+        setColumnDomainAndType({ id: '', label: '', frequency: 0 }, type.id);
 
         var parameters = {
             scope: 'column',

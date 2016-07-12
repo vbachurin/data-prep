@@ -23,13 +23,13 @@
  * @requires talend.widget.service:TalendConfirmService
  */
 export default function ImportCtrl($document,
-                                   state, StateService,
-                                   UploadWorkflowService, UpdateWorkflowService,
-                                   DatasetService,
-                                   TalendConfirmService,
-                                   ImportRestService) {
+    state, StateService,
+    UploadWorkflowService, UpdateWorkflowService,
+    DatasetService,
+    TalendConfirmService,
+    ImportRestService) {
     'ngInject';
-    var vm = this;
+    const vm = this;
     vm.state = state;
 
     /**
@@ -59,9 +59,9 @@ export default function ImportCtrl($document,
      */
     vm.isFetchingParameters = false;
 
-    //--------------------------------------------------------------------------------------------------------------
-    //-----------------------------------------------------Import---------------------------------------------------
-    //--------------------------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // ---------------------------------------------Import-----------------------------------------
+    // --------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
      * @name startDefaultImport
@@ -69,8 +69,8 @@ export default function ImportCtrl($document,
      * @description Start the default import process of a dataset.
      */
     vm.startDefaultImport = () => {
-        let defaultExportType = _.find(vm.importTypes, 'defaultImport', true);
-        vm.startImport(defaultExportType ? defaultExportType : vm.importTypes[0]);
+        const defaultExportType = _.find(vm.importTypes, 'defaultImport', true) || vm.importTypes[0];
+        vm.startImport(defaultExportType);
     };
 
     /**
@@ -111,7 +111,6 @@ export default function ImportCtrl($document,
      * @param {object} importType The import parameters
      */
     function createDataset(file, name, importType) {
-
         const params = DatasetService.getLocationParamIteration({}, importType.parameters);
         params.type = importType.locationType;
         params.name = name;
@@ -146,7 +145,7 @@ export default function ImportCtrl($document,
         const file = vm.datasetFile ? vm.datasetFile[0] : null;
         const datasetName = file ?
             file.name :
-            _.find(importType.parameters, {name: 'name'}).value;
+            _.find(importType.parameters, { name: 'name' }).value;
 
         // remove file extension and ask final name
         const name = datasetName.replace(/\.[^/.]+$/, '');
@@ -160,7 +159,8 @@ export default function ImportCtrl($document,
             .catch(() => {
                 vm.datasetName = name;
                 vm.datasetNameModal = true;
-            }).finally(() => {
+            })
+            .finally(() => {
                 vm.showModal = false;
             });
     };
@@ -200,10 +200,10 @@ export default function ImportCtrl($document,
      * Update : update the content of the existing dataset
      */
     function updateOrCreate(file, existingDataset, importType, name) {
-        return TalendConfirmService.confirm(null, ['UPDATE_EXISTING_DATASET'], {dataset: name})
+        return TalendConfirmService.confirm(null, ['UPDATE_EXISTING_DATASET'], { dataset: name })
             // user confirm : let's update the dataset
             .then(() => {
-                UpdateWorkflowService.updateDataset(file, existingDataset)
+                UpdateWorkflowService.updateDataset(file, existingDataset);
             })
             // user dismiss : cancel
             // user select no : get unique name and create a new dataset
@@ -214,10 +214,11 @@ export default function ImportCtrl($document,
                 return DatasetService.getUniqueName(name)
                     .then((name) => {
                         return createDataset(
-                        file,
-                        name,
-                        importType
-                    )});
+                            file,
+                            name,
+                            importType
+                        );
+                    });
             });
     }
 }

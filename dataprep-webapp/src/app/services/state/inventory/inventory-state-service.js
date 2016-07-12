@@ -39,7 +39,7 @@ export const inventoryState = {
     datasetsOrder: orderList[1],
     preparationsSort: sortList[1],
     preparationsOrder: orderList[1],
-    
+
     homeFolderId: HOME_FOLDER.id,
     folder: {
         metadata: HOME_FOLDER,
@@ -55,7 +55,6 @@ export const inventoryState = {
     isFetchingPreparations: false,
 };
 
-
 export function InventoryStateService() {
     return {
         setPreparations: setPreparations,
@@ -67,7 +66,7 @@ export function InventoryStateService() {
 
         setHomeFolderId: setHomeFolderId,
         setFolder: setFolder,
-        setBreadcrumb: setBreadcrumb, 
+        setBreadcrumb: setBreadcrumb,
         setBreadcrumbChildren: setBreadcrumbChildren,
 
         setDatasetsSort: setDatasetsSort,
@@ -104,12 +103,12 @@ export function InventoryStateService() {
 
     /**
      * @ngdoc method
-     * @name _consolidateDatasets
+     * @name consolidateDatasets
      * @methodOf data-prep.services.state.service:InventoryStateService
      * @param {array} datasets The datasets list to consolidate
      * @description Set the preparations list in each dataset to consolidate
      */
-    function _consolidateDatasets(datasets) {
+    function consolidateDatasets(datasets) {
         if (!datasets || !inventoryState.preparations) {
             return;
         }
@@ -123,12 +122,12 @@ export function InventoryStateService() {
 
     /**
      * @ngdoc method
-     * @name _consolidatePreparations
+     * @name consolidatePreparations
      * @methodOf data-prep.services.state.service:InventoryStateService
      * @param {array} preparations The preparations list to consolidate
      * @description Set the dataset in each preparation to consolidate
      */
-    function _consolidatePreparations(preparations) {
+    function consolidatePreparations(preparations) {
         if (!preparations || !inventoryState.datasets) {
             return;
         }
@@ -145,8 +144,8 @@ export function InventoryStateService() {
      * @description Consolidate preparations, datasets and the current folder datasets
      */
     function consolidate() {
-        _consolidatePreparations(inventoryState.preparations);
-        _consolidateDatasets(inventoryState.datasets);
+        consolidatePreparations(inventoryState.preparations);
+        consolidateDatasets(inventoryState.datasets);
     }
 
     /**

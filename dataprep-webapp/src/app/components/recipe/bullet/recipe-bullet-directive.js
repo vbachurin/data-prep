@@ -197,7 +197,8 @@ export default function RecipeBullet($timeout) {
                 activateAllCables();
                 if (!ctrl.step.inactive && !ctrl.isStartChain()) {
                     deActivateBottomCable(ctrl.stepIndex - 1);
-                } else if (!ctrl.isEndChain()) {
+                }
+                else if (!ctrl.isEndChain()) {
                     deActivateBottomCable(ctrl.stepIndex);
                 }
             };
@@ -219,7 +220,8 @@ export default function RecipeBullet($timeout) {
             if (!ctrl.isEndChain()) {
                 iElement.mouseenter(mouseEnterListener);
                 iElement.mouseleave(mouseLeaveListener);
-            } else {
+            }
+            else {
                 bulletCircleElement.addEventListener('mouseenter', mouseEnterListener);
                 bulletCircleElement.addEventListener('mouseleave', mouseLeaveListener);
             }
@@ -240,7 +242,6 @@ export default function RecipeBullet($timeout) {
             });
 
             $timeout(updateSVGSizes, 0, false);
-
         }
     };
 }

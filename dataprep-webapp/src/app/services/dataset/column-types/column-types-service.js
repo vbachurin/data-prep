@@ -19,7 +19,7 @@
 export default function ColumnTypesService($q, $http, RestURLs) {
     'ngInject';
 
-    var types;
+    let types;
 
     /**
      * @ngdoc method
@@ -32,7 +32,7 @@ export default function ColumnTypesService($q, $http, RestURLs) {
         if (types) {
             return $q.when(types);
         }
-        return $http.get(RestURLs.typesUrl).then(function (response) {
+        return $http.get(RestURLs.typesUrl).then((response) => {
             types = response.data;
             return types;
         });

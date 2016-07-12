@@ -24,7 +24,7 @@
  */
 export default class PreparationListCtrl {
     constructor($state, $stateParams, state, StateService,
-                FolderService, PreparationService, MessageService, TalendConfirmService) {
+        FolderService, PreparationService, MessageService, TalendConfirmService) {
         'ngInject';
 
         this.$state = $state;
@@ -53,6 +53,7 @@ export default class PreparationListCtrl {
                 this.StateService.setFetchingInventoryPreparations(false);
             });
     }
+
     /**
      * @ngdoc method
      * @name delete
@@ -61,13 +62,16 @@ export default class PreparationListCtrl {
      * @description Delete a preparation
      */
     remove(preparation) {
-        this.TalendConfirmService.confirm({ disableEnter: true }, ['DELETE_PERMANENTLY', 'NO_UNDONE_CONFIRM'], {
+        this.TalendConfirmService.confirm(
+            { disableEnter: true },
+            ['DELETE_PERMANENTLY', 'NO_UNDONE_CONFIRM'],
+            {
                 type: 'preparation',
                 name: preparation.name,
             })
             .then(() => this.PreparationService.delete(preparation))
             .then(() => {
-                this.FolderService.refresh(this.state.inventory.folder.metadata.id)
+                this.FolderService.refresh(this.state.inventory.folder.metadata.id);
             })
             .then(() => {
                 this.MessageService.success(
@@ -91,7 +95,7 @@ export default class PreparationListCtrl {
         if (cleanName) {
             return this.PreparationService.setName(preparation.id, newName)
                 .then(() => {
-                    this.FolderService.refresh(this.state.inventory.folder.metadata.id)
+                    this.FolderService.refresh(this.state.inventory.folder.metadata.id);
                 })
                 .then(() => {
                     this.MessageService.success(
@@ -132,10 +136,10 @@ export default class PreparationListCtrl {
                 );
             })
             .then(() => {
-                this.FolderService.refresh(this.state.inventory.folder.metadata.id)
+                this.FolderService.refresh(this.state.inventory.folder.metadata.id);
             })
             .then(() => {
-                this.copyMoveModal = false
+                this.copyMoveModal = false;
             });
     }
 
@@ -158,16 +162,16 @@ export default class PreparationListCtrl {
                 );
             })
             .then(() => {
-                this.FolderService.refresh(currentId)
+                this.FolderService.refresh(currentId);
             })
             .then(() => {
-                this.copyMoveModal = false
+                this.copyMoveModal = false;
             });
     }
 
-    //------------------------------------------------------------------------------------------------------------------
-    //--------------------------------------------------------FOLDER----------------------------------------------------
-    //------------------------------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // -------------------------------------------FOLDER-------------------------------------------
+    // --------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
      * @name goToFolder
@@ -190,7 +194,7 @@ export default class PreparationListCtrl {
     renameFolder(folder, newName) {
         this.FolderService.rename(folder.id, newName)
             .then(() => {
-                this.FolderService.refresh(this.state.inventory.folder.metadata.id)
+                this.FolderService.refresh(this.state.inventory.folder.metadata.id);
             });
     }
 
@@ -204,7 +208,7 @@ export default class PreparationListCtrl {
     removeFolder(folder) {
         this.FolderService.remove(folder.id)
             .then(() => {
-                this.FolderService.refresh(this.state.inventory.folder.metadata.id)
+                this.FolderService.refresh(this.state.inventory.folder.metadata.id);
             });
     }
 }

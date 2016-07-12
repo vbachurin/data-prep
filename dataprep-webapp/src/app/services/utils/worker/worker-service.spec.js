@@ -29,7 +29,7 @@ describe('Worker service', () => {
 
     it('should create a Parallel worker wrapper', inject((WorkerService) => {
         //given
-        const parameters = {a: 5, b: 8};
+        const parameters = { a: 5, b: 8 };
         const options = {};
 
         //when
@@ -44,7 +44,7 @@ describe('Worker service', () => {
     describe('importScripts', () => {
         it('should add external script to Parallel operation', inject((WorkerService) => {
             //given
-            const parameters = {a: 5, b: 8};
+            const parameters = { a: 5, b: 8 };
             const options = {};
             const workerWrapper = WorkerService.create(parameters, options);
             spyOn(workerWrapper.operation, 'require').and.returnValue();
@@ -60,7 +60,7 @@ describe('Worker service', () => {
 
         it('should return worker wrapper to allow fluid api', inject((WorkerService) => {
             //given
-            const parameters = {a: 5, b: 8};
+            const parameters = { a: 5, b: 8 };
             const options = {};
             const workerWrapper = WorkerService.create(parameters, options);
 
@@ -77,12 +77,13 @@ describe('Worker service', () => {
     describe('require', () => {
         it('should add local function to Parallel operation', inject((WorkerService) => {
             //given
-            const parameters = {a: 5, b: 8};
+            const parameters = { a: 5, b: 8 };
             const options = {};
             const workerWrapper = WorkerService.create(parameters, options);
             spyOn(workerWrapper.operation, 'require').and.returnValue();
 
-            const fn = () => {};
+            const fn = () => {
+            };
 
             //when
             workerWrapper.require(fn);
@@ -93,11 +94,12 @@ describe('Worker service', () => {
 
         it('should return worker wrapper to allow fluid api', inject((WorkerService) => {
             //given
-            const parameters = {a: 5, b: 8};
+            const parameters = { a: 5, b: 8 };
             const options = {};
             const workerWrapper = WorkerService.create(parameters, options);
 
-            const fn = () => {};
+            const fn = () => {
+            };
 
             //when
             const result = workerWrapper.require(fn);
@@ -110,7 +112,7 @@ describe('Worker service', () => {
     describe('run', () => {
         it('should run main function and resolve promise', inject(($rootScope, $q, WorkerService) => {
             //given
-            const parameters = {a: 5, b: 8};
+            const parameters = { a: 5, b: 8 };
             const options = {};
             const workerWrapper = WorkerService.create(parameters, options);
             spyOn(workerWrapper.operation, 'spawn').and.callFake((mainFn) => $q.when(mainFn(parameters)));
@@ -131,7 +133,7 @@ describe('Worker service', () => {
     describe('cancel', () => {
         it('should cancel worker wrapper promise', inject(($rootScope, $q, WorkerService) => {
             //given
-            const parameters = {a: 5, b: 8};
+            const parameters = { a: 5, b: 8 };
             const options = {};
             const workerWrapper = WorkerService.create(parameters, options);
             spyOn(workerWrapper.operation, 'spawn').and.callFake((mainFn) => $q.when(mainFn(parameters)));

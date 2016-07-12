@@ -39,19 +39,19 @@ export default function TalendButtonSwitch() {
             changeAction: '&'
         },
         bindToController: true,
-        controller: function () {
+        controller: () => {
         },
         controllerAs: 'buttonSwitchCtrl',
-        link: function (scope, iElement, attrs, ctrl) {
+        link: (scope, iElement, attrs, ctrl) => {
             function next() {
-                var index = ctrl.values.indexOf(ctrl.currentValue);
+                const index = ctrl.values.indexOf(ctrl.currentValue);
                 return (index === -1 || index >= ctrl.values.length - 1) ?
                     ctrl.values[0] :
                     ctrl.values[index + 1];
             }
 
-            iElement.on('click', function () {
-                ctrl.changeAction({selected: next()});
+            iElement.on('click', () => {
+                ctrl.changeAction({ selected: next() });
             });
         }
     };
