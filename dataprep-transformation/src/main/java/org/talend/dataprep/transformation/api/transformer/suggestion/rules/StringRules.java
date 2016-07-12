@@ -13,12 +13,6 @@
 
 package org.talend.dataprep.transformation.api.transformer.suggestion.rules;
 
-import static org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule.*;
-import static org.talend.dataprep.transformation.api.transformer.suggestion.rules.GenericRule.GenericRuleBuilder.forActions;
-
-import java.util.List;
-import java.util.StringTokenizer;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -26,8 +20,15 @@ import org.talend.dataprep.api.dataset.statistics.PatternFrequency;
 import org.talend.dataprep.transformation.actions.text.*;
 import org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule;
 
+import java.util.List;
+import java.util.StringTokenizer;
+
+import static org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule.*;
+import static org.talend.dataprep.transformation.api.transformer.suggestion.rules.ColumnPredicates.isString;
+import static org.talend.dataprep.transformation.api.transformer.suggestion.rules.GenericRule.GenericRuleBuilder.forActions;
+
 @Component
-public class StringRules extends BasicRules {
+public class StringRules {
 
     /**
      * @return A {@link SuggestionEngineRule rule} that hides Trim ("remove leading & trailing spaces") if no leading
@@ -36,7 +37,7 @@ public class StringRules extends BasicRules {
     @Bean
     public static SuggestionEngineRule trailingSpaceRule() {
         return forActions(Trim.TRIM_ACTION_NAME) //
-                .when(IS_STRING) //
+                .when(isString()) //
                 .then(columnMetadata -> {
                     final List<PatternFrequency> patterns = columnMetadata.getStatistics().getPatternFrequencies();
                     for (PatternFrequency pattern : patterns) {
@@ -59,7 +60,7 @@ public class StringRules extends BasicRules {
     @Bean
     public static SuggestionEngineRule upperCaseRule() {
         return forActions(UpperCase.UPPER_CASE_ACTION_NAME) //
-                .when(IS_STRING) //
+                .when(isString()) //
                 .then(columnMetadata -> {
                     final List<PatternFrequency> patterns = columnMetadata.getStatistics().getPatternFrequencies();
                     for (PatternFrequency pattern : patterns) {
@@ -80,7 +81,7 @@ public class StringRules extends BasicRules {
     @Bean
     public static SuggestionEngineRule lowerCaseRule() {
         return forActions(LowerCase.LOWER_CASE_ACTION_NAME) //
-                .when(IS_STRING) //
+                .when(isString()) //
                 .then(columnMetadata -> {
                     final List<PatternFrequency> patterns = columnMetadata.getStatistics().getPatternFrequencies();
                     for (PatternFrequency pattern : patterns) {
@@ -101,7 +102,7 @@ public class StringRules extends BasicRules {
     @Bean
     public static SuggestionEngineRule properCaseRule() {
         return forActions(ProperCase.PROPER_CASE_ACTION_NAME) //
-                .when(IS_STRING) //
+                .when(isString()) //
                 .then(StringRules::computeScoreForProperCaseAction) //
                 .build();
     }
@@ -144,7 +145,7 @@ public class StringRules extends BasicRules {
     @Bean
     public static SuggestionEngineRule replaceRule() {
         return forActions(ReplaceOnValue.REPLACE_ON_VALUE_ACTION_NAME) //
-                .when(IS_STRING) //
+                .when(isString()) //
                 .then(columnMetadata -> LOW) //
                 .build();
     }

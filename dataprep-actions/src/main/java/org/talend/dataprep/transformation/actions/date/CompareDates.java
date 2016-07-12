@@ -13,12 +13,8 @@
 
 package org.talend.dataprep.transformation.actions.date;
 
-import java.time.LocalDateTime;
-import java.util.Map;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.parameters.Parameter;
@@ -27,7 +23,10 @@ import org.talend.dataprep.parameters.SelectParameter;
 import org.talend.dataprep.transformation.actions.category.ActionCategory;
 import org.talend.dataprep.transformation.actions.common.*;
 
-@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + CompareDates.ACTION_NAME)
+import java.time.LocalDateTime;
+import java.util.Map;
+
+@DataprepAction(AbstractActionMetadata.ACTION_BEAN_PREFIX + CompareDates.ACTION_NAME)
 public class CompareDates extends AbstractCompareAction implements ColumnAction, OtherColumnParameters, CompareAction {
 
     /**

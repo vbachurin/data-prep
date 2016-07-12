@@ -13,15 +13,10 @@
 
 package org.talend.dataprep.transformation.actions.column;
 
-import static org.talend.dataprep.transformation.actions.common.ActionMetadata.Behavior.VALUES_COLUMN;
-
-import java.util.*;
-
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -36,10 +31,14 @@ import org.talend.dataprep.transformation.actions.category.ActionCategory;
 import org.talend.dataprep.transformation.actions.common.*;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
+import java.util.*;
+
+import static org.talend.dataprep.transformation.actions.common.ActionMetadata.Behavior.VALUES_COLUMN;
+
 /**
  * This action reorder columns. The column will be move to the selected column. All other columns will be moved as well.
  */
-@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + ReorderColumn.REORDER_ACTION_NAME)
+@DataprepAction(AbstractActionMetadata.ACTION_BEAN_PREFIX + ReorderColumn.REORDER_ACTION_NAME)
 public class ReorderColumn extends AbstractActionMetadata implements DataSetAction {
 
     /**

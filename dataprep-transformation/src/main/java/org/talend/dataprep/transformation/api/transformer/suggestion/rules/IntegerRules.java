@@ -13,19 +13,20 @@
 
 package org.talend.dataprep.transformation.api.transformer.suggestion.rules;
 
-import static org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule.*;
-import static org.talend.dataprep.transformation.api.transformer.suggestion.rules.GenericRule.GenericRuleBuilder.forActions;
-
-import java.util.List;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.statistics.PatternFrequency;
 import org.talend.dataprep.transformation.actions.math.*;
 import org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule;
 
+import java.util.List;
+
+import static org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule.*;
+import static org.talend.dataprep.transformation.api.transformer.suggestion.rules.ColumnPredicates.isNumeric;
+import static org.talend.dataprep.transformation.api.transformer.suggestion.rules.GenericRule.GenericRuleBuilder.forActions;
+
 @Component
-public class IntegerRules extends BasicRules {
+public class IntegerRules {
 
     /**
      * @return A {@link SuggestionEngineRule rule} that hides "absolute" actions if all numbers >=0.
@@ -33,7 +34,7 @@ public class IntegerRules extends BasicRules {
     @Bean
     public static SuggestionEngineRule absoluteRule() {
         return forActions(Absolute.ABSOLUTE_ACTION_NAME, DeleteNegativeValues.ACTION_NAME) //
-                .when(IS_NUMERIC) //
+                .when(isNumeric()) //
                 .then(columnMetadata -> {
                     if (columnMetadata.getStatistics().getMin() >= 0) {
                         return NEGATIVE;
@@ -50,7 +51,7 @@ public class IntegerRules extends BasicRules {
     @Bean
     public static SuggestionEngineRule integerRule() {
         return forActions(RemoveFractionalPart.ACTION_NAME, RoundHalfUp.ACTION_NAME) //
-                .when(IS_NUMERIC) //
+                .when(isNumeric()) //
                 .then(columnMetadata -> {
                     final List<PatternFrequency> patterns = columnMetadata.getStatistics().getPatternFrequencies();
                     for (PatternFrequency pattern : patterns) {
@@ -69,7 +70,7 @@ public class IntegerRules extends BasicRules {
     @Bean
     public static SuggestionEngineRule mathRule() {
         return forActions(NumericOperations.ACTION_NAME, CompareNumbers.ACTION_NAME) //
-                .when(IS_NUMERIC) //
+                .when(isNumeric()) //
                 .then(columnMetadata -> MEDIUM) //
                 .build();
     }

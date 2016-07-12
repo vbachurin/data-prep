@@ -1,14 +1,5 @@
 package org.talend.dataprep.configuration;
 
-import static org.springframework.http.HttpHeaders.*;
-
-import java.io.PrintWriter;
-import java.io.Writer;
-import java.util.Collections;
-import java.util.concurrent.Callable;
-
-import javax.servlet.http.HttpServletResponse;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -21,6 +12,14 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.async.CallableProcessingInterceptorAdapter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.talend.dataprep.exception.TDPException;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.PrintWriter;
+import java.io.Writer;
+import java.util.Collections;
+import java.util.concurrent.Callable;
+
+import static org.springframework.http.HttpHeaders.*;
 
 @Configuration
 public class Async {
@@ -44,10 +43,8 @@ public class Async {
                 threadPoolTaskExecutor.setMaxPoolSize(50);
                 threadPoolTaskExecutor.initialize();
                 asyncTaskExecutor.setThreadFactory(threadPoolTaskExecutor);
-                // Add message bundle
-                final AsyncListenableTaskExecutor messageBundle = MessageBundleTaskExecutor.messageBundle(asyncTaskExecutor);
                 // Add authentication
-                final AsyncListenableTaskExecutor authenticated = AuthenticatedTaskExecutor.authenticated(messageBundle);
+                final AsyncListenableTaskExecutor authenticated = AuthenticatedTaskExecutor.authenticated(asyncTaskExecutor);
                 handlerAdapter.setTaskExecutor(authenticated);
                 return handlerAdapter;
             }

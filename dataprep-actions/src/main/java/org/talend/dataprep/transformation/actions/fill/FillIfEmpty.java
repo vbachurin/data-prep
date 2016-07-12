@@ -13,18 +13,18 @@
 
 package org.talend.dataprep.transformation.actions.fill;
 
-import static org.talend.dataprep.transformation.actions.category.ActionCategory.DATA_CLEANSING;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ColumnAction;
+import org.talend.dataprep.transformation.actions.common.DataprepAction;
 
-@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + FillIfEmpty.FILL_EMPTY_ACTION_NAME)
+import static org.talend.dataprep.transformation.actions.category.ActionCategory.DATA_CLEANSING;
+
+@DataprepAction(AbstractActionMetadata.ACTION_BEAN_PREFIX + FillIfEmpty.FILL_EMPTY_ACTION_NAME)
 @Scope(value = "prototype")
 public class FillIfEmpty extends AbstractFillWith implements ColumnAction {
 
@@ -58,16 +58,16 @@ public class FillIfEmpty extends AbstractFillWith implements ColumnAction {
     public String getDescription() {
         switch (type) {
         case STRING:
-            return getMessagesBundle().getString("action." + FILL_EMPTY_STRING + ".desc");
+            return getMessagesBundle().getMessage("action." + FILL_EMPTY_STRING + ".desc");
         case NUMERIC:
         case DOUBLE:
         case FLOAT:
         case INTEGER:
-            return getMessagesBundle().getString("action." + FILL_EMPTY_INTEGER + ".desc");
+            return getMessagesBundle().getMessage("action." + FILL_EMPTY_INTEGER + ".desc");
         case BOOLEAN:
-            return getMessagesBundle().getString("action." + FILL_EMPTY_BOOLEAN + ".desc");
+            return getMessagesBundle().getMessage("action." + FILL_EMPTY_BOOLEAN + ".desc");
         case DATE:
-            return getMessagesBundle().getString("action." + FILL_EMPTY_DATE + ".desc");
+            return getMessagesBundle().getMessage("action." + FILL_EMPTY_DATE + ".desc");
         default:
             throw new UnsupportedOperationException("Type '" + type + "' is not supported.");
         }
@@ -77,16 +77,16 @@ public class FillIfEmpty extends AbstractFillWith implements ColumnAction {
     public String getLabel() {
         switch (type) {
         case STRING:
-            return getMessagesBundle().getString("action." + FILL_EMPTY_STRING + ".label");
+            return getMessagesBundle().getMessage("action." + FILL_EMPTY_STRING + ".label");
         case NUMERIC:
         case DOUBLE:
         case FLOAT:
         case INTEGER:
-            return getMessagesBundle().getString("action." + FILL_EMPTY_INTEGER + ".label");
+            return getMessagesBundle().getMessage("action." + FILL_EMPTY_INTEGER + ".label");
         case BOOLEAN:
-            return getMessagesBundle().getString("action." + FILL_EMPTY_BOOLEAN + ".label");
+            return getMessagesBundle().getMessage("action." + FILL_EMPTY_BOOLEAN + ".label");
         case DATE:
-            return getMessagesBundle().getString("action." + FILL_EMPTY_DATE + ".label");
+            return getMessagesBundle().getMessage("action." + FILL_EMPTY_DATE + ".label");
         default:
             throw new UnsupportedOperationException("Type '" + type + "' is not supported.");
         }

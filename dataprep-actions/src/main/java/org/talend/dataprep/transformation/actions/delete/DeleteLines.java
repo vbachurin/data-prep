@@ -13,17 +13,17 @@
 
 package org.talend.dataprep.transformation.actions.delete;
 
-import static org.talend.dataprep.transformation.actions.category.ActionCategory.FILTERED;
-
-import java.util.EnumSet;
-import java.util.Set;
-
-import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ColumnAction;
+import org.talend.dataprep.transformation.actions.common.DataprepAction;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
+
+import java.util.EnumSet;
+import java.util.Set;
+
+import static org.talend.dataprep.transformation.actions.category.ActionCategory.FILTERED;
 
 /**
  * This action is used to delete lines that match a filter.
@@ -31,7 +31,7 @@ import org.talend.dataprep.transformation.api.action.context.ActionContext;
  * With no filter, it will delete all lines!
  *
  */
-@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + DeleteLines.DELETE_LINES_ACTION_NAME)
+@DataprepAction(AbstractActionMetadata.ACTION_BEAN_PREFIX + DeleteLines.DELETE_LINES_ACTION_NAME)
 public class DeleteLines extends AbstractActionMetadata implements ColumnAction {
 
     static final String DELETE_LINES_ACTION_NAME = "delete_lines";

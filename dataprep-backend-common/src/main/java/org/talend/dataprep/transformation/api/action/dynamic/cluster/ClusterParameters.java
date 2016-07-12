@@ -14,29 +14,25 @@
 package org.talend.dataprep.transformation.api.action.dynamic.cluster;
 
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSet;
-import org.talend.dataprep.i18n.MessagesBundle;
-import org.talend.dataprep.transformation.api.action.dynamic.DynamicParameters;
-import org.talend.dataprep.transformation.api.action.dynamic.GenericParameter;
+import org.talend.dataprep.i18n.DataprepBundle;
 import org.talend.dataprep.parameters.ClusterItem;
 import org.talend.dataprep.parameters.Clusters;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.ParameterType;
-import org.talend.dataquality.record.linkage.constant.AttributeMatcherType;
+import org.talend.dataprep.transformation.api.action.dynamic.DynamicParameters;
+import org.talend.dataprep.transformation.api.action.dynamic.GenericParameter;
 import org.talend.dataquality.record.linkage.analyzer.PostMerge;
 import org.talend.dataquality.record.linkage.analyzer.StringClusters;
 import org.talend.dataquality.record.linkage.analyzer.StringsClusterAnalyzer;
+import org.talend.dataquality.record.linkage.constant.AttributeMatcherType;
 
 /**
  * Cluster action dynamic parameter generator It takes an InputStream as argument, containing the dataset
  */
 @Component
 public class ClusterParameters implements DynamicParameters {
-
-    @Autowired
-    private MessagesBundle messagesBundle;
 
     @Override
     public GenericParameter getParameters(final String columnId, final DataSet content) {
@@ -52,8 +48,8 @@ public class ClusterParameters implements DynamicParameters {
         // Build results
         final Clusters.Builder builder = Clusters
                 .builder()
-                .title(messagesBundle.getString("parameter.textclustering.title.1"))
-                .title(messagesBundle.getString("parameter.textclustering.title.2"));
+                .title(DataprepBundle.message("parameter.textclustering.title.1"))
+                .title(DataprepBundle.message("parameter.textclustering.title.2"));
         final StringClusters result = clusterAnalyzer.getResult().get(0);
         for (StringClusters.StringCluster cluster : result) {
             // String clustering may cluster null / empty values, however not interesting for data prep.

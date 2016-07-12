@@ -13,22 +13,22 @@
 
 package org.talend.dataprep.transformation.actions.delete;
 
-import static org.talend.dataprep.transformation.actions.category.ActionScope.INVALID;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
+import org.talend.dataprep.transformation.actions.common.ActionMetadata;
+import org.talend.dataprep.transformation.actions.common.DataprepAction;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
-import org.talend.dataprep.transformation.actions.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
+import static org.talend.dataprep.transformation.actions.category.ActionScope.INVALID;
 
 /**
  * Delete row when value is invalid.
  */
-@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + DeleteInvalid.DELETE_INVALID_ACTION_NAME)
+@DataprepAction(AbstractActionMetadata.ACTION_BEAN_PREFIX + DeleteInvalid.DELETE_INVALID_ACTION_NAME)
 public class DeleteInvalid extends AbstractDelete {
 
     /** the action name. */

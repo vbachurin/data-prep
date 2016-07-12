@@ -13,7 +13,19 @@
 
 package org.talend.dataprep.transformation.actions.date;
 
-import static org.talend.dataprep.transformation.actions.common.OtherColumnParameters.*;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.talend.daikon.exception.ExceptionContext;
+import org.talend.daikon.number.BigDecimalParser;
+import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.error.CommonErrorCodes;
+import org.talend.dataprep.parameters.Parameter;
+import org.talend.dataprep.parameters.ParameterType;
+import org.talend.dataprep.parameters.SelectParameter;
+import org.talend.dataprep.transformation.actions.common.*;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
 import java.time.DateTimeException;
 import java.time.LocalDateTime;
@@ -23,28 +35,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-import org.talend.daikon.exception.ExceptionContext;
-import org.talend.daikon.number.BigDecimalParser;
-import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.exception.error.CommonErrorCodes;
-import org.talend.dataprep.parameters.Parameter;
-import org.talend.dataprep.parameters.ParameterType;
-import org.talend.dataprep.parameters.SelectParameter;
-import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
-import org.talend.dataprep.transformation.actions.common.ActionMetadata;
-import org.talend.dataprep.transformation.actions.common.ColumnAction;
-import org.talend.dataprep.transformation.actions.common.OtherColumnParameters;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
+import static org.talend.dataprep.transformation.actions.common.OtherColumnParameters.*;
 
 /**
  * Change the date pattern on a 'date' column.
  */
-@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + ModifyDate.ACTION_NAME)
+@DataprepAction(AbstractActionMetadata.ACTION_BEAN_PREFIX + ModifyDate.ACTION_NAME)
 public class ModifyDate extends AbstractDate implements ColumnAction, DatePatternParamModel {
 
     /** Action name. */

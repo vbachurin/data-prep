@@ -13,12 +13,7 @@
 
 package org.talend.dataprep.transformation.actions.text;
 
-import java.util.EnumSet;
-import java.util.Set;
-import java.util.regex.Pattern;
-
 import org.apache.commons.lang.StringUtils;
-import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
@@ -26,12 +21,17 @@ import org.talend.dataprep.transformation.actions.category.ActionCategory;
 import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ColumnAction;
+import org.talend.dataprep.transformation.actions.common.DataprepAction;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
+
+import java.util.EnumSet;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * Trim leading and trailing spaces.
  */
-@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + Trim.TRIM_ACTION_NAME)
+@DataprepAction(AbstractActionMetadata.ACTION_BEAN_PREFIX + Trim.TRIM_ACTION_NAME)
 public class Trim extends AbstractActionMetadata implements ColumnAction {
 
     /**

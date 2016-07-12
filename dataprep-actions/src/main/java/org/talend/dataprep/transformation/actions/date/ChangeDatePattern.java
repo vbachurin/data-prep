@@ -13,20 +13,9 @@
 
 package org.talend.dataprep.transformation.actions.date;
 
-import static java.util.Collections.emptyList;
-import static org.apache.commons.lang.StringUtils.EMPTY;
-
-import java.time.DateTimeException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
@@ -38,12 +27,23 @@ import org.talend.dataprep.parameters.SelectParameter;
 import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ColumnAction;
+import org.talend.dataprep.transformation.actions.common.DataprepAction;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
+
+import java.time.DateTimeException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
+
+import static java.util.Collections.emptyList;
+import static org.apache.commons.lang.StringUtils.EMPTY;
 
 /**
  * Change the date pattern on a 'date' column.
  */
-@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + ChangeDatePattern.ACTION_NAME)
+@DataprepAction(AbstractActionMetadata.ACTION_BEAN_PREFIX + ChangeDatePattern.ACTION_NAME)
 public class ChangeDatePattern extends AbstractDate implements ColumnAction, DatePatternParamModel {
 
     /** Action name. */

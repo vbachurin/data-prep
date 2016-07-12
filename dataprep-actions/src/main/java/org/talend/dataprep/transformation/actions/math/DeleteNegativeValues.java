@@ -13,23 +13,23 @@
 
 package org.talend.dataprep.transformation.actions.math;
 
-import static org.talend.dataprep.api.type.Type.NUMERIC;
-
-import java.math.BigDecimal;
-
-import org.springframework.stereotype.Component;
 import org.talend.daikon.number.BigDecimalParser;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ActionMetadata;
+import org.talend.dataprep.transformation.actions.common.DataprepAction;
 import org.talend.dataprep.transformation.actions.delete.AbstractDelete;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
+
+import java.math.BigDecimal;
+
+import static org.talend.dataprep.api.type.Type.NUMERIC;
 
 /**
  * Delete row on a given value.
  */
-@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + DeleteNegativeValues.ACTION_NAME)
+@DataprepAction(AbstractActionMetadata.ACTION_BEAN_PREFIX + DeleteNegativeValues.ACTION_NAME)
 public class DeleteNegativeValues extends AbstractDelete {
 
     /**

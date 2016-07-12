@@ -13,10 +13,6 @@
 
 package org.talend.dataprep.transformation.api.transformer.suggestion.rules;
 
-import static org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule.INVALID_MGT;
-import static org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule.NEGATIVE;
-import static org.talend.dataprep.transformation.api.transformer.suggestion.rules.GenericRule.GenericRuleBuilder.forActions;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
@@ -26,8 +22,12 @@ import org.talend.dataprep.transformation.actions.delete.DeleteInvalid;
 import org.talend.dataprep.transformation.actions.fill.FillInvalid;
 import org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule;
 
+import static org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule.INVALID_MGT;
+import static org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule.NEGATIVE;
+import static org.talend.dataprep.transformation.api.transformer.suggestion.rules.GenericRule.GenericRuleBuilder.forActions;
+
 @Component
-public class InvalidRules extends BasicRules {
+public class InvalidRules {
 
     /**
      * Defines the minimum threshold for invalid values corrections. Defaults to 0 (if invalid > 0, returns invalid

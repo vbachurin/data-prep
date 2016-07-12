@@ -1,9 +1,9 @@
 package org.talend.dataprep.dataset.service.api;
 
-import java.util.List;
-
+import org.talend.dataprep.i18n.DataprepBundle;
 import org.talend.dataprep.parameters.Parameter;
-import org.talend.dataprep.util.MessagesBundleContext;
+
+import java.util.List;
 
 public class Import {
 
@@ -46,10 +46,10 @@ public class Import {
     }
 
     public String getLabel() {
-        return MessagesBundleContext.get().getString("import." + locationType + ".label");
+        return DataprepBundle.message("import." + locationType + ".label");
     }
 
     public String getTitle() {
-        return MessagesBundleContext.get().getString("import." + locationType + ".title");
+        return DataprepBundle.message("import." + locationType + ".title");
     }
 }

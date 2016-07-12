@@ -1,16 +1,14 @@
 package org.talend.dataprep.configuration;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
-
 import org.springframework.core.task.AsyncListenableTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.concurrent.ListenableFuture;
-import org.talend.dataprep.i18n.MessagesBundle;
-import org.talend.dataprep.util.MessagesBundleContext;
+
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 
 /**
  * Task Executor that replicate current security context

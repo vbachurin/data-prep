@@ -13,10 +13,6 @@
 
 package org.talend.dataprep.transformation.api.transformer.suggestion.rules;
 
-import static org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule.EMPTY_MGT;
-import static org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule.NEGATIVE;
-import static org.talend.dataprep.transformation.api.transformer.suggestion.rules.GenericRule.GenericRuleBuilder.forActions;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -24,8 +20,12 @@ import org.talend.dataprep.transformation.actions.delete.DeleteEmpty;
 import org.talend.dataprep.transformation.actions.fill.FillIfEmpty;
 import org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule;
 
+import static org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule.EMPTY_MGT;
+import static org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule.NEGATIVE;
+import static org.talend.dataprep.transformation.api.transformer.suggestion.rules.GenericRule.GenericRuleBuilder.forActions;
+
 @Component
-public class EmptyRules extends BasicRules {
+public class EmptyRules {
 
     private static long getEmptyCount(ColumnMetadata columnMetadata) {
         return Math.max(columnMetadata.getStatistics().getEmpty(), columnMetadata.getQuality().getEmpty());

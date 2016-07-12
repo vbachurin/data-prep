@@ -13,27 +13,27 @@
 
 package org.talend.dataprep.transformation.actions.delete;
 
-import static org.talend.dataprep.transformation.actions.category.ActionCategory.DATA_CLEANSING;
-import static org.talend.dataprep.transformation.actions.category.ScopeCategory.LINE;
-
-import java.util.EnumSet;
-import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.transformation.actions.category.ScopeCategory;
 import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
+import org.talend.dataprep.transformation.actions.common.DataprepAction;
 import org.talend.dataprep.transformation.actions.common.RowAction;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
+
+import java.util.EnumSet;
+import java.util.Set;
+
+import static org.talend.dataprep.transformation.actions.category.ActionCategory.DATA_CLEANSING;
+import static org.talend.dataprep.transformation.actions.category.ScopeCategory.LINE;
 
 /**
  * Delete the line which id matches TdpId in context. This id/filtering is managed by ActionMetadata.
  */
-@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + Delete.DELETE_ACTION_NAME)
+@DataprepAction(AbstractActionMetadata.ACTION_BEAN_PREFIX + Delete.DELETE_ACTION_NAME)
 @Scope(value = "prototype")
 public class Delete extends AbstractActionMetadata implements RowAction {
 
@@ -65,9 +65,9 @@ public class Delete extends AbstractActionMetadata implements RowAction {
     public String getDescription() {
         switch (scope) {
         case LINE:
-            return getMessagesBundle().getString("action." + DELETE_SINGLE_LINE + ".desc");
+            return getMessagesBundle().getMessage("action." + DELETE_SINGLE_LINE + ".desc");
         case COLUMN:
-            return getMessagesBundle().getString("action." + DELETE_COLUMN + ".desc");
+            return getMessagesBundle().getMessage("action." + DELETE_COLUMN + ".desc");
         default:
             return null;
         }
@@ -77,9 +77,9 @@ public class Delete extends AbstractActionMetadata implements RowAction {
     public String getLabel() {
         switch (scope) {
         case LINE:
-            return getMessagesBundle().getString("action." + DELETE_SINGLE_LINE + ".label");
+            return getMessagesBundle().getMessage("action." + DELETE_SINGLE_LINE + ".label");
         case COLUMN:
-            return getMessagesBundle().getString("action." + DELETE_COLUMN + ".label");
+            return getMessagesBundle().getMessage("action." + DELETE_COLUMN + ".label");
         default:
             return null;
         }

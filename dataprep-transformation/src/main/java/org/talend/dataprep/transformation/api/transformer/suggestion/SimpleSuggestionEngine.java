@@ -13,17 +13,18 @@
 
 package org.talend.dataprep.transformation.api.transformer.suggestion;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.transformation.actions.common.ActionMetadata;
+import org.talend.dataprep.transformation.actions.common.SuggestionLevel;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Simple suggestion engine implementation.
@@ -43,8 +44,13 @@ public class SimpleSuggestionEngine implements SuggestionEngine {
         return actions.stream() //
                 .map(actionMetadata -> {
                     int score = 0;
-                    for (SuggestionEngineRule rule : rules) {
-                        score += rule.apply(actionMetadata, column);
+                    SuggestionLevel suggestionScore = actionMetadata.getSuggestionScore(column);
+                    if (suggestionScore == null) {
+                        for (SuggestionEngineRule rule : rules) {
+                            score += rule.apply(actionMetadata, column);
+                        }
+                    } else {
+                        score = suggestionScore.getScore();
                     }
                     return new Suggestion(actionMetadata, score);
                 }) //

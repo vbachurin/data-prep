@@ -13,20 +13,20 @@
 
 package org.talend.dataprep.transformation.actions.fill;
 
-import static org.talend.dataprep.transformation.actions.category.ActionCategory.DATA_CLEANSING;
-
-import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ColumnAction;
+import org.talend.dataprep.transformation.actions.common.DataprepAction;
 
-@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + FillInvalid.FILL_INVALID_ACTION_NAME)
+import java.util.Set;
+
+import static org.talend.dataprep.transformation.actions.category.ActionCategory.DATA_CLEANSING;
+
+@DataprepAction(AbstractActionMetadata.ACTION_BEAN_PREFIX + FillInvalid.FILL_INVALID_ACTION_NAME)
 @Scope(value = "prototype")
 public class FillInvalid extends AbstractFillWith implements ColumnAction {
 
@@ -59,26 +59,26 @@ public class FillInvalid extends AbstractFillWith implements ColumnAction {
     @Override
     public String getDescription() {
         if (Type.BOOLEAN.isAssignableFrom(type)) {
-            return getMessagesBundle().getString(ACTION_PREFIX + FILL_INVALID_BOOLEAN + ACTION_DESCRIPTION);
+            return getMessagesBundle().getMessage(ACTION_PREFIX + FILL_INVALID_BOOLEAN + ACTION_DESCRIPTION);
         } else if (Type.DATE.isAssignableFrom(type)) {
-            return getMessagesBundle().getString(ACTION_PREFIX + FILL_INVALID_DATE + ACTION_DESCRIPTION);
+            return getMessagesBundle().getMessage(ACTION_PREFIX + FILL_INVALID_DATE + ACTION_DESCRIPTION);
         } else if (Type.NUMERIC.isAssignableFrom(type)) {
-            return getMessagesBundle().getString(ACTION_PREFIX + FILL_INVALID_NUMERIC + ACTION_DESCRIPTION);
+            return getMessagesBundle().getMessage(ACTION_PREFIX + FILL_INVALID_NUMERIC + ACTION_DESCRIPTION);
         } else {
-            return getMessagesBundle().getString(ACTION_PREFIX + FILL_INVALID_ACTION_NAME + ACTION_DESCRIPTION);
+            return getMessagesBundle().getMessage(ACTION_PREFIX + FILL_INVALID_ACTION_NAME + ACTION_DESCRIPTION);
         }
     }
 
     @Override
     public String getLabel() {
         if (Type.BOOLEAN.isAssignableFrom(type)) {
-            return getMessagesBundle().getString(ACTION_PREFIX + FILL_INVALID_BOOLEAN + ACTION_LABEL);
+            return getMessagesBundle().getMessage(ACTION_PREFIX + FILL_INVALID_BOOLEAN + ACTION_LABEL);
         } else if (Type.DATE.isAssignableFrom(type)) {
-            return getMessagesBundle().getString(ACTION_PREFIX + FILL_INVALID_DATE + ACTION_LABEL);
+            return getMessagesBundle().getMessage(ACTION_PREFIX + FILL_INVALID_DATE + ACTION_LABEL);
         } else if (Type.NUMERIC.isAssignableFrom(type)) {
-            return getMessagesBundle().getString(ACTION_PREFIX + FILL_INVALID_NUMERIC + ACTION_LABEL);
+            return getMessagesBundle().getMessage(ACTION_PREFIX + FILL_INVALID_NUMERIC + ACTION_LABEL);
         } else {
-            return getMessagesBundle().getString(ACTION_PREFIX + FILL_INVALID_ACTION_NAME + ACTION_LABEL);
+            return getMessagesBundle().getMessage(ACTION_PREFIX + FILL_INVALID_ACTION_NAME + ACTION_LABEL);
         }
     }
 

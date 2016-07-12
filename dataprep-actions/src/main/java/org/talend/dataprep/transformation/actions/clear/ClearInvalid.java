@@ -13,25 +13,25 @@
 
 package org.talend.dataprep.transformation.actions.clear;
 
-import static org.talend.dataprep.transformation.actions.category.ActionCategory.DATA_CLEANSING;
-import static org.talend.dataprep.transformation.actions.category.ActionScope.INVALID;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
+import org.talend.dataprep.transformation.actions.common.ActionMetadata;
+import org.talend.dataprep.transformation.actions.common.ColumnAction;
+import org.talend.dataprep.transformation.actions.common.DataprepAction;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
-import org.talend.dataprep.transformation.actions.common.ActionMetadata;
-import org.talend.dataprep.transformation.actions.common.ColumnAction;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
+import static org.talend.dataprep.transformation.actions.category.ActionCategory.DATA_CLEANSING;
+import static org.talend.dataprep.transformation.actions.category.ActionScope.INVALID;
 
 /**
  * Clear cell when value is invalid.
  */
-@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + ClearInvalid.ACTION_NAME)
+@DataprepAction(AbstractActionMetadata.ACTION_BEAN_PREFIX + ClearInvalid.ACTION_NAME)
 public class ClearInvalid extends AbstractClear implements ColumnAction {
 
     /** the action name. */

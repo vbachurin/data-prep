@@ -13,33 +13,29 @@
 
 package org.talend.dataprep.transformation.actions.clear;
 
-import static org.talend.dataprep.transformation.actions.category.ActionCategory.DATA_CLEANSING;
-
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataprep.parameters.SelectParameter;
-import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
-import org.talend.dataprep.transformation.actions.common.ActionMetadata;
-import org.talend.dataprep.transformation.actions.common.ColumnAction;
-import org.talend.dataprep.transformation.actions.common.ReplaceOnValueHelper;
+import org.talend.dataprep.transformation.actions.common.*;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
+
+import java.util.List;
+import java.util.Map;
+
+import static org.talend.dataprep.transformation.actions.category.ActionCategory.DATA_CLEANSING;
 
 /**
  * Clear cell when value is matching.
  */
 
-@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + ClearMatching.ACTION_NAME)
+@DataprepAction(AbstractActionMetadata.ACTION_BEAN_PREFIX + ClearMatching.ACTION_NAME)
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ClearMatching extends AbstractClear implements ColumnAction {
 

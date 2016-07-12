@@ -13,29 +13,25 @@
 
 package org.talend.dataprep.transformation.actions.text;
 
-import static org.apache.commons.lang.StringUtils.EMPTY;
-import static org.talend.dataprep.api.type.Type.STRING;
-import static org.talend.dataprep.parameters.ParameterType.REGEX;
-import static org.talend.dataprep.transformation.actions.category.ActionCategory.STRINGS;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.parameters.Parameter;
+import org.talend.dataprep.transformation.actions.common.*;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.parameters.Parameter;
-import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
-import org.talend.dataprep.transformation.actions.common.ActionMetadata;
-import org.talend.dataprep.transformation.actions.common.ColumnAction;
-import org.talend.dataprep.transformation.actions.common.ReplaceOnValueHelper;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
+import static org.apache.commons.lang.StringUtils.EMPTY;
+import static org.talend.dataprep.api.type.Type.STRING;
+import static org.talend.dataprep.parameters.ParameterType.REGEX;
+import static org.talend.dataprep.transformation.actions.category.ActionCategory.STRINGS;
 
-@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + Cut.CUT_ACTION_NAME)
+@DataprepAction(AbstractActionMetadata.ACTION_BEAN_PREFIX + Cut.CUT_ACTION_NAME)
 public class Cut extends AbstractActionMetadata implements ColumnAction {
 
     /**

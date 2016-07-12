@@ -12,11 +12,6 @@
 // ============================================================================
 package org.talend.dataprep.transformation.actions.math;
 
-import static org.talend.dataprep.transformation.actions.common.OtherColumnParameters.*;
-
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.slf4j.Logger;
@@ -31,6 +26,11 @@ import org.talend.dataprep.parameters.SelectParameter;
 import org.talend.dataprep.transformation.actions.common.ColumnAction;
 import org.talend.dataprep.transformation.actions.common.OtherColumnParameters;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
+
+import java.util.List;
+import java.util.Map;
+
+import static org.talend.dataprep.transformation.actions.common.OtherColumnParameters.*;
 
 /**
  * Abstract Action for basic math action with one parameter (constant or an other column)

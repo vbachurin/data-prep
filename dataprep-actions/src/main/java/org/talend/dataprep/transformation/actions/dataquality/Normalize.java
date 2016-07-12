@@ -13,11 +13,6 @@
 
 package org.talend.dataprep.transformation.actions.dataquality;
 
-import java.text.Normalizer;
-import java.util.EnumSet;
-import java.util.Set;
-
-import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
@@ -25,12 +20,17 @@ import org.talend.dataprep.transformation.actions.category.ActionCategory;
 import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ColumnAction;
+import org.talend.dataprep.transformation.actions.common.DataprepAction;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
+
+import java.text.Normalizer;
+import java.util.EnumSet;
+import java.util.Set;
 
 /**
  * Lower case a column in a dataset row.
  */
-@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + Normalize.ACTION_NAME)
+@DataprepAction(AbstractActionMetadata.ACTION_BEAN_PREFIX + Normalize.ACTION_NAME)
 public class Normalize extends AbstractActionMetadata implements ColumnAction {
 
     /**

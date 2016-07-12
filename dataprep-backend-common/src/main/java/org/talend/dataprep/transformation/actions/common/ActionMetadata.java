@@ -15,12 +15,11 @@ package org.talend.dataprep.transformation.actions.common;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.i18n.MessagesBundle;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.transformation.actions.category.ActionCategory;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.actions.category.ActionScope;
 import org.talend.dataprep.transformation.actions.category.ScopeCategory;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
 import java.util.List;
 import java.util.Set;
@@ -103,6 +102,8 @@ public interface ActionMetadata {
     ActionMetadata adapt(final ScopeCategory scope);
 
     /**
+     * Unique identifier of the action.
+     *
      * @return A unique name used to identify action.
      */
     String getName();
@@ -123,19 +124,16 @@ public interface ActionMetadata {
 
     /**
      * @return The label of the action, translated in the user locale.
-     * @see MessagesBundle
      */
     String getLabel();
 
     /**
      * @return The description of the action, translated in the user locale.
-     * @see MessagesBundle
      */
     String getDescription();
 
     /**
      * @return The url of the optionnal help page.
-     * @see MessagesBundle
      */
     String getDocUrl();
 
@@ -192,5 +190,14 @@ public interface ActionMetadata {
 
     @JsonIgnore
     Set<Behavior> getBehavior();
+
+    /**
+     * Compute a suggestion score based on column metadata. If it returns null, the result is ignored and rule based suggestion
+     * resolution takes place.
+     *
+     * @param column the column on which the action may be applied.
+     * @return the level of suggestion of this action on this column or null to let the rules do the work.
+     */
+    SuggestionLevel getSuggestionScore(ColumnMetadata column);
 
 }

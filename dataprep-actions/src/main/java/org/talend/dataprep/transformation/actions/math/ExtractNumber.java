@@ -12,16 +12,8 @@
 // ============================================================================
 package org.talend.dataprep.transformation.actions.math;
 
-import java.math.BigDecimal;
-import java.text.CharacterIterator;
-import java.text.DecimalFormat;
-import java.text.StringCharacterIterator;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
-import org.springframework.stereotype.Component;
 import org.talend.daikon.number.BigDecimalParser;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -31,7 +23,15 @@ import org.talend.dataprep.transformation.actions.category.ActionCategory;
 import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ColumnAction;
+import org.talend.dataprep.transformation.actions.common.DataprepAction;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
+
+import java.math.BigDecimal;
+import java.text.CharacterIterator;
+import java.text.DecimalFormat;
+import java.text.StringCharacterIterator;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This will extract the numeric part
@@ -54,7 +54,7 @@ import org.talend.dataprep.transformation.api.action.context.ActionContext;
  * <li>pico p 0.000000000001</li>
  * </ul>
  */
-@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + ExtractNumber.EXTRACT_NUMBER_ACTION_NAME)
+@DataprepAction(AbstractActionMetadata.ACTION_BEAN_PREFIX + ExtractNumber.EXTRACT_NUMBER_ACTION_NAME)
 public class ExtractNumber extends AbstractActionMetadata implements ColumnAction {
 
     /** Name of the action. */

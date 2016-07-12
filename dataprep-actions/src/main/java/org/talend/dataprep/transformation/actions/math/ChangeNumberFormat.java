@@ -13,19 +13,9 @@
 
 package org.talend.dataprep.transformation.actions.math;
 
-import static org.talend.daikon.number.BigDecimalParser.*;
-import static org.talend.dataprep.parameters.ParameterType.STRING;
-
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
-import java.util.*;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 import org.talend.daikon.number.BigDecimalFormatter;
 import org.talend.daikon.number.BigDecimalParser;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -37,12 +27,22 @@ import org.talend.dataprep.transformation.actions.category.ActionCategory;
 import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ColumnAction;
+import org.talend.dataprep.transformation.actions.common.DataprepAction;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
+
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
+import java.util.*;
+
+import static org.talend.daikon.number.BigDecimalParser.*;
+import static org.talend.dataprep.parameters.ParameterType.STRING;
 
 /**
  * Change the pattern on a 'number' column.
  */
-@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + ChangeNumberFormat.ACTION_NAME)
+@DataprepAction(AbstractActionMetadata.ACTION_BEAN_PREFIX + ChangeNumberFormat.ACTION_NAME)
 public class ChangeNumberFormat extends AbstractActionMetadata implements ColumnAction {
 
     /** Action name. */

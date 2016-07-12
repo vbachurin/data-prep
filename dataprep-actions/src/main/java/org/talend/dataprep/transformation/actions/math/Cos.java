@@ -12,17 +12,17 @@
 // ============================================================================
 package org.talend.dataprep.transformation.actions.math;
 
-import static org.talend.dataprep.transformation.actions.math.Cos.COS_NAME;
-
 import org.apache.commons.math3.util.FastMath;
-import org.springframework.stereotype.Component;
 import org.talend.daikon.number.BigDecimalParser;
 import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
+import org.talend.dataprep.transformation.actions.common.DataprepAction;
+
+import static org.talend.dataprep.transformation.actions.math.Cos.COS_NAME;
 
 /**
  * Create a new column with Cos
  */
-@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + COS_NAME)
+@DataprepAction(AbstractActionMetadata.ACTION_BEAN_PREFIX + COS_NAME)
 public class Cos extends AbstractMathNoParameterAction {
 
     protected static final String COS_NAME = "cos_numbers";

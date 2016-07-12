@@ -13,30 +13,29 @@
 
 package org.talend.dataprep.transformation.actions.delete;
 
-import static org.apache.commons.lang.StringUtils.EMPTY;
-import static org.talend.dataprep.api.type.Type.NUMERIC;
-import static org.talend.dataprep.api.type.Type.STRING;
-import static org.talend.dataprep.parameters.ParameterType.REGEX;
-
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Nonnull;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ActionMetadata;
+import org.talend.dataprep.transformation.actions.common.DataprepAction;
 import org.talend.dataprep.transformation.actions.common.ReplaceOnValueHelper;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
+
+import javax.annotation.Nonnull;
+import java.util.List;
+import java.util.Map;
+
+import static org.apache.commons.lang.StringUtils.EMPTY;
+import static org.talend.dataprep.api.type.Type.NUMERIC;
+import static org.talend.dataprep.api.type.Type.STRING;
+import static org.talend.dataprep.parameters.ParameterType.REGEX;
 
 /**
  * Delete row on a given value.
  */
-@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + DeleteOnValue.DELETE_ON_VALUE_ACTION_NAME)
+@DataprepAction(AbstractActionMetadata.ACTION_BEAN_PREFIX + DeleteOnValue.DELETE_ON_VALUE_ACTION_NAME)
 public class DeleteOnValue extends AbstractDelete {
 
     /**

@@ -13,13 +13,6 @@
 
 package org.talend.dataprep.transformation.api.transformer.suggestion.rules;
 
-import static org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule.HIGH;
-import static org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule.MEDIUM;
-import static org.talend.dataprep.transformation.api.transformer.suggestion.rules.GenericRule.GenericRuleBuilder.forActions;
-
-import java.util.HashSet;
-import java.util.Set;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.transformation.actions.datamasking.MaskDataByDomain;
@@ -32,8 +25,16 @@ import org.talend.dataprep.transformation.actions.phonenumber.FormatPhoneNumber;
 import org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule;
 import org.talend.dataquality.semantic.classifier.SemanticCategoryEnum;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import static org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule.HIGH;
+import static org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule.MEDIUM;
+import static org.talend.dataprep.transformation.api.transformer.suggestion.rules.ColumnPredicates.*;
+import static org.talend.dataprep.transformation.api.transformer.suggestion.rules.GenericRule.GenericRuleBuilder.forActions;
+
 @Component
-public class TypeDomainRules extends BasicRules {
+public class TypeDomainRules {
 
     /**
      * @return A {@link SuggestionEngineRule rule} that shows date actions if column is a date column.
@@ -41,7 +42,7 @@ public class TypeDomainRules extends BasicRules {
     @Bean
     public static SuggestionEngineRule dateRule() {
         return forActions(ExtractDateTokens.ACTION_NAME, ChangeDatePattern.ACTION_NAME, ComputeTimeSince.TIME_SINCE_ACTION_NAME) //
-                .when(IS_DATE) //
+                .when(isDate()) //
                 .then(columnMetadata -> MEDIUM) //
                 .build();
     }
@@ -52,7 +53,7 @@ public class TypeDomainRules extends BasicRules {
     @Bean
     public static SuggestionEngineRule emailRule() {
         return forActions(ExtractEmailDomain.EXTRACT_DOMAIN_ACTION_NAME) //
-                .when(IS_EMAIL) //
+                .when(isEmail()) //
                 .then(columnMetadata -> HIGH) //
                 .build();
     }
@@ -63,7 +64,7 @@ public class TypeDomainRules extends BasicRules {
     @Bean
     public static SuggestionEngineRule urlRule() {
         return forActions(ExtractUrlTokens.EXTRACT_URL_TOKENS_ACTION_NAME) //
-                .when(IS_URL) //
+                .when(isUrl()) //
                 .then(columnMetadata -> HIGH) //
                 .build();
     }
@@ -74,7 +75,7 @@ public class TypeDomainRules extends BasicRules {
     @Bean
     public static SuggestionEngineRule phoneRule() {
         return forActions(FormatPhoneNumber.ACTION_NAME) //
-                .when(IS_PHONE) //
+                .when(isPhone()) //
                 .then(columnMetadata -> MEDIUM) //
                 .build();
     }

@@ -13,16 +13,15 @@
 
 package org.talend.dataprep.parameters;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import org.apache.commons.lang.StringUtils;
+import org.talend.dataprep.i18n.AbstractBundle;
+import org.talend.dataprep.i18n.DataprepBundle;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
-import org.talend.dataprep.i18n.MessagesBundle;
-import org.talend.dataprep.util.MessagesBundleContext;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
  * Bean that models action parameter.
@@ -55,7 +54,7 @@ public class Parameter implements Serializable {
     private Map<String, Object> configuration;
 
     @JsonIgnore
-    private MessagesBundle messagesBundle;
+    private AbstractBundle messagesBundle;
 
     /**
      * Minimal default constructor.
@@ -110,7 +109,7 @@ public class Parameter implements Serializable {
     }
 
     public Parameter(final String name, final ParameterType type, final String defaultValue, final boolean implicit,
-                     final boolean canBeBlank, String placeHolder, MessagesBundle messagesBundle) {
+                     final boolean canBeBlank, String placeHolder, AbstractBundle messagesBundle) {
         this.name = name;
         this.placeHolder = placeHolder;
         this.type = type.asString();
@@ -136,14 +135,14 @@ public class Parameter implements Serializable {
      * the label of the parameter, translated in the user locale.
      */
     public String getLabel() {
-        return getMessagesBundle().getString("parameter." + getName() + ".label"); //$NON-NLS-1$ //$NON-NLS-2$
+        return getMessagesBundle().getMessage("parameter." + getName() + ".label"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     /**
      * the description of the parameter, translated in the user locale.
      */
     public String getDescription() {
-        return getMessagesBundle().getString("parameter." + getName() + ".desc"); //$NON-NLS-1$ //$NON-NLS-2$
+        return getMessagesBundle().getMessage("parameter." + getName() + ".desc"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     /**
@@ -186,9 +185,9 @@ public class Parameter implements Serializable {
     }
 
     @JsonIgnore
-    protected MessagesBundle getMessagesBundle() {
+    protected AbstractBundle getMessagesBundle() {
         if (this.messagesBundle == null) {
-            this.messagesBundle = MessagesBundleContext.get();
+            this.messagesBundle = DataprepBundle.getDataprepBundle();
         }
         return this.messagesBundle;
     }

@@ -14,19 +14,16 @@
 package org.talend.dataprep.transformation.actions.common;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.google.common.base.CaseFormat;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.RowMetadata;
-import org.talend.dataprep.i18n.MessagesBundle;
+import org.talend.dataprep.i18n.AbstractBundle;
+import org.talend.dataprep.i18n.DataprepBundle;
 import org.talend.dataprep.parameters.Parameter;
-import org.talend.dataprep.transformation.actions.category.ActionCategory;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.actions.category.ActionScope;
 import org.talend.dataprep.transformation.actions.category.ScopeCategory;
-import org.talend.dataprep.util.MessagesBundleContext;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -38,23 +35,21 @@ public abstract class AbstractActionMetadata implements ActionMetadata {
 
     public static final String ACTION_BEAN_PREFIX = "action#"; //$NON-NLS-1$
 
-    @Autowired
-    private MessagesBundle messagesBundle;
+    private final String defaultActionName = CaseFormat.UPPER_CAMEL.converterTo(CaseFormat.LOWER_UNDERSCORE)
+            .convert(getClass().getSimpleName());
 
+    /**
+     * Default implementation that returns {@code this}.
+     * {@inheritDoc}
+     */
     @Override
     public AbstractActionMetadata adapt(ColumnMetadata column) {
         return this;
     }
 
     /**
-     * <p>
-     * Adapts the current action metadata to the scope. This method may return <code>this</code> if no action specific
-     * change should be done. It may return a different instance with information from scope (like a different label).
-     * </p>
-     *
-     * @param scope A {@link ScopeCategory scope}.
-     * @return <code>this</code> if no change is required. OR a new action metadata with information extracted from
-     * <code>scope</code>.
+     * Default implementation that returns {@code this}.
+     * {@inheritDoc}
      */
     @Override
     public AbstractActionMetadata adapt(final ScopeCategory scope) {
@@ -62,65 +57,45 @@ public abstract class AbstractActionMetadata implements ActionMetadata {
     }
 
     /**
-     * @return A unique name used to identify action.
+     * Default implementation of {@link ActionMetadata#getName()} that uses the action implementation class name in lower
+     * underscore case  as unique action name.
+     * {@inheritDoc}
      */
     @Override
-    public abstract String getName();
-
-    /**
-     * @return A 'category' for the action used to group similar actions (eg. 'math', 'repair'...).
-     * @see ActionCategory
-     */
-    @Override
-    public abstract String getCategory();
-
-    /**
-     * Return true if the action can be applied to the given column metadata.
-     *
-     * @param column the column metadata to transform.
-     * @return true if the action can be applied to the given column metadata.
-     */
-    @Override
-    public abstract boolean acceptColumn(final ColumnMetadata column);
+    public String getName() {
+        return defaultActionName;
+    }
 
     /**
      * @return The label of the action, translated in the user locale.
-     * @see MessagesBundle
      */
     @Override
     public String getLabel() {
-        return getMessagesBundle().getString("action." + getName() + ".label");
+        return DataprepBundle.message("action." + getName() + ".label");
     }
 
     /**
      * @return The description of the action, translated in the user locale.
-     * @see MessagesBundle
      */
     @Override
     public String getDescription() {
-        return getMessagesBundle().getString("action." + getName() + ".desc");
+        return DataprepBundle.message("action." + getName() + ".desc");
     }
 
     /**
      * @return The url of the optionnal help page.
-     * @see MessagesBundle
      */
     @Override
     public String getDocUrl() {
-        return getMessagesBundle().getString("action." + getName() + ".url", StringUtils.EMPTY);
+        return DataprepBundle.message("action." + getName() + ".url");
     }
 
     /**
-     * Defines the list of scopes this action belong to.
-     * <p>
-     * Scope scope is a concept that allow us to describe on which scope(s) each action can be applied.
-     *
-     * @return list of scopes of this action
-     * @see ActionScope
+     * Default implementation that returns the {@link Collections#emptyList() emptyList()}.
      */
     @Override
     public List<String> getActionScope() {
-        return new ArrayList<>();
+        return Collections.emptyList();
     }
 
     /**
@@ -211,11 +186,17 @@ public abstract class AbstractActionMetadata implements ActionMetadata {
     @Override
     public abstract Set<ActionMetadata.Behavior> getBehavior();
 
+    /**
+     * Default implmeentation that returns null to let the rules do the suggestion for this action.
+     * <p>{@inheritDoc}
+     */
+    @Override
+    public SuggestionLevel getSuggestionScore(ColumnMetadata column) {
+        return null;
+    }
+
     @JsonIgnore
-    protected MessagesBundle getMessagesBundle() {
-        if (this.messagesBundle == null) {
-            this.messagesBundle = MessagesBundleContext.get();
-        }
-        return this.messagesBundle;
+    protected AbstractBundle getMessagesBundle() {
+        return DataprepBundle.getDataprepBundle();
     }
 }

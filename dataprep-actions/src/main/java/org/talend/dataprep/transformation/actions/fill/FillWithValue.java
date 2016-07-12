@@ -13,15 +13,15 @@
 
 package org.talend.dataprep.transformation.actions.fill;
 
-import static org.talend.dataprep.transformation.actions.category.ActionCategory.DATA_CLEANSING;
-
-import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ColumnAction;
+import org.talend.dataprep.transformation.actions.common.DataprepAction;
 
-@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + FillWithValue.ACTION_NAME)
+import static org.talend.dataprep.transformation.actions.category.ActionCategory.DATA_CLEANSING;
+
+@DataprepAction(AbstractActionMetadata.ACTION_BEAN_PREFIX + FillWithValue.ACTION_NAME)
 public class FillWithValue extends AbstractFillWith implements ColumnAction {
 
     public static final String ACTION_NAME = "fill_with_value";

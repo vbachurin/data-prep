@@ -13,20 +13,18 @@
 
 package org.talend.dataprep.parameters;
 
-import static java.util.Collections.emptyList;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import org.talend.dataprep.i18n.AbstractBundle;
+import org.talend.dataprep.i18n.DataprepBundle;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.talend.dataprep.i18n.MessagesBundle;
-import org.talend.dataprep.util.MessagesBundleContext;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import static java.util.Collections.emptyList;
 
 /**
  * Parameter that should be displayed as a select box in the UI.
@@ -117,29 +115,28 @@ public class SelectParameter extends Parameter implements Serializable {
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
         private List<Parameter> inlineParameters;
 
+        private AbstractBundle bundle;
+
+        public Item(String value) {
+            this(value, emptyList());
+        }
+
         /**
          * Create a select Item. The item's label will be by default looked up with key ("choice." + value). You may
          * override this behavior using {@link #setLabel(String)}.
          *
          * @param value the item value.
          * @param parameters the item optional parameters.
-         * @see MessagesBundle#getString(String)
          * @see #setLabel(String)
          */
         private Item(String value, List<Parameter> parameters) {
-            this.value = value;
-            this.label = MessagesBundleContext.get() //
-                    .getString("choice." + value, value);
-            this.inlineParameters = parameters;
+            this(value, parameters, DataprepBundle.getDataprepBundle());
         }
 
-        /**
-         * Create a select Item.
-         *
-         * @param value the item value.
-         */
-        private Item(String value) {
-            this(value, emptyList());
+        private Item(String value, List<Parameter> parameters, AbstractBundle bundle) {
+            this.value = value;
+            this.bundle = bundle;
+            this.inlineParameters = parameters;
         }
 
         /**
@@ -157,9 +154,19 @@ public class SelectParameter extends Parameter implements Serializable {
         }
 
         public String getLabel() {
-            final String lookupKey = "parameter." + label + ".label";
-            final String translatedLabel = MessagesBundleContext.get().getString(lookupKey);
-            return lookupKey.equals(translatedLabel) ? label : translatedLabel;
+            final String translatedLabel;
+            if (label == null) {
+                final String lookupKey = "choice." + value;
+                String translationFromBundle = bundle.getMessage(lookupKey, value);
+                if (lookupKey.equals(translationFromBundle)) {
+                    translatedLabel = value;
+                } else {
+                    translatedLabel = translationFromBundle;
+                }
+            } else {
+                translatedLabel = label;
+            }
+            return translatedLabel;
         }
 
         public void setLabel(String label) {

@@ -13,20 +13,20 @@
 
 package org.talend.dataprep.transformation.actions.text;
 
-import java.util.EnumSet;
-import java.util.Set;
-
 import org.apache.commons.lang.WordUtils;
-import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.actions.category.ActionCategory;
 import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ColumnAction;
+import org.talend.dataprep.transformation.actions.common.DataprepAction;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
-@Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + ProperCase.PROPER_CASE_ACTION_NAME)
+import java.util.EnumSet;
+import java.util.Set;
+
+@DataprepAction(AbstractActionMetadata.ACTION_BEAN_PREFIX + ProperCase.PROPER_CASE_ACTION_NAME)
 public class ProperCase extends AbstractActionMetadata implements ColumnAction {
 
     public static final String PROPER_CASE_ACTION_NAME = "propercase"; //$NON-NLS-1$
