@@ -18,6 +18,7 @@ import org.talend.dataprep.i18n.DataprepBundle;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataprep.parameters.SelectParameter;
+import org.talend.dataprep.transformation.actions.common.ActionCompileException;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
 import java.util.*;
@@ -114,14 +115,12 @@ public interface DatePatternParamModel {
         }
     }
 
-    default void compileDatePattern(ActionContext actionContext) {
-        if (actionContext.getActionStatus() == ActionContext.ActionStatus.OK) {
-            try {
-                actionContext.get(COMPILED_DATE_PATTERN, p -> getDateFormat(actionContext.getParameters()));
-            } catch (IllegalArgumentException e) {
-                // Nothing to do, when pattern is invalid, cancel action.
-                actionContext.setActionStatus(ActionContext.ActionStatus.CANCELED);
-            }
+    default void compileDatePattern(ActionContext actionContext) throws ActionCompileException {
+        try {
+            actionContext.get(COMPILED_DATE_PATTERN, p -> getDateFormat(actionContext.getParameters()));
+        } catch (IllegalArgumentException e) {
+            // Nothing to do, when pattern is invalid, cancel action.
+            throw new ActionCompileException("Invalid pattern", e);
         }
     }
 

@@ -82,17 +82,15 @@ public class Cut extends AbstractActionMetadata implements ColumnAction {
     }
 
     @Override
-    public void compile(ActionContext actionContext) {
+    public void compile(ActionContext actionContext) throws ActionCompileException {
         super.compile(actionContext);
-        if (actionContext.getActionStatus() == ActionContext.ActionStatus.OK) {
-            final Map<String, String> parameters = actionContext.getParameters();
-            String rawParam = parameters.get(PATTERN_PARAMETER);
+        final Map<String, String> parameters = actionContext.getParameters();
+        String rawParam = parameters.get(PATTERN_PARAMETER);
 
-            try {
-                actionContext.get(REGEX_HELPER_KEY, p -> regexParametersHelper.build(rawParam, false));
-            } catch (IllegalArgumentException e) {
-                actionContext.setActionStatus(ActionContext.ActionStatus.CANCELED);
-            }
+        try {
+            actionContext.get(REGEX_HELPER_KEY, p -> regexParametersHelper.build(rawParam, false));
+        } catch (IllegalArgumentException e) {
+            throw new ActionCompileException(e.getMessage(), e);
         }
     }
 

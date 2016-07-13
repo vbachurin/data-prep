@@ -31,6 +31,7 @@ import org.talend.dataprep.transformation.actions.category.ActionCategory;
 import org.talend.dataprep.transformation.actions.common.*;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 import static org.talend.dataprep.transformation.actions.common.ActionMetadata.Behavior.VALUES_COLUMN;
@@ -90,7 +91,7 @@ public class ReorderColumn extends AbstractActionMetadata implements DataSetActi
     }
 
     @Override
-    public void compile(ActionContext actionContext) {
+    public void compile(ActionContext actionContext) throws ActionCompileException {
         super.compile(actionContext);
 
         Map<String, String> parameters = actionContext.getParameters();
@@ -125,6 +126,7 @@ public class ReorderColumn extends AbstractActionMetadata implements DataSetActi
         // we have different case as target can he lower than origin or the opposite
         boolean forwardMove = targetIndex > originIndex;
 
+        // TODO: why the operation is in the compile and not in the apply?
         try {
             if (forwardMove) {
                 for (index = originIndex; index < targetIndex; index++) {
@@ -135,14 +137,15 @@ public class ReorderColumn extends AbstractActionMetadata implements DataSetActi
                     swapColumnMetadata(rowMetadata.getColumns().get(index), rowMetadata.getColumns().get(index - 1));
                 }
             }
-        } catch (Exception e) {
-            LOGGER.debug("cannot swap columns: {}", e.getMessage());
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            LOGGER.debug("Cannot swap columns.", e);
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION,
                     ExceptionContext.build().put("message", e.getMessage()));
         }
     }
 
-    protected void swapColumnMetadata(ColumnMetadata originColumn, ColumnMetadata targetColumn) throws Exception {
+    protected void swapColumnMetadata(ColumnMetadata originColumn, ColumnMetadata targetColumn)
+            throws InvocationTargetException, IllegalAccessException {
 
         ColumnMetadata targetColumnCopy = ColumnMetadata.Builder.column().copy(targetColumn).build();
         ColumnMetadata originColumnCopy = ColumnMetadata.Builder.column().copy(originColumn).build();
@@ -157,10 +160,10 @@ public class ReorderColumn extends AbstractActionMetadata implements DataSetActi
         BeanUtils.copyProperties(originColumn.getStatistics(), targetStatistics);
 
         Quality originalQuality = originColumnCopy.getQuality();
-        Quality targetQualityCopty = targetColumnCopy.getQuality();
+        Quality targetQualityCopy = targetColumnCopy.getQuality();
 
         BeanUtils.copyProperties(targetColumn.getQuality(), originalQuality);
-        BeanUtils.copyProperties(originColumn.getQuality(), targetQualityCopty);
+        BeanUtils.copyProperties(originColumn.getQuality(), targetQualityCopy);
 
     }
 

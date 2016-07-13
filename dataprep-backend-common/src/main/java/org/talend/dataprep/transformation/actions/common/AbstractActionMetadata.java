@@ -15,6 +15,7 @@ package org.talend.dataprep.transformation.actions.common;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.CaseFormat;
+import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.i18n.AbstractBundle;
@@ -25,6 +26,7 @@ import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -33,9 +35,12 @@ import java.util.Set;
  */
 public abstract class AbstractActionMetadata implements ActionMetadata {
 
+    /**
+     * Prefix for actions beans names. Not mandatory but help avoid bean names collision.
+     */
     public static final String ACTION_BEAN_PREFIX = "action#"; //$NON-NLS-1$
 
-    private final String defaultActionName = CaseFormat.UPPER_CAMEL.converterTo(CaseFormat.LOWER_UNDERSCORE)
+    protected final String defaultActionName = CaseFormat.UPPER_CAMEL.converterTo(CaseFormat.LOWER_UNDERSCORE)
             .convert(getClass().getSimpleName());
 
     /**
@@ -79,7 +84,7 @@ public abstract class AbstractActionMetadata implements ActionMetadata {
      */
     @Override
     public String getDescription() {
-        return DataprepBundle.message("action." + getName() + ".desc");
+        return getBundleMessageOrEmpty(".desc");
     }
 
     /**
@@ -87,7 +92,13 @@ public abstract class AbstractActionMetadata implements ActionMetadata {
      */
     @Override
     public String getDocUrl() {
-        return DataprepBundle.message("action." + getName() + ".url");
+        return getBundleMessageOrEmpty(".url");
+    }
+
+    private String getBundleMessageOrEmpty(String key) {
+        String messageKey = "action." + getName() + key;
+        String bundleValue = DataprepBundle.message(messageKey);
+        return  Objects.equals(bundleValue, messageKey) ? StringUtils.EMPTY : bundleValue;
     }
 
     /**
@@ -139,10 +150,14 @@ public abstract class AbstractActionMetadata implements ActionMetadata {
      *
      * @param actionContext The action context that contains the parameters and allows compile step to change action
      *                      status.
-     * @see ActionContext#setActionStatus(ActionContext.ActionStatus)
      */
     @Override
-    public void compile(ActionContext actionContext) {
+    public void compile(ActionContext actionContext) throws ActionCompileException {
+        checkImplicitArgumentsForScope(actionContext);
+    }
+
+    private void checkImplicitArgumentsForScope(ActionContext actionContext)
+            throws ActionCompileException {
         final RowMetadata input = actionContext.getRowMetadata();
         final ScopeCategory scope = actionContext.getScope();
         if (scope != null) {
@@ -151,8 +166,7 @@ public abstract class AbstractActionMetadata implements ActionMetadata {
             case COLUMN:
                 // Stop action if: there's actually column information in input AND column is not found
                 if (input != null && !input.getColumns().isEmpty() && input.getById(actionContext.getColumnId()) == null) {
-                    actionContext.setActionStatus(ActionContext.ActionStatus.CANCELED);
-                    return;
+                    throw new ActionCompileException("Missing column information for Cell or column action.");
                 }
                 break;
             case LINE:
@@ -161,7 +175,6 @@ public abstract class AbstractActionMetadata implements ActionMetadata {
                 break;
             }
         }
-        actionContext.setActionStatus(ActionContext.ActionStatus.OK);
     }
 
     /**

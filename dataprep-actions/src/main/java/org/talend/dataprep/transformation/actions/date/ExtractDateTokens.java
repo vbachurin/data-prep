@@ -22,10 +22,7 @@ import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.ParameterType;
-import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
-import org.talend.dataprep.transformation.actions.common.ActionMetadata;
-import org.talend.dataprep.transformation.actions.common.ColumnAction;
-import org.talend.dataprep.transformation.actions.common.DataprepAction;
+import org.talend.dataprep.transformation.actions.common.*;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
 import javax.annotation.Nonnull;
@@ -128,29 +125,27 @@ public class ExtractDateTokens extends AbstractDate implements ColumnAction {
     }
 
     @Override
-    public void compile(ActionContext context) {
+    public void compile(ActionContext context) throws ActionCompileException {
         super.compile(context);
-        if (context.getActionStatus() == ActionContext.ActionStatus.OK) {
-            final RowMetadata rowMetadata = context.getRowMetadata();
-            final String columnId = context.getColumnId();
-            final Map<String, String> parameters = context.getParameters();
-            final ColumnMetadata column = rowMetadata.getById(columnId);
-            for (DateFieldMappingBean date_field : DATE_FIELDS) {
-                if (Boolean.valueOf(parameters.get(date_field.key))) {
-                    context.column(column.getName() + SEPARATOR + date_field.key, (r) -> {
-                        final ColumnMetadata c = ColumnMetadata.Builder //
-                                .column() //
-                                .name(column.getName() + SEPARATOR + date_field.key) //
-                                .type(Type.INTEGER) //
-                                .empty(column.getQuality().getEmpty()) //
-                                .invalid(column.getQuality().getInvalid()) //
-                                .valid(column.getQuality().getValid()) //
-                                .headerSize(column.getHeaderSize()) //
-                                .build();
-                        rowMetadata.insertAfter(columnId, c);
-                        return c;
-                    });
-                }
+        final RowMetadata rowMetadata = context.getRowMetadata();
+        final String columnId = context.getColumnId();
+        final Map<String, String> parameters = context.getParameters();
+        final ColumnMetadata column = rowMetadata.getById(columnId);
+        for (DateFieldMappingBean dateField : DATE_FIELDS) {
+            if (Boolean.valueOf(parameters.get(dateField.key))) {
+                context.column(column.getName() + SEPARATOR + dateField.key, (r) -> {
+                    final ColumnMetadata c = ColumnMetadata.Builder //
+                            .column() //
+                            .name(column.getName() + SEPARATOR + dateField.key) //
+                            .type(Type.INTEGER) //
+                            .empty(column.getQuality().getEmpty()) //
+                            .invalid(column.getQuality().getInvalid()) //
+                            .valid(column.getQuality().getValid()) //
+                            .headerSize(column.getHeaderSize()) //
+                            .build();
+                    rowMetadata.insertAfter(columnId, c);
+                    return c;
+                });
             }
         }
     }

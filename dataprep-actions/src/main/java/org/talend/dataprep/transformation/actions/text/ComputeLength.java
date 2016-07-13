@@ -18,10 +18,7 @@ import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.actions.category.ActionCategory;
-import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
-import org.talend.dataprep.transformation.actions.common.ActionMetadata;
-import org.talend.dataprep.transformation.actions.common.ColumnAction;
-import org.talend.dataprep.transformation.actions.common.DataprepAction;
+import org.talend.dataprep.transformation.actions.common.*;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
 import java.util.EnumSet;
@@ -65,27 +62,24 @@ public class ComputeLength extends AbstractActionMetadata implements ColumnActio
     }
 
     @Override
-    public void compile(ActionContext context) {
+    public void compile(ActionContext context) throws ActionCompileException {
         super.compile(context);
-        if (context.getActionStatus() == ActionContext.ActionStatus.OK) {
-            final RowMetadata rowMetadata = context.getRowMetadata();
-            final String columnId = context.getColumnId();
-            final ColumnMetadata column = rowMetadata.getById(columnId);
-            context.column(column.getName() + APPENDIX, (r) -> {
-                final ColumnMetadata c = ColumnMetadata.Builder //
-                        .column() //
-                        .name(column.getName() + APPENDIX) //
-                        .type(Type.INTEGER) //
-                        .empty(column.getQuality().getEmpty()) //
-                        .invalid(column.getQuality().getInvalid()) //
-                        .valid(column.getQuality().getValid()) //
-                        .headerSize(column.getHeaderSize()) //
-                        .build();
-                rowMetadata.insertAfter(columnId, c);
-                return c;
-            });
-
-        }
+        final RowMetadata rowMetadata = context.getRowMetadata();
+        final String columnId = context.getColumnId();
+        final ColumnMetadata column = rowMetadata.getById(columnId);
+        context.column(column.getName() + APPENDIX, (r) -> {
+            final ColumnMetadata c = ColumnMetadata.Builder //
+                    .column() //
+                    .name(column.getName() + APPENDIX) //
+                    .type(Type.INTEGER) //
+                    .empty(column.getQuality().getEmpty()) //
+                    .invalid(column.getQuality().getInvalid()) //
+                    .valid(column.getQuality().getValid()) //
+                    .headerSize(column.getHeaderSize()) //
+                    .build();
+            rowMetadata.insertAfter(columnId, c);
+            return c;
+        });
     }
 
     /**

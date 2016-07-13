@@ -23,10 +23,7 @@ import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataprep.parameters.SelectParameter;
 import org.talend.dataprep.transformation.actions.category.ActionCategory;
-import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
-import org.talend.dataprep.transformation.actions.common.ColumnAction;
-import org.talend.dataprep.transformation.actions.common.DataprepAction;
-import org.talend.dataprep.transformation.actions.common.OtherColumnParameters;
+import org.talend.dataprep.transformation.actions.common.*;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
 import java.util.EnumSet;
@@ -94,29 +91,27 @@ public class FuzzyMatching extends AbstractActionMetadata implements ColumnActio
     }
 
     @Override
-    public void compile(ActionContext context) {
+    public void compile(ActionContext context) throws ActionCompileException {
         super.compile(context);
-        if (context.getActionStatus() == ActionContext.ActionStatus.OK) {
-            final String columnId = context.getColumnId();
-            // create new column and append it after current column
-            RowMetadata rowMetadata = context.getRowMetadata();
-            ColumnMetadata column = rowMetadata.getById(columnId);
+        final String columnId = context.getColumnId();
+        // create new column and append it after current column
+        RowMetadata rowMetadata = context.getRowMetadata();
+        ColumnMetadata column = rowMetadata.getById(columnId);
 
-            context.column(column.getName() + APPENDIX, (r) -> {
-                final ColumnMetadata c = ColumnMetadata.Builder //
-                        .column() //
-                        .name(column.getName() + APPENDIX) //
-                        .type(BOOLEAN) //
-                        .typeForce(true) //
-                        .empty(column.getQuality().getEmpty()) //
-                        .invalid(column.getQuality().getInvalid()) //
-                        .valid(column.getQuality().getValid()) //
-                        .headerSize(column.getHeaderSize()) //
-                        .build();
-                rowMetadata.insertAfter(columnId, c);
-                return c;
-            });
-        }
+        context.column(column.getName() + APPENDIX, (r) -> {
+            final ColumnMetadata c = ColumnMetadata.Builder //
+                    .column() //
+                    .name(column.getName() + APPENDIX) //
+                    .type(BOOLEAN) //
+                    .typeForce(true) //
+                    .empty(column.getQuality().getEmpty()) //
+                    .invalid(column.getQuality().getInvalid()) //
+                    .valid(column.getQuality().getValid()) //
+                    .headerSize(column.getHeaderSize()) //
+                    .build();
+            rowMetadata.insertAfter(columnId, c);
+            return c;
+        });
     }
 
     @Override

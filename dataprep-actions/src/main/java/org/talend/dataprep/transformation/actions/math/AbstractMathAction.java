@@ -18,7 +18,7 @@ import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.actions.category.ActionCategory;
 import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
-import org.talend.dataprep.transformation.actions.common.ActionMetadata;
+import org.talend.dataprep.transformation.actions.common.ActionCompileException;
 import org.talend.dataprep.transformation.actions.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
@@ -45,29 +45,24 @@ public abstract class AbstractMathAction extends AbstractActionMetadata implemen
 
     protected abstract String getColumnNameSuffix();
 
-    /**
-     * @see ActionMetadata#compile(ActionContext)
-     */
     @Override
-    public void compile(ActionContext context) {
+    public void compile(ActionContext context) throws ActionCompileException {
         super.compile(context);
-        if (context.getActionStatus() == ActionContext.ActionStatus.OK) {
 
-            String columnId = context.getColumnId();
-            RowMetadata rowMetadata = context.getRowMetadata();
-            ColumnMetadata column = rowMetadata.getById(columnId);
+        String columnId = context.getColumnId();
+        RowMetadata rowMetadata = context.getRowMetadata();
+        ColumnMetadata column = rowMetadata.getById(columnId);
 
-            // create new column and append it after current column
-            context.column("result", r -> {
-                ColumnMetadata c = ColumnMetadata.Builder //
-                        .column() //
-                        .name(column.getName() + "_" + getColumnNameSuffix()) //
-                        .type(Type.STRING) // Leave actual type detection to transformation
-                        .build();
-                rowMetadata.insertAfter(columnId, c);
-                return c;
-            });
-        }
+        // create new column and append it after current column
+        context.column("result", r -> {
+            ColumnMetadata c = ColumnMetadata.Builder //
+                    .column() //
+                    .name(column.getName() + "_" + getColumnNameSuffix()) //
+                    .type(Type.STRING) // Leave actual type detection to transformation
+                    .build();
+            rowMetadata.insertAfter(columnId, c);
+            return c;
+        });
     }
 
     @Override

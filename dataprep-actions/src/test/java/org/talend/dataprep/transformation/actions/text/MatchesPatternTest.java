@@ -12,14 +12,6 @@
 //  ============================================================================
 package org.talend.dataprep.transformation.actions.text;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
-import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
-import static org.talend.dataprep.transformation.actions.ActionMetadataTestUtils.getColumn;
-
-import java.io.IOException;
-import java.util.*;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,12 +19,20 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.actions.AbstractMetadataBaseTest;
 import org.talend.dataprep.transformation.actions.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.actions.category.ActionCategory;
+import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+
+import java.io.IOException;
+import java.util.*;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.*;
+import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
+import static org.talend.dataprep.transformation.actions.ActionMetadataTestUtils.getColumn;
 
 /**
  * Test class for Match Pattern action. Creates one consumer, and test it.
@@ -167,7 +167,7 @@ public class MatchesPatternTest extends AbstractMetadataBaseTest {
     }
 
     @Test
-    public void shouldOrNotMatchPattern() {
+    public void shouldOrNotMatchPattern() throws Exception {
         assertFalse(action.computeNewValue(" ", buildPatternActionContext("[a-zA-Z]+")));
         assertTrue(action.computeNewValue("aA", buildPatternActionContext("[a-zA-Z]+")));
 
@@ -176,7 +176,7 @@ public class MatchesPatternTest extends AbstractMetadataBaseTest {
     }
 
     @Test
-    public void shouldNotMatchPattern() {
+    public void shouldNotMatchPattern() throws Exception {
         assertFalse(action.computeNewValue(" ", buildPatternActionContext("[a-zA-Z]+")));
         assertFalse(action.computeNewValue("aaaa8", buildPatternActionContext("[a-zA-Z]*")));
         assertFalse(action.computeNewValue(" a8 ", buildPatternActionContext("[a-zA-Z]*")));
@@ -184,14 +184,14 @@ public class MatchesPatternTest extends AbstractMetadataBaseTest {
     }
 
     @Test
-    public void shouldMatchOrNotoEmptyString() {
+    public void shouldMatchOrNotoEmptyString() throws Exception {
         assertTrue(action.computeNewValue("", buildPatternActionContext(".*")));
         assertTrue(action.computeNewValue("", buildPatternActionContext("[a-zA-Z]*")));
         assertFalse(action.computeNewValue(" ", buildPatternActionContext("[a-zA-Z]+")));
         assertTrue(action.computeNewValue(" ", buildPatternActionContext("[a-zA-Z ]+")));
     }
 
-    private ActionContext buildPatternActionContext(String regex) {
+    private ActionContext buildPatternActionContext(String regex) throws Exception {
         ActionContext context = new ActionContext(new TransformationContext());
         context.setRowMetadata(new RowMetadata());
         context.setParameters(Collections.singletonMap(MatchesPattern.PATTERN_PARAMETER, regex));
@@ -200,14 +200,14 @@ public class MatchesPatternTest extends AbstractMetadataBaseTest {
     }
 
     @Test
-    public void shouldMatchEmptyStringEmptyPattern() {
+    public void shouldMatchEmptyStringEmptyPattern() throws Exception {
         assertFalse(action.computeNewValue("", buildPatternActionContext("")));
         assertFalse(action.computeNewValue("  ", buildPatternActionContext("")));
         assertFalse(action.computeNewValue("un petit texte", buildPatternActionContext("")));
     }
 
     @Test
-    public void shouldNotMatchBadPattern() {
+    public void shouldNotMatchBadPattern() throws Exception {
         assertFalse(action.computeNewValue("", buildPatternActionContext("*")));
         assertFalse(action.computeNewValue("  ", buildPatternActionContext("*")));
         assertFalse(action.computeNewValue("un petit texte", buildPatternActionContext("*")));

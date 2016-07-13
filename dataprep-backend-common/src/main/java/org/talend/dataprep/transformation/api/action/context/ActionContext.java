@@ -13,12 +13,6 @@
 
 package org.talend.dataprep.transformation.api.action.context;
 
-import java.util.*;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -26,6 +20,12 @@ import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.transformation.actions.category.ScopeCategory;
 import org.talend.dataprep.transformation.actions.common.ImplicitParameters;
+
+import java.util.*;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * Context for an action within a transformation. Hence, several instance of the same action can have their own context.
@@ -169,7 +169,7 @@ public class ActionContext {
      * Return the object from the context or use the supplier to create it and cache it.
      *
      * @param key the object key.
-     * @param supplier the supplier to use to create the object in case it is not found in the context.
+     * @param supplier the supplier to use to cr    eate the object in case it is not found in the context.
      * @return the object (stored in the context).
      */
     public <T> T get(String key, Function<Map<String, String>, T> supplier) {

@@ -12,21 +12,6 @@
 // ============================================================================
 package org.talend.dataprep.transformation.actions.phonenumber;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.talend.dataprep.transformation.actions.ActionMetadataTestUtils.getColumn;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,11 +19,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.parameters.Parameter;
-import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.actions.AbstractMetadataBaseTest;
 import org.talend.dataprep.transformation.actions.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.actions.category.ActionCategory;
 import org.talend.dataprep.transformation.actions.common.OtherColumnParameters;
+import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
+
+import java.io.IOException;
+import java.util.*;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.*;
+import static org.talend.dataprep.transformation.actions.ActionMetadataTestUtils.getColumn;
 
 public class FormatPhoneNumberTest extends AbstractMetadataBaseTest {
 
@@ -102,7 +94,6 @@ public class FormatPhoneNumberTest extends AbstractMetadataBaseTest {
 
         ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
         assertEquals(expectedValues, row.values());
-
     }
 
     @Test

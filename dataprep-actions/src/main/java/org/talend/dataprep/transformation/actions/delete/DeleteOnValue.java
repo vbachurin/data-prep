@@ -17,10 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.parameters.Parameter;
-import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
-import org.talend.dataprep.transformation.actions.common.ActionMetadata;
-import org.talend.dataprep.transformation.actions.common.DataprepAction;
-import org.talend.dataprep.transformation.actions.common.ReplaceOnValueHelper;
+import org.talend.dataprep.transformation.actions.common.*;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
 import javax.annotation.Nonnull;
@@ -79,12 +76,10 @@ public class DeleteOnValue extends AbstractDelete {
     }
 
     @Override
-    public void compile(ActionContext actionContext) {
+    public void compile(ActionContext actionContext) throws ActionCompileException {
         super.compile(actionContext);
-        if (actionContext.getActionStatus() == ActionContext.ActionStatus.OK) {
-            final Map<String, String> parameters = actionContext.getParameters();
-            actionContext.get("replaceOnValue", p -> regexParametersHelper.build(parameters.get(VALUE_PARAMETER), true));
-        }
+        final Map<String, String> parameters = actionContext.getParameters();
+        actionContext.get("replaceOnValue", p -> regexParametersHelper.build(parameters.get(VALUE_PARAMETER), true));
     }
 
     /**

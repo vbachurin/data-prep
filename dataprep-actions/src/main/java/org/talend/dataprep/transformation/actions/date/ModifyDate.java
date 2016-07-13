@@ -93,23 +93,21 @@ public class ModifyDate extends AbstractDate implements ColumnAction, DatePatter
     }
 
     @Override
-    public void compile(ActionContext actionContext) {
+    public void compile(ActionContext actionContext) throws ActionCompileException {
         super.compile(actionContext);
-        if (actionContext.getActionStatus() == ActionContext.ActionStatus.OK) {
-            try {
-                actionContext.get(PATTERN_CONTEXT_KEY, p -> dateParser
-                        .getMostFrequentPattern(actionContext.getRowMetadata().getById(actionContext.getColumnId())));
+        try {
+            actionContext.get(PATTERN_CONTEXT_KEY,
+                    p -> dateParser.getMostFrequentPattern(actionContext.getRowMetadata().getById(actionContext.getColumnId())));
 
-                actionContext.get(UNIT_CONTEXT_KEY,
-                        p -> ChronoUnit.valueOf(actionContext.getParameters().get(TIME_UNIT_PARAMETER).toUpperCase()));
+            actionContext.get(UNIT_CONTEXT_KEY,
+                    p -> ChronoUnit.valueOf(actionContext.getParameters().get(TIME_UNIT_PARAMETER).toUpperCase()));
 
-                if (actionContext.getParameters().get(MODE_PARAMETER).equals(CONSTANT_MODE)) {
-                    actionContext.get(AMOUNT_CONTEXT_KEY, p -> computeAmount(actionContext.getParameters().get(CONSTANT_VALUE)));
-                }
-
-            } catch (IllegalArgumentException e) {
-                actionContext.setActionStatus(ActionContext.ActionStatus.CANCELED);
+            if (actionContext.getParameters().get(MODE_PARAMETER).equals(CONSTANT_MODE)) {
+                actionContext.get(AMOUNT_CONTEXT_KEY, p -> computeAmount(actionContext.getParameters().get(CONSTANT_VALUE)));
             }
+
+        } catch (IllegalArgumentException e) {
+            throw new ActionCompileException(e.getMessage(), e);
         }
     }
 

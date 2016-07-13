@@ -122,27 +122,25 @@ public class Substring extends AbstractActionMetadata implements ColumnAction {
     }
 
     @Override
-    public void compile(ActionContext context) {
+    public void compile(ActionContext context) throws ActionCompileException {
         super.compile(context);
-        if (context.getActionStatus() == ActionContext.ActionStatus.OK) {
-            // Create result column
-            final RowMetadata rowMetadata = context.getRowMetadata();
-            final String columnId = context.getColumnId();
-            final ColumnMetadata column = rowMetadata.getById(columnId);
-            context.column(column.getName() + APPENDIX, (r) -> {
-                final ColumnMetadata c = ColumnMetadata.Builder //
-                        .column() //
-                        .name(column.getName() + APPENDIX) //
-                        .type(Type.get(column.getType())) //
-                        .empty(column.getQuality().getEmpty()) //
-                        .invalid(column.getQuality().getInvalid()) //
-                        .valid(column.getQuality().getValid()) //
-                        .headerSize(column.getHeaderSize()) //
-                        .build();
-                rowMetadata.insertAfter(columnId, c);
-                return c;
-            });
-        }
+        // Create result column
+        final RowMetadata rowMetadata = context.getRowMetadata();
+        final String columnId = context.getColumnId();
+        final ColumnMetadata column = rowMetadata.getById(columnId);
+        context.column(column.getName() + APPENDIX, (r) -> {
+            final ColumnMetadata c = ColumnMetadata.Builder //
+                    .column() //
+                    .name(column.getName() + APPENDIX) //
+                    .type(Type.get(column.getType())) //
+                    .empty(column.getQuality().getEmpty()) //
+                    .invalid(column.getQuality().getInvalid()) //
+                    .valid(column.getQuality().getValid()) //
+                    .headerSize(column.getHeaderSize()) //
+                    .build();
+            rowMetadata.insertAfter(columnId, c);
+            return c;
+        });
     }
 
     /**

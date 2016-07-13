@@ -13,13 +13,6 @@
 
 package org.talend.dataprep.transformation.actions.common;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.annotation.Nonnull;
-
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -28,10 +21,16 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataprep.parameters.SelectParameter;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
+
+import javax.annotation.Nonnull;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public abstract class AbstractCompareAction extends AbstractActionMetadata
         implements ColumnAction, OtherColumnParameters, CompareAction {
@@ -96,33 +95,31 @@ public abstract class AbstractCompareAction extends AbstractActionMetadata
     }
 
     @Override
-    public void compile(ActionContext context) {
+    public void compile(ActionContext context) throws ActionCompileException {
         super.compile(context);
-        if (context.getActionStatus() == ActionContext.ActionStatus.OK) {
-            final String columnId = context.getColumnId();
-            final RowMetadata rowMetadata = context.getRowMetadata();
-            final Map<String, String> parameters = context.getParameters();
-            final ColumnMetadata column = rowMetadata.getById(columnId);
-            final String compareMode = getCompareMode(parameters);
+        final String columnId = context.getColumnId();
+        final RowMetadata rowMetadata = context.getRowMetadata();
+        final Map<String, String> parameters = context.getParameters();
+        final ColumnMetadata column = rowMetadata.getById(columnId);
+        final String compareMode = getCompareMode(parameters);
 
-            String compareToLabel;
-            if (parameters.get(MODE_PARAMETER).equals(CONSTANT_MODE)) {
-                compareToLabel = parameters.get(CONSTANT_VALUE);
-            } else {
-                final ColumnMetadata selectedColumn = rowMetadata.getById(parameters.get(SELECTED_COLUMN_PARAMETER));
-                compareToLabel = selectedColumn.getName();
-            }
-
-            context.column("result", (r) -> {
-                final ColumnMetadata c = ColumnMetadata.Builder //
-                        .column() //
-                        .name(column.getName() + "_" + compareMode + "_" + compareToLabel + "?") //
-                        .type(Type.BOOLEAN) //
-                        .build();
-                rowMetadata.insertAfter(columnId, c);
-                return c;
-            });
+        String compareToLabel;
+        if (parameters.get(MODE_PARAMETER).equals(CONSTANT_MODE)) {
+            compareToLabel = parameters.get(CONSTANT_VALUE);
+        } else {
+            final ColumnMetadata selectedColumn = rowMetadata.getById(parameters.get(SELECTED_COLUMN_PARAMETER));
+            compareToLabel = selectedColumn.getName();
         }
+
+        context.column("result", r -> {
+            final ColumnMetadata c = ColumnMetadata.Builder //
+                    .column() //
+                    .name(column.getName() + "_" + compareMode + "_" + compareToLabel + "?") //
+                    .type(Type.BOOLEAN) //
+                    .build();
+            rowMetadata.insertAfter(columnId, c);
+            return c;
+        });
     }
 
     /**

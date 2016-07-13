@@ -67,11 +67,8 @@ public class Trim extends AbstractActionMetadata implements ColumnAction {
 
     @Override
     public void compile(ActionContext actionContext) {
-        super.compile(actionContext);
-        if (actionContext.getActionStatus() == ActionContext.ActionStatus.OK) {
-            final Pattern pattern = Pattern.compile("(^\\h*)|(\\h*$)");
-            actionContext.get(TRIM_PATTERN, parameters -> pattern);
-        }
+        final Pattern pattern = Pattern.compile("(^\\h*)|(\\h*$)");
+        actionContext.get(TRIM_PATTERN, parameters -> pattern);
     }
 
     /**

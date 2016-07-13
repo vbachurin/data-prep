@@ -24,10 +24,7 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.SelectParameter;
 import org.talend.dataprep.transformation.actions.category.ActionCategory;
-import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
-import org.talend.dataprep.transformation.actions.common.ActionMetadata;
-import org.talend.dataprep.transformation.actions.common.ColumnAction;
-import org.talend.dataprep.transformation.actions.common.DataprepAction;
+import org.talend.dataprep.transformation.actions.common.*;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
 import java.math.BigDecimal;
@@ -230,19 +227,13 @@ public class ChangeNumberFormat extends AbstractActionMetadata implements Column
         return decimalFormat;
     }
 
-    /**
-     * @see ActionMetadata#compile(ActionContext)
-     */
     @Override
-    public void compile(ActionContext actionContext) {
+    public void compile(ActionContext actionContext) throws ActionCompileException {
         super.compile(actionContext);
-        if (actionContext.getActionStatus() == ActionContext.ActionStatus.OK) {
-            try {
-                actionContext.get(COMPILED_TARGET_FORMAT, p -> getFormat(actionContext.getParameters()));
-            } catch (IllegalArgumentException e) {
-                LOGGER.warn("Unsupported number format", e);
-                actionContext.setActionStatus(ActionContext.ActionStatus.CANCELED);
-            }
+        try {
+            actionContext.get(COMPILED_TARGET_FORMAT, p -> getFormat(actionContext.getParameters()));
+        } catch (IllegalArgumentException e) {
+            throw new ActionCompileException("Unsupported number format", e);
         }
     }
 

@@ -23,10 +23,7 @@ import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.SelectParameter;
-import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
-import org.talend.dataprep.transformation.actions.common.ActionMetadata;
-import org.talend.dataprep.transformation.actions.common.ColumnAction;
-import org.talend.dataprep.transformation.actions.common.DataprepAction;
+import org.talend.dataprep.transformation.actions.common.*;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
 import javax.annotation.Nonnull;
@@ -102,65 +99,51 @@ public class ExtractStringTokens extends AbstractActionMetadata implements Colum
         return parameters;
     }
 
-    /**
-     * @see ActionMetadata#acceptColumn(ColumnMetadata)
-     */
     @Override
     public boolean acceptColumn(ColumnMetadata column) {
         return Type.STRING.equals(Type.get(column.getType()));
     }
 
-    /**
-     * @see ActionMetadata#compile(ActionContext)
-     */
     @Override
-    public void compile(ActionContext context) {
+    public void compile(ActionContext context) throws ActionCompileException {
         super.compile(context);
-        if (context.getActionStatus() == ActionContext.ActionStatus.OK) {
+        final String regex = context.getParameters().get(PARAMETER_REGEX);
 
-            final String regex = context.getParameters().get(PARAMETER_REGEX);
+        // Validate the regex, and put it in context once for all lines:
+        // Check 1: not null or empty
+        if (StringUtils.isEmpty(regex)) {
+            throw new ActionCompileException("Empty pattern, action canceled");
+        }
+        // Check 2: valid regex
+        try {
+            context.get(PATTERN, p -> Pattern.compile(regex));
+        } catch (PatternSyntaxException e) {
+            throw new ActionCompileException("Invalid pattern '" + regex + "', action canceled", e);
+        }
+        // Create result column
+        final Map<String, String> parameters = context.getParameters();
+        final String columnId = context.getColumnId();
 
-            // Validate the regex, and put it in context once for all lines:
-            // Check 1: not null or empty
-            if (StringUtils.isEmpty(regex)) {
-                LOGGER.debug("Empty pattern, action canceled");
-                context.setActionStatus(ActionContext.ActionStatus.CANCELED);
-                return;
-            }
-            // Check 2: valid regex
-            try {
-                context.get(PATTERN, (p) -> Pattern.compile(regex));
-            } catch (PatternSyntaxException e) {
-                LOGGER.debug("Invalid pattern {} --> {}, action canceled", regex, e.getMessage(), e);
-                context.setActionStatus(ActionContext.ActionStatus.CANCELED);
-            }
-            // Create result column
-            final Map<String, String> parameters = context.getParameters();
-            final String columnId = context.getColumnId();
+        // create the new columns
+        int limit = (parameters.get(MODE_PARAMETER).equals(MULTIPLE_COLUMNS_MODE) ? Integer.parseInt(parameters.get(LIMIT)) : 1);
 
-            // create the new columns
-            int limit = (parameters.get(MODE_PARAMETER).equals(MULTIPLE_COLUMNS_MODE) ? Integer.parseInt(parameters.get(LIMIT))
-                    : 1);
-
-            final RowMetadata rowMetadata = context.getRowMetadata();
-            final ColumnMetadata column = rowMetadata.getById(columnId);
-            final List<String> newColumns = new ArrayList<>();
-            final Deque<String> lastColumnId = new ArrayDeque<>();
-            lastColumnId.push(columnId);
-            for (int i = 0; i < limit; i++) {
-                final int newColumnIndex = i + 1;
-                newColumns.add(context.column(column.getName() + APPENDIX + i, (r) -> {
-                    final ColumnMetadata c = ColumnMetadata.Builder //
-                            .column() //
-                            .type(Type.STRING) //
-                            .computedId(StringUtils.EMPTY) //
-                            .name(column.getName() + APPENDIX + newColumnIndex) //
-                            .build();
-                    lastColumnId.push(rowMetadata.insertAfter(lastColumnId.pop(), c));
-                    return c;
-                }));
-            }
-
+        final RowMetadata rowMetadata = context.getRowMetadata();
+        final ColumnMetadata column = rowMetadata.getById(columnId);
+        final List<String> newColumns = new ArrayList<>();
+        final Deque<String> lastColumnId = new ArrayDeque<>();
+        lastColumnId.push(columnId);
+        for (int i = 0; i < limit; i++) {
+            final int newColumnIndex = i + 1;
+            newColumns.add(context.column(column.getName() + APPENDIX + i, (r) -> {
+                final ColumnMetadata c = ColumnMetadata.Builder //
+                        .column() //
+                        .type(Type.STRING) //
+                        .computedId(StringUtils.EMPTY) //
+                        .name(column.getName() + APPENDIX + newColumnIndex) //
+                        .build();
+                lastColumnId.push(rowMetadata.insertAfter(lastColumnId.pop(), c));
+                return c;
+            }));
         }
     }
 

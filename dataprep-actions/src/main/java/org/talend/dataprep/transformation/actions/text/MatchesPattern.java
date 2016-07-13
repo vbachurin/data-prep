@@ -48,6 +48,7 @@ public class MatchesPattern extends AbstractActionMetadata implements ColumnActi
      * The column appendix.
      */
     public static final String APPENDIX = "_matching"; //$NON-NLS-1$
+
     /**
      * The pattern shown to the user as a list. An item in this list is the value 'other', which allow the user to
      * manually enter his pattern.
@@ -57,6 +58,7 @@ public class MatchesPattern extends AbstractActionMetadata implements ColumnActi
     public static final String CUSTOM = "custom";
 
     public static final String REGEX_HELPER_KEY = "regex_helper";
+
     /**
      * The pattern manually specified by the user. Should be used only if PATTERN_PARAMETER value is 'other'.
      */
@@ -94,17 +96,17 @@ public class MatchesPattern extends AbstractActionMetadata implements ColumnActi
     public List<Parameter> getParameters() {
         final List<Parameter> parameters = super.getParameters();
         // @formatter:off
-		parameters.add(SelectParameter.Builder.builder()
-				.name(PATTERN_PARAMETER)
-				.item("[a-z]+")
-				.item("[A-Z]+")
-				.item("[0-9]+")
-				.item("[a-zA-Z]+")
-				.item("[a-zA-Z0-9]+")
-				.item(CUSTOM, new Parameter(MANUAL_PATTERN_PARAMETER, REGEX, EMPTY))
-				.defaultValue("[a-zA-Z]+")
-				.build());
-		// @formatter:on
+        parameters.add(SelectParameter.Builder.builder()
+                .name(PATTERN_PARAMETER)
+                .item("[a-z]+")
+                .item("[A-Z]+")
+                .item("[0-9]+")
+                .item("[a-zA-Z]+")
+                .item("[a-zA-Z0-9]+")
+                .item(CUSTOM, new Parameter(MANUAL_PATTERN_PARAMETER, REGEX, EMPTY))
+                .defaultValue("[a-zA-Z]+")
+                .build());
+        // @formatter:on
         return parameters;
     }
 
@@ -122,33 +124,31 @@ public class MatchesPattern extends AbstractActionMetadata implements ColumnActi
     }
 
     @Override
-    public void compile(ActionContext context) {
+    public void compile(ActionContext context) throws ActionCompileException {
         super.compile(context);
-        if (context.getActionStatus() == ActionContext.ActionStatus.OK) {
-            try {
-                context.get(REGEX_HELPER_KEY, p -> getPattern(context.getParameters()));
-            } catch (IllegalArgumentException e) {
-                context.setActionStatus(ActionContext.ActionStatus.CANCELED);
-            }
-            // Create result column
-            final String columnId = context.getColumnId();
-            final RowMetadata rowMetadata = context.getRowMetadata();
-            final ColumnMetadata column = rowMetadata.getById(columnId);
-            if (column != null) {
-                context.column(column.getName() + APPENDIX, r -> {
-                    final ColumnMetadata c = ColumnMetadata.Builder //
-                            .column() //
-                            .name(column.getName() + APPENDIX) //
-                            .type(BOOLEAN) //
-                            .empty(column.getQuality().getEmpty()) //
-                            .invalid(column.getQuality().getInvalid()) //
-                            .valid(column.getQuality().getValid()) //
-                            .headerSize(column.getHeaderSize()) //
-                            .build();
-                    rowMetadata.insertAfter(columnId, c);
-                    return c;
-                });
-            }
+        try {
+            context.get(REGEX_HELPER_KEY, p -> getPattern(context.getParameters()));
+        } catch (IllegalArgumentException e) {
+            throw new ActionCompileException(e.getMessage(), e);
+        }
+        // Create result column
+        final String columnId = context.getColumnId();
+        final RowMetadata rowMetadata = context.getRowMetadata();
+        final ColumnMetadata column = rowMetadata.getById(columnId);
+        if (column != null) {
+            context.column(column.getName() + APPENDIX, r -> {
+                final ColumnMetadata c = ColumnMetadata.Builder //
+                        .column() //
+                        .name(column.getName() + APPENDIX) //
+                        .type(BOOLEAN) //
+                        .empty(column.getQuality().getEmpty()) //
+                        .invalid(column.getQuality().getInvalid()) //
+                        .valid(column.getQuality().getValid()) //
+                        .headerSize(column.getHeaderSize()) //
+                        .build();
+                rowMetadata.insertAfter(columnId, c);
+                return c;
+            });
         }
     }
 
@@ -173,18 +173,13 @@ public class MatchesPattern extends AbstractActionMetadata implements ColumnActi
     /**
      * Computes if a given string matches or not given pattern.
      *
-     * @param value the value to test
+     * @param value         the value to test
      * @param actionContext context expected to contain the compiled pattern to match the value against.
      * @return true if 'value' matches 'pattern', false if not or if 'pattern' is not a valid pattern or is null or
      * empty
      */
     protected boolean computeNewValue(String value, ActionContext actionContext) {
-        // There are direct calls to this method from unit tests, normally such checks are done during transformation.
-        if (actionContext.getActionStatus() != ActionContext.ActionStatus.OK) {
-            return false;
-        }
         final ReplaceOnValueHelper replaceOnValueParameter = actionContext.get(REGEX_HELPER_KEY);
-
         return replaceOnValueParameter.matches(value);
     }
 

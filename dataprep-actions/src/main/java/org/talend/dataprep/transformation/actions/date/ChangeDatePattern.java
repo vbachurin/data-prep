@@ -24,10 +24,7 @@ import org.talend.dataprep.api.dataset.statistics.Statistics;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataprep.parameters.SelectParameter;
-import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
-import org.talend.dataprep.transformation.actions.common.ActionMetadata;
-import org.talend.dataprep.transformation.actions.common.ColumnAction;
-import org.talend.dataprep.transformation.actions.common.DataprepAction;
+import org.talend.dataprep.transformation.actions.common.*;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
 import java.time.DateTimeException;
@@ -92,31 +89,29 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction, Dat
     }
 
     @Override
-    public void compile(ActionContext actionContext) {
+    public void compile(ActionContext actionContext) throws ActionCompileException {
         super.compile(actionContext);
-        if (actionContext.getActionStatus() == ActionContext.ActionStatus.OK) {
-            compileDatePattern(actionContext);
+        compileDatePattern(actionContext);
 
-            // register the new pattern in column stats as most used pattern, to be able to process date action more
-            // efficiently later
-            final DatePattern newPattern = actionContext.get(COMPILED_DATE_PATTERN);
-            final RowMetadata rowMetadata = actionContext.getRowMetadata();
-            final ColumnMetadata column = rowMetadata.getById(actionContext.getColumnId());
-            final Statistics statistics = column.getStatistics();
+        // register the new pattern in column stats as most used pattern, to be able to process date action more
+        // efficiently later
+        final DatePattern newPattern = actionContext.get(COMPILED_DATE_PATTERN);
+        final RowMetadata rowMetadata = actionContext.getRowMetadata();
+        final ColumnMetadata column = rowMetadata.getById(actionContext.getColumnId());
+        final Statistics statistics = column.getStatistics();
 
-            actionContext.get(FROM_DATE_PATTERNS, p -> compileFromDatePattern(actionContext));
+        actionContext.get(FROM_DATE_PATTERNS, p -> compileFromDatePattern(actionContext));
 
-            final PatternFrequency newPatternFrequency = statistics.getPatternFrequencies().stream()
-                    .filter(patternFrequency -> StringUtils.equals(patternFrequency.getPattern(), newPattern.getPattern()))
-                    .findFirst().orElseGet(() -> {
-                        final PatternFrequency newPatternFreq = new PatternFrequency(newPattern.getPattern(), 0);
-                        statistics.getPatternFrequencies().add(newPatternFreq);
-                        return newPatternFreq;
-                    });
+        final PatternFrequency newPatternFrequency = statistics.getPatternFrequencies().stream()
+                .filter(patternFrequency -> StringUtils.equals(patternFrequency.getPattern(), newPattern.getPattern()))
+                .findFirst().orElseGet(() -> {
+                    final PatternFrequency newPatternFreq = new PatternFrequency(newPattern.getPattern(), 0);
+                    statistics.getPatternFrequencies().add(newPatternFreq);
+                    return newPatternFreq;
+                });
 
-            long mostUsedPatternCount = getMostUsedPatternCount(column);
-            newPatternFrequency.setOccurrences(mostUsedPatternCount + 1);
-        }
+        long mostUsedPatternCount = getMostUsedPatternCount(column);
+        newPatternFrequency.setOccurrences(mostUsedPatternCount + 1);
     }
 
     private List<DatePattern> compileFromDatePattern(ActionContext actionContext) {

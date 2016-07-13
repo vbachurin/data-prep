@@ -87,35 +87,24 @@ public class ReplaceOnValue extends AbstractActionMetadata implements ColumnActi
         return Type.STRING.equals(Type.get(column.getType()));
     }
 
-    /**
-     * @see ActionMetadata#compile(ActionContext)
-     */
     @Override
-    public void compile(ActionContext actionContext) {
+    public void compile(ActionContext actionContext) throws ActionCompileException {
         super.compile(actionContext);
-        if (actionContext.getActionStatus() == ActionContext.ActionStatus.OK) {
-            final Map<String, String> parameters = actionContext.getParameters();
-            String rawParam = parameters.get(CELL_VALUE_PARAMETER);
+        final Map<String, String> parameters = actionContext.getParameters();
+        String rawParam = parameters.get(CELL_VALUE_PARAMETER);
 
-            try {
-                actionContext.get(REGEX_HELPER_KEY, (p) -> regexParametersHelper.build(rawParam, false));
-            } catch (IllegalArgumentException e) {
-                actionContext.setActionStatus(ActionContext.ActionStatus.CANCELED);
-            }
+        try {
+            actionContext.get(REGEX_HELPER_KEY, p -> regexParametersHelper.build(rawParam, false));
+        } catch (Exception e) {
+            throw new ActionCompileException(e.getMessage(), e);
         }
     }
 
-    /**
-     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext)
-     */
     @Override
     public void applyOnColumn(DataSetRow row, ActionContext context) {
         apply(row, context);
     }
 
-    /**
-     * @see CellAction#applyOnCell(DataSetRow, ActionContext)
-     */
     @Override
     public void applyOnCell(DataSetRow row, ActionContext context) {
         apply(row, context);

@@ -19,10 +19,7 @@ import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.actions.category.ActionCategory;
-import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
-import org.talend.dataprep.transformation.actions.common.ActionMetadata;
-import org.talend.dataprep.transformation.actions.common.ColumnAction;
-import org.talend.dataprep.transformation.actions.common.DataprepAction;
+import org.talend.dataprep.transformation.actions.common.*;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
 import java.util.EnumSet;
@@ -74,33 +71,28 @@ public class ExtractEmailDomain extends AbstractActionMetadata implements Column
         return ActionCategory.SPLIT.getDisplayName();
     }
 
-    /**
-     * @see ActionMetadata#acceptColumn(ColumnMetadata)
-     */
     @Override
     public boolean acceptColumn(ColumnMetadata column) {
         return STRING.equals(Type.get(column.getType())) && StringUtils.equalsIgnoreCase("email", column.getDomain());
     }
 
     @Override
-    public void compile(ActionContext context) {
+    public void compile(ActionContext context) throws ActionCompileException {
         super.compile(context);
-        if (context.getActionStatus() == ActionContext.ActionStatus.OK) {
-            final String columnId = context.getColumnId();
-            final RowMetadata rowMetadata = context.getRowMetadata();
-            final ColumnMetadata column = rowMetadata.getById(columnId);
-            // Perform metadata level actions (add local + domain columns).
-            final String local = context.column(LOCAL, r -> {
-                final ColumnMetadata newColumn = column().name(column.getName() + LOCAL).type(Type.STRING).build();
-                rowMetadata.insertAfter(columnId, newColumn);
-                return newColumn;
-            });
-            context.column(DOMAIN, r -> {
-                final ColumnMetadata newColumn = column().name(column.getName() + DOMAIN).type(Type.STRING).build();
-                rowMetadata.insertAfter(local, newColumn);
-                return newColumn;
-            });
-        }
+        final String columnId = context.getColumnId();
+        final RowMetadata rowMetadata = context.getRowMetadata();
+        final ColumnMetadata column = rowMetadata.getById(columnId);
+        // Perform metadata level actions (add local + domain columns).
+        final String local = context.column(LOCAL, r -> {
+            final ColumnMetadata newColumn = column().name(column.getName() + LOCAL).type(Type.STRING).build();
+            rowMetadata.insertAfter(columnId, newColumn);
+            return newColumn;
+        });
+        context.column(DOMAIN, r -> {
+            final ColumnMetadata newColumn = column().name(column.getName() + DOMAIN).type(Type.STRING).build();
+            rowMetadata.insertAfter(local, newColumn);
+            return newColumn;
+        });
     }
 
     /**

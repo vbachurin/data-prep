@@ -22,10 +22,7 @@ import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataprep.parameters.SelectParameter;
 import org.talend.dataprep.transformation.actions.category.ActionCategory;
-import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
-import org.talend.dataprep.transformation.actions.common.ColumnAction;
-import org.talend.dataprep.transformation.actions.common.DataprepAction;
-import org.talend.dataprep.transformation.actions.common.OtherColumnParameters;
+import org.talend.dataprep.transformation.actions.common.*;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataquality.standardization.phone.PhoneNumberHandlerBase;
 
@@ -80,15 +77,13 @@ public class FormatPhoneNumber extends AbstractActionMetadata implements ColumnA
     private static final String TYPE_RFC396 = "RFC3966"; //$NON-NLS-1$
 
     @Override
-    public void compile(ActionContext context) {
+    public void compile(ActionContext context) throws ActionCompileException {
         super.compile(context);
-        if (context.getActionStatus() == ActionContext.ActionStatus.OK) {
-            try {
-                context.get(PHONE_NUMBER_HANDLER_KEY, p -> new PhoneNumberHandlerBase());
-            } catch (Exception e) {
-                LOGGER.error(e.getMessage(), e);
-                context.setActionStatus(ActionContext.ActionStatus.CANCELED);
-            }
+        try {
+            context.get(PHONE_NUMBER_HANDLER_KEY, p -> new PhoneNumberHandlerBase());
+        } catch (Exception e) {
+            // TODO: there is no justification to catch Exception directly
+            throw new ActionCompileException(e.getMessage(), e);
         }
     }
 

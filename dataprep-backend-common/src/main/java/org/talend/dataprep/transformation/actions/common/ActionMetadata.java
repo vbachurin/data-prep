@@ -172,9 +172,8 @@ public interface ActionMetadata {
      *
      * @param actionContext The action context that contains the parameters and allows compile step to change action
      *                      status.
-     * @see ActionContext#setActionStatus(ActionContext.ActionStatus)
      */
-    void compile(ActionContext actionContext);
+    void compile(ActionContext actionContext) throws ActionCompileException;
 
     /**
      * @return <code>true</code> if there should be an implicit filtering before the action gets executed. Actions that

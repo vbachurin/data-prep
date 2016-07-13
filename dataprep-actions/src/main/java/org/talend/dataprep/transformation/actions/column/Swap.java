@@ -80,7 +80,7 @@ public class Swap extends AbstractActionMetadata implements ColumnAction, OtherC
     }
 
     @Override
-    public void compile(ActionContext actionContext) {
+    public void compile(ActionContext actionContext) throws ActionCompileException {
         super.compile(actionContext);
 
         Map<String, String> parameters = actionContext.getParameters();

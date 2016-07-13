@@ -21,10 +21,7 @@ import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.actions.category.ActionCategory;
-import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
-import org.talend.dataprep.transformation.actions.common.ActionMetadata;
-import org.talend.dataprep.transformation.actions.common.ColumnAction;
-import org.talend.dataprep.transformation.actions.common.DataprepAction;
+import org.talend.dataprep.transformation.actions.common.*;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
 import java.net.URI;
@@ -79,24 +76,21 @@ public class ExtractUrlTokens extends AbstractActionMetadata implements ColumnAc
     }
 
     @Override
-    public void compile(ActionContext context) {
+    public void compile(ActionContext context) throws ActionCompileException {
         super.compile(context);
-        if (context.getActionStatus() == ActionContext.ActionStatus.OK) {
-            final String columnId = context.getColumnId();
-            final RowMetadata rowMetadata = context.getRowMetadata();
-            final ColumnMetadata column = rowMetadata.getById(columnId);
+        final String columnId = context.getColumnId();
+        final RowMetadata rowMetadata = context.getRowMetadata();
+        final ColumnMetadata column = rowMetadata.getById(columnId);
 
-            String lastId = column.getId();
-            for (UrlTokenExtractor urlTokenExtractor : UrlTokenExtractors.urlTokenExtractors) {
-                final String columnName = column.getName() + urlTokenExtractor.getTokenName();
-                String columnToInsertAfter = lastId;
-                lastId = context.column(columnName, (r) -> {
-                    final ColumnMetadata newColumn = column().name(columnName).type(urlTokenExtractor.getType()).build();
-                    rowMetadata.insertAfter(columnToInsertAfter, newColumn);
-                    return newColumn;
-                });
-            }
-
+        String lastId = column.getId();
+        for (UrlTokenExtractor urlTokenExtractor : UrlTokenExtractors.urlTokenExtractors) {
+            final String columnName = column.getName() + urlTokenExtractor.getTokenName();
+            String columnToInsertAfter = lastId;
+            lastId = context.column(columnName, (r) -> {
+                final ColumnMetadata newColumn = column().name(columnName).type(urlTokenExtractor.getType()).build();
+                rowMetadata.insertAfter(columnToInsertAfter, newColumn);
+                return newColumn;
+            });
         }
     }
 

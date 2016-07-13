@@ -22,10 +22,7 @@ import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.SelectParameter;
-import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
-import org.talend.dataprep.transformation.actions.common.ActionMetadata;
-import org.talend.dataprep.transformation.actions.common.ColumnAction;
-import org.talend.dataprep.transformation.actions.common.DataprepAction;
+import org.talend.dataprep.transformation.actions.common.*;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
 import javax.annotation.Nonnull;
@@ -102,49 +99,40 @@ public class Split extends AbstractActionMetadata implements ColumnAction {
         return parameters;
     }
 
-    /**
-     * @see ActionMetadata#acceptColumn(ColumnMetadata)
-     */
     @Override
     public boolean acceptColumn(ColumnMetadata column) {
         return Type.STRING.equals(Type.get(column.getType()));
     }
 
-    /**
-     * @see ActionMetadata#compile(ActionContext)
-     */
     @Override
-    public void compile(ActionContext context) {
+    public void compile(ActionContext context) throws ActionCompileException {
         super.compile(context);
-        if (context.getActionStatus() == ActionContext.ActionStatus.OK) {
-            if (StringUtils.isEmpty(getSeparator(context))) {
-                LOGGER.warn("Cannot split on an empty separator");
-                context.setActionStatus(ActionContext.ActionStatus.CANCELED);
-            }
-            // Create split columns
-            final RowMetadata rowMetadata = context.getRowMetadata();
-            final String columnId = context.getColumnId();
-            final ColumnMetadata column = rowMetadata.getById(columnId);
-            final Deque<String> lastColumnId = new ArrayDeque<>();
-            final Map<String, String> parameters = context.getParameters();
-            int limit = Integer.parseInt(parameters.get(LIMIT));
-            final List<String> newColumns = new ArrayList<>();
-            lastColumnId.push(columnId);
-            for (int i = 0; i < limit; i++) {
-                final int newColumnIndex = i + 1;
-                newColumns.add(context.column(column.getName() + SPLIT_APPENDIX + i, r -> {
-                    final ColumnMetadata c = ColumnMetadata.Builder //
-                            .column() //
-                            .type(Type.STRING) //
-                            .computedId(StringUtils.EMPTY) //
-                            .name(column.getName() + SPLIT_APPENDIX + newColumnIndex) //
-                            .build();
-                    lastColumnId.push(rowMetadata.insertAfter(lastColumnId.pop(), c));
-                    return c;
-                }));
-            }
-            context.get(NEW_COLUMNS_CONTEXT, p -> newColumns); // Save new column names for apply
+        if (StringUtils.isEmpty(getSeparator(context))) {
+            throw new ActionCompileException("Cannot split on an empty separator");
         }
+        // Create split columns
+        final RowMetadata rowMetadata = context.getRowMetadata();
+        final String columnId = context.getColumnId();
+        final ColumnMetadata column = rowMetadata.getById(columnId);
+        final Deque<String> lastColumnId = new ArrayDeque<>();
+        final Map<String, String> parameters = context.getParameters();
+        int limit = Integer.parseInt(parameters.get(LIMIT));
+        final List<String> newColumns = new ArrayList<>();
+        lastColumnId.push(columnId);
+        for (int i = 0; i < limit; i++) {
+            final int newColumnIndex = i + 1;
+            newColumns.add(context.column(column.getName() + SPLIT_APPENDIX + i, r -> {
+                final ColumnMetadata c = ColumnMetadata.Builder //
+                        .column() //
+                        .type(Type.STRING) //
+                        .computedId(StringUtils.EMPTY) //
+                        .name(column.getName() + SPLIT_APPENDIX + newColumnIndex) //
+                        .build();
+                lastColumnId.push(rowMetadata.insertAfter(lastColumnId.pop(), c));
+                return c;
+            }));
+        }
+        context.get(NEW_COLUMNS_CONTEXT, p -> newColumns); // Save new column names for apply
     }
 
     /**

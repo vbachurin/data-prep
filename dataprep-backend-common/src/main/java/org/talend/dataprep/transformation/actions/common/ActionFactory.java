@@ -1,11 +1,5 @@
 package org.talend.dataprep.transformation.actions.common;
 
-import static org.talend.dataprep.api.preparation.Action.Builder.builder;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Predicate;
-
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -16,11 +10,17 @@ import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.filter.FilterService;
 import org.talend.dataprep.api.preparation.Action;
+import org.talend.dataprep.transformation.actions.category.ScopeCategory;
 import org.talend.dataprep.transformation.api.action.DataSetMetadataAction;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.actions.category.ScopeCategory;
 import org.talend.dataprep.transformation.api.action.validation.ActionMetadataValidation;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Predicate;
+
+import static org.talend.dataprep.api.preparation.Action.Builder.builder;
 
 @Component
 public class ActionFactory {
@@ -64,14 +64,20 @@ public class ActionFactory {
         return builder().withName(metadata.getName()) //
                 .withParameters(parametersCopy) //
                 .withCompile(actionContext -> {
+                    ActionContext.ActionStatus actionStatus;
                     try {
                         actionContext.setParameters(parametersCopy);
                         metadata.compile(actionContext);
                         actionContext.setFilter(getFilter(parametersCopy, actionContext.getRowMetadata()));
+                        actionStatus = ActionContext.ActionStatus.OK;
+                    } catch (ActionCompileException ace) {
+                        LOGGER.warn("Action '{}' could not compile normally.", metadata.getName(), ace);
+                        actionStatus = ActionContext.ActionStatus.CANCELED;
                     } catch (Exception e) {
                         LOGGER.error("Unable to use action '{}' due to unexpected error.", metadata.getName(), e);
-                        actionContext.setActionStatus(ActionContext.ActionStatus.CANCELED);
+                        actionStatus = ActionContext.ActionStatus.CANCELED;
                     }
+                    actionContext.setActionStatus(actionStatus);
                 }) //
                 .withRow((row, context) -> handleRow(metadata, parameters, scope, row, context)) //
                 .build();
@@ -80,7 +86,7 @@ public class ActionFactory {
     /**
      * Get the row filter from parameters.
      *
-     * @param parameters the transformation parameters
+     * @param parameters  the transformation parameters
      * @param rowMetadata Row metadata to used to obtain information (valid/invalid, types...)
      * @return A {@link Predicate filter} for data set rows.
      */

@@ -63,7 +63,6 @@ public class DeleteEmpty extends AbstractDelete implements ColumnAction {
     @Override
     public void compile(ActionContext actionContext) {
         // This action is able to deal with missing column, overrides default behavior
-        actionContext.setActionStatus(ActionContext.ActionStatus.OK);
     }
 
     /**

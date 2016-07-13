@@ -12,6 +12,24 @@
 //  ============================================================================
 package org.talend.dataprep.transformation.actions.text;
 
+import org.hamcrest.collection.IsIterableContainingInAnyOrder;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.parameters.Parameter;
+import org.talend.dataprep.transformation.actions.AbstractMetadataBaseTest;
+import org.talend.dataprep.transformation.actions.common.ActionCompileException;
+import org.talend.dataprep.transformation.actions.common.ImplicitParameters;
+import org.talend.dataprep.transformation.actions.common.ReplaceOnValueHelper;
+import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import static java.util.stream.Collectors.toList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -22,23 +40,6 @@ import static org.talend.dataprep.api.type.Type.STRING;
 import static org.talend.dataprep.transformation.actions.common.ImplicitParameters.*;
 import static org.talend.dataprep.transformation.actions.text.ReplaceOnValue.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.hamcrest.collection.IsIterableContainingInAnyOrder;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.parameters.Parameter;
-import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
-import org.talend.dataprep.transformation.actions.AbstractMetadataBaseTest;
-import org.talend.dataprep.transformation.actions.common.ImplicitParameters;
-import org.talend.dataprep.transformation.actions.common.ReplaceOnValueHelper;
-
 /**
  * Test class for Replace value action
  */
@@ -47,14 +48,19 @@ public class ReplaceOnValueTest extends AbstractMetadataBaseTest {
     @Autowired
     private ReplaceOnValue action;
 
-    private ActionContext buildPatternActionContext(String regex, String replacement, boolean replace) {
+    private ActionContext buildPatternActionContext(String regex, String replacement, boolean replace) throws Exception {
         ActionContext context = new ActionContext(new TransformationContext());
         Map<String, String> parameters = new HashMap<>();
         parameters.put(ReplaceOnValue.CELL_VALUE_PARAMETER, regex);
         parameters.put(ReplaceOnValue.REPLACE_VALUE_PARAMETER, replacement);
         parameters.put(ReplaceOnValue.REPLACE_ENTIRE_CELL_PARAMETER, String.valueOf(replace));
         context.setParameters(parameters);
-        action.compile(context);
+        try {
+            action.compile(context);
+            context.setActionStatus(ActionContext.ActionStatus.OK);
+        } catch (ActionCompileException e) {
+            context.setActionStatus(ActionContext.ActionStatus.CANCELED);
+        }
         return context;
     }
 
@@ -188,7 +194,7 @@ public class ReplaceOnValueTest extends AbstractMetadataBaseTest {
      * This test case covers all cases describe in TDP-951 description.
      */
     @Test
-    public void test_TDP_951() {
+    public void test_TDP_951() throws Exception {
         assertEquals("XXX_FR_YYY", action.computeNewValue(
                 buildPatternActionContext(generateJson("FR", ReplaceOnValueHelper.EQUALS_MODE), "EN", false), "XXX_FR_YYY"));
         assertEquals("XXX_FR_YYY", action.computeNewValue(
@@ -267,7 +273,7 @@ public class ReplaceOnValueTest extends AbstractMetadataBaseTest {
     }
 
     @Test
-    public void test_TDP_1227(){
+    public void test_TDP_1227() throws Exception {
         assertEquals("India", action.computeNewValue(
                 buildPatternActionContext(generateJson("I(.*)", ReplaceOnValueHelper.REGEX_MODE), "J$2", true),
                 "India"));
@@ -325,7 +331,7 @@ public class ReplaceOnValueTest extends AbstractMetadataBaseTest {
     }
 
     @Test
-    public void should_replace_value_based_on_regex() {
+    public void should_replace_value_based_on_regex() throws Exception {
         //given
         final String from = "bridge.html?region=FR";
         final String regexp = "bridge.html[?]region=FR";
@@ -340,7 +346,7 @@ public class ReplaceOnValueTest extends AbstractMetadataBaseTest {
     }
 
     @Test
-    public void test_TDP_1502_match() {
+    public void test_TDP_1502_match() throws Exception {
         // given
         final String from = "Reference\nGI";
         final String regexp = "GI";
@@ -356,7 +362,7 @@ public class ReplaceOnValueTest extends AbstractMetadataBaseTest {
     }
 
     @Test
-    public void test_TDP_1502_replace() {
+    public void test_TDP_1502_replace() throws Exception {
         // given
         final String from = "Reference\nGI";
         final String regexp = "\n";
@@ -372,7 +378,7 @@ public class ReplaceOnValueTest extends AbstractMetadataBaseTest {
     }
 
     @Test
-    public void test_TDP_1502_replace_full() {
+    public void test_TDP_1502_replace_full() throws Exception {
         // given
         final String from = "Reference\nGI";
         final String regexp = "\nGI";
@@ -438,7 +444,7 @@ public class ReplaceOnValueTest extends AbstractMetadataBaseTest {
     }
 
     @Test
-    public void test_TDP_663() {
+    public void test_TDP_663() throws Exception {
         for (String op : new String[] { ReplaceOnValueHelper.REGEX_MODE, ReplaceOnValueHelper.EQUALS_MODE,
                 ReplaceOnValueHelper.CONTAINS_MODE, ReplaceOnValueHelper.STARTS_WITH_MODE,
                 ReplaceOnValueHelper.ENDS_WITH_MODE }) {
@@ -450,7 +456,7 @@ public class ReplaceOnValueTest extends AbstractMetadataBaseTest {
     }
 
     @Test
-    public void test_TDP_958_emptyPattern() {
+    public void test_TDP_958_emptyPattern() throws Exception {
         for (String op : new String[] { ReplaceOnValueHelper.REGEX_MODE, ReplaceOnValueHelper.EQUALS_MODE,
                 ReplaceOnValueHelper.CONTAINS_MODE, ReplaceOnValueHelper.STARTS_WITH_MODE,
                 ReplaceOnValueHelper.ENDS_WITH_MODE }) {
@@ -462,7 +468,7 @@ public class ReplaceOnValueTest extends AbstractMetadataBaseTest {
     }
 
     @Test
-    public void test_TDP_958_invalidPattern() {
+    public void test_TDP_958_invalidPattern() throws Exception {
         for (String op : new String[] { ReplaceOnValueHelper.REGEX_MODE, ReplaceOnValueHelper.EQUALS_MODE,
                 ReplaceOnValueHelper.CONTAINS_MODE, ReplaceOnValueHelper.STARTS_WITH_MODE,
                 ReplaceOnValueHelper.ENDS_WITH_MODE }) {

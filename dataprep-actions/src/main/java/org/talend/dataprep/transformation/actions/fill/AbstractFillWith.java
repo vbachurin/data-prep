@@ -28,6 +28,7 @@ import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataprep.parameters.SelectParameter;
 import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
+import org.talend.dataprep.transformation.actions.common.ActionCompileException;
 import org.talend.dataprep.transformation.actions.common.OtherColumnParameters;
 import org.talend.dataprep.transformation.actions.date.DateParser;
 import org.talend.dataprep.transformation.actions.date.DatePattern;
@@ -65,12 +66,10 @@ public abstract class AbstractFillWith extends AbstractActionMetadata implements
     public abstract boolean shouldBeProcessed(String value, ColumnMetadata colMetadata);
 
     @Override
-    public void compile(ActionContext actionContext) {
+    public void compile(ActionContext actionContext) throws ActionCompileException {
         super.compile(actionContext);
-        if (actionContext.getActionStatus() == ActionContext.ActionStatus.OK) {
-            final RowMetadata input = actionContext.getRowMetadata();
-            checkParameters(actionContext.getParameters(), input);
-        }
+        final RowMetadata input = actionContext.getRowMetadata();
+        checkParameters(actionContext.getParameters(), input);
     }
 
     public void applyOnColumn(DataSetRow row, ActionContext context) {
@@ -173,6 +172,7 @@ public abstract class AbstractFillWith extends AbstractActionMetadata implements
      * @param parameters where to look the parameter value.
      * @param rowMetadata the row metadata where to look for the column.
      */
+    // TODO: Why TDPException? It is catch in ActionFactory create anyway. Should use ActionCompileException.
     private void checkParameters(Map<String, String> parameters, RowMetadata rowMetadata) {
         if (!parameters.containsKey(MODE_PARAMETER)) {
             throw new TDPException(CommonErrorCodes.BAD_ACTION_PARAMETER,

@@ -79,7 +79,7 @@ public class TimestampToDate extends AbstractActionMetadata implements ColumnAct
     }
 
     @Override
-    public void compile(ActionContext context) {
+    public void compile(ActionContext context) throws ActionCompileException {
         super.compile(context);
         compileDatePattern(context);
         // create new column and append it after current column

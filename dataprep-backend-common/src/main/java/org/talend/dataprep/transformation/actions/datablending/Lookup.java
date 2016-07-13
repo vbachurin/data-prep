@@ -13,21 +13,8 @@
 
 package org.talend.dataprep.transformation.actions.datablending;
 
-import static org.apache.commons.lang.StringUtils.EMPTY;
-import static org.talend.dataprep.transformation.actions.common.ImplicitParameters.COLUMN_ID;
-import static org.talend.dataprep.transformation.actions.datablending.Lookup.Parameters.*;
-import static org.talend.dataprep.parameters.ParameterType.LIST;
-import static org.talend.dataprep.parameters.ParameterType.STRING;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
-
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,16 +27,20 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
-import org.talend.dataprep.transformation.actions.category.ActionCategory;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.actions.common.ActionMetadata;
-import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
-import org.talend.dataprep.transformation.actions.common.DataSetAction;
-import org.talend.dataprep.transformation.actions.common.ImplicitParameters;
 import org.talend.dataprep.parameters.Parameter;
+import org.talend.dataprep.transformation.actions.category.ActionCategory;
+import org.talend.dataprep.transformation.actions.common.*;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.util.*;
+import java.util.function.Function;
+
+import static org.apache.commons.lang.StringUtils.EMPTY;
+import static org.talend.dataprep.parameters.ParameterType.LIST;
+import static org.talend.dataprep.parameters.ParameterType.STRING;
+import static org.talend.dataprep.transformation.actions.common.ImplicitParameters.COLUMN_ID;
+import static org.talend.dataprep.transformation.actions.datablending.Lookup.Parameters.*;
 
 /**
  * Lookup action used to blend a (or a part of a) dataset into another one.
@@ -147,42 +138,42 @@ public class Lookup extends AbstractActionMetadata implements DataSetAction {
     }
 
     @Override
-    public void compile(ActionContext context) {
+    public void compile(ActionContext context) throws ActionCompileException {
         super.compile(context);
-        if (context.getActionStatus() == ActionContext.ActionStatus.OK) {
-            List<LookupSelectedColumnParameter> colsToAdd = getColsToAdd(context.getParameters());
-            if (colsToAdd.isEmpty()) {
-                context.setActionStatus(ActionContext.ActionStatus.CANCELED);
-            }
-            //
-            LookupRowMatcher rowMatcher = context.get("rowMatcher", //
-                    new Function<Map<String, String>, LookupRowMatcher>() {
-
-                        @Override public LookupRowMatcher apply(Map<String, String> p) {
-                            String dataSetId = p.get(LOOKUP_DS_ID.getKey());
-                            return applicationContext.getBean(LookupRowMatcher.class, dataSetId);
-                        }
-                    });
-            // Create lookup result columns
-            final Map<String, String> parameters = context.getParameters();
-            final String columnId = parameters.get(COLUMN_ID.getKey());
-            final RowMetadata lookupRowMetadata = rowMatcher.getRowMetadata();
-            final RowMetadata rowMetadata = context.getRowMetadata();
-            colsToAdd.forEach(toAdd -> {
-                // create the new column
-                final String toAddColumnId = toAdd.getId();
-                final ColumnMetadata metadata = lookupRowMetadata.getById(toAddColumnId);
-                context.column(toAddColumnId, r -> {
-                    final ColumnMetadata colMetadata = ColumnMetadata.Builder //
-                            .column() //
-                            .copy(metadata) //
-                            .computedId(null) // id should be set by the insertAfter method
-                            .build();
-                    rowMetadata.insertAfter(columnId, colMetadata);
-                    return colMetadata;
-                });
-            });
+        List<LookupSelectedColumnParameter> colsToAdd = getColsToAdd(context.getParameters());
+        if (colsToAdd.isEmpty()) {
+            throw new ActionCompileException("No columns to add.");
         }
+
+        LookupRowMatcher rowMatcher = context.get("rowMatcher", //
+                new Function<Map<String, String>, LookupRowMatcher>() {
+
+                    @Override
+                    public LookupRowMatcher apply(Map<String, String> p) {
+                        String dataSetId = p.get(LOOKUP_DS_ID.getKey());
+                        return applicationContext.getBean(LookupRowMatcher.class, dataSetId);
+                    }
+                });
+
+        // Create lookup result columns
+        final Map<String, String> parameters = context.getParameters();
+        final String columnId = parameters.get(COLUMN_ID.getKey());
+        final RowMetadata lookupRowMetadata = rowMatcher.getRowMetadata();
+        final RowMetadata rowMetadata = context.getRowMetadata();
+        colsToAdd.forEach(toAdd -> {
+            // create the new column
+            final String toAddColumnId = toAdd.getId();
+            final ColumnMetadata metadata = lookupRowMetadata.getById(toAddColumnId);
+            context.column(toAddColumnId, r -> {
+                final ColumnMetadata colMetadata = ColumnMetadata.Builder //
+                        .column() //
+                        .copy(metadata) //
+                        .computedId(null) // id should be set by the insertAfter method
+                        .build();
+                rowMetadata.insertAfter(columnId, colMetadata);
+                return colMetadata;
+            });
+        });
     }
 
     /**

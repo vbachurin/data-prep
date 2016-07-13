@@ -22,12 +22,8 @@ import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.dataset.statistics.PatternFrequency;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.actions.category.ActionCategory;
-import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
-import org.talend.dataprep.transformation.actions.common.ActionMetadata;
-import org.talend.dataprep.transformation.actions.common.ColumnAction;
-import org.talend.dataprep.transformation.actions.common.DataprepAction;
+import org.talend.dataprep.transformation.actions.common.*;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.api.action.context.ActionContext.ActionStatus;
 import org.talend.dataquality.datamasking.semantic.ValueDataMasker;
 
 import java.util.EnumSet;
@@ -98,29 +94,27 @@ public class MaskDataByDomain extends AbstractActionMetadata implements ColumnAc
      * @see ActionMetadata#compile(ActionContext)
      */
     @Override
-    public void compile(ActionContext actionContext) {
+    public void compile(ActionContext actionContext) throws ActionCompileException {
         super.compile(actionContext);
-        if (actionContext.getActionStatus() == ActionContext.ActionStatus.OK) {
-            final RowMetadata rowMetadata = actionContext.getRowMetadata();
-            final String columnId = actionContext.getColumnId();
-            final ColumnMetadata column = rowMetadata.getById(columnId);
-            final String domain = column.getDomain();
-            final Type type = Type.get(column.getType());
-            LOGGER.trace(">>> type: " + type + " metadata: " + column);
-            try {
-                if (Type.DATE.equals(type)) {
-                    final List<PatternFrequency> patternFreqList = column.getStatistics().getPatternFrequencies();
-                    final List<String> dateTimePatternList = patternFreqList.stream() //
-                            .map(PatternFrequency::getPattern) //
-                            .collect(Collectors.toList());
-                    actionContext.get(MASKER, p -> new ValueDataMasker(domain, type.getName(), dateTimePatternList));
-                } else {
-                    actionContext.get(MASKER, p -> new ValueDataMasker(domain, type.getName()));
-                }
-            } catch (Exception e) {
-                LOGGER.error(e.getMessage(), e);
-                actionContext.setActionStatus(ActionStatus.CANCELED);
+        final RowMetadata rowMetadata = actionContext.getRowMetadata();
+        final String columnId = actionContext.getColumnId();
+        final ColumnMetadata column = rowMetadata.getById(columnId);
+        final String domain = column.getDomain();
+        final Type type = Type.get(column.getType());
+        LOGGER.trace(">>> type: " + type + " metadata: " + column);
+        try {
+            if (Type.DATE.equals(type)) {
+                final List<PatternFrequency> patternFreqList = column.getStatistics().getPatternFrequencies();
+                final List<String> dateTimePatternList = patternFreqList.stream() //
+                        .map(PatternFrequency::getPattern) //
+                        .collect(Collectors.toList());
+                actionContext.get(MASKER, p -> new ValueDataMasker(domain, type.getName(), dateTimePatternList));
+            } else {
+                actionContext.get(MASKER, p -> new ValueDataMasker(domain, type.getName()));
             }
+        } catch (Exception e) {
+            // TODO: there is no justification to catch Exception directly
+            throw new ActionCompileException(e.getMessage(), e);
         }
     }
 

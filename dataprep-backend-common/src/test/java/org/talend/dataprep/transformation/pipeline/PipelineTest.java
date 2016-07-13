@@ -1,10 +1,5 @@
 package org.talend.dataprep.transformation.pipeline;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Before;
@@ -19,9 +14,12 @@ import org.talend.dataprep.transformation.pipeline.link.BasicLink;
 import org.talend.dataprep.transformation.pipeline.link.CloneLink;
 import org.talend.dataprep.transformation.pipeline.node.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.junit.Assert.*;
 
 public class PipelineTest {
 
@@ -100,7 +98,6 @@ public class PipelineTest {
                     @Override
                     public void compile(ActionContext actionContext) {
                         compileCount.incrementAndGet();
-                        actionContext.setActionStatus(ActionContext.ActionStatus.OK);
                     }
 
                     @Override

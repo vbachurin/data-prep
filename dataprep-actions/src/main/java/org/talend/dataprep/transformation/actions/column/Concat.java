@@ -133,27 +133,24 @@ public class Concat extends AbstractActionMetadata implements ColumnAction, Othe
     }
 
     @Override
-    public void compile(ActionContext context) {
+    public void compile(ActionContext context) throws ActionCompileException {
         super.compile(context);
-        if (context.getActionStatus() == ActionContext.ActionStatus.OK) {
-            checkSelectedColumnParameter(context.getParameters(), context.getRowMetadata());
-            // Create concat result column
-            final RowMetadata rowMetadata = context.getRowMetadata();
-            final String columnId = context.getColumnId();
-            final Map<String, String> parameters = context.getParameters();
-            final ColumnMetadata sourceColumn = rowMetadata.getById(columnId);
-            final String newColumnName = evalNewColumnName(sourceColumn.getName(), rowMetadata, parameters);
-            context.column(CONCAT_NEW_COLUMN, (r) -> {
-                final ColumnMetadata c = ColumnMetadata.Builder //
-                        .column() //
-                        .name(newColumnName) //
-                        .type(Type.STRING) //
-                        .build();
-                rowMetadata.insertAfter(columnId, c);
-                return c;
-            });
-            context.setActionStatus(ActionContext.ActionStatus.OK);
-        }
+        checkSelectedColumnParameter(context.getParameters(), context.getRowMetadata());
+        // Create concat result column
+        final RowMetadata rowMetadata = context.getRowMetadata();
+        final String columnId = context.getColumnId();
+        final Map<String, String> parameters = context.getParameters();
+        final ColumnMetadata sourceColumn = rowMetadata.getById(columnId);
+        final String newColumnName = evalNewColumnName(sourceColumn.getName(), rowMetadata, parameters);
+        context.column(CONCAT_NEW_COLUMN, (r) -> {
+            final ColumnMetadata c = ColumnMetadata.Builder //
+                    .column() //
+                    .name(newColumnName) //
+                    .type(Type.STRING) //
+                    .build();
+            rowMetadata.insertAfter(columnId, c);
+            return c;
+        });
     }
 
     /**

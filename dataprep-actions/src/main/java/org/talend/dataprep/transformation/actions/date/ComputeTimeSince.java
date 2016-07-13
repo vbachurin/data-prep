@@ -23,10 +23,7 @@ import org.talend.dataprep.api.dataset.statistics.Statistics;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataprep.parameters.SelectParameter;
-import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
-import org.talend.dataprep.transformation.actions.common.ActionMetadata;
-import org.talend.dataprep.transformation.actions.common.ColumnAction;
-import org.talend.dataprep.transformation.actions.common.DataprepAction;
+import org.talend.dataprep.transformation.actions.common.*;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
 import java.time.DateTimeException;
@@ -135,28 +132,26 @@ public class ComputeTimeSince extends AbstractDate implements ColumnAction {
     }
 
     @Override
-    public void compile(ActionContext context) {
+    public void compile(ActionContext context) throws ActionCompileException {
         super.compile(context);
-        if (context.getActionStatus() == ActionContext.ActionStatus.OK) {
-            // Create new column
-            Map<String, String> parameters = context.getParameters();
-            String columnId = context.getColumnId();
-            TemporalUnit unit = ChronoUnit.valueOf(parameters.get(TIME_UNIT_PARAMETER).toUpperCase());
-            ColumnMetadata column = context.getRowMetadata().getById(columnId);
-            context.column("result", (r) -> {
-                final ColumnMetadata c = ColumnMetadata.Builder //
-                        .column() //
-                        .copy(column)//
-                        .computedId(StringUtils.EMPTY) //
-                        .name(PREFIX + column.getName() + SUFFIX + unit.toString().toLowerCase()) //
-                        .computedId(null) // remove the id
-                        .statistics(new Statistics()) // clear the statistics
-                        .type(INTEGER)//
-                        .build();
-                context.getRowMetadata().insertAfter(columnId, c);
-                return c;
-            });
-        }
+        // Create new column
+        Map<String, String> parameters = context.getParameters();
+        String columnId = context.getColumnId();
+        TemporalUnit unit = ChronoUnit.valueOf(parameters.get(TIME_UNIT_PARAMETER).toUpperCase());
+        ColumnMetadata column = context.getRowMetadata().getById(columnId);
+        context.column("result", (r) -> {
+            final ColumnMetadata c = ColumnMetadata.Builder //
+                    .column() //
+                    .copy(column)//
+                    .computedId(StringUtils.EMPTY) //
+                    .name(PREFIX + column.getName() + SUFFIX + unit.toString().toLowerCase()) //
+                    .computedId(null) // remove the id
+                    .statistics(new Statistics()) // clear the statistics
+                    .type(INTEGER)//
+                    .build();
+            context.getRowMetadata().insertAfter(columnId, c);
+            return c;
+        });
     }
 
     /**

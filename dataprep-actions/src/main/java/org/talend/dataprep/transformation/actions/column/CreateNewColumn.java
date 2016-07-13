@@ -25,10 +25,7 @@ import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataprep.parameters.SelectParameter;
 import org.talend.dataprep.transformation.actions.category.ActionCategory;
-import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
-import org.talend.dataprep.transformation.actions.common.ActionMetadata;
-import org.talend.dataprep.transformation.actions.common.ColumnAction;
-import org.talend.dataprep.transformation.actions.common.DataprepAction;
+import org.talend.dataprep.transformation.actions.common.*;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
 import java.util.*;
@@ -129,24 +126,22 @@ public class CreateNewColumn extends AbstractActionMetadata implements ColumnAct
     }
 
     @Override
-    public void compile(ActionContext context) {
+    public void compile(ActionContext context) throws ActionCompileException {
         super.compile(context);
-        if (context.getActionStatus() == ActionContext.ActionStatus.OK) {
-            checkParameters(context.getParameters(), context.getRowMetadata());
-            // Create new column
-            final RowMetadata rowMetadata = context.getRowMetadata();
-            final String columnId = context.getColumnId();
-            final Map<String, String> parameters = context.getParameters();
-            context.column(NEW_COLUMN, (r) -> {
-                final ColumnMetadata c = ColumnMetadata.Builder //
-                        .column() //
-                        .name(evalNewColumnName(rowMetadata, parameters)) //
-                        .type(Type.STRING) //
-                        .build();
-                rowMetadata.insertAfter(columnId, c);
-                return c;
-            });
-        }
+        checkParameters(context.getParameters(), context.getRowMetadata());
+        // Create new column
+        final RowMetadata rowMetadata = context.getRowMetadata();
+        final String columnId = context.getColumnId();
+        final Map<String, String> parameters = context.getParameters();
+        context.column(NEW_COLUMN, (r) -> {
+            final ColumnMetadata c = ColumnMetadata.Builder //
+                    .column() //
+                    .name(evalNewColumnName(rowMetadata, parameters)) //
+                    .type(Type.STRING) //
+                    .build();
+            rowMetadata.insertAfter(columnId, c);
+            return c;
+        });
     }
 
     /**

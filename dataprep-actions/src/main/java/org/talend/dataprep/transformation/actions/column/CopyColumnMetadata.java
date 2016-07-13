@@ -18,10 +18,7 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.transformation.actions.category.ActionCategory;
-import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
-import org.talend.dataprep.transformation.actions.common.ActionMetadata;
-import org.talend.dataprep.transformation.actions.common.ColumnAction;
-import org.talend.dataprep.transformation.actions.common.DataprepAction;
+import org.talend.dataprep.transformation.actions.common.*;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
 import java.util.Collections;
@@ -81,22 +78,20 @@ public class CopyColumnMetadata extends AbstractActionMetadata implements Column
     }
 
     @Override
-    public void compile(ActionContext actionContext) {
+    public void compile(ActionContext actionContext) throws ActionCompileException {
         super.compile(actionContext);
-        if (actionContext.getActionStatus() == ActionContext.ActionStatus.OK) {
-            final RowMetadata rowMetadata = actionContext.getRowMetadata();
-            final String columnId = actionContext.getColumnId();
-            final ColumnMetadata column = rowMetadata.getById(columnId);
-            actionContext.column(COPY_APPENDIX, r -> {
-                final ColumnMetadata newColumn = column() //
-                        .copy(column) //
-                        .computedId(StringUtils.EMPTY) //
-                        .name(column.getName() + COPY_APPENDIX) //
-                        .build();
-                rowMetadata.insertAfter(columnId, newColumn);
-                return newColumn;
-            });
-        }
+        final RowMetadata rowMetadata = actionContext.getRowMetadata();
+        final String columnId = actionContext.getColumnId();
+        final ColumnMetadata column = rowMetadata.getById(columnId);
+        actionContext.column(COPY_APPENDIX, r -> {
+            final ColumnMetadata newColumn = column() //
+                    .copy(column) //
+                    .computedId(StringUtils.EMPTY) //
+                    .name(column.getName() + COPY_APPENDIX) //
+                    .build();
+            rowMetadata.insertAfter(columnId, newColumn);
+            return newColumn;
+        });
     }
 
     /**
