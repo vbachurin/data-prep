@@ -14,7 +14,6 @@
 .inventory-list {
   @include flex-column();
   overflow: auto;
-  max-width: 940px;
 }
 
 .inventory-item {
@@ -75,11 +74,6 @@
     }
 
     .inventory-text {
-
-      .inventory-title {
-        @include ellipsis(300px);
-      }
-
       .edit-btn {
         display: block;
       }
@@ -218,11 +212,9 @@
   .inventory-text {
     @include flex-column();
     @include justify-content(center);
-    min-width: 0; /* For ellipsis only */
     padding-left: 10px;
 
     .inventory-title {
-      @include ellipsis(750px);
       padding: 3px 0;
       cursor: pointer;
 
@@ -236,9 +228,6 @@
       font-weight: 300;
       font-size: .8em;
       max-height: 2.8em;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
     }
 
     .edition-text-input {

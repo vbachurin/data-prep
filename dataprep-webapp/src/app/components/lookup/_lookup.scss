@@ -138,6 +138,9 @@
         .inventory-icon {
           padding: 0 3px;
         }
+        .inventory-title, .inventory-description {
+          @include ellipsis(600px);
+        }
         .btn-icon:hover {
           background-color: transparent;
         }
