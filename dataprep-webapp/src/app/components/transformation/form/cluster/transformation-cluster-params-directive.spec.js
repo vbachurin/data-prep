@@ -106,7 +106,7 @@ describe('Transformation cluster params directive', function () {
     };
 
     beforeEach(angular.mock.module('data-prep.transformation-form'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(inject(function($rootScope, $compile, $timeout) {
         scope = $rootScope.$new();

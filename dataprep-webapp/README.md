@@ -1,24 +1,12 @@
 # Talend Data-prep web-application aka Talend Data Shaker
 ## How to run
 ### Prerequisites
-1. sass : to install saas you need to install 
-  * ruby : https://www.ruby-lang.org/fr/downloads/
-     on linux : `sudo apt-get install ruby1.9.1` (Ubuntu) `sudo yum install ruby` (Fedora)
-     on mac : `brew install ruby`
-  * gem : with ruby you can install gem, download the zip, unzip it, go into the root dir and use the command : `ruby setup.rb`. On Fedora installing ruby installs gem too.
-  * install sass using gem : `gem install sass`
-2. nodejs : http://nodejs.org/
-3. npm : it should be install with the above node
-4. install development tools using these commands :
-`npm install -g bower gulp`
-(You may have to use sudo before the command)
-
-5. git clone git@github.com:Talend/data-prep.git in _checkouts_ (adapt others commands if clone in another folder)
-6. go to _checkouts/data-prep/dataprep-webapp_ and type the following command
+1. nodejs : http://nodejs.org/
+2. npm : it should be install with the above node
+3. git clone git@github.com:Talend/data-prep.git in _checkouts_ (adapt others commands if clone in another folder)
+4. go to _checkouts/data-prep/dataprep-webapp_ and type the following command
 
 `npm install`
-
-`bower install`
 
 This will install all the dev package for dataprep as well as third party libraries required by this application.
 
@@ -29,11 +17,11 @@ The file structure is inspired by yeoman project called generator-gulp-angular :
 ├── README.md                               - this file
 ├── bower.json                              - javascript app external dependencies
 ├── bower_components/                       - untracked generated folder where external javascript dependencies are located
+├── config/                                 - untracked generated folder where you find build config
 ├── coverage/                               - untracked generated folder where karma istanbul plugin will put coverage files
-├── dist/                                   - untracked generated folder where you find an autonomous deployment of the app dev
+├── build/                                  - untracked generated folder where you find a non minified autonomous deployment of the app dev
+├── dist/                                   - untracked generated folder where you find a minified autonomous deployment of the app dev
 ├── docker/                                 - dockefile and scripts to generate the docker image 
-├── gulp/                                   - folder that contains all build files
-├── gulpfile.js                             - gulp initial file
 ├── node_modules/                           - untracked generated folder for gulp build node modules
 ├── karma.conf.js                           - unit tests configuration
 ├── package.json                            - npm description for build tools dependencies
@@ -105,10 +93,6 @@ The source file structure is based on the [Best Practice Recommendations for Ang
 └── index.html                                  - main page
 </pre>
 
-### build structure
-All the structure is inspired by yeoman project called [generator-gulp-angular](https://github.com/Swiip/generator-gulp-angular).
-The build of the web app is required because we use pre-compiler tools in order to use Jade and scss templating.
-use `gulp --tasks-simple` to find out which build tasks are available.
 
 ### Code style
 Interesting style guides to follow : 
@@ -118,14 +102,13 @@ Interesting style guides to follow :
 ### Run
 when in folder _checkouts/data-prep/dataprep-webapp_ type the command
 
-`gulp serve`
+`npm run serve`
 
-This will precompile jade and scss templates, update the index.html with all the css, and javascript available. 
-Then it will start a web server usually on port 3000 and watch any code change to refresh the browser. 
+Then it will start a web server on port 3000 and watch any code change to refresh the browser. 
 
 ### Alternative way to launch, this does't require the prerequisites.
 
-`docker run -v /home/stef/talend/checkouts/data-prep/dataprep-webapp:/dataprep-webapp -p 3000:3000 talend-registry:5000/talend/data-prep-webapp-tools:1.0 /bin/sh -c "gulp serve"`
+`docker run -v /home/stef/talend/checkouts/data-prep/dataprep-webapp:/dataprep-webapp -p 3000:3000 talend-registry:5000/talend/data-prep-webapp-tools:1.4 /bin/sh -c "npm run serve"`
 
 Of course change */home/stef/talend/checkouts/data-prep/dataprep-webapp* regarding the path of your git clone.
 
@@ -134,19 +117,19 @@ Then application is available at http://localhost:3000
 ### Run on your local machine
 By default, the webapp is setup to access the api hosted on `10.42.10.99`. This setting can be changed in the following file :
 
-* _src/assets/config/config.json_.
+* _src/assets/config/config.mine.json_.
 
-As long as we don't come up with a better solution, this file must not be commited...
+This file is an untracked file that overwrites the configuration in config.json.
 
 ### Run tests
 when in folder _checkouts/data-prep/dataprep-webapp_ type the command
 
-`gulp test`
+`npm run test`
 
-This will get all the vendors (bower_components) and source files, include them in karma config and run all the unit tests only once.
+This will get all source files, include them in karma config and run all the unit tests only once.
 To run it continuously with source watch, type the command
 
-`gulp test:auto`
+`npm run test:auto`
 
 ### Test coverage
 During each test run, Karma will generate coverage files, using [karma-coverage plugin](https://github.com/karma-runner/karma-coverage).
@@ -158,22 +141,19 @@ For more information about how to write ngDoc :
 * https://github.com/angular/angular.js/wiki/Writing-AngularJS-Documentation
 * https://github.com/angular/dgeni-packages/blob/master/NOTES.md
 
-To generate the documentation into a ngDoc/ forlder, type the command
-`gulp ngdoc`
-
 ### Build a standalone lib distrib (not minified)
 run
-`gulp build:lib`
+`npm run build`
 
 ### Build a standalone prod distrib
 run
-`gulp build`
+`npm run build:dist`
 
 ##Maven profiles
 The build and test can be executed using maven as well here are the different maven profile avaialble.
 
 ###-P dev (default)
-The default maven profile called *dev* that launches all the necessary gulp tasks for building and testing the app with the usuall maven phases : *test* *package*.
+The default maven profile called *dev* that launches all the necessary tasks for building and testing the app with the usuall maven phases : *test* *package*.
 This profile assumes that all the tooling is installed on the current machine.
 
 ###-Duse.docker.tool=true
@@ -184,9 +164,3 @@ The docker image is build from the Dockerfile : [docker/Dockerfile-for-dev-tools
 The docker profile adds the build of a docker image to the packaging maven phase.
 This image is launching the nginx web server with the webapp on the port 80. It is build using the Docker file [docker/Dockerfile](docker/Dockerfile).
 You may launch the docker image manually once it is built using this command : `docker run -d -p 80:80 -e TDP_API_HOST="host_for_api_service" -e TDP_API_PORT="port_for_api_service" talend/dataprep-webapp:<pom_version>`
-
-## Known possible errors
-### Error: watch ENOSPC on `gulp serve`
-This error occurs on Browser-sync watch files. The system have a limit of number of files it can watch. We can modify it (and persist it over reboot).
-Details : https://stackoverflow.com/questions/16748737/grunt-watch-error-waiting-fatal-error-watch-enospc
-Solution : `echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p`

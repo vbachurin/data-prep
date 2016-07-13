@@ -83,3 +83,5 @@ function SlickGridMock () {
         updateRowCount: function() {}
     };
 }
+
+module.exports = SlickGridMock;

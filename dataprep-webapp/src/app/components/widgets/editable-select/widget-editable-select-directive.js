@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './editable-select.html';
+
 /**
  * @ngdoc directive
  * @name talend.widget.directive:EditableSelect
@@ -26,7 +28,7 @@
 export default function EditableSelect() {
     return {
         restrict: 'E',
-        templateUrl: 'app/components/widgets/editable-select/editable-select.html',
+        templateUrl: template,
         scope: {
             list: '=',
             value: '=ngModel'

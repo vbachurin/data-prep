@@ -11,6 +11,8 @@
 
  ============================================================================*/
 
+import template from './search-bar.html';
+
 /**
  * @ngdoc directive
  * @name data-prep.data-prep.search-bar.component:SearchBarComponent
@@ -22,7 +24,7 @@
 import SearchBarCtrl from './search-bar-controller';
 
 const SearchBarComponent = {
-    templateUrl: 'app/components/search/bar/search-bar.html',
+    templateUrl: template,
     bindings: {
         items: '<',
         placeholder: '@',

@@ -4,7 +4,7 @@ describe('Upgrade version component', () => {
     let element;
 
     beforeEach(angular.mock.module('data-prep.upgrade-version'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(inject(function($rootScope, $compile) {
         scope = $rootScope.$new();

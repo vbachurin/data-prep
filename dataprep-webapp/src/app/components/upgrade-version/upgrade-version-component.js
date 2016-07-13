@@ -11,11 +11,13 @@
 
  ============================================================================*/
 
+import template from './upgrade-version.html';
+
 import UpgradeVersionCtrl from './upgrade-version-controller';
 
 const UpgradeVersionComponent = {
     controller: UpgradeVersionCtrl,
-    templateUrl: 'app/components/upgrade-version/upgrade-version.html'
+    templateUrl: template,
 };
 
 export default UpgradeVersionComponent;

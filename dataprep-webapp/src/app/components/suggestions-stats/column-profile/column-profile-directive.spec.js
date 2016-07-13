@@ -11,7 +11,7 @@
 
   ============================================================================*/
 
-describe('Suggestions Profile directive', () => {
+describe('Column Profile directive', () => {
     'use strict';
 
     let scope;
@@ -30,7 +30,7 @@ describe('Suggestions Profile directive', () => {
         };
         $provide.constant('state', stateMock);
     }));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(inject(($rootScope, $compile, $timeout) => {
         scope = $rootScope.$new();

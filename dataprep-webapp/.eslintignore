@@ -1,0 +1,7 @@
+config/**/*.js
+src/**/*.spec.js
+
+.babelrc
+
+karma.conf.js
+karma.conf.ci.js

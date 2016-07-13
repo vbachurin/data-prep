@@ -90,6 +90,8 @@
     }
   },
   "globals": {
+    "require": true,
+
     "$": true,
     "_": true,
     "angular": true,
@@ -100,9 +102,5 @@
     "moment": true,
     "Parallel": true,
     "Slick": true,
-
-    "DataViewMock": true,
-    "ParallelMock": true,
-    "SlickGridMock": true
   }
 }

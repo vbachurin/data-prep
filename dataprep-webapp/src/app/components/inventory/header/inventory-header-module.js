@@ -11,26 +11,32 @@
 
  ============================================================================*/
 
+import angular from 'angular';
+import ngTranslate from 'angular-translate';
+import PREPARATION_CREATOR from '../../preparation/creator/preparation-creator-module';
+import TALEND_WIDGET_MODULE from '../../widgets/widget-module';
+import SERVICES_UTILS_MODULE from '../../../services/utils/utils-module';
+
 import InventoryHeaderCtrl from './inventory-header-controller';
 import InventoryHeaderDirective from './inventory-header-directive';
 
-(() => {
-    'use strict';
+const MODULE_NAME = 'data-prep.inventory-header';
 
-    /**
-     * @ngdoc object
-     * @name data-prep.inventory-header
-     * @description This module contains the entities to manage the inventory list header
-     * @requires talend.widget
-     * @requires data-prep.services.utils
-     */
-    angular.module('data-prep.inventory-header',
-        [
-            'pascalprecht.translate',
-            'talend.widget',
-            'data-prep.services.utils',
-            'data-prep.preparation-creator'
-        ])
-        .controller('InventoryHeaderCtrl', InventoryHeaderCtrl)
-        .directive('inventoryHeader', InventoryHeaderDirective);
-})();
+/**
+ * @ngdoc object
+ * @name data-prep.inventory-header
+ * @description This module contains the entities to manage the inventory list header
+ * @requires talend.widget
+ * @requires data-prep.services.utils
+ */
+angular.module(MODULE_NAME,
+    [
+        ngTranslate,
+        PREPARATION_CREATOR,
+        TALEND_WIDGET_MODULE,
+        SERVICES_UTILS_MODULE,
+    ])
+    .controller('InventoryHeaderCtrl', InventoryHeaderCtrl)
+    .directive('inventoryHeader', InventoryHeaderDirective);
+
+export default MODULE_NAME;

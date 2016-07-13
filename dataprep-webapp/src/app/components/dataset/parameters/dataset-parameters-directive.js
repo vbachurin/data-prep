@@ -11,6 +11,8 @@
 
  ============================================================================*/
 
+import template from './dataset-parameters.html';
+
 /**
  * @ngdoc directive
  * @name data-prep.dataset-parameters.directive:datasetParameters
@@ -37,7 +39,7 @@
 export default function DatasetParameters() {
     return {
         restrict: 'E',
-        templateUrl: 'app/components/dataset/parameters/dataset-parameters.html',
+        templateUrl: template,
         scope: {
             processing: '=',
             dataset: '=',

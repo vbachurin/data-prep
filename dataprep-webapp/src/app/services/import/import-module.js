@@ -11,20 +11,26 @@
 
  ============================================================================*/
 
+import angular from 'angular';
+import SERVICES_STATE_MODULE from '../state/state-module';
+import SERVICES_UTILS_MODULE from '../utils/utils-module';
+
 import ImportRestService from './import-rest-service';
 import ImportService from './import-service';
 
-(() => {
-    /**
-     * @ngdoc object
-     * @name data-prep.services.import
-     * @description This module contains the services for import
-     */
-    angular.module('data-prep.services.import',
-        [
-            'data-prep.services.utils',
-            'data-prep.services.state',
-        ])
-        .service('ImportRestService', ImportRestService)
-        .service('ImportService', ImportService);
-})();
+const MODULE_NAME = 'data-prep.services.import';
+
+/**
+ * @ngdoc object
+ * @name data-prep.services.import
+ * @description This module contains the services for import
+ */
+angular.module(MODULE_NAME,
+    [
+        SERVICES_STATE_MODULE,
+        SERVICES_UTILS_MODULE,
+    ])
+    .service('ImportRestService', ImportRestService)
+    .service('ImportService', ImportService);
+
+export default MODULE_NAME;

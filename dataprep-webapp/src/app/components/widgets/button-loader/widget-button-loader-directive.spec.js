@@ -19,7 +19,7 @@ describe('Button Loader directive', function () {
     var createElement;
 
     beforeEach(angular.mock.module('talend.widget'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     afterEach(function () {
         scope.$destroy();

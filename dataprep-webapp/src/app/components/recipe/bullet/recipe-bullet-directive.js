@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './recipe-bullet.html';
+
 /**
  * @ngdoc directive
  * @name data-prep.recipe-bullet.directive:RecipeBullet
@@ -31,7 +33,7 @@ export default function RecipeBullet($timeout) {
         controller: 'RecipeBulletCtrl',
         controllerAs: 'recipeBulletCtrl',
         bindToController: true,
-        templateUrl: 'app/components/recipe/bullet/recipe-bullet.html',
+        templateUrl: template,
         link: function (scope, iElement, iAttrs, ctrl) {
             /**
              * @ngdoc property

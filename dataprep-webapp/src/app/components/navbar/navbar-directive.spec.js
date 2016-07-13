@@ -19,7 +19,7 @@ describe('Navbar directive', function() {
     var element;
     var stateMock;
 
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(angular.mock.module('data-prep.navbar', ($provide) => {
         stateMock = {

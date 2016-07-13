@@ -26,7 +26,7 @@ describe('Actions suggestions-stats directive', function() {
         } };
         $provide.constant('state', stateMock);
     }));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {

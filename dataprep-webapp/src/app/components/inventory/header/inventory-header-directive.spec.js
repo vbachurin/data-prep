@@ -31,7 +31,7 @@ describe('Inventory header directive', () => {
         $translateProvider.preferredLanguage('en');
     }));
     beforeEach(angular.mock.module('data-prep.inventory-header'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(inject(($rootScope, $compile) => {
         scope = $rootScope.$new(true);

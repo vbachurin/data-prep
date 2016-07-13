@@ -11,16 +11,18 @@
 
  ============================================================================*/
 
+import angular from 'angular';
+
 import HistoryService from './history-service';
 
-(() => {
-    'use strict';
+const MODULE_NAME = 'data-prep.services.history';
 
-    /**
-     * @ngdoc object
-     * @name data-prep.services.history
-     * @description This module contains the services to manage actions history
-     */
-    angular.module('data-prep.services.history', [])
-        .service('HistoryService', HistoryService);
-})();
+/**
+ * @ngdoc object
+ * @name data-prep.services.history
+ * @description This module contains the services to manage actions history
+ */
+angular.module(MODULE_NAME, [])
+    .service('HistoryService', HistoryService);
+
+export default MODULE_NAME;

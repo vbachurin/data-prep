@@ -11,6 +11,8 @@
 
  ============================================================================*/
 
+import moment from 'moment';
+
 /**
  * @ngdoc directive
  * @name talend.widget.directive:TalendDatetimePicker

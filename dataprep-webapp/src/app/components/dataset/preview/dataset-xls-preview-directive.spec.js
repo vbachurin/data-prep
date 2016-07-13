@@ -19,7 +19,7 @@ describe('Dataset upload list directive', function() {
     var element;
 
     beforeEach(angular.mock.module('data-prep.dataset-xls-preview'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(inject(function($rootScope, $compile, $timeout) {
         scope = $rootScope.$new();

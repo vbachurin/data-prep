@@ -34,7 +34,7 @@ describe('Column profile options component', () => {
     }));
 
     beforeEach(angular.mock.module('data-prep.column-profile-options'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
     beforeEach(angular.mock.module('ngSanitize'));
 
     beforeEach(inject(($rootScope, $compile) => {

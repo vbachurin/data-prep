@@ -19,7 +19,7 @@ describe('Add reset button to input directive', function() {
     var element;
     var body = angular.element('body');
     beforeEach(angular.mock.module('talend.widget'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(inject(function($rootScope, $compile) {
         scope = $rootScope.$new();

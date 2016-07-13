@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './tooltip.html';
+
 /**
  * @ngdoc directive
  * @name talend.widget.directive:TalendTooltip
@@ -31,7 +33,7 @@ export default function TalendTooltip($window, $document) {
 
     return {
         restrict: 'E',
-        templateUrl: 'app/components/widgets/tooltip/tooltip.html',
+        templateUrl: template,
         transclude: true,
         scope: {
             position: '=',

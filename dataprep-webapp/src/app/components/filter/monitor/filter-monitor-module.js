@@ -11,22 +11,26 @@
 
  ============================================================================*/
 
+import angular from 'angular';
+import SERVICES_FILTER_MODULE from '../../../services/filter/filter-module';
+import SERVICES_STATE_MODULE from '../../../services/state/state-module';
+
 import FilterMonitor from './filter-monitor-directive';
 
-(() => {
-    'use strict';
+const MODULE_NAME = 'data-prep.filter-monitor';
 
-    /**
-     * @ngdoc object
-     * @name data-prep.filter-monitor
-     * @description This module contains the controller and directives to manage the filter list
-     * @requires data-prep.services.filter
-     * @requires data-prep.services.state
-     */
-    angular.module('data-prep.filter-monitor',
-        [
-            'data-prep.services.filter',
-            'data-prep.services.state',
-        ])
-        .directive('filterMonitor', FilterMonitor);
-})();
+/**
+ * @ngdoc object
+ * @name data-prep.filter-monitor
+ * @description This module contains the controller and directives to manage the filter list
+ * @requires data-prep.services.filter
+ * @requires data-prep.services.state
+ */
+angular.module(MODULE_NAME,
+    [
+        SERVICES_FILTER_MODULE,
+        SERVICES_STATE_MODULE,
+    ])
+    .directive('filterMonitor', FilterMonitor);
+
+export default MODULE_NAME;

@@ -19,7 +19,7 @@ describe('StarWars directive', function() {
     var element;
 
     beforeEach(angular.mock.module('data-prep.easter-eggs'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(inject(function($rootScope, $compile) {
         scope = $rootScope.$new();

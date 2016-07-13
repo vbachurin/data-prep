@@ -17,7 +17,7 @@ describe('Transformation choice params directive', () => {
     let createElement;
 
     beforeEach(angular.mock.module('data-prep.transformation-form'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(angular.mock.module('pascalprecht.translate', ($translateProvider) => {
         $translateProvider.translations('en', {

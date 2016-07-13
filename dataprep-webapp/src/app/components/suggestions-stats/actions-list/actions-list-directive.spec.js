@@ -20,7 +20,7 @@ describe('Suggestions stats directive', function() {
 
     beforeEach(angular.mock.module('ngSanitize'));
     beforeEach(angular.mock.module('data-prep.actions-list'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(inject(function($rootScope, $compile) {
         scope = $rootScope.$new();

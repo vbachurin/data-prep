@@ -13,19 +13,33 @@
 
 /* eslint-disable angular/window-service */
 
+import angular from 'angular';
+import ngSanitize from 'angular-sanitize';
+import ngTranslate from 'angular-translate';
+import uiRouter from 'angular-ui-router';
+
+import './index.scss';
+
+import APP_MODULE from './components/app/app-module';
+import SERVICES_DATASET_MODULE from './services/dataset/dataset-module';
+import SERVICES_EXPORT_MODULE from './services/export/export-module';
+import SERVICES_IMPORT_MODULE from './services/import/import-module';
+import SERVICES_REST_MODULE from './services/rest/rest-module';
+import SERVICES_UTILS_MODULE from './services/utils/utils-module';
+
 (() => {
     'use strict';
     const app = angular.module('data-prep',
         [
-            'ngSanitize',
-            'ui.router', // more advanced router
-            'data-prep.app', // app root
-            'data-prep.services.rest', // rest interceptors
-            'data-prep.services.dataset', // for configuration
-            'data-prep.services.export', // for configuration
-            'data-prep.services.import', // for configuration
-            'data-prep.services.utils', // for configuration
-            'pascalprecht.translate',
+            ngSanitize,
+            ngTranslate,
+            uiRouter,
+            SERVICES_REST_MODULE, // rest interceptors
+            SERVICES_DATASET_MODULE, // for configuration
+            SERVICES_EXPORT_MODULE, // for configuration
+            SERVICES_IMPORT_MODULE, // for configuration
+            SERVICES_UTILS_MODULE, // for configuration
+            APP_MODULE, // app root
         ])
 
         // Performance config
@@ -114,7 +128,7 @@
         return $http.get('/assets/config/config.json')
             .then((config) => {
                 app
-                    // Debug config
+                // Debug config
                     .config(($compileProvider) => {
                         'ngInject';
                         $compileProvider.debugInfoEnabled(config.data.enableDebug);
@@ -132,7 +146,7 @@
                         DatasetService.refreshSupportedEncodings();
                     });
 
-                angular.module('data-prep.services.utils')
+                angular.module(SERVICES_UTILS_MODULE)
                     .value('version', config.data.version)
                     .value('copyRights', config.data.copyRights)
                     .value('documentationSearchURL', config.data.documentationSearchURL);

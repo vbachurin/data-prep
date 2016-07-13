@@ -25,10 +25,12 @@
 
 import PreparationCreatorCtrl from './preparation-creator-controller';
 
+import template from './preparation-creator.html';
+
 export default {
     controller: PreparationCreatorCtrl,
     bindings: {
         showAddPrepModal: '='
     },
-    templateUrl: 'app/components/preparation/creator/preparation-creator.html'
+    templateUrl: template,
 };

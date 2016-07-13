@@ -11,19 +11,21 @@
 
  ============================================================================*/
 
+import angular from 'angular';
+
 import FilterValueCtrl from './filter-value-controller';
 import FilterValueComponent from './filter-value-component';
 
-(() => {
-    'use strict';
+const MODULE_NAME = 'data-prep.filter-item-value';
 
-    /**
-     * @ngdoc object
-     * @name data-prep.filter-item-value
-     * @description This module contains the component to display filter item value
-     */
-    angular
-        .module('data-prep.filter-item-value', [])
-        .controller('FilterValueCtrl', FilterValueCtrl)
-        .component('filterValue', FilterValueComponent);
-})();
+/**
+ * @ngdoc object
+ * @name data-prep.filter-item-value
+ * @description This module contains the component to display filter item value
+ */
+angular
+    .module(MODULE_NAME, [])
+    .controller('FilterValueCtrl', FilterValueCtrl)
+    .component('filterValue', FilterValueComponent);
+
+export default MODULE_NAME;

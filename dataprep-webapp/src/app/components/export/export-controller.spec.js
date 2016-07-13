@@ -77,6 +77,11 @@ describe('Export controller', () => {
                     'exportParameters.csvSeparator': ';',
                     'exportParameters.fileName': 'prepname',
                 },
+                recipe: {
+                    current: {
+                        steps: []
+                    }
+                }
             },
         };
         $provide.constant('state', stateMock);
@@ -105,13 +110,13 @@ describe('Export controller', () => {
     }));
 
     describe('property binding', () => {
-        it('should bind stepId getter to RecipeService', inject((RecipeService) => {
+        it('should bind stepId getter to state', () => {
             //given
             const ctrl = createController();
             expect(ctrl.stepId).toBeFalsy();
 
             //when
-            RecipeService.getRecipe().push({
+            stateMock.playground.recipe.current.steps.push({
                 transformation: {
                     stepId: '48da64513c43a548e678bc99'
                 }
@@ -119,7 +124,7 @@ describe('Export controller', () => {
 
             //then
             expect(ctrl.stepId).toBe('48da64513c43a548e678bc99');
-        }));
+        });
     });
 
     describe('selectType', () => {

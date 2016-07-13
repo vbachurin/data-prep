@@ -19,7 +19,7 @@ describe('Suggestions stats directive', function() {
     var element;
 
     beforeEach(angular.mock.module('data-prep.suggestions-stats'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(inject(function($rootScope, $compile, $timeout) {
         scope = $rootScope.$new();

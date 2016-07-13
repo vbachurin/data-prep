@@ -29,7 +29,7 @@ describe('Datagrid header directive', () => {
     };
 
     beforeEach(angular.mock.module('data-prep.datagrid-header'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(inject(($rootScope, $compile, $timeout) => {
         scope = $rootScope.$new(true);

@@ -43,8 +43,8 @@ describe('Single recipeBullet directive ', function () {
     }
 
     beforeEach(angular.mock.module('data-prep.recipe-bullet'));
-    beforeEach(angular.mock.module('htmlTemplates'));
-    beforeEach(inject(function ($rootScope, $compile, $timeout, RecipeService, RecipeBulletService) {
+    
+    beforeEach(inject(function ($rootScope, $compile, $timeout, RecipeBulletService, PlaygroundService) {
         steps = [
             {
                 column: { id: 'col2' },
@@ -65,7 +65,7 @@ describe('Single recipeBullet directive ', function () {
 
         spyOn(RecipeBulletService, 'stepHoverStart').and.returnValue();
         spyOn(RecipeBulletService, 'stepHoverEnd').and.returnValue();
-        spyOn(RecipeBulletService, 'toggleStep').and.returnValue();
+        spyOn(PlaygroundService, 'toggleStep').and.returnValue();
     }));
 
     afterEach(function () {
@@ -74,17 +74,17 @@ describe('Single recipeBullet directive ', function () {
     });
 
     describe('Middle bullet ', function () {
-        beforeEach(inject(function ($rootScope, $compile, $timeout, RecipeService) {
-            spyOn(RecipeService, 'isFirstStep').and.callFake(function () {
+        beforeEach(inject(function ($rootScope, $compile, $timeout, StepUtilsService) {
+            spyOn(StepUtilsService, 'isFirstStep').and.callFake(function () {
                 return false;
             });
-            spyOn(RecipeService, 'isLastStep').and.callFake(function () {
+            spyOn(StepUtilsService, 'isLastStep').and.callFake(function () {
                 return false;
             });
-            spyOn(RecipeService, 'getActiveThresholdStepIndex').and.callFake(function () {
+            spyOn(StepUtilsService, 'getActiveThresholdStepIndex').and.callFake(function () {
                 return 1;
             });
-            spyOn(RecipeService, 'getStepIndex').and.callFake(function () {
+            spyOn(StepUtilsService, 'getStepIndex').and.callFake(function () {
                 return 1;
             });
         }));
@@ -150,8 +150,8 @@ describe('Multi recipeBullet directive', function () {
     }
 
     beforeEach(angular.mock.module('data-prep.recipe-bullet'));
-    beforeEach(angular.mock.module('htmlTemplates'));
-    beforeEach(inject(function ($rootScope, $compile, $timeout, RecipeService, RecipeBulletService) {
+
+    beforeEach(inject(($rootScope, $compile, $timeout, StepUtilsService, RecipeBulletService, PlaygroundService) => {
         steps = [
             {
                 column: { id: 'col2' },
@@ -214,21 +214,21 @@ describe('Multi recipeBullet directive', function () {
             $timeout.flush();
         };
 
-        spyOn(RecipeService, 'isFirstStep').and.callFake(function (step) {
+        spyOn(StepUtilsService, 'isFirstStep').and.callFake(function (recipeState, step) {
             return step === steps[0];
         });
-        spyOn(RecipeService, 'isLastStep').and.callFake(function (step) {
+        spyOn(StepUtilsService, 'isLastStep').and.callFake(function (recipeState, step) {
             return step === steps[4];
         });
-        spyOn(RecipeService, 'getActiveThresholdStepIndex').and.callFake(function () {
+        spyOn(StepUtilsService, 'getActiveThresholdStepIndex').and.callFake(function () {
             return 1;
         });
-        spyOn(RecipeService, 'getStepIndex').and.callFake(function (step) {
+        spyOn(StepUtilsService, 'getStepIndex').and.callFake(function (recipeState, step) {
             return steps.indexOf(step);
         });
         spyOn(RecipeBulletService, 'stepHoverStart').and.returnValue();
         spyOn(RecipeBulletService, 'stepHoverEnd').and.returnValue();
-        spyOn(RecipeBulletService, 'toggleStep').and.returnValue();
+        spyOn(PlaygroundService, 'toggleStep').and.returnValue();
     }));
 
     afterEach(function () {
@@ -249,7 +249,7 @@ describe('Multi recipeBullet directive', function () {
         expect(element.find('.all-svg-cls').eq(4).attr('class').indexOf('maillon-circle') > -1).toBe(true);
     });
 
-    it('should hide top cable on first step only', function () {
+    it('should hide top cable on first step only', () => {
         //when
         createElement();
 

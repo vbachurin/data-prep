@@ -64,6 +64,7 @@ describe('Playground controller', () => {
                 dataset: {},
                 lookup: { actions: [] },
                 preparationName: '',
+                recipe: { current: { steps: [] } },
             },
             inventory: {
                 homeFolderId: 'LW==',
@@ -92,17 +93,17 @@ describe('Playground controller', () => {
     }));
 
     describe('bindings', () => {
-        it('should bind hasActiveStep getter', inject((RecipeService) => {
+        it('should bind hasActiveStep getter', () => {
             //given
             const ctrl = createController();
             expect(ctrl.hasActiveStep).toBeFalsy();
 
             //when
-            RecipeService.getRecipe().push({ inactive: false });
+            stateMock.playground.recipe.current.steps.push({ inactive: false });
 
             //then
             expect(ctrl.hasActiveStep).toBe(true);
-        }));
+        });
     });
 
     describe('initialization', () => {

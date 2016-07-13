@@ -184,22 +184,22 @@ describe('Lookup controller', function () {
             expect(previewClosure).toHaveBeenCalledWith(params);
         }));
 
-        it('should trigger lookup preview update', inject(function (PlaygroundService) {
+        it('should trigger lookup preview update', inject(function (PreviewService) {
             //given
             var ctrl = createController();
-            spyOn(PlaygroundService, 'updatePreview').and.returnValue();
+            spyOn(PreviewService, 'updatePreview').and.returnValue();
             stateMock.playground.lookup.step = step;
             //when
             ctrl.hoverSubmitBtn();
 
             //then
-            expect(PlaygroundService.updatePreview).toHaveBeenCalledWith(step, params);
+            expect(PreviewService.updatePreview).toHaveBeenCalledWith(step, params);
         }));
     });
 
     describe('validation', function () {
-        beforeEach(inject(function ($q, TransformationApplicationService, PlaygroundService, EarlyPreviewService) {
-            spyOn(TransformationApplicationService, 'append').and.returnValue($q.when(true));
+        beforeEach(inject(function ($q, PlaygroundService, EarlyPreviewService) {
+            spyOn(PlaygroundService, 'completeParamsAndAppend').and.returnValue($q.when(true));
             spyOn(PlaygroundService, 'updateStep').and.returnValue($q.when(true));
             spyOn(EarlyPreviewService, 'activatePreview').and.returnValue();
             spyOn(EarlyPreviewService, 'deactivatePreview').and.returnValue();
@@ -218,7 +218,7 @@ describe('Lookup controller', function () {
             expect(EarlyPreviewService.cancelPendingPreview).toHaveBeenCalled();
         }));
 
-        it('should reactivate preview after the operation with a delay of 500ms', inject(function ($q, $timeout, TransformationApplicationService, EarlyPreviewService) {
+        it('should reactivate preview after the operation with a delay of 500ms', inject(function ($q, $timeout, EarlyPreviewService) {
             //given
             var ctrl = createController();
 
@@ -232,7 +232,7 @@ describe('Lookup controller', function () {
             expect(EarlyPreviewService.activatePreview).toHaveBeenCalled();
         }));
 
-        it('should add new lookup action', inject(function ($q, TransformationApplicationService) {
+        it('should add new lookup action', inject(function ($q, PlaygroundService) {
             //given
             var ctrl = createController();
 
@@ -240,7 +240,7 @@ describe('Lookup controller', function () {
             ctrl.submit();
 
             //then
-            expect(TransformationApplicationService.append).toHaveBeenCalledWith(stateMock.playground.lookup.dataset, 'dataset', params);
+            expect(PlaygroundService.completeParamsAndAppend).toHaveBeenCalledWith(stateMock.playground.lookup.dataset, 'dataset', params);
         }));
 
         it('should update lookup action', inject(function (PlaygroundService) {

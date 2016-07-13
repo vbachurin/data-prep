@@ -11,6 +11,8 @@
 
  ============================================================================*/
 
+import d3 from 'd3';
+
 const DATE_FORMAT = 'MM-DD-YYYY';
 const D3_DATE_FORMAT = '%m-%d-%Y';
 const D3_NUMBER_DECIMAL = ',';

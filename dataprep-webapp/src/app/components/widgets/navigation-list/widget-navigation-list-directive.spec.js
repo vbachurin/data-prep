@@ -25,7 +25,7 @@ describe('navigationList directive', function() {
     ];
 
     beforeEach(angular.mock.module('talend.widget'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(inject(function($rootScope, $compile, $timeout) {
         scope = $rootScope.$new();

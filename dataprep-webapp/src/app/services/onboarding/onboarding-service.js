@@ -11,6 +11,18 @@
 
  ============================================================================*/
 
+import _ from 'lodash';
+import { introJs } from 'intro.js';
+
+/**
+ * The step template with title and content
+ */
+const template =
+    '<div class="introjs-tooltiptitle"><%= title %></div>' +
+    '<div class="introjs-tooltipcontent"><%= content %></div>';
+
+const TOUR_OPTIONS_KEY = 'org.talend.dataprep.tour_options';
+
 /**
  * @ngdoc service
  * @name data-prep.services.onboarding.service:OnboardingService
@@ -20,25 +32,19 @@
  * @requires data-prep.services.onboarding.constant:playgroundTour
  * @requires data-prep.services.onboarding.constant:preparationTour
  */
-export default function OnboardingService($timeout, $state, $window, state, recipeTour, playgroundTour, preparationTour) {
-    'ngInject';
+export default class OnboardingService {
 
-    const TOUR_OPTIONS_KEY = 'org.talend.dataprep.tour_options';
-    let previousRoute = '';
+    constructor($timeout, $state, $window, state, recipeTour, playgroundTour, preparationTour) {
+        'ngInject';
 
-    /**
-     * @ngdoc property
-     * @name template
-     * @propertyOf data-prep.services.onboarding.service:OnboardingService
-     * @description The step template with title and content
-     */
-    var template = '<div class="introjs-tooltiptitle"><%= title %></div>' +
-        '<div class="introjs-tooltipcontent"><%= content %></div>';
-
-    return {
-        shouldStartTour: shouldStartTour,
-        startTour: startTour
-    };
+        this.$timeout = $timeout;
+        this.$state = $state;
+        this.$window = $window;
+        this.state = state;
+        this.recipeTour = recipeTour;
+        this.playgroundTour = playgroundTour;
+        this.preparationTour = preparationTour;
+    }
 
     /**
      * @ngdoc method
@@ -48,14 +54,12 @@ export default function OnboardingService($timeout, $state, $window, state, reci
      * @description Create the Intro.js steps
      * @returns {Array} The Intro.js steps
      */
-    function createIntroSteps(configs) {
-        return _.map(configs, function (config) {
-            return {
-                element: config.element,
-                position: config.position,
-                intro: _.template(template)(config)
-            };
-        });
+    createIntroSteps(configs) {
+        return _.map(configs, (config) => ({
+            element: config.element,
+            position: config.position,
+            intro: _.template(template)(config),
+        }));
     }
 
     /**
@@ -65,8 +69,8 @@ export default function OnboardingService($timeout, $state, $window, state, reci
      * @description Get options from localStorage
      * @returns {object} The saved tour config
      */
-    function getTourOptions() {
-        var tourOptionsString = $window.localStorage.getItem(TOUR_OPTIONS_KEY);
+    getTourOptions() {
+        const tourOptionsString = this.$window.localStorage.getItem(TOUR_OPTIONS_KEY);
         return tourOptionsString ? JSON.parse(tourOptionsString) : {};
     }
 
@@ -77,8 +81,8 @@ export default function OnboardingService($timeout, $state, $window, state, reci
      * @param {object} options The options to save
      * @description Set options in localStorage
      */
-    function setTourOptions(options) {
-        $window.localStorage.setItem(TOUR_OPTIONS_KEY, JSON.stringify(options));
+    setTourOptions(options) {
+        this.$window.localStorage.setItem(TOUR_OPTIONS_KEY, JSON.stringify(options));
     }
 
     /**
@@ -89,14 +93,14 @@ export default function OnboardingService($timeout, $state, $window, state, reci
      * @description Get tour details
      * @returns {Array} Tour details
      */
-    function getTour(tour) {
+    getTour(tour) {
         switch (tour) {
             case 'playground':
-                return playgroundTour;
+                return this.playgroundTour;
             case 'recipe':
-                return recipeTour;
+                return this.recipeTour;
             case 'preparation':
-                return preparationTour;
+                return this.preparationTour;
         }
     }
 
@@ -107,14 +111,10 @@ export default function OnboardingService($timeout, $state, $window, state, reci
      * @param {String} tour The tour Id
      * @description Set tour options as done in localStorage
      */
-    function setTourDone(tour) {
-        var options = getTourOptions();
+    setTourDone(tour) {
+        const options = this.getTourOptions();
         options[tour] = true;
-        setTourOptions(options);
-        if (previousRoute === 'datasetsList') {
-            $state.go('nav.index.datasets');
-            previousRoute = '';
-        }
+        this.setTourOptions(options);
     }
 
     /**
@@ -125,8 +125,8 @@ export default function OnboardingService($timeout, $state, $window, state, reci
      * @param {String} tour The tour Id
      * @return {boolean} True if the tour has not been completed yet
      */
-    function shouldStartTour(tour) {
-        var tourOptions = getTourOptions();
+    shouldStartTour(tour) {
+        const tourOptions = this.getTourOptions();
         return !tourOptions[tour];
     }
 
@@ -137,27 +137,32 @@ export default function OnboardingService($timeout, $state, $window, state, reci
      * @param {String} tour The tour Id
      * @description Configure and start an onboarding tour
      */
-    function startTour(tour) {
-        if ($state.current.name === 'nav.index.datasets') {
-            previousRoute = 'datasetsList';
-            $state.go('nav.index.preparations', { folderId: state.inventory.homeFolderId });
+    startTour(tour) {
+        const isOnDatasetsRoute = this.$state.current.name === 'nav.index.datasets';
+        if (isOnDatasetsRoute) {
+            this.$state.go('nav.index.preparations', { folderId: this.state.inventory.homeFolderId });
         }
-        $timeout(function () {
-            introJs()
+
+        this.$timeout(() => {
+            this.currentTour = introJs()
                 .setOptions({
                     nextLabel: 'NEXT',
                     prevLabel: 'BACK',
                     skipLabel: 'SKIP',
                     doneLabel: 'LET ME TRY',
-                    steps: createIntroSteps(getTour(tour))
+                    steps: this.createIntroSteps(this.getTour(tour))
                 })
-                .oncomplete(function () {
-                    setTourDone(tour);
+                .oncomplete(() => {
+                    this.setTourDone(tour);
                 })
-                .onexit(function () {
-                    setTourDone(tour);
-                })
-                .start();
+                .onexit(() => {
+                    this.setTourDone(tour);
+                    if (isOnDatasetsRoute) {
+                        this.$state.go('nav.index.datasets');
+                    }
+                    this.currentTour = null;
+                });
+            this.currentTour.start();
         }, 200, false);
     }
 }

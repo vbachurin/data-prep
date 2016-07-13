@@ -16,7 +16,7 @@ describe('Dataset upload list directive', function() {
     var createElement;
 
     beforeEach(angular.mock.module('data-prep.dataset-upload-list'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {

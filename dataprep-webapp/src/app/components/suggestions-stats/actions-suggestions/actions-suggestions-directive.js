@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './actions-suggestions.html';
+
 /**
  * @ngdoc directive
  * @name data-prep.actions-suggestions.directive:actionsSuggestions
@@ -23,7 +25,7 @@ export default function ActionsSuggestions($timeout) {
 
     return {
         restrict: 'E',
-        templateUrl: 'app/components/suggestions-stats/actions-suggestions/actions-suggestions.html',
+        templateUrl: template,
         bindToController: true,
         controllerAs: 'actionsSuggestionsCtrl',
         controller: 'ActionsSuggestionsCtrl',

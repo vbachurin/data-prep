@@ -11,35 +11,45 @@
 
  ============================================================================*/
 
+import angular from 'angular';
+import sunchoke from 'sunchoke';
+import TALEND_WIDGET_MODULE from '../../widgets/widget-module';
+import TRANSFORMATION_MENU_MODULE from '../../transformation/menu/transformation-menu-module';
+import SERVICES_FILTER_MODULE from '../../../services/filter/filter-module';
+import SERVICES_PLAYGROUND_MODULE from '../../../services/playground/playground-module';
+import SERVICES_STATE_MODULE from '../../../services/state/state-module';
+import SERVICES_TRANSFORMATION_MODULE from '../../../services/transformation/transformation-module';
+import SERVICES_UTILS_MODULE from '../../../services/utils/utils-module';
+
 import DatagridHeaderCtrl from './datagrid-header-controller';
 import DatagridHeader from './datagrid-header-directive';
 
-(() => {
-    'use strict';
+const MODULE_NAME = 'data-prep.datagrid-header';
 
-    /**
-     * @ngdoc object
-     * @name data-prep.datagrid-header
-     * @description This module contains the entitues to manage the datagrid header
-     * @requires talend.module.widget
-     * @requires data-prep.transformation-menu
-     * @requires data-prep.services.utils
-     * @requires data-prep.services.playground
-     * @requires data-prep.services.filter
-     * @requires data-prep.services.transformation
-     * @requires data-prep.services.state
-     */
-    angular.module('data-prep.datagrid-header',
-        [
-            'talend.widget',
-            'talend.sunchoke.dropdown',
-            'data-prep.transformation-menu',
-            'data-prep.services.utils',
-            'data-prep.services.playground',
-            'data-prep.services.filter',
-            'data-prep.services.transformation',
-            'data-prep.services.state',
-        ])
-        .controller('DatagridHeaderCtrl', DatagridHeaderCtrl)
-        .directive('datagridHeader', DatagridHeader);
-})();
+/**
+ * @ngdoc object
+ * @name data-prep.datagrid-header
+ * @description This module contains the entitues to manage the datagrid header
+ * @requires talend.module.widget
+ * @requires data-prep.transformation-menu
+ * @requires data-prep.services.utils
+ * @requires data-prep.services.playground
+ * @requires data-prep.services.filter
+ * @requires data-prep.services.transformation
+ * @requires data-prep.services.state
+ */
+angular.module(MODULE_NAME,
+    [
+        sunchoke.dropdown,
+        TALEND_WIDGET_MODULE,
+        TRANSFORMATION_MENU_MODULE,
+        SERVICES_FILTER_MODULE,
+        SERVICES_PLAYGROUND_MODULE,
+        SERVICES_STATE_MODULE,
+        SERVICES_TRANSFORMATION_MODULE,
+        SERVICES_UTILS_MODULE,
+    ])
+    .controller('DatagridHeaderCtrl', DatagridHeaderCtrl)
+    .directive('datagridHeader', DatagridHeader);
+
+export default MODULE_NAME;

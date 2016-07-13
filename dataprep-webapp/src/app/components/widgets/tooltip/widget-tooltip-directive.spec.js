@@ -17,7 +17,7 @@ describe('Tooltip widget directive', function() {
     var element;
 
     beforeEach(angular.mock.module('talend.widget'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(inject(function($rootScope, $compile, $window) {
         scope = $rootScope.$new();

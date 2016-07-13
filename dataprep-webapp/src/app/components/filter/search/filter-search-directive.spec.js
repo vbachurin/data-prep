@@ -19,7 +19,7 @@ describe('Filter search directive', function() {
     var element;
 
     beforeEach(angular.mock.module('data-prep.filter-search'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(inject(function($rootScope, $compile) {
         scope = $rootScope.$new();

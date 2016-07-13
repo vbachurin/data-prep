@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import moment from 'moment';
+
 /**
  * @ngdoc controller
  * @name data-prep.transformation-form.controller:TransformDateParamCtrl

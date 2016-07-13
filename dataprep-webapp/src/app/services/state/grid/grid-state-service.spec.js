@@ -11,6 +11,8 @@
 
  ============================================================================*/
 
+import DataViewMock from '../../../../mocks/DataView.mock';
+
 describe('Grid state service', () => {
     'use strict';
 

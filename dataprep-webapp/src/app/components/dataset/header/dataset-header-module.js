@@ -11,27 +11,34 @@
 
  ============================================================================*/
 
+import angular from 'angular';
+import ngTranslate from 'angular-translate';
+import INVENTORY_HEADER_MODULE from '../../inventory/header/inventory-header-module';
+import TALEND_WIDGET_MODULE from '../../widgets/widget-module';
+import SERVICES_DATASET_MODULE from '../../../services/dataset/dataset-module';
+import SERVICES_STATE_MODULE from '../../../services/state/state-module';
+
 import DatasetHeader from './dataset-header-component';
 
-(() => {
-    'use strict';
+const MODULE_NAME = 'data-prep.dataset-header';
 
-    /**
-     * @ngdoc object
-     * @name data-prep.dataset-header
-     * @description This module contains the entities to manage the dataset list header
-     * @requires talend.widget
-     * @requires data-prep.inventory-header
-     * @requires data-prep.services.dataset
-     * @requires data-prep.services.state
-     */
-    angular.module('data-prep.dataset-header',
-        [
-            'pascalprecht.translate',
-            'talend.widget',
-            'data-prep.inventory-header',
-            'data-prep.services.dataset',
-            'data-prep.services.state',
-        ])
-        .component('datasetHeader', DatasetHeader);
-})();
+/**
+ * @ngdoc object
+ * @name data-prep.dataset-header
+ * @description This module contains the entities to manage the dataset list header
+ * @requires talend.widget
+ * @requires data-prep.inventory-header
+ * @requires data-prep.services.dataset
+ * @requires data-prep.services.state
+ */
+angular.module(MODULE_NAME,
+    [
+        ngTranslate,
+        INVENTORY_HEADER_MODULE,
+        TALEND_WIDGET_MODULE,
+        SERVICES_DATASET_MODULE,
+        SERVICES_STATE_MODULE,
+    ])
+    .component('datasetHeader', DatasetHeader);
+
+export default MODULE_NAME;

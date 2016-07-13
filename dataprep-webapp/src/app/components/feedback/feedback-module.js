@@ -11,19 +11,25 @@
 
  ============================================================================*/
 
+import angular from 'angular';
+import TALEND_WIDGET_MODULE from '../widgets/widget-module';
+import SERVICES_FEEDBACK_MODULE from '../../services/feedback/feedback-module';
+import SERVICES_STATE_MODULE from '../../services/state/state-module';
+import SERVICES_UTILS_MODULE from '../../services/utils/utils-module';
+
 import FeedbackCtrl from './feedback-controller';
 import Feedback from './feedback-directive';
 
-(() => {
-    'use strict';
+const MODULE_NAME = 'data-prep.feedback';
 
-    angular.module('data-prep.feedback',
-        [
-            'talend.widget',
-            'data-prep.services.utils',
-            'data-prep.services.feedback',
-            'data-prep.services.state',
-        ])
-        .controller('FeedbackCtrl', FeedbackCtrl)
-        .directive('feedback', Feedback);
-})();
+angular.module(MODULE_NAME,
+    [
+        TALEND_WIDGET_MODULE,
+        SERVICES_FEEDBACK_MODULE,
+        SERVICES_STATE_MODULE,
+        SERVICES_UTILS_MODULE,
+    ])
+    .controller('FeedbackCtrl', FeedbackCtrl)
+    .directive('feedback', Feedback);
+
+export default MODULE_NAME;

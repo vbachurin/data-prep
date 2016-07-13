@@ -43,7 +43,7 @@ describe('Transformation column param directive', function () {
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(inject(function($rootScope, $compile) {
         scope = $rootScope.$new();

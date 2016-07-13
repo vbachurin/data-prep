@@ -28,7 +28,6 @@ describe('Preparation breadcrumb component', () => {
         };
         $provide.constant('state', stateMock);
     }));
-    beforeEach(angular.mock.module('htmlTemplates'));
 
     beforeEach(inject(($rootScope, $compile) => {
         scope = $rootScope.$new(true);

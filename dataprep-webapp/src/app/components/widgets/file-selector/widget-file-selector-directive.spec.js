@@ -19,7 +19,7 @@ describe('Upload File directive', function() {
     var body = angular.element('body');
     var scope;
     beforeEach(angular.mock.module('talend.widget'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(inject(function($rootScope, $compile) {
         createElement = function() {

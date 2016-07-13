@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './navbar.html';
+
 /**
  * @ngdoc directive
  * @name talend.widget.directive:TalendNavbar
@@ -55,7 +57,7 @@ export default function TalendNavbar() {
     return {
         restrict: 'EA',
         transclude: true,
-        templateUrl: 'app/components/widgets/navbar/navbar.html',
+        templateUrl: template,
         link: {
             post: (scope, iElement) => {
                 const menuToggle = iElement.find('.navigation-menu-button').unbind();

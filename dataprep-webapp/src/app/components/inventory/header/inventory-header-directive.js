@@ -11,9 +11,11 @@
 
  ============================================================================*/
 
+import template from './inventory-header.html';
+
 export default function InventoryHeaderDirective() {
     return {
-        templateUrl: 'app/components/inventory/header/inventory-header.html',
+        templateUrl: template,
         scope: true,
         bindToController: {
             sort: '<',

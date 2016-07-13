@@ -19,7 +19,7 @@ describe('Filter monitor directive', function() {
     var element;
 
     beforeEach(angular.mock.module('data-prep.filter-monitor'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
     beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
             'NB_LINES_MATCHING_FILTERS': '{{percentage}}% of lines are matching your filter(s)'

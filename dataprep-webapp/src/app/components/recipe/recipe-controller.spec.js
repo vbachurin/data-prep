@@ -37,12 +37,9 @@ describe('Recipe controller', function () {
                         name: 'lastName'
                     }]
                 },
-                lookup: {
-                    visibility: false
-                },
-                data: {
-                    metadata: {}
-                }
+                lookup: { visibility: false },
+                data: { metadata: {} },
+                recipe: { current: { steps: [] } },
             }
         };
         $provide.constant('state', stateMock);
@@ -58,40 +55,13 @@ describe('Recipe controller', function () {
         };
 
         spyOn($rootScope, '$emit').and.returnValue();
-        spyOn(RecipeService, 'refresh').and.callFake(function () {
-            var recipe = RecipeService.getRecipe();
-            recipe.splice(0, recipe.length);
-            recipe.push(lastActiveStep);
+        spyOn(RecipeService, 'refresh').and.callFake(() => {
+            stateMock.playground.recipe.current.steps = [lastActiveStep];
         });
-        spyOn(PreviewService, 'getPreviewDiffRecords').and.returnValue($q.when(true));
-        spyOn(PreviewService, 'getPreviewUpdateRecords').and.returnValue($q.when(true));
+        spyOn(PreviewService, 'getPreviewDiffRecords').and.returnValue($q.when());
+        spyOn(PreviewService, 'getPreviewUpdateRecords').and.returnValue($q.when());
         spyOn(PreviewService, 'cancelPreview').and.returnValue(null);
         spyOn($timeout, 'cancel').and.returnValue();
-    }));
-
-    it('should bind recipe getter with RecipeService', inject(function (RecipeService) {
-        //given
-        var ctrl = createController();
-        expect(ctrl.recipe).toEqual([]);
-
-        var column = { id: 'colId' };
-        var transformation = {
-            name: 'split',
-            category: 'split',
-            parameters: [],
-            items: []
-        };
-
-        //when
-        RecipeService.getRecipe().push({
-            column: column,
-            transformation: transformation
-        });
-
-        //then
-        expect(ctrl.recipe.length).toBe(1);
-        expect(ctrl.recipe[0].column).toBe(column);
-        expect(ctrl.recipe[0].transformation).toEqual(transformation);
     }));
 
     describe('update step', function () {

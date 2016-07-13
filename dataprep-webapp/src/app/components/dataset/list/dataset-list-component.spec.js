@@ -64,7 +64,7 @@ describe('DatasetList component', () => {
         });
         $translateProvider.preferredLanguage('en');
     }));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
     beforeEach(angular.mock.module('data-prep.dataset-list', ($provide) => {
         stateMock = {
             inventory: {
@@ -148,7 +148,7 @@ describe('DatasetList component loading', () => {
     let element;
     let stateMock;
 
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
     beforeEach(angular.mock.module('data-prep.dataset-list', ($provide) => {
         stateMock = {
             inventory: {
@@ -208,7 +208,7 @@ describe('DatasetList component with no datasets', () => {
     let element;
     let stateMock;
 
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
     beforeEach(angular.mock.module('data-prep.dataset-list', ($provide) => {
         stateMock = {
             inventory: {

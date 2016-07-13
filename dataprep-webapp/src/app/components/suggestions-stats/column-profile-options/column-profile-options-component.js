@@ -11,6 +11,8 @@
 
  ============================================================================*/
 
+import template from './column-profile-options.html';
+
 import ColumnProfileOptionsCtrl from './column-profile-options-controller';
 
 /**
@@ -32,7 +34,7 @@ import ColumnProfileOptionsCtrl from './column-profile-options-controller';
  * @param {function} onAggregationChange Aggregation change callback
  */
 const ColumnProfileOptionsComponent = {
-    templateUrl: 'app/components/suggestions-stats/column-profile-options/column-profile-options.html',
+    templateUrl: template,
     bindings: {
         numericColumns: '<',
         aggregation: '<',

@@ -57,6 +57,10 @@ export function PlaygroundStateService(RecipeStateService, recipeState,
         //recipe
         showRecipe: RecipeStateService.show,
         hideRecipe: RecipeStateService.hide,
+        setRecipeSteps: RecipeStateService.setSteps,
+        setRecipePreviewSteps: RecipeStateService.setPreviewSteps,
+        restoreRecipeBeforePreview: RecipeStateService.restoreBeforePreview,
+        disableRecipeStepsAfter: RecipeStateService.disableStepsAfter,
 
         //datagrid
         setColumnFocus: GridStateService.setColumnFocus,

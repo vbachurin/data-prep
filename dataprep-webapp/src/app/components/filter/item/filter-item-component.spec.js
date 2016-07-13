@@ -17,7 +17,7 @@ describe('Filter Item Component', () => {
     let element;
 
     beforeEach(angular.mock.module('data-prep.filter-item'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(inject(($rootScope, $compile) => {
         scope = $rootScope.$new();

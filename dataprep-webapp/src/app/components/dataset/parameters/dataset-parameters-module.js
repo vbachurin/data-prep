@@ -11,27 +11,33 @@
 
  ============================================================================*/
 
+import angular from 'angular';
+import ngTranslate from 'angular-translate';
+import TALEND_WIDGET_MODULE from '../../widgets/widget-module';
+import SERVICES_DATASET_MODULE from '../../../services/dataset/dataset-module';
+import SERVICES_PLAYGROUND_MODULE from '../../../services/playground/playground-module';
+
 import DatasetParametersCtrl from './dataset-parameters-controller';
 import DatasetParameters from './dataset-parameters-directive';
 
-(() => {
-    'use strict';
+const MODULE_NAME = 'data-prep.dataset-parameters';
 
-    /**
-     * @ngdoc object
-     * @name data-prep.dataset-parameters
-     * @description This module contains the entities to manage the dataset parameters
-     * @requires talend.widget
-     * @requires data-prep.services.dataset
-     * @requires data-prep.services.playground
-     */
-    angular.module('data-prep.dataset-parameters',
-        [
-            'pascalprecht.translate',
-            'talend.widget',
-            'data-prep.services.dataset',
-            'data-prep.services.playground',
-        ])
-        .controller('DatasetParametersCtrl', DatasetParametersCtrl)
-        .directive('datasetParameters', DatasetParameters);
-})();
+/**
+ * @ngdoc object
+ * @name data-prep.dataset-parameters
+ * @description This module contains the entities to manage the dataset parameters
+ * @requires talend.widget
+ * @requires data-prep.services.dataset
+ * @requires data-prep.services.playground
+ */
+angular.module(MODULE_NAME,
+    [
+        ngTranslate,
+        TALEND_WIDGET_MODULE,
+        SERVICES_DATASET_MODULE,
+        SERVICES_PLAYGROUND_MODULE,
+    ])
+    .controller('DatasetParametersCtrl', DatasetParametersCtrl)
+    .directive('datasetParameters', DatasetParameters);
+
+export default MODULE_NAME;

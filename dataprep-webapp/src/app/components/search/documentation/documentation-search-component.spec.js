@@ -17,7 +17,7 @@ describe('Documentation Search component', () => {
     let element;
 
     beforeEach(angular.mock.module('data-prep.documentation-search'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(inject(($rootScope, $compile) => {
         scope = $rootScope.$new();

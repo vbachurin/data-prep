@@ -19,7 +19,6 @@ describe('Breadcrumb component', () => {
     let itemsChildren;
 
     beforeEach(angular.mock.module('data-prep.breadcrumb'));
-    beforeEach(angular.mock.module('htmlTemplates'));
 
     beforeEach(inject(($rootScope, $compile) => {
         scope = $rootScope.$new(true);

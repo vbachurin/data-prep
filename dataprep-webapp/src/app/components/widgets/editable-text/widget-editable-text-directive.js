@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './editable-text.html';
+
 import TalendEditableTextCtrl from './widget-editable-text-controller';
 
 /**
@@ -40,7 +42,7 @@ import TalendEditableTextCtrl from './widget-editable-text-controller';
 export default function TalendEditableText() {
     return {
         restrict: 'E',
-        templateUrl: 'app/components/widgets/editable-text/editable-text.html',
+        templateUrl: template,
         scope: {
             placeholder: '@',
             text: '<',

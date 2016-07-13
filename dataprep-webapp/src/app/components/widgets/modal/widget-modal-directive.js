@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './modal.html';
+
 'use strict';
 
 /**
@@ -123,7 +125,7 @@ export default function TalendModal($timeout) {
     return {
         restrict: 'EA',
         transclude: true,
-        templateUrl: 'app/components/widgets/modal/modal.html',
+        templateUrl: template,
         scope: {
             state: '=',
             closeButton: '=',

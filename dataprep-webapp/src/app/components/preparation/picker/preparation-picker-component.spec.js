@@ -55,7 +55,7 @@ describe('Preparation Picker Component', () => {
         }
     ];
 
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(angular.mock.module('data-prep.preparation-picker'));
 

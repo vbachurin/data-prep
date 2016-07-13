@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import DataViewMock from './../../../../mocks/DataView.mock';
+
 describe('Lookup datagrid directive', function () {
     'use strict';
 
@@ -47,7 +49,7 @@ describe('Lookup datagrid directive', function () {
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(angular.mock.module('htmlTemplates'));
+
 
     beforeEach(inject(function ($rootScope, $compile, LookupDatagridGridService, LookupDatagridColumnService, LookupDatagridStyleService) {
         scope = $rootScope.$new();

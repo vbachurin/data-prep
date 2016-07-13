@@ -11,18 +11,25 @@
 
  ============================================================================*/
 
+import angular from 'angular';
+import ACTIONS_LIST_MODULE from '../suggestions-stats/actions-list/actions-list-module';
+import ACTIONS_SUGGESTIONS_MODULE from '../suggestions-stats/actions-suggestions/actions-suggestions-module';
+import STATS_COLUMN_PROFILE from '../suggestions-stats/column-profile/column-profile-module';
+import STATS_DETAILS_MODULE from '../suggestions-stats/stats-details/stats-details-module';
+import TALEND_WIDGET_MODULE from '../widgets/widget-module';
+
 import SuggestionsStats from './suggestions-stats-directive';
 
-(() => {
-    'use strict';
+const MODULE_NAME = 'data-prep.suggestions-stats';
 
-    angular.module('data-prep.suggestions-stats',
-        [
-            'talend.widget',
-            'data-prep.actions-list',
-            'data-prep.actions-suggestions',
-            'data-prep.stats-details',
-            'data-prep.column-profile',
-        ])
-        .component('suggestionsStats', SuggestionsStats);
-})();
+angular.module(MODULE_NAME,
+    [
+        ACTIONS_LIST_MODULE,
+        ACTIONS_SUGGESTIONS_MODULE,
+        STATS_COLUMN_PROFILE,
+        STATS_DETAILS_MODULE,
+        TALEND_WIDGET_MODULE,
+    ])
+    .component('suggestionsStats', SuggestionsStats);
+
+export default MODULE_NAME;

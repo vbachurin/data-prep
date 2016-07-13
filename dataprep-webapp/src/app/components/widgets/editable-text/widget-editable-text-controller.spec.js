@@ -20,7 +20,7 @@ describe('Editable Text Widget', () => {
     let onCancelFn;
 
     beforeEach(angular.mock.module('talend.widget'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(inject(($rootScope, $componentController) => {
         scope = $rootScope.$new();

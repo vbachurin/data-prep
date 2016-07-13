@@ -65,12 +65,17 @@ describe('Export directive', () => {
                     exportType: 'CSV',
                     'exportParameters.csvSeparator': ';',
                     'exportParameters.fileName': 'prepname'
+                },
+                recipe: {
+                    current: {
+                        steps: []
+                    }
                 }
             }
         };
         $provide.constant('state', stateMock);
     }));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(inject(($rootScope, $compile, $q, ExportService, StorageService) => {
         spyOn(ExportService, 'refreshTypes').and.returnValue($q.when(exportTypes));
@@ -104,13 +109,13 @@ describe('Export directive', () => {
             expect(input.value).toBe('48da64513c43a548e678bc99');
         });
 
-        it('should inject step id input', inject((RecipeService) => {
+        it('should inject step id input', () => {
             //given
             const input = element.find('#exportForm').eq(0)[0].stepId;
             expect(input.value).toBeFalsy();
 
             //when
-            RecipeService.getRecipe().push({
+            stateMock.playground.recipe.current.steps.push({
                 transformation: {
                     stepId: '48da64513c43a548e678bc99'
                 }
@@ -119,7 +124,7 @@ describe('Export directive', () => {
 
             //then
             expect(input.value).toBe('48da64513c43a548e678bc99');
-        }));
+        });
 
         it('should inject dataset id input', inject((state) => {
             //given

@@ -11,6 +11,10 @@
 
  ============================================================================*/
 
+import angular from 'angular';
+import ngTranslate from 'angular-translate';
+import ngAnimate from 'angular-animate';
+
 import TalendBadge from './badge/widget-badge-component';
 import ResizableInput from './resizable-input/resizable-input-directive';
 import TalendButtonDropdown from './button-dropdown/widget-button-dropdown-directive';
@@ -43,69 +47,63 @@ import TalendTooltipCtrl from './tooltip/widget-tooltip-controller';
 import TalendTooltip from './tooltip/widget-tooltip-directive';
 import Typeahead from './typeahead/typeahead-directive';
 
+const MODULE_NAME = 'talend.widget';
 
-(() => {
-    'use strict';
+/**
+ * @ngdoc object
+ * @name talend.widget
+ * @description This module contains all the reusable widgets
+ */
+angular.module(MODULE_NAME, [ngTranslate, ngAnimate])
+    .component('talendBadge', TalendBadge)
+    .directive('resizableInput', ResizableInput)
 
-    /**
-     * @ngdoc object
-     * @name talend.widget
-     * @description This module contains all the reusable widgets
-     */
-    angular.module('talend.widget', [
-        'data-prep.services.filter',
-        'pascalprecht.translate',
-        'ngAnimate'
-    ])
+    .directive('talendButtonDropdown', TalendButtonDropdown)
 
-        .component('talendBadge', TalendBadge)
-        .directive('resizableInput', ResizableInput)
+    .directive('talendButtonLoader', TalendButtonLoader)
 
-        .directive('talendButtonDropdown', TalendButtonDropdown)
+    .directive('talendButtonSwitch', TalendButtonSwitch)
 
-        .directive('talendButtonLoader', TalendButtonLoader)
+    .directive('boxplotChart', BoxplotChart)
+    .directive('horizontalBarchart', HorizontalBarchart)
+    .controller('RangeSliderCtrl', RangeSliderCtrl)
+    .directive('rangeSlider', RangeSlider)
+    .directive('verticalBarchart', VerticalBarchart)
 
-        .directive('talendButtonSwitch', TalendButtonSwitch)
+    .service('TalendConfirmService', TalendConfirmService)
+    .controller('TalendConfirmCtrl', TalendConfirmCtrl)
+    .directive('talendConfirm', TalendConfirm)
 
-        .directive('boxplotChart', BoxplotChart)
-        .directive('horizontalBarchart', HorizontalBarchart)
-        .controller('RangeSliderCtrl', RangeSliderCtrl)
-        .directive('rangeSlider', RangeSlider)
-        .directive('verticalBarchart', VerticalBarchart)
+    .directive('talendDatetimePicker', TalendDatetimePicker)
 
-        .service('TalendConfirmService', TalendConfirmService)
-        .controller('TalendConfirmCtrl', TalendConfirmCtrl)
-        .directive('talendConfirm', TalendConfirm)
+    .directive('talendDropdown', TalendDropdown)
 
-        .directive('talendDatetimePicker', TalendDatetimePicker)
+    .controller('TalendEditableRegexCtrl', TalendEditableRegexCtrl)
+    .directive('talendEditableRegex', TalendEditableRegex)
 
-        .directive('talendDropdown', TalendDropdown)
+    .directive('editableSelect', EditableSelect)
 
-        .controller('TalendEditableRegexCtrl', TalendEditableRegexCtrl)
-        .directive('talendEditableRegex', TalendEditableRegex)
+    .directive('talendEditableText', TalendEditableText)
 
-        .directive('editableSelect', EditableSelect)
+    .directive('talendFileSelector', TalendFileSelector)
 
-        .directive('talendEditableText', TalendEditableText)
+    .directive('talendLoading', TalendLoading)
 
-        .directive('talendFileSelector', TalendFileSelector)
+    .directive('talendModal', TalendModal)
 
-        .directive('talendLoading', TalendLoading)
+    .directive('talendNavbar', TalendNavbar)
 
-        .directive('talendModal', TalendModal)
+    .directive('navigationList', NavigationList)
 
-        .directive('talendNavbar', TalendNavbar)
+    .controller('QualityBarCtrl', QualityBarCtrl)
+    .directive('qualityBar', QualityBar)
 
-        .directive('navigationList', NavigationList)
+    .directive('talendSearchInput', TalendSearchInput)
 
-        .controller('QualityBarCtrl', QualityBarCtrl)
-        .directive('qualityBar', QualityBar)
+    .directive('talendSlidable', TalendSlidable)
 
-        .directive('talendSearchInput', TalendSearchInput)
+    .controller('TalendTooltipCtrl', TalendTooltipCtrl)
+    .directive('talendTooltip', TalendTooltip)
+    .directive('typeahead', Typeahead);
 
-        .directive('talendSlidable', TalendSlidable)
-
-        .controller('TalendTooltipCtrl', TalendTooltipCtrl)
-        .directive('talendTooltip', TalendTooltip)
-        .directive('typeahead', Typeahead);
-})();
+export default MODULE_NAME;

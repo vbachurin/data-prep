@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './lookup-datagrid.html';
+
 /**
  * @ngdoc directive
  * @name data-prep.lookup.directive:LookupDatagrid
@@ -33,7 +35,7 @@ export default function LookupDatagrid($timeout, state, LookupDatagridGridServic
 
     return {
         restrict: 'E',
-        templateUrl: 'app/components/lookup/grid/lookup-datagrid.html',
+        templateUrl: template,
         bindToController: true,
         controllerAs: 'lookupDatagridCtrl',
         controller: 'LookupDatagridCtrl',

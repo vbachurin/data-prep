@@ -11,10 +11,10 @@
 
  ============================================================================*/
 
-describe('Statistics service', function () {
+describe('Statistics service', () => {
     'use strict';
 
-    var barChartNumCol = {
+    const barChartNumCol = {
         'domain': 'barchartAndNumeric',
         'type': 'numeric',
         'id': '0000',
@@ -54,7 +54,7 @@ describe('Statistics service', function () {
         }
     };
 
-    var barChartDateCol = {
+    const barChartDateCol = {
         'domain': 'barchartAndDate',
         'type': 'date',
         'id': '0000',
@@ -105,7 +105,7 @@ describe('Statistics service', function () {
         }
     };
 
-    var barChartDateColCENTURY = {
+    const barChartDateColCENTURY = {
         'domain': 'barchartAndDate',
         'type': 'date',
         'id': '0000',
@@ -156,7 +156,7 @@ describe('Statistics service', function () {
         }
     };
 
-    var barChartDateColDECADE = {
+    const barChartDateColDECADE = {
         'domain': 'barchartAndDate',
         'type': 'date',
         'id': '0000',
@@ -207,7 +207,7 @@ describe('Statistics service', function () {
         }
     };
 
-    var barChartDateColYEAR = {
+    const barChartDateColYEAR = {
         'domain': 'barchartAndDate',
         'type': 'date',
         'id': '0000',
@@ -258,7 +258,7 @@ describe('Statistics service', function () {
         }
     };
 
-    var barChartDateColHAFLYEAR = {
+    const barChartDateColHAFLYEAR = {
         'domain': 'barchartAndDate',
         'type': 'date',
         'id': '0000',
@@ -309,7 +309,7 @@ describe('Statistics service', function () {
         }
     };
 
-    var barChartDateColQUARTER = {
+    const barChartDateColQUARTER = {
         'domain': 'barchartAndDate',
         'type': 'date',
         'id': '0000',
@@ -360,7 +360,7 @@ describe('Statistics service', function () {
         }
     };
 
-    var barChartDateColMONTH = {
+    const barChartDateColMONTH = {
         'domain': 'barchartAndDate',
         'type': 'date',
         'id': '0000',
@@ -411,7 +411,7 @@ describe('Statistics service', function () {
         }
     };
 
-    var barChartDateColWEEK = {
+    const barChartDateColWEEK = {
         'domain': 'barchartAndDate',
         'type': 'date',
         'id': '0000',
@@ -462,7 +462,7 @@ describe('Statistics service', function () {
         }
     };
 
-    var barChartDateColDAY = {
+    const barChartDateColDAY = {
         'domain': 'barchartAndDate',
         'type': 'date',
         'id': '0000',
@@ -513,7 +513,7 @@ describe('Statistics service', function () {
         }
     };
 
-    var barChartDateColWithoutHistogram = {
+    const barChartDateColWithoutHistogram = {
         'domain': 'barchartAndDate',
         'type': 'date',
         'id': '0000',
@@ -546,7 +546,7 @@ describe('Statistics service', function () {
         }
     };
 
-    var barChartStrCol = {
+    const barChartStrCol = {
         id: '0010',
         'domain': 'barchartAndString',
         'type': 'string',
@@ -600,7 +600,7 @@ describe('Statistics service', function () {
         }
     };
 
-    var barChartStrCol2 = {
+    const barChartStrCol2 = {
         id: '0010',
         'domain': 'barchartAndString',
         'type': 'string',
@@ -644,7 +644,7 @@ describe('Statistics service', function () {
         }
     };
 
-    var barChartBoolCol = {
+    const barChartBoolCol = {
         'domain': 'barchartAndBool',
         'type': 'boolean',
         'statistics': {
@@ -665,16 +665,15 @@ describe('Statistics service', function () {
         }
     };
 
-    var unknownTypeCol = {
+    const unknownTypeCol = {
         'domain': '',
         'type': 'unknown',
         statistics: {}
     };
 
-    var stateMock;
-    var workerWrapper;
+    let stateMock;
 
-    beforeEach(angular.mock.module('data-prep.services.statistics', function ($provide) {
+    beforeEach(angular.mock.module('data-prep.services.statistics', ($provide) => {
         stateMock = {
             playground: {
                 grid: {},
@@ -686,24 +685,7 @@ describe('Statistics service', function () {
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(inject(function ($q, WorkerService, StateService) {
-        workerWrapper = null;
-        spyOn(WorkerService, 'create').and.callFake(function (parameters) {
-            workerWrapper = {
-                importScripts: jasmine.createSpy('importScripts').and.callFake(() => {
-                    return workerWrapper
-                }),
-                require: jasmine.createSpy('require').and.callFake(() => {
-                    return workerWrapper
-                }),
-                run: function (mainFn) {
-                    var workerPostedMessage = mainFn.call(null, parameters);
-                    return $q.when(workerPostedMessage);
-                },
-                cancel: jasmine.createSpy('cancel')
-            };
-            return workerWrapper;
-        });
+    beforeEach(inject(($q, StateService) => {
         spyOn(StateService, 'setStatisticsHistogramActiveLimits').and.returnValue();
         spyOn(StateService, 'setStatisticsPatterns').and.returnValue();
         spyOn(StateService, 'setStatisticsFilteredPatterns').and.returnValue();
@@ -711,23 +693,20 @@ describe('Statistics service', function () {
         spyOn(StateService, 'setStatisticsFilteredHistogram').and.returnValue();
         spyOn(StateService, 'setStatisticsBoxPlot').and.returnValue();
         spyOn(StateService, 'setStatisticsRangeLimits').and.returnValue();
-        spyOn(StateService, 'setStatisticsDetails').and.callFake(function (details) {
+        spyOn(StateService, 'setStatisticsDetails').and.callFake((details) => {
             stateMock.playground.statistics.details = details;
         });
     }));
 
-    describe('filters', function () {
-        beforeEach(inject(function (FilterService) {
-            spyOn(FilterService, 'addFilter').and.returnValue();
-        }));
+    describe('filters', () => {
 
         it('should create a function that reinit range limits when the selected column is the same', inject(function (StatisticsService, StateService) {
             //given
-            var column = { id: '0000', type: 'integer', statistics: { min: 5, max: 55 } };
+            const column = { id: '0000', type: 'integer', statistics: { min: 5, max: 55 } };
             stateMock.playground.statistics.histogram = {};
             stateMock.playground.grid.selectedColumn = column;
 
-            var removeCallback = StatisticsService.getRangeFilterRemoveFn();
+            const removeCallback = StatisticsService.getRangeFilterRemoveFn();
 
             //when
             removeCallback({ colId: '0000' });
@@ -746,7 +725,7 @@ describe('Statistics service', function () {
             stateMock.playground.statistics.histogram = {};
             stateMock.playground.grid.selectedColumn = { id: '0000', statistics: { min: 5, max: 55 } };
 
-            var removeCallback = StatisticsService.getRangeFilterRemoveFn();
+            const removeCallback = StatisticsService.getRangeFilterRemoveFn();
 
             //when
             removeCallback({ colId: '0001' }); // not the same column as the filters one
@@ -756,7 +735,7 @@ describe('Statistics service', function () {
         }));
     });
 
-    describe('init Statistics : The statistics values', function () {
+    describe('init Statistics : The statistics values', () => {
         it('should init number statistics whithout quantile', inject(function (StatisticsService, StateService) {
             //given
             stateMock.playground.grid.selectedColumn = {
@@ -932,8 +911,8 @@ describe('Statistics service', function () {
         }));
     });
 
-    describe('Update Statistics : The statistics values', function () {
-        beforeEach(inject(function () {
+    describe('Update Statistics : The statistics values', () => {
+        beforeEach(inject(() => {
             stateMock.playground.grid.selectedColumn = {
                 'id': '0001',
                 'name': 'city',
@@ -967,8 +946,7 @@ describe('Statistics service', function () {
             expect(StateService.setStatisticsPatterns).toHaveBeenCalledWith([
                 {
                     'pattern': '',
-                    'occurrences': 1,
-                    'filteredOccurrences': 0
+                    'occurrences': 1
                 }
             ]);
         }));
@@ -999,13 +977,11 @@ describe('Statistics service', function () {
             expect(StateService.setStatisticsPatterns).toHaveBeenCalledWith([
                 {
                     'pattern': 'd-M-yyyy',
-                    'occurrences': 1,
-                    'filteredOccurrences': 1
+                    'occurrences': 1
                 },
                 {
                     'pattern': 'yyyy-M-d',
-                    'occurrences': 2,
-                    'filteredOccurrences': 1
+                    'occurrences': 2
                 }
             ]);
         }));
@@ -1036,13 +1012,11 @@ describe('Statistics service', function () {
             expect(StateService.setStatisticsPatterns).toHaveBeenCalledWith([
                 {
                     'pattern': 'Aa,/',
-                    'occurrences': 3,
-                    'filteredOccurrences': 1
+                    'occurrences': 3
                 },
                 {
                     'pattern': '99/99-99',
-                    'occurrences': 4,
-                    'filteredOccurrences': 1
+                    'occurrences': 4
                 }
             ]);
         }));
@@ -1070,33 +1044,31 @@ describe('Statistics service', function () {
             expect(StateService.setStatisticsPatterns).toHaveBeenCalledWith([
                 {
                     'pattern': 'Aa,/',
-                    'occurrences': 3,
-                    'filteredOccurrences': 3
+                    'occurrences': 3
                 },
                 {
                     'pattern': '99/99-99',
-                    'occurrences': 4,
-                    'filteredOccurrences': 4
+                    'occurrences': 4
                 }
             ]);
         }));
     });
 
-    describe('Update Statistics : Statistics routing (basic / aggregations)', function () {
-        var currentColumn = { // the selected column
+    describe('Update Statistics : Statistics routing (basic / aggregations)', () => {
+        const currentColumn = { // the selected column
             'id': '0001',
             'name': 'city',
             'domain': '',
             'type': '',
             'statistics': { 'patternFrequencyTable': [] }
         };
-        var datasetId = '13654634856752';                   // the current data id
-        var preparationId = '2132548345365';                // the current preparation id
-        var stepId = '9878645468';                          // the currently viewed step id
-        var column = { 'id': '0002', 'name': 'state' };       // the column where to perform the aggregation
-        var aggregation = 'MAX';                            // the aggregation operation
+        const datasetId = '13654634856752';                   // the current data id
+        const preparationId = '2132548345365';                // the current preparation id
+        const stepId = '9878645468';                          // the currently viewed step id
+        const column = { 'id': '0002', 'name': 'state' };       // the column where to perform the aggregation
+        const aggregation = 'MAX';                            // the aggregation operation
 
-        var getAggregationsResponse = [                     // the REST aggregation GET result
+        const getAggregationsResponse = [                     // the REST aggregation GET result
             { 'data': 'Lansing', 'MAX': 15 },
             { 'data': 'Helena', 'MAX': 5 },
             { 'data': 'Baton Rouge', 'MAX': 64 },
@@ -1104,11 +1076,11 @@ describe('Statistics service', function () {
             { 'data': 'Pierre', 'MAX': 104 }
         ];
 
-        beforeEach(inject(function (StatisticsService, RecipeService, StorageService) {
+        beforeEach(inject(function (StatisticsService, StepUtilsService, StorageService) {
             stateMock.playground.grid.selectedColumn = currentColumn;
             stateMock.playground.dataset = { id: datasetId };
             stateMock.playground.preparation = { id: preparationId };
-            spyOn(RecipeService, 'getLastActiveStep').and.returnValue({ transformation: { stepId: stepId } });
+            spyOn(StepUtilsService, 'getLastActiveStep').and.returnValue({ transformation: { stepId: stepId } });
             spyOn(StorageService, 'setAggregation').and.returnValue();
             spyOn(StorageService, 'removeAggregation').and.returnValue();
         }));
@@ -1159,7 +1131,7 @@ describe('Statistics service', function () {
             });
         }));
 
-        it('should update histogram data with classical occurrence when saved aggregation column does NOT exist anymore', inject(function ($rootScope, StatisticsService, StorageService, StateService, DatagridService) {
+        it('should update histogram data with classical occurrence when saved aggregation column does NOT exist anymore', inject(function ($rootScope, StatisticsService, StorageService, StateService) {
             //given
             stateMock.playground.grid.selectedColumn = barChartStrCol;
             stateMock.playground.grid.filteredOccurences = { '   toto': 3, 'titi': 2 };
@@ -1212,10 +1184,10 @@ describe('Statistics service', function () {
             });
         }));
 
-        it('should update histogram data from saved aggregation configuration', inject(function ($q, $rootScope, StatisticsService, StatisticsRestService, DatagridService, StorageService, StateService) {
+        it('should update histogram data from saved aggregation configuration', inject(function ($q, $rootScope, StatisticsService, StatisticsRestService, StorageService, StateService) {
             //given
             spyOn(StatisticsRestService, 'getAggregations').and.returnValue($q.when(getAggregationsResponse));
-            var savedAggregation = {
+            const savedAggregation = {
                 aggregationColumnId: '0002',
                 aggregation: 'MAX'
             };
@@ -1268,15 +1240,15 @@ describe('Statistics service', function () {
         }));
     });
 
-    describe('Process Aggregations', function () {
-        var currentColumn = { 'id': '0001', 'name': 'city' }; // the selected column
-        var datasetId = '13654634856752';                   // the current data id
-        var preparationId = '2132548345365';                // the current preparation id
-        var stepId = '9878645468';                          // the currently viewed step id
-        var column = { 'id': '0002', 'name': 'state' };       // the column where to perform the aggregation
-        var aggregation = 'MAX';                            // the aggregation operation
+    describe('Process Aggregations', () => {
+        const currentColumn = { 'id': '0001', 'name': 'city' }; // the selected column
+        const datasetId = '13654634856752';                   // the current data id
+        const preparationId = '2132548345365';                // the current preparation id
+        const stepId = '9878645468';                          // the currently viewed step id
+        const column = { 'id': '0002', 'name': 'state' };       // the column where to perform the aggregation
+        const aggregation = 'MAX';                            // the aggregation operation
 
-        var getAggregationsResponse = [                     // the REST aggregation GET result
+        const getAggregationsResponse = [                     // the REST aggregation GET result
             { 'data': 'Lansing', 'MAX': 15 },
             { 'data': 'Helena', 'MAX': 5 },
             { 'data': 'Baton Rouge', 'MAX': 64 },
@@ -1284,11 +1256,11 @@ describe('Statistics service', function () {
             { 'data': 'Pierre', 'MAX': 104 }
         ];
 
-        beforeEach(inject(function (StatisticsService, RecipeService, StorageService) {
+        beforeEach(inject(function (StatisticsService, StepUtilsService, StorageService) {
             stateMock.playground.grid.selectedColumn = currentColumn;
             stateMock.playground.dataset = { id: datasetId };
             stateMock.playground.preparation = { id: preparationId };
-            spyOn(RecipeService, 'getLastActiveStep').and.returnValue({ transformation: { stepId: stepId } });
+            spyOn(StepUtilsService, 'getLastActiveStep').and.returnValue({ transformation: { stepId: stepId } });
             spyOn(StorageService, 'setAggregation').and.returnValue();
         }));
 
@@ -1392,9 +1364,9 @@ describe('Statistics service', function () {
         }));
     });
 
-    describe('Process classic charts', function () {
-        describe('The range slider', function () {
-            beforeEach(function () {
+    describe('Process classic charts', () => {
+        describe('The range slider', () => {
+            beforeEach(() => {
                 stateMock.playground.grid.selectedColumn = {
                     'id': '0001',
                     type: 'integer',
@@ -1628,7 +1600,7 @@ describe('Statistics service', function () {
             }));
         });
 
-        describe('The boxplot data', function () {
+        describe('The boxplot data', () => {
             it('should reset boxplotData when quantile values are NaN', inject(function (StatisticsService, StateService) {
                 //given
                 stateMock.playground.grid.selectedColumn = {
@@ -1735,7 +1707,7 @@ describe('Statistics service', function () {
             }));
         });
 
-        describe('process horizontal chart', function () {
+        describe('process horizontal chart', () => {
             it('should reset non histogram data when column type is "string"', inject(function (StatisticsService, StateService) {
                 //given
                 stateMock.playground.grid.selectedColumn = barChartStrCol;
@@ -1885,8 +1857,8 @@ describe('Statistics service', function () {
             }));
         });
 
-        describe('process vertical chart', function () {
-            describe('number', function () {
+        describe('process vertical chart', () => {
+            describe('number', () => {
                 it('should set the range data frequency when column type is "number" with filters', inject(function ($rootScope, StatisticsService, StateService) {
                     //given
                     stateMock.playground.grid.selectedColumn = barChartNumCol;
@@ -1978,21 +1950,30 @@ describe('Statistics service', function () {
                 }));
             });
 
-            describe('date', function () {
-                it('should NOT set the range histogram when there is no histogram', inject(function (StatisticsService, StateService) {
+            describe('date', () => {
+                let _$rootScope;
+                let _StatisticsService;
+                let _StateService;
+                beforeEach(inject(($rootScope, StatisticsService, StateService) => {
+                    _$rootScope = $rootScope;
+                    _StatisticsService = StatisticsService;
+                    _StateService = StateService;
+                }));
+                
+                it('should NOT set the range histogram when there is no histogram', () => {
                     //given
                     stateMock.playground.grid.selectedColumn = barChartDateColWithoutHistogram;
                     stateMock.playground.statistics = {};
 
                     //when
-                    StatisticsService.processClassicChart();
+                    _StatisticsService.processClassicChart();
 
                     //then
-                    expect(StateService.setStatisticsHistogram).toHaveBeenCalledWith(null);
-                    expect(StateService.setStatisticsHistogramActiveLimits).toHaveBeenCalledWith(null);
-                }));
+                    expect(_StateService.setStatisticsHistogram).toHaveBeenCalledWith(null);
+                    expect(_StateService.setStatisticsHistogramActiveLimits).toHaveBeenCalledWith(null);
+                });
 
-                it('should set the range data frequency when column type is "date" with filters', inject(function ($rootScope, StatisticsService, StateService) {
+                it('should set the range data frequency when column type is "date" with filters', (done) => {
                     //given
                     stateMock.playground.grid.selectedColumn = barChartDateCol;
                     stateMock.playground.filter.gridFilters = [{}];
@@ -2030,67 +2011,69 @@ describe('Statistics service', function () {
                     };
 
                     //when
-                    StatisticsService.processClassicChart();
-                    $rootScope.$digest();
+                    _StatisticsService.processClassicChart()
+                        .then(() => {
+                            //then
+                            expect(_StateService.setStatisticsHistogram).toHaveBeenCalledWith({
+                                data: [
+                                    {
+                                        data: {
+                                            type: 'date',
+                                            label: 'Jan 2015',
+                                            min: new Date(2015, 0, 1).getTime(),
+                                            max: new Date(2015, 1, 1).getTime()
+                                        },
+                                        occurrences: 15
+                                    },
+                                    {
+                                        data: {
+                                            type: 'date',
+                                            label: 'Feb 2015',
+                                            min: new Date(2015, 1, 1).getTime(),
+                                            max: new Date(2015, 2, 1).getTime()
+                                        },
+                                        occurrences: 5
+                                    }],
+                                keyField: 'data',
+                                valueField: 'occurrences',
+                                label: 'Occurrences',
+                                column: barChartDateCol,
+                                vertical: true
+                            });
+                            expect(_StateService.setStatisticsFilteredHistogram).toHaveBeenCalledWith({
+                                data: [
+                                    {
+                                        data: {
+                                            type: 'date',
+                                            label: 'Jan 2015',
+                                            min: new Date(2015, 0, 1).getTime(),
+                                            max: new Date(2015, 1, 1).getTime()
+                                        },
+                                        occurrences: 15,
+                                        filteredOccurrences: 10
+                                    },
+                                    {
+                                        data: {
+                                            type: 'date',
+                                            label: 'Feb 2015',
+                                            min: new Date(2015, 1, 1).getTime(),
+                                            max: new Date(2015, 2, 1).getTime()
+                                        },
+                                        occurrences: 5,
+                                        filteredOccurrences: 3
+                                    }],
+                                keyField: 'data',
+                                valueField: 'filteredOccurrences',
+                                label: 'Filtered Occurrences',
+                                column: barChartDateCol,
+                                vertical: true
+                            });
+                            done();
+                        });
+                    setTimeout(() => _$rootScope.$digest(), 500);
+                });
 
-                    //then
-                    expect(StateService.setStatisticsHistogram).toHaveBeenCalledWith({
-                        data: [
-                            {
-                                data: {
-                                    type: 'date',
-                                    label: 'Jan 2015',
-                                    min: new Date(2015, 0, 1).getTime(),
-                                    max: new Date(2015, 1, 1).getTime()
-                                },
-                                occurrences: 15
-                            },
-                            {
-                                data: {
-                                    type: 'date',
-                                    label: 'Feb 2015',
-                                    min: new Date(2015, 1, 1).getTime(),
-                                    max: new Date(2015, 2, 1).getTime()
-                                },
-                                occurrences: 5
-                            }],
-                        keyField: 'data',
-                        valueField: 'occurrences',
-                        label: 'Occurrences',
-                        column: barChartDateCol,
-                        vertical: true
-                    });
-                    expect(StateService.setStatisticsFilteredHistogram).toHaveBeenCalledWith({
-                        data: [
-                            {
-                                data: {
-                                    type: 'date',
-                                    label: 'Jan 2015',
-                                    min: new Date(2015, 0, 1).getTime(),
-                                    max: new Date(2015, 1, 1).getTime()
-                                },
-                                occurrences: 15,
-                                filteredOccurrences: 10
-                            },
-                            {
-                                data: {
-                                    type: 'date',
-                                    label: 'Feb 2015',
-                                    min: new Date(2015, 1, 1).getTime(),
-                                    max: new Date(2015, 2, 1).getTime()
-                                },
-                                occurrences: 5,
-                                filteredOccurrences: 3
-                            }],
-                        keyField: 'data',
-                        valueField: 'filteredOccurrences',
-                        label: 'Filtered Occurrences',
-                        column: barChartDateCol,
-                        vertical: true
-                    });
-                }));
-
-                it('should set the range data frequency with no filters', inject(function ($rootScope, StatisticsService, StateService) {
+                it('should set the range data frequency with no filters', () => {
                     //given
                     stateMock.playground.grid.selectedColumn = barChartDateCol;
                     stateMock.playground.filter.gridFilters = [];
@@ -2123,67 +2106,69 @@ describe('Statistics service', function () {
                     };
 
                     //when
-                    StatisticsService.processClassicChart();
-                    $rootScope.$digest();
+                    _StatisticsService.processClassicChart()
+                        .then(() => {
+                            //then
+                            expect(_StateService.setStatisticsHistogram).toHaveBeenCalledWith({
+                                data: [
+                                    {
+                                        data: {
+                                            type: 'date',
+                                            label: 'Jan 2015',
+                                            min: new Date(2015, 0, 1).getTime(),
+                                            max: new Date(2015, 1, 1).getTime()
+                                        },
+                                        occurrences: 15
+                                    },
+                                    {
+                                        data: {
+                                            type: 'date',
+                                            label: 'Feb 2015',
+                                            min: new Date(2015, 1, 1).getTime(),
+                                            max: new Date(2015, 2, 1).getTime()
+                                        },
+                                        occurrences: 5
+                                    }],
+                                keyField: 'data',
+                                valueField: 'occurrences',
+                                label: 'Occurrences',
+                                column: barChartDateCol,
+                                vertical: true
+                            });
+                            expect(_StateService.setStatisticsFilteredHistogram).toHaveBeenCalledWith({
+                                data: [
+                                    {
+                                        data: {
+                                            type: 'date',
+                                            label: 'Jan 2015',
+                                            min: new Date(2015, 0, 1).getTime(),
+                                            max: new Date(2015, 1, 1).getTime()
+                                        },
+                                        occurrences: 15,
+                                        filteredOccurrences: 15
+                                    },
+                                    {
+                                        data: {
+                                            type: 'date',
+                                            label: 'Feb 2015',
+                                            min: new Date(2015, 1, 1).getTime(),
+                                            max: new Date(2015, 2, 1).getTime()
+                                        },
+                                        occurrences: 5,
+                                        filteredOccurrences: 5
+                                    }],
+                                keyField: 'data',
+                                valueField: 'filteredOccurrences',
+                                label: 'Filtered Occurrences',
+                                column: barChartDateCol,
+                                vertical: true
+                            });
+                            done();
+                        });
+                    setTimeout(() => _$rootScope.$digest(), 500);
+                });
 
-                    //then
-                    expect(StateService.setStatisticsHistogram).toHaveBeenCalledWith({
-                        data: [
-                            {
-                                data: {
-                                    type: 'date',
-                                    label: 'Jan 2015',
-                                    min: new Date(2015, 0, 1).getTime(),
-                                    max: new Date(2015, 1, 1).getTime()
-                                },
-                                occurrences: 15
-                            },
-                            {
-                                data: {
-                                    type: 'date',
-                                    label: 'Feb 2015',
-                                    min: new Date(2015, 1, 1).getTime(),
-                                    max: new Date(2015, 2, 1).getTime()
-                                },
-                                occurrences: 5
-                            }],
-                        keyField: 'data',
-                        valueField: 'occurrences',
-                        label: 'Occurrences',
-                        column: barChartDateCol,
-                        vertical: true
-                    });
-                    expect(StateService.setStatisticsFilteredHistogram).toHaveBeenCalledWith({
-                        data: [
-                            {
-                                data: {
-                                    type: 'date',
-                                    label: 'Jan 2015',
-                                    min: new Date(2015, 0, 1).getTime(),
-                                    max: new Date(2015, 1, 1).getTime()
-                                },
-                                occurrences: 15,
-                                filteredOccurrences: 15
-                            },
-                            {
-                                data: {
-                                    type: 'date',
-                                    label: 'Feb 2015',
-                                    min: new Date(2015, 1, 1).getTime(),
-                                    max: new Date(2015, 2, 1).getTime()
-                                },
-                                occurrences: 5,
-                                filteredOccurrences: 5
-                            }],
-                        keyField: 'data',
-                        valueField: 'filteredOccurrences',
-                        label: 'Filtered Occurrences',
-                        column: barChartDateCol,
-                        vertical: true
-                    });
-                }));
-
-                it('should adapt date range label to century', inject(function (StatisticsService, StateService) {
+                it('should adapt date range label to century', () => {
                     //given
                     stateMock.playground.grid.selectedColumn = barChartDateColCENTURY;
                     stateMock.playground.statistics = {
@@ -2214,10 +2199,10 @@ describe('Statistics service', function () {
                     };
 
                     //when
-                    StatisticsService.processClassicChart();
+                    _StatisticsService.processClassicChart();
 
                     //then
-                    var histogram = StateService.setStatisticsHistogram.calls.argsFor(1)[0]; // first call is the reset
+                    const histogram = _StateService.setStatisticsHistogram.calls.argsFor(1)[0]; // first call is the reset
                     expect(histogram.data[0].data).toEqual({
                         type: 'date',
                         label: '[2000, 2100[',
@@ -2230,9 +2215,9 @@ describe('Statistics service', function () {
                         min: new Date(2100, 0, 1).getTime(),
                         max: new Date(2200, 0, 1).getTime()
                     });
-                }));
+                });
 
-                it('should adapt date range label to decade', inject(function (StatisticsService, StateService) {
+                it('should adapt date range label to decade', () => {
                     //given
                     stateMock.playground.grid.selectedColumn = barChartDateColDECADE;
                     stateMock.playground.statistics = {
@@ -2263,10 +2248,10 @@ describe('Statistics service', function () {
                     };
 
                     //when
-                    StatisticsService.processClassicChart();
+                    _StatisticsService.processClassicChart();
 
                     //then
-                    var histogram = StateService.setStatisticsHistogram.calls.argsFor(1)[0]; // first call is the reset
+                    const histogram = _StateService.setStatisticsHistogram.calls.argsFor(1)[0]; // first call is the reset
                     expect(histogram.data[0].data).toEqual({
                         type: 'date',
                         label: '[2000, 2010[',
@@ -2279,9 +2264,9 @@ describe('Statistics service', function () {
                         min: new Date(2010, 0, 1).getTime(),
                         max: new Date(2020, 0, 1).getTime()
                     });
-                }));
+                });
 
-                it('should adapt date range label to year', inject(function (StatisticsService, StateService) {
+                it('should adapt date range label to year', () => {
                     //given
                     stateMock.playground.grid.selectedColumn = barChartDateColYEAR;
                     stateMock.playground.statistics = {
@@ -2312,10 +2297,10 @@ describe('Statistics service', function () {
                     };
 
                     //when
-                    StatisticsService.processClassicChart();
+                    _StatisticsService.processClassicChart();
 
                     //then
-                    var histogram = StateService.setStatisticsHistogram.calls.argsFor(1)[0]; // first call is the reset
+                    const histogram = _StateService.setStatisticsHistogram.calls.argsFor(1)[0]; // first call is the reset
                     expect(histogram.data[0].data).toEqual({
                         type: 'date',
                         label: '2014',
@@ -2328,9 +2313,9 @@ describe('Statistics service', function () {
                         min: new Date(2015, 0, 1).getTime(),
                         max: new Date(2016, 0, 1).getTime()
                     });
-                }));
+                });
 
-                it('should adapt date range label to half year', inject(function (StatisticsService, StateService) {
+                it('should adapt date range label to half year', () => {
                     //given
                     stateMock.playground.grid.selectedColumn = barChartDateColHAFLYEAR;
                     stateMock.playground.statistics = {
@@ -2361,10 +2346,10 @@ describe('Statistics service', function () {
                     };
 
                     //when
-                    StatisticsService.processClassicChart();
+                    _StatisticsService.processClassicChart();
 
                     //then
-                    var histogram = StateService.setStatisticsHistogram.calls.argsFor(1)[0]; // first call is the reset
+                    const histogram = _StateService.setStatisticsHistogram.calls.argsFor(1)[0]; // first call is the reset
                     expect(histogram.data[0].data).toEqual({
                         type: 'date',
                         label: 'H1 2014',
@@ -2377,9 +2362,9 @@ describe('Statistics service', function () {
                         min: new Date(2014, 6, 1).getTime(),
                         max: new Date(2015, 0, 1).getTime()
                     });
-                }));
+                });
 
-                it('should adapt date range label to quarter', inject(function (StatisticsService, StateService) {
+                it('should adapt date range label to quarter', () => {
                     //given
                     stateMock.playground.grid.selectedColumn = barChartDateColQUARTER;
                     stateMock.playground.statistics = {
@@ -2410,10 +2395,10 @@ describe('Statistics service', function () {
                     };
 
                     //when
-                    StatisticsService.processClassicChart();
+                    _StatisticsService.processClassicChart();
 
                     //then
-                    var histogram = StateService.setStatisticsHistogram.calls.argsFor(1)[0]; // first call is the reset
+                    const histogram = _StateService.setStatisticsHistogram.calls.argsFor(1)[0]; // first call is the reset
                     expect(histogram.data[0].data).toEqual({
                         type: 'date',
                         label: 'Q1 2014',
@@ -2426,9 +2411,9 @@ describe('Statistics service', function () {
                         min: new Date(2014, 3, 1).getTime(),
                         max: new Date(2014, 6, 1).getTime()
                     });
-                }));
+                });
 
-                it('should adapt date range label to month', inject(function (StatisticsService, StateService) {
+                it('should adapt date range label to month', () => {
                     //given
                     stateMock.playground.grid.selectedColumn = barChartDateColMONTH;
                     stateMock.playground.statistics = {
@@ -2459,10 +2444,10 @@ describe('Statistics service', function () {
                     };
 
                     //when
-                    StatisticsService.processClassicChart();
+                    _StatisticsService.processClassicChart();
 
                     //then
-                    var histogram = StateService.setStatisticsHistogram.calls.argsFor(1)[0]; // first call is the reset
+                    const histogram = _StateService.setStatisticsHistogram.calls.argsFor(1)[0]; // first call is the reset
                     expect(histogram.data[0].data).toEqual({
                         type: 'date',
                         label: 'Jan 2015',
@@ -2475,9 +2460,9 @@ describe('Statistics service', function () {
                         min: new Date(2015, 1, 1).getTime(),
                         max: new Date(2015, 2, 1).getTime()
                     });
-                }));
+                });
 
-                it('should adapt date range label to week', inject(function (StatisticsService, StateService) {
+                it('should adapt date range label to week', () => {
                     //given
                     stateMock.playground.grid.selectedColumn = barChartDateColWEEK;
                     stateMock.playground.statistics = {
@@ -2508,10 +2493,10 @@ describe('Statistics service', function () {
                     };
 
                     //when
-                    StatisticsService.processClassicChart();
+                    _StatisticsService.processClassicChart();
 
                     //then
-                    var histogram = StateService.setStatisticsHistogram.calls.argsFor(1)[0]; // first call is the reset
+                    const histogram = _StateService.setStatisticsHistogram.calls.argsFor(1)[0]; // first call is the reset
                     expect(histogram.data[0].data).toEqual({
                         type: 'date',
                         label: 'W01 2016',
@@ -2524,9 +2509,9 @@ describe('Statistics service', function () {
                         min: new Date(2016, 0, 11).getTime(),
                         max: new Date(2016, 0, 18).getTime()
                     });
-                }));
+                });
 
-                it('should adapt date range label to day', inject(function (StatisticsService, StateService) {
+                it('should adapt date range label to day', () => {
                     //given
                     stateMock.playground.grid.selectedColumn = barChartDateColDAY;
                     stateMock.playground.statistics = {
@@ -2557,10 +2542,10 @@ describe('Statistics service', function () {
                     };
 
                     //when
-                    StatisticsService.processClassicChart();
+                    _StatisticsService.processClassicChart();
 
                     //then
-                    var histogram = StateService.setStatisticsHistogram.calls.argsFor(1)[0]; // first call is the reset
+                    const histogram = _StateService.setStatisticsHistogram.calls.argsFor(1)[0]; // first call is the reset
                     expect(histogram.data[0].data).toEqual({
                         type: 'date',
                         label: 'Jan 1, 2016',
@@ -2573,7 +2558,7 @@ describe('Statistics service', function () {
                         min: new Date(2016, 0, 2).getTime(),
                         max: new Date(2016, 0, 3).getTime()
                     });
-                }));
+                });
             });
         });
 
@@ -2592,8 +2577,8 @@ describe('Statistics service', function () {
 
         it('should remove saved aggregation on current column/preparation/dataset from storage', inject(function (StatisticsService, StorageService) {
             //given
-            var datasetId = '13654634856752';
-            var preparationId = '2132548345365';
+            const datasetId = '13654634856752';
+            const preparationId = '2132548345365';
             stateMock.playground.dataset = { id: datasetId };
             stateMock.playground.preparation = { id: preparationId };
             stateMock.playground.grid.selectedColumn = barChartStrCol;
@@ -2609,28 +2594,40 @@ describe('Statistics service', function () {
         }));
     });
 
-    describe('Update Filtered Statistics', function () {
-        var currentColumn = { // the selected column
+    describe('Update Filtered Statistics', () => {
+        const currentColumn = { // the selected column
             'id': '0001',
             'name': 'city',
             'domain': '',
             'type': '',
             'statistics': { 'patternFrequencyTable': [] }
         };
-        var datasetId = '13654634856752';                   // the current data id
-        var preparationId = '2132548345365';                // the current preparation id
-        var stepId = '9878645468';                          // the currently viewed step id
+        const datasetId = '13654634856752';                   // the current data id
+        const preparationId = '2132548345365';                // the current preparation id
+        const stepId = '9878645468';                          // the currently viewed step id
+        
+        let _$rootScope;
+        let _StatisticsService;
+        let _StepUtilsService;
+        let _StorageService;
+        let _StateService;
 
-        beforeEach(inject(function (StatisticsService, RecipeService, StorageService) {
+        beforeEach(inject(($rootScope, StatisticsService, StepUtilsService, StorageService, StateService) => {
             stateMock.playground.grid.selectedColumn = currentColumn;
             stateMock.playground.dataset = { id: datasetId };
             stateMock.playground.preparation = { id: preparationId };
-            spyOn(RecipeService, 'getLastActiveStep').and.returnValue({ transformation: { stepId: stepId } });
+            spyOn(StepUtilsService, 'getLastActiveStep').and.returnValue({ transformation: { stepId: stepId } });
             spyOn(StorageService, 'setAggregation').and.returnValue();
             spyOn(StorageService, 'removeAggregation').and.returnValue();
+
+            _$rootScope = $rootScope;
+            _StatisticsService = StatisticsService;
+            _StepUtilsService = StepUtilsService;
+            _StorageService = StorageService;
+            _StateService = StateService;
         }));
 
-        it('should update filtered Numeric column', inject(function (StatisticsService, StateService, StorageService) {
+        it('should update filtered Numeric column', () => {
             //given
             stateMock.playground.grid.selectedColumn = barChartNumCol;
             stateMock.playground.filter.gridFilters = [{
@@ -2650,13 +2647,14 @@ describe('Statistics service', function () {
                 3: 1,
                 11: 6
             };
-            spyOn(StorageService, 'getAggregation').and.returnValue();
-
+            spyOn(_StorageService, 'getAggregation').and.returnValue();
+        
             //when
-            StatisticsService.updateFilteredStatistics();
-
+            _StatisticsService.updateFilteredStatistics();
+            _$rootScope.$digest();
+        
             //then
-            expect(StateService.setStatisticsFilteredHistogram).toHaveBeenCalledWith({
+            expect(_StateService.setStatisticsFilteredHistogram).toHaveBeenCalledWith({
                 'data': [
                     {
                         'data': {
@@ -2681,12 +2679,12 @@ describe('Statistics service', function () {
                 'column': barChartNumCol,
                 'vertical': true
             });
-            expect(StateService.setStatisticsHistogramActiveLimits).toHaveBeenCalledWith([5, 10]);
-        }));
-
-        it('should update filtered Date column', inject(function ($rootScope, StatisticsService, StorageService, StateService) {
+            expect(_StateService.setStatisticsHistogramActiveLimits).toHaveBeenCalledWith([5, 10]);
+        });
+        
+        it('should update filtered Date column', (done) => {
             //given
-            spyOn(StorageService, 'getAggregation').and.returnValue();
+            spyOn(_StorageService, 'getAggregation').and.returnValue();
             stateMock.playground.grid.selectedColumn = barChartDateCol;
             stateMock.playground.filter.gridFilters = [{}];
             stateMock.playground.grid.filteredOccurences = {
@@ -2721,53 +2719,55 @@ describe('Statistics service', function () {
                     ]
                 }
             };
-
+        
             //when
-            StatisticsService.updateFilteredStatistics();
-            $rootScope.$digest();
-
-            //then
-            expect(StateService.setStatisticsFilteredHistogram).toHaveBeenCalledWith({
-                data: [
-                    {
-                        data: {
-                            type: 'date',
-                            label: 'Jan 2015',
-                            min: new Date(2015, 0, 1),
-                            max: new Date(2015, 1, 1)
-                        },
-                        occurrences: 15,
-                        filteredOccurrences: 10
-                    },
-                    {
-                        data: {
-                            type: 'date',
-                            label: 'Feb 2015',
-                            min: new Date(2015, 1, 1),
-                            max: new Date(2015, 2, 1)
-                        },
-                        occurrences: 5,
-                        filteredOccurrences: 3
-                    }],
-                keyField: 'data',
-                valueField: 'filteredOccurrences',
-                label: 'Filtered Occurrences',
-                column: barChartDateCol,
-                vertical: true
-            });
-        }));
-
-        it('should update filtered Text column', inject(function (StorageService, StatisticsService, StateService) {
+            _StatisticsService.updateFilteredStatistics()
+                .then(() => {
+                    //then
+                    expect(_StateService.setStatisticsFilteredHistogram).toHaveBeenCalledWith({
+                        data: [
+                            {
+                                data: {
+                                    type: 'date',
+                                    label: 'Jan 2015',
+                                    min: new Date(2015, 0, 1),
+                                    max: new Date(2015, 1, 1)
+                                },
+                                occurrences: 15,
+                                filteredOccurrences: 10
+                            },
+                            {
+                                data: {
+                                    type: 'date',
+                                    label: 'Feb 2015',
+                                    min: new Date(2015, 1, 1),
+                                    max: new Date(2015, 2, 1)
+                                },
+                                occurrences: 5,
+                                filteredOccurrences: 3
+                            }],
+                        keyField: 'data',
+                        valueField: 'filteredOccurrences',
+                        label: 'Filtered Occurrences',
+                        column: barChartDateCol,
+                        vertical: true
+                    });
+                    done();
+                });
+            setTimeout(() => _$rootScope.$apply(), 500);
+        });
+        
+        it('should update filtered Text column', () => {
             //given
             stateMock.playground.grid.selectedColumn = barChartStrCol;
-            spyOn(StorageService, 'getAggregation').and.returnValue();
+            spyOn(_StorageService, 'getAggregation').and.returnValue();
             stateMock.playground.grid.filteredOccurences = { '   toto': 3, 'titi': 2 };
-
+        
             //when
-            StatisticsService.updateFilteredStatistics();
-
+            _StatisticsService.updateFilteredStatistics();
+        
             //then
-            expect(StateService.setStatisticsFilteredHistogram).toHaveBeenCalledWith({
+            expect(_StateService.setStatisticsFilteredHistogram).toHaveBeenCalledWith({
                 data: [
                     { formattedValue: '<span class="hiddenChars">   </span>toto', filteredOccurrences: 3 },
                     { formattedValue: 'titi', filteredOccurrences: 2 },
@@ -2781,65 +2781,62 @@ describe('Statistics service', function () {
                 className: 'blueBar',
                 column: barChartStrCol
             });
-        }));
-
-        it('should update filtered Patterns Frequency', inject(function ($rootScope, StatisticsService, StateService) {
+        });
+        
+        it('should update filtered Patterns Frequency', (done) => {
             //given
             stateMock.playground.grid.selectedColumn.statistics.patternFrequencyTable = [
-                {
-                    'pattern': '',
-                    'occurrences': 1
-                }
+                { 'pattern': '', 'occurrences': 1 }
             ];
-            stateMock.playground.grid.filteredRecords = [{
-                '0001': 'toto'
-            }];
+            stateMock.playground.grid.filteredRecords = [{ '0001': 'toto' }];
 
             //when
-            StatisticsService.updateFilteredStatistics();
-            $rootScope.$digest();
+            _StatisticsService.updateFilteredStatistics()
+                .then(() => {
+                    //then
+                    expect(_StateService.setStatisticsFilteredPatterns).toHaveBeenCalledWith([{
+                        'pattern': '',
+                        'occurrences': 1,
+                        'filteredOccurrences': 1
+                    }]);
+                    done();
+                });
+            setTimeout(() => _$rootScope.$digest(), 500);
+        });
 
-            //then
-            expect(StateService.setStatisticsFilteredPatterns).toHaveBeenCalledWith([{
-                'pattern': '',
-                'occurrences': 1,
-                'filteredOccurrences': 1
-            }]);
-        }));
-
-        it('should NOT update filtered data when there is an aggregation', inject(function (StorageService, StatisticsService, StateService, DatagridService) {
+        it('should NOT update filtered data when there is an aggregation', () => {
             //given
             stateMock.playground.grid.selectedColumn = barChartStrCol;
-            var savedAggregation = {
+            const savedAggregation = {
                 aggregationColumnId: '0002',
                 aggregation: 'MAX'
             };
-            spyOn(StorageService, 'getAggregation').and.returnValue(savedAggregation);
+            spyOn(_StorageService, 'getAggregation').and.returnValue(savedAggregation);
             stateMock.playground.grid.numericColumns = [{ id: '0003' }];
-
+        
             //when
-            StatisticsService.updateFilteredStatistics();
-
+            _StatisticsService.updateFilteredStatistics();
+        
             //then
-            expect(StateService.setStatisticsFilteredHistogram).not.toHaveBeenCalled();
-            expect(StateService.setStatisticsHistogramActiveLimits).not.toHaveBeenCalled();
-            expect(StateService.setStatisticsFilteredPatterns).not.toHaveBeenCalled();
-        }));
-
-        it('should update aggregation chart when at least 1 filter exists', inject(function ($q, StorageService, StatisticsService, StateService, DatagridService, StatisticsRestService) {
+            expect(_StateService.setStatisticsFilteredHistogram).not.toHaveBeenCalled();
+            expect(_StateService.setStatisticsHistogramActiveLimits).not.toHaveBeenCalled();
+            expect(_StateService.setStatisticsFilteredPatterns).not.toHaveBeenCalled();
+        });
+        
+        it('should update aggregation chart when at least 1 filter exists', inject(($q, StatisticsService, StatisticsRestService, StorageService) => {
             //given
             stateMock.playground.grid.selectedColumn = barChartStrCol;
             stateMock.playground.grid.numericColumns = [{ id: '0002' }];
-            var savedAggregation = {
+            const savedAggregation = {
                 aggregationColumnId: '0002',
                 aggregation: 'MAX'
             };
             spyOn(StorageService, 'getAggregation').and.returnValue(savedAggregation);
             spyOn(StatisticsRestService, 'getAggregations').and.returnValue($q.reject());
-
+        
             //when
             StatisticsService.updateFilteredStatistics();
-
+        
             //then
             expect(StatisticsRestService.getAggregations).toHaveBeenCalledWith({
                 datasetId: null,
@@ -2854,7 +2851,7 @@ describe('Statistics service', function () {
         }));
     });
 
-    describe('utils', function () {
+    describe('utils', () => {
         beforeEach(inject(function (StatisticsRestService) {
             spyOn(StatisticsRestService, 'resetCache').and.returnValue();
         }));
@@ -2883,13 +2880,16 @@ describe('Statistics service', function () {
             expect(StatisticsService.histogram).toBeFalsy();
 
             StatisticsService.processClassicChart(); //create the worker
-            expect(workerWrapper.cancel).not.toHaveBeenCalled();
+            const dateWorker = StatisticsService.dateWorker;
+            expect(dateWorker).toBeDefined();
+            spyOn(dateWorker, 'terminate').and.callThrough();
 
             //when
             StatisticsService.reset();
 
             //then
-            expect(workerWrapper.cancel).toHaveBeenCalled();
+            expect(dateWorker.terminate).toHaveBeenCalled();
+            expect(StatisticsService.dateWorker).toBe(null);
         }));
 
         it('should reset date pattern filtered occurrence worker', inject(function (StatisticsService) {
@@ -2919,13 +2919,16 @@ describe('Statistics service', function () {
             ];
 
             StatisticsService.updateStatistics(); //create the worker
-            expect(workerWrapper.cancel).not.toHaveBeenCalled();
+            const patternWorker = StatisticsService.patternWorker;
+            expect(patternWorker).toBeDefined();
+            spyOn(patternWorker, 'terminate').and.callThrough();
 
             //when
             StatisticsService.reset();
 
             //then
-            expect(workerWrapper.cancel).toHaveBeenCalled();
+            expect(patternWorker.terminate).toHaveBeenCalled();
+            expect(StatisticsService.patternWorker).toBe(null);
         }));
     });
 });

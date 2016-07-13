@@ -24,7 +24,7 @@ describe('Range slider directive', () => {
     let scope;
     let ctrl;
 
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
     beforeEach(angular.mock.module('talend.widget'));
 
     beforeEach(inject(($rootScope, $compile) => {

@@ -29,7 +29,7 @@ describe('Transformation menu directive', function () {
     ];
 
     beforeEach(angular.mock.module('data-prep.transformation-menu'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {

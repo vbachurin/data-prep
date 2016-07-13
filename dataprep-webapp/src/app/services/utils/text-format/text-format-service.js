@@ -11,6 +11,9 @@
 
  ============================================================================*/
 
+import _ from 'lodash';
+import moment from 'moment-jdateformatparser';
+
 /**
  * @ngdoc service
  * @name data-prep.services.utils.service:TextFormatService
@@ -23,7 +26,8 @@ export default function TextFormatService() {
         escapeRegexpExceptStar: escapeRegexpExceptStar,
         convertPatternToRegexp: convertPatternToRegexp,
         convertJavaDateFormatToMomentDateFormat: convertJavaDateFormatToMomentDateFormat,
-        highlight: highlight
+        highlight: highlight,
+        valueMatchPatternFn: valueMatchPatternFn
     };
 
     // --------------------------------------------------------------------------------------------
@@ -207,7 +211,6 @@ export default function TextFormatService() {
         return pattern;
     }
 
-
     /**
      * @ngdoc method
      * @name highlight
@@ -224,6 +227,73 @@ export default function TextFormatService() {
             object[key] = originalValue.replace(
                 new RegExp('(' + escapeRegex(highlightText) + ')', 'gi'),
                 '<span class="' + hightlightCssClass + '">$1</span>');
+        }
+    }
+
+    // --------------------------------------------------------------------------------------------
+    // -------------------------------------------PATTERN------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    /**
+     * @ngdoc method
+     * @name isDatePattern
+     * @methodOf data-prep.services.utils:TextFormatService
+     * @description Check if the pattern is a date pattern
+     * @param {string} pattern The pattern to check
+     */
+    function isDatePattern(pattern) {
+        return (pattern.indexOf('d') > -1 ||
+            pattern.indexOf('M') > -1 ||
+            pattern.indexOf('y') > -1 ||
+            pattern.indexOf('H') > -1 ||
+            pattern.indexOf('h') > -1 ||
+            pattern.indexOf('m') > -1 ||
+            pattern.indexOf('s') > -1);
+    }
+
+    /**
+     * @ngdoc method
+     * @name valueMatchDatePatternFn
+     * @methodOf data-prep.services.utils:TextFormatService
+     * @description Create a predicate that check if a value match the date pattern
+     * @param {string} pattern The date pattern to match
+     */
+    function valueMatchDatePatternFn(pattern) {
+        const datePattern = convertJavaDateFormatToMomentDateFormat(pattern);
+        return value => value && moment(value, datePattern, true).isValid();
+    }
+
+    /**
+     * @ngdoc method
+     * @name valueMatchRegexFn
+     * @methodOf data-prep.services.utils:TextFormatService
+     * @description Create a predicate that check if a value match the regex pattern
+     * @param {string} pattern The pattern to match
+     */
+    function valueMatchRegexFn(pattern) {
+        var regex = convertPatternToRegexp(pattern);
+        return function (value) {
+            return value && value.match(regex);
+        };
+    }
+
+    /**
+     * @ngdoc method
+     * @name valueMatchPatternFn
+     * @methodOf data-prep.services.utils:TextFormatService
+     * @description Create the adequat predicate that match the pattern. It can be empty, a date pattern, or an alphanumeric pattern
+     * @param {string} pattern The pattern to match
+     */
+    function valueMatchPatternFn(pattern) {
+        if (pattern === '') {
+            return function (value) {
+                return value === '';
+            };
+        }
+        else if (isDatePattern(pattern)) {
+            return valueMatchDatePatternFn(pattern);
+        }
+        else {
+            return valueMatchRegexFn(pattern);
         }
     }
 }

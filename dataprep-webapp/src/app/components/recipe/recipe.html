@@ -14,12 +14,12 @@
   -->
 
 <sc-accordion class="recipe">
-    <sc-accordion-item ng-repeat="step in recipeCtrl.recipe track by step.transformation.stepId"
+    <sc-accordion-item ng-repeat="step in recipeCtrl.state.playground.recipe.current.steps track by step.transformation.stepId"
                        id="step-{{step.transformation.stepId}}"
                        class="recipe-step"
                        ng-class="::{'preview': step.preview}"
                        on-open="recipeCtrl.resetParams(step)"
-                       default="$index === (recipeCtrl.recipe.length - 1)">
+                       default="$index === (recipeCtrl.state.playground.recipe.current.steps.length - 1)">
 
         <trigger class="step-description"
              ng-click="recipeCtrl.select(step)">

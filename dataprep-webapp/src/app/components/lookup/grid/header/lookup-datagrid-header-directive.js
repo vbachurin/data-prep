@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './lookup-datagrid-header.html';
+
 /**
  * @ngdoc directive
  * @name data-prep.lookup-datagrid-header.directive:DatagridHeader
@@ -29,7 +31,7 @@ export default function LookupDatagridHeader($timeout) {
 
     return {
         restrict: 'E',
-        templateUrl: 'app/components/lookup/grid/header/lookup-datagrid-header.html',
+        templateUrl: template,
         scope: {
             column: '=',
             added: '='

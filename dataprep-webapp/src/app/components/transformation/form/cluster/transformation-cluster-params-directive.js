@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './transformation-cluster-params.html';
+
 /**
  * @ngdoc directive
  * @name data-prep.transformation-form.directive:TransformClusterParams
@@ -24,7 +26,7 @@ export default function TransformClusterParams($timeout) {
 
     return {
         restrict: 'E',
-        templateUrl: 'app/components/transformation/form/cluster/transformation-cluster-params.html',
+        templateUrl: template,
         scope: {
             details: '='
         },

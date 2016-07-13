@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import moment from 'moment';
+
 /**
  * @ngdoc service
  * @name data-prep.services.utils.filter:MessageService

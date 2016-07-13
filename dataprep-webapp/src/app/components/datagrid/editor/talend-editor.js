@@ -128,17 +128,7 @@ export default function TalendEditor(validationFn, translatedMsg) {
         };
 
         /*********** OPTIONAL METHODS ***********/
-
-        //this.hide = function() {
-        //    // if implemented, this will be called if the cell being edited is scrolled out of the view
-        //    // implement this is your UI is not appended to the cell itself or if you open any secondary
-        //    // selector controls (like a calendar for a datepicker input)
-        //};
-        //
-        //this.show = function() {
-        //    // pretty much the opposite of hide
-        //};
-        //
+        
         this.position = function(cellBox) {
             // if implemented, this will be called by the grid if any of the cell containers are scrolled
             // and the absolute position of the edited cell is changed
@@ -164,4 +154,5 @@ export default function TalendEditor(validationFn, translatedMsg) {
         init();
     };
 }
+
 /*eslint-enable */

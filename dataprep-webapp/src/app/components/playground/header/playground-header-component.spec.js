@@ -19,7 +19,7 @@ describe('Playground header component', () => {
     let element;
 
     beforeEach(angular.mock.module('data-prep.playground'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(inject(($rootScope, $compile) => {
         scope = $rootScope.$new();

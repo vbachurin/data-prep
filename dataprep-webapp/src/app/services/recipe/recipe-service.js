@@ -1,292 +1,42 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
+
+import _ from 'lodash';
 
 /**
  * @ngdoc service
  * @name data-prep.services.recipe.service:RecipeService
  * @description Recipe service. This service provide the entry point to manipulate properly the recipe
  * @requires data-prep.services.preparation.service:PreparationService
+ * @requires data-prep.services.parameters.service:ParametersService
  * @requires data-prep.services.transformation.service:TransformationService
  * @requires data-prep.services.filters.service:FilterAdapterService
  */
-export default function RecipeService(state, PreparationService, TransformationService, FilterAdapterService) {
+export default function RecipeService(state, StateService, StepUtilsService, PreparationService, ParametersService, TransformationService, FilterAdapterService) {
     'ngInject';
 
-    var clusterType = 'CLUSTER';
-
-    /**
-     * @ngdoc property
-     * @name recipeStateBeforePreview
-     * @propertyOf data-prep.services.recipe.service:RecipeService
-     * @description [PRIVATE] The recipe state before early preview
-     * @type {object}
-     */
-    var recipeStateBeforePreview;
-
-    /**
-     * @ngdoc property
-     * @name recipe
-     * @propertyOf data-prep.services.recipe.service:RecipeService
-     * @description [PRIVATE] the recipe step list
-     * @type {object[]}
-     */
-    var recipe = [];
-
-    /**
-     * @ngdoc property
-     * @name activeThresholdStep
-     * @propertyOf data-prep.services.recipe.service:RecipeService
-     * @description [PRIVATE] the last recipe step that is active
-     * @type {object}
-     */
-    var activeThresholdStep = null;
-
-    /**
-     * @ngdoc property
-     * @name initialState
-     * @propertyOf data-prep.services.recipe.service:RecipeService
-     * @description [PRIVATE] the recipe initial step (without transformation)
-     * @type {object}
-     */
-    var initialState;
-
     return {
-        //step utils
-        getActiveThresholdStep: getActiveThresholdStep,
-        getActiveThresholdStepIndex: getActiveThresholdStepIndex,
-        getAllActionsFrom: getAllActionsFrom,
-        getLastActiveStep: getLastActiveStep,
-        getLastStep: getLastStep,
-        getPreviousStep: getPreviousStep,
-        getRecipe: getRecipe,
-        getStep: getStep,
-        getStepBefore: getStepBefore,
-        getStepIndex: getStepIndex,
-        isFirstStep: isFirstStep,
-        isLastStep: isLastStep,
-        reset: reset,
-
         //recipe and steps manipulation
-        disableStepsAfter: disableStepsAfter,
-        resetParams: resetParams,
         refresh: refresh,
 
         //append step preview
         earlyPreview: earlyPreview,
-        cancelEarlyPreview: cancelEarlyPreview
+        cancelEarlyPreview: cancelEarlyPreview,
     };
-
-    //--------------------------------------------------------------------------------------------------------------
-    //----------------------------------------------------STEP UTILS------------------------------------------------
-    //--------------------------------------------------------------------------------------------------------------
-    /**
-     * @ngdoc method
-     * @name getRecipe
-     * @methodOf data-prep.services.recipe.service:RecipeService
-     * @description Return recipe step list
-     * @returns {object[]} The recipe step list
-     */
-    function getRecipe() {
-        return recipe;
-    }
-
-    /**
-     * @ngdoc method
-     * @name getStep
-     * @methodOf data-prep.services.recipe.service:RecipeService
-     * @param {number} index The wanted index
-     * @param {boolean} defaultLast Return the last step if no step is identified by the index
-     * @description Return a recipe step identified by index
-     * @returns {object} The recipe step
-     */
-    function getStep(index, defaultLast) {
-        if (index < 0) {
-            return initialState;
-        }
-        if (index >= recipe.length || index < 0) {
-            return defaultLast ? recipe[recipe.length - 1] : null;
-        }
-        return recipe[index];
-    }
-
-    /**
-     * @ngdoc method
-     * @name getStepBefore
-     * @methodOf data-prep.services.recipe.service:RecipeService
-     * @param {number} index The targeted step index
-     * @description Return the step just before the provided index
-     * @returns {object} The recipe step
-     */
-    function getStepBefore(index) {
-        if (index <= 0) {
-            return initialState;
-        }
-        else if (index >= recipe.length) {
-            return recipe[recipe.length - 1];
-        }
-
-        return recipe[index - 1];
-    }
-
-    /**
-     * @ngdoc method
-     * @name getPreviousStep
-     * @methodOf data-prep.services.recipe.service:RecipeService
-     * @param {object} step The given step
-     * @description Get the step before the given one
-     */
-    function getPreviousStep(step) {
-        var index = recipe.indexOf(step);
-        return getStepBefore(index);
-    }
-
-    /**
-     * @ngdoc method
-     * @name reset
-     * @methodOf data-prep.services.recipe.service:RecipeService
-     * @description [PRIVATE] Reset the current recipe
-     */
-    function reset() {
-        initialState = null;
-        recipe = [];
-        activeThresholdStep = null;
-        recipeStateBeforePreview = null;
-    }
-
-    /**
-     * @ngdoc method
-     * @name getActiveThresholdStep
-     * @methodOf data-prep.services.recipe.service:RecipeService
-     * @description Get the last active step
-     * @returns {object} - the last active step
-     */
-    function getActiveThresholdStep() {
-        return activeThresholdStep;
-    }
-
-    /**
-     * @ngdoc method
-     * @name getActiveThresholdStepIndex
-     * @methodOf data-prep.services.recipe.service:RecipeService
-     * @description Get the last active step index
-     * @returns {number} The last active step index
-     */
-    function getActiveThresholdStepIndex() {
-        return activeThresholdStep ? recipe.indexOf(activeThresholdStep) : recipe.length - 1;
-    }
-
-    /**
-     * @ngdoc method
-     * @name getStepIndex
-     * @methodOf data-prep.services.recipe.service:RecipeService
-     * @param {object} step The step
-     * @description Get the current clicked step index
-     * @returns {number} The current step index
-     */
-    function getStepIndex(step) {
-        return recipe.indexOf(step);
-    }
-
-    /**
-     * @ngdoc method
-     * @name getLastActiveStep
-     * @methodOf data-prep.services.recipe.service:RecipeService
-     * @description Get the last active step (last step if activeThresholdStep var is not set)
-     * @returns {object} The last active step
-     */
-    function getLastActiveStep() {
-        return activeThresholdStep || getLastStep();
-    }
-
-    /**
-     * @ngdoc method
-     * @name isFirstStep
-     * @methodOf data-prep.services.recipe.service:RecipeService
-     * @param {object} step The step to test
-     * @description Test if the provided step is the first step of the recipe
-     * @returns {object} The step to test
-     */
-    function isFirstStep(step) {
-        return getStepIndex(step) === 0;
-    }
-
-    /**
-     * @ngdoc method
-     * @name isLastStep
-     * @methodOf data-prep.services.recipe.service:RecipeService
-     * @param {object} step The step to test
-     * @description Test if the provided step is the last step of the recipe
-     * @returns {object} The step to test
-     */
-    function isLastStep(step) {
-        return step === getLastStep();
-    }
-
-    /**
-     * @ngdoc method
-     * @name getLastStep
-     * @methodOf data-prep.services.recipe.service:RecipeService
-     * @description Get the last step of the recipe
-     * @returns {object} The last step
-     */
-    function getLastStep() {
-        return recipe.length > 0 ? recipe[recipe.length - 1] : initialState;
-    }
-
-    /**
-     * @ngdoc method
-     * @name getAllStepsFrom
-     * @methodOf data-prep.services.recipe.service:RecipeService
-     * @description Get all steps from provided step to the head
-     * @param {object} step The starting step
-     * @returns {object} The sublist from 'step' to head
-     */
-    function getAllStepsFrom(step) {
-        var index = getStepIndex(step);
-        return recipe.slice(index);
-    }
-
-    /**
-     * @ngdoc method
-     * @name getAllActionsFrom
-     * @methodOf data-prep.services.recipe.service:RecipeService
-     * @description Get all actions from provided step to the head
-     * @param {object} step The starting step
-     * @returns {object} The actions array
-     */
-    function getAllActionsFrom(step) {
-        var steps = getAllStepsFrom(step);
-        return _.map(steps, 'actionParameters');
-    }
 
     //--------------------------------------------------------------------------------------------------------------
     //----------------------------------------------------STEP PARAMS-----------------------------------------------
     //--------------------------------------------------------------------------------------------------------------
-
-    /**
-     * @ngdoc method
-     * @name resetParams
-     * @methodOf data-prep.services.recipe.service:RecipeService
-     * @param {object} recipeItem The item to reset
-     * @description Reset all params of the recipe item, with saved values (param.initialValue)
-     */
-    function resetParams(recipeItem) {
-        //simple parameters
-        TransformationService.resetParamValue(recipeItem.transformation.parameters, null);
-
-        //clusters
-        TransformationService.resetParamValue(recipeItem.transformation.cluster, clusterType);
-    }
 
     /**
      * @ngdoc method
@@ -298,13 +48,13 @@ export default function RecipeService(state, PreparationService, TransformationS
      * Otherwise, we call the backend
      */
     function initDynamicParams(recipes) {
-        var getOldStepById = function (step) {
+        function getOldStepById(step) {
             return _.find(recipes.old, function (oldStep) {
                 return oldStep.transformation.stepId === step.transformation.stepId;
             });
-        };
+        }
 
-        var initOnStep = function (step) {
+        function initOnStep(step) {
             var oldStep = getOldStepById(step);
             if (oldStep) {
                 step.transformation.parameters = oldStep.transformation.parameters;
@@ -314,14 +64,16 @@ export default function RecipeService(state, PreparationService, TransformationS
                 var infos = {
                     columnId: step.column.id,
                     preparationId: state.playground.preparation.id,
-                    stepId: getPreviousStep(step).transformation.stepId
+                    stepId: StepUtilsService.getPreviousStep(state.playground.recipe, step)
+                        .transformation
+                        .stepId
                 };
                 return TransformationService.initDynamicParameters(step.transformation, infos)
-                    .then(function () {
-                        return TransformationService.initParamsValues(step.transformation, step.actionParameters.parameters);
+                    .then(() => {
+                        return ParametersService.initParamsValues(step.transformation, step.actionParameters.parameters);
                     });
             }
-        };
+        }
 
         return _.chain(recipes.new)
             .filter(function (step) {
@@ -366,10 +118,13 @@ export default function RecipeService(state, PreparationService, TransformationS
             },
             actionParameters: actionValues,
             diff: diff,
-            filters: FilterAdapterService.fromTree(actionValues.parameters.filter)
+            filters: FilterAdapterService.fromTree(
+                actionValues.parameters.filter,
+                state.playground.data.metadata.columns
+            )
         };
 
-        TransformationService.initParamsValues(item.transformation, actionValues.parameters);
+        ParametersService.initParamsValues(item.transformation, actionValues.parameters);
 
         return item;
     }
@@ -381,19 +136,21 @@ export default function RecipeService(state, PreparationService, TransformationS
      * @description Refresh recipe items with current preparation steps
      */
     function refresh(details) {
-        recipeStateBeforePreview = null;
         //steps ids are in reverse order and the last is the 'no-transformation' id
-        var steps = details.steps.slice(0);
-        var initialStepId = steps.shift();
-        initialState = { transformation: { stepId: initialStepId } };
+        const steps = details.steps.slice(0);
+        const initialStepId = steps.shift();
+        const initialStep = { transformation: { stepId: initialStepId } };
 
-        var oldRecipe = recipe;
-        var newRecipe = _.chain(steps)
+        const oldRecipeSteps = state.playground.recipe.current.steps;
+        const newRecipeSteps = _.chain(steps)
             .zip(details.actions, details.metadata, details.diff)
             .map(createItem)
             .value();
-        activeThresholdStep = null;
-        recipe = newRecipe;
+        StateService.setRecipeSteps(initialStep, newRecipeSteps);
+        initDynamicParams({
+            old: oldRecipeSteps,
+            new: newRecipeSteps
+        });
 
         //TODO : Move this in a recipe-bullet-directive
         //remove "single-maillon-cables-disabled" class of bullet cables when refreshing recipe
@@ -404,35 +161,7 @@ export default function RecipeService(state, PreparationService, TransformationS
             cable.setAttribute('class', '');
         });
 
-        initDynamicParams({
-            old: oldRecipe,
-            new: newRecipe
-        });
-
         return details;
-    }
-
-    /**
-     * @ngdoc method
-     * @name disableStepsAfter
-     * @methodOf data-prep.services.recipe.service:RecipeService
-     * @param {object} step The limit between active and inactive
-     * @description Disable all steps after the given one
-     */
-    function disableStepsAfter(step) {
-        var stepFound = step === initialState;
-        _.forEach(recipe, function (nextStep) {
-            if (stepFound) {
-                nextStep.inactive = true;
-            }
-            else {
-                nextStep.inactive = false;
-                if (nextStep === step) {
-                    stepFound = true;
-                }
-            }
-        });
-        activeThresholdStep = step;
     }
 
     //--------------------------------------------------------------------------------------------------------------
@@ -447,18 +176,12 @@ export default function RecipeService(state, PreparationService, TransformationS
      * @description Add a preview step in the recipe. The state before preview is saved to be able to revert.
      */
     function earlyPreview(transformation, params) {
-        //save state if not already in preview mode
-        recipeStateBeforePreview = recipeStateBeforePreview || {
-            recipe: recipe,
-            lastActiveStep: activeThresholdStep
-        };
-
-        var stepFilters = state.playground.filter.applyTransformationOnFilters ?
+        const stepFilters = state.playground.filter.applyTransformationOnFilters ?
             state.playground.filter.gridFilters.slice(0) :
             [];
 
         //create the preview step
-        var previewStep = {
+        const previewStep = {
             column: {
                 id: params.column_id,
                 name: params.column_name
@@ -481,12 +204,14 @@ export default function RecipeService(state, PreparationService, TransformationS
             preview: true,
             filters: stepFilters
         };
-        TransformationService.initParamsValues(previewStep.transformation, params);
+        ParametersService.initParamsValues(previewStep.transformation, params);
 
         //set the new state : add the step and enable all steps
-        recipe = recipeStateBeforePreview.recipe.slice(0);
-        recipe.push(previewStep);
-        disableStepsAfter(previewStep);
+        const previewSteps = state.playground.recipe.beforePreview ?
+            state.playground.recipe.beforePreview.steps.slice(0) :
+            state.playground.recipe.current.steps.slice(0);
+        previewSteps.push(previewStep);
+        StateService.setRecipePreviewSteps(previewSteps);
     }
 
     /**
@@ -496,12 +221,6 @@ export default function RecipeService(state, PreparationService, TransformationS
      * @description Set back the state before preview and reset preview state
      */
     function cancelEarlyPreview() {
-        if (!recipeStateBeforePreview) {
-            return;
-        }
-
-        recipe = recipeStateBeforePreview.recipe;
-        disableStepsAfter(recipeStateBeforePreview.lastActiveStep);
-        recipeStateBeforePreview = null;
+        StateService.restoreRecipeBeforePreview();
     }
 }

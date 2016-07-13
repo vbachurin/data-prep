@@ -24,13 +24,11 @@
  *     </li>
  * </ul>
  * @requires data-prep.datagrid.service:DatagridStyleService
- * @requires data-prep.services.playground.service:DatagridService
+ * @requires data-prep.services.playground.service:PlaygroundService
  * @requires data-prep.services.utils.service:ConverterService
- * @requires data-prep.services.transformation.service:TransformationApplicationService
  */
 export default function DatagridColumnService($rootScope, $compile, $log, $translate,
-                                              DatagridStyleService, ConverterService,
-                                              TransformationApplicationService, PlaygroundService) {
+                                              PlaygroundService, DatagridStyleService, ConverterService) {
     'ngInject';
 
     let grid;
@@ -97,7 +95,7 @@ export default function DatagridColumnService($rootScope, $compile, $log, $trans
             editor: preview ?
                 null :
                 Slick.Editors.TalendEditor( // eslint-disable-line new-cap
-                    TransformationApplicationService.editCell,
+                    PlaygroundService.editCell,
                     translatedMsg
                 ),
             preview: preview

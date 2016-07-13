@@ -11,6 +11,9 @@
 
   ============================================================================*/
 
+import d3 from 'd3';
+import d3Tip from 'd3-tip';
+
 /**
  * @ngdoc directive
  * @name talend.widget.directive:horizontalBarchart
@@ -89,7 +92,7 @@ export default function HorizontalBarchart($timeout) {
             //------------------------------------------------------------------------------------------------------
             //----------------------------------------------- Tooltip ----------------------------------------------
             //------------------------------------------------------------------------------------------------------
-            var tooltip = d3.tip()
+            var tooltip = d3Tip()
                 .attr('class', 'horizontal-barchart-cls d3-tip')
                 .offset([-10, 0])
                 .html(function (primaryDatum, index) {

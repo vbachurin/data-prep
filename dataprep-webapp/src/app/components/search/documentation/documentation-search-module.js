@@ -11,21 +11,25 @@
 
  ============================================================================*/
 
+import angular from 'angular';
+import SEARCH_BAR_MODULE from '../bar/search-bar-module';
+import SERVICES_DOCUMENTATION_MODULE from '../../../services/documentation/documentation-module';
+
 import DocumentationSearch from './documentation-search-component';
 
-(() => {
-    'use strict';
+const MODULE_NAME = 'data-prep.documentation-search';
 
-    /**
-     * @ngdoc object
-     * @name data-prep.data-prep.documentation-search
-     * @description This module contains the component to manage an documentation search
-     * @requires talend.widget
-     */
-    angular.module('data-prep.documentation-search',
-        [
-            'data-prep.search-bar',
-            'data-prep.services.documentation'
-        ])
-        .component('documentationSearch', DocumentationSearch);
-})();
+/**
+ * @ngdoc object
+ * @name data-prep.data-prep.documentation-search
+ * @description This module contains the component to manage an documentation search
+ * @requires talend.widget
+ */
+angular.module(MODULE_NAME,
+    [
+        SEARCH_BAR_MODULE,
+        SERVICES_DOCUMENTATION_MODULE,
+    ])
+    .component('documentationSearch', DocumentationSearch);
+
+export default MODULE_NAME;

@@ -25,7 +25,7 @@ describe('Button Switch directive', function () {
     ];
 
     beforeEach(angular.mock.module('talend.widget'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     afterEach(function () {
         scope.$destroy();

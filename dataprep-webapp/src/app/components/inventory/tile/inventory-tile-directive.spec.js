@@ -28,7 +28,7 @@ describe('Inventory Tile Component', () => {
     }));
 
     beforeEach(angular.mock.module('data-prep.inventory-tile'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(inject(($rootScope, $compile) => {
         scope = $rootScope.$new();

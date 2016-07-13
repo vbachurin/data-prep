@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './transformation-params.html';
+
 /**
  * @ngdoc directive
  * @name data-prep.transformation-form.directive:TransformParams
@@ -22,7 +24,7 @@
 export default function TransformParams() {
     return {
         restrict: 'E',
-        templateUrl: 'app/components/transformation/form/params/transformation-params.html',
+        templateUrl: template,
         scope: {
             parameters: '='
         },

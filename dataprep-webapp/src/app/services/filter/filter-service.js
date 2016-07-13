@@ -11,6 +11,8 @@
 
  ============================================================================*/
 
+import d3 from 'd3';
+
 const RANGE_SEPARATOR = ' .. ';
 const INTERVAL_SEPARATOR = ',';
 const VALUES_SEPARATOR = '|';
@@ -22,15 +24,13 @@ const CTRL_KEY_NAME = 'ctrl';
  * @name data-prep.services.filter.service:FilterService
  * @description Filter service. This service provide the entry point to datagrid filters
  * @requires data-prep.services.filter.service:FilterAdapterService
- * @requires data-prep.services.playground.service:DatagridService
  * @requires data-prep.services.state.service:StateService
  * @requires data-prep.services.statistics.service:StatisticsService
- * @requires data-prep.services.playground.service:DatagridService
  * @requires data-prep.services.utils.service:ConverterService
  * @requires data-prep.services.utils.service:TextFormatService
  * @requires data-prep.services.utils.service:DateService
  */
-export default function FilterService($timeout, state, StateService, FilterAdapterService, DatagridService, StatisticsService, ConverterService, TextFormatService, DateService) {
+export default function FilterService($timeout, state, StateService, FilterAdapterService, StatisticsService, ConverterService, TextFormatService, DateService) {
     'ngInject';
 
     var service = {
@@ -41,7 +41,6 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
         EMPTY_RECORDS_LABEL: FilterAdapterService.EMPTY_RECORDS_LABEL,
 
         //utils
-        getColumnsContaining: getColumnsContaining,
         getRangeLabelFor: getRangeLabelFor,
         getSplittedRangeLabelFor: getSplittedRangeLabelFor,
 
@@ -58,26 +57,6 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
     //--------------------------------------------------------------------------------------------------------------
     //---------------------------------------------------UTILS------------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------
-
-    /**
-     * @ngdoc method
-     * @name getColumnsContaining
-     * @methodOf data-prep.services.filter.service:FilterService
-     * @param {string} phrase To match. Wildcard (*) accepted
-     * @description Return the column with a cell that can match the phrase. It take into account a possible wildcard (*)
-     * @returns {Object[]} The columns id that contains a matching value (col.id & col.name)
-     */
-    function getColumnsContaining(phrase) {
-        if (!phrase) {
-            return [];
-        }
-
-        var regexp = new RegExp(TextFormatService.escapeRegexpExceptStar(phrase));
-        var canBeNumeric = !isNaN(phrase.replace(/\*/g, ''));
-        var canBeBoolean = 'true'.match(regexp) || 'false'.match(regexp);
-
-        return DatagridService.getColumnsContaining(regexp, canBeNumeric, canBeBoolean);
-    }
 
     /**
      * @ngdoc method
@@ -337,7 +316,7 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
      * @name createMatchFilterFn
      * @methodOf data-prep.services.filter.service:FilterService
      * @param {string} colId The column id
-     * @param {string} pattern The filter pattern
+     * @param {Array} patterns The filter patterns
      * @description Create a 'match' filter function
      * @returns {function} The predicate function
      */
@@ -348,7 +327,7 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
         const patternValues = patterns
             .map(patternValue => patternValue.value);
         const valueMatchPatternFns = (item) => patternValues
-            .map(pattern => StatisticsService.valueMatchPatternFn(pattern)(item))
+            .map(pattern => TextFormatService.valueMatchPatternFn(pattern)(item))
             .reduce((oldResult, newResult) => oldResult || newResult);
         return function () {
             return function (item) {
@@ -385,7 +364,7 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
      * @param {string} type The filter type (ex : contains)
      * @param {string} colId The column id
      * @param {string} colName The column name
-     * @param {string} args The filter arguments (ex for 'contains' type : {phrase: 'toto'})
+     * @param {object} args The filter arguments (ex for 'contains' type : {phrase: 'toto'})
      * @param {function} removeFilterFn An optional remove callback
      * @description Add a filter and update datagrid filters
      */

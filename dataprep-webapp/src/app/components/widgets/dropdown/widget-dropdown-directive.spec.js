@@ -11,14 +11,12 @@
 
   ============================================================================*/
 
-'use strict';
-
 describe('Dropdown directive', function () {
     var scope;
     var element;
 
     beforeEach(angular.mock.module('talend.widget'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     var clickDropdownToggle = function (elm) {
         elm = elm || element;

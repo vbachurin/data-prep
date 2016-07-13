@@ -11,6 +11,8 @@
 
  ============================================================================*/
 
+import DataViewMock from './../../../mocks/DataView.mock';
+
 describe('Datagrid directive', () => {
     'use strict';
 
@@ -42,7 +44,7 @@ describe('Datagrid directive', () => {
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(angular.mock.module('htmlTemplates'));
+
 
     beforeEach(inject(($rootScope, $compile, DatagridGridService, DatagridColumnService, DatagridSizeService, DatagridStyleService, DatagridExternalService, StateService) => {
         scope = $rootScope.$new();
@@ -106,7 +108,7 @@ describe('Datagrid directive', () => {
                 expect(DatagridGridService.initGrid).toHaveBeenCalledWith('#datagrid');
             }));
 
-            it('should init grid only once', inject((DatagridService, DatagridGridService) => {
+            it('should init grid only once', inject((DatagridGridService) => {
                 //given
                 expect(DatagridGridService.initGrid.calls.count()).toBe(1);
 

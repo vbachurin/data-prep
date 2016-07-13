@@ -11,29 +11,36 @@
 
  ============================================================================*/
 
+import angular from 'angular';
+import ngTranslate from 'angular-translate';
+import SEARCH_BAR_MODULE from '../bar/search-bar-module';
+import SERVICES_DOCUMENTATION_MODULE from '../../../services/documentation/documentation-module';
+import SERVICES_EASTER_EGG_MODULE from '../../../services/easter-eggs/easter-eggs-module';
+import SERVICES_INVENTORY_MODULE from '../../../services/inventory/inventory-module';
+import SERVICES_UTILS_MODULE from '../../../services/utils/utils-module';
+
 import InventorySearch from './inventory-search-component';
 
-(() => {
-    'use strict';
+const MODULE_NAME = 'data-prep.inventory-search';
 
-    /**
-     * @ngdoc object
-     * @name data-prep.data-prep.inventory-search
-     * @description This module contains the component to manage an inventory search
-     * @requires talend.widget
-     * @requires data-prep.services.documentation
-     * @requires data-prep.services.inventory
-     * @requires data-prep.services.utils
-     * @requires data-prep.services.easter-eggs
-     */
-    angular.module('data-prep.inventory-search',
-        [
-            'pascalprecht.translate',
-            'data-prep.search-bar',
-            'data-prep.services.documentation',
-            'data-prep.services.inventory',
-            'data-prep.services.utils',
-            'data-prep.services.easter-eggs'
-        ])
-        .component('inventorySearch', InventorySearch);
-})();
+/**
+ * @ngdoc object
+ * @name data-prep.data-prep.inventory-search
+ * @description This module contains the component to manage an inventory search
+ * @requires data-prep.services.documentation
+ * @requires data-prep.services.easter-eggs
+ * @requires data-prep.services.inventory
+ * @requires data-prep.services.utils
+ */
+angular.module(MODULE_NAME,
+    [
+        ngTranslate,
+        SEARCH_BAR_MODULE,
+        SERVICES_DOCUMENTATION_MODULE,
+        SERVICES_EASTER_EGG_MODULE,
+        SERVICES_INVENTORY_MODULE,
+        SERVICES_UTILS_MODULE,
+    ])
+    .component('inventorySearch', InventorySearch);
+
+export default MODULE_NAME;

@@ -1,89 +1,94 @@
 'use strict';
 
-var path = require('path');
-var conf = require('./gulp/conf');
-
-var argv = require('yargs').argv;
-var webpackConfig = require('./webpack.conf.test');
-
-var _ = require('lodash');
-var wiredep = require('wiredep');
-
-function listFiles() {
-    var wiredepOptions = _.extend({}, conf.wiredep, {
-        dependencies: true,
-        devDependencies: true
-    });
-
-    var patterns = wiredep(wiredepOptions).js
-        .concat([
-            path.join(conf.paths.src, '/app/**/*-module.js'),
-            path.join(conf.paths.src, '/app/**/' + (argv.folder ? argv.folder + '/**/' : '') + '*.spec.js'),
-            path.join(conf.paths.src, '/**/*.html'),
-            path.join(conf.paths.src, '/mocks/**/*.js')
-        ]);
-
-    var files = patterns.map(function (pattern) {
-        return {
-            pattern: pattern
-        };
-    });
-    files.push({
-        pattern: path.join(conf.paths.src, '/assets/**/*'),
-        included: false,
-        served: true,
-        watched: false
-    });
-    return files;
-}
+const argv = require('yargs').argv;
+const webpack = require('webpack');
 
 module.exports = function (config) {
+    config.set({
+        // base path used to resolve all patterns
+        basePath: '',
 
-    var configuration = {
-        files: listFiles(),
-
-        singleRun: !argv.auto,
-
-        autoWatch: !!argv.auto,
-
-        ngHtml2JsPreprocessor: {
-            stripPrefix: 'src/',
-            moduleName: 'htmlTemplates'
-        },
-
-        logLevel: config.LOG_WARN,
-
+        // frameworks to use
+        // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
         frameworks: ['jasmine'],
 
-        browsers: ['PhantomJS'],
-
-        plugins: [
-            'karma-chrome-launcher',
-            'karma-phantomjs-launcher',
-            'karma-coverage',
-            'karma-jasmine',
-            'karma-ng-html2js-preprocessor',
-            'karma-webpack'
+        // list of files/patterns to load in the browser
+        files: [
+            { pattern: './spec.bundle.js', watched: false },
         ],
+
+        // files to exclude
+        exclude: [],
+
+        // preprocess matching files before serving them to the browser
+        // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
+        preprocessors: {
+            './spec.bundle.js': ['webpack'],
+        },
+
+        webpack: {
+            devtool: 'inline-source-map',
+            module: {
+                preLoaders: [
+                    { test: /\.js$/, loader: 'isparta', exclude: [/node_modules/, /\.spec\.js$/] }
+                ],
+                loaders: [
+                    { test: /\.js$/, loaders: ['ng-annotate', 'babel'], exclude: /node_modules/ },
+                    { test: /\.(css|scss)$/, loaders: ['style', 'css', 'sass'] },
+                    { test: /\.(png|jpg|jpeg|gif)$/, loader: 'url-loader', query: { mimetype: 'image/png' } },
+                    { test: /\.html$/, loaders: ['ngtemplate', 'html']},
+                ],
+            },
+            plugins: [
+                new webpack.ProvidePlugin({
+                    $: 'jquery',
+                    jQuery: 'jquery',
+                    'window.jQuery': 'jquery',
+                })
+            ],
+            isparta: {
+                embedSource: true,
+                noAutoWrap: true,
+                babel: {
+                    presets: ['es2015']
+                }
+            }
+        },
+
+        webpackServer: {
+            noInfo: true // prevent console spamming when running in Karma!
+        },
+
+        // available reporters: https://npmjs.org/browse/keyword/karma-reporter
+        reporters: ['progress', 'coverage'],
+
+        // web server port
+        port: 9876,
+
+        // enable colors in the output
+        colors: true,
+
+        // level of logging
+        // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
+        logLevel: config.LOG_WARN,
+
+        // toggle whether to watch files and rerun tests upon incurring changes
+        autoWatch: !!argv.auto,
+
+        // start these browsers
+        // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
+        browsers: ['PhantomJS'],
 
         coverageReporter: {
             type: 'html',
             dir: 'coverage/'
         },
 
-        reporters: ['progress', 'coverage'],
-
-        preprocessors: {
-            'src/**/*.html': ['ng-html2js'],
-            'src/app/**/*.js': ['webpack']
-        },
-
-        webpack: webpackConfig,
+        // if true, Karma runs tests once and exits
+        singleRun: !argv.auto,
 
         proxies: {
-            '/assets/': path.join('/base/', conf.paths.src, '/assets/')
+            '/assets/': '/src/assets/',
         }
-    };
-
-    config.set(configuration);
+    });
 };

@@ -11,6 +11,9 @@
 
   ============================================================================*/
 
+import DataViewMock from '../../../../../mocks/DataView.mock';
+import SlickGridMock from '../../../../../mocks/SlickGrid.mock';
+
 describe('Lookup Datagrid style service', function () {
     'use strict';
 
@@ -39,7 +42,6 @@ describe('Lookup Datagrid style service', function () {
             { id: 'tdpId', field: 'tdpId', tdpColMetadata: { id: 'tdpId', name: '#' } }
         ];
 
-        /*global SlickGridMock:false */
         gridMock = new SlickGridMock();
         gridMock.initColumnsMock(gridColumns);
 

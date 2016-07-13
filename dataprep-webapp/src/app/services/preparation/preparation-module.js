@@ -11,28 +11,34 @@
 
  ============================================================================*/
 
+import angular from 'angular';
+import uiRouter from 'angular-ui-router';
+import SERVICES_FOLDER_MODULE from '../folder/folder-module';
+import SERVICES_STATE_MODULE from '../state/state-module';
+import SERVICES_UTILS_MODULE from '../utils/utils-module';
+
 import PreparationRestService from './rest/preparation-rest-service';
 import PreparationListService from './list/preparation-list-service';
 import PreparationService from './preparation-service';
 
-(() => {
-    'use strict';
+const MODULE_NAME = 'data-prep.services.preparation';
 
-    /**
-     * @ngdoc object
-     * @name data-prep.services.preparation
-     * @description This module contains the services to manipulate preparations
-     * @requires data-prep.services.preparation
-     * @requires data-prep.services.utils
-     */
-    angular.module('data-prep.services.preparation',
-        [
-            'ui.router',
-            'data-prep.services.folder',
-            'data-prep.services.state',
-            'data-prep.services.utils',
-        ])
-        .service('PreparationRestService', PreparationRestService)
-        .service('PreparationListService', PreparationListService)
-        .service('PreparationService', PreparationService);
-})();
+/**
+ * @ngdoc object
+ * @name data-prep.services.preparation
+ * @description This module contains the services to manipulate preparations
+ * @requires data-prep.services.preparation
+ * @requires data-prep.services.utils
+ */
+angular.module(MODULE_NAME,
+    [
+        uiRouter,
+        SERVICES_FOLDER_MODULE,
+        SERVICES_STATE_MODULE,
+        SERVICES_UTILS_MODULE,
+    ])
+    .service('PreparationRestService', PreparationRestService)
+    .service('PreparationListService', PreparationListService)
+    .service('PreparationService', PreparationService);
+
+export default MODULE_NAME;

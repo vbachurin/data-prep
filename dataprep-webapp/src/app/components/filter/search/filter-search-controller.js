@@ -16,7 +16,7 @@
  * @name data-prep.filter-search.controller:FilterSearchCtrl
  * @description Filter search controller.
  */
-export default function FilterSearchCtrl(FilterService) {
+export default function FilterSearchCtrl(FilterService, DatagridService) {
     'ngInject';
 
     const vm = this;
@@ -50,7 +50,7 @@ export default function FilterSearchCtrl(FilterService) {
      */
     function filterSuggestion(term) {
         const cleanTerm = term.toLowerCase().trim();
-        const colContainingTerm = FilterService.getColumnsContaining(cleanTerm);
+        const colContainingTerm = DatagridService.getColumnsContaining(cleanTerm);
 
         return _.chain(colContainingTerm)
             .sortBy((col) => col.name.toLowerCase())

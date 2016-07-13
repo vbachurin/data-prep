@@ -11,12 +11,14 @@
 
   ============================================================================*/
 
+import template from './filter-bar.html';
+
 export default function FilterBar(state, FilterService) {
     'ngInject';
 
     return {
         restrict: 'E',
-        templateUrl: 'app/components/filter/bar/filter-bar.html',
+        templateUrl: template,
         scope: {},
         bindToController: true,
         controller: function () {

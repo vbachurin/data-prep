@@ -21,7 +21,7 @@ describe('Import directive', () => {
     var StateMock;
 
     beforeEach(angular.mock.module('data-prep.import'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(angular.mock.module('data-prep.import', ($provide) => {
         StateMock = {

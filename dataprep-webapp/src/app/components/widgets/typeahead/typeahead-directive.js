@@ -13,6 +13,8 @@
 
 import TypeaheadCtrl from './typeahead-controller';
 
+import template from './typeahead.html';
+
 /**
  * @ngdoc directive
  * @name talend.widget.directive:Typeahead
@@ -28,7 +30,7 @@ export default function Typeahead($timeout, $window) {
     return {
         restrict: 'E',
         transclude: true,
-        templateUrl: 'app/components/widgets/typeahead/typeahead.html',
+        templateUrl: template,
         scope: {
             search: '&',
             placeholder: '@',

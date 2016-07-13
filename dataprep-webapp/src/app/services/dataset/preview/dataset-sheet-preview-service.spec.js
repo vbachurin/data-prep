@@ -11,6 +11,8 @@
 
  ============================================================================*/
 
+import SlickGridMock from '../../../../mocks/SlickGrid.mock';
+
 describe('Dataset Sheet Preview Service', function () {
     'use strict';
 

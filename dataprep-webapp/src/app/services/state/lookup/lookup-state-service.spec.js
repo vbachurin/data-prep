@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import DataViewMock from '../../../../mocks/DataView.mock';
+
 describe('Lookup state service', function () {
     'use strict';
 

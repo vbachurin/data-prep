@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './dataset-upload-list.html';
+
 /**
  * @ngdoc directive
  * @name data-prep.dataset-upload-list.directive:DatasetUploadList
@@ -22,7 +24,7 @@
  */
 export default function DatasetUploadList() {
     return {
-        templateUrl: 'app/components/dataset/upload-list/dataset-upload-list.html',
+        templateUrl: template,
         restrict: 'E',
         scope: {
             datasets: '='

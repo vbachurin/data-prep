@@ -31,8 +31,8 @@
     <div class="folder-icon"
          ng-click="$ctrl.onSelect()"
          ng-switch="!!$ctrl.isOpened">
-        <img class="icon-img" ng-switch-when="true" src="assets/images/folder/folder_open_small-icon.png"/>
-        <img class="icon-img" ng-switch-when="false" src="assets/images/folder/folder_close_small-icon.png"/>
+        <img class="icon-img" ng-switch-when="true" ng-src="assets/images/folder/folder_open_small-icon.png"/>
+        <img class="icon-img" ng-switch-when="false" ng-src="assets/images/folder/folder_close_small-icon.png"/>
     </div>
 
     <div class="folder-name" ng-click="$ctrl.onSelect()">{{$ctrl.name}} <span ng-if="$ctrl.path"

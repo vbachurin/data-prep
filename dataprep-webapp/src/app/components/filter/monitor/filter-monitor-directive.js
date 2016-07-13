@@ -11,10 +11,12 @@
 
   ============================================================================*/
 
+import template from './filter-monitor.html';
+
 export default function FilterMonitor() {
     return {
         restrict: 'E',
-        templateUrl: 'app/components/filter/monitor/filter-monitor.html',
+        templateUrl: template,
         scope: {
             filters: '=',
             onToogle: '&',

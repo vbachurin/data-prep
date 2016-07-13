@@ -19,11 +19,10 @@
  * @requires data-prep.services.state.service:StateService
  * @requires data-prep.services.transformations.service:TransformationRestService
  * @requires data-prep.services.datasets.service:DatasetRestService
- * @requires data-prep.services.recipe.service:RecipeService
  * @requires data-prep.services.utils.service:StorageService
  */
 export default class LookupService {
-    constructor($q, state, StateService, TransformationRestService, DatasetRestService, RecipeService, StorageService) {
+    constructor($q, state, StateService, TransformationRestService, DatasetRestService, StorageService) {
         'ngInject';
 
         this.$q = $q;
@@ -31,7 +30,6 @@ export default class LookupService {
         this.StateService = StateService;
         this.TransformationRestService = TransformationRestService;
         this.DatasetRestService = DatasetRestService;
-        this.RecipeService = RecipeService;
         this.StorageService = StorageService;
 
         this.loadFromAction = this.loadFromAction.bind(this);
@@ -179,7 +177,7 @@ export default class LookupService {
      */
     disableDatasetsUsedInRecipe() {
         _.forEach(this.state.playground.lookup.datasets, (dataset) => {
-            const lookupStep = _.find(this.RecipeService.getRecipe(), (nextStep) => {
+            const lookupStep = _.find(this.state.playground.recipe.current.steps, (nextStep) => {
                 return nextStep.actionParameters.action === 'lookup' &&
                     dataset.id === nextStep.actionParameters.parameters.lookup_ds_id;
             });
@@ -269,7 +267,7 @@ export default class LookupService {
     _getSelectedColumnLastLookup() {
         const selectedColumn = this.state.playground.grid.selectedColumn;
         return selectedColumn &&
-            _.findLast(this.RecipeService.getRecipe(), (nextStep) => {
+            _.findLast(this.state.playground.recipe.current.steps, (nextStep) => {
                 return nextStep.column.id === selectedColumn.id && nextStep.transformation.name === 'lookup';
             });
     }
@@ -285,7 +283,7 @@ export default class LookupService {
         const datasetId = this._getDsId(lookupAction);
         const selectedColumn = this.state.playground.grid.selectedColumn;
         return selectedColumn &&
-            _.findLast(this.RecipeService.getRecipe(), (nextStep) => {
+            _.findLast(this.state.playground.recipe.current.steps, (nextStep) => {
                 return nextStep.column.id === selectedColumn.id &&
                     nextStep.transformation.name === 'lookup' &&
                     nextStep.actionParameters.parameters.lookup_ds_id === datasetId;
@@ -302,7 +300,7 @@ export default class LookupService {
         const addedDatasets = this.StorageService.getLookupDatasets();
 
         //Consolidate addedDatasets: if lookup datasets of a step are not save in localStorage, we add them
-        _.chain(this.RecipeService.getRecipe())
+        _.chain(this.state.playground.recipe.current.steps)
             .filter((step) => step.actionParameters.action === 'lookup')
             .forEach((step) => {
                 if (addedDatasets.indexOf(step.actionParameters.parameters.lookup_ds_id) === -1) {

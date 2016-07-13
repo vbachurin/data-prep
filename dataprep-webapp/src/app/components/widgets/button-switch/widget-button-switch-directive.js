@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './button-switch.html';
+
 /**
  * @ngdoc directive
  * @name talend.widget.directive:TalendButtonSwitch
@@ -31,7 +33,7 @@
 export default function TalendButtonSwitch() {
     return {
         restrict: 'E',
-        templateUrl: 'app/components/widgets/button-switch/button-switch.html',
+        templateUrl: template,
         scope: {
             currentValue: '=',
             displayKey: '@',

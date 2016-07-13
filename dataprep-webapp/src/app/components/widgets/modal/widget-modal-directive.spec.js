@@ -24,7 +24,7 @@ describe('Modal directive', function () {
     var createBeforeCloseElement;
 
     beforeEach(angular.mock.module('talend.widget'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     afterEach(function () {
         scope.$destroy();

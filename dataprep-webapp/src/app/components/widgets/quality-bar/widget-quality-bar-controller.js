@@ -15,9 +15,6 @@
  * @ngdoc controller
  * @name talend.widget.controller:QualityBarCtrl
  * @description Quality bar controller
- * @requires data-prep.services.filter.service:FilterService
- * @requires data-prep.services.transformation.service:ColumnSuggestionService
- * @requires data-prep.services.transformation.service:TransformationApplicationService
  */
 export default function QualityBarCtrl() {
     var MIN_QUALITY_WIDTH = 10;

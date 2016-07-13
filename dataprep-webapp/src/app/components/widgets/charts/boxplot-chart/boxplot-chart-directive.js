@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import d3 from 'd3';
+
 /**
  * @ngdoc directive
  * @name talend.widget.directive:boxplotChart

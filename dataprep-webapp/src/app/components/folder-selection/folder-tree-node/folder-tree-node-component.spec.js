@@ -17,7 +17,7 @@ describe('Folder Tree Node Component', () => {
     let element;
 
     beforeEach(angular.mock.module('data-prep.folder-selection'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
     beforeEach(angular.mock.module('pascalprecht.translate', ($translateProvider) => {
         $translateProvider.translations('en', {
             "FOLDER_PATH": "(Path: {{path}})"

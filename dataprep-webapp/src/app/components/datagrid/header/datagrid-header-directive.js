@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './datagrid-header.html';
+
 /**
  * @ngdoc directive
  * @name data-prep.datagrid-header.directive:DatagridHeader
@@ -32,7 +34,7 @@ export default function DatagridHeader($timeout) {
 
     return {
         restrict: 'E',
-        templateUrl: 'app/components/datagrid/header/datagrid-header.html',
+        templateUrl: template,
         scope: {
             column: '='
         },

@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './dataset-xls-preview.html';
+
 /**
  * @ngdoc directive
  * @name data-prep.dataset-preview.directive:Preview
@@ -23,7 +25,7 @@ export default function DatasetXlsPreview($timeout) {
 
     return {
         restrict: 'E',
-        templateUrl: 'app/components/dataset/preview/dataset-xls-preview.html',
+        templateUrl: template,
         bindToController: true,
         controllerAs: 'previewCtrl',
         controller: 'DatasetXlsPreviewCtrl',

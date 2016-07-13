@@ -11,24 +11,33 @@
 
  ============================================================================*/
 
+import angular from 'angular';
+import SERVICES_PLAYGROUND_MODULE from '../../../services/playground/playground-module';
+import SERVICES_RECIPE_MODULE from '../../../services/recipe/recipe-module';
+import SERVICES_STATE_MODULE from '../../../services/state/state-module';
+import SERVICES_UTILS_MODULE from '../../../services/utils/utils-module';
+
 import RecipeBulletCtrl from './recipe-bullet-controller';
 import RecipeBullet from './recipe-bullet-directive';
 
-(() => {
-    'use strict';
+const MODULE_NAME = 'data-prep.recipe-bullet';
 
-    /**
-     * @ngdoc object
-     * @name data-prep.recipe-bullet
-     * @description This module contains the controller and directives to manage the recipe bullets
-     * @requires data-prep.services.recipe
-     * @requires data-prep.services.playground
-     */
-    angular.module('data-prep.recipe-bullet',
-        [
-            'data-prep.services.recipe',
-            'data-prep.services.playground',
-        ])
-        .controller('RecipeBulletCtrl', RecipeBulletCtrl)
-        .directive('recipeBullet', RecipeBullet);
-})();
+/**
+ * @ngdoc object
+ * @name data-prep.recipe-bullet
+ * @description This module contains the controller and directives to manage the recipe bullets
+ * @requires data-prep.services.recipe
+ * @requires data-prep.services.playground
+ * @requires data-prep.services.utils
+ */
+angular.module(MODULE_NAME,
+    [
+        SERVICES_PLAYGROUND_MODULE,
+        SERVICES_RECIPE_MODULE,
+        SERVICES_STATE_MODULE,
+        SERVICES_UTILS_MODULE,
+    ])
+    .controller('RecipeBulletCtrl', RecipeBulletCtrl)
+    .directive('recipeBullet', RecipeBullet);
+
+export default MODULE_NAME;

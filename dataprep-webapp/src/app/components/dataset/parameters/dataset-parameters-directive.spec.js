@@ -34,7 +34,7 @@ describe('Dataset parameters directive', function() {
 
 
     beforeEach(angular.mock.module('data-prep.dataset-parameters'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(inject(function($rootScope, $compile) {
         scope = $rootScope.$new();

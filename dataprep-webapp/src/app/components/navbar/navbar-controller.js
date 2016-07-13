@@ -31,7 +31,7 @@ export default function NavbarCtrl($timeout, $state, state, version, copyRights,
     //--------------------------------------------------------------------------------------------------------------
     //-------------------------------------------ONBOARDING---------------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------
-    this.startTour = OnboardingService.startTour;
+    this.startTour = (tourId) => OnboardingService.startTour(tourId);
     this.version = version;
     this.copyRights = copyRights;
 

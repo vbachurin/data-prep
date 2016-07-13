@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './history-control.html';
+
 /**
  * @ngdoc directive
  * @name data-prep.history-control.directive:HistoryControl
@@ -22,7 +24,7 @@ export default function HistoryControl($document, HistoryService) {
 
     return {
         restrict: 'E',
-        templateUrl: 'app/components/history-control/history-control.html',
+        templateUrl: template,
         controller: function () {
             this.service = HistoryService;
         },

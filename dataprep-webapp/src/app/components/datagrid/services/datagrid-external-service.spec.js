@@ -11,6 +11,8 @@
 
  ============================================================================*/
 
+import SlickGridMock from '../../../../mocks/SlickGrid.mock';
+
 describe('Datagrid external service', () => {
     'use strict';
 

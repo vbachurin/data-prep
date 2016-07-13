@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import SlickGridMock from './../../../../../mocks/SlickGrid.mock';
+
 describe('Lookup Datagrid column service', function () {
     'use strict';
 
@@ -26,7 +28,6 @@ describe('Lookup Datagrid column service', function () {
             { id: '0002', name: 'col2', type: 'string', domain: 'salary' }
         ];
 
-        /*global SlickGridMock:false */
         gridMock = new SlickGridMock();
     }));
 

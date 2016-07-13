@@ -11,6 +11,8 @@
 
  ============================================================================*/
 
+import template from './datagrid.html';
+
 /**
  * @ngdoc directive
  * @name data-prep.datagrid.directive:Datagrid
@@ -38,7 +40,7 @@ export default function Datagrid($timeout, state, DatagridGridService, DatagridC
 
     return {
         restrict: 'E',
-        templateUrl: 'app/components/datagrid/datagrid.html',
+        templateUrl: template,
         bindToController: true,
         controllerAs: 'datagridCtrl',
         controller: function () {

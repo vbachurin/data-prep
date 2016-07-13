@@ -40,7 +40,7 @@
                    ng-click="$ctrl.onLookup()"
                    ng-class="{pressed: $ctrl.lookupVisible}"
                    translate-once-title="LOOKUP_ICON_TOOLTIP">
-                    <img src="assets/images/header/lookup.png">
+                    <img ng-src="assets/images/header/lookup.png">
                 </a>
             </li>
             <li id="export-data" insertion-export><export></export></li>
@@ -83,7 +83,7 @@
     </div>
 
     <div id="preview" ng-if="$ctrl.preview">
-        <img src="assets/images/header/eye.svg" alt="preview-icon" height="24px"/>
+        <img ng-src="assets/images/header/eye.svg" alt="preview-icon" height="24px"/>
         <span class="preview-text">Preview</span>
     </div>
 </div>

@@ -11,6 +11,8 @@
 
  ============================================================================*/
 
+import template from './inventory-item.html';
+
 /**
  * @ngdoc component
  * @name data-prep.inventoryItem.component:InventoryItem
@@ -64,7 +66,7 @@
  *
  */
 const InventoryItemcomponent = {
-    templateUrl: 'app/components/inventory/item/inventory-item.html',
+    templateUrl: template,
     controller: 'InventoryItemCtrl',
     bindings: {
         copy: '=',

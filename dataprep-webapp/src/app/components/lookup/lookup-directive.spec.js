@@ -47,7 +47,7 @@ describe('Lookup directive', function () {
         $provide.constant('state', StateMock);
     }));
 
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(inject(function ($rootScope, $compile) {
         scope = $rootScope.$new();

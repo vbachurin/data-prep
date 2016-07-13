@@ -1,15 +1,15 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
 
 /**
  * @ngdoc controller
@@ -18,13 +18,14 @@
  * @requires data-prep.services.state.constant:state
  * @requires data-prep.services.state.service:StateService
  * @requires data-prep.services.lookup.service:LookupService
- * @requires data-prep.services.playground.service:EarlyPreviewService
- * @requires data-prep.services.transformation.service:TransformationApplicationService
  * @requires data-prep.services.playground.service:PlaygroundService
+ * @requires data-prep.services.early-preview.service:EarlyPreviewService
+ * @requires data-prep.services.preview.service:PreviewService
  * @requires data-prep.services.utils.service:StorageService
  */
-export default function LookupCtrl($timeout, state, StateService, LookupService, EarlyPreviewService,
-    TransformationApplicationService, PlaygroundService, StorageService) {
+export default function LookupCtrl($timeout, state, StateService,
+                                   LookupService, PlaygroundService,
+                                   EarlyPreviewService, PreviewService, StorageService) {
     'ngInject';
 
     var vm = this;
@@ -67,7 +68,7 @@ export default function LookupCtrl($timeout, state, StateService, LookupService,
      */
     vm.hoverSubmitBtn = function hoverSubmitBtn() {
         if (state.playground.lookup.step) {
-            PlaygroundService.updatePreview(state.playground.lookup.step, getParams());
+            PreviewService.updatePreview(state.playground.lookup.step, getParams());
         }
         else {
             var previewClosure = EarlyPreviewService.earlyPreview(state.playground.lookup.dataset, 'dataset');
@@ -134,7 +135,7 @@ export default function LookupCtrl($timeout, state, StateService, LookupService,
             promise = PlaygroundService.updateStep(lookupStep, getParams());
         }
         else {
-            promise = TransformationApplicationService.append(state.playground.lookup.dataset, 'dataset', getParams());
+            promise = PlaygroundService.completeParamsAndAppend(state.playground.lookup.dataset, 'dataset', getParams());
         }
 
         promise.then(StateService.setLookupVisibility.bind(null, false))

@@ -1,17 +1,20 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
 
-describe('Datagrid tooltip service', function() {
+import DataViewMock from '../../../../mocks/DataView.mock';
+import SlickGridMock from '../../../../mocks/SlickGrid.mock';
+
+describe('Datagrid tooltip service', function () {
     'use strict';
 
     var gridMock;
@@ -20,13 +23,13 @@ describe('Datagrid tooltip service', function() {
 
     //invisible ruler mock
     var RulerMock = {
-        text: function(savedText) {
+        text: function (savedText) {
             this.savedText = savedText;
         },
-        width: function() {
+        width: function () {
             return this.savedText.length * 4;
         },
-        height: function() {
+        height: function () {
             return ((this.savedText.match(new RegExp('\n', 'g')) || []).length + 1) * 20; //eslint-disable-line no-control-regex
         }
     };
@@ -53,15 +56,18 @@ describe('Datagrid tooltip service', function() {
 
     beforeEach(angular.mock.module('data-prep.datagrid', function ($provide) {
         dataViewMock = new DataViewMock();
-        stateMock = { playground: { grid: {
+        stateMock = {
+            playground: {
+                grid: {
                     dataView: dataViewMock
-        } } };
+                }
+            }
+        };
 
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(inject(function(DatagridTooltipService) {
-        /*global SlickGridMock:false */
+    beforeEach(inject(function (DatagridTooltipService) {
         gridMock = new SlickGridMock();
 
         gridMock.initColumnsMock(columns);
@@ -80,20 +86,20 @@ describe('Datagrid tooltip service', function() {
         jasmine.clock().uninstall();
     });
 
-    describe('on creation', function() {
-        it('should hide tooltip', inject(function(DatagridTooltipService) {
+    describe('on creation', function () {
+        it('should hide tooltip', inject(function (DatagridTooltipService) {
             //then
             expect(DatagridTooltipService.showTooltip).toBe(false);
         }));
 
-        it('should create empty tooltip infos', inject(function(DatagridTooltipService) {
+        it('should create empty tooltip infos', inject(function (DatagridTooltipService) {
             //then
             expect(DatagridTooltipService.tooltip).toEqual({});
         }));
     });
 
-    describe('on initialization', function() {
-        it('should attach listeners to the grid', inject(function(DatagridTooltipService) {
+    describe('on initialization', function () {
+        it('should attach listeners to the grid', inject(function (DatagridTooltipService) {
             //when
             DatagridTooltipService.init(gridMock);
 
@@ -103,8 +109,8 @@ describe('Datagrid tooltip service', function() {
         }));
     });
 
-    describe('on mouse enter', function() {
-        it('should NOT show tooltip when no cell correspond to the event', inject(function($timeout, DatagridTooltipService) {
+    describe('on mouse enter', function () {
+        it('should NOT show tooltip when no cell correspond to the event', inject(function ($timeout, DatagridTooltipService) {
             //given
             DatagridTooltipService.init(gridMock);
             gridMock.initCellMock(null); //grid.getCellFromEvent returns falsy param
@@ -124,14 +130,14 @@ describe('Datagrid tooltip service', function() {
                 $timeout.flush();
                 throw Error('Should have thrown exception, because no timeout is waiting');
             }
-            //then
-            catch(error) {
+                //then
+            catch (error) {
                 expect(DatagridTooltipService.tooltip).toEqual({});
                 expect(DatagridTooltipService.showTooltip).toBeFalsy();
             }
         }));
 
-        it('should NOT show tooltip with content that fit in the box (column 0)', inject(function($timeout, DatagridTooltipService) {
+        it('should NOT show tooltip with content that fit in the box (column 0)', inject(function ($timeout, DatagridTooltipService) {
             //given
             DatagridTooltipService.init(gridMock);
 
@@ -155,14 +161,14 @@ describe('Datagrid tooltip service', function() {
                 $timeout.flush();
                 throw Error('Should have thrown exception, because no timeout is waiting');
             }
-            //then
-            catch(error) {
+                //then
+            catch (error) {
                 expect(DatagridTooltipService.tooltip).toEqual({});
                 expect(DatagridTooltipService.showTooltip).toBeFalsy();
             }
         }));
 
-        it('should show trailing spaces in the tooltip (column 1)', inject(function($timeout, DatagridTooltipService) {
+        it('should show trailing spaces in the tooltip (column 1)', inject(function ($timeout, DatagridTooltipService) {
             //given
             DatagridTooltipService.init(gridMock);
 
@@ -185,7 +191,7 @@ describe('Datagrid tooltip service', function() {
             expect(DatagridTooltipService.showTooltip).toBeTruthy();
         }));
 
-        it('should show tooltip after a 300ms delay with long line content (column 2)', inject(function($timeout, DatagridTooltipService) {
+        it('should show tooltip after a 300ms delay with long line content (column 2)', inject(function ($timeout, DatagridTooltipService) {
             //given
             DatagridTooltipService.init(gridMock);
 
@@ -214,7 +220,7 @@ describe('Datagrid tooltip service', function() {
             expect(DatagridTooltipService.showTooltip).toBeTruthy();
         }));
 
-        it('should show tooltip after a 300ms delay with multiple line content (column 3)', inject(function($timeout, DatagridTooltipService) {
+        it('should show tooltip after a 300ms delay with multiple line content (column 3)', inject(function ($timeout, DatagridTooltipService) {
             //given
             DatagridTooltipService.init(gridMock);
 
@@ -242,7 +248,7 @@ describe('Datagrid tooltip service', function() {
             expect(DatagridTooltipService.showTooltip).toBeTruthy();
         }));
 
-        it('should NOT show tooltip with empty content (column 4)', inject(function($timeout, DatagridTooltipService) {
+        it('should NOT show tooltip with empty content (column 4)', inject(function ($timeout, DatagridTooltipService) {
             //given
             DatagridTooltipService.init(gridMock);
 
@@ -266,14 +272,14 @@ describe('Datagrid tooltip service', function() {
                 $timeout.flush();
                 throw Error('Should have thrown exception, because no timeout is waiting');
             }
-            //then
-            catch(error) {
+                //then
+            catch (error) {
                 expect(DatagridTooltipService.tooltip).toEqual({});
                 expect(DatagridTooltipService.showTooltip).toBeFalsy();
             }
         }));
 
-        it('should show tooltip after a 300ms delay with column tdpId', inject(function($timeout, DatagridTooltipService) {
+        it('should show tooltip after a 300ms delay with column tdpId', inject(function ($timeout, DatagridTooltipService) {
             //given
             DatagridTooltipService.init(gridMock);
             var box = { left: 400, right: 500, top: 10, bottom: 40 }; //width: 100
@@ -302,8 +308,8 @@ describe('Datagrid tooltip service', function() {
         }));
     });
 
-    describe('on mouse leave', function() {
-        it('should hide tooltip after a 300ms delay', inject(function(DatagridTooltipService, $timeout) {
+    describe('on mouse leave', function () {
+        it('should hide tooltip after a 300ms delay', inject(function (DatagridTooltipService, $timeout) {
             //given
             DatagridTooltipService.init(gridMock);
             DatagridTooltipService.showTooltip = true;
@@ -322,7 +328,7 @@ describe('Datagrid tooltip service', function() {
             expect(DatagridTooltipService.showTooltip).toBe(false);
         }));
 
-        it('should cancel existing update promise', inject(function(DatagridTooltipService, $timeout) {
+        it('should cancel existing update promise', inject(function (DatagridTooltipService, $timeout) {
             //given
             DatagridTooltipService.init(gridMock);
 
@@ -342,13 +348,13 @@ describe('Datagrid tooltip service', function() {
             //when : tooltip hide
             var mouseLeaveHandler = gridMock.onMouseLeave.subscribe.calls.argsFor(0)[0];
             mouseLeaveHandler();
-            try{
+            try {
                 $timeout.flush();
                 throw Error('Should have thrown exception, because no timeout is waiting');
             }
 
-            //then
-            catch(error) {
+                //then
+            catch (error) {
                 expect(DatagridTooltipService.tooltip).toEqual({});
                 expect(DatagridTooltipService.showTooltip).toBeFalsy();
             }

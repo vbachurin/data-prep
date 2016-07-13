@@ -13,6 +13,7 @@
 
 import DatasetListCtrl from './dataset-list-controller';
 
+import template from './dataset-list.html';
 /**
  * @ngdoc component
  * @name data-prep.dataset-list.component:DatasetList
@@ -21,7 +22,7 @@ import DatasetListCtrl from './dataset-list-controller';
  * @restrict E
  */
 const DatasetListComponent = {
-    templateUrl: 'app/components/dataset/list/dataset-list.html',
+    templateUrl: template,
     controller: DatasetListCtrl,
 };
 

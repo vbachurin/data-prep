@@ -11,6 +11,9 @@
 
  ============================================================================*/
 
+import d3 from 'd3';
+import template from './range-slider.html';
+
 /**
  * Return the timestamp at midnight
  */
@@ -52,7 +55,7 @@ export default function RangeSlider($timeout) {
         controller: 'RangeSliderCtrl',
         controllerAs: 'rangeSliderCtrl',
         bindToController: true,
-        templateUrl: 'app/components/widgets/charts/range-slider/range-slider.html',
+        templateUrl: template,
 
         link: function (scope, element, attrs, ctrl) {
             let renderTimeout;

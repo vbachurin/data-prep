@@ -11,6 +11,9 @@
 
   ============================================================================*/
 
+import DataViewMock from '../../../../mocks/DataView.mock';
+import SlickGridMock from '../../../../mocks/SlickGrid.mock';
+
 describe('Datagrid grid service', function () {
     'use strict';
 

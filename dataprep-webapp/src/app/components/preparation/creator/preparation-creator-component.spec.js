@@ -18,7 +18,7 @@ describe('Datasets filters component', () => {
     let controller;
 
     beforeEach(angular.mock.module('data-prep.preparation-creator'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(angular.mock.module('pascalprecht.translate', ($translateProvider) => {
         $translateProvider.translations('en', {

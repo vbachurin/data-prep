@@ -74,7 +74,7 @@ describe('Transform menu controller', function () {
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(inject(function ($rootScope, $controller, $q, PlaygroundService, TransformationService) {
+    beforeEach(inject(function ($rootScope, $controller, $q, PlaygroundService, TransformationService, ParametersService) {
         scope = $rootScope.$new();
 
         createController = function () {
@@ -87,11 +87,11 @@ describe('Transform menu controller', function () {
         };
 
         spyOn(PlaygroundService, 'appendStep').and.returnValue($q.when(true));
-        spyOn(TransformationService, 'resetParamValue').and.returnValue();
+        spyOn(ParametersService, 'resetParamValue').and.returnValue();
         spyOn(TransformationService, 'initDynamicParameters').and.returnValue($q.when(true));
     }));
 
-    it('should reset parameters/choices on select if items has parameters/choices', inject(function (TransformationService) {
+    it('should reset parameters/choices on select if items has parameters/choices', inject((ParametersService) => {
         //given
         var ctrl = createController();
         var menu = {
@@ -100,14 +100,14 @@ describe('Transform menu controller', function () {
         };
         var scope = 'column';
 
-        expect(TransformationService.resetParamValue).not.toHaveBeenCalled();
+        expect(ParametersService.resetParamValue).not.toHaveBeenCalled();
 
         //when
         ctrl.select(menu, scope);
 
         //then
-        expect(TransformationService.resetParamValue).toHaveBeenCalledWith(menu.parameters);
-        expect(TransformationService.resetParamValue).toHaveBeenCalledWith(menu.items, 'CHOICE');
+        expect(ParametersService.resetParamValue).toHaveBeenCalledWith(menu.parameters);
+        expect(ParametersService.resetParamValue).toHaveBeenCalledWith(menu.items, 'CHOICE');
     }));
 
     it('should open modal on select if item has parameters', inject(function (PlaygroundService) {

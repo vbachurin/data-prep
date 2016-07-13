@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './navigation-list.html';
+
 /**
  * @ngdoc directive
  * @name data-prep.widget.directive:NavigationList
@@ -35,7 +37,7 @@ export default function NavigationList($timeout) {
 
     return {
         restrict: 'E',
-        templateUrl: 'app/components/widgets/navigation-list/navigation-list.html',
+        templateUrl: template,
         scope: {
             list: '=',
             selectedItem: '=',

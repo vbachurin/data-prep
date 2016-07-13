@@ -11,28 +11,34 @@
 
  ============================================================================*/
 
+import angular from 'angular';
+import uiRouter from 'angular-ui-router';
+import SERVICES_DATASET_MODULE from '../dataset/dataset-module';
+import SERVICES_STATE_MODULE from '../state/state-module';
+import SERVICES_UTILS_MODULE from '../utils/utils-module';
+
 import UploadWorkflowService from './upload-workflow-service';
 import UpdateWorkflowService from './update-workflow-service';
 
-(() => {
-    'use strict';
+const MODULE_NAME = 'data-prep.services.datasetWorkflowService';
 
-    /**
-     * @ngdoc object
-     * @name data-prep.services.dataset-workflow
-     * @description This module contains the services to manage the upload & update of datasets
-     * @requires ui.router
-     * @requires data-prep.services.dataset
-     * @requires data-prep.services.state
-     * @requires data-prep.services.utils
-     */
-    angular.module('data-prep.services.datasetWorkflowService',
-        [
-            'ui.router',
-            'data-prep.services.dataset',
-            'data-prep.services.state',
-            'data-prep.services.utils',
-        ])
-        .service('UploadWorkflowService', UploadWorkflowService)
-        .service('UpdateWorkflowService', UpdateWorkflowService);
-})();
+/**
+ * @ngdoc object
+ * @name data-prep.services.dataset-workflow
+ * @description This module contains the services to manage the upload & update of datasets
+ * @requires ui.router
+ * @requires data-prep.services.dataset
+ * @requires data-prep.services.state
+ * @requires data-prep.services.utils
+ */
+angular.module(MODULE_NAME,
+    [
+        uiRouter,
+        SERVICES_DATASET_MODULE,
+        SERVICES_STATE_MODULE,
+        SERVICES_UTILS_MODULE,
+    ])
+    .service('UploadWorkflowService', UploadWorkflowService)
+    .service('UpdateWorkflowService', UpdateWorkflowService);
+
+export default MODULE_NAME;

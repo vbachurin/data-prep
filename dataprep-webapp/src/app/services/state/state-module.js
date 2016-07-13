@@ -1,15 +1,17 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
+
+import angular from 'angular';
 
 import { datasetState, DatasetStateService } from './dataset/dataset-state-service';
 import { easterEggsState, EasterEggsStateService } from './easter-eggs/easter-eggs-state-service';
@@ -27,57 +29,57 @@ import { routeState, RouteStateService } from './route/route-state-service';
 import { importState, ImportStateService } from './import/import-state-service';
 import { state, StateService } from './state-service';
 
-(() => {
-    'use strict';
+const MODULE_NAME = 'data-prep.services.state';
 
-    /**
-     * @ngdoc object
-     * @name data-prep.services.state
-     * @description This module contains the service that hold the application state
-     */
-    angular.module('data-prep.services.state', [])
-        .service('DatasetStateService', DatasetStateService)
-        .constant('datasetState', datasetState)
+/**
+ * @ngdoc object
+ * @name data-prep.services.state
+ * @description This module contains the service that hold the application state
+ */
+angular.module(MODULE_NAME, [])
+    .service('DatasetStateService', DatasetStateService)
+    .constant('datasetState', datasetState)
 
-        .service('EasterEggsStateService', EasterEggsStateService)
-        .constant('easterEggsState', easterEggsState)
+    .service('EasterEggsStateService', EasterEggsStateService)
+    .constant('easterEggsState', easterEggsState)
 
-        .service('FeedbackStateService', FeedbackStateService)
-        .constant('feedbackState', feedbackState)
+    .service('FeedbackStateService', FeedbackStateService)
+    .constant('feedbackState', feedbackState)
 
-        .service('FilterStateService', FilterStateService)
-        .constant('filterState', filterState)
+    .service('FilterStateService', FilterStateService)
+    .constant('filterState', filterState)
 
-        .service('GridStateService', GridStateService)
-        .constant('gridState', gridState)
+    .service('GridStateService', GridStateService)
+    .constant('gridState', gridState)
 
-        .service('InventoryStateService', InventoryStateService)
-        .constant('inventoryState', inventoryState)
+    .service('InventoryStateService', InventoryStateService)
+    .constant('inventoryState', inventoryState)
 
-        .service('LookupStateService', LookupStateService)
-        .constant('lookupState', lookupState)
+    .service('LookupStateService', LookupStateService)
+    .constant('lookupState', lookupState)
 
-        .service('ParametersStateService', ParametersStateService)
-        .constant('parametersState', parametersState)
+    .service('ParametersStateService', ParametersStateService)
+    .constant('parametersState', parametersState)
 
-        .service('PlaygroundStateService', PlaygroundStateService)
-        .constant('playgroundState', playgroundState)
+    .service('PlaygroundStateService', PlaygroundStateService)
+    .constant('playgroundState', playgroundState)
 
-        .service('RecipeStateService', RecipeStateService)
-        .constant('recipeState', recipeState)
+    .service('RecipeStateService', RecipeStateService)
+    .constant('recipeState', recipeState)
 
-        .service('StatisticsStateService', StatisticsStateService)
-        .constant('statisticsState', statisticsState)
+    .service('StatisticsStateService', StatisticsStateService)
+    .constant('statisticsState', statisticsState)
 
-        .service('SuggestionsStateService', SuggestionsStateService)
-        .constant('suggestionsState', suggestionsState)
+    .service('SuggestionsStateService', SuggestionsStateService)
+    .constant('suggestionsState', suggestionsState)
 
-        .service('RouteStateService', RouteStateService)
-        .constant('routeState', routeState)
+    .service('RouteStateService', RouteStateService)
+    .constant('routeState', routeState)
 
-        .service('ImportStateService', ImportStateService)
-        .constant('importState', importState)
+    .service('ImportStateService', ImportStateService)
+    .constant('importState', importState)
 
-        .service('StateService', StateService)
-        .constant('state', state);
-})();
+    .service('StateService', StateService)
+    .constant('state', state);
+
+export default MODULE_NAME;

@@ -18,7 +18,7 @@ describe('Folder Tree Component', () => {
     let node;
 
     beforeEach(angular.mock.module('data-prep.folder-selection'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(inject(($rootScope, $compile) => {
         node = {

@@ -11,10 +11,12 @@
 
   ============================================================================*/
 
+import template from './navbar.html';
+
 export default function Navbar() {
     return {
         restrict: 'E',
-        templateUrl: 'app/components/navbar/navbar.html',
+        templateUrl: template,
         scope: {},
         bindToController: true,
         controller: 'NavbarCtrl',

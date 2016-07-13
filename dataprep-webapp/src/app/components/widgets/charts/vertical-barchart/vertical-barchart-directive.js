@@ -11,6 +11,9 @@
 
  ============================================================================*/
 
+import d3 from 'd3';
+import d3Tip from 'd3-tip';
+
 /**
  * @ngdoc directive
  * @name talend.widget.directive:verticalBarchart
@@ -90,7 +93,7 @@ export default function VerticalBarchart($timeout) {
             //------------------------------------------------------------------------------------------------------
             //----------------------------------------------- Tooltip ----------------------------------------------
             //------------------------------------------------------------------------------------------------------
-            var tooltip = d3.tip()
+            var tooltip = d3Tip()
                 .attr('class', 'vertical-barchart-cls d3-tip')
                 .offset([0, -11])
                 .direction('w')

@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './filter-search.html';
+
 /**
  * @ngdoc directive
  * @name data-prep.filter-search.directive:FilterSearch
@@ -21,7 +23,7 @@
 export default function FilterSearch() {
     return {
         restrict: 'E',
-        templateUrl: 'app/components/filter/search/filter-search.html',
+        templateUrl: template,
         scope: {},
         bindToController: true,
         controllerAs: 'filterCtrl',

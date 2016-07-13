@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './playground.html';
+
 /**
  * @ngdoc directive
  * @name data-prep.playground.directive:Playground
@@ -22,7 +24,7 @@ export default function Playground($timeout) {
 
     return {
         restrict: 'E',
-        templateUrl: 'app/components/playground/playground.html',
+        templateUrl: template,
         bindToController: true,
         controllerAs: 'playgroundCtrl',
         controller: 'PlaygroundCtrl',

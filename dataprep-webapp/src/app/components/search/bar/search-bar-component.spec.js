@@ -17,7 +17,7 @@ describe('Search bar component', () => {
     let element;
 
     beforeEach(angular.mock.module('data-prep.search-bar'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(inject(($rootScope, $compile) => {
         scope = $rootScope.$new();

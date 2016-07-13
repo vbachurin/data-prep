@@ -36,8 +36,8 @@ describe('Actions list controller', function () {
         };
     }));
 
-    beforeEach(inject(function ($q, TransformationApplicationService, TransformationService, EarlyPreviewService) {
-        spyOn(TransformationApplicationService, 'append').and.returnValue($q.when());
+    beforeEach(inject(function ($q, PlaygroundService, TransformationService, EarlyPreviewService) {
+        spyOn(PlaygroundService, 'completeParamsAndAppend').and.returnValue($q.when());
         spyOn(TransformationService, 'initDynamicParameters').and.returnValue($q.when());
         spyOn(EarlyPreviewService, 'activatePreview').and.returnValue();
         spyOn(EarlyPreviewService, 'deactivatePreview').and.returnValue();
@@ -74,7 +74,7 @@ describe('Actions list controller', function () {
     });
 
     describe('transform', function() {
-        it('should call appendStep function on transform closure execution', inject(function (TransformationApplicationService) {
+        it('should call appendStep function on transform closure execution', inject((PlaygroundService) => {
             //given
             var transformation = { name: 'tolowercase' };
             var params = { param: 'value' };
@@ -86,7 +86,7 @@ describe('Actions list controller', function () {
             closure(params);
 
             //then
-            expect(TransformationApplicationService.append).toHaveBeenCalledWith(transformation, 'column', params);
+            expect(PlaygroundService.completeParamsAndAppend).toHaveBeenCalledWith(transformation, 'column', params);
         }));
 
         it('should hide modal after step append', function () {
@@ -106,7 +106,7 @@ describe('Actions list controller', function () {
             expect(ctrl.showDynamicModal).toBe(false);
         });
 
-        it('should append new step on static transformation selection', inject(function (TransformationApplicationService) {
+        it('should append new step on static transformation selection', inject((PlaygroundService) => {
             //given
             var transformation = { name: 'tolowercase' };
             var ctrl = createController();
@@ -116,7 +116,7 @@ describe('Actions list controller', function () {
             ctrl.select(transformation);
 
             //then
-            expect(TransformationApplicationService.append).toHaveBeenCalledWith(transformation, 'column', undefined);
+            expect(PlaygroundService.completeParamsAndAppend).toHaveBeenCalledWith(transformation, 'column', undefined);
         }));
 
         it('should cancel pending preview and disable it', inject(function (EarlyPreviewService) {

@@ -23,7 +23,7 @@ describe('Transformation menu directive', function () {
     };
 
     beforeEach(angular.mock.module('data-prep.transformation-menu'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(inject(function ($q, $rootScope, $compile, ColumnTypesService) {
         spyOn(ColumnTypesService, 'getTypes').and.returnValue($q.when([]));

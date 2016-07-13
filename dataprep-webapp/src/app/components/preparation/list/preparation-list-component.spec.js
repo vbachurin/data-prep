@@ -108,7 +108,7 @@ describe('Preparation list component', () => {
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(inject(($q, $rootScope, $compile, StateService, FolderService) => {
         scope = $rootScope.$new();
@@ -171,7 +171,7 @@ describe('Preparation list component loading', () => {
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(inject(($q, $rootScope, $compile, StateService, FolderService) => {
         scope = $rootScope.$new();
@@ -239,7 +239,7 @@ describe('Preparation list component with no preparations', () => {
         $translateProvider.preferredLanguage('en');
     }));
 
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(inject(($q, $rootScope, $compile, StateService, FolderService) => {
         scope = $rootScope.$new();
