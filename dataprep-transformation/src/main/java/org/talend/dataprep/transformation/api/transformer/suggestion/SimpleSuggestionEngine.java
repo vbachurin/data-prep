@@ -32,13 +32,12 @@ import java.util.stream.Collectors;
 @Component
 public class SimpleSuggestionEngine implements SuggestionEngine {
 
-    /** Available rules. */
+    /**
+     * Available rules.
+     */
     @Autowired(required = false)
     private List<SuggestionEngineRule> rules = new ArrayList<>();
 
-    /**
-     * @see SuggestionEngine#score(Collection, ColumnMetadata)
-     */
     @Override
     public List<Suggestion> score(Collection<ActionMetadata> actions, ColumnMetadata column) {
         return actions.stream() //
@@ -47,20 +46,20 @@ public class SimpleSuggestionEngine implements SuggestionEngine {
                     SuggestionLevel suggestionScore = actionMetadata.getSuggestionScore(column);
                     if (suggestionScore == null) {
                         for (SuggestionEngineRule rule : rules) {
-                            score += rule.apply(actionMetadata, column);
+                            score += getSuggestionLevelScore(rule.apply(actionMetadata, column));
                         }
                     } else {
                         score = suggestionScore.getScore();
                     }
                     return new Suggestion(actionMetadata, score);
                 }) //
-                .sorted((s1, s2) -> Integer.compare(s2.getScore(), s1.getScore()))
-                .collect(Collectors.toList());
+                .sorted((s1, s2) -> Integer.compare(s2.getScore(), s1.getScore())).collect(Collectors.toList());
     }
 
-    /**
-     * @see SuggestionEngine#suggest(DataSet)
-     */
+    private static int getSuggestionLevelScore(SuggestionLevel level) {
+        return level == null ? 0 : level.getScore();
+    }
+
     @Override
     public List<ActionMetadata> suggest(DataSet dataSet) {
         // really simple implementation here :-)

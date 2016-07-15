@@ -39,6 +39,16 @@ public class TransformationFailureAction extends AbstractActionMetadata implemen
     }
 
     @Override
+    public String getLabel() {
+        return "Transformation failure test action label";
+    }
+
+    @Override
+    public String getDescription() {
+        return "Transformation failure test action description";
+    }
+
+    @Override
     public String getCategory() {
         return "TEST";
     }

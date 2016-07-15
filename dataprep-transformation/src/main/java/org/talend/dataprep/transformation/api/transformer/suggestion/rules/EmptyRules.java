@@ -20,8 +20,8 @@ import org.talend.dataprep.transformation.actions.delete.DeleteEmpty;
 import org.talend.dataprep.transformation.actions.fill.FillIfEmpty;
 import org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule;
 
-import static org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule.EMPTY_MGT;
-import static org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule.NEGATIVE;
+import static org.talend.dataprep.transformation.actions.common.SuggestionLevel.EMPTY_MGT;
+import static org.talend.dataprep.transformation.actions.common.SuggestionLevel.NEGATIVE;
 import static org.talend.dataprep.transformation.api.transformer.suggestion.rules.GenericRule.GenericRuleBuilder.forActions;
 
 @Component

@@ -23,6 +23,11 @@ public class DataprepBundle extends AbstractBundle {
         return INSTANCE.getMessage(key, params);
     }
 
+    public static String messageWithDefault(String key, Object[] params, String defaultValue) {
+        String message = DataprepBundle.message(key);
+        return key.equals(message) ? defaultValue : message;
+    }
+
     /**
      * Retrieve the singleton instance to use as bundle parent.
      */

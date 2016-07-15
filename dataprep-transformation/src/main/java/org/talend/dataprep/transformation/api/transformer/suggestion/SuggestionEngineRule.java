@@ -13,27 +13,12 @@
 
 package org.talend.dataprep.transformation.api.transformer.suggestion;
 
-import java.util.function.BiFunction;
-
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.transformation.actions.common.ActionMetadata;
+import org.talend.dataprep.transformation.actions.common.SuggestionLevel;
 
-public interface SuggestionEngineRule extends BiFunction<ActionMetadata, ColumnMetadata, Integer> {
+import java.util.function.BiFunction;
 
-    int HOP = 10;
-
-    int LOW = HOP;
-
-    int MEDIUM = HOP * 2;
-
-    int HIGH = HOP * 3;
-
-    int EMPTY_MGT = HOP * 4;
-
-    int INVALID_MGT = HOP * 5;
-
-    int NEGATIVE = -1 * HOP;
-
-    int NON_APPLICABLE = 0;
+public interface SuggestionEngineRule extends BiFunction<ActionMetadata, ColumnMetadata, SuggestionLevel> {
 
 }

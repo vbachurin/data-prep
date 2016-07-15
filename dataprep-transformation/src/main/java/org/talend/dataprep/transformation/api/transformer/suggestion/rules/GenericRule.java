@@ -13,12 +13,15 @@
 
 package org.talend.dataprep.transformation.api.transformer.suggestion.rules;
 
+import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.transformation.actions.common.ActionMetadata;
+import org.talend.dataprep.transformation.actions.common.SuggestionLevel;
+import org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule;
+
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.transformation.actions.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule;
+import static org.talend.dataprep.transformation.actions.common.SuggestionLevel.NON_APPLICABLE;
 
 public class GenericRule implements SuggestionEngineRule {
 
@@ -26,16 +29,16 @@ public class GenericRule implements SuggestionEngineRule {
 
     private final Predicate<ColumnMetadata> filter;
 
-    private final Function<ColumnMetadata, Integer> rule;
+    private final Function<ColumnMetadata, SuggestionLevel> rule;
 
-    private GenericRule(Predicate<ColumnMetadata> filter, Function<ColumnMetadata, Integer> rule, String... actionNames) {
+    private GenericRule(Predicate<ColumnMetadata> filter, Function<ColumnMetadata, SuggestionLevel> rule, String... actionNames) {
         this.filter = filter;
         this.rule = rule;
         this.actionNames = actionNames;
     }
 
     @Override
-    public Integer apply(ActionMetadata actionMetadata, ColumnMetadata columnMetadata) {
+    public SuggestionLevel apply(ActionMetadata actionMetadata, ColumnMetadata columnMetadata) {
         if (filter.test(columnMetadata)) {
             for (String actionName : actionNames) {
                 if (actionName.equals(actionMetadata.getName())) {
@@ -53,7 +56,7 @@ public class GenericRule implements SuggestionEngineRule {
 
         private Predicate<ColumnMetadata> filter = columnMetadata -> true;
 
-        private Function<ColumnMetadata, Integer> rule = columnMetadata -> SuggestionEngineRule.NON_APPLICABLE;
+        private Function<ColumnMetadata, SuggestionLevel> rule = columnMetadata -> NON_APPLICABLE;
 
         public GenericRuleBuilder(String... actionsNames) {
             this.actionsNames = actionsNames;
@@ -68,7 +71,7 @@ public class GenericRule implements SuggestionEngineRule {
             return this;
         }
 
-        public GenericRuleBuilder then(Function<ColumnMetadata, Integer> rule) {
+        public GenericRuleBuilder then(Function<ColumnMetadata, SuggestionLevel> rule) {
             this.rule = rule;
             return this;
         }

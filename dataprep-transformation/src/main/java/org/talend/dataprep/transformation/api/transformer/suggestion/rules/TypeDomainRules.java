@@ -28,8 +28,8 @@ import org.talend.dataquality.semantic.classifier.SemanticCategoryEnum;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule.HIGH;
-import static org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule.MEDIUM;
+import static org.talend.dataprep.transformation.actions.common.SuggestionLevel.HIGH;
+import static org.talend.dataprep.transformation.actions.common.SuggestionLevel.MEDIUM;
 import static org.talend.dataprep.transformation.api.transformer.suggestion.rules.ColumnPredicates.*;
 import static org.talend.dataprep.transformation.api.transformer.suggestion.rules.GenericRule.GenericRuleBuilder.forActions;
 

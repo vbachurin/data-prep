@@ -17,13 +17,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.statistics.PatternFrequency;
+import org.talend.dataprep.transformation.actions.common.SuggestionLevel;
 import org.talend.dataprep.transformation.actions.text.*;
 import org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule;
 
 import java.util.List;
 import java.util.StringTokenizer;
 
-import static org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule.*;
+import static org.talend.dataprep.transformation.actions.common.SuggestionLevel.*;
 import static org.talend.dataprep.transformation.api.transformer.suggestion.rules.ColumnPredicates.isString;
 import static org.talend.dataprep.transformation.api.transformer.suggestion.rules.GenericRule.GenericRuleBuilder.forActions;
 
@@ -113,7 +114,7 @@ public class StringRules {
      * @param columnMetadata the column metadata to analyze.
      * @return the score for case actions.
      */
-    private static Integer computeScoreForProperCaseAction(ColumnMetadata columnMetadata) {
+    private static SuggestionLevel computeScoreForProperCaseAction(ColumnMetadata columnMetadata) {
         final List<PatternFrequency> patterns = columnMetadata.getStatistics().getPatternFrequencies();
         for (PatternFrequency pattern : patterns) {
             final String patternAsString = pattern.getPattern();

@@ -13,11 +13,6 @@
 
 package org.talend.dataprep.transformation.api.transformer.suggestion.rules;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
-import static org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule.*;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -26,6 +21,11 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.actions.text.LowerCase;
 import org.talend.dataprep.transformation.actions.text.ProperCase;
 import org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
+import static org.talend.dataprep.transformation.actions.common.SuggestionLevel.*;
 
 public class LowerCaseRuleTest {
 

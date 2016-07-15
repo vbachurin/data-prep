@@ -21,7 +21,7 @@ import org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionE
 
 import java.util.List;
 
-import static org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule.*;
+import static org.talend.dataprep.transformation.actions.common.SuggestionLevel.*;
 import static org.talend.dataprep.transformation.api.transformer.suggestion.rules.ColumnPredicates.isNumeric;
 import static org.talend.dataprep.transformation.api.transformer.suggestion.rules.GenericRule.GenericRuleBuilder.forActions;
 

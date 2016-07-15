@@ -22,8 +22,8 @@ import org.talend.dataprep.transformation.actions.delete.DeleteInvalid;
 import org.talend.dataprep.transformation.actions.fill.FillInvalid;
 import org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule;
 
-import static org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule.INVALID_MGT;
-import static org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule.NEGATIVE;
+import static org.talend.dataprep.transformation.actions.common.SuggestionLevel.INVALID_MGT;
+import static org.talend.dataprep.transformation.actions.common.SuggestionLevel.NEGATIVE;
 import static org.talend.dataprep.transformation.api.transformer.suggestion.rules.GenericRule.GenericRuleBuilder.forActions;
 
 @Component

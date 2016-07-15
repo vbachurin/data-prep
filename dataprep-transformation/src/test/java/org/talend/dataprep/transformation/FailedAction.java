@@ -39,6 +39,16 @@ public class FailedAction extends AbstractActionMetadata implements ColumnAction
     }
 
     @Override
+    public String getLabel() {
+        return "Failed action label";
+    }
+
+    @Override
+    public String getDescription() {
+        return "Failed action description";
+    }
+
+    @Override
     public String getCategory() {
         return "TEST";
     }

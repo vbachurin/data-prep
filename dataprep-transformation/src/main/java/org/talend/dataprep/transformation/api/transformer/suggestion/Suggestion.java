@@ -42,9 +42,6 @@ public class Suggestion {
         this.score = score;
     }
 
-    /**
-     * @see Object#toString()
-     */
     @Override
     public String toString() {
         return "Suggestion{" + "action=" + action + ", score=" + score + '}';
