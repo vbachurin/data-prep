@@ -26,9 +26,9 @@ const DOUBLE_REGEXP = /^\-?\d+(\.\d+)?$/;
 export default function IsTypeValidation() {
     return {
         require: 'ngModel',
-        link: function (scope, elm, attrs, ctrl) {
+        link: (scope, elm, attrs, ctrl) => {
             var type = attrs.isType;
-            ctrl.$validators.isTypeValidation = function (modelValue, viewValue) {
+            ctrl.$validators.isTypeValidation = (modelValue, viewValue) => {
                 if (ctrl.$isEmpty(modelValue)) {
                     return true;
                 }

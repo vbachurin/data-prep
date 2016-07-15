@@ -14,7 +14,9 @@
 describe('Preparation list controller', () => {
     'use strict';
 
-    let createController, scope, stateMock;
+    let createController;
+    let scope;
+    let stateMock;
 
     beforeEach(angular.mock.module('data-prep.preparation-list', ($provide) => {
         stateMock = {
@@ -187,7 +189,6 @@ describe('Preparation list controller', () => {
     });
 
     describe('rename', () => {
-
         it('should call preparation service', inject((PreparationService) => {
             //given
             const ctrl = createController();

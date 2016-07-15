@@ -12,7 +12,7 @@
  ============================================================================*/
 
 export const gridState = {
-    dataView: new Slick.Data.DataView({inlineFilters: false}),
+    dataView: new Slick.Data.DataView({ inlineFilters: false }),
     numericColumns: [],
 };
 
@@ -111,7 +111,7 @@ export function GridStateService() {
         };
 
         gridState.dataView.beginUpdate();
-        gridState.dataView.setFilterArgs({filters: _.map(filters, 'filterFn')});
+        gridState.dataView.setFilterArgs({ filters: _.map(filters, 'filterFn') });
         gridState.dataView.setFilter(allFilterFn);
         gridState.dataView.endUpdate();
 
@@ -162,10 +162,10 @@ export function GridStateService() {
         }
 
         const hasSelectedLine = angular.isNumber(gridState.lineIndex);
-        if(!hasSelectedLine || gridState.selectedColumn) {
+        if (!hasSelectedLine || gridState.selectedColumn) {
             updateSelectedColumn(data);
         }
-        if(hasSelectedLine) {
+        if (hasSelectedLine) {
             updateSelectedLine();
         }
     }
@@ -180,7 +180,7 @@ export function GridStateService() {
     function updateSelectedColumn(data) {
         //if there is already a selected column, we update the column metadata to reference one of the new columns
         if (gridState.selectedColumn) {
-            gridState.selectedColumn = _.find(data.metadata.columns, {id: gridState.selectedColumn.id}) || data.metadata.columns[0];
+            gridState.selectedColumn = _.find(data.metadata.columns, { id: gridState.selectedColumn.id }) || data.metadata.columns[0];
         }
         //the first column is selected by default
         else {
@@ -225,7 +225,7 @@ export function GridStateService() {
      * @description Filter the columns list to have only numeric type ones
      */
     function updateNumericColumns(data) {
-        if(data.preview) {
+        if (data.preview) {
             return;
         }
 

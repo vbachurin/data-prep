@@ -14,7 +14,10 @@
 describe('Suggestions Profile directive', () => {
     'use strict';
 
-    let scope, createElement, element, stateMock;
+    let scope;
+    let createElement;
+    let element;
+    let stateMock;
 
     beforeEach(angular.mock.module('data-prep.suggestions-stats', ($provide) => {
         stateMock = {

@@ -29,5 +29,4 @@ export default function EasterEggsService(StateService) {
     this.enableEasterEgg = function enableEasterEgg(input) {
         StateService.enableEasterEgg(input);
     };
-
 }

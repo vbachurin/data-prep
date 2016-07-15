@@ -30,10 +30,10 @@ describe('Playground state service', function () {
         it('should init separators list', inject(function (parametersState) {
             //then
             expect(parametersState.configuration.separators).toEqual([
-                {label: ';', value: ';'},
-                {label: ',', value: ','},
-                {label: '<space>', value: ' '},
-                {label: '<tab>', value: '\t'}
+                { label: ';', value: ';' },
+                { label: ',', value: ',' },
+                { label: '<space>', value: ' ' },
+                { label: '<tab>', value: '\t' }
             ]);
         }));
     });
@@ -92,7 +92,7 @@ describe('Playground state service', function () {
     describe('update', function() {
         it('should update dataset separator', inject(function (parametersState, ParametersStateService) {
             //given
-            var dataset = {parameters: {SEPARATOR: ','}};
+            var dataset = { parameters: { SEPARATOR: ',' } };
             parametersState.values.separator = '\t';
 
             //when
@@ -104,7 +104,7 @@ describe('Playground state service', function () {
 
         it('should update dataset encoding', inject(function (parametersState, ParametersStateService) {
             //given
-            var dataset = {encoding: 'UTF-8', parameters: {}};
+            var dataset = { encoding: 'UTF-8', parameters: {} };
             parametersState.values.encoding = 'UTF-16';
 
             //when

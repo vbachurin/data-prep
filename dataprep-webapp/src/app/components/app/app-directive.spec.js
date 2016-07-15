@@ -14,7 +14,9 @@
 describe('App directive', function() {
     'use strict';
 
-    var scope, createElement, element;
+    var scope;
+    var createElement;
+    var element;
 
     beforeEach(angular.mock.module('data-prep.app'));
     beforeEach(angular.mock.module('htmlTemplates'));

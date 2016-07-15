@@ -12,46 +12,47 @@
   ============================================================================*/
 
 describe('Lookup Datagrid controller', function () {
-	'use strict';
+    'use strict';
 
-	var createController, scope;
+    var createController;
+    var scope;
 
-	beforeEach(angular.mock.module('data-prep.lookup'));
+    beforeEach(angular.mock.module('data-prep.lookup'));
 
-	beforeEach(inject(function($rootScope, $controller) {
-		scope = $rootScope.$new();
+    beforeEach(inject(function($rootScope, $controller) {
+        scope = $rootScope.$new();
 
-		createController = function () {
-			var ctrl = $controller('LookupDatagridCtrl', {
-				$scope: scope
-			});
-			return ctrl;
-		};
-	}));
+        createController = function () {
+            var ctrl = $controller('LookupDatagridCtrl', {
+                $scope: scope
+            });
+            return ctrl;
+        };
+    }));
 
-	it('should bind tooltip getter to LookupDatagridTooltipService', inject(function(LookupDatagridTooltipService) {
-		//given
-		var newTooltip = {colId: '0000'};
+    it('should bind tooltip getter to LookupDatagridTooltipService', inject(function(LookupDatagridTooltipService) {
+        //given
+        var newTooltip = { colId: '0000' };
 
-		var ctrl = createController();
-		expect(ctrl.tooltip).toEqual({});
+        var ctrl = createController();
+        expect(ctrl.tooltip).toEqual({});
 
-		//when
-		LookupDatagridTooltipService.tooltip = newTooltip;
+        //when
+        LookupDatagridTooltipService.tooltip = newTooltip;
 
-		//then
-		expect(ctrl.tooltip).toEqual(newTooltip);
-	}));
+        //then
+        expect(ctrl.tooltip).toEqual(newTooltip);
+    }));
 
-	it('should bind showTooltip getter to LookupDatagridTooltipService', inject(function(LookupDatagridTooltipService) {
-		//given
-		var ctrl = createController();
-		expect(ctrl.showTooltip).toEqual(false);
+    it('should bind showTooltip getter to LookupDatagridTooltipService', inject(function(LookupDatagridTooltipService) {
+        //given
+        var ctrl = createController();
+        expect(ctrl.showTooltip).toEqual(false);
 
-		//when
-		LookupDatagridTooltipService.showTooltip = true;
+        //when
+        LookupDatagridTooltipService.showTooltip = true;
 
-		//then
-		expect(ctrl.showTooltip).toEqual(true);
-	}));
+        //then
+        expect(ctrl.showTooltip).toEqual(true);
+    }));
 });

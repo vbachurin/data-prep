@@ -12,7 +12,10 @@
  ============================================================================*/
 
 describe('Datasets filters component', () => {
-    let scope, createElement, element, controller;
+    let scope;
+    let createElement;
+    let element;
+    let controller;
 
     beforeEach(angular.mock.module('data-prep.datasets-filters'));
 

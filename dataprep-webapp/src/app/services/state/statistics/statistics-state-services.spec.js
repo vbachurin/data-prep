@@ -19,7 +19,7 @@ describe('Statistics state service', function () {
     it('should set histogram', inject(function (statisticsState, StatisticsStateService) {
         //given
         expect(statisticsState.histogram).toBeFalsy();
-        var histogram = {data : []};
+        var histogram = { data : [] };
 
         //when
         StatisticsStateService.setHistogram(histogram);
@@ -31,7 +31,7 @@ describe('Statistics state service', function () {
     it('should set filtered histogram', inject(function (statisticsState, StatisticsStateService) {
         //given
         expect(statisticsState.filteredHistogram).toBeFalsy();
-        var filteredHistogram = {data : []};
+        var filteredHistogram = { data : [] };
 
         //when
         StatisticsStateService.setFilteredHistogram(filteredHistogram);
@@ -55,7 +55,7 @@ describe('Statistics state service', function () {
     it('should set patterns', inject(function (statisticsState, StatisticsStateService) {
         //given
         expect(statisticsState.patterns).toBeFalsy();
-        var patterns = {data : []};
+        var patterns = { data : [] };
 
         //when
         StatisticsStateService.setPatterns(patterns);
@@ -67,7 +67,7 @@ describe('Statistics state service', function () {
     it('should set filtered patterns', inject(function (statisticsState, StatisticsStateService) {
         //given
         expect(statisticsState.filteredPatterns).toBeFalsy();
-        var filteredPatterns = {data : []};
+        var filteredPatterns = { data : [] };
 
         //when
         StatisticsStateService.setFilteredPatterns(filteredPatterns);

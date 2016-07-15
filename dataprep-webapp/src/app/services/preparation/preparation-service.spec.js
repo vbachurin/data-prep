@@ -3,9 +3,9 @@ describe('Preparation Service', () => {
 
     let stateMock;
     const preparations = [
-        {id: '4385fa764bce39593a405d91bc88', dataSetId: '3214a5454ef8642c13'},
-        {id: '58444bce39593a405d9456'},
-        {id: '2545764bce39593a405d91bc8673'}
+        { id: '4385fa764bce39593a405d91bc88', dataSetId: '3214a5454ef8642c13' },
+        { id: '58444bce39593a405d9456' },
+        { id: '2545764bce39593a405d91bc8673' }
     ];
     const newPreparationId = '6cd546546548a745';
 
@@ -24,7 +24,7 @@ describe('Preparation Service', () => {
 
     beforeEach(inject(($q, PreparationListService, PreparationRestService, StorageService) => {
         spyOn(PreparationListService, 'refreshPreparations').and.returnValue($q.when(preparations));
-        spyOn(PreparationListService, 'create').and.returnValue($q.when({id: newPreparationId}));
+        spyOn(PreparationListService, 'create').and.returnValue($q.when({ id: newPreparationId }));
         spyOn(PreparationListService, 'update').and.returnValue($q.when({
             id: updatedPreparationId,
             dataSetId: updatedDatasetId
@@ -99,7 +99,6 @@ describe('Preparation Service', () => {
 
     describe('lifecycle', () => {
         describe('create', () => {
-
             beforeEach(inject((StateService) => {
                 spyOn(StateService, 'setPreviousRoute').and.returnValue();
             }));
@@ -114,7 +113,7 @@ describe('Preparation Service', () => {
                 PreparationService.create(datasetId, name, 'destinationFolder');
 
                 //then
-                expect(StateService.setPreviousRoute).toHaveBeenCalledWith('nav.index.preparations', {folderId: $stateParams.folderId});
+                expect(StateService.setPreviousRoute).toHaveBeenCalledWith('nav.index.preparations', { folderId: $stateParams.folderId });
             }));
 
             it('should create a new preparation', inject(($rootScope, PreparationService, PreparationListService) => {
@@ -203,7 +202,6 @@ describe('Preparation Service', () => {
         });
 
         describe('open', () => {
-
             beforeEach(inject(($state) => {
                 spyOn($state, 'href').and.returnValue('absoluetUrl');
             }));
@@ -224,8 +222,8 @@ describe('Preparation Service', () => {
                 PreparationService.open(preparation);
 
                 //then
-                expect($state.go).toHaveBeenCalledWith('playground.preparation', {prepid: preparation.id});
-                expect(StateService.setPreviousRoute).toHaveBeenCalledWith('nav.index.preparations', {folderId: 'test/'});
+                expect($state.go).toHaveBeenCalledWith('playground.preparation', { prepid: preparation.id });
+                expect(StateService.setPreviousRoute).toHaveBeenCalledWith('nav.index.preparations', { folderId: 'test/' });
             }));
 
             it('should open a preparation in a new tab on scroll click', inject(($stateParams, $rootScope, $state, $window, StateService, PreparationService) => {
@@ -247,7 +245,7 @@ describe('Preparation Service', () => {
 
                 //then
                 expect($state.go).not.toHaveBeenCalled();
-                expect($state.href).toHaveBeenCalledWith('playground.preparation', {prepid: preparation.id}, {absolute: true});
+                expect($state.href).toHaveBeenCalledWith('playground.preparation', { prepid: preparation.id }, { absolute: true });
                 expect($window.open).toHaveBeenCalledWith('absoluetUrl', '_blank');
             }));
 
@@ -271,7 +269,7 @@ describe('Preparation Service', () => {
 
                 //then
                 expect($state.go).not.toHaveBeenCalled();
-                expect($state.href).toHaveBeenCalledWith('playground.preparation', {prepid: preparation.id}, {absolute: true});
+                expect($state.href).toHaveBeenCalledWith('playground.preparation', { prepid: preparation.id }, { absolute: true });
                 expect($window.open).toHaveBeenCalledWith('absoluetUrl', '_blank');
             }));
 
@@ -295,7 +293,7 @@ describe('Preparation Service', () => {
 
                 //then
                 expect($state.go).not.toHaveBeenCalled();
-                expect($state.href).toHaveBeenCalledWith('playground.preparation', {prepid: preparation.id}, {absolute: true});
+                expect($state.href).toHaveBeenCalledWith('playground.preparation', { prepid: preparation.id }, { absolute: true });
                 expect($window.open).toHaveBeenCalledWith('absoluetUrl', '_blank');
             }));
         });
@@ -305,7 +303,7 @@ describe('Preparation Service', () => {
         describe('copyImplicitParameters', () => {
             it('should copy implicit parameters when they are in original params', inject((PreparationService) => {
                 //given
-                const newParams = {value: 'tata'};
+                const newParams = { value: 'tata' };
                 const oldParams = {
                     value: 'toto',
                     scope: 'cell',
@@ -329,14 +327,14 @@ describe('Preparation Service', () => {
 
             it('should NOT copy implicit parameters when they are NOT in original params', inject((PreparationService) => {
                 //given
-                const newParams = {value: 'tata'};
-                const oldParams = {value: 'toto', scope: 'cell'};
+                const newParams = { value: 'tata' };
+                const oldParams = { value: 'toto', scope: 'cell' };
 
                 //when
                 PreparationService.copyImplicitParameters(newParams, oldParams);
 
                 //then
-                expect(newParams).toEqual({value: 'tata', scope: 'cell'});
+                expect(newParams).toEqual({ value: 'tata', scope: 'cell' });
             }));
         });
 
@@ -349,10 +347,10 @@ describe('Preparation Service', () => {
                         name: 'firstname'
                     },
                     actionParameters: {
-                        parameters: {value: '--', column_name: 'firstname', column_id: '1'}
+                        parameters: { value: '--', column_name: 'firstname', column_id: '1' }
                     }
                 };
-                const newParams = {value: '.'};
+                const newParams = { value: '.' };
 
                 //when
                 const result = PreparationService.paramsHasChanged(step, newParams);
@@ -369,10 +367,10 @@ describe('Preparation Service', () => {
                         name: 'firstname'
                     },
                     actionParameters: {
-                        parameters: {value: '--', column_id: '1', column_name: 'firstname'}
+                        parameters: { value: '--', column_id: '1', column_name: 'firstname' }
                     }
                 };
-                const newParams = {value: '--', column_id: '1', column_name: 'firstname'};
+                const newParams = { value: '--', column_id: '1', column_name: 'firstname' };
 
                 //when
                 const result = PreparationService.paramsHasChanged(step, newParams);
@@ -391,9 +389,9 @@ describe('Preparation Service', () => {
                         stepId: '867654ab15edf576844c4',
                         name: 'deletematch'
                     },
-                    column: {id: '1', name: 'firstname'}
+                    column: { id: '1', name: 'firstname' }
                 };
-                const parameters = {value: 'Toto', column_name: 'firstname', column_id: '1', scope: 'column'};
+                const parameters = { value: 'Toto', column_name: 'firstname', column_id: '1', scope: 'column' };
 
                 //when
                 PreparationService.updateStep(preparationId, step, parameters);
@@ -405,7 +403,7 @@ describe('Preparation Service', () => {
                     '867654ab15edf576844c4',  //step id
                     {
                         action: 'deletematch', //step name
-                        parameters: {value: 'Toto', column_name: 'firstname', column_id: '1', scope: 'column'} //params
+                        parameters: { value: 'Toto', column_name: 'firstname', column_id: '1', scope: 'column' } //params
                     }
                 );
             }));

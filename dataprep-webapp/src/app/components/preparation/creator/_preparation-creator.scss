@@ -71,7 +71,7 @@
                 background-color: tint($pale-blue, 70%);
             }
             .inventory-text .inventory-title {
-                @include ellipsis(450px);
+                @include ellipsis(400px);
             }
         }
 

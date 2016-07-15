@@ -14,7 +14,9 @@
 describe('Filter list directive', function() {
     'use strict';
 
-    var scope, createElement, element;
+    var scope;
+    var createElement;
+    var element;
 
     var filters = [
         {

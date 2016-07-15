@@ -30,7 +30,6 @@ export const suggestionsState = {
 };
 
 export function SuggestionsStateService() {
-
     return {
         setColumnTransformations: setColumnTransformations,
         setLineTransformations: setLineTransformations,
@@ -51,12 +50,13 @@ export function SuggestionsStateService() {
     }
 
     function setColumnTransformations(columnTransformations) {
-        suggestionsState.column = columnTransformations || {
+        suggestionsState.column = columnTransformations ||
+            {
                 allSuggestions: [],
                 allTransformations: [],
                 filteredTransformations: [],
                 allCategories: null,
-                searchActionString: ''
+                searchActionString: '',
             };
     }
 

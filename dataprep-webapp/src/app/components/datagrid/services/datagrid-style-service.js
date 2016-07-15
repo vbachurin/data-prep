@@ -127,11 +127,11 @@ export default class DatagridStyleService {
                 'highlight' :
                 '';
 
-            //hidden characters need to be shown
+            // hidden characters need to be shown
             const returnStr = this.TextFormatService.adaptToGridConstraints(value) || ' ';
 
-            //entire row modification preview
-            switch (dataContext.__tdpRowDiff) {
+            // entire row modification preview
+            switch (dataContext.__tdpRowDiff) { // eslint-disable-line no-underscore-dangle
                 case 'delete':
                     classNames += ' cellDeletedValue';
                     break;
@@ -140,9 +140,9 @@ export default class DatagridStyleService {
                     break;
             }
 
-            //cell modification preview
-            if (dataContext.__tdpDiff && dataContext.__tdpDiff[columnDef.id]) {
-                switch (dataContext.__tdpDiff[columnDef.id]) {
+            // cell modification preview
+            if (dataContext.__tdpDiff && dataContext.__tdpDiff[columnDef.id]) { // eslint-disable-line no-underscore-dangle
+                switch (dataContext.__tdpDiff[columnDef.id]) { // eslint-disable-line no-underscore-dangle
                     case 'update':
                         classNames += ' cellUpdateValue';
                         break;
@@ -174,7 +174,7 @@ export default class DatagridStyleService {
      * @param {object} col The column metadata
      */
     getColumnPreviewStyle(col) {
-        switch (col.__tdpColumnDiff) {
+        switch (col.__tdpColumnDiff) { // eslint-disable-line no-underscore-dangle
             case 'new':
                 return 'newColumn';
             case 'delete':
@@ -211,7 +211,7 @@ export default class DatagridStyleService {
         this.hightlightedContent = content;
 
         const hasCellEditor = this.grid.getCellEditor();
-        if(hasCellEditor) {
+        if (hasCellEditor) {
             const activeLine = this.grid.getActiveCell().row;
             const range = this.grid.getRenderedRange();
             const indexes = _.range(range.top, range.bottom + 1).filter((index) => index !== activeLine);

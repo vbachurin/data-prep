@@ -43,7 +43,7 @@ export default function BoxplotChart($timeout) {
             var h = +attrs.height;
 
             function renderBoxplotchart(boxValues) {
-                var margin = {top: 30, right: 80, bottom: 70, left: 80};
+                var margin = { top: 30, right: 80, bottom: 70, left: 80 };
                 var width = w - margin.left - margin.right;
                 var height = h - margin.top - margin.bottom;
 

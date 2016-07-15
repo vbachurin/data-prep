@@ -1,26 +1,26 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
 
 'use strict';
 
 const sortList = [
-    {id: 'name', name: 'NAME_SORT', property: 'name'},
-    {id: 'date', name: 'DATE_SORT', property: 'created'}
+    { id: 'name', name: 'NAME_SORT', property: 'name' },
+    { id: 'date', name: 'DATE_SORT', property: 'created' }
 ];
 
 const orderList = [
-    {id: 'asc', name: 'ASC_ORDER'},
-    {id: 'desc', name: 'DESC_ORDER'}
+    { id: 'asc', name: 'ASC_ORDER' },
+    { id: 'desc', name: 'DESC_ORDER' }
 ];
 
 
@@ -32,7 +32,7 @@ export const lookupState = {
     columnsToAdd: [],                                           // columns that are checked
     dataset: null,                                              // loaded lookup action (on a lookup dataset)
     data: null,                                                 // selected lookup action dataset data
-    dataView: new Slick.Data.DataView({inlineFilters: false}),  // grid view that hold the dataset data
+    dataView: new Slick.Data.DataView({ inlineFilters: false }),  // grid view that hold the dataset data
     selectedColumn: null,                                       // selected column
     visibility: false,                                          // visibility flag
     step: null,                                                  // lookup step
@@ -253,7 +253,7 @@ export function LookupStateService() {
      * @description Set parameters for update mode
      */
     function setUpdateMode(lookupAction, data, step) {
-        var selectedColumn = _.find(data.metadata.columns, {id: step.actionParameters.parameters.lookup_join_on});
+        var selectedColumn = _.find(data.metadata.columns, { id: step.actionParameters.parameters.lookup_join_on });
         lookupState.step = step;
         setDataset(lookupAction);
         setData(data); //this updates the checkboxes

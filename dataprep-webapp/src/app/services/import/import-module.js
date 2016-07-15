@@ -15,17 +15,16 @@ import ImportRestService from './import-rest-service';
 import ImportService from './import-service';
 
 (() => {
-    'use strict';
-
     /**
      * @ngdoc object
      * @name data-prep.services.import
      * @description This module contains the services for import
      */
-    angular.module('data-prep.services.import', [
+    angular.module('data-prep.services.import',
+        [
             'data-prep.services.utils',
             'data-prep.services.state',
         ])
         .service('ImportRestService', ImportRestService)
-        .service('ImportService', ImportService)
+        .service('ImportService', ImportService);
 })();

@@ -14,7 +14,9 @@
 describe('Transform choice params controller', function () {
     'use strict';
 
-    var createController, scope, parameter;
+    var createController;
+    var scope;
+    var parameter;
 
     beforeEach(angular.mock.module('data-prep.transformation-form'));
 
@@ -54,8 +56,8 @@ describe('Transform choice params controller', function () {
             type: 'select',
             configuration: {
                 values: [
-                    {value: 'regex'},
-                    {value: 'index'}
+                    { value: 'regex' },
+                    { value: 'index' }
                 ]
             },
             default: 'index'
@@ -75,8 +77,8 @@ describe('Transform choice params controller', function () {
             type: 'select',
             configuration: {
                 values: [
-                    {value: 'regex'},
-                    {value: 'index'}
+                    { value: 'regex' },
+                    { value: 'index' }
                 ]
             }
         };
@@ -95,8 +97,8 @@ describe('Transform choice params controller', function () {
             type: 'select',
             configuration: {
                 values: [
-                    {value: 'regex'},
-                    {value: 'index'}
+                    { value: 'regex' },
+                    { value: 'index' }
                 ]
             },
             value: 'index'
@@ -108,5 +110,4 @@ describe('Transform choice params controller', function () {
         //then
         expect(ctrl.parameter.value).toEqual('index');
     });
-
 });

@@ -13,7 +13,8 @@
 
 describe('Transformation regex params directive', function () {
     'use strict';
-    var scope, createElement;
+    var scope;
+    var createElement;
 
     beforeEach(angular.mock.module('data-prep.transformation-form'));
     beforeEach(angular.mock.module('htmlTemplates'));
@@ -44,11 +45,11 @@ describe('Transformation regex params directive', function () {
     it('should render an action with a parameter', function() {
         //given
         scope.parameter =   {
-                'name': 'param1',
-                'label': 'Param 1',
-                'type': 'regex',
-                'default': ''
-            };
+            'name': 'param1',
+            'label': 'Param 1',
+            'type': 'regex',
+            'default': ''
+        };
 
         //when
         var element = createElement();

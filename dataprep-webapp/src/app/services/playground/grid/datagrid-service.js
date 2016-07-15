@@ -159,8 +159,8 @@ export default function DatagridService(state, StateService, ConverterService) {
 
         var nextInsertionIndex = state.playground.grid.dataView.getIdxById(data.records[0].tdpId);
         _.forEach(data.records, function (row) {
-            if (row.__tdpRowDiff || row.__tdpDiff) {
-                if (row.__tdpRowDiff === 'new') {
+            if (row.__tdpRowDiff || row.__tdpDiff) { // eslint-disable-line no-underscore-dangle
+                if (row.__tdpRowDiff === 'new') { // eslint-disable-line no-underscore-dangle
                     executor.instructions.push({
                         type: INSERT,
                         row: row,
@@ -208,7 +208,7 @@ export default function DatagridService(state, StateService, ConverterService) {
         }
 
         return _.map(cols, function (col) {
-            return {'id': col.id, 'name': col.name};
+            return { id: col.id, name: col.name };
         });
     }
 

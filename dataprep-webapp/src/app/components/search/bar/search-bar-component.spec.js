@@ -12,7 +12,9 @@
  ============================================================================*/
 
 describe('Search bar component', () => {
-    let scope, createElement, element;
+    let scope;
+    let createElement;
+    let element;
 
     beforeEach(angular.mock.module('data-prep.search-bar'));
     beforeEach(angular.mock.module('htmlTemplates'));
@@ -53,7 +55,7 @@ describe('Search bar component', () => {
         createElement();
 
         //when
-        scope.items = [{inventoryType: 'dataset'}, {inventoryType: 'preparation'}, {inventoryType: 'documentation'}, {inventoryType: 'folder'}];
+        scope.items = [{ inventoryType: 'dataset' }, { inventoryType: 'preparation' }, { inventoryType: 'documentation' }, { inventoryType: 'folder' }];
         scope.$apply();
 
         //then

@@ -14,15 +14,16 @@
 describe('Transform column param controller', function () {
     'use strict';
 
-    var createController, scope;
+    var createController;
+    var scope;
     var parameter;
     var stateMock;
 
     beforeEach(angular.mock.module('data-prep.transformation-form', function ($provide) {
         var columns =  [
-            {id: '0001', name: 'first name'},
-            {id: '0002', name: 'last name'},
-            {id: '0003', name: 'birth date'}
+            { id: '0001', name: 'first name' },
+            { id: '0002', name: 'last name' },
+            { id: '0003', name: 'birth date' }
         ];
         stateMock = {
             playground: {
@@ -95,7 +96,7 @@ describe('Transform column param controller', function () {
 
         it('should NOT set selected value when value already exists and columns does NOT exist', function () {
             //given
-            stateMock.playground.data.metadata.columns = [{id: '0001', name: 'first name'}];
+            stateMock.playground.data.metadata.columns = [{ id: '0001', name: 'first name' }];
 
             // when
             var ctrl = createController();
@@ -103,7 +104,5 @@ describe('Transform column param controller', function () {
             // then
             expect(ctrl.parameter.value).toBe('0002');
         });
-
     });
-
 });

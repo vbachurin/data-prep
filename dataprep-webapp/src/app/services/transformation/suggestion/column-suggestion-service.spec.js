@@ -14,8 +14,11 @@
 describe('Column suggestion service', function () {
     'use strict';
 
-    var firstSelectedColumn = {id: '0001', name: 'col1'};
-    var stateMock, columnTransformations, columnSuggestions, allCategories;
+    var firstSelectedColumn = { id: '0001', name: 'col1' };
+    var stateMock;
+    var columnTransformations;
+    var columnSuggestions;
+    var allCategories;
 
     beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
@@ -44,13 +47,12 @@ describe('Column suggestion service', function () {
     }));
 
     beforeEach(inject(function ($q, TransformationCacheService, StateService) {
-
         columnTransformations = {
             allTransformations: [
-                {name: 'rename', category: 'column_metadata', label: 'z', labelHtml: 'z', description: 'test'},
-                {name: 'cluster', category: 'quickfix', label: 'f', labelHtml: 'f', description: 'test'},
-                {name: 'split', category: 'column_metadata', label: 'c', labelHtml: 'c', description: 'test'},
-                {name: 'tolowercase', category: 'case', label: 'v', labelHtml: 'v', description: 'test'},
+                { name: 'rename', category: 'column_metadata', label: 'z', labelHtml: 'z', description: 'test' },
+                { name: 'cluster', category: 'quickfix', label: 'f', labelHtml: 'f', description: 'test' },
+                { name: 'split', category: 'column_metadata', label: 'c', labelHtml: 'c', description: 'test' },
+                { name: 'tolowercase', category: 'case', label: 'v', labelHtml: 'v', description: 'test' },
                 {
                     name: 'touppercase',
                     category: 'case',
@@ -83,7 +85,7 @@ describe('Column suggestion service', function () {
                     description: 'test',
                     actionScope: ['empty', 'unknown']
                 },
-                {name: 'split', category: 'split', label: 'l', labelHtml: 'l...', dynamic: true, description: 'test'}
+                { name: 'split', category: 'split', label: 'l', labelHtml: 'l...', dynamic: true, description: 'test' }
             ],
             allCategories: [
                 {
@@ -105,7 +107,7 @@ describe('Column suggestion service', function () {
                             description: 'test',
                             actionScope: ['unknown']
                         },
-                        {name: 'tolowercase', category: 'case', label: 'v', labelHtml: 'v', description: 'test'}
+                        { name: 'tolowercase', category: 'case', label: 'v', labelHtml: 'v', description: 'test' }
                     ]
                 },
                 {
@@ -122,7 +124,7 @@ describe('Column suggestion service', function () {
                 {
                     category: 'quickfix',
                     transformations: [
-                        {name: 'cluster', category: 'quickfix', label: 'f', labelHtml: 'f', description: 'test'},
+                        { name: 'cluster', category: 'quickfix', label: 'f', labelHtml: 'f', description: 'test' },
                         {
                             name: 'removetrailingspaces',
                             category: 'quickfix',
@@ -147,8 +149,8 @@ describe('Column suggestion service', function () {
             ]
         };
         columnSuggestions = [
-            {name: 'touppercase', category: 'case', label: 'u', labelHtml: 'u', description: 'test'},
-            {name: 'tolowercase', category: 'case', label: 'v', labelHtml: 'v', description: 'test'}
+            { name: 'touppercase', category: 'case', label: 'u', labelHtml: 'u', description: 'test' },
+            { name: 'tolowercase', category: 'case', label: 'v', labelHtml: 'v', description: 'test' }
         ];
         allCategories = [
             {
@@ -276,7 +278,6 @@ describe('Column suggestion service', function () {
             //then
             expect(StateService.setSuggestionsLoading.calls.count()).toBe(2);
             expect(StateService.setSuggestionsLoading).toHaveBeenCalledWith(false);
-
         }));
     });
 
@@ -398,7 +399,6 @@ describe('Column suggestion service', function () {
             expect(filteredTransformations[0].categoryHtml).toBe('SPLIT');
             expect(filteredTransformations[0].transformations[0].labelHtml).toBe('l<span class="highlighted">...</span>');
         }));
-
     });
 
     it('should initialize column transformations with new transfos for empty and invalid cells', inject(function ($rootScope, ColumnSuggestionService, TransformationCacheService, StateService) {
@@ -452,13 +452,12 @@ describe('Column suggestion service', function () {
             allCategories: allCategories,
             searchActionString: ''
         });
-
     }));
 
     it('should NOT change transfos for empty and invalid cells when they are already initialized', inject(function ($rootScope, ColumnSuggestionService, TransformationCacheService, StateService) {
         //given
-        stateMock.playground.suggestions.transformationsForEmptyCells = [{name: 'deleteEmpty'}];
-        stateMock.playground.suggestions.transformationsForInvalidCells = [{name: 'deleteInvalid'}];
+        stateMock.playground.suggestions.transformationsForEmptyCells = [{ name: 'deleteEmpty' }];
+        stateMock.playground.suggestions.transformationsForInvalidCells = [{ name: 'deleteInvalid' }];
 
         //when
         spyOn(StateService, 'setColumnTransformations').and.returnValue();
@@ -469,6 +468,5 @@ describe('Column suggestion service', function () {
         expect(TransformationCacheService.getColumnTransformations).toHaveBeenCalledWith(firstSelectedColumn);
         expect(StateService.setTransformationsForEmptyCells).not.toHaveBeenCalled();
         expect(StateService.setTransformationsForInvalidCells).not.toHaveBeenCalled();
-
     }));
 });

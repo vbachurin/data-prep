@@ -13,7 +13,7 @@
 
 class PreparationCreatorCtrl {
     constructor(state, $document, $state, $translate, RestURLs,
-                PreparationService, DatasetService, UploadWorkflowService) {
+        PreparationService, DatasetService, UploadWorkflowService) {
         'ngInject';
 
         this.$translate = $translate;
@@ -34,7 +34,7 @@ class PreparationCreatorCtrl {
         this.whileImport = false;
         this.isFetchingDatasets = false;
 
-        this.preparationSuffix= this.$translate.instant('PREPARATION');
+        this.preparationSuffix = this.$translate.instant('PREPARATION');
     }
 
     $onInit() {
@@ -111,8 +111,8 @@ class PreparationCreatorCtrl {
      */
     _createDataset(file, name) {
         const params = {
-            datasetFile: "",
-            type: "local",
+            datasetFile: '',
+            type: 'local',
             name: name
         };
 
@@ -148,9 +148,14 @@ class PreparationCreatorCtrl {
      * @params {Number} index the index to increment
      */
     _getUniquePrepName(index = 0) {
-        const suffix = index === 0 ? ' ' + this.preparationSuffix : ' ' + this.preparationSuffix +' (' + index + ')';
+        const suffix = index === 0 ?
+            ' ' + this.preparationSuffix :
+            ' ' + this.preparationSuffix + ' (' + index + ')';
         this.enteredName = this.baseDataset.name + suffix;
-        const existingName = _.some(this.state.inventory.folder.content.preparations, {name: this.enteredName});
+        const existingName = _.some(
+            this.state.inventory.folder.content.preparations,
+            { name: this.enteredName }
+        );
         if (existingName) {
             this._getUniquePrepName(index + 1);
         }
@@ -176,12 +181,18 @@ class PreparationCreatorCtrl {
     createPreparation() {
         if (this.baseDataset.draft) {
             this.createPreparationFromMultiSheetDataset();
-        } else {
+        }
+        else {
             this.addPreparationForm.$commitViewValue();
-            this.preparationService.create(this.baseDataset.id, this.enteredName, this.state.inventory.folder.metadata.id)
+            this.preparationService
+                .create(
+                    this.baseDataset.id,
+                    this.enteredName,
+                    this.state.inventory.folder.metadata.id
+            )
                 .then((newPreparation) => {
                     this.showAddPrepModal = false;
-                    this.$state.go('playground.preparation', {prepid: newPreparation.id});
+                    this.$state.go('playground.preparation', { prepid: newPreparation.id });
                 });
         }
     }
@@ -197,7 +208,10 @@ class PreparationCreatorCtrl {
         if (from === 'user') {
             this.userHasTypedName = true;
         }
-        this.alreadyExistingName = _.some(this.state.inventory.folder.content.preparations, {name: this.enteredName});
+        this.alreadyExistingName = _.some(
+            this.state.inventory.folder.content.preparations,
+            { name: this.enteredName }
+        );
     }
 
     /**
@@ -233,7 +247,8 @@ class PreparationCreatorCtrl {
      * @ngdoc method
      * @name anyMissingEntries
      * @methodOf data-prep.preparation-creator.controller:PreparationCreatorCtrl
-     * @description checks if there is a unique preparation name and there is a selected base dataset
+     * @description checks if there is a unique preparation name
+     * and there is a selected base dataset
      * @returns boolean
      */
     anyMissingEntries() {

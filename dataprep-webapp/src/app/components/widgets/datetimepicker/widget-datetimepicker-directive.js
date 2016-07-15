@@ -30,7 +30,7 @@
  */
 export default function TalendDatetimePicker($timeout) {
     'ngInject';
-    
+
     return {
         restrict: 'E',
         template: '<input class="datetimepicker" type="text" ng-blur="ctrl.onBlur()" ng-model="ctrl.value" />',
@@ -40,7 +40,8 @@ export default function TalendDatetimePicker($timeout) {
             onBlur: '&'
         },
         bindToController: true,
-        controller: () => {},
+        controller: () => {
+        },
         controllerAs: 'ctrl',
         link: function (scope, iElement, iAttrs, ctrl) {
             Date.parseDate = function (input, format) {
@@ -78,7 +79,9 @@ export default function TalendDatetimePicker($timeout) {
                 }
             });
 
-            scope.$on('$destroy', () => { input.datetimepicker('destroy'); })
+            scope.$on('$destroy', () => {
+                input.datetimepicker('destroy');
+            });
         }
     };
 }

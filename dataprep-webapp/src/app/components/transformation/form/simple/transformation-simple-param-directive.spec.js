@@ -13,7 +13,8 @@
 
 describe('Transformation simple params directive', function () {
     'use strict';
-    var scope, createElement;
+    var scope;
+    var createElement;
 
     beforeEach(angular.mock.module('data-prep.transformation-form'));
     beforeEach(angular.mock.module('htmlTemplates'));
@@ -40,12 +41,12 @@ describe('Transformation simple params directive', function () {
     it('should render an action with a parameter', function() {
         //given
         scope.parameter =   {
-                'name': 'param1',
-                'label': 'Param 1',
-                'type': 'string',
-                'inputType': 'text',
-                'default': '.'
-            };
+            'name': 'param1',
+            'label': 'Param 1',
+            'type': 'string',
+            'inputType': 'text',
+            'default': '.'
+        };
 
         //when
         var element = createElement();

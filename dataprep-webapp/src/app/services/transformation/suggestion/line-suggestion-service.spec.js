@@ -15,24 +15,24 @@ describe('Line suggestion service', function () {
     'use strict';
 
     var allTransformations = [
-        {name: 'delete', category: 'clean', label: 'c', labelHtml: 'c', description: 'test'},
-        {name: 'tolowercase', category: 'case', label: 'v', labelHtml: 'v', description: 'test'},
-        {name: 'touppercase', category: 'case', label: 'u', labelHtml: 'u', description: 'test',  actionScope: ['unknown']},
-        {name: 'totitlecase', category: 'case', label: 't', labelHtml: 't', description: 'test', actionScope: ['invalid']}
+        { name: 'delete', category: 'clean', label: 'c', labelHtml: 'c', description: 'test' },
+        { name: 'tolowercase', category: 'case', label: 'v', labelHtml: 'v', description: 'test' },
+        { name: 'touppercase', category: 'case', label: 'u', labelHtml: 'u', description: 'test',  actionScope: ['unknown'] },
+        { name: 'totitlecase', category: 'case', label: 't', labelHtml: 't', description: 'test', actionScope: ['invalid'] }
     ];
 
     var allCategories = [
         {
             category: 'case',
             transformations: [
-                {name: 'totitlecase', category: 'case', label: 't', labelHtml: 't', description: 'test', actionScope: ['invalid']},
-                {name: 'touppercase', category: 'case', label: 'u', labelHtml: 'u', description: 'test', actionScope: ['unknown']},
-                {name: 'tolowercase', category: 'case', label: 'v', labelHtml: 'v', description: 'test'}
+                { name: 'totitlecase', category: 'case', label: 't', labelHtml: 't', description: 'test', actionScope: ['invalid'] },
+                { name: 'touppercase', category: 'case', label: 'u', labelHtml: 'u', description: 'test', actionScope: ['unknown'] },
+                { name: 'tolowercase', category: 'case', label: 'v', labelHtml: 'v', description: 'test' }
             ]
         },
         {
             category: 'clean',
-            transformations: [{name: 'delete', category: 'clean', label: 'c', labelHtml: 'c', description: 'test'}]
+            transformations: [{ name: 'delete', category: 'clean', label: 'c', labelHtml: 'c', description: 'test' }]
         }
     ];
 

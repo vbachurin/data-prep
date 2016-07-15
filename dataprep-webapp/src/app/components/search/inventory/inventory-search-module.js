@@ -37,4 +37,3 @@ import InventorySearch from './inventory-search-component';
         ])
         .component('inventorySearch', InventorySearch);
 })();
-

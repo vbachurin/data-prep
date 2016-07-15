@@ -14,7 +14,10 @@
 describe('Single recipeBullet directive ', function () {
     'use strict';
 
-    var createElement, element, scope, steps;
+    var createElement;
+    var element;
+    var scope;
+    var steps;
 
     function getSvgElementAttribute(elementName, elementIndex, attr) {
         var allSvg = element.find('svg');
@@ -44,8 +47,8 @@ describe('Single recipeBullet directive ', function () {
     beforeEach(inject(function ($rootScope, $compile, $timeout, RecipeService, RecipeBulletService) {
         steps = [
             {
-                column: {id: 'col2'},
-                transformation: {name: 'uppercase', label: 'To uppercase', category: 'case', parameters: [], items: []},
+                column: { id: 'col2' },
+                transformation: { name: 'uppercase', label: 'To uppercase', category: 'case', parameters: [], items: [] },
                 inactive: false
             }
         ];
@@ -71,9 +74,7 @@ describe('Single recipeBullet directive ', function () {
     });
 
     describe('Middle bullet ', function () {
-
         beforeEach(inject(function ($rootScope, $compile, $timeout, RecipeService) {
-
             spyOn(RecipeService, 'isFirstStep').and.callFake(function () {
                 return false;
             });
@@ -86,7 +87,6 @@ describe('Single recipeBullet directive ', function () {
             spyOn(RecipeService, 'getStepIndex').and.callFake(function () {
                 return 1;
             });
-
         }));
 
         it('should init circle position', function () {
@@ -115,7 +115,6 @@ describe('Single recipeBullet directive ', function () {
             var dimensions = getBottomCablesDimensions();
             expect(dimensions[0]).toBe('M 15 29 L 15 105 Z');
         });
-
     });
 });
 
@@ -123,7 +122,10 @@ describe('Single recipeBullet directive ', function () {
 describe('Multi recipeBullet directive', function () {
     'use strict';
 
-    var createElement, element, scope, steps;
+    var createElement;
+    var element;
+    var scope;
+    var steps;
 
     function getSvgElementAttribute(elementName, elementIndex, attr) {
         var allSvg = element.find('svg');
@@ -152,12 +154,12 @@ describe('Multi recipeBullet directive', function () {
     beforeEach(inject(function ($rootScope, $compile, $timeout, RecipeService, RecipeBulletService) {
         steps = [
             {
-                column: {id: 'col2'},
-                transformation: {name: 'uppercase', label: 'To uppercase', category: 'case', parameters: [], items: []},
+                column: { id: 'col2' },
+                transformation: { name: 'uppercase', label: 'To uppercase', category: 'case', parameters: [], items: [] },
                 inactive: false
             },
             {
-                column: {id: 'col1'},
+                column: { id: 'col1' },
                 transformation: {
                     name: 'lowerercase',
                     label: 'To uppercase',
@@ -168,12 +170,12 @@ describe('Multi recipeBullet directive', function () {
                 inactive: false
             },
             {
-                column: {id: 'col3'},
-                transformation: {name: 'negate', label: 'To uppercase', category: 'case', parameters: [], items: []},
+                column: { id: 'col3' },
+                transformation: { name: 'negate', label: 'To uppercase', category: 'case', parameters: [], items: [] },
                 inactive: true
             },
             {
-                column: {id: 'col4'},
+                column: { id: 'col4' },
                 transformation: {
                     name: 'propercase',
                     label: 'To uppercase',
@@ -184,8 +186,8 @@ describe('Multi recipeBullet directive', function () {
                 inactive: true
             },
             {
-                column: {id: 'col1'},
-                transformation: {name: 'rename', label: 'To uppercase', category: 'case', parameters: [], items: []},
+                column: { id: 'col1' },
+                transformation: { name: 'rename', label: 'To uppercase', category: 'case', parameters: [], items: [] },
                 inactive: false
             }
         ];
@@ -351,5 +353,4 @@ describe('Multi recipeBullet directive', function () {
         expect(classes[2]).toBeFalsy();
         expect(classes[3]).toBeFalsy();
     });
-
 });

@@ -16,7 +16,8 @@ import DatasetListCtrl from './dataset-list-controller';
 /**
  * @ngdoc component
  * @name data-prep.dataset-list.component:DatasetList
- * @description This component display the dataset list from {@link data-prep.services.dataset.service:DatasetService DatasetService}
+ * @description This component display the dataset list
+ * from {@link data-prep.services.dataset.service:DatasetService DatasetService}
  * @restrict E
  */
 const DatasetListComponent = {

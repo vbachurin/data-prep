@@ -19,8 +19,8 @@
 export default function TalendTooltipCtrl($scope) {
     'ngInject';
 
-    var vm = this;
-    var blocked = false;
+    const vm = this;
+    let blocked = false;
     vm.innerState = vm.requestedState;
 
     /**
@@ -29,7 +29,7 @@ export default function TalendTooltipCtrl($scope) {
      * @methodOf talend.widget.controller:TalendTooltipCtrl
      * @description Block the display
      */
-    vm.blockState = function () {
+    vm.blockState = function blockState() {
         blocked = true;
     };
 
@@ -39,7 +39,7 @@ export default function TalendTooltipCtrl($scope) {
      * @methodOf talend.widget.controller:TalendTooltipCtrl
      * @description Unblock the display
      */
-    vm.unblockState = function () {
+    vm.unblockState = function unblockState() {
         blocked = false;
         vm.innerState = vm.requestedState;
     };
@@ -52,7 +52,7 @@ export default function TalendTooltipCtrl($scope) {
      * @param {object} verticalPosition - {top: (number | string); bottom: (number | string)}
      * @description Change the position of the tooltip
      */
-    vm.updatePosition = function (horizontalPosition, verticalPosition) {
+    vm.updatePosition = function updatePosition(horizontalPosition, verticalPosition) {
         vm.style = {
             left: horizontalPosition.left,
             right: horizontalPosition.right,
@@ -65,10 +65,10 @@ export default function TalendTooltipCtrl($scope) {
      * Update visibility state if not blocked when requested state change
      */
     $scope.$watch(
-        function () {
+        () => {
             return vm.requestedState;
         },
-        function (newValue) {
+        (newValue) => {
             if (!blocked) {
                 vm.innerState = newValue;
             }

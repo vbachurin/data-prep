@@ -50,14 +50,13 @@ describe('Filter state service', function () {
     });
 
     describe('grid filters', function() {
-
         it('should add a new filter', inject(function (filterState, FilterStateService) {
             //given
             var originalGridFilters = [];
             filterState.gridFilters = originalGridFilters;
             filterState.applyTransformationOnFilters = false;
 
-            var newFilter = {colId: '0001', args: {value: 'tata'}};
+            var newFilter = { colId: '0001', args: { value: 'tata' } };
 
             //when
             FilterStateService.addGridFilter(newFilter);
@@ -72,13 +71,13 @@ describe('Filter state service', function () {
 
         it('should add filter to existing filters', inject(function (filterState, FilterStateService) {
             //given
-            var filter1 = {colId: '0001', args: {value: 'toto'}};
-            var filter2 = {colId: '0004', args: {value: 'toto'}};
+            var filter1 = { colId: '0001', args: { value: 'toto' } };
+            var filter2 = { colId: '0004', args: { value: 'toto' } };
             var originalGridFilters = [filter1, filter2];
             filterState.gridFilters = originalGridFilters;
             filterState.applyTransformationOnFilters = true;
 
-            var newFilter = {colId: '0001', args: {value: 'tata'}};
+            var newFilter = { colId: '0001', args: { value: 'tata' } };
 
             //when
             FilterStateService.addGridFilter(newFilter);
@@ -95,13 +94,13 @@ describe('Filter state service', function () {
 
         it('should update filter', inject(function (filterState, FilterStateService) {
             //given
-            var oldFilter = {colId: '0001', args: {value: 'toto'}};
-            var otherFilter = {colId: '0004', args: {value: 'toto'}};
+            var oldFilter = { colId: '0001', args: { value: 'toto' } };
+            var otherFilter = { colId: '0004', args: { value: 'toto' } };
             var originalGridFilters = [oldFilter, otherFilter];
             filterState.gridFilters = originalGridFilters;
 
 
-            var newFilter = {colId: '0001', args: {value: 'tata'}};
+            var newFilter = { colId: '0001', args: { value: 'tata' } };
 
             //when
             FilterStateService.updateGridFilter(oldFilter, newFilter);
@@ -116,8 +115,8 @@ describe('Filter state service', function () {
 
         it('should remove not the last filter', inject(function (filterState, FilterStateService) {
             //given
-            var filter1 = {colId: '0001', args: {value: 'toto'}};
-            var filter2 = {colId: '0004', args: {value: 'toto'}};
+            var filter1 = { colId: '0001', args: { value: 'toto' } };
+            var filter2 = { colId: '0004', args: { value: 'toto' } };
             var originalGridFilters = [filter1, filter2];
             filterState.gridFilters = originalGridFilters;
             filterState.applyTransformationOnFilters = true;
@@ -135,7 +134,7 @@ describe('Filter state service', function () {
 
         it('should remove the last filter', inject(function (filterState, FilterStateService) {
             //given
-            var filter1 = {colId: '0001', args: {value: 'toto'}};
+            var filter1 = { colId: '0001', args: { value: 'toto' } };
             var originalGridFilters = [filter1];
             filterState.gridFilters = originalGridFilters;
             filterState.applyTransformationOnFilters = true;
@@ -152,8 +151,8 @@ describe('Filter state service', function () {
 
         it('should remove all filters', inject(function (filterState, FilterStateService) {
             //given
-            var filter1 = {colId: '0001', args: {value: 'toto'}};
-            var filter2 = {colId: '0004', args: {value: 'toto'}};
+            var filter1 = { colId: '0001', args: { value: 'toto' } };
+            var filter2 = { colId: '0004', args: { value: 'toto' } };
             var originalGridFilters = [filter1, filter2];
             filterState.gridFilters = originalGridFilters;
             filterState.applyTransformationOnFilters = true;
@@ -168,6 +167,4 @@ describe('Filter state service', function () {
             expect(filterState.applyTransformationOnFilters).toBe(false);
         }));
     });
-
-
 });

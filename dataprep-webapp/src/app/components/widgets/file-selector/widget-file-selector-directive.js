@@ -37,9 +37,10 @@ export default function TalendFileSelector() {
         },
         bindToController: true,
         controllerAs: 'talendFileSelectorCtrl',
-        controller: () => {},
-        link: function (scope, element) {
-            element.find('span').bind('click', function () {
+        controller: () => {
+        },
+        link: (scope, element) => {
+            element.find('span').bind('click', () => {
                 element.find('input').click();
             });
         }

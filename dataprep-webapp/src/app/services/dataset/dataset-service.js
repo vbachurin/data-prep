@@ -79,38 +79,38 @@ export default function DatasetService($q, state, StateService, DatasetListServi
     /**
      * @ngdoc method
      * @methodOf data-prep.services.dataset.service:DatasetService
-     * @name _refreshDatasetsSort
+     * @name refreshDatasetsSort
      * @description Refresh the actual sort parameter
      * */
-    function _refreshDatasetsSort() {
+    function refreshDatasetsSort() {
         const savedSort = StorageService.getDatasetsSort();
         if (savedSort) {
-            StateService.setDatasetsSort(_.find(state.inventory.sortList, {id: savedSort}));
+            StateService.setDatasetsSort(_.find(state.inventory.sortList, { id: savedSort }));
         }
     }
 
     /**
      * @ngdoc method
      * @methodOf data-prep.services.dataset.service:DatasetService
-     * @name _refreshDatasetsOrder
+     * @name refreshDatasetsOrder
      * @description Refresh the actual order parameter
      */
-    function _refreshDatasetsOrder() {
+    function refreshDatasetsOrder() {
         const savedSortOrder = StorageService.getDatasetsOrder();
         if (savedSortOrder) {
-            StateService.setDatasetsOrder(_.find(state.inventory.orderList, {id: savedSortOrder}));
+            StateService.setDatasetsOrder(_.find(state.inventory.orderList, { id: savedSortOrder }));
         }
     }
 
     /**
      * @ngdoc method
      * @methodOf data-prep.services.dataset.service:DatasetService
-     * @name _refreshDatasetsOrder
+     * @name refreshDatasetsOrder
      * @description Init datasets sort/order and refresh datasets list
      */
     function init() {
-        _refreshDatasetsSort();
-        _refreshDatasetsOrder();
+        refreshDatasetsSort();
+        refreshDatasetsOrder();
         return DatasetListService.refreshDatasets();
     }
 
@@ -140,7 +140,7 @@ export default function DatasetService($q, state, StateService, DatasetListServi
      * @description check if Process Certification is enabled
      */
     function isProcessCertificationEnabled() {
-       return false;
+        return false;
     }
 
     /**
@@ -311,7 +311,7 @@ export default function DatasetService($q, state, StateService, DatasetListServi
     //--------------------------------------------------------------------------------------------------------------
     //---------------------------------------------Dataset Parameters-----------------------------------------------
     //--------------------------------------------------------------------------------------------------------------
-    function _extractOriginalParameters(metadata) {
+    function extractOriginalParameters(metadata) {
         return {
             //TODO remove this and review the datasets model to NOT change the original object. This is done here to
             // avoid cyclic ref
@@ -323,7 +323,7 @@ export default function DatasetService($q, state, StateService, DatasetListServi
         };
     }
 
-    function _setParameters(metadata, parameters) {
+    function setParameters(metadata, parameters) {
         //TODO remove this and review the datasets model to NOT change the original object. This is done here to avoid
         // avoid cyclic ref
         metadata.defaultPreparation = parameters.defaultPreparation;
@@ -349,7 +349,7 @@ export default function DatasetService($q, state, StateService, DatasetListServi
 
                 // deal with select inline parameters
                 if (paramItem.type === 'select') {
-                    let selectedValue = _.find(paramItem.configuration.values, {value: paramItem.value});
+                    let selectedValue = _.find(paramItem.configuration.values, { value: paramItem.value });
                     getParamIteration(paramsAccu, selectedValue.parameters);
                 }
             });
@@ -367,8 +367,8 @@ export default function DatasetService($q, state, StateService, DatasetListServi
      * @returns {Promise} The process Promise
      */
     function updateParameters(metadata, parameters) {
-        const originalParameters = _extractOriginalParameters(metadata);
-        _setParameters(metadata, parameters);
+        const originalParameters = extractOriginalParameters(metadata);
+        setParameters(metadata, parameters);
 
         return DatasetRestService.updateMetadata(metadata)
             .then(() => {
@@ -376,7 +376,7 @@ export default function DatasetService($q, state, StateService, DatasetListServi
                 metadata.preparations = originalParameters.preparations;
             })
             .catch((error) => {
-                _setParameters(metadata, originalParameters);
+                setParameters(metadata, originalParameters);
                 return $q.reject(error);
             });
     }
@@ -404,13 +404,13 @@ export default function DatasetService($q, state, StateService, DatasetListServi
         return DatasetRestService.getCompatiblePreparations(datasetId)
             .then((compatiblePreparations) => {
                 if (state.playground.preparation) {
-                    compatiblePreparations = _.reject(compatiblePreparations, {id: state.playground.preparation.id});
+                    compatiblePreparations = _.reject(compatiblePreparations, { id: state.playground.preparation.id });
                 }
 
                 return _.map(compatiblePreparations, (candidatePrepa) => {
                     return {
                         preparation: candidatePrepa,
-                        dataset: _.find(state.inventory.datasets, {id: candidatePrepa.dataSetId}),
+                        dataset: _.find(state.inventory.datasets, { id: candidatePrepa.dataSetId }),
                     };
                 });
             });
@@ -460,7 +460,7 @@ export default function DatasetService($q, state, StateService, DatasetListServi
                 return $q.reject(error);
             })
             .finally(() => {
-                injectPreparations(metadata, preparations)
+                injectPreparations(metadata, preparations);
             });
     }
 }

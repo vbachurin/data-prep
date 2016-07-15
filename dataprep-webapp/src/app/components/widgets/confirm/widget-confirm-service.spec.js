@@ -27,7 +27,7 @@ describe('Confirm widget service', function() {
     }));
 
     afterEach(inject(function($timeout, TalendConfirmService) {
-        if(TalendConfirmService.element) {
+        if (TalendConfirmService.element) {
             TalendConfirmService.resolve();
             $timeout.flush();
         }
@@ -43,7 +43,7 @@ describe('Confirm widget service', function() {
         expect(body.has('talend-confirm').length).toBe(0);
 
         //when
-        TalendConfirmService.confirm({disableEnter: true}, [text1, text2]);
+        TalendConfirmService.confirm({ disableEnter: true }, [text1, text2]);
         $rootScope.$digest();
 
         //then
@@ -89,7 +89,7 @@ describe('Confirm widget service', function() {
         expect(body.has('talend-confirm').length).toBe(0);
 
         //when
-        TalendConfirmService.confirm(null, [text1, text3], {argValue: 'my value'});
+        TalendConfirmService.confirm(null, [text1, text3], { argValue: 'my value' });
         $rootScope.$digest();
 
         //then
@@ -102,7 +102,9 @@ describe('Confirm widget service', function() {
     }));
 
     describe('with existing confirm', function() {
-        var promise, element, scope;
+        var promise;
+        var element;
+        var scope;
 
         beforeEach(inject(function($rootScope, TalendConfirmService) {
             promise = TalendConfirmService.confirm();

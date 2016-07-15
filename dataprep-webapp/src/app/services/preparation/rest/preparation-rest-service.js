@@ -241,7 +241,7 @@ export default function PreparationRestService($http, RestURLs) {
             method: 'PUT',
             url: `${RestURLs.preparationUrl}/${preparationId}/actions/${stepId}`,
             headers: { 'Content-Type': 'application/json' },
-            data: {actions: [actionParams]},
+            data: { actions: [actionParams] },
         };
 
         return $http(request);

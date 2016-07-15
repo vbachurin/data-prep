@@ -41,7 +41,9 @@ export default function DatagridHeader($timeout) {
         controller: 'DatagridHeaderCtrl',
         link: {
             post: function (scope, iElement, iAttrs, ctrl) {
-                var gridHeader, gridHeaderTitle, gridHeaderTitleInput;
+                var gridHeader;
+                var gridHeaderTitle;
+                var gridHeaderTitleInput;
 
                 /**
                  * @ngdoc method
@@ -93,10 +95,10 @@ export default function DatagridHeader($timeout) {
                         .keydown(function (event) {
                             event.stopPropagation();
                             switch (event.keyCode) {
-                                case 13 : //ENTER
+                                case 13: //ENTER
                                     gridHeaderTitleInput.blur();
                                     break;
-                                case 27 : //ESC
+                                case 27: //ESC
                                     ctrl.resetColumnName();
                                     gridHeaderTitleInput.blur();
                                     break;

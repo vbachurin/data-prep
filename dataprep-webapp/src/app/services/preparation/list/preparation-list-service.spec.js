@@ -138,7 +138,7 @@ describe('Preparation list service', () => {
     beforeEach(inject(($q, PreparationRestService, StateService) => {
         initPreparations();
 
-        spyOn(PreparationRestService, 'create').and.returnValue($q.when({data: createdPreparationId}));
+        spyOn(PreparationRestService, 'create').and.returnValue($q.when({ data: createdPreparationId }));
         spyOn(PreparationRestService, 'update').and.returnValue($q.when());
         spyOn(PreparationRestService, 'delete').and.returnValue($q.when());
         spyOn(PreparationRestService, 'copy').and.returnValue($q.when());
@@ -151,9 +151,8 @@ describe('Preparation list service', () => {
     }));
 
     describe('getter/refresher', () => {
-
         beforeEach(inject(($q, PreparationRestService) => {
-            spyOn(PreparationRestService, 'getPreparations').and.returnValue($q.when({data: preparations}));
+            spyOn(PreparationRestService, 'getPreparations').and.returnValue($q.when({ data: preparations }));
         }));
 
         it('should refresh preparations', inject(($rootScope, PreparationListService, StateService) => {
@@ -221,9 +220,8 @@ describe('Preparation list service', () => {
     });
 
     describe('create', () => {
-
         beforeEach(inject(($q, PreparationRestService) => {
-            spyOn(PreparationRestService, 'getPreparations').and.returnValue($q.when({data: preparations}));
+            spyOn(PreparationRestService, 'getPreparations').and.returnValue($q.when({ data: preparations }));
         }));
 
         it('should create a new preparation', inject((PreparationListService, PreparationRestService) => {
@@ -241,7 +239,7 @@ describe('Preparation list service', () => {
             //given
             let result = null;
             const datasetId = '84ab54cd867f4645a';
-            const createdPreparation = {id: createdPreparationId};
+            const createdPreparation = { id: createdPreparationId };
 
             stateMock.inventory.preparations = preparations;
 
@@ -269,9 +267,8 @@ describe('Preparation list service', () => {
     });
 
     describe('copy', () => {
-
         beforeEach(inject(($q, PreparationRestService) => {
-            spyOn(PreparationRestService, 'getPreparations').and.returnValue($q.when({data: preparations}));
+            spyOn(PreparationRestService, 'getPreparations').and.returnValue($q.when({ data: preparations }));
         }));
 
         it('should copy a preparation', inject((PreparationListService, PreparationRestService) => {
@@ -297,9 +294,8 @@ describe('Preparation list service', () => {
     });
 
     describe('move', () => {
-
         beforeEach(inject(($q, PreparationRestService) => {
-            spyOn(PreparationRestService, 'getPreparations').and.returnValue($q.when({data: preparations}));
+            spyOn(PreparationRestService, 'getPreparations').and.returnValue($q.when({ data: preparations }));
         }));
 
         it('should move a preparation', inject((PreparationListService, PreparationRestService) => {
@@ -333,9 +329,8 @@ describe('Preparation list service', () => {
     });
 
     describe('update', () => {
-
         beforeEach(inject(($q, PreparationRestService) => {
-            spyOn(PreparationRestService, 'getPreparations').and.returnValue($q.when({data: preparations}));
+            spyOn(PreparationRestService, 'getPreparations').and.returnValue($q.when({ data: preparations }));
         }));
 
         it('should update a preparation name', inject((PreparationListService, PreparationRestService) => {
@@ -346,7 +341,7 @@ describe('Preparation list service', () => {
             PreparationListService.update('84ab54cd867f4645a', 'my preparation');
 
             //then
-            expect(PreparationRestService.update).toHaveBeenCalledWith('84ab54cd867f4645a', {name: 'my preparation'});
+            expect(PreparationRestService.update).toHaveBeenCalledWith('84ab54cd867f4645a', { name: 'my preparation' });
         }));
 
         it('should refresh preparations list on creation', inject(($rootScope, PreparationListService, PreparationRestService) => {
@@ -363,9 +358,8 @@ describe('Preparation list service', () => {
     });
 
     describe('delete', () => {
-
         beforeEach(inject(($q, PreparationRestService) => {
-            spyOn(PreparationRestService, 'getPreparations').and.returnValue($q.when({data: preparations}));
+            spyOn(PreparationRestService, 'getPreparations').and.returnValue($q.when({ data: preparations }));
         }));
 
         it('should delete a preparation', inject(($rootScope, PreparationListService, PreparationRestService, StateService) => {

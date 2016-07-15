@@ -12,12 +12,14 @@
  ============================================================================*/
 
 describe('DatasetList component', () => {
-
     function strEndsWith(str, suffix) {
         return str.match(suffix + '$')[0] === suffix;
     }
 
-    let scope, createElement, element, stateMock;
+    let scope;
+    let createElement;
+    let element;
+    let stateMock;
     const datasets = [
         {
             'id': '12ce6c32-bf80-41c8-92e5-66d70f22ec1f',
@@ -141,7 +143,10 @@ describe('DatasetList component', () => {
 
 
 describe('DatasetList component loading', () => {
-    let scope, createElement, element, stateMock;
+    let scope;
+    let createElement;
+    let element;
+    let stateMock;
 
     beforeEach(angular.mock.module('htmlTemplates'));
     beforeEach(angular.mock.module('data-prep.dataset-list', ($provide) => {
@@ -198,7 +203,10 @@ describe('DatasetList component loading', () => {
 });
 
 describe('DatasetList component with no datasets', () => {
-    let scope, createElement, element, stateMock;
+    let scope;
+    let createElement;
+    let element;
+    let stateMock;
 
     beforeEach(angular.mock.module('htmlTemplates'));
     beforeEach(angular.mock.module('data-prep.dataset-list', ($provide) => {

@@ -14,7 +14,8 @@
 describe('Datagrid header controller', () => {
     'use strict';
 
-    let createController, scope;
+    let createController;
+    let scope;
     const column = {
         id: '0001',
         name: 'Original name',
@@ -221,7 +222,6 @@ describe('Datagrid header controller', () => {
     });
 
     describe('update column name', () => {
-
         beforeEach(inject(($q, PlaygroundService) => {
             spyOn(PlaygroundService, 'appendStep').and.returnValue($q.when(true));
         }));

@@ -17,10 +17,9 @@ describe('Import', function () {
     beforeEach(angular.mock.module('data-prep.services.state'));
 
     describe('state service', function() {
-
         it('should set import types', inject(function (importState, ImportStateService) {
             //given
-            const imports = [{name: 'import 1'}, {name: 'import 2'}];
+            const imports = [{ name: 'import 1' }, { name: 'import 2' }];
             //when
             ImportStateService.setImportTypes(imports);
 

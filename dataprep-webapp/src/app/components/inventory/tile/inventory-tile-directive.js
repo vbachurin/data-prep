@@ -42,7 +42,8 @@ export default function inventoryTile() {
         templateUrl: 'app/components/inventory/tile/inventory-tile.html',
         bindToController: true,
         controllerAs: 'inventoryTileCtrl',
-        controller: () => {},
+        controller: () => {
+        },
         scope: {
             dataset: '<',
             preparation: '<',

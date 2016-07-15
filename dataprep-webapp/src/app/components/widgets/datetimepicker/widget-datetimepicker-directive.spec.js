@@ -14,7 +14,11 @@
 'use strict';
 
 describe('Datetimepicker directive', function () {
-    var scope, element, html, createElement, controller;
+    var scope;
+    var element;
+    var html;
+    var createElement;
+    var controller;
 
     beforeEach(angular.mock.module('talend.widget'));
     beforeEach(angular.mock.module('data-prep.services.utils'));
@@ -27,7 +31,8 @@ describe('Datetimepicker directive', function () {
     beforeEach(inject(function($rootScope, $compile) {
         scope = $rootScope.$new();
         scope.minModel = 1465895872052;
-        scope.onMouseBlur = () => {};
+        scope.onMouseBlur = () => {
+        };
         createElement = function() {
             element = angular.element(`<html><body><div>
                             <talend-datetime-picker ng-model="minModel"

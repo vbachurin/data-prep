@@ -25,7 +25,7 @@ export default function Export() {
         bindToController: true,
         controllerAs: 'exportCtrl',
         controller: 'ExportCtrl',
-        link: function (scope, iElement, iAttrs, ctrl) {
+        link: (scope, iElement, iAttrs, ctrl) => {
             ctrl.form = iElement.find('#exportForm').eq(0)[0];
         }
     };

@@ -47,18 +47,18 @@ describe('Folder services', () => {
             spyOn(FolderRestService, 'rename').and.returnValue($q.when());
             spyOn(FolderRestService, 'remove').and.returnValue($q.when());
         }));
-        
+
         it('should call rest children', inject((FolderService, FolderRestService) => {
             //given
             const folderId = 'L215L3BlcnNvbmFsL2ZvbGRlcg==';
-            
+
             //when
             FolderService.children(folderId);
 
             //then
             expect(FolderRestService.children).toHaveBeenCalledWith(folderId);
         }));
-        
+
         it('should call rest children with home folder by default', inject((FolderService, FolderRestService) => {
             //when
             FolderService.children();
@@ -71,7 +71,7 @@ describe('Folder services', () => {
             //given
             const folderName = 'azerty';
             const parentId = 'L215L3BlcnNvbmFsL2ZvbGRlcg==';
-            
+
             //when
             FolderService.create(parentId, folderName);
 
@@ -82,7 +82,7 @@ describe('Folder services', () => {
         it('should call rest create with default folder', inject((FolderService, FolderRestService) => {
             //given
             const name = 'azerty';
-            
+
             //when
             FolderService.create(undefined, name);
 
@@ -94,7 +94,7 @@ describe('Folder services', () => {
             //given
             const newName = 'azerty';
             const folderId = 'L215L3BlcnNvbmFsL2ZvbGRlcg==';
-            
+
             //when
             FolderService.rename(folderId, newName);
 
@@ -105,7 +105,7 @@ describe('Folder services', () => {
         it('should call rest rename', inject((FolderService, FolderRestService) => {
             //given
             const newName = 'azerty';
-            
+
             //when
             FolderService.rename(undefined, newName);
 
@@ -113,10 +113,11 @@ describe('Folder services', () => {
             expect(FolderRestService.rename).toHaveBeenCalledWith(stateMock.inventory.homeFolderId, newName);
         }));
 
-        it('should call rest remove', inject((FolderService, FolderRestService) => {$
+        it('should call rest remove', inject((FolderService, FolderRestService) => {
+            $
             //given
             const folderId = 'L215L3BlcnNvbmFsL2ZvbGRlcg==';
-            
+
             //when
             FolderService.remove(folderId);
 
@@ -247,11 +248,11 @@ describe('Folder services', () => {
             const folderId = 'L215L3BlcnNvbmFsL2ZvbGRlcg==';
             stateMock.inventory.preparationsSort = sortList[1];
             stateMock.inventory.preparationsOrder = orderList[1];
-        
+
             // when
             FolderService.refresh(folderId);
             $rootScope.$digest();
-        
+
             // then
             expect(StateService.setFolder).toHaveBeenCalledWith(folderMetadata.folder, content);
         }));
@@ -282,12 +283,12 @@ describe('Folder services', () => {
 
     describe('refreshBreadcrumbChildren', () => {
         const children = [{ id: '5' }];
-        
+
         beforeEach(inject(($q, FolderRestService, StateService) => {
             spyOn(FolderRestService, 'children').and.returnValue($q.when(children));
             spyOn(StateService, 'setBreadcrumbChildren').and.returnValue();
         }));
-        
+
         it('should fetch folder children', inject((FolderService, FolderRestService) => {
             // given
             const folderId = 'L215L3BlcnNvbmFsL2ZvbGRlcg==';
@@ -304,11 +305,11 @@ describe('Folder services', () => {
             // given
             const folderId = 'L215L3BlcnNvbmFsL2ZvbGRlcg==';
             expect(StateService.setBreadcrumbChildren).not.toHaveBeenCalledWith();
-        
+
             // when
             FolderService.refreshBreadcrumbChildren(folderId);
             $rootScope.$digest();
-        
+
             // then
             expect(StateService.setBreadcrumbChildren).toHaveBeenCalledWith(
                 folderId,

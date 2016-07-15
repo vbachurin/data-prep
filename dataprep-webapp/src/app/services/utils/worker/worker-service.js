@@ -35,7 +35,7 @@ export default function WorkerService($q) {
     function create(parameters, options) {
         var operation = new Parallel(parameters, options);
         var defer = $q.defer();
-        var workerOperator =  {operation: operation, defer: defer};
+        var workerOperator =  { operation: operation, defer: defer };
 
         workerOperator.importScripts = (scriptUrl) => {
             operation.require(scriptUrl);
@@ -50,7 +50,7 @@ export default function WorkerService($q) {
             return defer.promise;
         };
         workerOperator.cancel = () => {
-            defer.reject('user cancel')
+            defer.reject('user cancel');
         };
 
         return workerOperator;

@@ -14,7 +14,8 @@
 describe('Not Blank Validation directive', function() {
     'use strict';
 
-    var scope, createElement;
+    var scope;
+    var createElement;
 
     beforeEach(angular.mock.module('data-prep.validation'));
 
@@ -50,7 +51,6 @@ describe('Not Blank Validation directive', function() {
 
         //then
         expect(scope.myForm.$invalid).toBeTruthy();
-
     });
 
     it('should validate input when it cannot be blank and input is not empty', function() {

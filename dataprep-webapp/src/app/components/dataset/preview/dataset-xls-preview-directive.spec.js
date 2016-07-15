@@ -14,7 +14,9 @@
 'use strict';
 
 describe('Dataset upload list directive', function() {
-    var scope, createElement, element;
+    var scope;
+    var createElement;
+    var element;
 
     beforeEach(angular.mock.module('data-prep.dataset-xls-preview'));
     beforeEach(angular.mock.module('htmlTemplates'));
@@ -53,7 +55,7 @@ describe('Dataset upload list directive', function() {
         expect(nameInput.value).toBeFalsy();
 
         //when
-        DatasetSheetPreviewService.currentMetadata = {name: 'my sheet'};
+        DatasetSheetPreviewService.currentMetadata = { name: 'my sheet' };
         scope.$digest();
 
         //then
@@ -68,7 +70,7 @@ describe('Dataset upload list directive', function() {
         //when
         DatasetSheetPreviewService.currentMetadata = {
             schemaParserResult: {
-                sheetContents: [{name: 'my first sheet'}, {name: 'my second sheet'}, {name: 'my third sheet'}]
+                sheetContents: [{ name: 'my first sheet' }, { name: 'my second sheet' }, { name: 'my third sheet' }]
             }
         };
         DatasetSheetPreviewService.selectedSheetName = 'my second sheet';

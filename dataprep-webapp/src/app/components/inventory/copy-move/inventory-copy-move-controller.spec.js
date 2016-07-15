@@ -12,7 +12,10 @@
  ============================================================================*/
 
 describe('InventoryCopyMove controller', () => {
-    let createController, scope, ctrl, $element;
+    let createController;
+    let scope;
+    let ctrl;
+    let $element;
 
     beforeEach(angular.mock.module('data-prep.inventory-copy-move'));
 
@@ -21,9 +24,9 @@ describe('InventoryCopyMove controller', () => {
         $element = {};
         createController = () => {
             return $componentController('inventoryCopyMove', {
-                    $scope: scope,
-                    $element: $element,
-                },
+                $scope: scope,
+                $element: $element,
+            },
                 {
                     item: { name: 'my item' },
                     initialFolder: {

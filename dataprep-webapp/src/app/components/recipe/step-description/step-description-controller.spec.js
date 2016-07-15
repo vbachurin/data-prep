@@ -12,7 +12,8 @@
  ============================================================================*/
 
 describe('Step Description controller', () => {
-    let createController, scope;
+    let createController;
+    let scope;
 
     beforeEach(angular.mock.module('data-prep.step-description'));
 
@@ -67,7 +68,6 @@ describe('Step Description controller', () => {
 
             //then
             expect(ctrl.stepDescription).toBe('6. Split on column <b>COL1</b>');
-
         });
 
         it('should translate description on scope: cell', () => {
@@ -103,7 +103,6 @@ describe('Step Description controller', () => {
 
             //then
             expect(ctrl.stepDescription).toBe('3. Replace value on cell');
-
         });
 
         it('should translate description on scope: line', () => {
@@ -137,7 +136,6 @@ describe('Step Description controller', () => {
 
             //then
             expect(ctrl.stepDescription).toBe('1. Delete Line <b>#125</b>');
-
         });
 
         describe('translate description on scope: dataset, ', () => {
@@ -324,10 +322,8 @@ describe('Step Description controller', () => {
 
                     //then
                     expect(ctrl.stepDescription).toBe('1. Split on column <b>COL1</b>');
-
                 });
             });
         });
     });
 });
-

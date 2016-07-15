@@ -59,7 +59,7 @@ class InventoryService {
      * @description add html label to data based on searchValue and sort the results
      */
     addHtmlLabelsAndSort(searchValue, data) {
-        let inventory_items = [];
+        let inventoryItems = [];
 
         if (data.datasets && data.datasets.length) {
             _.each(data.datasets, function (item) {
@@ -77,26 +77,25 @@ class InventoryService {
                 itemToDisplay.tooltipName = item.name;
                 itemToDisplay.owner = item.owner;
 
-                inventory_items.push(itemToDisplay);
+                inventoryItems.push(itemToDisplay);
             });
-
         }
         if (data.preparations && data.preparations.length) {
             _.each(data.preparations, function (item) {
                 item.inventoryType = 'preparation';
                 item.tooltipName = item.name;
             });
-            inventory_items = inventory_items.concat(data.preparations);
+            inventoryItems = inventoryItems.concat(data.preparations);
         }
         if (data.folders && data.folders.length) {
             _.each(data.folders, function (item) {
                 item.inventoryType = 'folder';
                 item.tooltipName = item.name;
             });
-            inventory_items = inventory_items.concat(data.folders);
+            inventoryItems = inventoryItems.concat(data.folders);
         }
 
-        return _.chain(inventory_items)
+        return _.chain(inventoryItems)
             .map((item) => {
                 this.TextFormatService.highlight(item, 'name', searchValue, 'highlighted');
                 return item;

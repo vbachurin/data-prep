@@ -169,7 +169,7 @@ export default function DatasetListService($q, state, DatasetRestService, StateS
      * @returns {promise} Promise that resolves datasetsList
      */
     function getDatasetsPromise() {
-        return datasetsPromise ? datasetsPromise : refreshDatasets();
+        return datasetsPromise || refreshDatasets();
     }
 
     /**

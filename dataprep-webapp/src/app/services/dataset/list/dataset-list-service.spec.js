@@ -14,7 +14,8 @@
 describe('Dataset List Service', () => {
     'use strict';
 
-    let datasets, stateMock;
+    let datasets;
+    let stateMock;
     let restPromise;
 
     function initDatasets() {
@@ -59,13 +60,13 @@ describe('Dataset List Service', () => {
     }
 
     const sortList = [
-        {id: 'name', name: 'NAME_SORT', property: 'name'},
-        {id: 'date', name: 'DATE_SORT', property: 'created'}
+        { id: 'name', name: 'NAME_SORT', property: 'name' },
+        { id: 'date', name: 'DATE_SORT', property: 'created' }
     ];
 
     const orderList = [
-        {id: 'asc', name: 'ASC_ORDER'},
-        {id: 'desc', name: 'DESC_ORDER'}
+        { id: 'asc', name: 'ASC_ORDER' },
+        { id: 'desc', name: 'DESC_ORDER' }
     ];
 
     beforeEach(angular.mock.module('data-prep.services.dataset', ($provide) => {
@@ -96,12 +97,12 @@ describe('Dataset List Service', () => {
     describe('getter/refresher', () => {
         describe('nominal', () => {
             beforeEach(inject(($q, DatasetRestService) => {
-                spyOn(DatasetRestService, 'getDatasets').and.returnValue($q.when({data: datasets.slice(0)}));
+                spyOn(DatasetRestService, 'getDatasets').and.returnValue($q.when({ data: datasets.slice(0) }));
             }));
 
             it('should refresh dataset list', inject(($rootScope, DatasetListService, StateService) => {
                 //given
-                stateMock.inventory.datasets = [{name: 'my dataset'}, {name: 'my second dataset'}];
+                stateMock.inventory.datasets = [{ name: 'my dataset' }, { name: 'my second dataset' }];
 
                 //when
                 DatasetListService.refreshDatasets();
@@ -113,7 +114,7 @@ describe('Dataset List Service', () => {
 
             it('should trigger another refresh when one is already pending with different sort condition', inject(($rootScope, DatasetListService, DatasetRestService, StateService) => {
                 //given
-                stateMock.inventory.datasets = [{name: 'my dataset'}, {name: 'my second dataset'}];
+                stateMock.inventory.datasets = [{ name: 'my dataset' }, { name: 'my second dataset' }];
                 DatasetListService.refreshDatasets();
 
                 //when
@@ -172,15 +173,14 @@ describe('Dataset List Service', () => {
     });
 
     describe('create', () => {
-
         beforeEach(inject(($q, DatasetRestService) => {
-            spyOn(DatasetRestService, 'getDatasets').and.returnValue($q.when({data: datasets.slice(0)}));
+            spyOn(DatasetRestService, 'getDatasets').and.returnValue($q.when({ data: datasets.slice(0) }));
         }));
 
         it('should create dataset', inject(($rootScope, DatasetListService, DatasetRestService) => {
             //given
-            const dataset = {name: 'my dataset'};
-            var file = {id: '0001'};
+            const dataset = { name: 'my dataset' };
+            var file = { id: '0001' };
             var contentType = 'text/plain';
 
             //when
@@ -193,7 +193,7 @@ describe('Dataset List Service', () => {
 
         it('should refresh datasets list', inject(($rootScope, DatasetListService, DatasetRestService) => {
             //given
-            const dataset = {name: 'my dataset'};
+            const dataset = { name: 'my dataset' };
 
             //when
             DatasetListService.create(dataset);
@@ -205,7 +205,7 @@ describe('Dataset List Service', () => {
 
         it('should return original REST promise (not the promise with dataset list refresh)', inject(($rootScope, DatasetListService) => {
             //given
-            const dataset = {name: 'my dataset'};
+            const dataset = { name: 'my dataset' };
 
             //when
             const promise = DatasetListService.create(dataset);
@@ -216,9 +216,8 @@ describe('Dataset List Service', () => {
     });
 
     describe('clone', () => {
-
         beforeEach(inject(($q, DatasetRestService) => {
-            spyOn(DatasetRestService, 'getDatasets').and.returnValue($q.when({data: datasets.slice(0)}));
+            spyOn(DatasetRestService, 'getDatasets').and.returnValue($q.when({ data: datasets.slice(0) }));
         }));
 
         it('should call rest service clone', inject((DatasetRestService, DatasetListService) => {
@@ -248,14 +247,13 @@ describe('Dataset List Service', () => {
     });
 
     describe('update', () => {
-
         beforeEach(inject(($q, DatasetRestService) => {
-            spyOn(DatasetRestService, 'getDatasets').and.returnValue($q.when({data: datasets.slice(0)}));
+            spyOn(DatasetRestService, 'getDatasets').and.returnValue($q.when({ data: datasets.slice(0) }));
         }));
 
         it('should update dataset', inject(($rootScope, DatasetListService, DatasetRestService) => {
             //given
-            const dataset = {name: 'my dataset'};
+            const dataset = { name: 'my dataset' };
 
             //when
             DatasetListService.update(dataset);
@@ -267,7 +265,7 @@ describe('Dataset List Service', () => {
 
         it('should refresh datasets list', inject(($rootScope, DatasetListService, DatasetRestService) => {
             //given
-            const dataset = {name: 'my dataset'};
+            const dataset = { name: 'my dataset' };
 
             //when
             DatasetListService.update(dataset);
@@ -279,7 +277,7 @@ describe('Dataset List Service', () => {
 
         it('should return original REST promise (not the promise with dataset list refresh)', inject(($rootScope, DatasetListService) => {
             //given
-            const dataset = {name: 'my dataset'};
+            const dataset = { name: 'my dataset' };
 
             //when
             const promise = DatasetListService.update(dataset);
@@ -290,9 +288,8 @@ describe('Dataset List Service', () => {
     });
 
     describe('delete', () => {
-
         beforeEach(inject(($q, DatasetRestService) => {
-            spyOn(DatasetRestService, 'getDatasets').and.returnValue($q.when({data: datasets.slice(0)}));
+            spyOn(DatasetRestService, 'getDatasets').and.returnValue($q.when({ data: datasets.slice(0) }));
         }));
 
         it('should delete dataset', inject(($rootScope, DatasetListService, DatasetRestService) => {
@@ -321,14 +318,13 @@ describe('Dataset List Service', () => {
     });
 
     describe('certification', () => {
-
         beforeEach(inject(($q, DatasetRestService) => {
-            spyOn(DatasetRestService, 'getDatasets').and.returnValue($q.when({data: datasets.slice(0)}));
+            spyOn(DatasetRestService, 'getDatasets').and.returnValue($q.when({ data: datasets.slice(0) }));
         }));
 
         it('should process certification on dataset', inject(($rootScope, DatasetListService, DatasetRestService) => {
             //given
-            const dataset = {id: '6a543545de46512bf8651c'};
+            const dataset = { id: '6a543545de46512bf8651c' };
 
             //when
             DatasetListService.processCertification(dataset);
@@ -340,7 +336,7 @@ describe('Dataset List Service', () => {
 
         it('should refresh datasets list', inject(($rootScope, DatasetListService, DatasetRestService) => {
             //given
-            const dataset = {id: '6a543545de46512bf8651c'};
+            const dataset = { id: '6a543545de46512bf8651c' };
 
             //when
             DatasetListService.processCertification(dataset);
@@ -352,14 +348,13 @@ describe('Dataset List Service', () => {
     });
 
     describe('toggle', () => {
-
         beforeEach(inject(($q, DatasetRestService) => {
-            spyOn(DatasetRestService, 'getDatasets').and.returnValue($q.when({data: datasets.slice(0)}));
+            spyOn(DatasetRestService, 'getDatasets').and.returnValue($q.when({ data: datasets.slice(0) }));
         }));
 
         it('should toggle dataset', inject(($rootScope, DatasetListService, DatasetRestService) => {
             //given
-            const dataset = {name: 'my dataset', favorite: true};
+            const dataset = { name: 'my dataset', favorite: true };
 
             //when
             DatasetListService.toggleFavorite(dataset);
@@ -372,7 +367,7 @@ describe('Dataset List Service', () => {
 
         it('should refresh datasets list', inject(($rootScope, DatasetListService, DatasetRestService) => {
             //given
-            const dataset = {name: 'my dataset', favorite: true};
+            const dataset = { name: 'my dataset', favorite: true };
 
             //when
             DatasetListService.toggleFavorite(dataset);

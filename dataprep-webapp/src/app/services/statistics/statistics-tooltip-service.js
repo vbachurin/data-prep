@@ -19,15 +19,15 @@
 export default function StatisticsTooltipService($translate, state) {
     'ngInject';
 
-    var TOOLTIP_TEMPLATE = _.template(
+    const tooltipTemplate = _.template(
         '<strong><%= label %>: </strong><span style="color:yellow"><%= primaryValue %></span>' +
         '<br/><br/>' +
         '<strong><%= title %>: </strong><span style="color:yellow"><%= key %></span>'
     );
 
-    var TOOLTIP_FILTERED_TEMPLATE = _.template('');
-    $translate(['TOOLTIP_MATCHING_FILTER', 'TOOLTIP_MATCHING_FULL']).then(function (messages) {
-        TOOLTIP_FILTERED_TEMPLATE = _.template(
+    let tooltipFilteredTemplate = _.template('');
+    $translate(['TOOLTIP_MATCHING_FILTER', 'TOOLTIP_MATCHING_FULL']).then((messages) => {
+        tooltipFilteredTemplate = _.template(
             '<strong><%= label %> ' + messages.TOOLTIP_MATCHING_FILTER + ': </strong><span style="color:yellow"><%= secondaryValue %> <%= percentage %></span>' +
             '<br/><br/>' +
             '<strong><%= label %> ' + messages.TOOLTIP_MATCHING_FULL + ': </strong><span style="color:yellow"><%= primaryValue %></span>' +
@@ -36,9 +36,9 @@ export default function StatisticsTooltipService($translate, state) {
         );
     });
 
-    var TOOLTIP_FILTERED_AGGREG_TEMPLATE = _.template('');
-    $translate(['TOOLTIP_MATCHING_FILTER']).then(function (messages) {
-        TOOLTIP_FILTERED_AGGREG_TEMPLATE = _.template(
+    let tooltipFilteredAggregTemplate = _.template('');
+    $translate(['TOOLTIP_MATCHING_FILTER']).then((messages) => {
+        tooltipFilteredAggregTemplate = _.template(
             '<strong><%= label %> ' + messages.TOOLTIP_MATCHING_FILTER + ': </strong><span style="color:yellow"><%= primaryValue %></span>' +
             '<br/><br/>' +
             '<strong><%= title %>: </strong><span style="color:yellow"><%= key %></span>'
@@ -92,17 +92,21 @@ export default function StatisticsTooltipService($translate, state) {
 
             if (uniqueValue) {
                 keyString = key[0];
-            } else {
-                if(key[0] <=  rangeLimits.min) {
+            }
+            else {
+                if (key[0] <=  rangeLimits.min) {
                     if (key[1] >= rangeLimits.max) {
                         keyString = '[' + minLabel + ',' +  maxLabel + ']';
-                    } else {
+                    }
+                    else {
                         keyString = '[' + minLabel + ',' +  key[1] + '[';
                     }
-                } else {
+                }
+                else {
                     if (key[1] >= rangeLimits.max) {
                         keyString = '[' + key[0] + ',' +  maxLabel + ']';
-                    } else {
+                    }
+                    else {
                         keyString = '[' + key[0] + ',' + key[1] + '[';
                     }
                 }
@@ -111,7 +115,7 @@ export default function StatisticsTooltipService($translate, state) {
 
         if (state.playground.filter.gridFilters.length) {
             if (state.playground.statistics.histogram.aggregation) {
-                return TOOLTIP_FILTERED_AGGREG_TEMPLATE({
+                return tooltipFilteredAggregTemplate({
                     label: keyLabel,
                     title: title,
                     key: keyString,
@@ -120,7 +124,7 @@ export default function StatisticsTooltipService($translate, state) {
             }
             else {
                 var percentage = getPercentage(secondaryValue, primaryValue);
-                return TOOLTIP_FILTERED_TEMPLATE({
+                return tooltipFilteredTemplate({
                     label: keyLabel,
                     title: title,
                     percentage: percentage,
@@ -131,7 +135,7 @@ export default function StatisticsTooltipService($translate, state) {
             }
         }
         else {
-            return TOOLTIP_TEMPLATE({
+            return tooltipTemplate({
                 label: keyLabel,
                 title: title,
                 key: keyString,

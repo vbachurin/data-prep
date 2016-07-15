@@ -15,10 +15,10 @@ export default function FilterListCtrl() {
     var vm = this;
 
     vm.changeFilter = function changeFilter(filter, value) {
-        vm.onFilterChange({filter, value});
+        vm.onFilterChange({ filter, value });
     };
 
     vm.removeFilter = function removeFilter(filter) {
-        vm.onFilterRemove({filter});
+        vm.onFilterRemove({ filter });
     };
 }

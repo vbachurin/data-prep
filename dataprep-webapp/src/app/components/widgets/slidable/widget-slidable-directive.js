@@ -102,7 +102,7 @@ export default function TalendSlidable($window) {
             scope.$watch(
                 () => ctrl.visible,
                 (visible) => {
-                    if(visible) {
+                    if (visible) {
                         iElement.removeClass('slide-hide');
                     }
                     else {

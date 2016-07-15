@@ -41,4 +41,3 @@ class DocumentationSearchCtrl {
 }
 
 export default DocumentationSearchCtrl;
-

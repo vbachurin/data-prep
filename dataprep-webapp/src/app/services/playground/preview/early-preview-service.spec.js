@@ -2,10 +2,10 @@ describe('Early Preview Service', () => {
     'use strict';
 
     var stateMock;
-    var dataset = {id: '123456'};
-    var preparation = {id: '456789'};
-    var column = {id: '0001', name: 'firstname'};
-    var line = {tdpId: 125};
+    var dataset = { id: '123456' };
+    var preparation = { id: '456789' };
+    var column = { id: '0001', name: 'firstname' };
+    var line = { tdpId: 125 };
     var transfoScope;
     var transformation;
     var params;

@@ -32,7 +32,7 @@ export default class ImportService {
      */
     initImport() {
         return this.ImportRestService.importTypes()
-            .then( (response) => {
+            .then((response) => {
                 this.StateService.setImportTypes(response.data);
             });
     }

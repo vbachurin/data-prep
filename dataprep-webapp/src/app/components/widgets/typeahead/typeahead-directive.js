@@ -77,11 +77,15 @@ export default function Typeahead($timeout, $window) {
                 }
 
                 function getCurrentItem() {
-                    return iElement.find('ul').eq(0).find('li.' + selectedClass).eq(0);
+                    return iElement.find('ul')
+                        .eq(0)
+                        .find('li.' + selectedClass)
+                        .eq(0);
                 }
 
                 input.keydown((event) => {
-                    let current, next;
+                    let current;
+                    let next;
 
                     switch (event.keyCode) {
                         case 27: //ESC

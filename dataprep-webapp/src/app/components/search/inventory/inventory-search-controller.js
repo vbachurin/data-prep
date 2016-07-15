@@ -90,4 +90,3 @@ class InventorySearchCtrl {
 }
 
 export default InventorySearchCtrl;
-

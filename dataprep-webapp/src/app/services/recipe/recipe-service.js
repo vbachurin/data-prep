@@ -205,7 +205,7 @@ export default function RecipeService(state, PreparationService, TransformationS
      * @returns {object} The last active step
      */
     function getLastActiveStep() {
-        return activeThresholdStep ? activeThresholdStep : getLastStep();
+        return activeThresholdStep || getLastStep();
     }
 
     /**
@@ -385,7 +385,7 @@ export default function RecipeService(state, PreparationService, TransformationS
         //steps ids are in reverse order and the last is the 'no-transformation' id
         var steps = details.steps.slice(0);
         var initialStepId = steps.shift();
-        initialState = {transformation: {stepId: initialStepId}};
+        initialState = { transformation: { stepId: initialStepId } };
 
         var oldRecipe = recipe;
         var newRecipe = _.chain(steps)
@@ -397,14 +397,16 @@ export default function RecipeService(state, PreparationService, TransformationS
 
         //TODO : Move this in a recipe-bullet-directive
         //remove "single-maillon-cables-disabled" class of bullet cables when refreshing recipe
-        var allDisabledCables = angular.element('.recipe').eq(0).find('.single-maillon-cables-disabled').toArray();
-        _.each(allDisabledCables, function (cable) {
+        var allDisabledCables = angular.element('.recipe').eq(0)
+            .find('.single-maillon-cables-disabled')
+            .toArray();
+        _.each(allDisabledCables, (cable) => {
             cable.setAttribute('class', '');
         });
 
         initDynamicParams({
-            'old': oldRecipe,
-            'new': newRecipe
+            old: oldRecipe,
+            new: newRecipe
         });
 
         return details;
@@ -447,9 +449,9 @@ export default function RecipeService(state, PreparationService, TransformationS
     function earlyPreview(transformation, params) {
         //save state if not already in preview mode
         recipeStateBeforePreview = recipeStateBeforePreview || {
-                recipe: recipe,
-                lastActiveStep: activeThresholdStep
-            };
+            recipe: recipe,
+            lastActiveStep: activeThresholdStep
+        };
 
         var stepFilters = state.playground.filter.applyTransformationOnFilters ?
             state.playground.filter.gridFilters.slice(0) :

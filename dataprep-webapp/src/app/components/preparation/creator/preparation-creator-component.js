@@ -31,4 +31,4 @@ export default {
         showAddPrepModal: '='
     },
     templateUrl: 'app/components/preparation/creator/preparation-creator.html'
-}
+};

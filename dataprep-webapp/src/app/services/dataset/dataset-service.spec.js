@@ -14,7 +14,8 @@
 describe('Dataset Service', () => {
     'use strict';
 
-    let promiseWithProgress, stateMock;
+    let promiseWithProgress;
+    let stateMock;
 
     const datasets = [{ id: '11', name: 'my dataset' },
         { id: '22', name: 'my second dataset' },
@@ -514,7 +515,7 @@ describe('Dataset Service', () => {
             beforeEach(inject(($q, DatasetRestService) => {
                 let call = 0;
                 spyOn(DatasetRestService, 'getDatasetByName').and.callFake(() => {
-                    if(call === 0) {
+                    if (call === 0) {
                         call ++;
                         return $q.reject({});
                     }
@@ -529,7 +530,9 @@ describe('Dataset Service', () => {
 
                 // when
                 DatasetService.getUniqueName(name)
-                    .then((res) => { uniqueName = res; });
+                    .then((res) => {
+                        uniqueName = res;
+                    });
                 $rootScope.$digest();
 
                 // then
@@ -543,7 +546,9 @@ describe('Dataset Service', () => {
 
                 // when
                 DatasetService.getUniqueName(name)
-                    .then((res) => { uniqueName = res; });
+                    .then((res) => {
+                        uniqueName = res;
+                    });
                 $rootScope.$digest();
 
                 // then
@@ -562,8 +567,12 @@ describe('Dataset Service', () => {
 
                 // when
                 DatasetService.checkNameAvailability(name)
-                    .then(() => { resolved = true; })
-                    .catch((existingDataset) => { rejected = existingDataset; });
+                    .then(() => {
+                        resolved = true;
+                    })
+                    .catch((existingDataset) => {
+                        rejected = existingDataset;
+                    });
                 $rootScope.$digest();
 
                 // then
@@ -583,8 +592,12 @@ describe('Dataset Service', () => {
 
                 // when
                 DatasetService.checkNameAvailability(name)
-                    .then(() => { resolved = true; })
-                    .catch((existingDataset) => { rejected = existingDataset; });
+                    .then(() => {
+                        resolved = true;
+                    })
+                    .catch((existingDataset) => {
+                        rejected = existingDataset;
+                    });
                 $rootScope.$digest();
 
                 // then
@@ -624,7 +637,9 @@ describe('Dataset Service', () => {
 
             // when
             DatasetService.getCompatiblePreparations('11')
-                .then((preps) => { result = preps });
+                .then((preps) => {
+                    result = preps
+                });
             $rootScope.$digest();
 
             // then
@@ -644,7 +659,9 @@ describe('Dataset Service', () => {
 
             // when
             DatasetService.getCompatiblePreparations('11')
-                .then((preps) => { result = preps });
+                .then((preps) => {
+                    result = preps
+                });
             $rootScope.$digest();
 
             // then : it should have removed preparation[3]

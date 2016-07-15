@@ -21,11 +21,11 @@ describe('Filter Adapter Service', function () {
                 data: {
                     metadata: {
                         columns: [
-                            {id: '0000', name: 'firstname'},
-                            {id: '0001', name: 'lastname'},
-                            {id: '0002', name: 'birthdate'},
-                            {id: '0003', name: 'address'},
-                            {id: '0004', name: 'gender'}
+                            { id: '0000', name: 'firstname' },
+                            { id: '0001', name: 'lastname' },
+                            { id: '0002', name: 'birthdate' },
+                            { id: '0003', name: 'address' },
+                            { id: '0004', name: 'gender' }
                         ]
                     }
                 }

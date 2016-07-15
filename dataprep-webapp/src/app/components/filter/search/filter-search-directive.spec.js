@@ -13,8 +13,10 @@
 
 describe('Filter search directive', function() {
     'use strict';
-    
-    var scope, createElement, element;
+
+    var scope;
+    var createElement;
+    var element;
 
     beforeEach(angular.mock.module('data-prep.filter-search'));
     beforeEach(angular.mock.module('htmlTemplates'));
@@ -48,7 +50,7 @@ describe('Filter search directive', function() {
 
         var bodyEscEvent = false;
         var escEventListener = function(event) {
-            if(event.keyCode === 27) {
+            if (event.keyCode === 27) {
                 bodyEscEvent = true;
             }
         };
@@ -76,7 +78,7 @@ describe('Filter search directive', function() {
 
         var bodyEnterEvent = false;
         var escEventListener = function(event) {
-            if(event.keyCode === 13) {
+            if (event.keyCode === 13) {
                 bodyEnterEvent = true;
             }
         };

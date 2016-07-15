@@ -20,7 +20,8 @@ import TypeTransformMenu from './type-transformation-menu-directive';
     /**
      * @ngdoc object
      * @name data-prep.type-transformation-menu
-     * @description This module contains the controller and directives to manage the type transformation menu items
+     * @description This module contains the controller
+     * and directives to manage the type transformation menu items
      * @requires data-prep.services.dataset
      * @requires data-prep.services.playground
      * @requires data-prep.services.state

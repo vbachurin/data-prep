@@ -14,18 +14,19 @@
 describe('Type transform menu controller', function () {
     'use strict';
 
-    var createController, scope;
-    var currentMetadata = {id: '719b84635c436ef245'};
+    var createController;
+    var scope;
+    var currentMetadata = { id: '719b84635c436ef245' };
 
     var types = [
-        {'id': 'ANY', 'name': 'any', 'labelKey': 'ANY'},
-        {'id': 'STRING', 'name': 'string', 'labelKey': 'STRING'},
-        {'id': 'NUMERIC', 'name': 'numeric', 'labelKey': 'NUMERIC'},
-        {'id': 'INTEGER', 'name': 'integer', 'labelKey': 'INTEGER'},
-        {'id': 'DOUBLE', 'name': 'double', 'labelKey': 'DOUBLE'},
-        {'id': 'FLOAT', 'name': 'float', 'labelKey': 'FLOAT'},
-        {'id': 'BOOLEAN', 'name': 'boolean', 'labelKey': 'BOOLEAN'},
-        {'id': 'DATE', 'name': 'date', 'labelKey': 'DATE'}
+        { 'id': 'ANY', 'name': 'any', 'labelKey': 'ANY' },
+        { 'id': 'STRING', 'name': 'string', 'labelKey': 'STRING' },
+        { 'id': 'NUMERIC', 'name': 'numeric', 'labelKey': 'NUMERIC' },
+        { 'id': 'INTEGER', 'name': 'integer', 'labelKey': 'INTEGER' },
+        { 'id': 'DOUBLE', 'name': 'double', 'labelKey': 'DOUBLE' },
+        { 'id': 'FLOAT', 'name': 'float', 'labelKey': 'FLOAT' },
+        { 'id': 'BOOLEAN', 'name': 'boolean', 'labelKey': 'BOOLEAN' },
+        { 'id': 'DATE', 'name': 'date', 'labelKey': 'DATE' }
     ];
 
     beforeEach(angular.mock.module('data-prep.type-transformation-menu'));
@@ -44,10 +45,10 @@ describe('Type transform menu controller', function () {
                 domainFrequency: 18,
                 type: 'string',
                 semanticDomains: [
-                    {id: '', label: '', frequency: 15},
-                    {id: 'CITY', label: 'CITY', frequency: 18},
-                    {id: 'REGION', label: 'REGION', frequency: 6},
-                    {id: 'COUNTRY', label: 'COUNTRY', frequency: 17}
+                    { id: '', label: '', frequency: 15 },
+                    { id: 'CITY', label: 'CITY', frequency: 18 },
+                    { id: 'REGION', label: 'REGION', frequency: 6 },
+                    { id: 'COUNTRY', label: 'COUNTRY', frequency: 17 }
                 ]
             };
             return ctrl;
@@ -60,11 +61,11 @@ describe('Type transform menu controller', function () {
     it('should get column primitive types', inject(function (ColumnTypesService) {
         //given
         var expectedTypes = [
-            {'id': 'STRING', 'name': 'string', 'labelKey': 'STRING'},
-            {'id': 'INTEGER', 'name': 'integer', 'labelKey': 'INTEGER'},
-            {'id': 'FLOAT', 'name': 'float', 'labelKey': 'FLOAT'},
-            {'id': 'BOOLEAN', 'name': 'boolean', 'labelKey': 'BOOLEAN'},
-            {'id': 'DATE', 'name': 'date', 'labelKey': 'DATE'}
+            { 'id': 'STRING', 'name': 'string', 'labelKey': 'STRING' },
+            { 'id': 'INTEGER', 'name': 'integer', 'labelKey': 'INTEGER' },
+            { 'id': 'FLOAT', 'name': 'float', 'labelKey': 'FLOAT' },
+            { 'id': 'BOOLEAN', 'name': 'boolean', 'labelKey': 'BOOLEAN' },
+            { 'id': 'DATE', 'name': 'date', 'labelKey': 'DATE' }
         ];
 
         //when
@@ -184,9 +185,9 @@ describe('Type transform menu controller', function () {
 
         //then
         expect(ctrl.domains).toEqual([
-            {id: 'CITY', label: 'CITY', frequency: 18},
-            {id: 'COUNTRY', label: 'COUNTRY', frequency: 17},
-            {id: 'REGION', label: 'REGION', frequency: 6}
+            { id: 'CITY', label: 'CITY', frequency: 18 },
+            { id: 'COUNTRY', label: 'COUNTRY', frequency: 17 },
+            { id: 'REGION', label: 'REGION', frequency: 6 }
         ]);
         expect(ctrl.currentDomain).toBe('CITY');
         expect(ctrl.currentSimplifiedDomain).toBe('CITY');
@@ -196,7 +197,7 @@ describe('Type transform menu controller', function () {
         //given
         var ctrl = createController();
         ctrl.currentDomain = 'double';
-        var type = {'id': 'FLOAT', 'name': 'float', 'labelKey': 'FLOAT'};
+        var type = { 'id': 'FLOAT', 'name': 'float', 'labelKey': 'FLOAT' };
 
         //when
         var result = ctrl.shouldBeChecked(type);
@@ -209,7 +210,7 @@ describe('Type transform menu controller', function () {
         //given
         var ctrl = createController();
         ctrl.currentDomain = 'float';
-        var type = {'id': 'FLOAT', 'name': 'float', 'labelKey': 'FLOAT'};
+        var type = { 'id': 'FLOAT', 'name': 'float', 'labelKey': 'FLOAT' };
 
         //when
         var result = ctrl.shouldBeChecked(type);
@@ -222,7 +223,7 @@ describe('Type transform menu controller', function () {
         //given
         var ctrl = createController();
         ctrl.currentDomain = 'beer_name'; // maybe dq library could detect beers names?
-        var type = {'id': 'STRING', 'name': 'string', 'labelKey': 'STRING'};
+        var type = { 'id': 'STRING', 'name': 'string', 'labelKey': 'STRING' };
 
         //when
         var result = ctrl.shouldBeChecked(type);
@@ -235,7 +236,7 @@ describe('Type transform menu controller', function () {
         //given
         var ctrl = createController();
         ctrl.currentDomain = 'integer';
-        var type = {'id': 'INTEGER', 'name': 'integer', 'labelKey': 'INTEGER'};
+        var type = { 'id': 'INTEGER', 'name': 'integer', 'labelKey': 'INTEGER' };
 
         //when
         var result = ctrl.shouldBeChecked(type);

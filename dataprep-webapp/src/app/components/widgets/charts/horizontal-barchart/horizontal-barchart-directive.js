@@ -73,13 +73,16 @@ export default function HorizontalBarchart($timeout) {
         link: function (scope, element, attrs) {
             var BAR_MIN_WIDTH = 3;
             var containerId = '#' + attrs.id;
-            var renderPrimaryTimeout, renderSecondaryTimeout;
+            var renderPrimaryTimeout;
+            var renderSecondaryTimeout;
 
             // Define chart sizes and margin
-            var margin = {top: 15, right: 20, bottom: 10, left: 10};
+            var margin = { top: 15, right: 20, bottom: 10, left: 10 };
             var containerWidth = +attrs.width;
 
-            let selectedValues, min, max;
+            let selectedValues;
+            let min;
+            let max;
             selectedValues = [];
             min = max = -1;
 
@@ -128,7 +131,8 @@ export default function HorizontalBarchart($timeout) {
             //------------------------------------------------------------------------------------------------------
             //------------------------------------------- Chart utils ----------------------------------------------
             //------------------------------------------------------------------------------------------------------
-            var xScale, yScale;
+            var xScale;
+            var yScale;
             var xAxis;
             var svg;
 
@@ -143,7 +147,6 @@ export default function HorizontalBarchart($timeout) {
             }
 
             function initAxes(height) {
-
                 var ticksThreshold;
                 if (xScale.domain()[1] >= 1e9) {
                     ticksThreshold = 2;
@@ -213,9 +216,8 @@ export default function HorizontalBarchart($timeout) {
                     })
                     .attr('height', yScale.rangeBand())
                     .attr('width', xScale(0))
-                    .transition().delay(function (d, i) {
-                        return i * 30;
-                    })
+                    .transition()
+                    .delay((d, i) => i * 30)
                     .attr('width', function (d) {
                         var realWidth = xScale(getValue(d));
                         return adaptToMinHeight(realWidth);
@@ -283,24 +285,26 @@ export default function HorizontalBarchart($timeout) {
                         let index = _.findIndex(statData, d);
                         if (d3.event.ctrlKey || d3.event.metaKey) {
                             _.find(selectedValues, item) ? _.remove(selectedValues, item) : selectedValues.push(item);
-                            scope.onCtrlClick({item});
-                        } else if (d3.event.shiftKey) {
+                            scope.onCtrlClick({ item });
+                        }
+                        else if (d3.event.shiftKey) {
                             if (min > -1 && max > -1 && index > min && index < max) {
                                 let previousMax = max;
                                 max = index;
                                 for (let i = (index + 1); i <= previousMax; i++) {
                                     let currentItem = _.extend({}, statData[i]);
                                     _.remove(selectedValues, currentItem);
-                                    scope.onCtrlClick({item: currentItem});
+                                    scope.onCtrlClick({ item: currentItem });
                                 }
-                            } else {
+                            }
+                            else {
                                 min < 0 ? (min = index) : (min = index < min ? index : min);
                                 max < 0 ? (max = index) : (max = index > max ? index : max);
                                 for (let i = min; i <= max; i++) {
                                     let currentItem = _.extend({}, statData[i]);
                                     if (!_.find(selectedValues, currentItem)) {
                                         selectedValues.push(currentItem);
-                                        scope.onCtrlClick({item: currentItem});
+                                        scope.onCtrlClick({ item: currentItem });
                                     }
                                 }
                             }
@@ -309,12 +313,13 @@ export default function HorizontalBarchart($timeout) {
                             selectedValues = [];
                             if (_.find(selectedValues, item)) {
                                 min = max = -1;
-                            } else {
+                            }
+                            else {
                                 selectedValues.push(item);
                                 min = max = index;
                             }
                             //create a new reference as the data object could be modified outside the component
-                            scope.onClick({item});
+                            scope.onClick({ item });
                         }
                     });
             }

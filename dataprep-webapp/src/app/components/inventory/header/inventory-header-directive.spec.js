@@ -14,7 +14,9 @@
 describe('Inventory header directive', () => {
     'use strict';
 
-    let createElement, scope, element;
+    let createElement;
+    let scope;
+    let element;
 
     beforeEach(angular.mock.module('pascalprecht.translate', ($translateProvider) => {
         $translateProvider.translations('en', {
@@ -34,12 +36,12 @@ describe('Inventory header directive', () => {
     beforeEach(inject(($rootScope, $compile) => {
         scope = $rootScope.$new(true);
         scope.sortList = [
-            {id: 'name', name: 'NAME_SORT', property: 'name'},
-            {id: 'date', name: 'DATE_SORT', property: 'created'},
+            { id: 'name', name: 'NAME_SORT', property: 'name' },
+            { id: 'date', name: 'DATE_SORT', property: 'created' },
         ];
         scope.orderList = [
-            {id: 'asc', name: 'ASC_ORDER'},
-            {id: 'desc', name: 'DESC_ORDER'},
+            { id: 'asc', name: 'ASC_ORDER' },
+            { id: 'desc', name: 'DESC_ORDER' },
         ];
         scope.sort = scope.sortList[0];
         scope.order = scope.orderList[0];
@@ -144,8 +146,8 @@ describe('Inventory header directive', () => {
     describe('sort control', () => {
         it('should render sort switch', () => {
             //given
-            scope.sort = {id: 'name', name: 'NAME_SORT', property: 'name'};
-            scope.order = {id: 'asc', name: 'ASC_ORDER'};
+            scope.sort = { id: 'name', name: 'NAME_SORT', property: 'name' };
+            scope.order = { id: 'asc', name: 'ASC_ORDER' };
 
             // when
             createElement();
@@ -178,5 +180,4 @@ describe('Inventory header directive', () => {
             expect(scope.onOrderChange).toHaveBeenCalledWith(scope.orderList[1]);
         });
     });
-
 });

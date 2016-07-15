@@ -14,7 +14,9 @@
 describe('Navbar controller', function () {
     'use strict';
 
-    var createController, scope, $stateMock;
+    var createController;
+    var scope;
+    var $stateMock;
 
     beforeEach(angular.mock.module('data-prep.navbar'));
 
@@ -40,7 +42,7 @@ describe('Navbar controller', function () {
         it('should start tour on dataset page', inject(function ($timeout, DatasetService, OnboardingService) {
             //given
             $stateMock.params = {};
-            $stateMock.current = {name: 'nav.index.datasets'};
+            $stateMock.current = { name: 'nav.index.datasets' };
 
             //when
             createController();
@@ -53,7 +55,7 @@ describe('Navbar controller', function () {
         it('should start tour on preparation page', inject(function (DatasetService, OnboardingService) {
             //given
             $stateMock.params = {};
-            $stateMock.current = {name: 'nav.index.preparations'};
+            $stateMock.current = { name: 'nav.index.preparations' };
 
             //when
             createController();
@@ -65,8 +67,8 @@ describe('Navbar controller', function () {
 
         it('should not start tour on dataset playground page', inject(function ($timeout, DatasetService, OnboardingService) {
             //given
-            $stateMock.params = {datasetid: '154645'};
-            $stateMock.current = {name: 'nav.index.datasets'};
+            $stateMock.params = { datasetid: '154645' };
+            $stateMock.current = { name: 'nav.index.datasets' };
 
             //when
             createController();
@@ -79,7 +81,7 @@ describe('Navbar controller', function () {
         it('should not start tour on other than dataset page', inject(function ($timeout, DatasetService, OnboardingService) {
             //given
             $stateMock.params = {};
-            $stateMock.current = {name: 'nav.index.other'};
+            $stateMock.current = { name: 'nav.index.other' };
 
             //when
             createController();
@@ -98,7 +100,7 @@ describe('Navbar controller', function () {
         it('should not start tour on dataset page', inject(function ($timeout, DatasetService, OnboardingService) {
             //given
             $stateMock.params = {};
-            $stateMock.current = {name: 'nav.index.datasets'};
+            $stateMock.current = { name: 'nav.index.datasets' };
 
             //when
             createController();
@@ -118,7 +120,7 @@ describe('Navbar controller', function () {
         it('should open feedback modal', inject(function (StateService) {
             //given
             $stateMock.params = {};
-            $stateMock.current = {name: 'nav.index.datasets'};
+            $stateMock.current = { name: 'nav.index.datasets' };
             var ctrl = createController();
 
             //given

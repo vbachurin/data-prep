@@ -40,11 +40,11 @@ describe('Suggestions state service', function () {
         it('should set line transformations', inject(function (suggestionsState, SuggestionsStateService) {
             //given
             var transformations = {
-                allTransformations: [{name: 'delete'}, {name: 'uppercase'}],
-                filteredTransformations: [{name: 'delete'}],
+                allTransformations: [{ name: 'delete' }, { name: 'uppercase' }],
+                filteredTransformations: [{ name: 'delete' }],
                 allCategories: {
-                    'clean': [{name: 'delete'}],
-                    'case': [{name: 'uppercase'}]
+                    'clean': [{ name: 'delete' }],
+                    'case': [{ name: 'uppercase' }]
                 }
             };
             expect(suggestionsState.line).not.toBe(transformations);
@@ -70,9 +70,9 @@ describe('Suggestions state service', function () {
         it('should set column transformations', inject(function (suggestionsState, SuggestionsStateService) {
             //given
             var transformations = {
-                allTransformations: [{name: 'delete'}, {name: 'uppercase'}],
-                filteredTransformations: [{name: 'delete'}],
-                allSuggestions: [{name: 'delete'}, {name: 'uppercase'}],
+                allTransformations: [{ name: 'delete' }, { name: 'uppercase' }],
+                filteredTransformations: [{ name: 'delete' }],
+                allSuggestions: [{ name: 'delete' }, { name: 'uppercase' }],
                 allCategories: [{}],
                 searchActionString: ''
             };
@@ -88,9 +88,9 @@ describe('Suggestions state service', function () {
         it('should reset column transformations when the new transformations are undefined', inject(function (suggestionsState, SuggestionsStateService) {
             //given
             suggestionsState.column = {
-                allTransformations: [{name: 'delete'}, {name: 'uppercase'}],
-                filteredTransformations: [{name: 'delete'}],
-                allSuggestions: [{name: 'delete'}, {name: 'uppercase'}],
+                allTransformations: [{ name: 'delete' }, { name: 'uppercase' }],
+                filteredTransformations: [{ name: 'delete' }],
+                allSuggestions: [{ name: 'delete' }, { name: 'uppercase' }],
                 allCategories: [{}],
                 searchActionString: ''
             };
@@ -110,8 +110,8 @@ describe('Suggestions state service', function () {
 
         it('should update filtered Transformations', inject(function (suggestionsState, SuggestionsStateService) {
             //given
-            suggestionsState.column.filteredTransformations = [{name: 'delete'}];
-            var filteredTransformations = [{name: 'delete'}, {name: 'split'}];
+            suggestionsState.column.filteredTransformations = [{ name: 'delete' }];
+            var filteredTransformations = [{ name: 'delete' }, { name: 'split' }];
 
             //when
             SuggestionsStateService.updateFilteredTransformations(filteredTransformations);
@@ -122,8 +122,8 @@ describe('Suggestions state service', function () {
 
         it('should set transformations for empty cells', inject(function (suggestionsState, SuggestionsStateService) {
             //given
-            suggestionsState.column.transformationsForEmptyCells = [{name: 'delete'}];
-            var transformations = [{name: 'delete'}, {name: 'split'}];
+            suggestionsState.column.transformationsForEmptyCells = [{ name: 'delete' }];
+            var transformations = [{ name: 'delete' }, { name: 'split' }];
 
             //when
             SuggestionsStateService.setTransformationsForEmptyCells(transformations);
@@ -134,8 +134,8 @@ describe('Suggestions state service', function () {
 
         it('should set transformations for invalid cells', inject(function (suggestionsState, SuggestionsStateService) {
             //given
-            suggestionsState.column.transformationsForInvalidCells = [{name: 'delete'}];
-            var transformations = [{name: 'delete'}, {name: 'split'}];
+            suggestionsState.column.transformationsForInvalidCells = [{ name: 'delete' }];
+            var transformations = [{ name: 'delete' }, { name: 'split' }];
 
             //when
             SuggestionsStateService.setTransformationsForInvalidCells(transformations);
@@ -160,11 +160,11 @@ describe('Suggestions state service', function () {
         it('should reset line transformations', inject(function (suggestionsState, SuggestionsStateService) {
             //given
             suggestionsState.line = {
-                allTransformations: [{name: 'delete'}, {name: 'uppercase'}],
-                filteredTransformations: [{name: 'delete'}],
+                allTransformations: [{ name: 'delete' }, { name: 'uppercase' }],
+                filteredTransformations: [{ name: 'delete' }],
                 allCategories: {
-                    'clean': [{name: 'delete'}],
-                    'case': [{name: 'uppercase'}]
+                    'clean': [{ name: 'delete' }],
+                    'case': [{ name: 'uppercase' }]
                 }
             };
 

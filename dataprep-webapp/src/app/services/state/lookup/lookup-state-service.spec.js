@@ -17,39 +17,39 @@ describe('Lookup state service', function () {
     var data = {
         metadata: {
             columns: [
-                {id: '0000', 'name': 'identif'},
-                {id: '0001', 'name': 'code'},
-                {id: '0002', 'name': 'firstname'},
-                {id: '0003', 'name': 'lastname'}
+                { id: '0000', 'name': 'identif' },
+                { id: '0001', 'name': 'code' },
+                { id: '0002', 'name': 'firstname' },
+                { id: '0003', 'name': 'lastname' }
             ]
         },
         records: [
-            {tdpId: 0, firstname: 'Tata'},
-            {tdpId: 1, firstname: 'Tetggggge'},
-            {tdpId: 2, firstname: 'Titi'},
-            {tdpId: 3, firstname: 'Toto'},
-            {tdpId: 4, name: 'AMC Gremlin'},
-            {tdpId: 5, firstname: 'Tyty'},
-            {tdpId: 6, firstname: 'Papa'},
-            {tdpId: 7, firstname: 'Pepe'},
-            {tdpId: 8, firstname: 'Pipi'},
-            {tdpId: 9, firstname: 'Popo'},
-            {tdpId: 10, firstname: 'Pupu'},
-            {tdpId: 11, firstname: 'Pypy'}
+            { tdpId: 0, firstname: 'Tata' },
+            { tdpId: 1, firstname: 'Tetggggge' },
+            { tdpId: 2, firstname: 'Titi' },
+            { tdpId: 3, firstname: 'Toto' },
+            { tdpId: 4, name: 'AMC Gremlin' },
+            { tdpId: 5, firstname: 'Tyty' },
+            { tdpId: 6, firstname: 'Papa' },
+            { tdpId: 7, firstname: 'Pepe' },
+            { tdpId: 8, firstname: 'Pipi' },
+            { tdpId: 9, firstname: 'Popo' },
+            { tdpId: 10, firstname: 'Pupu' },
+            { tdpId: 11, firstname: 'Pypy' }
         ]
     };
 
     var initialColumnCheckboxes = [
-        {'id': '0000', 'name': 'identif', isAdded: false},
-        {'id': '0001', 'name': 'code', isAdded: false},
-        {'id': '0002', 'name': 'firstname', isAdded: false},
-        {'id': '0003', 'name': 'lastname', isAdded: false}
+        { 'id': '0000', 'name': 'identif', isAdded: false },
+        { 'id': '0001', 'name': 'code', isAdded: false },
+        { 'id': '0002', 'name': 'firstname', isAdded: false },
+        { 'id': '0003', 'name': 'lastname', isAdded: false }
     ];
     var columnCheckboxesWithSelection = [
-        {'id': '0000', 'name': 'identif', isAdded: false},
-        {'id': '0001', 'name': 'code', isAdded: false},
-        {'id': '0002', 'name': 'firstname', isAdded: true},
-        {'id': '0003', 'name': 'lastname', isAdded: true}
+        { 'id': '0000', 'name': 'identif', isAdded: false },
+        { 'id': '0001', 'name': 'code', isAdded: false },
+        { 'id': '0002', 'name': 'firstname', isAdded: true },
+        { 'id': '0003', 'name': 'lastname', isAdded: true }
     ];
 
     var actions = [
@@ -126,7 +126,7 @@ describe('Lookup state service', function () {
             //given
             lookupState.actions = [{}, {}];
             lookupState.columnsToAdd = ['0000'];
-            lookupState.columnCheckboxes = [{id: '0001', isAdded: true, name: 'vfvf'}];
+            lookupState.columnCheckboxes = [{ id: '0001', isAdded: true, name: 'vfvf' }];
             lookupState.dataset = {};
             lookupState.data = {};
             lookupState.selectedColumn = '0001';
@@ -219,7 +219,7 @@ describe('Lookup state service', function () {
 
         it('should set lookup ds selected column to the 1st column', inject(function (lookupState, LookupStateService) {
             //given
-            lookupState.selectedColumn = {id: '0001'};
+            lookupState.selectedColumn = { id: '0001' };
 
             //when
             LookupStateService.setAddMode(lookupAction, data);
@@ -234,19 +234,19 @@ describe('Lookup state service', function () {
             actionParameters: {
                 parameters: {
                     lookup_join_on: '0001',
-                    lookup_selected_cols: [{id: '0002'}, {id: '0003'}]
+                    lookup_selected_cols: [{ id: '0002' }, { id: '0003' }]
                 }
             }
         };
         var stepColumnCheckboxes = [
-            {'id': '0000', 'name': 'identif', isAdded: false},
-            {'id': '0001', 'name': 'code', isAdded: false},
-            {'id': '0002', 'name': 'firstname', isAdded: true},
-            {'id': '0003', 'name': 'lastname', isAdded: true}
+            { 'id': '0000', 'name': 'identif', isAdded: false },
+            { 'id': '0001', 'name': 'code', isAdded: false },
+            { 'id': '0002', 'name': 'firstname', isAdded: true },
+            { 'id': '0003', 'name': 'lastname', isAdded: true }
         ];
         var stepColumnsToAdd = [
-            {'id': '0002', 'name': 'firstname'},
-            {'id': '0003', 'name': 'lastname'}
+            { 'id': '0002', 'name': 'firstname' },
+            { 'id': '0003', 'name': 'lastname' }
         ];
 
         it('should set the step to update', inject(function(lookupState, LookupStateService) {
@@ -306,7 +306,7 @@ describe('Lookup state service', function () {
 
         it('should set lookup ds selected column', inject(function (lookupState, LookupStateService) {
             //given
-            lookupState.selectedColumn = {id: '0000'};
+            lookupState.selectedColumn = { id: '0000' };
 
             //when
             LookupStateService.setUpdateMode(lookupAction, data, stepToUpdate);
@@ -327,15 +327,15 @@ describe('Lookup state service', function () {
 
             //then
             expect(lookupState.columnsToAdd).toEqual([
-                {id: '0002', name: 'firstname'},
-                {id: '0003', name: 'lastname'}
+                { id: '0002', name: 'firstname' },
+                { id: '0003', name: 'lastname' }
             ]);
         }));
 
         it('should set selected column', inject(function (lookupState, LookupStateService) {
             //given
             lookupState.selectedColumn = null;
-            var selectedColumn = {id: '0001'};
+            var selectedColumn = { id: '0001' };
 
             //when
             LookupStateService.setSelectedColumn(selectedColumn);
@@ -347,15 +347,15 @@ describe('Lookup state service', function () {
         it('should update the columns to add on new column selection', inject(function (lookupState, LookupStateService) {
             //given
             lookupState.columnCheckboxes = columnCheckboxesWithSelection;
-            var selectedColumn = {id: '0001'};
+            var selectedColumn = { id: '0001' };
 
             //when
             LookupStateService.setSelectedColumn(selectedColumn);
 
             //then
             expect(lookupState.columnsToAdd).toEqual([
-                {id: '0002', name: 'firstname'},
-                {id: '0003', name: 'lastname'}]
+                { id: '0002', name: 'firstname' },
+                { id: '0003', name: 'lastname' }]
             );
         }));
 
@@ -377,17 +377,17 @@ describe('Lookup state service', function () {
         it('should sort lookup step when updating the sort type', inject(function (lookupState, LookupStateService) {
             //given
             lookupState.datasets = [
-                {id : '9e739b88-5ec9-4b58-84b5-2127a7e2eac7', addedToLookup: true, created : 80},
-                {id : '3', addedToLookup: false, created : 90},
-                {id : '2', addedToLookup: false, created : 100}
+                { id : '9e739b88-5ec9-4b58-84b5-2127a7e2eac7', addedToLookup: true, created : 80 },
+                { id : '3', addedToLookup: false, created : 90 },
+                { id : '2', addedToLookup: false, created : 100 }
             ];
 
-            lookupState.sort = {id: 'name', name: 'NAME_SORT', property: 'name'};
-            lookupState.order = {id: 'desc', name: 'DESC_ORDER'};
+            lookupState.sort = { id: 'name', name: 'NAME_SORT', property: 'name' };
+            lookupState.order = { id: 'desc', name: 'DESC_ORDER' };
 
 
             //when
-            LookupStateService.setSort({id: 'date', name: 'DATE_SORT', property: 'created'});
+            LookupStateService.setSort({ id: 'date', name: 'DATE_SORT', property: 'created' });
 
             //then
             expect(lookupState.datasets[0].created).toBe(100);
@@ -398,17 +398,17 @@ describe('Lookup state service', function () {
         it('should sort lookup step when updating the order type', inject(function (lookupState, LookupStateService) {
             //given
             lookupState.datasets = [
-                {id : '9e739b88-5ec9-4b58-84b5-2127a7e2eac7', addedToLookup: true, created : 80},
-                {id : '3', addedToLookup: false, created : 90},
-                {id : '2', addedToLookup: false, created : 100}
+                { id : '9e739b88-5ec9-4b58-84b5-2127a7e2eac7', addedToLookup: true, created : 80 },
+                { id : '3', addedToLookup: false, created : 90 },
+                { id : '2', addedToLookup: false, created : 100 }
             ];
 
-            lookupState.sort = {id: 'date', name: 'DATE_SORT', property: 'created'};
-            lookupState.order = {id: 'desc', name: 'DESC_ORDER'};
+            lookupState.sort = { id: 'date', name: 'DATE_SORT', property: 'created' };
+            lookupState.order = { id: 'desc', name: 'DESC_ORDER' };
 
 
             //when
-            LookupStateService.setOrder({id: 'asc', name: 'ASC_ORDER'});
+            LookupStateService.setOrder({ id: 'asc', name: 'ASC_ORDER' });
 
             //then
             expect(lookupState.datasets[0].created).toBe(80);
@@ -419,17 +419,17 @@ describe('Lookup state service', function () {
         it('should sort lookup step when updating the sort type in case of String', inject(function (lookupState, LookupStateService) {
             //given
             lookupState.datasets = [
-                {id : '9e739b88-5ec9-4b58-84b5-2127a7e2eac7', addedToLookup: true, created : 'a'},
-                {id : '3', addedToLookup: false, created : 'b'},
-                {id : '2', addedToLookup: false, created : 'C'}
+                { id : '9e739b88-5ec9-4b58-84b5-2127a7e2eac7', addedToLookup: true, created : 'a' },
+                { id : '3', addedToLookup: false, created : 'b' },
+                { id : '2', addedToLookup: false, created : 'C' }
             ];
 
-            lookupState.sort = {id: 'name', name: 'NAME_SORT', property: 'name'};
-            lookupState.order = {id: 'desc', name: 'DESC_ORDER'};
+            lookupState.sort = { id: 'name', name: 'NAME_SORT', property: 'name' };
+            lookupState.order = { id: 'desc', name: 'DESC_ORDER' };
 
 
             //when
-            LookupStateService.setSort({id: 'date', name: 'DATE_SORT', property: 'created'});
+            LookupStateService.setSort({ id: 'date', name: 'DATE_SORT', property: 'created' });
 
             //then
             expect(lookupState.datasets[0].created).toBe('C');
@@ -440,17 +440,17 @@ describe('Lookup state service', function () {
         it('should sort lookup step when updating the order type in case of String', inject(function (lookupState, LookupStateService) {
             //given
             lookupState.datasets = [
-                {id : '9e739b88-5ec9-4b58-84b5-2127a7e2eac7', addedToLookup: true, created : 'a'},
-                {id : '3', addedToLookup: false, created : 'b'},
-                {id : '2', addedToLookup: false, created : 'C'}
+                { id : '9e739b88-5ec9-4b58-84b5-2127a7e2eac7', addedToLookup: true, created : 'a' },
+                { id : '3', addedToLookup: false, created : 'b' },
+                { id : '2', addedToLookup: false, created : 'C' }
             ];
 
-            lookupState.sort = {id: 'date', name: 'DATE_SORT', property: 'created'};
-            lookupState.order = {id: 'desc', name: 'DESC_ORDER'};
+            lookupState.sort = { id: 'date', name: 'DATE_SORT', property: 'created' };
+            lookupState.order = { id: 'desc', name: 'DESC_ORDER' };
 
 
             //when
-            LookupStateService.setOrder({id: 'asc', name: 'ASC_ORDER'});
+            LookupStateService.setOrder({ id: 'asc', name: 'ASC_ORDER' });
 
             //then
             expect(lookupState.datasets[0].created).toBe('a');

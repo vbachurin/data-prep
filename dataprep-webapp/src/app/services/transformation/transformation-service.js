@@ -1,29 +1,30 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
 
 /**
  * @ngdoc service
  * @name data-prep.services.transformation.service:TransformationService
- * @description Transformation service. This service provide the entry point to get and manipulate transformations
+ * @description Transformation service.
+ * This service provide the entry point to get and manipulate transformations
  * @requires data-prep.services.utils.service:ConverterService
  * @requires data-prep.services.transformation.service:TransformationRestService
  */
 export default function TransformationService(TransformationRestService, ConverterService) {
     'ngInject';
 
-    var choiceType = 'CHOICE';
-    var clusterType = 'CLUSTER';
-    var COLUMN_CATEGORY = 'column_metadata';
+    const choiceType = 'CHOICE';
+    const clusterType = 'CLUSTER';
+    const COLUMN_CATEGORY = 'column_metadata';
 
     return {
         getLineTransformations: getLineTransformations,
@@ -46,19 +47,20 @@ export default function TransformationService(TransformationRestService, Convert
         return !param.implicit;
     }
 
-    //--------------------------------------------------------------------------------------------------------------
-    //---------------------------------------Transformations suggestions Utils--------------------------------------
-    //--------------------------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // ----------------------------------Transformations suggestions Utils-------------------------
+    // --------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
      * @name cleanParams
      * @methodOf data-prep.services.transformation.service:TransformationService
      * @param {object[]} menus - the menus to clean
-     * @description Remove 'column_id' and 'column_name' parameters (automatically sent), and clean empty arrays (choices and params)
+     * @description Remove 'column_id' and 'column_name' parameters (automatically sent),
+     * and clean empty arrays (choices and params)
      */
     function cleanParams(menus) {
-        return _.forEach(menus, function (menu) {
-            var filteredParameters = _.filter(menu.parameters, isExplicitParameter);
+        return _.forEach(menus, (menu) => {
+            const filteredParameters = _.filter(menu.parameters, isExplicitParameter);
             menu.parameters = filteredParameters.length ? filteredParameters : null;
         });
     }
@@ -72,12 +74,12 @@ export default function TransformationService(TransformationRestService, Convert
      */
     function insertType(transformation) {
         if (transformation.parameters) {
-            _.forEach(transformation.parameters, function (param) {
+            _.forEach(transformation.parameters, (param) => {
                 param.inputType = ConverterService.toInputType(param.type);
 
                 // also take care of select parameters...
                 if (param.type === 'select' && param.configuration && param.configuration.values) {
-                    _.forEach(param.configuration.values, function (selectItem) {
+                    _.forEach(param.configuration.values, (selectItem) => {
                         selectItem.inputType = ConverterService.toInputType(selectItem.type);
                         // ...and its parameters
                         if (selectItem.parameters) {
@@ -108,13 +110,14 @@ export default function TransformationService(TransformationRestService, Convert
      * @param {Array} transformations The list of transformations
      */
     function setHtmlDisplayLabels(transformations) {
-        _.forEach(transformations, function (transfo) {
-            transfo.labelHtml = transfo.label + (transfo.parameters || transfo.dynamic ? '...' : '');
+        _.forEach(transformations, (transfo) => {
+            transfo.labelHtml =
+                transfo.label + (transfo.parameters || transfo.dynamic ? '...' : '');
         });
     }
 
     function isNotColumnCategory(category) {
-        return function (item) {
+        return (item) => {
             return item.category !== category;
         };
     }
@@ -134,7 +137,7 @@ export default function TransformationService(TransformationRestService, Convert
      * "transformations" the array of transformations for this category
      */
     function prepareTransformations(transformations) {
-        var groupedTransformations = _.chain(transformations)
+        const groupedTransformations = _.chain(transformations)
             .filter(isNotColumnCategory(COLUMN_CATEGORY))
             .sortBy(labelCriteria)
             .groupBy('category')
@@ -142,7 +145,7 @@ export default function TransformationService(TransformationRestService, Convert
 
         return _.chain(Object.getOwnPropertyNames(groupedTransformations))
             .sort()
-            .map(function (key) {
+            .map((key) => {
                 return {
                     category: key,
                     categoryHtml: key.toUpperCase(),
@@ -152,9 +155,9 @@ export default function TransformationService(TransformationRestService, Convert
             .value();
     }
 
-    //--------------------------------------------------------------------------------------------------------------
-    //------------------------------------------Transformations suggestions-----------------------------------------
-    //--------------------------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // -----------------------------------Transformations suggestions------------------------------
+    // --------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
      * @name getLineTransformations
@@ -166,11 +169,11 @@ export default function TransformationService(TransformationRestService, Convert
      */
     function getLineTransformations() {
         return TransformationRestService.getLineTransformations()
-            .then(function (response) {
-                var allTransformations = cleanParams(response.data);
+            .then((response) => {
+                const allTransformations = cleanParams(response.data);
                 insertInputTypes(allTransformations);
                 setHtmlDisplayLabels(allTransformations);
-                var allCategories = prepareTransformations(allTransformations);
+                const allCategories = prepareTransformations(allTransformations);
                 return {
                     allTransformations: allTransformations,
                     allCategories: allCategories
@@ -190,11 +193,11 @@ export default function TransformationService(TransformationRestService, Convert
      */
     function getColumnTransformations(column) {
         return TransformationRestService.getColumnTransformations(column)
-            .then(function (response) {
-                var allTransformations = cleanParams(response.data);
+            .then((response) => {
+                const allTransformations = cleanParams(response.data);
                 insertInputTypes(allTransformations);
                 setHtmlDisplayLabels(allTransformations);
-                var allCategories = prepareTransformations(allTransformations);
+                const allCategories = prepareTransformations(allTransformations);
                 return {
                     allTransformations: allTransformations,
                     allCategories: allCategories
@@ -212,17 +215,17 @@ export default function TransformationService(TransformationRestService, Convert
      */
     function getColumnSuggestions(column) {
         return TransformationRestService.getColumnSuggestions(column)
-            .then(function (response) {
-                var allTransformations = cleanParams(response.data);
+            .then((response) => {
+                const allTransformations = cleanParams(response.data);
                 insertInputTypes(allTransformations);
                 setHtmlDisplayLabels(allTransformations);
                 return allTransformations;
             });
     }
 
-    //--------------------------------------------------------------------------------------------------------------
-    //------------------------------------------Transformation parameters-------------------------------------------
-    //--------------------------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // -----------------------------------Transformation parameters--------------------------------
+    // --------------------------------------------------------------------------------------------
 
     /**
      * @ngdoc method
@@ -238,7 +241,7 @@ export default function TransformationService(TransformationRestService, Convert
         }
 
         function executeOnSimpleParams(simpleParamsToInit) {
-            _.forEach(simpleParamsToInit, function (param) {
+            _.forEach(simpleParamsToInit, (param) => {
                 param.value = angular.isDefined(param.initialValue) ?
                     param.initialValue :
                     param.default;
@@ -247,19 +250,19 @@ export default function TransformationService(TransformationRestService, Convert
 
         switch (type) {
             case choiceType:
-                _.forEach(params, function (choice) {
+                _.forEach(params, (choice) => {
                     choice.selectedValue = angular.isDefined(choice.initialValue) ?
                         choice.initialValue :
                         choice.default;
 
-                    _.forEach(choice.values, function (choiceItem) {
+                    _.forEach(choice.values, (choiceItem) => {
                         executeOnSimpleParams(choiceItem.parameters);
                     });
                 });
                 break;
 
             case clusterType:
-                _.forEach(params.clusters, function (cluster) {
+                _.forEach(params.clusters, (cluster) => {
                     cluster.active = cluster.initialActive;
                     executeOnSimpleParams(cluster.parameters);
                     executeOnSimpleParams([cluster.replace]);
@@ -283,17 +286,19 @@ export default function TransformationService(TransformationRestService, Convert
     function initParameters(parameters, paramValues) {
         return _.chain(parameters)
             .filter(isExplicitParameter)
-            .forEach(function (param) {
-                param.initialValue = param.value = ConverterService.adaptValue(param.type, paramValues[param.name]);
+            .forEach((param) => {
+                param.initialValue = param.value = ConverterService.adaptValue(
+                    param.type,
+                    paramValues[param.name]
+                );
                 param.inputType = ConverterService.toInputType(param.type);
 
                 // also take care of select parameters
                 if (param.type === 'select' && param.configuration && param.configuration.values) {
-                    _.forEach(param.configuration.values, function (selectItem) {
+                    _.forEach(param.configuration.values, (selectItem) => {
                         initParameters(selectItem.parameters, paramValues);
                     });
                 }
-
             })
             .value();
     }
@@ -309,9 +314,9 @@ export default function TransformationService(TransformationRestService, Convert
      * @returns {object} The Cluster with initialized values
      */
     function initCluster(cluster, paramValues) {
-        _.forEach(cluster.clusters, function (clusterItem) {
-            var firstActiveParam = _.chain(clusterItem.parameters)
-                .forEach(function (param) {
+        _.forEach(cluster.clusters, (clusterItem) => {
+            const firstActiveParam = _.chain(clusterItem.parameters)
+                .forEach((param) => {
                     param.initialValue = param.value = param.name in paramValues;
                 })
                 .filter('value')
@@ -321,8 +326,10 @@ export default function TransformationService(TransformationRestService, Convert
 
             //get the replace value or the default if the cluster item is inactive
             //and init the replace input value
-            var replaceValue = firstActiveParam ? paramValues[firstActiveParam.name] : clusterItem.replace.default;
-            var replaceParamValues = {replaceValue: replaceValue};
+            const replaceValue = firstActiveParam ?
+                paramValues[firstActiveParam.name] :
+                clusterItem.replace.default;
+            const replaceParamValues = { replaceValue: replaceValue };
             initParameters([clusterItem.replace], replaceParamValues);
         });
         return cluster;
@@ -345,9 +352,9 @@ export default function TransformationService(TransformationRestService, Convert
         }
     }
 
-    //--------------------------------------------------------------------------------------------------------------
-    //-------------------------------------Transformation Dynamic parameters----------------------------------------
-    //--------------------------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // ---------------------------Transformation Dynamic parameters--------------------------------
+    // --------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
      * @name resetParameters
@@ -368,10 +375,17 @@ export default function TransformationService(TransformationRestService, Convert
     function initDynamicParameters(transformation, infos) {
         resetParameters(transformation);
 
-        var action = transformation.name;
-        return TransformationRestService.getDynamicParameters(action, infos.columnId, infos.datasetId, infos.preparationId, infos.stepId)
-            .then(function (response) {
-                var parameters = response.data;
+        const action = transformation.name;
+        return TransformationRestService
+            .getDynamicParameters(
+                action,
+                infos.columnId,
+                infos.datasetId,
+                infos.preparationId,
+                infos.stepId
+            )
+            .then((response) => {
+                const parameters = response.data;
                 transformation[parameters.type] = parameters.details;
                 return transformation;
             });

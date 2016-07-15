@@ -14,15 +14,15 @@
 const DATE_FORMAT = 'MM-DD-YYYY';
 const D3_DATE_FORMAT = '%m-%d-%Y';
 const D3_NUMBER_DECIMAL = ',';
-const D3_DATE_FORMATTER = d3.time.format(D3_DATE_FORMAT);
-const D3_NUMBER_FORMATTER = d3.format(D3_NUMBER_DECIMAL);
+const d3DateFormatter = d3.time.format(D3_DATE_FORMAT);
+const d3NumberFormatter = d3.format(D3_NUMBER_DECIMAL);
 
-const NUMBER_FORMATTER = {
-    format: (value) => D3_NUMBER_FORMATTER(value)
+const numberFormatter = {
+    format: (value) => d3NumberFormatter(value)
 };
-const DATE_FORMATTER = {
-    parse: (string) => D3_DATE_FORMATTER.parse(string),
-    format: (timestamp) => D3_DATE_FORMATTER(new Date(timestamp))
+const dateFormatter = {
+    parse: (string) => d3DateFormatter.parse(string),
+    format: (timestamp) => d3DateFormatter(new Date(timestamp))
 };
 
 /**
@@ -40,7 +40,7 @@ function adaptSelection(selection, maxValue) {
  * Check if date is correct
  */
 function dateIsCorrect(value) {
-    return DATE_FORMATTER.parse(value);
+    return dateFormatter.parse(value);
 }
 
 /**
@@ -79,7 +79,7 @@ export default class RangeSliderCtrl {
     constructor() {
         this.dateFormat = DATE_FORMAT;
     }
-    
+
     // -----------------------------------------------------------------------------------------------------------------
     // --------------------------------------------------UTILS----------------------------------------------------------
     // -----------------------------------------------------------------------------------------------------------------
@@ -103,8 +103,8 @@ export default class RangeSliderCtrl {
      **/
     adaptToInputValue(values) {
         return {
-            min: this.isDateType() ? DATE_FORMATTER.format(values.min) : '' + values.min,
-            max: this.isDateType() ? DATE_FORMATTER.format(values.max) : '' + values.max
+            min: this.isDateType() ? dateFormatter.format(values.min) : '' + values.min,
+            max: this.isDateType() ? dateFormatter.format(values.max) : '' + values.max
         };
     }
 
@@ -118,9 +118,9 @@ export default class RangeSliderCtrl {
      **/
     adaptFromInputValue(values) {
         return {
-            min: this.isDateType() ? +DATE_FORMATTER.parse(values.min) : +values.min,
-            max: this.isDateType() ? +DATE_FORMATTER.parse(values.max) : +values.max,
-        }
+            min: this.isDateType() ? +dateFormatter.parse(values.min) : +values.min,
+            max: this.isDateType() ? +dateFormatter.parse(values.max) : +values.max,
+        };
     }
 
     /**
@@ -132,11 +132,11 @@ export default class RangeSliderCtrl {
      **/
     getLimitsText() {
         const minText = this.isDateType() ?
-            DATE_FORMATTER.format(this.rangeLimits.min) :
-            NUMBER_FORMATTER.format(this.rangeLimits.min);
+            dateFormatter.format(this.rangeLimits.min) :
+            numberFormatter.format(this.rangeLimits.min);
         const maxText = this.isDateType() ?
-            DATE_FORMATTER.format(this.rangeLimits.max) :
-            NUMBER_FORMATTER.format(this.rangeLimits.max);
+            dateFormatter.format(this.rangeLimits.max) :
+            numberFormatter.format(this.rangeLimits.max);
         return { minText, maxText };
     }
 
@@ -221,8 +221,8 @@ export default class RangeSliderCtrl {
      * @params {Object} values The new brush values
      **/
     updateBrush(values) {
-        let {min, max} = values;
-        if(min === max) {
+        let { min, max } = values;
+        if (min === max) {
             const exp = '1e-' + (this.nbDecimals + 2);
             max = max + Number(exp);
         }
@@ -343,7 +343,7 @@ export default class RangeSliderCtrl {
      * @ngdoc method
      * @name onBrushChange
      * @methodOf talend.widget.controller:RangeSliderCtrl
-     * @description When user change brush values with the mouse, 
+     * @description When user change brush values with the mouse,
      * we propagate it in the last registered values and to the parent component
      **/
     onBrushChange(values) {

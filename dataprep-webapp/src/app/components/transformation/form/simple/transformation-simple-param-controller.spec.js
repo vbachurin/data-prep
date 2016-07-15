@@ -14,7 +14,9 @@
 describe('Transform simple param controller', function () {
     'use strict';
 
-    var createController, scope, parameter;
+    var createController;
+    var scope;
+    var parameter;
 
     beforeEach(angular.mock.module('data-prep.transformation-form'));
 
@@ -32,7 +34,7 @@ describe('Transform simple param controller', function () {
 
     it('should set numeric default value', function () {
         //given
-        parameter = {name: 'param1', type: 'numeric', default: '5'};
+        parameter = { name: 'param1', type: 'numeric', default: '5' };
 
         //when
         var ctrl = createController();
@@ -43,7 +45,7 @@ describe('Transform simple param controller', function () {
 
     it('should set integer default value', function () {
         //given
-        parameter = {name: 'param1', type: 'integer', default: '5'};
+        parameter = { name: 'param1', type: 'integer', default: '5' };
 
         //when
         var ctrl = createController();
@@ -54,7 +56,7 @@ describe('Transform simple param controller', function () {
 
     it('should set double default value', function () {
         //given
-        parameter = {name: 'param1', type: 'double', default: '5.1'};
+        parameter = { name: 'param1', type: 'double', default: '5.1' };
 
         //when
         var ctrl = createController();
@@ -65,7 +67,7 @@ describe('Transform simple param controller', function () {
 
     it('should set float default value', function () {
         //given
-        parameter = {name: 'param1', type: 'float', default: '5.1'};
+        parameter = { name: 'param1', type: 'float', default: '5.1' };
 
         //when
         var ctrl = createController();
@@ -76,7 +78,7 @@ describe('Transform simple param controller', function () {
 
     it('should set boolean true default value', function () {
         //given
-        parameter = {name: 'param1', type: 'boolean', default: 'true'};
+        parameter = { name: 'param1', type: 'boolean', default: 'true' };
 
         //when
         var ctrl = createController();
@@ -87,7 +89,7 @@ describe('Transform simple param controller', function () {
 
     it('should set boolean true default value (with boolean default)', function () {
         //given
-        parameter = {name: 'param1', type: 'boolean', default: true};
+        parameter = { name: 'param1', type: 'boolean', default: true };
 
         //when
         var ctrl = createController();
@@ -98,7 +100,7 @@ describe('Transform simple param controller', function () {
 
     it('should set boolean false default value', function () {
         //given
-        parameter = {name: 'param1', type: 'boolean', default: 'false'};
+        parameter = { name: 'param1', type: 'boolean', default: 'false' };
 
         //when
         var ctrl = createController();
@@ -109,7 +111,7 @@ describe('Transform simple param controller', function () {
 
     it('should set 0 value if default value is not numeric with numeric type', function () {
         //given
-        parameter = {name: 'param1', type: 'numeric', default: 'a'};
+        parameter = { name: 'param1', type: 'numeric', default: 'a' };
 
         //when
         var ctrl = createController();
@@ -120,7 +122,7 @@ describe('Transform simple param controller', function () {
 
     it('should not set default value if no default value is null', function () {
         //given
-        parameter = {name: 'param1', type: 'text', default: null};
+        parameter = { name: 'param1', type: 'text', default: null };
 
         //when
         var ctrl = createController();
@@ -131,7 +133,7 @@ describe('Transform simple param controller', function () {
 
     it('should not set value if no default value is provided', function () {
         //given
-        parameter = {name: 'param1', type: 'text'};
+        parameter = { name: 'param1', type: 'text' };
 
         //when
         var ctrl = createController();
@@ -142,7 +144,7 @@ describe('Transform simple param controller', function () {
 
     it('should init params default values', function () {
         //given
-        parameter = {name: 'param1', type: 'text', default: 'param1Value'};
+        parameter = { name: 'param1', type: 'text', default: 'param1Value' };
 
         //when
         var ctrl = createController();
@@ -153,7 +155,7 @@ describe('Transform simple param controller', function () {
 
     it('should init params with values values instead of default when available', function () {
         //given
-        parameter = {name: 'param1', type: 'text', value: 'my value', default: 'param1Value'};
+        parameter = { name: 'param1', type: 'text', value: 'my value', default: 'param1Value' };
 
         //when
         var ctrl = createController();
@@ -164,7 +166,7 @@ describe('Transform simple param controller', function () {
 
     it('should set initial value type', function () {
         //given
-        parameter = {name: 'param2', type: 'integer', value: '12', initialValue: '3', default: '5'};
+        parameter = { name: 'param2', type: 'integer', value: '12', initialValue: '3', default: '5' };
 
         //when
         var ctrl = createController();

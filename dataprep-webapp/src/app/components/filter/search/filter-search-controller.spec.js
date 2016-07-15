@@ -14,7 +14,8 @@
 describe('filter search controller', function() {
     'use strict';
 
-    var createController, scope;
+    var createController;
+    var scope;
     var stateMock;
 
     var data = {
@@ -109,7 +110,7 @@ describe('filter search controller', function() {
     };
 
     beforeEach(angular.mock.module('data-prep.filter-search', function ($provide) {
-        stateMock = {playground: {}};
+        stateMock = { playground: {} };
         $provide.constant('state', stateMock);
     }));
 

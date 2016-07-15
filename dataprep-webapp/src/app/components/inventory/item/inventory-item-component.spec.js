@@ -18,7 +18,10 @@ describe('InventoryItem component', () => {
         return str.match(suffix + '$')[0] === suffix;
     }
 
-    let scope,  createElement, element, ctrl;
+    let scope;
+    let createElement;
+    let element;
+    let ctrl;
 
     const dataset = {
         'id': '12ce6c32-bf80-41c8-92e5-66d70f22ec1f',
@@ -27,7 +30,7 @@ describe('InventoryItem component', () => {
         'created': '1437020219741',
         'type': 'text/csv',
         'certificationStep': 'NONE',
-        'preparations': [{name:'US States prepa'}, {name:'US States prepa 2'}],
+        'preparations': [{ name:'US States prepa' }, { name:'US States prepa 2' }],
         'favorite' : true,
         'owner': {
             'displayName': "anonymousUser"
@@ -66,7 +69,7 @@ describe('InventoryItem component', () => {
         'creationDate': '1437020219741',
         'type': 'text/csv',
         'certificationStep': 'NONE',
-        'steps': [{name: 'US States prepa'}, {name: 'US States prepa 2'}],
+        'steps': [{ name: 'US States prepa' }, { name: 'US States prepa 2' }],
         'owner': {
             'displayName': "anonymousUser"
         }
@@ -90,7 +93,7 @@ describe('InventoryItem component', () => {
         'created': '1437020219741',
         'type': 'text/csv',
         'certificationStep': 'certified',
-        'preparations': [{name:'US States prepa'}, {name:'US States prepa 2'}]
+        'preparations': [{ name:'US States prepa' }, { name:'US States prepa 2' }]
     };
 
     beforeEach(angular.mock.module('data-prep.inventory-item'));
@@ -117,7 +120,6 @@ describe('InventoryItem component', () => {
     });
 
     describe('dataset icon', () => {
-
         beforeEach(inject(($rootScope, $compile) => {
             scope = $rootScope.$new();
             createElement = (newDataSet) => {
@@ -177,30 +179,39 @@ describe('InventoryItem component', () => {
         });
 
         it('should not display update for job dattaset', () => {
-                // when
-                createElement(job_dataset);
+            // when
+            createElement(job_dataset);
 
-                // then
-                expect(element.find('talend-file-selector').length).toBe(0);
-            });
+            // then
+            expect(element.find('talend-file-selector').length).toBe(0);
+        });
     });
 
     describe('dataset', () => {
-
         beforeEach(inject(($rootScope, $compile) => {
             scope = $rootScope.$new();
 
             scope.dataset = dataset;
-            scope.openDataset = () =>{};
-            scope.openRelatedInventory = () =>{};
-            scope.copy = () =>{};
-            scope.processCertif = () =>{};
-            scope.rename = () =>{};
-            scope.open = () =>{};
-            scope.update = () =>{};
-            scope.remove = () =>{};
-            scope.openRelatedInv = () =>{};
-            scope.toggleFavorite = () =>{};
+            scope.openDataset = () =>{
+            };
+            scope.openRelatedInventory = () =>{
+            };
+            scope.copy = () =>{
+            };
+            scope.processCertif = () =>{
+            };
+            scope.rename = () =>{
+            };
+            scope.open = () =>{
+            };
+            scope.update = () =>{
+            };
+            scope.remove = () =>{
+            };
+            scope.openRelatedInv = () =>{
+            };
+            scope.toggleFavorite = () =>{
+            };
             scope.preparations = [];
             createElement = () => {
                 element = angular.element('<inventory-item ' +
@@ -386,7 +397,7 @@ describe('InventoryItem component', () => {
                 // then
                 const icon = element.find('a').eq(3).attr('data-icon');
                 expect(icon).toBe('f');
-             });
+            });
 
             it('should NOT display favorite icon', () => {
                 // when
@@ -583,7 +594,6 @@ describe('InventoryItem component', () => {
                 expect(ctrl.toggleFavorite).toHaveBeenCalled();
             });
         });
-
     });
 
     describe('preparation', () => {
@@ -636,9 +646,12 @@ describe('InventoryItem component', () => {
             scope.folder = folder;
             scope.preparations = [];
 
-            scope.rename = () => {};
-            scope.open = () => {};
-            scope.remove = () => {};
+            scope.rename = () => {
+            };
+            scope.open = () => {
+            };
+            scope.remove = () => {
+            };
 
             createElement = () => {
                 element = angular.element(`
@@ -697,7 +710,7 @@ describe('InventoryItem component', () => {
 
         it('display inventory components', () => {
             // given
-            scope.doc = {name: 'What is a recipe ?'};
+            scope.doc = { name: 'What is a recipe ?' };
             scope.details = 'This is a recipe';
 
             // when

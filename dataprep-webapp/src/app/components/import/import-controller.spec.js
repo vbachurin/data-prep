@@ -14,7 +14,10 @@
 describe('Import controller', () => {
     'use strict';
 
-    let ctrl, createController, scope, StateMock;
+    let ctrl;
+    let createController;
+    let scope;
+    let StateMock;
     const dataset = { id: 'ec4834d9bc2af8', name: 'Customers (50 lines)', draft: false };
 
     beforeEach(angular.mock.module('data-prep.import', ($provide) => {
@@ -164,7 +167,6 @@ describe('Import controller', () => {
     }));
 
     describe('startDefaultImport', () => {
-
         it('should call the first import type if no defaultImportType', () => {
             // given
             StateMock.import.importTypes[2].defaultImport = false;
@@ -190,12 +192,10 @@ describe('Import controller', () => {
 
             // then
             expect(ctrl.startImport).toHaveBeenCalledWith(StateMock.import.importTypes[2]);
-
         }));
     });
 
     describe('startImport', () => {
-
         it('should start import from local file', () => {
             // given
             ctrl = createController();
@@ -218,7 +218,6 @@ describe('Import controller', () => {
             // then
             expect(ctrl.currentInputType).toEqual(StateMock.import.importTypes[0]);
             expect(ctrl.showModal).toBe(true);
-
         }));
 
         it('should start import from remote with dynamic parameters', inject((ImportRestService, $q) => {
@@ -243,7 +242,6 @@ describe('Import controller', () => {
     describe('import', () => {
         let uploadDefer;
         beforeEach(inject((StateService, $q, DatasetService, UploadWorkflowService) => {
-
             ctrl = createController();
             ctrl.datasetFile = [{ name: 'my dataset.csv' }];
             ctrl.datasetName = 'my cool dataset';
@@ -317,7 +315,6 @@ describe('Import controller', () => {
         let uploadDefer;
 
         beforeEach(inject((StateService, $q, DatasetService, UploadWorkflowService) => {
-
             ctrl = createController();
             ctrl.datasetFile = [{ name: 'my dataset.csv' }];
             ctrl.datasetName = 'my cool dataset';
@@ -338,11 +335,9 @@ describe('Import controller', () => {
 
             spyOn(StateService, 'startUploadingDataset').and.returnValue();
             spyOn(StateService, 'finishUploadingDataset').and.returnValue();
-
         }));
 
         describe('with unique name', () => {
-
             beforeEach(inject(($q, $rootScope, DatasetService) => {
                 spyOn(DatasetService, 'checkNameAvailability').and.returnValue($q.when());
                 ctrl.currentInputType = StateMock.import.importTypes[0];

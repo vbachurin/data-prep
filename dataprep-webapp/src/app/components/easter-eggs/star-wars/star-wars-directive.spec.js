@@ -14,7 +14,9 @@
 describe('StarWars directive', function() {
     'use strict';
 
-    var scope, createElement, element;
+    var scope;
+    var createElement;
+    var element;
 
     beforeEach(angular.mock.module('data-prep.easter-eggs'));
     beforeEach(angular.mock.module('htmlTemplates'));
@@ -36,5 +38,4 @@ describe('StarWars directive', function() {
         //then
         expect(element.find('.title').text()).toBe('Talend Data Preparation');
     });
-
 });

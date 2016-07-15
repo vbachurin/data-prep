@@ -36,7 +36,8 @@ class InventoryCopyMoveCtrl {
         this.isCopying = true;
         this.copyMoveForm.$commitViewValue();
 
-        return this.onCopy({
+        return this.onCopy(
+            {
                 item: this.item,
                 destination: this.destinationFolder,
                 name: this.newName
@@ -59,7 +60,8 @@ class InventoryCopyMoveCtrl {
         this.isMoving = true;
         this.copyMoveForm.$commitViewValue();
 
-        return this.onMove({
+        return this.onMove(
+            {
                 item: this.item,
                 destination: this.destinationFolder,
                 name: this.newName

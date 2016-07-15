@@ -45,8 +45,8 @@ describe('Playground Service', () => {
     }));
 
     beforeEach(inject(($q, $state, StateService, DatasetService, RecipeService, DatagridService,
-                       PreparationService, TransformationCacheService,
-                       HistoryService, PreviewService, ExportService) => {
+        PreparationService, TransformationCacheService,
+        HistoryService, PreviewService, ExportService) => {
         stateMock.playground = {
             preparationName: ''
         };
@@ -103,7 +103,8 @@ describe('Playground Service', () => {
         }));
 
         describe('history', () => {
-            let undo, redo;
+            let undo;
+            let redo;
             const oldName = 'My preparation';
             const newName = 'My new preparation name';
 
@@ -161,8 +162,8 @@ describe('Playground Service', () => {
         let assertNewPreparationInitialization;
 
         beforeEach(inject(($rootScope, TransformationCacheService,
-                           HistoryService, RecipeService,
-                           PreviewService, StateService, ExportService) => {
+            HistoryService, RecipeService,
+            PreviewService, StateService, ExportService) => {
             spyOn($rootScope, '$emit').and.returnValue();
             spyOn(RecipeService, 'reset').and.returnValue();
             assertNewPreparationInitialization = () => {
@@ -187,7 +188,6 @@ describe('Playground Service', () => {
 
             // then
             assertNewPreparationInitialization();
-
         }));
 
         it('should manage loading spinner', inject(($rootScope, PlaygroundService) => {
@@ -266,11 +266,12 @@ describe('Playground Service', () => {
             columns: [{ id: '0001' }],
             records: [{ id: '0', firstname: 'toto' }, { id: '1', firstname: 'tata' }, { id: '2', firstname: 'titi' }],
         };
-        let assertDatasetLoadInitialized, assertDatasetLoadNotInitialized;
+        let assertDatasetLoadInitialized;
+        let assertDatasetLoadNotInitialized;
 
         beforeEach(inject(($rootScope, $q, StateService,
-                           PreparationService, RecipeService,
-                           TransformationCacheService, HistoryService, PreviewService) => {
+            PreparationService, RecipeService,
+            TransformationCacheService, HistoryService, PreviewService) => {
             spyOn($rootScope, '$emit').and.returnValue();
             spyOn(PreparationService, 'getContent').and.returnValue($q.when(data));
 
@@ -517,7 +518,8 @@ describe('Playground Service', () => {
     });
 
     describe('transformation steps', () => {
-        let preparationHeadContent, metadata;
+        let preparationHeadContent;
+        let metadata;
         const lastStepId = 'a151e543456413ef51';
         const previousLastStepId = '3248fa65e45f588cb464';
         const lastStep = { transformation: { stepId: lastStepId } };
@@ -569,7 +571,7 @@ describe('Playground Service', () => {
                     name: 'my dataset name'
                 };
                 stateMock.playground.preparation = null;
-                stateMock.inventory = {homeFolderId: 'Lw=='};
+                stateMock.inventory = { homeFolderId: 'Lw==' };
                 const action = 'uppercase';
                 const parameters = {
                     param1: 'param1Value',
@@ -1083,7 +1085,6 @@ describe('Playground Service', () => {
     });
 
     describe('preparation name edition mode', () => {
-
         beforeEach(inject(($q, PreparationService, RecipeService) => {
             spyOn(PreparationService, 'getContent').and.returnValue($q.when({ columns: [{}] }));
             spyOn(PreparationService, 'appendStep').and.callFake(() => {
@@ -1207,7 +1208,8 @@ describe('Playground Service', () => {
     });
 
     describe('dataset parameters', () => {
-        let assertNewPlaygroundIsInitWith, assertPreparationStepIsLoadedWith;
+        let assertNewPlaygroundIsInitWith;
+        let assertPreparationStepIsLoadedWith;
 
         beforeEach(inject((StateService, RecipeService, TransformationCacheService, HistoryService, PreviewService, ExportService, DatagridService) => {
             spyOn(RecipeService, 'reset').and.returnValue();

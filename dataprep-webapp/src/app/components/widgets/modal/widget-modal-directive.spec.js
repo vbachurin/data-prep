@@ -14,7 +14,14 @@
 describe('Modal directive', function () {
     'use strict';
 
-    var scope, element, createElement, disableElementHide, createFormElement, createNestedElement, createButtonElement, createBeforeCloseElement;
+    var scope;
+    var element;
+    var createElement;
+    var disableElementHide;
+    var createFormElement;
+    var createNestedElement;
+    var createButtonElement;
+    var createBeforeCloseElement;
 
     beforeEach(angular.mock.module('talend.widget'));
     beforeEach(angular.mock.module('htmlTemplates'));
@@ -280,7 +287,7 @@ describe('Modal directive', function () {
             try {
                 $timeout.flush();
             }
-                //then
+            //then
             catch (error) {
                 expect(scope.state).toBe(true);
                 return;

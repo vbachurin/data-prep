@@ -30,7 +30,7 @@ describe('Transformation Rest Service', function () {
                 'name': 'uppercase',
                 'value': '',
                 'type': 'OPERATION',
-                'parameters': [{'name': 'column_name', 'type': 'string', 'default': ''}]
+                'parameters': [{ 'name': 'column_name', 'type': 'string', 'default': '' }]
             },
             {
                 'category': 'case',
@@ -38,14 +38,14 @@ describe('Transformation Rest Service', function () {
                 'name': 'lowercase',
                 'value': '',
                 'type': 'OPERATION',
-                'parameters': [{'name': 'column_name', 'type': 'string', 'default': ''}]
+                'parameters': [{ 'name': 'column_name', 'type': 'string', 'default': '' }]
             }
         ];
 
         describe('column', function() {
             var column = {
                 'id': 'firstname',
-                'quality': {'empty': 0, 'invalid': 0, 'valid': 2},
+                'quality': { 'empty': 0, 'invalid': 0, 'valid': 2 },
                 'type': 'string',
                 'total': 2
             };
@@ -116,7 +116,7 @@ describe('Transformation Rest Service', function () {
             var columnId = 'firstname';
             var preparationId = '7b89ef45f6';
 
-            var result = {type: 'cluster', details: {titles: ['', '']}};
+            var result = { type: 'cluster', details: { titles: ['', ''] } };
             $httpBackend
                 .expectGET(RestURLs.transformUrl + '/suggest/textclustering/params?preparationId=7b89ef45f6&columnId=firstname')
                 .respond(200, result);
@@ -140,7 +140,7 @@ describe('Transformation Rest Service', function () {
             var preparationId = '7b89ef45f6';
             var stepId = '126578a98bf';
 
-            var result = {type: 'cluster', details: {titles: ['', '']}};
+            var result = { type: 'cluster', details: { titles: ['', ''] } };
             $httpBackend
                 .expectGET(RestURLs.transformUrl + '/suggest/textclustering/params?preparationId=7b89ef45f6&stepId=126578a98bf&columnId=firstname')
                 .respond(200, result);
@@ -163,7 +163,7 @@ describe('Transformation Rest Service', function () {
             var columnId = 'firstname';
             var datasetId = '7b89ef45f6';
 
-            var result = {type: 'cluster', details: {titles: ['', '']}};
+            var result = { type: 'cluster', details: { titles: ['', ''] } };
             $httpBackend
                 .expectGET(RestURLs.transformUrl + '/suggest/textclustering/params?datasetId=7b89ef45f6&columnId=firstname')
                 .respond(200, result);

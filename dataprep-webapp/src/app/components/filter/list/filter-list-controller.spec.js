@@ -14,8 +14,10 @@
 describe('filter list controller', function () {
     'use strict';
 
-    var createController, scope;
-    var onFilterChange, onFilterRemove;
+    var createController;
+    var scope;
+    var onFilterChange;
+    var onFilterRemove;
 
     beforeEach(angular.mock.module('data-prep.filter-list'));
 
@@ -54,7 +56,7 @@ describe('filter list controller', function () {
         ctrl.changeFilter(filter);
 
         //then
-        expect(onFilterChange).toHaveBeenCalledWith({filter, value: undefined});
+        expect(onFilterChange).toHaveBeenCalledWith({ filter, value: undefined });
     });
 
     it('should call filter change callback', function () {

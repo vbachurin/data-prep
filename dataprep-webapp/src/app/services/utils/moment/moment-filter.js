@@ -17,7 +17,7 @@
  * @description Display message toasts
  */
 export default function TDPMoment() {
-    return function (dateString, format) {
-        return moment(dateString, format ? format : 'x').fromNow();
+    return (dateString, format = 'x') => {
+        return moment(dateString, format).fromNow();
     };
 }

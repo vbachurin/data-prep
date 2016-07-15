@@ -66,7 +66,7 @@ export default function PreparationListService(PreparationRestService, StateServ
      * @returns {promise} The process promise
      */
     function getPreparationsPromise() {
-        return preparationsPromise ? preparationsPromise : refreshPreparations();
+        return preparationsPromise || refreshPreparations();
     }
 
     /**

@@ -14,11 +14,11 @@
 import PreparationBreadcrumbComponent from './preparation-breadcrumb-component';
 
 (() => {
-    angular.module('data-prep.preparation-breadcrumb', 
+    angular.module('data-prep.preparation-breadcrumb',
         [
             'data-prep.breadcrumb',
             'data-prep.services.state',
             'data-prep.services.folder',
         ])
-        .component('preparationBreadcrumb', PreparationBreadcrumbComponent)
+        .component('preparationBreadcrumb', PreparationBreadcrumbComponent);
 })();

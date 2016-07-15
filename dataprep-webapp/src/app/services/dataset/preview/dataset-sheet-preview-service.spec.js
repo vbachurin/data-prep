@@ -14,17 +14,18 @@
 describe('Dataset Sheet Preview Service', function () {
     'use strict';
 
-    var slickGridMock, gridMockElement;
+    var slickGridMock;
+    var gridMockElement;
     var previewResponse = {
         metadata: {
             sheetName: 'my sheet',
             columns: [
-                {id: '1', name: 'col1'},
-                {id: '2', name: 'col2'},
-                {id: '3', name: 'col3'}
+                { id: '1', name: 'col1' },
+                { id: '2', name: 'col2' },
+                { id: '3', name: 'col3' }
             ]
         },
-        records: [{1: 'value1', 2: 'value2', 3: 'value3'}]
+        records: [{ 1: 'value1', 2: 'value2', 3: 'value3' }]
     };
 
     beforeEach(angular.mock.module('data-prep.services.dataset'));
@@ -66,14 +67,13 @@ describe('Dataset Sheet Preview Service', function () {
     }));
 
     describe('load preview', function () {
-
         beforeEach(inject(function (DatasetSheetPreviewService) {
             DatasetSheetPreviewService.grid = slickGridMock;
         }));
 
         it('should reset grid content', inject(function (DatasetSheetPreviewService) {
             //given
-            var metadata = {id: '74a856ef486b', name: 'my dataset'};
+            var metadata = { id: '74a856ef486b', name: 'my dataset' };
 
             //when
             DatasetSheetPreviewService.loadPreview(metadata);
@@ -85,7 +85,7 @@ describe('Dataset Sheet Preview Service', function () {
 
         it('should set current metadata', inject(function (DatasetSheetPreviewService) {
             //given
-            var metadata = {id: '74a856ef486b', name: 'my dataset'};
+            var metadata = { id: '74a856ef486b', name: 'my dataset' };
 
             //when
             DatasetSheetPreviewService.loadPreview(metadata);
@@ -97,7 +97,7 @@ describe('Dataset Sheet Preview Service', function () {
 
         it('should reset selectedSheetName', inject(function (DatasetSheetPreviewService) {
             //given
-            var metadata = {id: '74a856ef486b', name: 'my dataset'};
+            var metadata = { id: '74a856ef486b', name: 'my dataset' };
             DatasetSheetPreviewService.selectedSheetName = {};
 
             //when
@@ -109,7 +109,7 @@ describe('Dataset Sheet Preview Service', function () {
 
         it('should set addPreparation', inject(function (DatasetSheetPreviewService) {
             //given
-            var metadata = {id: '74a856ef486b', name: 'my dataset'};
+            var metadata = { id: '74a856ef486b', name: 'my dataset' };
 
             //when
             DatasetSheetPreviewService.loadPreview(metadata, true);
@@ -121,7 +121,7 @@ describe('Dataset Sheet Preview Service', function () {
 
         it('should call sheet preview service and set selected sheet name', inject(function ($rootScope, DatasetSheetPreviewService) {
             //given
-            var metadata = {id: '74a856ef486b', name: 'my dataset'};
+            var metadata = { id: '74a856ef486b', name: 'my dataset' };
             var expectedSheetName = previewResponse.metadata.sheetName;
 
             //when
@@ -134,7 +134,7 @@ describe('Dataset Sheet Preview Service', function () {
 
         it('should call sheet preview service and update grid', inject(function ($rootScope, DatasetService, DatasetSheetPreviewService) {
             //given
-            var metadata = {id: '74a856ef486b', name: 'my dataset'};
+            var metadata = { id: '74a856ef486b', name: 'my dataset' };
             var expectedData = previewResponse.records;
 
             //when
@@ -167,7 +167,6 @@ describe('Dataset Sheet Preview Service', function () {
     });
 
     describe('load sheet', function () {
-
         beforeEach(inject(function (DatasetSheetPreviewService) {
             DatasetSheetPreviewService.grid = slickGridMock;
         }));
@@ -188,7 +187,7 @@ describe('Dataset Sheet Preview Service', function () {
             //given
             var sheetName = 'my sheet';
             var expectedData = previewResponse.records;
-            DatasetSheetPreviewService.currentMetadata = {id: '74a856ef486b', name: 'my dataset'};
+            DatasetSheetPreviewService.currentMetadata = { id: '74a856ef486b', name: 'my dataset' };
 
             //when
             DatasetSheetPreviewService.loadSheet(sheetName);
@@ -222,7 +221,7 @@ describe('Dataset Sheet Preview Service', function () {
     it('should call dataset sheet service', inject(function (DatasetService, DatasetSheetPreviewService) {
         //given
         var sheetName = 'my sheet';
-        DatasetSheetPreviewService.currentMetadata = {id: '74a856ef486b', name: 'my dataset'};
+        DatasetSheetPreviewService.currentMetadata = { id: '74a856ef486b', name: 'my dataset' };
 
         //when
         DatasetSheetPreviewService.setDatasetSheet(sheetName);

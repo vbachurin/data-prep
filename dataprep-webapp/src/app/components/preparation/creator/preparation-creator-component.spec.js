@@ -12,7 +12,10 @@
  ============================================================================*/
 
 describe('Datasets filters component', () => {
-    let scope, createElement, element, controller;
+    let scope;
+    let createElement;
+    let element;
+    let controller;
 
     beforeEach(angular.mock.module('data-prep.preparation-creator'));
     beforeEach(angular.mock.module('htmlTemplates'));
@@ -130,7 +133,6 @@ describe('Datasets filters component', () => {
         });
 
         describe('right Panel', () => {
-
             it('should render right panel spinner', () => {
                 //when
                 createElement();
@@ -212,7 +214,6 @@ describe('Datasets filters component', () => {
         });
 
         describe('form', () => {
-
             it('should render form input Label', () => {
                 //when
                 createElement();
@@ -288,5 +289,4 @@ describe('Datasets filters component', () => {
             });
         });
     });
-
 });

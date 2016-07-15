@@ -22,4 +22,4 @@ const PreparationPicker = {
     },
     controller: PreparationPickerCtrl,
 };
-export default PreparationPicker
+export default PreparationPicker;

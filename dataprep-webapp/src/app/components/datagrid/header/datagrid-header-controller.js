@@ -24,7 +24,7 @@
  * @requires data-prep.services.transformation.service:ColumnSuggestionService
  */
 export default function DatagridHeaderCtrl($scope, state, TransformationCacheService, ConverterService, PlaygroundService,
-                                           FilterService, TransformationApplicationService, ColumnSuggestionService) {
+    FilterService, TransformationApplicationService, ColumnSuggestionService) {
     'ngInject';
 
     const ACTION_SCOPE = 'column_metadata';
@@ -81,7 +81,9 @@ export default function DatagridHeaderCtrl($scope, state, TransformationCacheSer
                         (menu) => (menu.actionScope.indexOf(ACTION_SCOPE) !== -1)
                     );
                 })
-                .catch(() => { vm.transformationsRetrieveError = true })
+                .catch(() => {
+                    vm.transformationsRetrieveError = true;
+                })
                 .finally(() => {
                     transformationsMustBeRetrieved = false;
                     vm.initTransformationsInProgress = false;
@@ -154,7 +156,7 @@ export default function DatagridHeaderCtrl($scope, state, TransformationCacheSer
     $scope.$watch(
         () => vm.column,
         () => {
-            transformationsMustBeRetrieved = true
+            transformationsMustBeRetrieved = true;
         }
     );
 }

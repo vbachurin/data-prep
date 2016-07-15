@@ -12,7 +12,8 @@
   ============================================================================*/
 
 describe('Dataset upload list directive', function() {
-    var scope, createElement;
+    var scope;
+    var createElement;
 
     beforeEach(angular.mock.module('data-prep.dataset-upload-list'));
     beforeEach(angular.mock.module('htmlTemplates'));
@@ -37,7 +38,7 @@ describe('Dataset upload list directive', function() {
     it('should render progressing upload dataset', function() {
         //given
         scope.datasets = [
-            {name: 'Customers (50 lines)', progress: 10, error: false, type: 'file'}
+            { name: 'Customers (50 lines)', progress: 10, error: false, type: 'file' }
         ];
 
         //when
@@ -55,7 +56,7 @@ describe('Dataset upload list directive', function() {
     it('should show profiling data message once the upload reaches the 100%', function() {
         //given
         scope.datasets = [
-            {name: 'Customers (50 lines)', progress: 100, error: false, type: 'file'}
+            { name: 'Customers (50 lines)', progress: 100, error: false, type: 'file' }
         ];
 
         //when
@@ -69,7 +70,7 @@ describe('Dataset upload list directive', function() {
     it('should render progressing remote dataset import', function() {
         //given
         scope.datasets = [
-            {name: 'remote 1', progress: 0, error: false, type: 'remote'}
+            { name: 'remote 1', progress: 0, error: false, type: 'remote' }
         ];
 
         //when
@@ -86,7 +87,7 @@ describe('Dataset upload list directive', function() {
     it('should render upload error dataset', function() {
         //given
         scope.datasets = [
-            {name: 'Customers (50 lines)', progress: 10, error: true}
+            { name: 'Customers (50 lines)', progress: 10, error: true }
         ];
 
         //when
@@ -104,9 +105,9 @@ describe('Dataset upload list directive', function() {
     it('should render multiple datasets', function() {
         //given
         scope.datasets = [
-            {name: 'Customers (50 lines)', progress: 10, error: false, type: 'file'},
-            {name: 'Us states', progress: 20, error: false, type: 'file'},
-            {name: 'Customers (1K lines)', progress: 30, error: true, type: 'file'}
+            { name: 'Customers (50 lines)', progress: 10, error: false, type: 'file' },
+            { name: 'Us states', progress: 20, error: false, type: 'file' },
+            { name: 'Customers (1K lines)', progress: 30, error: true, type: 'file' }
         ];
 
         //when

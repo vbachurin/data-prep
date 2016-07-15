@@ -27,9 +27,9 @@
  * @requires data-prep.services.utils.service:DateService
  */
 export default function StatisticsService($log, $filter, state, StateService,
-                                          DatagridService, RecipeService, StatisticsRestService,
-                                          ConverterService, FilterAdapterService, TextFormatService,
-                                          StorageService, WorkerService, DateService) {
+    DatagridService, RecipeService, StatisticsRestService,
+    ConverterService, FilterAdapterService, TextFormatService,
+    StorageService, WorkerService, DateService) {
     'ngInject';
 
     var dateFilteredWorkerWrapper;
@@ -164,12 +164,12 @@ export default function StatisticsService($log, $filter, state, StateService,
             };
 
             rangeData.push({
-                'data': range,
-                'occurrences': histDatum.occurrences
+                data: range,
+                occurrences: histDatum.occurrences
             });
             filteredRangeData.push({
-                'data': range,
-                'filteredOccurrences': state.playground.filter.gridFilters.length ? getRangeFilteredOccurrence(min, max) : histDatum.occurrences
+                data: range,
+                filteredOccurrences: state.playground.filter.gridFilters.length ? getRangeFilteredOccurrence(min, max) : histDatum.occurrences
             });
         });
 
@@ -233,13 +233,14 @@ export default function StatisticsService($log, $filter, state, StateService,
 
         let rangeLimits;
         if (state.playground.grid.selectedColumn.type === 'date') {
-            const firstHistogramItem = _.first(state.playground.grid.selectedColumn.statistics.histogram.items),
-                  lastHistogramItem = _.last(state.playground.grid.selectedColumn.statistics.histogram.items);
+            const firstHistogramItem = _.first(state.playground.grid.selectedColumn.statistics.histogram.items);
+            const lastHistogramItem = _.last(state.playground.grid.selectedColumn.statistics.histogram.items);
             rangeLimits = {
                 min: firstHistogramItem.range.min,
                 max: lastHistogramItem.range.max
             };
-        } else {
+        }
+        else {
             rangeLimits = {
                 min: statistics.min,
                 max: statistics.max
@@ -296,13 +297,13 @@ export default function StatisticsService($log, $filter, state, StateService,
             maxDate.setTime(maxDate.getTime() + (maxDate.getTimezoneOffset() * 60 * 1000));
 
             return {
-                'data': {
+                data: {
                     type: 'date',
                     label: getDateLabel(histoData.pace, minDate, maxDate),
                     min: minDate.getTime(),
                     max: maxDate.getTime()
                 },
-                'occurrences': histDatum.occurrences
+                occurrences: histDatum.occurrences
             };
         });
 
@@ -685,12 +686,12 @@ export default function StatisticsService($log, $filter, state, StateService,
      */
     function isDatePattern(pattern) {
         return (pattern.indexOf('d') > -1 ||
-        pattern.indexOf('M') > -1 ||
-        pattern.indexOf('y') > -1 ||
-        pattern.indexOf('H') > -1 ||
-        pattern.indexOf('h') > -1 ||
-        pattern.indexOf('m') > -1 ||
-        pattern.indexOf('s') > -1);
+            pattern.indexOf('M') > -1 ||
+            pattern.indexOf('y') > -1 ||
+            pattern.indexOf('H') > -1 ||
+            pattern.indexOf('h') > -1 ||
+            pattern.indexOf('m') > -1 ||
+            pattern.indexOf('s') > -1);
     }
 
     /**
@@ -821,7 +822,7 @@ export default function StatisticsService($log, $filter, state, StateService,
             case 'boolean':
                 initClassicHistogram('occurrences', 'Occurrences', column.statistics.frequencyTable);
                 break;
-            default :
+            default:
                 $log.debug('nor a number neither a boolean, neither a string, neither a date but a ' + simplifiedType);
         }
     }

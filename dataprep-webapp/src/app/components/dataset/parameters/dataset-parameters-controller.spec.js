@@ -14,7 +14,8 @@
 describe('Dataset parameters controller', function () {
     'use strict';
 
-    var scope, createController;
+    var scope;
+    var createController;
 
     beforeEach(angular.mock.module('data-prep.dataset-parameters'));
 
@@ -27,10 +28,10 @@ describe('Dataset parameters controller', function () {
             });
             ctrl.configuration = {
                 separators: [
-                    {label: ';', value: ';'},
-                    {label: ',', value: ','},
-                    {label: '<space>', value: ' '},
-                    {label: '<tab>', value: '\t'}
+                    { label: ';', value: ';' },
+                    { label: ',', value: ',' },
+                    { label: '<space>', value: ' ' },
+                    { label: '<tab>', value: '\t' }
                 ]
             };
             return ctrl;
@@ -85,7 +86,7 @@ describe('Dataset parameters controller', function () {
         it('should return true when current separator is an item of the separators list', function() {
             //given
             var ctrl = createController();
-            ctrl.dataset = {id: '1348b684f2e548'};
+            ctrl.dataset = { id: '1348b684f2e548' };
             ctrl.onParametersChange = jasmine.createSpy('on parameter change');
             ctrl.parameters = {
                 separator: ';',
@@ -98,7 +99,7 @@ describe('Dataset parameters controller', function () {
 
             //then
             expect(ctrl.onParametersChange).toHaveBeenCalledWith({
-                dataset: {id: '1348b684f2e548'},
+                dataset: { id: '1348b684f2e548' },
                 parameters: {
                     separator: ';',
                     encoding: 'UTF-8'

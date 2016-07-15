@@ -12,12 +12,11 @@
  ============================================================================*/
 
 describe('Folder Tree Component', () => {
-
     let createElement;
     let scope;
     let element;
     let node;
-    
+
     beforeEach(angular.mock.module('data-prep.folder-selection'));
     beforeEach(angular.mock.module('htmlTemplates'));
 
@@ -40,10 +39,10 @@ describe('Folder Tree Component', () => {
                 }
             ]
         };
-        
+
         scope = $rootScope.$new(true);
         scope.node = node;
-        
+
         createElement = () => {
             element = angular.element(
                 `<folder-tree node="node"
@@ -77,7 +76,7 @@ describe('Folder Tree Component', () => {
         expect(element.find('.folder-tree-node').eq(0).css('padding-left')).toBe(20 * 2 + 'px'); // level
         expect(element.find('.folder-tree-node').eq(0).find('.caret-right').length).toBe(1); // caret
     });
-    
+
     describe('children', () => {
         it('should render children when node has some and is opened', () => {
             //given
@@ -89,7 +88,7 @@ describe('Folder Tree Component', () => {
             //then
             expect(element.find('folder-tree').length).toBe(1);
         });
-        
+
         it('should NOT render children when node has some and is closed', () => {
             //given
             node.folder.opened = false;
@@ -100,7 +99,7 @@ describe('Folder Tree Component', () => {
             //then
             expect(element.find('folder-tree').length).toBe(0);
         });
-        
+
         it('should NOT render children when node has no children', () => {
             //given
             node.folder.opened = true;
@@ -111,7 +110,7 @@ describe('Folder Tree Component', () => {
 
             //then
             expect(element.find('folder-tree').length).toBe(0);
-        }); 
+        });
     });
 
     describe('toggle', () => {
@@ -128,7 +127,7 @@ describe('Folder Tree Component', () => {
             //then
             expect(scope.onToggle).toHaveBeenCalledWith(node);
         });
-        
+
         it('should trigger callback on children toggle', () => {
             //given
             scope.onToggle = jasmine.createSpy('onToggle');

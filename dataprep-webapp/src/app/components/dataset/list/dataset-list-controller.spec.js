@@ -12,8 +12,9 @@
  ============================================================================*/
 
 describe('Dataset list controller', () => {
-
-    let createController, scope, stateMock;
+    let createController;
+    let scope;
+    let stateMock;
 
     const datasets = [
         { id: 'ec4834d9bc2af8', name: 'Customers (50 lines)' },
@@ -43,7 +44,6 @@ describe('Dataset list controller', () => {
     }));
 
     describe('init', () => {
-
         it('should call setFetchingInventoryDatasets when init starts', inject((StateService) => {
             //given
             var ctrl = createController();
@@ -168,11 +168,11 @@ describe('Dataset list controller', () => {
                 expect(DatasetService.update).not.toHaveBeenCalled();
             }));
 
-        it('should NOT rename with blank name', inject(($q, DatasetService) => {
-            //given
-            const ctrl = createController();
-            const name = 'dataset name';
-            const dataset = { name: name };
+            it('should NOT rename with blank name', inject(($q, DatasetService) => {
+                //given
+                const ctrl = createController();
+                const name = 'dataset name';
+                const dataset = { name: name };
 
                 spyOn(DatasetService, 'update').and.returnValue($q.when());
 
@@ -189,7 +189,7 @@ describe('Dataset list controller', () => {
                 //given
                 const ctrl = createController();
                 const name = 'foo';
-                const dataset = {name: name};
+                const dataset = { name: name };
 
                 spyOn(DatasetService, 'getDatasetByName').and.returnValue({ id: 'ab45f893d8e923', name: 'Us states' });
                 spyOn(DatasetService, 'update').and.returnValue($q.when());
@@ -225,7 +225,7 @@ describe('Dataset list controller', () => {
             it('should show a warning', inject(($q, MessageService) => {
                 //given
                 const ctrl = createController();
-                const dataset = {id: '461465'};
+                const dataset = { id: '461465' };
                 const name = 'new dataset name';
                 ctrl.renamingList.push(dataset);
 
@@ -260,7 +260,7 @@ describe('Dataset list controller', () => {
         it('should show confirmation message', inject(($q, DatasetService, MessageService) => {
             //given
             const ctrl = createController();
-            const dataset = {name: 'my old name'};
+            const dataset = { name: 'my old name' };
             const name = 'new dataset name';
 
             spyOn(DatasetService, 'rename').and.returnValue($q.when());

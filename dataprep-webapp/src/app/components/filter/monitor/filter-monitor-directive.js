@@ -21,10 +21,11 @@ export default function FilterMonitor() {
             nbLines: '=',
             nbTotalLines: '=',
             percentage: '=',
-            state: "="
+            state: '='
         },
         bindToController: true,
-        controller: () => {},
+        controller: () => {
+        },
         controllerAs: 'filterMonitorCtrl'
     };
 }

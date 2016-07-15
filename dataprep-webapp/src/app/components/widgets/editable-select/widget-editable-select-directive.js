@@ -32,7 +32,8 @@ export default function EditableSelect() {
             value: '=ngModel'
         },
         bindToController: true,
-        controller: () => {},
+        controller: () => {
+        },
         controllerAs: 'editableSelectCtrl'
     };
 }

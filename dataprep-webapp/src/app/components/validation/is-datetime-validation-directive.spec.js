@@ -12,9 +12,11 @@
   ============================================================================*/
 
 describe('Datetime validation directive', function() {
-   'use strict';
+    'use strict';
 
-    var scope, createElement, createElementWithFormat;
+    var scope;
+    var createElement;
+    var createElementWithFormat;
 
 
     beforeEach(angular.mock.module('data-prep.validation'));
@@ -57,25 +59,24 @@ describe('Datetime validation directive', function() {
     });
 
     it('should validate a date with default format', function() {
-      //given
-      scope.myInput = '02/01/2012 10:02:23';
+        //given
+        scope.myInput = '02/01/2012 10:02:23';
 
-      //when
-      createElement();
+        //when
+        createElement();
 
-      //then
-      expect(scope.myForm.$invalid).toBeFalsy();
+        //then
+        expect(scope.myForm.$invalid).toBeFalsy();
     });
 
     it('should validate a date with provided format', function() {
-      //given
-      scope.myInput = '02/01/2012';
+        //given
+        scope.myInput = '02/01/2012';
 
-      //when
-      createElementWithFormat();
+        //when
+        createElementWithFormat();
 
-      //then
-      expect(scope.myForm.$invalid).toBeFalsy();
+        //then
+        expect(scope.myForm.$invalid).toBeFalsy();
     });
-
 });

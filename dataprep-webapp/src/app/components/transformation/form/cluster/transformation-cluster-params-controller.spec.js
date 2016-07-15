@@ -14,7 +14,10 @@
 describe('Transform cluster params controller', function () {
     'use strict';
 
-    var createController, scope, details, detailsWithInitialActivationFlags;
+    var createController;
+    var scope;
+    var details;
+    var detailsWithInitialActivationFlags;
 
     function getCluster() {
         return {
@@ -315,5 +318,4 @@ describe('Transform cluster params controller', function () {
         expect(ctrl.details.clusters[0].active).toBeTruthy();
         expect(ctrl.details.clusters[1].active).toBeFalsy();
     });
-
 });

@@ -12,7 +12,6 @@
  ============================================================================*/
 
 describe('Preparation breadcrumb controller', () => {
-
     let createController;
     let scope;
 
@@ -22,7 +21,7 @@ describe('Preparation breadcrumb controller', () => {
         scope = $rootScope.$new(true);
 
         createController = () => $componentController(
-            'preparationBreadcrumb', 
+            'preparationBreadcrumb',
             { $scope: scope }
         );
     }));
@@ -31,7 +30,7 @@ describe('Preparation breadcrumb controller', () => {
         // given
         const ctrl = createController();
         const folder = { id: '1' };
-        
+
         spyOn($state, 'go').and.returnValue();
 
         // when
@@ -39,7 +38,7 @@ describe('Preparation breadcrumb controller', () => {
 
         // then
         expect($state.go).toHaveBeenCalledWith(
-            'nav.index.preparations', 
+            'nav.index.preparations',
             { folderId: folder.id }
         );
     }));

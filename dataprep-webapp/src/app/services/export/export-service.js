@@ -73,7 +73,7 @@ export default class ExportService {
     refreshTypes() {
         return this.ExportRestService.exportTypes()
             .then((exportTypes) => {
-                this.exportTypes = exportTypes
+                this.exportTypes = exportTypes;
             })
             .then(() => {
                 // save default export if no parameter has been saved yet

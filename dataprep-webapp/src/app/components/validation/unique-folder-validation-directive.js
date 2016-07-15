@@ -27,11 +27,11 @@ export default function UniqueFolderValidation() {
             uniqueFolder: '='
         },
         link: function (scope, elm, attrs, ctrl) {
-            ctrl.$validators.uniqueFolderValidation = function (name) {
+            ctrl.$validators.uniqueFolderValidation = (name) => {
                 if (name === '') {
                     return false;
                 }
-                return !_.find(scope.uniqueFolder, function (folder) {
+                return !_.find(scope.uniqueFolder, (folder) => {
                     return folder.name.toLowerCase() === name.toLowerCase();
                 });
             };

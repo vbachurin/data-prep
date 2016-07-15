@@ -14,13 +14,16 @@
 describe('Dataset xls preview controller', () => {
     'use strict';
 
-    let createController, scope, gridElement, stateMock;
+    let createController;
+    let scope;
+    let gridElement;
+    let stateMock;
     const content = { column: [], records: [] };
 
     beforeEach(angular.mock.module('data-prep.dataset-xls-preview', ($provide) => {
         stateMock = {
             inventory: {
-                currentFolder: {path: 'HOME'},
+                currentFolder: { path: 'HOME' },
                 folder: {
                     metadata: {
                         id: 'HOME'
@@ -33,7 +36,7 @@ describe('Dataset xls preview controller', () => {
 
 
     beforeEach(inject(($rootScope, $controller, $q, $timeout, $state,
-                       DatasetSheetPreviewService, DatasetService, PlaygroundService, StateService) => {
+        DatasetSheetPreviewService, DatasetService, PlaygroundService, StateService) => {
         scope = $rootScope.$new();
 
         createController = () => {
@@ -182,7 +185,7 @@ describe('Dataset xls preview controller', () => {
 
         it('should open preparation', inject(($q, $state, DatasetSheetPreviewService, StateService, PreparationService) => {
             //given
-            spyOn(PreparationService, 'create').and.returnValue($q.when({id: 'aaaa256cf813a25d158'}));
+            spyOn(PreparationService, 'create').and.returnValue($q.when({ id: 'aaaa256cf813a25d158' }));
 
             const ctrl = createController();
             ctrl.selectedSheetName = 'my sheet';
@@ -197,7 +200,7 @@ describe('Dataset xls preview controller', () => {
 
             //then
             expect(PreparationService.create).toHaveBeenCalledWith('13aa256cf813a25d158', 'sheet Preparation', 'HOME');
-            expect($state.go).toHaveBeenCalledWith('playground.preparation', {prepid: 'aaaa256cf813a25d158'});
+            expect($state.go).toHaveBeenCalledWith('playground.preparation', { prepid: 'aaaa256cf813a25d158' });
         }));
     });
 });

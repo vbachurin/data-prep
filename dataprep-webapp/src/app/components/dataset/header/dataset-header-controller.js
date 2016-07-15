@@ -54,7 +54,8 @@ export default class DatasetHeaderCtrl {
      * @ngdoc method
      * @name sort
      * @methodOf data-prep.dataset-header.controller:DatasetHeaderCtrl
-     * @description sort dataset in order (ASC or DESC) by calling refreshDatasets from DatasetService
+     * @description sort dataset in order (ASC or DESC)
+     * by calling refreshDatasets from DatasetService
      * @param {object} order Sort order ASC(ascending) or DESC(descending)
      */
     updateSortOrder(order) {

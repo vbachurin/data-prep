@@ -24,7 +24,7 @@
  * @requires data-prep.services.utils.service:StorageService
  */
 export default function LookupCtrl($timeout, state, StateService, LookupService, EarlyPreviewService,
-                                   TransformationApplicationService, PlaygroundService, StorageService) {
+    TransformationApplicationService, PlaygroundService, StorageService) {
     'ngInject';
 
     var vm = this;
@@ -42,9 +42,8 @@ export default function LookupCtrl($timeout, state, StateService, LookupService,
     function refreshLookupDatasetsSort() {
         var savedSort = StorageService.getLookupDatasetsSort();
         if (savedSort) {
-            StateService.setLookupDatasetsSort(_.find(state.playground.lookup.sortList, {id: savedSort}));
+            StateService.setLookupDatasetsSort(_.find(state.playground.lookup.sortList, { id: savedSort }));
         }
-
     }
 
     /**
@@ -56,7 +55,7 @@ export default function LookupCtrl($timeout, state, StateService, LookupService,
     function refreshLookupDatasetsOrder() {
         var savedSortOrder = StorageService.getLookupDatasetsOrder();
         if (savedSortOrder) {
-            StateService.setLookupDatasetsOrder(_.find(state.playground.lookup.orderList, {id: savedSortOrder}));
+            StateService.setLookupDatasetsOrder(_.find(state.playground.lookup.orderList, { id: savedSortOrder }));
         }
     }
 
@@ -69,7 +68,8 @@ export default function LookupCtrl($timeout, state, StateService, LookupService,
     vm.hoverSubmitBtn = function hoverSubmitBtn() {
         if (state.playground.lookup.step) {
             PlaygroundService.updatePreview(state.playground.lookup.step, getParams());
-        } else {
+        }
+        else {
             var previewClosure = EarlyPreviewService.earlyPreview(state.playground.lookup.dataset, 'dataset');
             previewClosure(getParams());
         }
@@ -84,7 +84,7 @@ export default function LookupCtrl($timeout, state, StateService, LookupService,
      * @description loops over the dataset lookup action parameters to collect the dataset name
      */
     vm.getDsName = function getDsName(item) {
-        return _.find(item.parameters, {name: 'lookup_ds_name'}).default;
+        return _.find(item.parameters, { name: 'lookup_ds_name' }).default;
     };
 
     /**

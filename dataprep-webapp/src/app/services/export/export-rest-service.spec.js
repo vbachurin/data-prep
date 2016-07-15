@@ -65,7 +65,9 @@ describe('Export REST Service', () => {
 
         //when
         ExportRestService.exportTypes()
-            .then((response) => { types = response });
+            .then((response) => {
+                types = response
+            });
         $httpBackend.flush();
         $rootScope.$digest();
 

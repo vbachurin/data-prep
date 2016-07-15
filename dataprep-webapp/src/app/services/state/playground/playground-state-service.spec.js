@@ -14,7 +14,10 @@
 describe('Playground state service', () => {
     'use strict';
 
-    let recipeStateMock, gridStateMock, filterStateMock, parametersStateMock;
+    let recipeStateMock;
+    let gridStateMock;
+    let filterStateMock;
+    let parametersStateMock;
 
     beforeEach(angular.mock.module('data-prep.services.state', ($provide) => {
         recipeStateMock = {};
@@ -145,7 +148,7 @@ describe('Playground state service', () => {
         it('should set filters again on data change in grid to refresh statefull filters (ex: invalid filters)', inject((playgroundState, PlaygroundStateService, GridStateService) => {
             //given
             expect(GridStateService.setData).not.toHaveBeenCalled();
-            const data = {records: []};
+            const data = { records: [] };
             const filters = [{}, {}];
             filterStateMock.gridFilters = filters;
             filterStateMock.enabled = true;
@@ -160,7 +163,7 @@ describe('Playground state service', () => {
         it('should set data with disabled filter', inject((playgroundState, PlaygroundStateService, GridStateService) => {
             //given
             expect(GridStateService.setData).not.toHaveBeenCalled();
-            const data = {records: []};
+            const data = { records: [] };
             const filters = [{}, {}];
             filterStateMock.gridFilters = filters;
             filterStateMock.enabled = false;
@@ -190,17 +193,17 @@ describe('Playground state service', () => {
             playgroundState.data = {
                 metadata: {
                     columns: [
-                        {id: '0000', statistics: {}},
-                        {id: '0001', statistics: {}},
-                        {id: '0002', statistics: {}}
+                        { id: '0000', statistics: {} },
+                        { id: '0001', statistics: {} },
+                        { id: '0002', statistics: {} }
                     ]
                 }
             };
             const newMetadata = {
                 columns: [
-                    {id: '0000', statistics: {frequencyTable: [{data: '5.0', occurrences: 98}]}},
-                    {id: '0001', statistics: {frequencyTable: [{data: 'Toto', occurrences: 5}]}},
-                    {id: '0002', statistics: {frequencyTable: [{data: '', occurrences: 66}]}}
+                    { id: '0000', statistics: { frequencyTable: [{ data: '5.0', occurrences: 98 }] } },
+                    { id: '0001', statistics: { frequencyTable: [{ data: 'Toto', occurrences: 5 }] } },
+                    { id: '0002', statistics: { frequencyTable: [{ data: '', occurrences: 66 }] } }
                 ],
                 records: 256
             };
@@ -219,17 +222,17 @@ describe('Playground state service', () => {
             playgroundState.data = {
                 metadata: {
                     columns: [
-                        {id: '0000', statistics: {}},
-                        {id: '0001', statistics: {}},
-                        {id: '0002', statistics: {}}
+                        { id: '0000', statistics: {} },
+                        { id: '0001', statistics: {} },
+                        { id: '0002', statistics: {} }
                     ]
                 }
             };
             const newMetadata = {
                 columns: [
-                    {id: '0000', quality: {valid: 253, invalid: 3, empty: 0}},
-                    {id: '0001', quality: {valid: 7, invalid: 25, empty: 18}},
-                    {id: '0002', quality: {valid: 10, invalid: 0, empty: 110}},
+                    { id: '0000', quality: { valid: 253, invalid: 3, empty: 0 } },
+                    { id: '0001', quality: { valid: 7, invalid: 25, empty: 18 } },
+                    { id: '0002', quality: { valid: 10, invalid: 0, empty: 110 } },
                 ],
             };
 
@@ -244,7 +247,7 @@ describe('Playground state service', () => {
 
         it('should update dataset records number', inject((playgroundState, PlaygroundStateService) => {
             //given
-             playgroundState.dataset = {
+            playgroundState.dataset = {
                 id: '958cb63f235e4565',
                 records: 10
             };
@@ -283,7 +286,7 @@ describe('Playground state service', () => {
 
         it('should update parameters when they are not visible', inject((playgroundState, PlaygroundStateService, ParametersStateService) => {
             //given
-            const dataset = {id: '56a74a6425432cf57b87'};
+            const dataset = { id: '56a74a6425432cf57b87' };
             playgroundState.dataset = dataset;
             parametersStateMock.visible = false;
 
@@ -299,7 +302,7 @@ describe('Playground state service', () => {
         describe('add', () => {
             it('should add filter in filter list', inject((PlaygroundStateService, FilterStateService) => {
                 //given
-                const filter = {column: '0001'};
+                const filter = { column: '0001' };
 
                 //when
                 PlaygroundStateService.addGridFilter(filter);
@@ -310,9 +313,9 @@ describe('Playground state service', () => {
 
             it('should apply filters in grid', inject((playgroundState, PlaygroundStateService, GridStateService, FilterStateService) => {
                 //given
-                const filter = {column: '0001'};
+                const filter = { column: '0001' };
                 const filters = [{}, {}];
-                const data = {records: []};
+                const data = { records: [] };
                 filterStateMock.gridFilters = filters;
                 playgroundState.data = data;
 
@@ -328,8 +331,8 @@ describe('Playground state service', () => {
         describe('update', () => {
             it('should update filter in filter list', inject((PlaygroundStateService, FilterStateService) => {
                 //given
-                const oldFilter = {column: '0001'};
-                const newFilter = {column: '0002'};
+                const oldFilter = { column: '0001' };
+                const newFilter = { column: '0002' };
 
                 //when
                 PlaygroundStateService.updateGridFilter(oldFilter, newFilter);
@@ -340,10 +343,10 @@ describe('Playground state service', () => {
 
             it('should apply filters in grid', inject((playgroundState, PlaygroundStateService, GridStateService, FilterStateService) => {
                 //given
-                const oldFilter = {column: '0001'};
-                const newFilter = {column: '0002'};
+                const oldFilter = { column: '0001' };
+                const newFilter = { column: '0002' };
                 const filters = [{}, {}];
-                const data = {records: []};
+                const data = { records: [] };
                 filterStateMock.gridFilters = filters;
                 playgroundState.data = data;
 
@@ -359,7 +362,7 @@ describe('Playground state service', () => {
         describe('remove', () => {
             it('should add remove from filter list', inject((PlaygroundStateService, FilterStateService) => {
                 //given
-                const filter = {column: '0001'};
+                const filter = { column: '0001' };
 
                 //when
                 PlaygroundStateService.removeGridFilter(filter);
@@ -370,9 +373,9 @@ describe('Playground state service', () => {
 
             it('should apply filters in grid on single remove', inject((playgroundState, PlaygroundStateService, GridStateService) => {
                 //given
-                const filter = {column: '0001'};
+                const filter = { column: '0001' };
                 const filters = [{}, {}];
-                const data = {records: []};
+                const data = { records: [] };
                 filterStateMock.gridFilters = filters;
                 playgroundState.data = data;
 
@@ -394,7 +397,7 @@ describe('Playground state service', () => {
             it('should apply filters in grid on remove all', inject((playgroundState, PlaygroundStateService, GridStateService) => {
                 //given
                 const filters = [{}, {}];
-                const data = {records: []};
+                const data = { records: [] };
                 filterStateMock.gridFilters = filters;
                 playgroundState.data = data;
 
@@ -410,7 +413,7 @@ describe('Playground state service', () => {
             it('should enable filters', inject((playgroundState, PlaygroundStateService, FilterStateService, GridStateService) => {
                 //given
                 const filters = [{}, {}];
-                const data = {records: []};
+                const data = { records: [] };
                 filterStateMock.gridFilters = filters;
                 playgroundState.data = data;
 
@@ -424,7 +427,7 @@ describe('Playground state service', () => {
             it('should disable filters', inject((playgroundState, PlaygroundStateService, FilterStateService, GridStateService) => {
                 //given
                 const filters = [{}, {}];
-                const data = {records: []};
+                const data = { records: [] };
                 filterStateMock.gridFilters = filters;
                 playgroundState.data = data;
 
@@ -461,7 +464,7 @@ describe('Playground state service', () => {
             expect(playgroundState.isFetchingStats).toBe(false);
             expect(playgroundState.isSavingPreparation).toBe(false);
         }));
-        
+
         it('should reset sub-states', inject((playgroundState, PlaygroundStateService, RecipeStateService, GridStateService, FilterStateService, LookupStateService, SuggestionsStateService, ParametersStateService) => {
             //given
             expect(RecipeStateService.reset).not.toHaveBeenCalled();

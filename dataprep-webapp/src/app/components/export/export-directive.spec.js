@@ -14,7 +14,10 @@
 describe('Export directive', () => {
     'use strict';
 
-    let scope, element, ctrl, stateMock;
+    let scope;
+    let element;
+    let ctrl;
+    let stateMock;
 
     const exportTypes = [
         {

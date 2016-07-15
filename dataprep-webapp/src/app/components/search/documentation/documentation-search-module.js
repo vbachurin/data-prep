@@ -29,4 +29,3 @@ import DocumentationSearch from './documentation-search-component';
         ])
         .component('documentationSearch', DocumentationSearch);
 })();
-

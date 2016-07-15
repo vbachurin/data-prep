@@ -45,14 +45,12 @@ export default function NavigationList($timeout) {
         },
         bindToController: true,
         controllerAs: 'navigationListCtrl',
-        controller: function () {
-        },
+        controller: function () {},
         link: function (scope, iElement, iAttrs, ctrl) {
             var ITEM_WIDTH = 200;
             ctrl.showAddButton = !!iAttrs.onAddItem;
 
             $timeout(function () {
-
                 var leftButton = iElement.find('.arrow-left').eq(0);
                 var rightButton = iElement.find('.arrow-right').eq(0);
                 var wrapper = iElement.find('.items-list-wrapper').eq(0);

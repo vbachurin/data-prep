@@ -14,13 +14,16 @@
 describe('Actions suggestions-stats directive', function() {
     'use strict';
 
-    var scope, element, createElement, stateMock;
+    var scope;
+    var element;
+    var createElement;
+    var stateMock;
     var body = angular.element('body');
     beforeEach(angular.mock.module('data-prep.actions-suggestions', function($provide) {
-        stateMock = {playground: {
-            grid: {},
-            suggestions: {}
-        }};
+        stateMock = { playground: {
+                grid: {},
+                suggestions: {}
+        } };
         $provide.constant('state', stateMock);
     }));
     beforeEach(angular.mock.module('htmlTemplates'));
@@ -50,7 +53,7 @@ describe('Actions suggestions-stats directive', function() {
 
     it('should set column name in title', function() {
         //given
-        stateMock.playground.grid.selectedColumn = {name: 'Col 1'};
+        stateMock.playground.grid.selectedColumn = { name: 'Col 1' };
 
         //when
         createElement();

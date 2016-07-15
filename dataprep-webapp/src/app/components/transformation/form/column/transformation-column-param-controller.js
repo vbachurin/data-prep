@@ -20,7 +20,7 @@
 export default function TransformColumnParamCtrl(state) {
     'ngInject';
 
-    var vm = this;
+    const vm = this;
     vm.columns = state.playground.data.metadata.columns;
 
     /**
@@ -29,13 +29,13 @@ export default function TransformColumnParamCtrl(state) {
      * @methodOf data-prep.transformation-form.controller:TransformColumnParamCtrl
      * @description [PRIVATE] Init select default value
      */
-    var initDefaultValue = function () {
+    function initDefaultValue() {
         if (!vm.parameter.value) {
             if (vm.columns.length) {
                 vm.parameter.value = vm.columns[0].id;
             }
         }
-    };
+    }
 
     initDefaultValue();
 }

@@ -12,11 +12,10 @@
  ============================================================================*/
 
 describe('Preparation Picker controller', () => {
-
     const datasets = [
-        {id: 'de3cc32a-b624-484e-b8e7-dab9061a009c', name: 'my dataset'},
-        {id: '4d0a2718-bec6-4614-ad6c-8b3b326ff6c9', name: 'my second dataset'},
-        {id: '555a2718-bec6-4614-ad6c-8b3b326ff6c7', name: 'my second dataset (1)'},
+        { id: 'de3cc32a-b624-484e-b8e7-dab9061a009c', name: 'my dataset' },
+        { id: '4d0a2718-bec6-4614-ad6c-8b3b326ff6c9', name: 'my second dataset' },
+        { id: '555a2718-bec6-4614-ad6c-8b3b326ff6c7', name: 'my second dataset (1)' },
     ];
 
     let compatiblePreps = [
@@ -52,7 +51,8 @@ describe('Preparation Picker controller', () => {
         }
     ];
 
-    let createController, scope;
+    let createController;
+    let scope;
 
     beforeEach(angular.mock.module('data-prep.preparation-picker'));
 
@@ -62,7 +62,7 @@ describe('Preparation Picker controller', () => {
         createController = () => {
             return $componentController(
                 'preparationPicker',
-                {$scope: scope},
+                { $scope: scope },
                 {
                     dataset: { id: 'dsId', name: 'myDsName' },
                     fetchPreparations: jasmine.createSpy('fetchPreparations').and.returnValue($q.when(compatiblePreps)),

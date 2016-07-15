@@ -41,7 +41,8 @@ export default function TalendTooltip($window, $document) {
         controller: 'TalendTooltipCtrl',
         controllerAs: 'talendTooltipCtrl',
         link: function (scope, iElement, iAttrs, ctrl) {
-            var hasFocus, isOver;
+            var hasFocus;
+            var isOver;
             /**
              * @ngdoc method
              * @name processBlockUnblock

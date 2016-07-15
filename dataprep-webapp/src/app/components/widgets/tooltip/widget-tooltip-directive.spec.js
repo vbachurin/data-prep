@@ -13,7 +13,8 @@
 
 describe('Tooltip widget directive', function() {
     'use strict';
-    var scope, element;
+    var scope;
+    var element;
 
     beforeEach(angular.mock.module('talend.widget'));
     beforeEach(angular.mock.module('htmlTemplates'));
@@ -50,7 +51,7 @@ describe('Tooltip widget directive', function() {
 
     it('should set the position when requested position is on the left', function() {
         //given
-        scope.position = {x: 120, y: 300};
+        scope.position = { x: 120, y: 300 };
 
         expect(element.find('.talend-tooltip')[0].style.left).toBeFalsy();
         expect(element.find('.talend-tooltip')[0].style.right).toBeFalsy();
@@ -65,7 +66,7 @@ describe('Tooltip widget directive', function() {
 
     it('should set the position when requested position is on the right', function() {
         //given
-        scope.position = {x: 1900, y: 300};
+        scope.position = { x: 1900, y: 300 };
 
         expect(element.find('.talend-tooltip')[0].style.left).toBeFalsy();
         expect(element.find('.talend-tooltip')[0].style.right).toBeFalsy();
@@ -80,7 +81,7 @@ describe('Tooltip widget directive', function() {
 
     it('should set the position when requested position is on the top', function() {
         //given
-        scope.position = {x: 120, y: 300};
+        scope.position = { x: 120, y: 300 };
 
         expect(element.find('.talend-tooltip')[0].style.top).toBeFalsy();
         expect(element.find('.talend-tooltip')[0].style.bottom).toBeFalsy();
@@ -95,7 +96,7 @@ describe('Tooltip widget directive', function() {
 
     it('should set the position when requested position is on the bottom', function() {
         //given
-        scope.position = {x: 120, y: 1000};
+        scope.position = { x: 120, y: 1000 };
 
         expect(element.find('.talend-tooltip')[0].style.top).toBeFalsy();
         expect(element.find('.talend-tooltip')[0].style.bottom).toBeFalsy();
@@ -115,7 +116,7 @@ describe('Tooltip widget directive', function() {
 
         $document.documentElement = { clientWidth: 1920, clientHeight: 1080 };
 
-        scope.position = {x: 120, y: 300};
+        scope.position = { x: 120, y: 300 };
 
         expect(element.find('.talend-tooltip')[0].style.left).toBeFalsy();
         expect(element.find('.talend-tooltip')[0].style.right).toBeFalsy();
@@ -136,7 +137,7 @@ describe('Tooltip widget directive', function() {
 
         $document.body = { clientWidth: 1920, clientHeight: 1080 };
 
-        scope.position = {x: 120, y: 300};
+        scope.position = { x: 120, y: 300 };
 
         expect(element.find('.talend-tooltip')[0].style.left).toBeFalsy();
         expect(element.find('.talend-tooltip')[0].style.right).toBeFalsy();

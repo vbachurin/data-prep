@@ -15,7 +15,7 @@
  * @name data-prep.services.import.service:ImportRestService
  * @description Import service. This service provide the entry point to the backend import REST api.<br/>
  */
-export default function ImportRestService ($http, RestURLs) {
+export default function ImportRestService($http, RestURLs) {
     'ngInject';
 
     return {
@@ -41,6 +41,6 @@ export default function ImportRestService ($http, RestURLs) {
      * @returns {Promise}  The GET call promise
      */
     function importParameters(locationType) {
-        return $http.get(RestURLs.datasetUrl + '/imports/'+ locationType + '/parameters' );
+        return $http.get(RestURLs.datasetUrl + '/imports/' + locationType + '/parameters');
     }
 }

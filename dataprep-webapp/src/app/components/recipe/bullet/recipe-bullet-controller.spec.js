@@ -14,14 +14,16 @@
 describe('Recipe Bullet controller', function () {
     'use strict';
 
-    var createController, scope, step;
+    var createController;
+    var scope;
+    var step;
 
     beforeEach(angular.mock.module('data-prep.recipe-bullet'));
 
     beforeEach(inject(function ($rootScope, $controller) {
         scope = $rootScope.$new();
         step = {
-            transformation: {stepId: '138ea798bc56', column:{id:'0002'}}
+            transformation: { stepId: '138ea798bc56', column:{ id:'0002' } }
         };
 
         createController = function () {
@@ -31,7 +33,6 @@ describe('Recipe Bullet controller', function () {
             ctrlFn.instance.step = step;
             return ctrlFn();
         };
-
     }));
 
     it('should init step index', inject(function (RecipeService) {
@@ -156,7 +157,6 @@ describe('Recipe Bullet controller', function () {
             //then
             expect(bullets).toEqual(allSvgs.slice(stepIndex));
         });
-
     });
 
     describe('inactive step', function () {
@@ -181,7 +181,5 @@ describe('Recipe Bullet controller', function () {
             //then
             expect(bullets).toEqual(allSvgs.slice(3, 6));
         });
-
     });
-
 });

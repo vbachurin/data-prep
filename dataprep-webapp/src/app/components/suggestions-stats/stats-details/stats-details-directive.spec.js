@@ -14,7 +14,10 @@
 describe('stats details directive', function () {
     'use strict';
 
-    var stateMock, scope, element, createElement;
+    var stateMock;
+    var scope;
+    var element;
+    var createElement;
 
     beforeEach(angular.mock.module('data-prep.stats-details', function ($provide) {
         stateMock = {

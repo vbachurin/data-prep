@@ -303,7 +303,7 @@ describe('Grid state service', () => {
             gridState.selectedLine = 2;
             gridState.numericColumns = [{}, {}];
             gridState.filteredRecords = [{}, {}];
-            gridState.filteredOccurences = {toto: 3};
+            gridState.filteredOccurences = { toto: 3 };
 
             //when
             GridStateService.reset();
