@@ -253,7 +253,7 @@
                                         <argument>${docker.tools.image.name}</argument>
                                         <argument>/bin/sh</argument>
                                         <argument>-c</argument>
-                                        <argument>npm install &amp;&amp; bower --allow-root --config.interactive=false install --force
+                                        <argument>npm install &amp;&amp; npm rebuild node-sass &amp;&amp; bower --allow-root --config.interactive=false install --force
                                         </argument>
                                     </arguments>
                                 </configuration>
