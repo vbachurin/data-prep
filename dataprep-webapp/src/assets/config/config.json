@@ -1,5 +1,6 @@
 {
   "serverUrl": "http://10.42.10.99:8888",
+  "serverKeepAliveUrl": "",
   "enableDebug": false,
   "version": "1.2.0",
   "copyRights": "2016 Talend. All Rights Reserved",

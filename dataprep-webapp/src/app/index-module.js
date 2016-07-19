@@ -107,24 +107,25 @@
         .run(($window, $translate) => {
             'ngInject';
             $translate.use('en');
-            });
+        });
 
     window.fetchConfiguration = function fetchConfiguration() {
         const initInjector = angular.injector(['ng']);
         const $http = initInjector.get('$http');
 
         return $http.get('/assets/config/config.json')
+            .then((config) => config.data)
             .then((config) => {
                 app
-                // Debug config
+                    // Debug config
                     .config(($compileProvider) => {
                         'ngInject';
-                        $compileProvider.debugInfoEnabled(config.data.enableDebug);
+                        $compileProvider.debugInfoEnabled(config.enableDebug);
                     })
                     // Configure server api urls
                     .run((RestURLs) => {
                         'ngInject';
-                        RestURLs.setServerUrl(config.data.serverUrl);
+                        RestURLs.setServerUrl(config.serverUrl);
                     })
                     // Fetch dynamic configuration (export types, supported encodings, ...)
                     .run((ImportService, ExportService, DatasetService) => {
@@ -132,13 +133,17 @@
                         ImportService.initImport();
                         ExportService.refreshTypes();
                         DatasetService.refreshSupportedEncodings();
-
+                    })
+                    // Open a keepalive websocket if requested
+                    .run(() => {
+                        if (!config.serverKeepAliveUrl) return;
+                        new WebSocket(config.serverKeepAliveUrl);
                     });
 
                 angular.module('data-prep.services.utils')
-                    .value('version', config.data.version)
-                    .value('copyRights', config.data.copyRights)
-                    .value('documentationSearchURL', config.data.documentationSearchURL);
+                    .value('version', config.version)
+                    .value('copyRights', config.copyRights)
+                    .value('documentationSearchURL', config.documentationSearchURL);
             });
     };
 
