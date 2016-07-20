@@ -22,7 +22,6 @@ import static org.junit.Assert.assertThat;
 import java.io.InputStream;
 import java.util.Random;
 
-import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -191,6 +190,7 @@ public class SchemaAnalysisTest extends DataSetBaseTest {
         schemaAnalysis.analyze(id);
 
         final DataSetMetadata analyzed = dataSetMetadataRepository.get(id);
+        assertNotNull(analyzed);
         assertNotNull(analyzed.getLifecycle());
         assertThat(analyzed.getLifecycle().schemaAnalyzed(), is(true));
         return analyzed;
@@ -214,6 +214,25 @@ public class SchemaAnalysisTest extends DataSetBaseTest {
             i++;
         }
 
-        StringUtils.equalsIgnoreCase("IPv6 Address", actual.getRowMetadata().getColumns().get(2).getDomainLabel());
+        assertThat("IPv6 Address", is(actual.getRowMetadata().getColumns().get(2).getDomainLabel()));
+    }
+
+    /**
+     * See <a href="https://jira.talendforge.org/browse/TDP-855">TDP-855_movie_title_detected_as_city</a>.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testTDP_855() throws Exception {
+        final DataSetMetadata actual = initializeDataSetMetadata(
+                DataSetServiceTest.class.getResourceAsStream("../TDP-855_movie_title_detected_as_city.csv"));
+        assertThat(actual.getLifecycle().schemaAnalyzed(), is(true));
+        ColumnMetadata column = actual.getRowMetadata().getColumns().get(0);
+        String expectedName = "Genre: (Movie, Program, show)";
+        Type expectedType = Type.STRING;
+
+        assertThat(expectedName, is(column.getName()));
+        assertThat(expectedType.getName(), is(column.getType()));
+        assertThat("", is(column.getDomainLabel()));
     }
 }
