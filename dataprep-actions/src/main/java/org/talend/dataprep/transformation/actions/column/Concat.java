@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.talend.dataprep.transformation.actions.DataprepActionsBundle.choice;
+
 /**
  * Concat action concatenates 2 columns into a new one. The new column name will be "column_source + selected_column."
  * The new column content is "prefix + column_source + separator + selected_column + suffix"
@@ -105,17 +107,17 @@ public class Concat extends AbstractActionMetadata implements ColumnAction, Othe
         parameters.add(new Parameter(PREFIX_PARAMETER, ParameterType.STRING, StringUtils.EMPTY));
 
         parameters.add(SelectParameter.Builder.builder().name(MODE_PARAMETER)
-                .item(OTHER_COLUMN_MODE,
+                .item(OTHER_COLUMN_MODE, choice(OTHER_COLUMN_MODE),
                         new Parameter(SELECTED_COLUMN_PARAMETER, ParameterType.COLUMN, StringUtils.EMPTY, //
                                 false, false, StringUtils.EMPTY, getMessagesBundle()),
                         new Parameter(SEPARATOR_PARAMETER, ParameterType.STRING, StringUtils.EMPTY), //
                         SelectParameter.Builder.builder() //
                                 .name(SEPARATOR_CONDITION) //
-                                .item(BOTH_NOT_EMPTY) //
-                                .item(ALWAYS) //
+                                .item(BOTH_NOT_EMPTY, choice(BOTH_NOT_EMPTY)) //
+                                .item(ALWAYS, choice(ALWAYS)) //
                                 .defaultValue(BOTH_NOT_EMPTY) //
                                 .build())//
-                .item(CONSTANT_MODE) //
+                .item(CONSTANT_MODE, choice(CONSTANT_MODE)) //
                 .defaultValue(OTHER_COLUMN_MODE) //
                 .build());
 

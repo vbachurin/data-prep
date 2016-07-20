@@ -30,6 +30,7 @@ import javax.annotation.Nonnull;
 import java.util.*;
 
 import static org.apache.commons.lang.StringUtils.EMPTY;
+import static org.talend.dataprep.transformation.actions.DataprepActionsBundle.choice;
 import static org.talend.dataprep.transformation.actions.common.OtherColumnParameters.CONSTANT_MODE;
 import static org.talend.dataprep.transformation.actions.common.OtherColumnParameters.OTHER_COLUMN_MODE;
 
@@ -131,27 +132,27 @@ public class FormatPhoneNumber extends AbstractActionMetadata implements ColumnA
         final List<Parameter> parameters = super.getParameters();
         parameters.add(SelectParameter.Builder.builder() //
                 .name(OtherColumnParameters.MODE_PARAMETER) //
-                .item(OTHER_COLUMN_MODE, //
+                .item(OTHER_COLUMN_MODE, choice(OTHER_COLUMN_MODE), //
                         new Parameter(OtherColumnParameters.SELECTED_COLUMN_PARAMETER, //
                                 ParameterType.COLUMN, //
                                 StringUtils.EMPTY, false, false, StringUtils.EMPTY, getMessagesBundle())) //
-                .item(CONSTANT_MODE, //
+                .item(CONSTANT_MODE, choice(CONSTANT_MODE), //
                         SelectParameter.Builder.builder().name(REGIONS_PARAMETER_CONSTANT_MODE).canBeBlank(true) //
-                                .item(US_REGION_CODE) //
-                                .item(FR_REGION_CODE) //
-                                .item(UK_REGION_CODE) //
-                                .item(DE_REGION_CODE) //
-                                .item(OTHER_REGION_TO_BE_SPECIFIED,
+                                .item(US_REGION_CODE, choice(US_REGION_CODE)) //
+                                .item(FR_REGION_CODE, choice(FR_REGION_CODE)) //
+                                .item(UK_REGION_CODE, choice(UK_REGION_CODE)) //
+                                .item(DE_REGION_CODE, choice(DE_REGION_CODE)) //
+                                .item(OTHER_REGION_TO_BE_SPECIFIED, choice(OTHER_REGION_TO_BE_SPECIFIED),
                                         new Parameter(MANUAL_REGION_PARAMETER_STRING, ParameterType.STRING, EMPTY))
                                 .defaultValue(US_REGION_CODE).build()) //
 
         .defaultValue(CONSTANT_MODE).build());
 
         parameters.add(SelectParameter.Builder.builder().name(FORMAT_TYPE_PARAMETER) //
-                .item(TYPE_INTERNATIONAL) //
-                .item(TYPE_NATIONAL) //
-                .item(TYPE_E164) //
-                .item(TYPE_RFC396) //
+                .item(TYPE_INTERNATIONAL, choice(TYPE_INTERNATIONAL)) //
+                .item(TYPE_NATIONAL, choice(TYPE_NATIONAL)) //
+                .item(TYPE_E164, choice(TYPE_E164)) //
+                .item(TYPE_RFC396, choice(TYPE_RFC396)) //
                 .defaultValue(TYPE_INTERNATIONAL).build());
         return parameters;
     }

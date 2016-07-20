@@ -83,7 +83,7 @@ public class Absolute extends AbstractActionMetadata implements ColumnAction {
 
     @Override
     public String getName() {
-        return ABSOLUTE_ACTION_NAME;
+        return ABSOLUTE_ACTION_NAME + "toto";
     }
 
     @Override

@@ -13,18 +13,18 @@
 
 package org.talend.dataprep.transformation.api.action.parameters;
 
-import static org.junit.Assert.assertThat;
-import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
-
-import java.io.IOException;
-import java.io.StringWriter;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataprep.parameters.SelectParameter;
+
+import java.io.IOException;
+import java.io.StringWriter;
+
+import static org.junit.Assert.assertThat;
+import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
 /**
  * Unit test for the SelectParameter bean. Mostly test the json serialization.
@@ -42,8 +42,8 @@ public class SelectParameterTest extends ParameterBaseTest {
                 .implicit(false) //
                 .canBeBlank(false) //
                 .item("first choice", "first value") //
-                .item("2") //
-                .item("your choice", new Parameter("limit", ParameterType.INTEGER, StringUtils.EMPTY, false, false)) //
+                .item("2", "two") //
+                .item("your_choice", "your choice", new Parameter("limit", ParameterType.INTEGER, StringUtils.EMPTY, false, false)) //
                 .build();
 
         // when

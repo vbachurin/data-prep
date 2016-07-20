@@ -14,16 +14,18 @@
 package org.talend.dataprep.transformation.actions.date;
 
 import org.apache.commons.lang.StringUtils;
-import org.talend.dataprep.i18n.DataprepBundle;
+import org.talend.dataprep.parameters.ItemParameter;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataprep.parameters.SelectParameter;
+import org.talend.dataprep.transformation.actions.DataprepActionsBundle;
 import org.talend.dataprep.transformation.actions.common.ActionCompileException;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
 import java.util.*;
 
 import static org.apache.commons.lang.StringUtils.EMPTY;
+import static org.talend.dataprep.transformation.actions.DataprepActionsBundle.choice;
 
 /**
  * This interface is designed to be implemented by actions that have a date pattern as parameter.
@@ -59,15 +61,12 @@ public interface DatePatternParamModel {
                 .getBundle("org.talend.dataprep.transformation.actions.date.date_patterns", Locale.ENGLISH);
         Enumeration<String> keys = patterns.getKeys();
 
-        List<SelectParameter.Item> items = new ArrayList<>();
-        SelectParameter.Item defaultItem = null;
+        List<ItemParameter> items = new ArrayList<>();
+        ItemParameter defaultItem = null;
         while (keys.hasMoreElements()) {
             String key = keys.nextElement();
             String value = patterns.getString(key);
-            SelectParameter.Item item = SelectParameter.Item.Builder.builder()
-                    .value(value)
-                    .label(DataprepBundle.message("choice." + key, key + " (" + value + ")"))
-                    .build();
+            ItemParameter item = new ItemParameter(value, DataprepActionsBundle.messageWithDefault("choice." + key, null, key + " (" + value + ")"));
             items.add(item);
 
             if (key.equals("ISO")){
@@ -78,10 +77,10 @@ public interface DatePatternParamModel {
             defaultItem = items.get(0);
         }
 
-        items.sort(new Comparator<SelectParameter.Item>() {
+        items.sort(new Comparator<ItemParameter>() {
 
             @Override
-            public int compare(SelectParameter.Item item, SelectParameter.Item t1) {
+            public int compare(ItemParameter item, ItemParameter t1) {
                 return item.getLabel().compareTo(t1.getLabel());
             }
         });
@@ -90,7 +89,7 @@ public interface DatePatternParamModel {
         parameters.add(SelectParameter.Builder.builder() //
                 .name(NEW_PATTERN) //
                 .items(items) //
-                .item("custom", CUSTOM_PATTERN_PARAMETER) //
+                .item("custom", choice("custom"), CUSTOM_PATTERN_PARAMETER) //
                 .defaultValue(defaultItem.getValue()) //
                 .build());
 

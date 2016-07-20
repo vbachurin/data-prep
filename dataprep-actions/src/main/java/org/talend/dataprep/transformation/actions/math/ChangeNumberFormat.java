@@ -35,6 +35,7 @@ import java.util.*;
 
 import static org.talend.daikon.number.BigDecimalParser.*;
 import static org.talend.dataprep.parameters.ParameterType.STRING;
+import static org.talend.dataprep.transformation.actions.DataprepActionsBundle.choice;
 
 /**
  * Change the pattern on a 'number' column.
@@ -112,11 +113,11 @@ public class ChangeNumberFormat extends AbstractActionMetadata implements Column
         // @formatter:off
         parameters.add(SelectParameter.Builder.builder()
                 .name(FROM_SEPARATORS)
-                .item(UNKNOWN_SEPARATORS)
-                .item(US_SEPARATORS)
-                .item(EU_SEPARATORS)
-                .item(CH_SEPARATORS)
-                .item(CUSTOM, buildDecimalSeparatorParameter(FROM), buildGroupingSeparatorParameter(FROM))
+                .item(UNKNOWN_SEPARATORS, choice(UNKNOWN_SEPARATORS))
+                .item(US_SEPARATORS, choice(US_SEPARATORS))
+                .item(EU_SEPARATORS, choice(EU_SEPARATORS))
+                .item(CH_SEPARATORS, choice(CH_SEPARATORS))
+                .item(CUSTOM, choice(CUSTOM), buildDecimalSeparatorParameter(FROM), buildGroupingSeparatorParameter(FROM))
                 .defaultValue(UNKNOWN_SEPARATORS)
                 .build());
         // @formatter:on
@@ -124,11 +125,11 @@ public class ChangeNumberFormat extends AbstractActionMetadata implements Column
         // @formatter:off
         parameters.add(SelectParameter.Builder.builder()
                 .name(TARGET_PATTERN)
-                .item(US_PATTERN)
-                .item(EU_PATTERN)
-                .item(CH_PATTERN)
-                .item(SCIENTIFIC)
-                .item(CUSTOM, new Parameter(TARGET_PATTERN + "_" + CUSTOM, STRING, US_DECIMAL_PATTERN.toPattern()),
+                .item(US_PATTERN, choice(US_PATTERN))
+                .item(EU_PATTERN, choice(EU_PATTERN))
+                .item(CH_PATTERN, choice(CH_PATTERN))
+                .item(SCIENTIFIC, choice(SCIENTIFIC))
+                .item(CUSTOM, choice(CUSTOM), new Parameter(TARGET_PATTERN + "_" + CUSTOM, STRING, US_DECIMAL_PATTERN.toPattern()),
                         buildDecimalSeparatorParameter(TARGET),
                         buildGroupingSeparatorParameter(TARGET))
                 .defaultValue(US_PATTERN)
@@ -143,9 +144,9 @@ public class ChangeNumberFormat extends AbstractActionMetadata implements Column
         // @formatter:off
         return  SelectParameter.Builder.builder()
                 .name(name)
-                .item(".")
-                .item(",")
-                .item(CUSTOM, new Parameter(name + "_" + CUSTOM, STRING, "."))
+                .item(".", ".")
+                .item(",", ",")
+                .item(CUSTOM, choice(CUSTOM), new Parameter(name + "_" + CUSTOM, STRING, "."))
                 .defaultValue(".")
                 .build();
         // @formatter:on
@@ -161,7 +162,7 @@ public class ChangeNumberFormat extends AbstractActionMetadata implements Column
                 .item(".",". (dot)")
                 .item("'", "' (quote)")
                 .item("", "None")
-                .item(CUSTOM, new Parameter(name + "_" + CUSTOM, STRING, ","))
+                .item(CUSTOM, choice(CUSTOM), new Parameter(name + "_" + CUSTOM, STRING, ","))
                 .canBeBlank(true)
                 .defaultValue(",")
                 .build();

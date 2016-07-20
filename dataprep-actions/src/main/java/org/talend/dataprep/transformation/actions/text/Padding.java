@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.talend.dataprep.transformation.actions.DataprepActionsBundle.choice;
+
 @DataprepAction(AbstractActionMetadata.ACTION_BEAN_PREFIX + Padding.ACTION_NAME)
 public class Padding extends AbstractActionMetadata implements ColumnAction {
 
@@ -96,8 +98,8 @@ public class Padding extends AbstractActionMetadata implements ColumnAction {
         //@formatter:off
         parameters.add(SelectParameter.Builder.builder()
                         .name(PADDING_POSITION_PARAMETER)
-                        .item(LEFT_POSITION)
-                        .item(RIGHT_POSITION)
+                        .item(LEFT_POSITION, choice(LEFT_POSITION))
+                        .item(RIGHT_POSITION, choice(RIGHT_POSITION))
                         .defaultValue(LEFT_POSITION)
                         .build()
         );

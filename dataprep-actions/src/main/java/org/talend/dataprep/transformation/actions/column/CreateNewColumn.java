@@ -30,6 +30,7 @@ import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
 import java.util.*;
 
+import static org.talend.dataprep.transformation.actions.DataprepActionsBundle.choice;
 import static org.talend.dataprep.transformation.actions.category.ActionScope.COLUMN_METADATA;
 
 /**
@@ -112,9 +113,9 @@ public class CreateNewColumn extends AbstractActionMetadata implements ColumnAct
         //@formatter:off
         parameters.add(SelectParameter.Builder.builder()
                         .name(MODE_PARAMETER)
-                        .item(EMPTY_MODE)
-                        .item(CONSTANT_MODE, constantParameter)
-                        .item(COLUMN_MODE, new Parameter(SELECTED_COLUMN_PARAMETER, ParameterType.COLUMN, //
+                        .item(EMPTY_MODE, choice(EMPTY_MODE))
+                        .item(CONSTANT_MODE, choice(CONSTANT_MODE), constantParameter)
+                        .item(COLUMN_MODE, choice(COLUMN_MODE), new Parameter(SELECTED_COLUMN_PARAMETER, ParameterType.COLUMN, //
                                                          StringUtils.EMPTY, false, false, StringUtils.EMPTY,
                                                          getMessagesBundle()))
                         .defaultValue(COLUMN_MODE)

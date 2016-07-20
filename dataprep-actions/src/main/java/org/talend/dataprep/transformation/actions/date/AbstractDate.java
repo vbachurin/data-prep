@@ -13,15 +13,15 @@
 
 package org.talend.dataprep.transformation.actions.date;
 
-import static org.talend.dataprep.api.type.Type.DATE;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.actions.category.ActionCategory;
-import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
+import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataquality.semantic.classifier.SemanticCategoryEnum;
+
+import static org.talend.dataprep.api.type.Type.DATE;
 
 public abstract class AbstractDate extends AbstractActionMetadata {
 

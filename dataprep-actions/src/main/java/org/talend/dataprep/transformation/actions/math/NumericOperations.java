@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static java.math.RoundingMode.HALF_UP;
+import static org.talend.dataprep.transformation.actions.DataprepActionsBundle.choice;
 
 /**
  * Concat action concatenates 2 columns into a new one. The new column name will be "column_source + selected_column."
@@ -101,10 +102,10 @@ public class NumericOperations extends AbstractActionMetadata implements ColumnA
         //@formatter:off
         parameters.add(SelectParameter.Builder.builder()
                         .name(OPERATOR_PARAMETER)
-                        .item(PLUS)
-                        .item(MULTIPLY)
-                        .item(MINUS)
-                        .item(DIVIDE)
+                        .item(PLUS, choice(PLUS))
+                        .item(MULTIPLY, choice(MULTIPLY))
+                        .item(MINUS, choice(MINUS))
+                        .item(DIVIDE, choice(DIVIDE))
                         .defaultValue(MULTIPLY)
                         .build()
         );
@@ -113,8 +114,8 @@ public class NumericOperations extends AbstractActionMetadata implements ColumnA
         //@formatter:off
         parameters.add(SelectParameter.Builder.builder()
                         .name(MODE_PARAMETER)
-                        .item(CONSTANT_MODE, new Parameter(OPERAND_PARAMETER, ParameterType.STRING, "2"))
-                        .item(OTHER_COLUMN_MODE,
+                        .item(CONSTANT_MODE, choice(CONSTANT_MODE), new Parameter(OPERAND_PARAMETER, ParameterType.STRING, "2"))
+                        .item(OTHER_COLUMN_MODE, choice(OTHER_COLUMN_MODE),
                               new Parameter(SELECTED_COLUMN_PARAMETER, ParameterType.COLUMN, //
                                             StringUtils.EMPTY, false, false, StringUtils.EMPTY, getMessagesBundle())) //
                         .defaultValue(CONSTANT_MODE)

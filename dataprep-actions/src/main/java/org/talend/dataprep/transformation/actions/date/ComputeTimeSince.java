@@ -29,7 +29,6 @@ import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.time.temporal.TemporalUnit;
 import java.util.EnumSet;
@@ -37,7 +36,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static java.time.temporal.ChronoUnit.*;
 import static org.talend.dataprep.api.type.Type.INTEGER;
+import static org.talend.dataprep.transformation.actions.DataprepActionsBundle.choice;
 import static org.talend.dataprep.transformation.actions.common.OtherColumnParameters.OTHER_COLUMN_MODE;
 import static org.talend.dataprep.transformation.actions.common.OtherColumnParameters.SELECTED_COLUMN_PARAMETER;
 
@@ -102,24 +103,24 @@ public class ComputeTimeSince extends AbstractDate implements ColumnAction {
 
         parameters.add(SelectParameter.Builder.builder() //
                 .name(TIME_UNIT_PARAMETER) //
-                .item(ChronoUnit.YEARS.name()) //
-                .item(ChronoUnit.MONTHS.name()) //
-                .item(ChronoUnit.DAYS.name()) //
-                .item(ChronoUnit.HOURS.name()) //
-                .defaultValue(ChronoUnit.HOURS.name()) //
+                .item(YEARS.name(), choice(YEARS.name())) //
+                .item(MONTHS.name(), choice(MONTHS.name())) //
+                .item(DAYS.name(), choice(DAYS.name())) //
+                .item(HOURS.name(), choice(HOURS.name())) //
+                .defaultValue(HOURS.name()) //
                 .build());
 
         parameters.add(SelectParameter.Builder.builder() //
                 .name(SINCE_WHEN_PARAMETER) //
                 .canBeBlank(false) //
-                .item(NOW_SERVER_SIDE_MODE) //
-                .item(SPECIFIC_DATE_MODE,
+                .item(NOW_SERVER_SIDE_MODE, choice(NOW_SERVER_SIDE_MODE)) //
+                .item(SPECIFIC_DATE_MODE, choice(SPECIFIC_DATE_MODE),
                         new Parameter(SPECIFIC_DATE_PARAMETER, //
                                 ParameterType.DATE, //
                                 StringUtils.EMPTY, //
                                 false, //
                                 false)) //
-                .item(OTHER_COLUMN_MODE,
+                .item(OTHER_COLUMN_MODE, choice(OTHER_COLUMN_MODE),
                         new Parameter(SELECTED_COLUMN_PARAMETER, //
                                 ParameterType.COLUMN, //
                                 StringUtils.EMPTY, //
@@ -137,7 +138,7 @@ public class ComputeTimeSince extends AbstractDate implements ColumnAction {
         // Create new column
         Map<String, String> parameters = context.getParameters();
         String columnId = context.getColumnId();
-        TemporalUnit unit = ChronoUnit.valueOf(parameters.get(TIME_UNIT_PARAMETER).toUpperCase());
+        TemporalUnit unit = valueOf(parameters.get(TIME_UNIT_PARAMETER).toUpperCase());
         ColumnMetadata column = context.getRowMetadata().getById(columnId);
         context.column("result", (r) -> {
             final ColumnMetadata c = ColumnMetadata.Builder //
@@ -165,7 +166,7 @@ public class ComputeTimeSince extends AbstractDate implements ColumnAction {
 
         final String newColumnId = context.column("result");
 
-        TemporalUnit unit = ChronoUnit.valueOf(parameters.get(TIME_UNIT_PARAMETER).toUpperCase());
+        TemporalUnit unit = valueOf(parameters.get(TIME_UNIT_PARAMETER).toUpperCase());
 
         try {
             LocalDateTime since = null;

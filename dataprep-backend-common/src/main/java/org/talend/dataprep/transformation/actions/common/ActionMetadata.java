@@ -187,16 +187,11 @@ public interface ActionMetadata {
      **/
     List<Parameter> getParameters();
 
+    /**
+     * Get the behavior of this action to help optimize flow based on what the action needs and modify.
+     *
+     * @return The list of this action behaviors
+     */
     @JsonIgnore
     Set<Behavior> getBehavior();
-
-    /**
-     * Compute a suggestion score based on column metadata. If it returns null, the result is ignored and rule based suggestion
-     * resolution takes place.
-     *
-     * @param column the column on which the action may be applied.
-     * @return the level of suggestion of this action on this column or null to let the rules do the work.
-     */
-    SuggestionLevel getSuggestionScore(ColumnMetadata column);
-
 }

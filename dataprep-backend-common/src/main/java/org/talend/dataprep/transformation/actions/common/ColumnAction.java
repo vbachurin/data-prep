@@ -19,11 +19,12 @@ import org.talend.dataprep.transformation.api.action.context.ActionContext;
 /**
  * Interface used to apply an action on a column.
  */
-public interface ColumnAction {
+public interface ColumnAction extends ActionMetadata {
 
     /**
      * Apply action on a column.
-     * @param row the dataset row.
+     *
+     * @param row     the dataset row.
      * @param context the transformation context.
      */
     void applyOnColumn(final DataSetRow row, final ActionContext context);

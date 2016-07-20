@@ -43,6 +43,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.talend.dataprep.transformation.actions.DataprepActionsBundle.choice;
+
 public abstract class AbstractFillWith extends AbstractActionMetadata implements OtherColumnParameters {
 
     public static final String DEFAULT_VALUE_PARAMETER = "default_value"; //$NON-NLS-1$
@@ -132,8 +134,8 @@ public abstract class AbstractFillWith extends AbstractActionMetadata implements
         case BOOLEAN:
             constantParameter = SelectParameter.Builder.builder() //
                     .name(DEFAULT_VALUE_PARAMETER) //
-                    .item("True") //
-                    .item("False") //
+                    .item("True", choice("True")) //
+                    .item("False", choice("False")) //
                     .defaultValue("True") //
                     .build();
             break;
@@ -154,8 +156,8 @@ public abstract class AbstractFillWith extends AbstractActionMetadata implements
         //@formatter:off
         parameters.add(SelectParameter.Builder.builder()
                         .name(MODE_PARAMETER)
-                        .item(CONSTANT_MODE, constantParameter)
-                        .item(OTHER_COLUMN_MODE, new Parameter(SELECTED_COLUMN_PARAMETER, ParameterType.COLUMN, //
+                        .item(CONSTANT_MODE, choice(CONSTANT_MODE), constantParameter)
+                        .item(OTHER_COLUMN_MODE, choice(OTHER_COLUMN_MODE), new Parameter(SELECTED_COLUMN_PARAMETER, ParameterType.COLUMN, //
                                                                StringUtils.EMPTY, false, false, StringUtils.EMPTY, getMessagesBundle()))
                         .defaultValue(CONSTANT_MODE)
                         .build()

@@ -11,7 +11,7 @@
 //
 // ============================================================================
 
-package org.talend.dataprep.transformation.actions.common;
+package org.talend.dataprep.transformation.actions;
 
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -24,6 +24,7 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataprep.parameters.SelectParameter;
+import org.talend.dataprep.transformation.actions.common.*;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
 import javax.annotation.Nonnull;
@@ -31,6 +32,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static org.talend.dataprep.transformation.actions.DataprepActionsBundle.choice;
 
 public abstract class AbstractCompareAction extends AbstractActionMetadata
         implements ColumnAction, OtherColumnParameters, CompareAction {
@@ -51,8 +54,8 @@ public abstract class AbstractCompareAction extends AbstractActionMetadata
         //@formatter:off
         parameters.add(SelectParameter.Builder.builder() //
                         .name(MODE_PARAMETER) //
-                        .item(CONSTANT_MODE, getDefaultConstantValue()) //
-                        .item(OTHER_COLUMN_MODE, new Parameter(SELECTED_COLUMN_PARAMETER, ParameterType.COLUMN, //
+                        .item(CONSTANT_MODE, choice(CONSTANT_MODE), getDefaultConstantValue()) //
+                        .item(OTHER_COLUMN_MODE, choice(OTHER_COLUMN_MODE), new Parameter(SELECTED_COLUMN_PARAMETER, ParameterType.COLUMN, //
                                                                StringUtils.EMPTY, false, false, //
                                                                StringUtils.EMPTY, getMessagesBundle())) //
                         .defaultValue(CONSTANT_MODE)
@@ -73,12 +76,12 @@ public abstract class AbstractCompareAction extends AbstractActionMetadata
         //@formatter:off
         return SelectParameter.Builder.builder() //
                            .name(COMPARE_MODE) //
-                           .item(EQ) //
-                           .item(NE) //
-                           .item(GT) //
-                           .item(GE) //
-                           .item(LT) //
-                           .item(LE) //
+                           .item(EQ, choice(EQ)) //
+                           .item(NE, choice(NE)) //
+                           .item(GT, choice(GT)) //
+                           .item(GE, choice(GE)) //
+                           .item(LT, choice(LT)) //
+                           .item(LE, choice(LE)) //
                            .defaultValue(EQ) //
                            .build();
         //@formatter:on

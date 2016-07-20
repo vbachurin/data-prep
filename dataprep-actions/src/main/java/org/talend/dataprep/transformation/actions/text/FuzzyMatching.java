@@ -23,7 +23,10 @@ import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataprep.parameters.SelectParameter;
 import org.talend.dataprep.transformation.actions.category.ActionCategory;
-import org.talend.dataprep.transformation.actions.common.*;
+import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
+import org.talend.dataprep.transformation.actions.common.ActionCompileException;
+import org.talend.dataprep.transformation.actions.common.ColumnAction;
+import org.talend.dataprep.transformation.actions.common.DataprepAction;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
 import java.util.EnumSet;
@@ -35,6 +38,8 @@ import static org.apache.commons.lang.BooleanUtils.toStringTrueFalse;
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.talend.dataprep.api.type.Type.BOOLEAN;
 import static org.talend.dataprep.parameters.ParameterType.INTEGER;
+import static org.talend.dataprep.transformation.actions.DataprepActionsBundle.choice;
+import static org.talend.dataprep.transformation.actions.common.OtherColumnParameters.*;
 
 /**
  * Create a new column with Boolean result <code>true</code> if the Levenstein distance is less or equals the parameter
@@ -76,15 +81,15 @@ public class FuzzyMatching extends AbstractActionMetadata implements ColumnActio
         final List<Parameter> parameters = super.getParameters();
 
         parameters.add(SelectParameter.Builder.builder() //
-                .name(OtherColumnParameters.MODE_PARAMETER) //
-                .item(OtherColumnParameters.CONSTANT_MODE, //
+                .name(MODE_PARAMETER) //
+                .item(CONSTANT_MODE, choice(CONSTANT_MODE), //
                         new Parameter(VALUE_PARAMETER, ParameterType.STRING, EMPTY, false, true, StringUtils.EMPTY,
                                 getMessagesBundle())) //
-                .item(OtherColumnParameters.OTHER_COLUMN_MODE, //
-                        new Parameter(OtherColumnParameters.SELECTED_COLUMN_PARAMETER, //
+                .item(OTHER_COLUMN_MODE, choice(OTHER_COLUMN_MODE), //
+                        new Parameter(SELECTED_COLUMN_PARAMETER, //
                                 ParameterType.COLUMN, //
                                 StringUtils.EMPTY, false, false, StringUtils.EMPTY, getMessagesBundle())) //
-                .defaultValue(OtherColumnParameters.CONSTANT_MODE).build());
+                .defaultValue(CONSTANT_MODE).build());
 
         parameters.add(new Parameter(SENSITIVITY, INTEGER, "1", false, false, StringUtils.EMPTY, getMessagesBundle()));
         return parameters;
@@ -129,11 +134,11 @@ public class FuzzyMatching extends AbstractActionMetadata implements ColumnActio
 
         String value = row.get(context.getColumnId());
         String referenceValue;
-        if (parameters.get(OtherColumnParameters.MODE_PARAMETER).equals(OtherColumnParameters.CONSTANT_MODE)) {
+        if (parameters.get(MODE_PARAMETER).equals(CONSTANT_MODE)) {
             referenceValue = parameters.get(VALUE_PARAMETER);
         } else {
             final ColumnMetadata selectedColumn = rowMetadata
-                    .getById(parameters.get(OtherColumnParameters.SELECTED_COLUMN_PARAMETER));
+                    .getById(parameters.get(SELECTED_COLUMN_PARAMETER));
             referenceValue = row.get(selectedColumn.getId());
         }
 

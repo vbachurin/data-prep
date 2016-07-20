@@ -13,14 +13,16 @@
 
 package org.talend.dataprep.transformation.format;
 
-import java.util.Arrays;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.format.export.ExportFormat;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataprep.parameters.SelectParameter;
+
+import java.util.Arrays;
+
+import static org.talend.dataprep.transformation.actions.DataprepActionsBundle.choice;
 
 /**
  * CSV format type.
@@ -38,10 +40,10 @@ public class CSVFormat extends ExportFormat {
         //@formatter:off
         super("CSV", "text/csv", ".csv", true, false,
                 Arrays.asList(SelectParameter.Builder.builder().name("csvSeparator") //
-                        .item(";", "semiColon") //
-                        .item("\u0009", "tabulation") //
-                        .item(" ", "space") //
-                        .item(",", "comma") //
+                        .item(";", choice("semiColon")) //
+                        .item("\u0009", choice("tabulation")) //
+                        .item(" ", choice("space")) //
+                        .item(",", choice("comma")) //
                         .defaultValue(";") //
                         .canBeBlank(true) //
                         .radio(true) //

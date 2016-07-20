@@ -36,6 +36,7 @@ import java.util.Set;
 
 import static java.util.Collections.emptyList;
 import static org.apache.commons.lang.StringUtils.EMPTY;
+import static org.talend.dataprep.transformation.actions.DataprepActionsBundle.choice;
 
 /**
  * Change the date pattern on a 'date' column.
@@ -78,8 +79,8 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction, Dat
         // @formatter:off
         parameters.add(SelectParameter.Builder.builder()
                 .name(FROM_MODE)
-                .item(FROM_MODE_BEST_GUESS)
-                .item(FROM_MODE_CUSTOM, new Parameter(FROM_CUSTOM_PATTERN, ParameterType.STRING, EMPTY, false, false))
+                .item(FROM_MODE_BEST_GUESS, choice(FROM_MODE_BEST_GUESS))
+                .item(FROM_MODE_CUSTOM, choice(FROM_MODE_CUSTOM), new Parameter(FROM_CUSTOM_PATTERN, ParameterType.STRING, EMPTY, false, false))
                 .defaultValue(FROM_MODE_BEST_GUESS)
                 .build());
         // @formatter:on

@@ -14,30 +14,29 @@
 package org.talend.dataprep.parameters;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import org.talend.dataprep.i18n.DataprepBundle;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static java.util.Collections.emptyList;
-
 /**
  * Parameter that should be displayed as a select box in the UI.
  */
 public class SelectParameter extends Parameter implements Serializable {
 
-    /** Serialization UID. */
+    /**
+     * Serialization UID.
+     */
     private static final long serialVersionUID = 1L;
 
     private final boolean isRadio;
 
-    /** The select items. */
+    /**
+     * The select items.
+     */
     @JsonIgnore // will be part of the Parameter#configuration
-    private List<Item> items;
+    private List<ItemParameter> items;
 
     /** True if multiple items can be selected. */
     @JsonIgnore // will be part of the Parameter#configuration
@@ -45,16 +44,17 @@ public class SelectParameter extends Parameter implements Serializable {
 
     /**
      * Private constructor to ensure the use of builder.
-     *  @param name The parameter name.
+     *
+     * @param name         The parameter name.
      * @param defaultValue The parameter default value.
-     * @param implicit True if the parameter is implicit.
-     * @param canBeBlank True if the parameter can be blank.
-     * @param items List of items for this select parameter.
-     * @param multiple True if multiple selection is allowed.
-     * @param isRadio <code>true</code> if the rendering code should prefer radio buttons instead of drop down list.
+     * @param implicit     True if the parameter is implicit.
+     * @param canBeBlank   True if the parameter can be blank.
+     * @param items        List of items for this select parameter.
+     * @param multiple     True if multiple selection is allowed.
+     * @param isRadio      <code>true</code> if the rendering code should prefer radio buttons instead of drop down list.
      */
-    private SelectParameter(String name, String defaultValue, boolean implicit, boolean canBeBlank, List<Item> items,
-                            boolean multiple, boolean isRadio) {
+    private SelectParameter(String name, String defaultValue, boolean implicit, boolean canBeBlank, List<ItemParameter> items,
+            boolean multiple, boolean isRadio) {
         super(name, ParameterType.SELECT, defaultValue, implicit, canBeBlank);
         this.isRadio = isRadio;
         setItems(items);
@@ -68,129 +68,22 @@ public class SelectParameter extends Parameter implements Serializable {
         return isRadio;
     }
 
-    /**
-     * @return the Items
-     */
-    public List<Item> getItems() {
+    public List<ItemParameter> getItems() {
         return items;
     }
 
-    /**
-     * @param items the items to set.
-     */
-    public void setItems(List<Item> items) {
+    public void setItems(List<ItemParameter> items) {
         addConfiguration("values", items);
         this.items = items;
     }
 
-    /**
-     * @return the Multiple
-     */
     public boolean isMultiple() {
         return multiple;
     }
 
-    /**
-     * @param multiple the multiple to set.
-     */
     public void setMultiple(boolean multiple) {
         addConfiguration("multiple", multiple);
         this.multiple = multiple;
-    }
-
-    /**
-     * Models a select item.
-     */
-    public static class Item {
-
-        /** the item value. */
-        private String value;
-
-        /** the item label. */
-        private String label;
-
-        /** The optional inline parameter. */
-        @JsonProperty("parameters")
-        @JsonInclude(JsonInclude.Include.NON_EMPTY)
-        private List<Parameter> inlineParameters;
-
-        public Item(String value) {
-            this(value, emptyList());
-        }
-
-        /**
-         * Create a select Item. The item's label will be by default looked up with key ("choice." + value). You may
-         * override this behavior using {@link #setLabel(String)}.
-         *
-         * @param value the item value.
-         * @param parameters the item optional parameters.
-         * @see #setLabel(String)
-         */
-        private Item(String value, List<Parameter> parameters) {
-            this.value = value;
-            this.label = DataprepBundle.messageWithDefault("choice." + value, new Object[]{}, value);
-            this.inlineParameters = parameters;
-        }
-
-        /**
-         * @return the Value
-         */
-        public String getValue() {
-            return value;
-        }
-
-        /**
-         * @return the InlineParameters
-         */
-        public List<Parameter> getInlineParameters() {
-            return inlineParameters;
-        }
-
-        public String getLabel() {
-            final String lookupKey = "parameter." + label + ".label";
-            final String translatedLabel = DataprepBundle.message(lookupKey);
-            return lookupKey.equals(translatedLabel) ? label : translatedLabel;
-        }
-
-        public void setLabel(String label) {
-            this.label = label;
-        }
-
-        public static class Builder {
-
-            private String label;
-            
-            private String value;
-
-            private List<Parameter> inlineParameters;
-
-            public static Builder builder() {
-                return new Builder();
-            }
-
-            public Builder value(String value) {
-                this.value = value;
-                return this;
-            }
-
-            public Builder label(String label) {
-                this.label = label;
-                return this;
-            }
-
-            public Builder inlineParameters(List<Parameter> inlineParameters) {
-                this.inlineParameters = inlineParameters;
-                return this;
-            }
-
-            public Item build() {
-                Item toReturn = new Item(value, inlineParameters == null ? emptyList() : inlineParameters);
-                if (label != null) {
-                    toReturn.setLabel(label);
-                }
-                return toReturn;
-            }
-        }
     }
 
     /**
@@ -202,7 +95,7 @@ public class SelectParameter extends Parameter implements Serializable {
         private String name = "";
 
         /** List of items. */
-        private List<Item> items = new ArrayList<>();
+        private List<ItemParameter> items = new ArrayList<>();
 
         /** The parameter default value. */
         private String defaultValue = "";
@@ -210,13 +103,19 @@ public class SelectParameter extends Parameter implements Serializable {
         /** True if the parameter is not displayed to the user. */
         private boolean implicit = false;
 
-        /** True if the parameter can be blank. */
+        /**
+         * True if the parameter can be blank.
+         */
         private boolean canBeBlank = false;
 
-        /** True if the selection is multiple. */
+        /**
+         * True if the selection is multiple.
+         */
         private boolean multiple = false;
 
-        /** True if rendering should prefer radio buttons to render parameters choices */
+        /**
+         * True if rendering should prefer radio buttons to render parameters choices
+         */
         private boolean isRadio = false;
 
         /**
@@ -273,24 +172,14 @@ public class SelectParameter extends Parameter implements Serializable {
         /**
          * Add an item to the select parameter builder.
          *
-         * @param value the item value.
+         * @param value     the item value.
          * @param parameter the item optional parameter.
          * @return the builder to carry on building the column.
+         * @deprecated Always use {@link #item(String, String, Parameter...)} that supplies an i18n label.
          */
+        @Deprecated
         public Builder item(String value, Parameter... parameter) {
-            this.items.add(new Item(value, Arrays.asList(parameter)));
-            return this;
-        }
-
-        /**
-         * Add an item to the select parameter builder.
-         *
-         * @param value the item value.
-         * @return the builder to carry on building the column.
-         * @see Item#setLabel(String) to override default translated label.
-         */
-        public Builder item(String value) {
-            this.items.add(new Item(value, emptyList()));
+            this.items.add(new ItemParameter(value, value, Arrays.asList(parameter)));
             return this;
         }
 
@@ -301,9 +190,8 @@ public class SelectParameter extends Parameter implements Serializable {
          * @param label the item label
          * @return the builder to carry on building the column.
          */
-        public Builder item(String value, String label) {
-            final Item item = new Item(value, emptyList());
-            item.setLabel(label);
+        public Builder item(String value, String label, Parameter... parameter) {
+            final ItemParameter item = new ItemParameter(value, label, Arrays.asList(parameter));
             this.items.add(item);
             return this;
         }
@@ -314,7 +202,7 @@ public class SelectParameter extends Parameter implements Serializable {
          * @param items the item name.
          * @return the builder to carry on building the column.
          */
-        public Builder items(List<Item> items) {
+        public Builder items(List<ItemParameter> items) {
             this.items.addAll(items);
             return this;
         }

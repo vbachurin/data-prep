@@ -43,13 +43,8 @@ public class SimpleSuggestionEngine implements SuggestionEngine {
         return actions.stream() //
                 .map(actionMetadata -> {
                     int score = 0;
-                    SuggestionLevel suggestionScore = actionMetadata.getSuggestionScore(column);
-                    if (suggestionScore == null) {
-                        for (SuggestionEngineRule rule : rules) {
-                            score += getSuggestionLevelScore(rule.apply(actionMetadata, column));
-                        }
-                    } else {
-                        score = suggestionScore.getScore();
+                    for (SuggestionEngineRule rule : rules) {
+                        score += getSuggestionLevelScore(rule.apply(actionMetadata, column));
                     }
                     return new Suggestion(actionMetadata, score);
                 }) //

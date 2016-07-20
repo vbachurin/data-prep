@@ -20,11 +20,14 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataprep.parameters.SelectParameter;
+import org.talend.dataprep.transformation.actions.AbstractCompareAction;
 import org.talend.dataprep.transformation.actions.category.ActionCategory;
 import org.talend.dataprep.transformation.actions.common.*;
 
 import java.time.LocalDateTime;
 import java.util.Map;
+
+import static org.talend.dataprep.transformation.actions.DataprepActionsBundle.choice;
 
 @DataprepAction(AbstractActionMetadata.ACTION_BEAN_PREFIX + CompareDates.ACTION_NAME)
 public class CompareDates extends AbstractCompareAction implements ColumnAction, OtherColumnParameters, CompareAction {
@@ -101,12 +104,12 @@ public class CompareDates extends AbstractCompareAction implements ColumnAction,
         //@formatter:off
         return SelectParameter.Builder.builder() //
             .name(COMPARE_MODE) //
-            .item(EQ) //
-            .item(NE) //
-            .item(GT) //
-            .item(GE) //
-            .item(LT) //
-            .item(LE) //
+            .item(EQ, choice(EQ)) //
+            .item(NE, choice(NE)) //
+            .item(GT, choice(GT)) //
+            .item(GE, choice(GE)) //
+            .item(LT, choice(LT)) //
+            .item(LE, choice(LE)) //
             .defaultValue(EQ) //
             .build();
         //@formatter:on

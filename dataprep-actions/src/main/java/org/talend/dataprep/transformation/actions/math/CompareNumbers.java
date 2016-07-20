@@ -16,6 +16,7 @@ package org.talend.dataprep.transformation.actions.math;
 import org.talend.daikon.number.BigDecimalParser;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.actions.AbstractCompareAction;
 import org.talend.dataprep.transformation.actions.category.ActionCategory;
 import org.talend.dataprep.transformation.actions.common.*;
 

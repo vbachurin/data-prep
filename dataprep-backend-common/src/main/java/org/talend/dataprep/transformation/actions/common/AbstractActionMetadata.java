@@ -27,7 +27,6 @@ import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * Adapter for {@link ActionMetadata} to have default implementation and behavior for actions. Every dataprep actions
@@ -76,7 +75,7 @@ public abstract class AbstractActionMetadata implements ActionMetadata {
      */
     @Override
     public String getLabel() {
-        return DataprepBundle.message("action." + getName() + ".label");
+        return getMessagesBundle().getMessage("action." + getName() + ".label");
     }
 
     /**
@@ -97,7 +96,7 @@ public abstract class AbstractActionMetadata implements ActionMetadata {
 
     private String getBundleMessageOrEmpty(String key) {
         String messageKey = "action." + getName() + key;
-        String bundleValue = DataprepBundle.message(messageKey);
+        String bundleValue = getMessagesBundle().getMessage(messageKey);
         return  Objects.equals(bundleValue, messageKey) ? StringUtils.EMPTY : bundleValue;
     }
 
@@ -193,19 +192,6 @@ public abstract class AbstractActionMetadata implements ActionMetadata {
     @Override
     public List<Parameter> getParameters() {
         return ImplicitParameters.getParameters();
-    }
-
-    @JsonIgnore
-    @Override
-    public abstract Set<ActionMetadata.Behavior> getBehavior();
-
-    /**
-     * Default implmeentation that returns null to let the rules do the suggestion for this action.
-     * <p>{@inheritDoc}
-     */
-    @Override
-    public SuggestionLevel getSuggestionScore(ColumnMetadata column) {
-        return null;
     }
 
     @JsonIgnore

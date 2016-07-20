@@ -13,20 +13,21 @@
 
 package org.talend.dataprep.transformation.api.action.metadata;
 
-import static org.junit.Assert.*;
-
-import java.util.List;
-
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.talend.dataprep.parameters.ItemParameter;
+import org.talend.dataprep.parameters.Parameter;
+import org.talend.dataprep.parameters.SelectParameter;
 import org.talend.dataprep.transformation.FailedAction;
 import org.talend.dataprep.transformation.TransformationBaseTest;
 import org.talend.dataprep.transformation.TransformationFailureAction;
 import org.talend.dataprep.transformation.actions.common.ActionMetadata;
-import org.talend.dataprep.parameters.Parameter;
-import org.talend.dataprep.parameters.SelectParameter;
+
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 /**
  * Test that a translation exists for i18n keys label/desc for each action and each params/item.
@@ -86,9 +87,9 @@ public class TestI18nKeysForActionsTest extends TransformationBaseTest {
 
                 if (param instanceof SelectParameter) {
 
-                    List<SelectParameter.Item> values = (List<SelectParameter.Item>) param.getConfiguration().get("values");
+                    List<ItemParameter> values = (List<ItemParameter>) param.getConfiguration().get("values");
 
-                    for (SelectParameter.Item value : values) {
+                    for (ItemParameter value : values) {
                         LOGGER.trace("    - " + value);
 
 

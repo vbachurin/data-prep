@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.apache.commons.lang.StringUtils.EMPTY;
+import static org.talend.dataprep.transformation.actions.DataprepActionsBundle.choice;
 import static org.talend.dataprep.transformation.actions.category.ActionCategory.STRINGS;
 
 @DataprepAction(AbstractActionMetadata.ACTION_BEAN_PREFIX + Substring.SUBSTRING_ACTION_NAME)
@@ -81,9 +82,9 @@ public class Substring extends AbstractActionMetadata implements ColumnAction {
         // "to" parameter with all possible values
         final Parameter toCompleteParameters = SelectParameter.Builder.builder() //
                 .name(TO_MODE_PARAMETER) //
-                .item(TO_END) //
-                .item(TO_INDEX_PARAMETER, toIndexParameters) //
-                .item(TO_N_BEFORE_END_PARAMETER, toNBeforeEndParameters) //
+                .item(TO_END, choice(TO_END)) //
+                .item(TO_INDEX_PARAMETER, choice(TO_INDEX_PARAMETER), toIndexParameters) //
+                .item(TO_N_BEFORE_END_PARAMETER, choice(TO_N_BEFORE_END_PARAMETER), toNBeforeEndParameters) //
                 .defaultValue(TO_INDEX_PARAMETER) //
                 .build();
 
@@ -91,17 +92,17 @@ public class Substring extends AbstractActionMetadata implements ColumnAction {
         // the "to index" option should not be available
         final Parameter toParametersWithoutIndexSelection = SelectParameter.Builder.builder() //
                 .name(TO_MODE_PARAMETER) //
-                .item(TO_END) //
-                .item(TO_N_BEFORE_END_PARAMETER, toNBeforeEndParameters) //
+                .item(TO_END, choice(TO_END)) //
+                .item(TO_N_BEFORE_END_PARAMETER, choice(TO_N_BEFORE_END_PARAMETER), toNBeforeEndParameters) //
                 .defaultValue(TO_END) //
                 .build();
 
         // "from" parameter
         final Parameter fromParameters = SelectParameter.Builder.builder() //
                 .name(FROM_MODE_PARAMETER) //
-                .item(FROM_BEGINNING, toCompleteParameters) // has all the "To" choices
-                .item(FROM_INDEX_PARAMETER, fromIndexParameters, toCompleteParameters) // has all the "To" choices
-                .item(FROM_N_BEFORE_END_PARAMETER, fromNBeforeEndParameters, toParametersWithoutIndexSelection) // cannot
+                .item(FROM_BEGINNING, choice(FROM_BEGINNING), toCompleteParameters) // has all the "To" choices
+                .item(FROM_INDEX_PARAMETER, choice(FROM_INDEX_PARAMETER), fromIndexParameters, toCompleteParameters) // has all the "To" choices
+                .item(FROM_N_BEFORE_END_PARAMETER, choice(FROM_N_BEFORE_END_PARAMETER), fromNBeforeEndParameters, toParametersWithoutIndexSelection) // cannot
                                                                                                                 // choose
                                                                                                                 // "To
                                                                                                                 // index"

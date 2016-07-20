@@ -35,6 +35,7 @@ import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.talend.dataprep.api.type.Type.BOOLEAN;
 import static org.talend.dataprep.api.type.Type.STRING;
 import static org.talend.dataprep.parameters.ParameterType.REGEX;
+import static org.talend.dataprep.transformation.actions.DataprepActionsBundle.choice;
 
 @DataprepAction(AbstractActionMetadata.ACTION_BEAN_PREFIX + MatchesPattern.MATCHES_PATTERN_ACTION_NAME)
 public class MatchesPattern extends AbstractActionMetadata implements ColumnAction {
@@ -98,12 +99,12 @@ public class MatchesPattern extends AbstractActionMetadata implements ColumnActi
         // @formatter:off
         parameters.add(SelectParameter.Builder.builder()
                 .name(PATTERN_PARAMETER)
-                .item("[a-z]+")
-                .item("[A-Z]+")
-                .item("[0-9]+")
-                .item("[a-zA-Z]+")
-                .item("[a-zA-Z0-9]+")
-                .item(CUSTOM, new Parameter(MANUAL_PATTERN_PARAMETER, REGEX, EMPTY))
+                .item("[a-z]+", choice("[a-z]+"))
+                .item("[A-Z]+", choice("[A-Z]+"))
+                .item("[0-9]+",  choice("[0-9]+"))
+                .item("[a-zA-Z]+", choice("[a-zA-Z]+"))
+                .item("[a-zA-Z0-9]+", choice("[a-zA-Z0-9]+"))
+                .item(CUSTOM, choice(CUSTOM), new Parameter(MANUAL_PATTERN_PARAMETER, REGEX, EMPTY))
                 .defaultValue("[a-zA-Z]+")
                 .build());
         // @formatter:on

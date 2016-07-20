@@ -29,12 +29,13 @@ import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
 import java.time.DateTimeException;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static java.time.temporal.ChronoUnit.*;
+import static org.talend.dataprep.transformation.actions.DataprepActionsBundle.choice;
 import static org.talend.dataprep.transformation.actions.common.OtherColumnParameters.*;
 
 /**
@@ -72,17 +73,17 @@ public class ModifyDate extends AbstractDate implements ColumnAction, DatePatter
 
         parameters.add(SelectParameter.Builder.builder() //
                 .name(TIME_UNIT_PARAMETER) //
-                .item(ChronoUnit.YEARS.name()) //
-                .item(ChronoUnit.MONTHS.name()) //
-                .item(ChronoUnit.DAYS.name()) //
-                .item(ChronoUnit.HOURS.name()) //
-                .defaultValue(ChronoUnit.YEARS.name()) //
+                .item(YEARS.name(), choice(YEARS.name())) //
+                .item(MONTHS.name(), choice(MONTHS.name())) //
+                .item(DAYS.name(), choice(DAYS.name())) //
+                .item(HOURS.name(), choice(HOURS.name())) //
+                .defaultValue(YEARS.name()) //
                 .build());
 
         parameters.add(SelectParameter.Builder.builder() //
                 .name(MODE_PARAMETER) //
-                .item(CONSTANT_MODE, new Parameter(CONSTANT_VALUE, ParameterType.INTEGER, "1")) //
-                .item(OTHER_COLUMN_MODE,
+                .item(CONSTANT_MODE, choice(CONSTANT_MODE), new Parameter(CONSTANT_VALUE, ParameterType.INTEGER, "1")) //
+                .item(OTHER_COLUMN_MODE, choice(OTHER_COLUMN_MODE),
                         new Parameter(SELECTED_COLUMN_PARAMETER, ParameterType.COLUMN, //
                                 StringUtils.EMPTY, false, false, //
                                 StringUtils.EMPTY, getMessagesBundle())) //
@@ -100,7 +101,7 @@ public class ModifyDate extends AbstractDate implements ColumnAction, DatePatter
                     p -> dateParser.getMostFrequentPattern(actionContext.getRowMetadata().getById(actionContext.getColumnId())));
 
             actionContext.get(UNIT_CONTEXT_KEY,
-                    p -> ChronoUnit.valueOf(actionContext.getParameters().get(TIME_UNIT_PARAMETER).toUpperCase()));
+                    p -> valueOf(actionContext.getParameters().get(TIME_UNIT_PARAMETER).toUpperCase()));
 
             if (actionContext.getParameters().get(MODE_PARAMETER).equals(CONSTANT_MODE)) {
                 actionContext.get(AMOUNT_CONTEXT_KEY, p -> computeAmount(actionContext.getParameters().get(CONSTANT_VALUE)));

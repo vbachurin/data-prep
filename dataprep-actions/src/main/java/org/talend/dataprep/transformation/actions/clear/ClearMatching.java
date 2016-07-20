@@ -29,6 +29,9 @@ import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import java.util.List;
 import java.util.Map;
 
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
+import static org.talend.dataprep.transformation.actions.DataprepActionsBundle.choice;
 import static org.talend.dataprep.transformation.actions.category.ActionCategory.DATA_CLEANSING;
 
 /**
@@ -90,8 +93,8 @@ public class ClearMatching extends AbstractClear implements ColumnAction {
         if (this.type == Type.BOOLEAN) {
             parameters.add(SelectParameter.Builder.builder() //
                     .name(VALUE_PARAMETER) //
-                    .item(Boolean.TRUE.toString()) //
-                    .item(Boolean.FALSE.toString()) //
+                    .item(TRUE.toString(), choice(TRUE.toString())) //
+                    .item(FALSE.toString(), choice(FALSE.toString())) //
                     .build());
         } else {
             parameters.add(new Parameter(VALUE_PARAMETER, ParameterType.REGEX, //

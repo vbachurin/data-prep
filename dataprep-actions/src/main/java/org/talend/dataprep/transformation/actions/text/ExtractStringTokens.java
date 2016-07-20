@@ -35,6 +35,7 @@ import java.util.regex.PatternSyntaxException;
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.talend.dataprep.parameters.ParameterType.INTEGER;
 import static org.talend.dataprep.parameters.ParameterType.STRING;
+import static org.talend.dataprep.transformation.actions.DataprepActionsBundle.choice;
 import static org.talend.dataprep.transformation.actions.category.ActionCategory.SPLIT;
 
 /**
@@ -89,8 +90,8 @@ public class ExtractStringTokens extends AbstractActionMetadata implements Colum
         //@formatter:off
         parameters.add(SelectParameter.Builder.builder()
                         .name(MODE_PARAMETER)
-                        .item(MULTIPLE_COLUMNS_MODE, new Parameter(LIMIT, INTEGER, "4"))
-                        .item(SINGLE_COLUMN_MODE, new Parameter(PARAMETER_SEPARATOR, STRING, ","))
+                        .item(MULTIPLE_COLUMNS_MODE, choice(MULTIPLE_COLUMNS_MODE), new Parameter(LIMIT, INTEGER, "4"))
+                        .item(SINGLE_COLUMN_MODE, choice(SINGLE_COLUMN_MODE), new Parameter(PARAMETER_SEPARATOR, STRING, ","))
                         .defaultValue(MULTIPLE_COLUMNS_MODE)
                         .build()
         );
