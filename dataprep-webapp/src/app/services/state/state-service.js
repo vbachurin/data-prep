@@ -121,8 +121,6 @@ export function StateService(RouteStateService, routeState,
 
         // inventory
         setDatasetName: InventoryStateService.setDatasetName,
-        setPreparations: InventoryStateService.setPreparations,
-        removePreparation: InventoryStateService.removePreparation,
         setDatasets: InventoryStateService.setDatasets,
         removeDataset: InventoryStateService.removeDataset,
         setDatasetsSort: InventoryStateService.setDatasetsSort,

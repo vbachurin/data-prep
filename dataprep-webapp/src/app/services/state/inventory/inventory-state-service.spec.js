@@ -64,50 +64,6 @@ describe('Inventory state service', () => {
             },
         ];
     });
-
-    describe('preparations', () => {
-        it('should set preparations', inject((inventoryState, InventoryStateService) => {
-            //given
-            inventoryState.preparations = null;
-            inventoryState.datasets = null;
-
-            //when
-            InventoryStateService.setPreparations(preparations);
-
-            //then
-            expect(inventoryState.preparations).toBe(preparations);
-        }));
-
-        it('should consolidate preparations and datasets', inject((inventoryState, InventoryStateService) => {
-            //given
-            inventoryState.preparations = null;
-            inventoryState.datasets = datasets;
-
-            //when
-            InventoryStateService.setPreparations(preparations);
-
-            //then
-            expect(inventoryState.datasets[0].preparations[0]).toBe(preparations[0]);
-            expect(inventoryState.datasets[1].preparations[0]).toBe(preparations[1]);
-            expect(inventoryState.datasets[2].preparations.length).toBe(0);
-
-            expect(inventoryState.preparations[0].dataset).toBe(datasets[0]);
-            expect(inventoryState.preparations[1].dataset).toBe(datasets[1]);
-        }));
-
-        it('should remove a preparation from preparations list', inject((inventoryState, InventoryStateService) => {
-            //given
-            inventoryState.preparations = preparations;
-
-            //when
-            InventoryStateService.removePreparation(preparations[0]);
-
-            //then
-            expect(inventoryState.preparations.length).toBe(1);
-            expect(inventoryState.preparations[0].id).toBe('fbaa18e82e913e97e5f0e9d40f04413412be1126');
-        }));
-    });
-
     describe('datasets', () => {
         it('should set datasets', inject((inventoryState, InventoryStateService) => {
             //given
@@ -119,23 +75,6 @@ describe('Inventory state service', () => {
 
             //then
             expect(inventoryState.datasets).toBe(datasets);
-        }));
-
-        it('should consolidate preparations and datasets', inject((inventoryState, InventoryStateService) => {
-            //given
-            inventoryState.preparations = preparations;
-            inventoryState.datasets = null;
-
-            //when
-            InventoryStateService.setDatasets(datasets);
-
-            //then
-            expect(inventoryState.datasets[0].preparations[0]).toBe(preparations[0]);
-            expect(inventoryState.datasets[1].preparations[0]).toBe(preparations[1]);
-            expect(inventoryState.datasets[2].preparations.length).toBe(0);
-
-            expect(inventoryState.preparations[0].dataset).toBe(datasets[0]);
-            expect(inventoryState.preparations[1].dataset).toBe(datasets[1]);
         }));
 
         it('should remove a dataset from datasets list', inject((inventoryState, InventoryStateService) => {

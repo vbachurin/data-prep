@@ -37,7 +37,6 @@ export default function PreparationRestService($http, RestURLs) {
         copySteps,
 
         // getter : list, content, details
-        getPreparations,
         getContent,
         getDetails,
 
@@ -50,17 +49,6 @@ export default function PreparationRestService($http, RestURLs) {
     //---------------------------------------------------------------------------------
     // ----------------------------------------GETTERS----------------------------------
     //---------------------------------------------------------------------------------
-    /**
-     * @ngdoc method
-     * @name getPreparations
-     * @methodOf data-prep.services.preparation.service:PreparationRestService
-     * @description Get All the user's preparations
-     * @returns {promise} The GET promise
-     */
-    function getPreparations() {
-        return $http.get(RestURLs.preparationUrl);
-    }
-
     /**
      * @ngdoc method
      * @name getContent
@@ -84,7 +72,7 @@ export default function PreparationRestService($http, RestURLs) {
      * @returns {promise} The GET promise
      */
     function getDetails(preparationId) {
-        return $http.get(`${RestURLs.preparationUrl}/${preparationId}/details`);
+        return $http.get(`${RestURLs.preparationUrl}/${preparationId}/details`).then((response) => response.data);
     }
 
     //---------------------------------------------------------------------------------

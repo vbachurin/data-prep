@@ -22,11 +22,12 @@
  * @requires data-prep.services.utils.service:StorageService
  */
 export default class LookupService {
-    constructor($q, state, StateService, TransformationRestService, DatasetRestService, StorageService) {
+    constructor($q, state, DatasetListService, StateService, TransformationRestService, DatasetRestService, StorageService) {
         'ngInject';
 
         this.$q = $q;
         this.state = state;
+        this.DatasetListService = DatasetListService;
         this.StateService = StateService;
         this.TransformationRestService = TransformationRestService;
         this.DatasetRestService = DatasetRestService;
@@ -44,19 +45,22 @@ export default class LookupService {
      * Otherwise, we init the the first lookup action as new lookup.
      */
     initLookups() {
-        return this._getActions(this.state.playground.dataset.id)
-            .then((lookupActions) => {
-                if (!lookupActions.length) {
-                    return;
-                }
+        return this._getDatasets()
+            .then(() => {
+                return this._getActions(this.state.playground.dataset.id)
+                    .then((lookupActions) => {
+                        if (!lookupActions.length) {
+                            return;
+                        }
 
-                const step = this._getSelectedColumnLastLookup();
-                if (step) {
-                    return this.loadFromStep(step);
-                }
-                else {
-                    return this.loadFromAction(lookupActions[0]);
-                }
+                        const step = this._getSelectedColumnLastLookup();
+                        if (step) {
+                            return this.loadFromStep(step);
+                        }
+                        else {
+                            return this.loadFromAction(lookupActions[0]);
+                        }
+                    });
             });
     }
 
@@ -190,6 +194,19 @@ export default class LookupService {
     //------------------------------------------------------------------------------------------------------------------
     // ---------------------------------------------------PRIVATE--------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------------
+    /**
+     * @ngdoc method
+     * @name _getDatasets
+     * @methodOf data-prep.services.lookup.service:LookupService
+     * @description get datasets to be used for lookup
+     */
+    _getDatasets() {
+        if(this.state.inventory.datasets) {
+            return this.$q.when(this.state.inventory.datasets);
+        }
+        return this.DatasetListService.refreshDatasets();
+    }
+
     /**
      * @ngdoc method
      * @name _getActions

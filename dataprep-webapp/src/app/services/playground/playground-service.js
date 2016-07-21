@@ -33,10 +33,10 @@
 export default function PlaygroundService($state, $rootScope, $q, $translate, $timeout,
                                           state, StateService,
                                           DatasetService, DatagridService,
-                                          FilterAdapterService, PreparationService, PreviewService,
+                                          PreparationService, PreviewService,
                                           RecipeService, TransformationCacheService,
                                           StatisticsService, HistoryService,
-                                          OnboardingService, MessageService, StepUtilsService, ExportService) {
+                                          OnboardingService, MessageService, ExportService) {
     'ngInject';
 
     const INVENTORY_SUFFIX = ' ' + $translate.instant('PREPARATION');
@@ -107,7 +107,7 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
             })
             .then(() => {
                 if (OnboardingService.shouldStartTour('playground')) {
-                    $timeout(OnboardingService.startTour.bind(null, 'playground'), 300, false);
+                    $timeout(OnboardingService.startTour('playground'), 300, false);
                 }
             })
             .finally(() => {
@@ -130,22 +130,18 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
      * @returns {Promise} The process promise
      */
     function load(preparation) {
-        if (!state.playground.preparation || state.playground.preparation.id !== preparation.id) {
-            $rootScope.$emit('talend.loading.start');
-            return PreparationService.getContent(preparation.id, 'head')
-                .then((response) => {
-                    StateService.setPreparationName(preparation.name);
-                    reset.call(this, preparation.dataset ? preparation.dataset : { id: preparation.dataSetId }, response, preparation);
-                    StateService.showRecipe();
-                    StateService.setNameEditionMode(false);
-                })
-                .finally(() => {
-                    $rootScope.$emit('talend.loading.stop');
-                });
-        }
-        else {
-            return $q.when(true);
-        }
+        $rootScope.$emit('talend.loading.start');
+        return PreparationService.getContent(preparation.id, 'head')
+            .then((response) => {
+                StateService.setPreparationName(preparation.name);
+                reset.call(this, state.playground.dataset ? state.playground.dataset : { id: preparation.dataSetId }, response, preparation);
+                StateService.showRecipe();
+                StateService.setNameEditionMode(false);
+                return response;
+            })
+            .finally(() => {
+                $rootScope.$emit('talend.loading.stop');
+            });
     }
 
     /**
@@ -251,7 +247,7 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
 
         return PreparationService.getDetails(state.playground.preparation.id)
             .then((resp) => {
-                RecipeService.refresh(resp.data);
+                RecipeService.refresh(resp);
                 if (state.playground.recipe.current.steps.length === 1) { // first step append
                     StateService.showRecipe();
                     $state.go('playground.preparation', { prepid: state.playground.preparation.id });
@@ -262,7 +258,7 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
                     $timeout(OnboardingService.startTour('recipe'), 300, false);
                 }
 
-                return resp.data;
+                return resp;
             });
     }
 

@@ -50,7 +50,7 @@ class PreparationCreatorCtrl {
      */
     loadDatasets(filterValue) {
         this.lastFilterValue = filterValue;
-        let url = this.restURLs.datasetUrl;
+        let url = this.restURLs.datasetUrl + '/summary';
         switch (filterValue) {
         case 'RECENT_DATASETS':
             url += '?sort=MODIF&limit=true&name=';

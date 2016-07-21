@@ -28,7 +28,6 @@ const HOME_FOLDER = {
 };
 
 export const inventoryState = {
-    preparations: null,
     datasets: null,
 
     sortList,
@@ -55,9 +54,6 @@ export const inventoryState = {
 
 export function InventoryStateService() {
     return {
-        setPreparations,
-        removePreparation,
-
         setDatasets,
         removeDataset,
         setDatasetName,
@@ -101,76 +97,6 @@ export function InventoryStateService() {
 
     /**
      * @ngdoc method
-     * @name consolidateDatasets
-     * @methodOf data-prep.services.state.service:InventoryStateService
-     * @param {array} datasets The datasets list to consolidate
-     * @description Set the preparations list in each dataset to consolidate
-     */
-    function consolidateDatasets(datasets) {
-        if (!datasets || !inventoryState.preparations) {
-            return;
-        }
-
-        const preparationsByDataset = _.groupBy(inventoryState.preparations, 'dataSetId');
-        _.forEach(datasets, (dataset) => {
-            const preparations = preparationsByDataset[dataset.id] || [];
-            dataset.preparations = _.sortByOrder(preparations, 'lastModificationDate', false);
-        });
-    }
-
-    /**
-     * @ngdoc method
-     * @name consolidatePreparations
-     * @methodOf data-prep.services.state.service:InventoryStateService
-     * @param {array} preparations The preparations list to consolidate
-     * @description Set the dataset in each preparation to consolidate
-     */
-    function consolidatePreparations(preparations) {
-        if (!preparations || !inventoryState.datasets) {
-            return;
-        }
-
-        _.forEach(preparations, (prep) => {
-            prep.dataset = _.find(inventoryState.datasets, { id: prep.dataSetId });
-        });
-    }
-
-    /**
-     * @ngdoc method
-     * @name consolidate
-     * @methodOf data-prep.services.state.service:InventoryStateService
-     * @description Consolidate preparations, datasets and the current folder datasets
-     */
-    function consolidate() {
-        consolidatePreparations(inventoryState.preparations);
-        consolidateDatasets(inventoryState.datasets);
-    }
-
-    /**
-     * @ngdoc method
-     * @name setPreparations
-     * @methodOf data-prep.services.state.service:InventoryStateService
-     * @param {array} preparations The preparations list
-     * @description Set preparations in Inventory
-     */
-    function setPreparations(preparations) {
-        inventoryState.preparations = preparations;
-        consolidate();
-    }
-
-    /**
-     * @ngdoc method
-     * @name removePreparation
-     * @methodOf data-prep.services.state.service:InventoryStateService
-     * @param {object} preparation The preparation
-     * @description Remove a preparation
-     */
-    function removePreparation(preparation) {
-        inventoryState.preparations = _.reject(inventoryState.preparations, { id: preparation.id });
-    }
-
-    /**
-     * @ngdoc method
      * @name setDatasets
      * @methodOf data-prep.services.state.service:InventoryStateService
      * @param {array} datasets The datasets list
@@ -178,7 +104,6 @@ export function InventoryStateService() {
      */
     function setDatasets(datasets) {
         inventoryState.datasets = datasets;
-        consolidate();
     }
 
     /**

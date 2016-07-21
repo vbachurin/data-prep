@@ -204,8 +204,36 @@ describe('Lookup service', () => {
 
     describe('init lookup', () => {
         describe('actions', () => {
-            beforeEach(inject(($q, TransformationRestService) => {
+            beforeEach(inject(($q, TransformationRestService, DatasetListService) => {
                 spyOn(TransformationRestService, 'getDatasetTransformations').and.returnValue($q.when({ data: lookupActions }));
+                spyOn(DatasetListService, 'refreshDatasets').and.returnValue($q.when());
+            }));
+
+            it('should fetch datasets list', inject((LookupService, DatasetListService) => {
+                stateMock.inventory = {
+                    datasets: null
+                };
+
+                //when
+                LookupService.initLookups();
+
+                //then
+                expect(DatasetListService.refreshDatasets).toHaveBeenCalled();
+            }));
+
+            it('should NOT fetch datasets list if exist', inject((DatasetListService, LookupService) => {
+                //given
+                stateMock.inventory = {
+                    datasets: {
+                        id: '123'
+                    }
+                };
+
+                //when
+                LookupService.initLookups();
+
+                //then
+                expect(DatasetListService.refreshDatasets).not.toHaveBeenCalled();
             }));
 
             it('should fetch lookup actions when they are not initialized yet', inject(($rootScope, $q, LookupService, StateService, TransformationRestService) => {

@@ -25,9 +25,9 @@
  * @requires data-prep.services.utils.service:MessageService
  */
 export default function PlaygroundCtrl($timeout, $state, $stateParams, state, StateService,
-    PlaygroundService, DatasetService, PreparationService,
-    PreviewService,
-    OnboardingService, LookupService, MessageService) {
+                                       PlaygroundService, DatasetService, PreparationService,
+                                       PreviewService,
+                                       OnboardingService, LookupService, MessageService) {
     'ngInject';
 
     const vm = this;
@@ -97,7 +97,7 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
         const cleanName = name.trim();
         if (!vm.changeNameInProgress && cleanName) {
             changeName(cleanName)
-                .then((preparation) => $state.go('playground.preparation', { prepid: preparation.id }));
+                .then((preparation) => $state.go('playground.preparation', {prepid: preparation.id}));
         }
     };
 
@@ -260,8 +260,10 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
      * @name errorGoBack
      * @description go back to homePage when errors occur
      */
-    function errorGoBack(errorOptions) {
-        MessageService.error('PLAYGROUND_FILE_NOT_FOUND_TITLE', 'PLAYGROUND_FILE_NOT_FOUND', errorOptions);
+    function errorGoBack(errorDisplay, errorOptions) {
+        if (errorDisplay) {
+            MessageService.error('PLAYGROUND_FILE_NOT_FOUND_TITLE', 'PLAYGROUND_FILE_NOT_FOUND', errorOptions);
+        }
         $state.go(state.route.previous, state.route.previousOptions);
     }
 
@@ -271,49 +273,72 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
      * @description open a preparation
      * @param {string} prepid The preparation id
      */
-    function loadPreparation(prepid) {
-        const preparation = _.find(state.inventory.preparations, { id: prepid });
-        if (!preparation) {
-            errorGoBack({ type: 'preparation' });
-        }
-        else {
-            PlaygroundService.load(preparation)
-                .then(() => {
-                    if (shouldFetchStatistics()) {
-                        fetchStatistics();
-                    }
-                })
-                .catch(() => errorGoBack({ type: 'preparation' }));
-        }
+    function loadPreparation() {
+        PlaygroundService.load(state.playground.preparation)
+            .then(() => {
+                if (shouldFetchStatistics()) {
+                    fetchStatistics();
+                }
+            })
+            .catch(() => errorGoBack(true, {type: 'preparation'}));
     }
 
     /**
      * @ngdoc method
      * @name loadDataset
      * @description open a dataset
-     * @param {string} datasetid The dataset id
      */
-    function loadDataset(datasetid) {
-        const dataset = _.find(state.inventory.datasets, { id: datasetid });
-        if (!dataset) {
-            errorGoBack({ type: 'dataset' });
-        }
-        else {
-            PlaygroundService.initPlayground(dataset)
-                .then(() => {
-                    if (shouldFetchStatistics()) {
-                        fetchStatistics();
-                    }
-                })
-                .catch(() => errorGoBack({ type: 'dataset' }));
-        }
+    function loadDataset() {
+        PlaygroundService.initPlayground(state.playground.dataset)
+            .then(() => {
+                if (shouldFetchStatistics()) {
+                    fetchStatistics();
+                }
+            })
+            .catch(() => errorGoBack(true, {type: 'dataset'}));
+    }
+
+    /**
+     * @ngdoc method
+     * @name getDatasetById
+     * @description get dataset metadata by Id
+     */
+    function getDatasetById(id) {
+        return DatasetService.getMetadata(id)
+            .then((dataset) => {
+                StateService.setCurrentDataset(dataset);
+                return dataset;
+            });
+    }
+
+    /**
+     * @ngdoc method
+     * @name getPreparationById
+     * @description get preparation detail by id
+     */
+    function getPreparationById(id) {
+        return PreparationService.getDetails(id)
+            .then((preparation) => {
+                StateService.setCurrentPreparation(preparation);
+                return preparation;
+            })
     }
 
     if ($stateParams.prepid) {
-        loadPreparation($stateParams.prepid);
+        getPreparationById($stateParams.prepid)
+            .then((preparation) => {
+                loadPreparation();
+                return preparation;
+            })
+            .then((preparation) => {
+                return getDatasetById(preparation.dataSetId);
+            })
+            .catch(() => errorGoBack(false));
     }
     else if ($stateParams.datasetid) {
-        loadDataset($stateParams.datasetid);
+        getDatasetById($stateParams.datasetid)
+            .then(loadDataset)
+            .catch(() => errorGoBack(false));
     }
 }
 

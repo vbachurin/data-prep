@@ -184,25 +184,6 @@ describe('Preparation REST Service', () => {
     });
 
     describe('preparation getters', () => {
-        it('should get all preparations', inject(($rootScope, RestURLs, PreparationRestService) => {
-            //given
-            let preparations = null;
-            $httpBackend
-                .expectGET(RestURLs.preparationUrl)
-                .respond(200, allPreparations);
-
-            //when
-            PreparationRestService.getPreparations()
-                .then((response) => {
-                    preparations = response.data;
-                });
-            $httpBackend.flush();
-            $rootScope.$digest();
-
-            //then
-            expect(preparations).toEqual(allPreparations);
-        }));
-
         it('should get the current preparation details', inject(($rootScope, RestURLs, PreparationRestService) => {
             //given
             let details = null;
@@ -214,7 +195,7 @@ describe('Preparation REST Service', () => {
             //when
             PreparationRestService.getDetails(preparationId)
                 .then((response) => {
-                    details = response.data;
+                    details = response;
                 });
             $httpBackend.flush();
             $rootScope.$digest();
