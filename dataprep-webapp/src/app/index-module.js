@@ -13,6 +13,7 @@
 
 /* eslint-disable angular/window-service */
 
+let ws;
 (() => {
     'use strict';
     const app = angular.module('data-prep',
@@ -137,7 +138,13 @@
                     // Open a keepalive websocket if requested
                     .run(() => {
                         if (!config.serverKeepAliveUrl) return;
-                        new WebSocket(config.serverKeepAliveUrl);
+                        function setupWebSocket() {
+                            ws = new WebSocket(config.serverKeepAliveUrl);
+                            ws.onclose = function () {
+                                setTimeout(setupWebSocket, 1000);
+                            };
+                        }
+                        setupWebSocket();
                     });
 
                 angular.module('data-prep.services.utils')
