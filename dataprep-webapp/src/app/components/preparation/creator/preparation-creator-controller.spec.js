@@ -18,14 +18,12 @@ describe('Preparation Creator Controller', () => {
     const urlQueries = {
         RECENT_DATASETS: '/api/datasets?sort=MODIF&limit=true&name=',
         FAVORITE_DATASETS: '/api/datasets?favorite=true&name=',
-        CERTIFIED_DATASETS: '/api/datasets?certified=true&name=',
         ALL_DATASETS: '/api/datasets?name='
     };
 
     const FILTERS_TYPES = {
         'RECENT': 'RECENT_DATASETS',
         'FAVORITE': 'FAVORITE_DATASETS',
-        'CERTIFIED': 'CERTIFIED_DATASETS',
         'ALL': 'ALL_DATASETS',
     };
 
@@ -90,7 +88,7 @@ describe('Preparation Creator Controller', () => {
             spyOn(DatasetService, 'loadFilteredDatasets').and.returnValue($q.when(filteredDs));
         }));
 
-        it('should query the recent datsets without Name filter', inject((DatasetService) => {
+        it('should query the recent datasets without Name filter', inject((DatasetService) => {
             //given
             ctrl = createController();
 
@@ -101,7 +99,7 @@ describe('Preparation Creator Controller', () => {
             expect(DatasetService.loadFilteredDatasets).toHaveBeenCalledWith(urlQueries.RECENT_DATASETS);
         }));
 
-        it('should query the favorite datsets without Name filter', inject((DatasetService) => {
+        it('should query the favorite datasets without Name filter', inject((DatasetService) => {
             //given
             ctrl = createController();
 
@@ -112,18 +110,7 @@ describe('Preparation Creator Controller', () => {
             expect(DatasetService.loadFilteredDatasets).toHaveBeenCalledWith(urlQueries.FAVORITE_DATASETS);
         }));
 
-        it('should query the certified datsets without Name filter', inject((DatasetService) => {
-            //given
-            ctrl = createController();
-
-            //when
-            ctrl.loadDatasets(FILTERS_TYPES.CERTIFIED);
-
-            //then
-            expect(DatasetService.loadFilteredDatasets).toHaveBeenCalledWith(urlQueries.CERTIFIED_DATASETS);
-        }));
-
-        it('should query all the datsets without Name filter', inject((DatasetService) => {
+        it('should query all the datasets without Name filter', inject((DatasetService) => {
             //given
             ctrl = createController();
 

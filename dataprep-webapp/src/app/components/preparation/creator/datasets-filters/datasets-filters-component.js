@@ -40,7 +40,6 @@ export default {
              ng-switch="filter.value">
             <div ng-switch-when="RECENT_DATASETS"><img ng-src="{{filter.imageUrl}}"/></div>
             <div ng-switch-when="FAVORITE_DATASETS" data-icon="{{filter.icon}}" class="favorite"></div>
-            <div ng-switch-when="CERTIFIED_DATASETS" ><img ng-src="{{filter.imageUrl}}"/></div>
             <div ng-switch-when="ALL_DATASETS"><img ng-src="{{filter.imageUrl}}"/></div>
         </div>
 

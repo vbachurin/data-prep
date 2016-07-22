@@ -68,7 +68,7 @@ describe('Datasets filters component', () => {
             expect(element.find('.preparation-creator-header').length).toBe(1);
             expect(element.find('.filters-left-panel').length).toBe(1);
             expect(element.find('.import-button-panel').length).toBe(1);
-            expect(element.find('.dataset-filter-title').length).toBe(4);
+            expect(element.find('.dataset-filter-title').length).toBe(3);
             expect(element.find('.inventory-list').length).toBe(2);
             expect(element.find('form').length).toBe(1);
             expect(element.find('.modal-buttons').length).toBe(1);

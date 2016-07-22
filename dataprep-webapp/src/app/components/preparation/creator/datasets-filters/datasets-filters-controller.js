@@ -28,11 +28,6 @@ class DatasetsFiltersCtrl {
                 description:'FAVORITE_DATASETS_DESCRIPTION'
             },
             {
-                value: 'CERTIFIED_DATASETS',
-                imageUrl: '/assets/images/inventory/certified_no_shadow.png',
-                description:'CERTIFIED_DATASETS_DESCRIPTION'
-            },
-            {
                 value: 'ALL_DATASETS',
                 imageUrl: '/assets/images/inventory/all-datasets.png',
                 description:'ALL_DATASETS_DESCRIPTION'
