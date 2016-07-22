@@ -50,24 +50,21 @@ class PreparationCreatorCtrl {
      */
     loadDatasets(filterValue) {
         this.lastFilterValue = filterValue;
-        this.url = this.restURLs.datasetUrl;
+        let url = this.restURLs.datasetUrl;
         switch (filterValue) {
             case 'RECENT_DATASETS':
-                this.url += '?sort=MODIF&limit=true&name=';
+                url += '?sort=MODIF&limit=true&name=';
                 break;
             case 'FAVORITE_DATASETS':
-                this.url += '?favorite=true&name=';
-                break;
-            case 'CERTIFIED_DATASETS':
-                this.url += '?certified=true&name=';
+                url += '?favorite=true&name=';
                 break;
             case 'ALL_DATASETS':
-                this.url += '?name=';
+                url += '?name=';
                 break;
         }
-        this.url += this.enteredFilterText;
+        url += this.enteredFilterText;
         this.isFetchingDatasets = true;
-        this.datasetService.loadFilteredDatasets(this.url)
+        this.datasetService.loadFilteredDatasets(url)
             .then((filteredDatasets) => {
                 this.filteredDatasets = filteredDatasets;
             })
