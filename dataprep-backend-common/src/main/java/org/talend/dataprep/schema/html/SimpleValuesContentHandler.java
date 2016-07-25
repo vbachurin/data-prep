@@ -57,7 +57,7 @@ class SimpleValuesContentHandler extends DefaultHandler {
     }
 
     private boolean withinLimit() {
-        return values.size() < limit;
+        return limit < 0 || values.size() < limit;
     }
 
     @Override

@@ -98,7 +98,7 @@ public class CSVSerializer implements Serializer {
         String[] line;
         int current = 0;
 
-        while ((line = reader.readNext()) != null && current < limit) {
+        while ((line = reader.readNext()) != null && withinLimit(limit, current)) {
             // skip empty lines
             if (line.length == 1 && (StringUtils.isEmpty(line[0]) || line[0].charAt(0) == '\u0000')) {
                 continue;
@@ -129,6 +129,10 @@ public class CSVSerializer implements Serializer {
             generator.writeEndObject();
             current++;
         }
+    }
+
+    private boolean withinLimit(long limit, int current) {
+        return limit < 0 || current < limit;
     }
 
     private String cleanCharacters(final String value) {
