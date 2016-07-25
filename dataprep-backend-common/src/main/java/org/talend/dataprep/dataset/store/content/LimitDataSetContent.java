@@ -1,9 +1,9 @@
 package org.talend.dataprep.dataset.store.content;
 
 import java.io.InputStream;
-import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -11,9 +11,12 @@ import org.talend.dataprep.api.dataset.DataSetRow;
 @Component
 class LimitDataSetContent implements DataSetContentLimit {
 
+    @Value("${dataset.records.limit}")
+    private long limit;
+
     @Override
     public DataSetContentStore get(DataSetContentStore contentStore) {
-        return LimitDataSetContentStore.get(contentStore);
+        return new LimitDataSetContentStore(contentStore);
     }
 
     @Override
@@ -21,16 +24,12 @@ class LimitDataSetContent implements DataSetContentLimit {
         return true;
     }
 
-    private static class LimitDataSetContentStore extends DataSetContentStore {
+    private class LimitDataSetContentStore extends DataSetContentStore {
 
         private final DataSetContentStore store;
 
         private LimitDataSetContentStore(DataSetContentStore store) {
             this.store = store;
-        }
-
-        public static DataSetContentStore get(DataSetContentStore store) {
-            return new LimitDataSetContentStore(store);
         }
 
         @Override
@@ -40,38 +39,34 @@ class LimitDataSetContent implements DataSetContentLimit {
 
         @Override
         public InputStream get(DataSetMetadata dataSetMetadata) {
-            return store.get(dataSetMetadata);
-        }
-
-        @Override
-        public Stream<DataSetRow> stream(DataSetMetadata dataSetMetadata) {
-            Stream<DataSetRow> dataSetRowStream = super.stream(dataSetMetadata);
-            // deal with dataset size limit (ignored if limit is <= 0)
-            final Optional<Long> limit = dataSetMetadata.getContent().getLimit();
-            if (limit.isPresent() && limit.get() > 0) {
-                dataSetRowStream = dataSetRowStream.limit(limit.get());
-            }
-            return dataSetRowStream;
-        }
-
-        @Override
-        public InputStream getAsRaw(DataSetMetadata dataSetMetadata) {
-            return store.getAsRaw(dataSetMetadata);
-        }
-
-        @Override
-        public InputStream getAsRaw(DataSetMetadata dataSetMetadata, long limit) {
-            return store.getAsRaw(dataSetMetadata, limit);
-        }
-
-        @Override
-        protected InputStream get(DataSetMetadata dataSetMetadata, long limit) {
             return store.get(dataSetMetadata, limit);
         }
 
         @Override
         public Stream<DataSetRow> stream(DataSetMetadata dataSetMetadata, long limit) {
-            return store.stream(dataSetMetadata, limit);
+            return stream(dataSetMetadata);
+        }
+
+        @Override
+        public Stream<DataSetRow> stream(DataSetMetadata dataSetMetadata) {
+            Stream<DataSetRow> dataSetRowStream = super.stream(dataSetMetadata, limit);
+            // deal with dataset size limit (ignored if limit is <= 0)
+            return dataSetRowStream.limit(limit);
+        }
+
+        @Override
+        public InputStream getAsRaw(DataSetMetadata dataSetMetadata) {
+            return store.getAsRaw(dataSetMetadata, limit);
+        }
+
+        @Override
+        public InputStream getAsRaw(DataSetMetadata dataSetMetadata, long limit) {
+            return getAsRaw(dataSetMetadata);
+        }
+
+        @Override
+        protected InputStream get(DataSetMetadata dataSetMetadata, long limit) {
+            return get(dataSetMetadata);
         }
 
         @Override

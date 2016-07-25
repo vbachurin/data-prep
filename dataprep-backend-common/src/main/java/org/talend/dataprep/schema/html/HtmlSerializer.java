@@ -49,7 +49,7 @@ public class HtmlSerializer implements Serializer {
             PipedInputStream pipe = new PipedInputStream();
             PipedOutputStream jsonOutput = new PipedOutputStream(pipe);
 
-            Runnable r = doSerialize(rawContent, metadata, jsonOutput);
+            Runnable r = doSerialize(rawContent, metadata, jsonOutput, limit);
             executor.execute(r);
             return pipe;
         } catch (IOException e) {
@@ -57,13 +57,13 @@ public class HtmlSerializer implements Serializer {
         }
     }
 
-    private Runnable doSerialize(InputStream rawContent, DataSetMetadata dataSetMetadata, OutputStream jsonOutput) {
+    private Runnable doSerialize(InputStream rawContent, DataSetMetadata dataSetMetadata, OutputStream jsonOutput, long limit) {
 
         return () -> {
             try {
 
                 List<ColumnMetadata> columns = dataSetMetadata.getRowMetadata().getColumns();
-                SimpleValuesContentHandler valuesContentHandler = new SimpleValuesContentHandler(columns.size());
+                SimpleValuesContentHandler valuesContentHandler = new SimpleValuesContentHandler(columns.size(), limit);
 
                 HtmlParser htmlParser = new HtmlParser();
                 Metadata metadata = new Metadata();

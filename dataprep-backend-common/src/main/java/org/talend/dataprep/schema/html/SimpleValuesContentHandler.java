@@ -32,6 +32,8 @@ class SimpleValuesContentHandler extends DefaultHandler {
 
     private final int rowSize;
 
+    private final long limit;
+
     private boolean inValue;
 
     private int index = -1;
@@ -41,8 +43,9 @@ class SimpleValuesContentHandler extends DefaultHandler {
      */
     private List<List<String>> values = new ArrayList<>();
 
-    SimpleValuesContentHandler(int rowSize) {
+    SimpleValuesContentHandler(int rowSize, long limit) {
         this.rowSize = rowSize;
+        this.limit = limit;
     }
 
     List<List<String>> getValues() {
@@ -53,32 +56,40 @@ class SimpleValuesContentHandler extends DefaultHandler {
         return values.get(values.size() - 1);
     }
 
+    private boolean withinLimit() {
+        return values.size() < limit;
+    }
+
     @Override
     public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
-        if ("tr".equals(localName)) {
-            // New line
-            values.add(new ArrayList<>());
-            index = -1;
-        } else if ("td".equals(localName)) {
-            inValue = true;
-            getLastRow().add(StringUtils.EMPTY);
-            index++;
+        if (withinLimit()) {
+            if ("tr".equals(localName)) {
+                // New line
+                values.add(new ArrayList<>());
+                index = -1;
+            } else if ("td".equals(localName)) {
+                inValue = true;
+                getLastRow().add(StringUtils.EMPTY);
+                index++;
+            }
         }
     }
 
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
-        if("tr".equals(localName) && rowSize > 0 && getLastRow().size() < rowSize) {
-            // Discard row (does not match column number)
-            values.remove(values.size() - 1);
-        } else if ("td".equals(localName)) {
-            inValue = false;
+        if (withinLimit()) {
+            if("tr".equals(localName) && rowSize > 0 && getLastRow().size() < rowSize) {
+                // Discard row (does not match column number)
+                values.remove(values.size() - 1);
+            } else if ("td".equals(localName)) {
+                inValue = false;
+            }
         }
     }
 
     @Override
     public void characters(char[] chars, int start, int length) throws SAXException {
-        if (inValue) {
+        if (withinLimit() && inValue) {
             char[] thechars = new char[length];
             System.arraycopy(chars, start, thechars, 0, length);
             String value = new String(thechars);
