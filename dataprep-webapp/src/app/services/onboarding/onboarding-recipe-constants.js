@@ -34,7 +34,7 @@ const recipeTour = [
     {
         element: '#export-data',
         title: '<center>Export</center>',
-        content: 'Don\'t look for a save button: every change you make is automatically saved.',
+        content: 'Click here to export the result of your preparation.',
         position: 'left'
     }
 ];
