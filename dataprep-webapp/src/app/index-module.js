@@ -14,6 +14,8 @@
 /* eslint-disable angular/window-service */
 
 let ws;
+let wsPing;
+
 (() => {
     'use strict';
     const app = angular.module('data-prep',
@@ -139,10 +141,15 @@ let ws;
                     .run(() => {
                         if (!config.serverKeepAliveUrl) return;
                         function setupWebSocket() {
+                            clearInterval(wsPing);
+
                             ws = new WebSocket(config.serverKeepAliveUrl);
-                            ws.onclose = function () {
+                            ws.onclose = () => {
                                 setTimeout(setupWebSocket, 1000);
                             };
+                            wsPing = setInterval(() => {
+                                ws.send('ping');
+                            }, 3 * 60 * 1000);
                         }
                         setupWebSocket();
                     });
