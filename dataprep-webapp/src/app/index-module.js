@@ -28,6 +28,7 @@ import SERVICES_UTILS_MODULE from './services/utils/utils-module';
 const MODULE_NAME = 'data-prep';
 
 let ws;
+let wsPing;
 const app = angular.module(MODULE_NAME,
     [
         ngSanitize,
@@ -149,10 +150,15 @@ window.fetchConfiguration = function fetchConfiguration() {
                     .run(() => {
                         if (!config.serverKeepAliveUrl) return;
                         function setupWebSocket() {
+                            clearInterval(wsPing);
+
                             ws = new WebSocket(config.serverKeepAliveUrl);
-                            ws.onclose = function () {
+                            ws.onclose = () => {
                                 setTimeout(setupWebSocket, 1000);
                             };
+                            wsPing = setInterval(() => {
+                                ws.send('ping');
+                            }, 3 * 60 * 1000);
                         }
                         setupWebSocket();
                     });
