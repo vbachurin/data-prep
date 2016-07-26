@@ -125,7 +125,9 @@ public class XlsRunnable implements Runnable {
             throws IOException {
 
         for (int i = 0, size = sheet.getLastRowNum(); i <= size; i++) {
-
+            if (limit > 0 && i > limit) {
+                break;
+            }
             // is header line?
             Row row = sheet.getRow(i);
             if (isHeaderLine(i, columns) || row == null) {
@@ -151,10 +153,6 @@ public class XlsRunnable implements Runnable {
                 }
             }
             generator.writeEndObject();
-
-            if (limit > 0 && i > limit) {
-                break;
-            }
         }
     }
 }
