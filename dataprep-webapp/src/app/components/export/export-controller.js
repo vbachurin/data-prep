@@ -34,6 +34,7 @@ export default class ExportCtrl {
 
         this.exportParams = StorageService.getExportParams();
         this.selectedType = ExportService.getType(this.exportParams.exportType);
+        this._initExportParameters(this.selectedType);
     }
 
     /**
@@ -85,6 +86,9 @@ export default class ExportCtrl {
      * @description Change the fileName of the type parameters to fit the current prep/dataset
      */
     _initExportParameters(exportType) {
+        if (!exportType) {
+            return;
+        }
         _.chain(exportType.parameters)
             .filter({ name: 'fileName' })
             .forEach((param) => {
