@@ -34,7 +34,6 @@ export default class ExportCtrl {
 
         this.exportParams = StorageService.getExportParams();
         this.selectedType = ExportService.getType(this.exportParams.exportType);
-        this._initExportParameters(this.selectedType);
     }
 
     /**
@@ -70,6 +69,7 @@ export default class ExportCtrl {
      * @description Save the current parameters and launch an export
      */
     launchExport() {
+        this._initExportParameters(this.selectedType);
         this.exportParams = this._extractParameters(this.selectedType);
 
         this.$timeout(() => {
