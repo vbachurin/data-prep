@@ -13,9 +13,15 @@
 
 package org.talend.dataprep.transformation.api.action.metadata.date;
 
+import static java.util.Collections.emptyList;
+import static org.apache.commons.lang.StringUtils.EMPTY;
+
 import java.time.DateTimeException;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -26,15 +32,12 @@ import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.dataset.statistics.PatternFrequency;
 import org.talend.dataprep.api.dataset.statistics.Statistics;
+import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataprep.parameters.SelectParameter;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
-import org.talend.dataprep.parameters.Parameter;
-
-import static java.util.Collections.emptyList;
-import static org.apache.commons.lang.StringUtils.EMPTY;
 
 /**
  * Change the date pattern on a 'date' column.
@@ -121,6 +124,9 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction, Dat
     }
 
     private List<DatePattern> compileFromDatePattern(ActionContext actionContext) {
+        if (actionContext.getParameters() == null) {
+            return emptyList();
+        }
         switch (actionContext.getParameters().get(FROM_MODE)) {
             case FROM_MODE_BEST_GUESS:
                 final RowMetadata rowMetadata = actionContext.getRowMetadata();
