@@ -53,6 +53,35 @@
         max-height: 45vh;
         overflow-y: auto;
 
+        .inventory-item-row {
+            @include display(flex);
+            @include flex-direction(row);
+            @include align-items(center);
+            @include flex-basis(80px);
+            @include flex-grow(0);
+            @include flex-shrink(0);
+
+            inventory-item {
+                @include flex-basis(200px);
+                @include flex-grow(1);
+                @include flex-shrink(1);
+
+                .inventory-icon {
+                    padding-top: 8px;
+                }
+
+                .inventory-item {
+                    cursor:pointer;
+                    &:hover {
+                        background-color: tint($pale-blue, 70%);
+                    }
+                    .inventory-text .inventory-title {
+                        @include ellipsis(400px);
+                    }
+                }
+            }
+        }
+
         border: 1px solid $light-gray;
         @include flex-grow(1);
 
@@ -62,16 +91,6 @@
             top: 40%;
             .continuous-rotate {
                 display: flex;
-            }
-        }
-
-        .inventory-item {
-            cursor:pointer;
-            &:hover {
-                background-color: tint($pale-blue, 70%);
-            }
-            .inventory-text .inventory-title {
-                @include ellipsis(400px);
             }
         }
 
