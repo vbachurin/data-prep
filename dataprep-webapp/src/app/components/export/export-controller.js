@@ -59,7 +59,7 @@ export default class ExportCtrl {
         this.selectedType = this.nextSelectedType;
         const params = this._extractParameters(this.selectedType);
         this.StorageService.saveExportParams(params);
-        this.launchExport();
+        this.launchExport(false);
     }
 
     /**
@@ -68,8 +68,10 @@ export default class ExportCtrl {
      * @methodOf data-prep.export.controller:ExportCtrl
      * @description Save the current parameters and launch an export
      */
-    launchExport() {
-        this._initExportParameters(this.selectedType);
+    launchExport(resetName) {
+        if(resetName) {
+            this._initExportParameters(this.selectedType);
+        }
         this.exportParams = this._extractParameters(this.selectedType);
 
         this.$timeout(() => {
