@@ -27,9 +27,11 @@ import SERVICES_IMPORT_MODULE from './services/import/import-module';
 import SERVICES_REST_MODULE from './services/rest/rest-module';
 import SERVICES_UTILS_MODULE from './services/utils/utils-module';
 
+const MODULE_NAME = 'data-prep';
+
 (() => {
     'use strict';
-    const app = angular.module('data-prep',
+    const app = angular.module(MODULE_NAME,
         [
             ngSanitize,
             ngTranslate,
@@ -159,3 +161,5 @@ import SERVICES_UTILS_MODULE from './services/utils/utils-module';
     };
 })();
 /* eslint-enable angular/window-service */
+
+export default MODULE_NAME;

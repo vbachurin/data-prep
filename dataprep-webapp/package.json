@@ -6,6 +6,7 @@
   ],
   "description": "Talend Data Preparation",
   "private": true,
+  "main": "src/app/index-module.js",
   "scripts": {
     "clean": "npm run clean:build && npm run clean:dist && npm run clean:coverage",
     "clean:build": "rimraf ./build",
