@@ -27,6 +27,7 @@ import SERVICES_UTILS_MODULE from './services/utils/utils-module';
 
 const MODULE_NAME = 'data-prep';
 
+let ws;
 const app = angular.module(MODULE_NAME,
     [
         ngSanitize,
@@ -123,33 +124,45 @@ window.fetchConfiguration = function fetchConfiguration() {
     const initInjector = angular.injector(['ng']);
     const $http = initInjector.get('$http');
 
-    return $http.get('/assets/config/config.json')
-        .then((config) => {
-            app
-            // Debug config
-                .config(($compileProvider) => {
-                    'ngInject';
-                    $compileProvider.debugInfoEnabled(config.data.enableDebug);
-                })
-                // Configure server api urls
-                .run((RestURLs) => {
-                    'ngInject';
-                    RestURLs.setServerUrl(config.data.serverUrl);
-                })
-                // Fetch dynamic configuration (export types, supported encodings, ...)
-                .run((ImportService, ExportService, DatasetService) => {
-                    'ngInject';
-                    ImportService.initImport();
-                    ExportService.refreshTypes();
-                    DatasetService.refreshSupportedEncodings();
-                });
+        return $http.get('/assets/config/config.json')
+            .then((config) => config.data)
+            .then((config) => {
+                app
+                    // Debug config
+                    .config(($compileProvider) => {
+                        'ngInject';
+                        $compileProvider.debugInfoEnabled(config.enableDebug);
+                    })
+                    // Configure server api urls
+                    .run((RestURLs) => {
+                        'ngInject';
+                        RestURLs.setServerUrl(config.serverUrl);
+                    })
+                    // Fetch dynamic configuration (export types, supported encodings, ...)
+                    .run((ImportService, ExportService, DatasetService) => {
+                        'ngInject';
+                        ImportService.initImport();
+                        ExportService.refreshTypes();
+                        DatasetService.refreshSupportedEncodings();
+                    })
+                    // Open a keepalive websocket if requested
+                    .run(() => {
+                        if (!config.serverKeepAliveUrl) return;
+                        function setupWebSocket() {
+                            ws = new WebSocket(config.serverKeepAliveUrl);
+                            ws.onclose = function () {
+                                setTimeout(setupWebSocket, 1000);
+                            };
+                        }
+                        setupWebSocket();
+                    });
 
-            angular.module(SERVICES_UTILS_MODULE)
-                .value('version', config.data.version)
-                .value('copyRights', config.data.copyRights)
-                .value('documentationSearchURL', config.data.documentationSearchURL);
-        });
-};
+                angular.module(SERVICES_UTILS_MODULE)
+                    .value('version', config.version)
+                    .value('copyRights', config.copyRights)
+                    .value('documentationSearchURL', config.documentationSearchURL);
+            });
+    };
 
 window.bootstrapDataPrepApplication = function bootstrapDataPrepApplication(modules) {
     angular.element(document)
