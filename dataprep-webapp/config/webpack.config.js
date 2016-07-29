@@ -12,6 +12,7 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const extractCSS = new ExtractTextPlugin('styles/[name]-[hash].css');
 
 const INDEX_TEMPLATE_PATH = path.resolve(__dirname, '../src/index.html');
+const STYLE_PATH = path.resolve(__dirname, '../src/app/index.scss');
 const INDEX_PATH = path.resolve(__dirname, '../src/app/index-module.js');
 const VENDOR_PATH = path.resolve(__dirname, '../src/vendor.js');
 const BUILD_PATH = path.resolve(__dirname, '../build');
@@ -20,7 +21,8 @@ function getDefaultConfig(options) {
     return {
         entry: {
             app: INDEX_PATH,
-            vendor: VENDOR_PATH
+            vendor: VENDOR_PATH,
+            style: STYLE_PATH,
         },
         output: {
             path: BUILD_PATH,
