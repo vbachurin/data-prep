@@ -11,9 +11,8 @@
 
   ============================================================================*/
 .documentation-search {
-  input[type=search],
-  .no-results,
-  .searching {
-    width: 180px;
-  }
+    .inventory-description {
+        overflow: hidden;
+        white-space: normal;
+    }
 }

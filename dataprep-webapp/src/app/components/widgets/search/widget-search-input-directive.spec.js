@@ -14,10 +14,12 @@
 describe('Add reset button to input directive', function() {
     'use strict';
 
-    var scope, createElement, element;
+    var scope;
+    var createElement;
+    var element;
     var body = angular.element('body');
     beforeEach(angular.mock.module('talend.widget'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(inject(function($rootScope, $compile) {
         scope = $rootScope.$new();
@@ -47,7 +49,6 @@ describe('Add reset button to input directive', function() {
 
         expect(icons.eq(0).css('display')).toEqual('none');
         expect(icons.eq(1).css('display')).toEqual('block');
-
     });
 
     it('should switch icon when text field is not empty', function() {

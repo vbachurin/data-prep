@@ -14,7 +14,8 @@
 describe('Recipe controller', function () {
     'use strict';
 
-    var createController, scope;
+    var createController;
+    var scope;
     var lastActiveStep = { inactive: false };
     var stateMock;
 
@@ -36,12 +37,9 @@ describe('Recipe controller', function () {
                         name: 'lastName'
                     }]
                 },
-                lookup: {
-                    visibility: false
-                },
-                data: {
-                    metadata: {}
-                }
+                lookup: { visibility: false },
+                data: { metadata: {} },
+                recipe: { current: { steps: [] } },
             }
         };
         $provide.constant('state', stateMock);
@@ -57,40 +55,13 @@ describe('Recipe controller', function () {
         };
 
         spyOn($rootScope, '$emit').and.returnValue();
-        spyOn(RecipeService, 'refresh').and.callFake(function () {
-            var recipe = RecipeService.getRecipe();
-            recipe.splice(0, recipe.length);
-            recipe.push(lastActiveStep);
+        spyOn(RecipeService, 'refresh').and.callFake(() => {
+            stateMock.playground.recipe.current.steps = [lastActiveStep];
         });
-        spyOn(PreviewService, 'getPreviewDiffRecords').and.returnValue($q.when(true));
-        spyOn(PreviewService, 'getPreviewUpdateRecords').and.returnValue($q.when(true));
+        spyOn(PreviewService, 'getPreviewDiffRecords').and.returnValue($q.when());
+        spyOn(PreviewService, 'getPreviewUpdateRecords').and.returnValue($q.when());
         spyOn(PreviewService, 'cancelPreview').and.returnValue(null);
         spyOn($timeout, 'cancel').and.returnValue();
-    }));
-
-    it('should bind recipe getter with RecipeService', inject(function (RecipeService) {
-        //given
-        var ctrl = createController();
-        expect(ctrl.recipe).toEqual([]);
-
-        var column = { id: 'colId' };
-        var transformation = {
-            name: 'split',
-            category: 'split',
-            parameters: [],
-            items: []
-        };
-
-        //when
-        RecipeService.getRecipe().push({
-            column: column,
-            transformation: transformation
-        });
-
-        //then
-        expect(ctrl.recipe.length).toBe(1);
-        expect(ctrl.recipe[0].column).toBe(column);
-        expect(ctrl.recipe[0].transformation).toEqual(transformation);
     }));
 
     describe('update step', function () {
@@ -233,7 +204,6 @@ describe('Recipe controller', function () {
     });
 
     describe('step parameters', function () {
-
         it('should return that step has dynamic parameters when it has cluster', function () {
             //given
             var ctrl = createController();
@@ -571,10 +541,9 @@ describe('Recipe controller', function () {
 
             //then
             expect(PlaygroundService.updateStep).toHaveBeenCalled();
-            const callArgs = PlaygroundService.updateStep.calls.argsFor(0); 
+            const callArgs = PlaygroundService.updateStep.calls.argsFor(0);
             expect(callArgs[0]).toBe(stepWithMultipleFilters);
             expect(callArgs[1].filter).toEqual({ contains: { field: '0002', value: ['toto'] } });
-            
         }));
     });
 
@@ -596,7 +565,8 @@ describe('Recipe controller', function () {
                 phrase: ['toto']
             }
         };
-        var stepDeleteLinesWithSingleFilter, stepWithMultipleFilters;
+        var stepDeleteLinesWithSingleFilter;
+        var stepWithMultipleFilters;
 
         beforeEach(inject(function (FilterAdapterService) {
             spyOn(FilterAdapterService, 'toTree').and.returnValue({

@@ -11,11 +11,15 @@
 
   ============================================================================*/
 
+import DataViewMock from '../../../../mocks/DataView.mock';
+import SlickGridMock from '../../../../mocks/SlickGrid.mock';
+
 describe('Datagrid grid service', function () {
     'use strict';
 
     var realSlickGrid = Slick;
-    var dataViewMock, stateMock;
+    var dataViewMock;
+    var stateMock;
 
     beforeEach(angular.mock.module('data-prep.datagrid'));
     beforeEach(angular.mock.module('data-prep.suggestions-stats'));
@@ -26,9 +30,9 @@ describe('Datagrid grid service', function () {
 
 
     beforeEach(angular.mock.module('data-prep.datagrid', function ($provide) {
-        stateMock = {playground: {grid: {
-            dataView: dataViewMock
-        }}};
+        stateMock = { playground: { grid: {
+                    dataView: dataViewMock
+        } } };
         $provide.constant('state', stateMock);
 
         spyOn(dataViewMock.onRowCountChanged, 'subscribe').and.returnValue();
@@ -36,7 +40,7 @@ describe('Datagrid grid service', function () {
     }));
 
     beforeEach(inject(function (DatagridColumnService, DatagridStyleService, DatagridSizeService,
-                                DatagridExternalService, DatagridTooltipService) {
+        DatagridExternalService, DatagridTooltipService) {
         spyOn(DatagridColumnService, 'init').and.returnValue();
         spyOn(DatagridStyleService, 'init').and.returnValue();
         spyOn(DatagridSizeService, 'init').and.returnValue();
@@ -56,8 +60,8 @@ describe('Datagrid grid service', function () {
 
     describe('on creation', function() {
         it('should init the other datagrid services', inject(function (DatagridGridService, DatagridColumnService,
-                                                                       DatagridStyleService, DatagridSizeService,
-                                                                       DatagridExternalService, DatagridTooltipService) {
+            DatagridStyleService, DatagridSizeService,
+            DatagridExternalService, DatagridTooltipService) {
             //when
             DatagridGridService.initGrid();
 
@@ -101,7 +105,7 @@ describe('Datagrid grid service', function () {
             spyOn(grid, 'invalidateRows').and.returnValue();
             spyOn(grid, 'render').and.returnValue();
 
-            var args = {rows: []};
+            var args = { rows: [] };
 
             //when
             var onRowsChanged = stateMock.playground.grid.dataView.onRowsChanged.subscribe.calls.argsFor(0)[0];
@@ -117,11 +121,11 @@ describe('Datagrid grid service', function () {
         it('should go to the selected column after', inject(function (DatagridStyleService, DatagridService, DatagridGridService) {
             //given
             var gridColumns = [
-                {id: '0000', field: 'col0', tdpColMetadata: {id: '0000', name: 'col0', type: 'string'}},
-                {id: '0001', field: 'col1', tdpColMetadata: {id: '0001', name: 'col1', type: 'integer'}},
-                {id: '0002', field: 'col2', tdpColMetadata: {id: '0002', name: 'col2', type: 'string'}},
-                {id: '0003', field: 'col3', tdpColMetadata: {id: '0003', name: 'col3', type: 'string'}},
-                {id: '0004', field: 'col4', tdpColMetadata: {id: '0004', name: 'col4', type: 'string'}}
+                { id: '0000', field: 'col0', tdpColMetadata: { id: '0000', name: 'col0', type: 'string' } },
+                { id: '0001', field: 'col1', tdpColMetadata: { id: '0001', name: 'col1', type: 'integer' } },
+                { id: '0002', field: 'col2', tdpColMetadata: { id: '0002', name: 'col2', type: 'string' } },
+                { id: '0003', field: 'col3', tdpColMetadata: { id: '0003', name: 'col3', type: 'string' } },
+                { id: '0004', field: 'col4', tdpColMetadata: { id: '0004', name: 'col4', type: 'string' } }
             ];
             var grid = DatagridGridService.initGrid();
 
@@ -129,7 +133,7 @@ describe('Datagrid grid service', function () {
             DatagridService.focusedColumn = '0002';
 
             spyOn(grid, 'scrollCellIntoView').and.returnValue();
-            spyOn(grid, 'getRenderedRange').and.returnValue({top:100, bottom:150});
+            spyOn(grid, 'getRenderedRange').and.returnValue({ top:100, bottom:150 });
 
             //when
             DatagridGridService.navigateToFocusedColumn();
@@ -141,11 +145,11 @@ describe('Datagrid grid service', function () {
         it('should do nothing when no column should be focused', inject(function (DatagridStyleService, DatagridService, DatagridGridService) {
             //given
             var gridColumns = [
-                {id: '0000', field: 'col0', tdpColMetadata: {id: '0000', name: 'col0', type: 'string'}},
-                {id: '0001', field: 'col1', tdpColMetadata: {id: '0001', name: 'col1', type: 'integer'}},
-                {id: '0002', field: 'col2', tdpColMetadata: {id: '0002', name: 'col2', type: 'string'}},
-                {id: '0003', field: 'col3', tdpColMetadata: {id: '0003', name: 'col3', type: 'string'}},
-                {id: '0004', field: 'col4', tdpColMetadata: {id: '0004', name: 'col4', type: 'string'}}
+                { id: '0000', field: 'col0', tdpColMetadata: { id: '0000', name: 'col0', type: 'string' } },
+                { id: '0001', field: 'col1', tdpColMetadata: { id: '0001', name: 'col1', type: 'integer' } },
+                { id: '0002', field: 'col2', tdpColMetadata: { id: '0002', name: 'col2', type: 'string' } },
+                { id: '0003', field: 'col3', tdpColMetadata: { id: '0003', name: 'col3', type: 'string' } },
+                { id: '0004', field: 'col4', tdpColMetadata: { id: '0004', name: 'col4', type: 'string' } }
             ];
             var grid = DatagridGridService.initGrid();
 
@@ -153,7 +157,7 @@ describe('Datagrid grid service', function () {
             DatagridService.focusedColumn = null;
 
             spyOn(grid, 'scrollCellIntoView').and.returnValue();
-            spyOn(grid, 'getRenderedRange').and.returnValue({top:100, bottom:150});
+            spyOn(grid, 'getRenderedRange').and.returnValue({ top:100, bottom:150 });
 
             //when
             DatagridGridService.navigateToFocusedColumn();

@@ -11,18 +11,21 @@
 
  ============================================================================*/
 
-describe('Datagrid column service', function () {
+import SlickGridMock from '../../../../mocks/SlickGrid.mock';
+
+describe('Datagrid column service', () => {
     'use strict';
 
-    var gridMock, columnsMetadata;
+    var gridMock;
+    var columnsMetadata;
 
     beforeEach(angular.mock.module('data-prep.datagrid'));
 
-    beforeEach(inject(function () {
+    beforeEach(inject(() => {
         columnsMetadata = [
-            {id: '0000', name: 'col0', type: 'string'},
-            {id: '0001', name: 'col1', type: 'integer'},
-            {id: '0002', name: 'col2', type: 'string', domain: 'salary'}
+            { id: '0000', name: 'col0', type: 'string' },
+            { id: '0001', name: 'col1', type: 'integer' },
+            { id: '0002', name: 'col2', type: 'string', domain: 'salary' }
         ];
 
         /*global SlickGridMock:false */
@@ -57,24 +60,20 @@ describe('Datagrid column service', function () {
         var headers = [
             {
                 element: {
-                    detach: function () {
-                    }
+                    detach: function () {}
                 }
             },
             {
                 element: {
-                    detach: function () {
-                    }
+                    detach: function () {}
                 }
             },
             {
                 element: {
-                    detach: function () {
-                    }
+                    detach: function () {}
                 }
             }];
-        var formatter = function () {
-        };
+        var formatter = function () {};
 
         beforeEach(inject(function (DatagridColumnService, DatagridStyleService) {
             DatagridColumnService.init(gridMock);
@@ -101,19 +100,19 @@ describe('Datagrid column service', function () {
 
             expect(createdColumns[1].id).toEqual('0000');
             expect(createdColumns[1].field).toEqual('0000');
-            expect(createdColumns[1].name).toEqual('<div class="grid-header ">   <div class="grid-header-title dropdown-button ng-binding">col0</div>       <div class="grid-header-type ng-binding">text</div>   </div><div class="quality-bar"><div class="record-unknown"></div></div>');
+            expect(createdColumns[1].name).toEqual('<div class="grid-header ">   <div class="grid-header-title dropdown-button ng-binding">col0</div>   <div class="grid-header-type ng-binding">text</div></div><div class="quality-bar"><div class="record-unknown"></div></div>');
             expect(createdColumns[1].formatter).toEqual(formatter);
-            expect(createdColumns[1].tdpColMetadata).toEqual({id: '0000', name: 'col0', type: 'string'});
+            expect(createdColumns[1].tdpColMetadata).toEqual({ id: '0000', name: 'col0', type: 'string' });
 
             expect(createdColumns[2].id).toEqual('0001');
             expect(createdColumns[2].field).toEqual('0001');
-            expect(createdColumns[2].name).toEqual('<div class="grid-header ">   <div class="grid-header-title dropdown-button ng-binding">col1</div>       <div class="grid-header-type ng-binding">integer</div>   </div><div class="quality-bar"><div class="record-unknown"></div></div>');
+            expect(createdColumns[2].name).toEqual('<div class="grid-header ">   <div class="grid-header-title dropdown-button ng-binding">col1</div>   <div class="grid-header-type ng-binding">integer</div></div><div class="quality-bar"><div class="record-unknown"></div></div>');
             expect(createdColumns[2].formatter).toEqual(formatter);
-            expect(createdColumns[2].tdpColMetadata).toEqual({id: '0001', name: 'col1', type: 'integer'});
+            expect(createdColumns[2].tdpColMetadata).toEqual({ id: '0001', name: 'col1', type: 'integer' });
 
             expect(createdColumns[3].id).toEqual('0002');
             expect(createdColumns[3].field).toEqual('0002');
-            expect(createdColumns[3].name).toEqual('<div class="grid-header ">   <div class="grid-header-title dropdown-button ng-binding">col2</div>       <div class="grid-header-type ng-binding">salary</div>   </div><div class="quality-bar"><div class="record-unknown"></div></div>');
+            expect(createdColumns[3].name).toEqual('<div class="grid-header ">   <div class="grid-header-title dropdown-button ng-binding">col2</div>   <div class="grid-header-type ng-binding">salary</div></div><div class="quality-bar"><div class="record-unknown"></div></div>');
             expect(createdColumns[3].formatter).toEqual(formatter);
             expect(createdColumns[3].tdpColMetadata).toEqual({
                 id: '0002',
@@ -140,13 +139,13 @@ describe('Datagrid column service', function () {
             expect(createdColumns[1].field).toEqual('0000');
             expect(createdColumns[1].name).toEqual('');
             expect(createdColumns[1].formatter).toEqual(formatter);
-            expect(createdColumns[1].tdpColMetadata).toEqual({id: '0000', name: 'col0', type: 'string'});
+            expect(createdColumns[1].tdpColMetadata).toEqual({ id: '0000', name: 'col0', type: 'string' });
 
             expect(createdColumns[2].id).toEqual('0001');
             expect(createdColumns[2].field).toEqual('0001');
             expect(createdColumns[2].name).toEqual('');
             expect(createdColumns[2].formatter).toEqual(formatter);
-            expect(createdColumns[2].tdpColMetadata).toEqual({id: '0001', name: 'col1', type: 'integer'});
+            expect(createdColumns[2].tdpColMetadata).toEqual({ id: '0001', name: 'col1', type: 'integer' });
 
             expect(createdColumns[3].id).toEqual('0002');
             expect(createdColumns[3].field).toEqual('0002');
@@ -169,13 +168,10 @@ describe('Datagrid column service', function () {
 
             columnDef = {
                 header: {
-                    remove: function () {
-                    }, detach: function () {
-                    }
+                    remove: function () {}, detach: function () {}
                 },
                 scope: {
-                    $destroy: function () {
-                    }
+                    $destroy: function () {}
                 }
             };
 
@@ -251,13 +247,10 @@ describe('Datagrid column service', function () {
                 column: {
                     id: 'tdpId',
                     header: {
-                        remove: function () {
-                        }, detach: function () {
-                        }
+                        remove: function () {}, detach: function () {}
                     },
                     scope: {
-                        $destroy: function () {
-                        }
+                        $destroy: function () {}
                     }
                 }
             };
@@ -300,9 +293,7 @@ describe('Datagrid column service', function () {
 
             //save header in available headers list
             availableScope = {
-                $destroy: function () {
-                }, $digest: function () {
-                }
+                $destroy: function () {}, $digest: function () {}
             };
             availableHeader = angular.element('<div id="availableHeader"></div>');
             saveHeader('0001', availableScope, availableHeader);
@@ -402,7 +393,6 @@ describe('Datagrid column service', function () {
     });
 
     describe('on column reorder event', function () {
-
         beforeEach(inject(function (PlaygroundService) {
             spyOn(PlaygroundService, 'appendStep');
         }));
@@ -411,16 +401,16 @@ describe('Datagrid column service', function () {
         it('should call PlaygroundService move columns 2 steps', inject(function (DatagridColumnService, PlaygroundService) {
             //given
             var original = [
-                {id: "0000", tdpColMetadata: {id: "0000", name: "beer"}},
-                {id: "0001", tdpColMetadata: {id: "0001"}},
-                {id: "0002", tdpColMetadata: {id: "0002"}},
-                {id: "0003", tdpColMetadata: {id: "0003"}}
+                { id: "0000", tdpColMetadata: { id: "0000", name: "beer" } },
+                { id: "0001", tdpColMetadata: { id: "0001" } },
+                { id: "0002", tdpColMetadata: { id: "0002" } },
+                { id: "0003", tdpColMetadata: { id: "0003" } }
             ];
             var newCols = [
-                {id: "0001", tdpColMetadata: {id: "0001"}},
-                {id: "0002", tdpColMetadata: {id: "0002"}},
-                {id: "0000", tdpColMetadata: {id: "0000"}},
-                {id: "0003", tdpColMetadata: {id: "0003"}}
+                { id: "0001", tdpColMetadata: { id: "0001" } },
+                { id: "0002", tdpColMetadata: { id: "0002" } },
+                { id: "0000", tdpColMetadata: { id: "0000" } },
+                { id: "0003", tdpColMetadata: { id: "0003" } }
             ];
 
             //when
@@ -435,22 +425,21 @@ describe('Datagrid column service', function () {
                     column_name: 'beer',
                     dataset_action_display_type: 'column'
                 });
-
         }));
 
         it('should find move columns 2 steps', inject(function (DatagridColumnService, PlaygroundService) {
             //given
             var original = [
-                {id: "0000", tdpColMetadata: {id: "0000", name: "beer"}},
-                {id: "0001", tdpColMetadata: {id: "0001"}},
-                {id: "0002", tdpColMetadata: {id: "0002"}},
-                {id: "0003", tdpColMetadata: {id: "0003"}}
+                { id: "0000", tdpColMetadata: { id: "0000", name: "beer" } },
+                { id: "0001", tdpColMetadata: { id: "0001" } },
+                { id: "0002", tdpColMetadata: { id: "0002" } },
+                { id: "0003", tdpColMetadata: { id: "0003" } }
             ];
             var newCols = [
-                {id: "0001", tdpColMetadata: {id: "0001"}},
-                {id: "0002", tdpColMetadata: {id: "0002"}},
-                {id: "0000", tdpColMetadata: {id: "0000"}},
-                {id: "0003", tdpColMetadata: {id: "0003"}}
+                { id: "0001", tdpColMetadata: { id: "0001" } },
+                { id: "0002", tdpColMetadata: { id: "0002" } },
+                { id: "0000", tdpColMetadata: { id: "0000" } },
+                { id: "0003", tdpColMetadata: { id: "0003" } }
             ];
 
             //when
@@ -466,22 +455,21 @@ describe('Datagrid column service', function () {
                     dataset_action_display_type: 'column'
                 }
             );
-
         }));
 
         it('should find move columns simple swap', inject(function (DatagridColumnService, PlaygroundService) {
             //given
             var original = [
-                {id: "0000", tdpColMetadata: {id: "0000"}},
-                {id: "0001", tdpColMetadata: {id: "0001", name: "beer"}},
-                {id: "0002", tdpColMetadata: {id: "0002"}},
-                {id: "0003", tdpColMetadata: {id: "0003"}}
+                { id: "0000", tdpColMetadata: { id: "0000" } },
+                { id: "0001", tdpColMetadata: { id: "0001", name: "beer" } },
+                { id: "0002", tdpColMetadata: { id: "0002" } },
+                { id: "0003", tdpColMetadata: { id: "0003" } }
             ];
             var newCols = [
-                {id: "0000", tdpColMetadata: {id: "0000"}},
-                {id: "0002", tdpColMetadata: {id: "0002"}},
-                {id: "0001", tdpColMetadata: {id: "0001"}},
-                {id: "0003", tdpColMetadata: {id: "0003"}}
+                { id: "0000", tdpColMetadata: { id: "0000" } },
+                { id: "0002", tdpColMetadata: { id: "0002" } },
+                { id: "0001", tdpColMetadata: { id: "0001" } },
+                { id: "0003", tdpColMetadata: { id: "0003" } }
             ];
 
             //when
@@ -502,16 +490,16 @@ describe('Datagrid column service', function () {
         it('should find move columns 3 steps', inject(function (DatagridColumnService, PlaygroundService) {
             //given
             var original = [
-                {id: "0000", tdpColMetadata: {id: "0000", name: "beer"}},
-                {id: "0001", tdpColMetadata: {id: "0001"}},
-                {id: "0002", tdpColMetadata: {id: "0002"}},
-                {id: "0003", tdpColMetadata: {id: "0003"}}
+                { id: "0000", tdpColMetadata: { id: "0000", name: "beer" } },
+                { id: "0001", tdpColMetadata: { id: "0001" } },
+                { id: "0002", tdpColMetadata: { id: "0002" } },
+                { id: "0003", tdpColMetadata: { id: "0003" } }
             ];
             var newCols = [
-                {id: "0001", tdpColMetadata: {id: "0001"}},
-                {id: "0002", tdpColMetadata: {id: "0002"}},
-                {id: "0003", tdpColMetadata: {id: "0003"}},
-                {id: "0000", tdpColMetadata: {id: "0000"}}
+                { id: "0001", tdpColMetadata: { id: "0001" } },
+                { id: "0002", tdpColMetadata: { id: "0002" } },
+                { id: "0003", tdpColMetadata: { id: "0003" } },
+                { id: "0000", tdpColMetadata: { id: "0000" } }
             ];
 
             //when
@@ -532,16 +520,16 @@ describe('Datagrid column service', function () {
         it('should find not moved', inject(function (DatagridColumnService, PlaygroundService) {
             //given
             var original = [
-                {id: "0000", tdpColMetadata: {id: "0000", name: "beer"}},
-                {id: "0001", tdpColMetadata: {id: "0001"}},
-                {id: "0002", tdpColMetadata: {id: "0002"}},
-                {id: "0003", tdpColMetadata: {id: "0003"}}
+                { id: "0000", tdpColMetadata: { id: "0000", name: "beer" } },
+                { id: "0001", tdpColMetadata: { id: "0001" } },
+                { id: "0002", tdpColMetadata: { id: "0002" } },
+                { id: "0003", tdpColMetadata: { id: "0003" } }
             ];
             var newCols = [
-                {id: "0000", tdpColMetadata: {id: "0000"}},
-                {id: "0001", tdpColMetadata: {id: "0001"}},
-                {id: "0002", tdpColMetadata: {id: "0002"}},
-                {id: "0003", tdpColMetadata: {id: "0003"}}
+                { id: "0000", tdpColMetadata: { id: "0000" } },
+                { id: "0001", tdpColMetadata: { id: "0001" } },
+                { id: "0002", tdpColMetadata: { id: "0002" } },
+                { id: "0003", tdpColMetadata: { id: "0003" } }
             ];
 
             //when
@@ -554,16 +542,16 @@ describe('Datagrid column service', function () {
         it('should find move columns 2 steps backward', inject(function (DatagridColumnService, PlaygroundService) {
             //given
             var original = [
-                {id: "0000", tdpColMetadata: {id: "0000"}},
-                {id: "0001", tdpColMetadata: {id: "0001"}},
-                {id: "0002", tdpColMetadata: {id: "0002", name: "beer"}},
-                {id: "0003", tdpColMetadata: {id: "0003"}}
+                { id: "0000", tdpColMetadata: { id: "0000" } },
+                { id: "0001", tdpColMetadata: { id: "0001" } },
+                { id: "0002", tdpColMetadata: { id: "0002", name: "beer" } },
+                { id: "0003", tdpColMetadata: { id: "0003" } }
             ];
             var newCols = [
-                {id: "0002", tdpColMetadata: {id: "0002", name: "beer"}},
-                {id: "0000", tdpColMetadata: {id: "0000"}},
-                {id: "0001", tdpColMetadata: {id: "0001"}},
-                {id: "0003", tdpColMetadata: {id: "0003"}}
+                { id: "0002", tdpColMetadata: { id: "0002", name: "beer" } },
+                { id: "0000", tdpColMetadata: { id: "0000" } },
+                { id: "0001", tdpColMetadata: { id: "0001" } },
+                { id: "0003", tdpColMetadata: { id: "0003" } }
             ];
 
             //when
@@ -584,18 +572,18 @@ describe('Datagrid column service', function () {
         it('should find move columns 2 steps backward in the middle', inject(function (DatagridColumnService, PlaygroundService) {
             //given
             var original = [
-                {id: "0000", tdpColMetadata: {id: "0000"}},
-                {id: "0001", tdpColMetadata: {id: "0001"}},
-                {id: "0002", tdpColMetadata: {id: "0002"}},
-                {id: "0003", tdpColMetadata: {id: "0003", name: "beer"}},
-                {id: "0004", tdpColMetadata: {id: "0004"}}
+                { id: "0000", tdpColMetadata: { id: "0000" } },
+                { id: "0001", tdpColMetadata: { id: "0001" } },
+                { id: "0002", tdpColMetadata: { id: "0002" } },
+                { id: "0003", tdpColMetadata: { id: "0003", name: "beer" } },
+                { id: "0004", tdpColMetadata: { id: "0004" } }
             ];
             var newCols = [
-                {id: "0000", tdpColMetadata: {id: "0000"}},
-                {id: "0003", tdpColMetadata: {id: "0003", name: "beer"}},
-                {id: "0001", tdpColMetadata: {id: "0001"}},
-                {id: "0002", tdpColMetadata: {id: "0002"}},
-                {id: "0004", tdpColMetadata: {id: "0004"}}
+                { id: "0000", tdpColMetadata: { id: "0000" } },
+                { id: "0003", tdpColMetadata: { id: "0003", name: "beer" } },
+                { id: "0001", tdpColMetadata: { id: "0001" } },
+                { id: "0002", tdpColMetadata: { id: "0002" } },
+                { id: "0004", tdpColMetadata: { id: "0004" } }
             ];
 
             //when
@@ -612,7 +600,5 @@ describe('Datagrid column service', function () {
                 }
             );
         }));
-
     });
-
 });

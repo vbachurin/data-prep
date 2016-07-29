@@ -11,18 +11,19 @@
 
  ============================================================================*/
 
+import angular from 'angular';
+
 import DatasetsFiltersComponent from './datasets-filters-component';
 
-(() => {
-    'use strict';
+const MODULE_NAME = 'data-prep.datasets-filters';
 
-    /**
-     * @ngdoc object
-     * @name data-prep.inventory-copy-move
-     * @description This module contains the entities to manage the inventory copy/move wiazerd
-     * @requires data-prep.folder-selection
-     */
-    angular.module('data-prep.datasets-filters',
-        [])
-        .component('datasetsFilters', DatasetsFiltersComponent);
-})();
+/**
+ * @ngdoc object
+ * @name data-prep.inventory-copy-move
+ * @description This module contains the entities to manage the inventory copy/move wiazerd
+ * @requires data-prep.folder-selection
+ */
+angular.module(MODULE_NAME, [])
+    .component('datasetsFilters', DatasetsFiltersComponent);
+
+export default MODULE_NAME;

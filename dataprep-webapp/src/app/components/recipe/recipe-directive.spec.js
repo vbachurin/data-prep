@@ -13,17 +13,19 @@
 
 describe('Recipe directive', function () {
     'use strict';
-    var scope, element;
+    let scope;
+    let element;
+    let stateMock;
 
-    var recipe = [
+    const steps = [
         {
-            column: {id: '0', name: 'col1'},
+            column: { id: '0', name: 'col1' },
             transformation: {
                 stepId: '13a24e8765ef4',
                 name: 'split',
                 label: 'Split',
                 category: 'split',
-                parameters: [{name: 'pattern', type: 'string'}],
+                parameters: [{ name: 'pattern', type: 'string' }],
                 items: []
             },
             actionParameters: {
@@ -36,7 +38,7 @@ describe('Recipe directive', function () {
             }
         },
         {
-            column: {id: '1', name: 'col2'},
+            column: { id: '1', name: 'col2' },
             transformation: {
                 stepId: '9876fb498e36543ab51',
                 name: 'uppercase',
@@ -54,15 +56,15 @@ describe('Recipe directive', function () {
             inactive: true
         },
         {
-            column: {id: '1', name: 'col2'},
+            column: { id: '1', name: 'col2' },
             transformation: {
                 stepId: '456bb784a9674e532fc446',
                 name: 'replace_on_value',
                 label: 'Replace value',
                 category: 'quickfix',
                 parameters: [
-                    {name: 'cell_value', type: 'string'},
-                    {name: 'replace_value', type: 'string'}
+                    { name: 'cell_value', type: 'string' },
+                    { name: 'replace_value', type: 'string' }
                 ]
             },
             actionParameters: {
@@ -76,7 +78,7 @@ describe('Recipe directive', function () {
             inactive: true
         },
         {
-            column: {id: '2', name: 'col3'},
+            column: { id: '2', name: 'col3' },
             transformation: {
                 stepId: '8876fb498e3625ab53',
                 name: 'textclustering',
@@ -133,8 +135,8 @@ describe('Recipe directive', function () {
             inactive: true
         },
         {
-            column: {id: undefined, name: undefined},
-            row: {id: 125},
+            column: { id: undefined, name: undefined },
+            row: { id: 125 },
             transformation: {
                 stepId: '3213ca58454a58d436',
                 name: 'delete',
@@ -153,13 +155,13 @@ describe('Recipe directive', function () {
             inactive: true
         },
         {
-            column: {id: '0', name: 'col1'},
+            column: { id: '0', name: 'col1' },
             transformation: {
                 stepId: 'preview step',
                 name: 'split',
                 label: 'Split',
                 category: 'split',
-                parameters: [{name: 'pattern', type: 'string'}],
+                parameters: [{ name: 'pattern', type: 'string' }],
                 items: []
             },
             actionParameters: {
@@ -204,7 +206,7 @@ describe('Recipe directive', function () {
             },
         }
     ];
-    var recipeWithDiff = [
+    const stepsWithDiff = [
         {
             'column': {
                 'id': '0002',
@@ -695,11 +697,16 @@ describe('Recipe directive', function () {
         }
     ];
 
-    beforeEach(angular.mock.module('data-prep.recipe'));
+    beforeEach(angular.mock.module('data-prep.recipe', ($provide) => {
+        stateMock = {
+            playground: {
+                recipe: { current: { steps: [] } },
+            }
+        };
+        $provide.constant('state', stateMock);
+    }));
 
-    beforeEach(angular.mock.module('htmlTemplates'));
-
-    beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
+    beforeEach(angular.mock.module('pascalprecht.translate', ($translateProvider) => {
         $translateProvider.translations('en', {
             'RECIPE_ITEM_ON_COL': '{{index}}. {{label}} on column {{columnName}}',
             'RECIPE_ITEM_ON_CELL': '{{index}}. {{label}} on cell',
@@ -716,24 +723,26 @@ describe('Recipe directive', function () {
         $translateProvider.preferredLanguage('en');
     }));
 
-    beforeEach(inject(function ($rootScope, $compile) {
+    beforeEach(inject(($rootScope, $compile) => {
         scope = $rootScope.$new();
         element = angular.element('<recipe></recipe>');
         $compile(element)(scope);
         scope.$digest();
     }));
 
-    afterEach(function () {
+    afterEach(() => {
         scope.$destroy();
         element.remove();
     });
 
-    it('should render recipe entries', inject(function (RecipeService) {
+    it('should render recipe entries', () => {
         //when
-        RecipeService.getRecipe().push(recipe[0]);
-        RecipeService.getRecipe().push(recipe[1]);
-        RecipeService.getRecipe().push(recipe[2]);
-        RecipeService.getRecipe().push(recipe[4]);
+        stateMock.playground.recipe.current.steps = [
+            steps[0],
+            steps[1],
+            steps[2],
+            steps[4],
+        ];
         scope.$digest();
 
         //then
@@ -742,24 +751,25 @@ describe('Recipe directive', function () {
         expect(element.find('>.recipe >ul sc-accordion-item trigger').eq(1).text().trim().replace(/\s+/g, ' ')).toBe('2. To uppercase on column COL2');
         expect(element.find('>.recipe >ul sc-accordion-item trigger').eq(2).text().trim().replace(/\s+/g, ' ')).toBe('3. Replace value on cell');
         expect(element.find('>.recipe >ul sc-accordion-item trigger').eq(3).text().trim().replace(/\s+/g, ' ')).toBe('4. Delete Line #125');
-    }));
+    });
 
-    it('should render recipe Lookup entry', inject(function (RecipeService) {
+    it('should render recipe Lookup entry', () => {
         //when
-        RecipeService.getRecipe().push(recipe[recipe.length - 1]);
-
+        stateMock.playground.recipe.current.steps = [steps[steps.length - 1]];
         scope.$digest();
 
         //then
         expect(element.find('>.recipe >ul sc-accordion-item ').length).toBe(1);
         expect(element.find('>.recipe >ul sc-accordion-item trigger').eq(0).text().trim().replace(/\s+/g, ' ')).toBe('1. Lookup done with dataset customers_100_with_pb. Join has been set between id and id. The column firstname has been added.');
-    }));
+    });
 
-    it('should render early preview step', inject(function (RecipeService) {
+    it('should render early preview step', () => {
         //when
-        RecipeService.getRecipe().push(recipe[0]);
-        RecipeService.getRecipe().push(recipe[1]);
-        RecipeService.getRecipe().push(recipe[5]); // preview step
+        stateMock.playground.recipe.current.steps = [
+            steps[0],
+            steps[1],
+            steps[5], // preview step
+        ];
         scope.$digest();
 
         //then
@@ -767,34 +777,34 @@ describe('Recipe directive', function () {
         expect(element.find('>.recipe >ul sc-accordion-item').eq(0).hasClass('preview')).toBe(false);
         expect(element.find('>.recipe >ul sc-accordion-item').eq(1).hasClass('preview')).toBe(false);
         expect(element.find('>.recipe >ul sc-accordion-item').eq(2).hasClass('preview')).toBe(true);
-    }));
+    });
 
-    it('should render recipe params', inject(function (RecipeService) {
+    it('should render recipe params', () => {
         //when
-        RecipeService.getRecipe().push(recipe[0]);
+        stateMock.playground.recipe.current.steps = [steps[0]];
         scope.$digest();
 
         //then
         expect(element.find('>.recipe >ul sc-accordion-item content').length).toBe(1);
         expect(element.find('>.recipe >ul sc-accordion-item content').eq(0).find('.transformation-form').length).toBe(1);
-    }));
+    });
 
-    it('should render recipe cluster params', inject(function (RecipeService) {
+    it('should render recipe cluster params', () => {
         //given
-        var body = angular.element('body');
+        const body = angular.element('body');
 
         //when
-        RecipeService.getRecipe().push(recipe[3]);
+        stateMock.playground.recipe.current.steps = [steps[3]];
         scope.$digest();
 
         //then
         expect(body.find('.modal-inner').length).toBe(1);
         expect(body.find('.modal-inner').find('.cluster').length).toBe(1);
-    }));
+    });
 
-    it('should highlight steps that will be deleted on remove icon mouse over', inject(function($timeout, RecipeService) {
+    it('should highlight steps that will be deleted on remove icon mouse over', inject(($timeout) => {
         //given
-        spyOn(RecipeService, 'getRecipe').and.returnValue(recipeWithDiff);
+        stateMock.playground.recipe.current.steps = stepsWithDiff;
         scope.$digest();
         $timeout.flush(1);
 
@@ -807,9 +817,9 @@ describe('Recipe directive', function () {
         expect(element.find('#step-2f749665763cffe0382ab581ac1a7c4bffb5afbc').hasClass('remove')).toBe(true);
     }));
 
-    it('should remove highlight class on remove icon mouse out', inject(function($timeout, RecipeService) {
+    it('should remove highlight class on remove icon mouse out', inject(($timeout) => {
         //given
-        spyOn(RecipeService, 'getRecipe').and.returnValue(recipeWithDiff);
+        stateMock.playground.recipe.current.steps = stepsWithDiff;
         scope.$digest();
         $timeout.flush(1);
         element.find('#step-remove-260a4b7a3d1f2c03509d865a7961a481e594142e').mouseover();

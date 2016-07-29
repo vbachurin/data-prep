@@ -37,7 +37,6 @@ export default function RestErrorMessageHandler($q, MessageService) {
             if (rejection.status <= 0) {
                 MessageService.error('SERVER_ERROR_TITLE', 'SERVICE_UNAVAILABLE');
             }
-
             else if (rejection.status === 500) {
                 MessageService.error('SERVER_ERROR_TITLE', 'GENERIC_ERROR');
             }

@@ -12,10 +12,13 @@
  ============================================================================*/
 
 describe('Datasets filters component', () => {
-    let scope, createElement, element, controller;
+    let scope;
+    let createElement;
+    let element;
+    let controller;
 
     beforeEach(angular.mock.module('data-prep.preparation-creator'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(angular.mock.module('pascalprecht.translate', ($translateProvider) => {
         $translateProvider.translations('en', {
@@ -68,7 +71,7 @@ describe('Datasets filters component', () => {
             expect(element.find('.preparation-creator-header').length).toBe(1);
             expect(element.find('.filters-left-panel').length).toBe(1);
             expect(element.find('.import-button-panel').length).toBe(1);
-            expect(element.find('.dataset-filter-title').length).toBe(4);
+            expect(element.find('.dataset-filter-title').length).toBe(3);
             expect(element.find('.inventory-list').length).toBe(2);
             expect(element.find('form').length).toBe(1);
             expect(element.find('.modal-buttons').length).toBe(1);
@@ -130,7 +133,6 @@ describe('Datasets filters component', () => {
         });
 
         describe('right Panel', () => {
-
             it('should render right panel spinner', () => {
                 //when
                 createElement();
@@ -212,7 +214,6 @@ describe('Datasets filters component', () => {
         });
 
         describe('form', () => {
-
             it('should render form input Label', () => {
                 //when
                 createElement();
@@ -288,5 +289,4 @@ describe('Datasets filters component', () => {
             });
         });
     });
-
 });

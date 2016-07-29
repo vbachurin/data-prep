@@ -1,15 +1,15 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
 
 /**
  * @ngdoc service
@@ -52,7 +52,7 @@ export default function DatagridSizeService($window, state) {
         var localKey = getLocalStorageKey();
         var sizesStr = $window.localStorage.getItem(localKey);
         var sizes = (sizesStr && JSON.parse(sizesStr)) || {};
-        _.forEach(gridColumns, function(col) {
+        _.forEach(gridColumns, function (col) {
             col.minWidth = MIN_COLUMN_WIDTH;
             col.width = sizes[col.id] || INITIAL_COLUMN_WIDTH;
         });
@@ -70,7 +70,7 @@ export default function DatagridSizeService($window, state) {
         var localKey = getLocalStorageKey();
         var sizes = {};
 
-        _.forEach(grid.getColumns(), function(col) {
+        _.forEach(grid.getColumns(), function (col) {
             sizes[col.id] = col.width;
         });
 
@@ -84,7 +84,7 @@ export default function DatagridSizeService($window, state) {
      * @description Attach listeners on window resize
      */
     function attachGridResizeListener() {
-        $window.addEventListener('resize', function(){
+        $window.addEventListener('resize', function () {
             grid.resizeCanvas();
         }, true);
     }

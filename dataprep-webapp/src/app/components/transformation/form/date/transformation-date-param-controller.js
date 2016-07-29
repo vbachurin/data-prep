@@ -11,13 +11,15 @@
 
   ============================================================================*/
 
+import moment from 'moment';
+
 /**
  * @ngdoc controller
  * @name data-prep.transformation-form.controller:TransformDateParamCtrl
  * @description Transformation date parameter controller.
  */
 export default function TransformDateParamCtrl() {
-    var vm = this;
+    const vm = this;
 
     /**
      * @ngdoc method
@@ -25,15 +27,15 @@ export default function TransformDateParamCtrl() {
      * @methodOf data-prep.transformation-form.controller:TransformDateParamCtrl
      * @description [PRIVATE] Init date parameter values to default
      */
-    var initParamValue = function () {
-        var param = vm.parameter;
+    function initParamValue() {
+        const param = vm.parameter;
         if (!param.value) {
             param.value = param.default;
         }
-        if (!param.value){
+        if (!param.value) {
             param.value = moment(new Date()).format('DD/MM/YYYY HH:mm:ss');
         }
-    };
+    }
 
     initParamValue();
 }

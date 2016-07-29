@@ -11,10 +11,14 @@
 
  ============================================================================*/
 
+import SlickGridMock from '../../../../mocks/SlickGrid.mock';
+
 describe('Datagrid style service', () => {
     'use strict';
 
-    var gridMock, gridColumns, stateMock;
+    var gridMock;
+    var gridColumns;
+    var stateMock;
 
     function assertColumnsHasNoStyles() {
         gridColumns.forEach(function (column) {
@@ -23,18 +27,18 @@ describe('Datagrid style service', () => {
     }
 
     beforeEach(angular.mock.module('data-prep.datagrid', ($provide) => {
-        stateMock = {playground: {grid: {}}};
+        stateMock = { playground: { grid: {} } };
         $provide.constant('state', stateMock);
     }));
 
     beforeEach(() => {
         gridColumns = [
-            {id: '0000', field: 'col0', tdpColMetadata: {id: '0000', name: 'col0', type: 'string'}},
-            {id: '0001', field: 'col1', tdpColMetadata: {id: '0001', name: 'col1', type: 'integer'}},
-            {id: '0002', field: 'col2', tdpColMetadata: {id: '0002', name: 'col2', type: 'string'}},
-            {id: '0003', field: 'col3', tdpColMetadata: {id: '0003', name: 'col3', type: 'string'}},
-            {id: '0004', field: 'col4', tdpColMetadata: {id: '0004', name: 'col4', type: 'string'}},
-            {id: 'tdpId', field: 'tdpId', tdpColMetadata: {id: 'tdpId', name: '#'}}
+            { id: '0000', field: 'col0', tdpColMetadata: { id: '0000', name: 'col0', type: 'string' } },
+            { id: '0001', field: 'col1', tdpColMetadata: { id: '0001', name: 'col1', type: 'integer' } },
+            { id: '0002', field: 'col2', tdpColMetadata: { id: '0002', name: 'col2', type: 'string' } },
+            { id: '0003', field: 'col3', tdpColMetadata: { id: '0003', name: 'col3', type: 'string' } },
+            { id: '0004', field: 'col4', tdpColMetadata: { id: '0004', name: 'col4', type: 'string' } },
+            { id: 'tdpId', field: 'tdpId', tdpColMetadata: { id: 'tdpId', name: '#' } }
         ];
 
         gridMock = new SlickGridMock();
@@ -119,8 +123,8 @@ describe('Datagrid style service', () => {
             spyOn(gridMock, 'render');
 
             gridMock.initCellEditorMock({}); //truthy editor
-            gridMock.initRenderedRangeMock({top: 20, bottom: 30});
-            gridMock.initActiveCellMock({row: 25});
+            gridMock.initRenderedRangeMock({ top: 20, bottom: 30 });
+            gridMock.initActiveCellMock({ row: 25 });
 
             DatagridStyleService.init(gridMock);
 
@@ -212,7 +216,7 @@ describe('Datagrid style service', () => {
         it('should adapt value into html with leading/trailing spaces management', inject((DatagridStyleService) => {
             //given
             DatagridStyleService.init(gridMock);
-            var col = {quality: {invalidValues: []}};
+            var col = { quality: { invalidValues: [] } };
             var value = '  my value     ';
             var columnDef = gridColumns[1];
             var dataContext = {};
@@ -228,7 +232,7 @@ describe('Datagrid style service', () => {
         it('should add a space " " as value on empty cell', inject((DatagridStyleService) => {
             //given
             DatagridStyleService.init(gridMock);
-            var col = {quality: {invalidValues: []}};
+            var col = { quality: { invalidValues: [] } };
             var value = '';
             var columnDef = gridColumns[1];
 
@@ -244,7 +248,7 @@ describe('Datagrid style service', () => {
             it('should add invisible rectangle on valid value', inject((DatagridStyleService) => {
                 //given
                 DatagridStyleService.init(gridMock);
-                var col = {quality: {invalidValues: []}};
+                var col = { quality: { invalidValues: [] } };
                 var value = 'my value';
                 var columnDef = gridColumns[1];
                 var dataContext = {};
@@ -260,7 +264,7 @@ describe('Datagrid style service', () => {
             it('should add red rectangle on invalid value', inject((DatagridStyleService) => {
                 //given
                 DatagridStyleService.init(gridMock);
-                var col = {quality: {invalidValues: ['my value']}};
+                var col = { quality: { invalidValues: ['my value'] } };
                 var value = 'my value';
                 var columnDef = gridColumns[1];
                 var dataContext = {};
@@ -278,10 +282,10 @@ describe('Datagrid style service', () => {
             it('should add "new" class on a new row', inject((DatagridStyleService) => {
                 //given
                 DatagridStyleService.init(gridMock);
-                var col = {quality: {invalidValues: []}};
+                var col = { quality: { invalidValues: [] } };
                 var value = 'my value';
                 var columnDef = gridColumns[1];
-                var dataContext = {__tdpRowDiff: 'new'};
+                var dataContext = { __tdpRowDiff: 'new' };
 
                 //when
                 var formatter = DatagridStyleService.columnFormatter(col);
@@ -294,10 +298,10 @@ describe('Datagrid style service', () => {
             it('should add "new" class on a new cell', inject((DatagridStyleService) => {
                 //given
                 DatagridStyleService.init(gridMock);
-                var col = {quality: {invalidValues: []}};
+                var col = { quality: { invalidValues: [] } };
                 var value = 'my value';
                 var columnDef = gridColumns[1];
-                var dataContext = {__tdpDiff: {'0001': 'new'}};
+                var dataContext = { __tdpDiff: { '0001': 'new' } };
 
                 //when
                 var formatter = DatagridStyleService.columnFormatter(col);
@@ -312,10 +316,10 @@ describe('Datagrid style service', () => {
             it('should add "update" class on an updated cell', inject((DatagridStyleService) => {
                 //given
                 DatagridStyleService.init(gridMock);
-                var col = {quality: {invalidValues: []}};
+                var col = { quality: { invalidValues: [] } };
                 var value = 'my value';
                 var columnDef = gridColumns[1];
-                var dataContext = {__tdpDiff: {'0001': 'update'}};
+                var dataContext = { __tdpDiff: { '0001': 'update' } };
 
                 //when
                 var formatter = DatagridStyleService.columnFormatter(col);
@@ -330,10 +334,10 @@ describe('Datagrid style service', () => {
             it('should add "deleted" class on deleted row', inject((DatagridStyleService) => {
                 //given
                 DatagridStyleService.init(gridMock);
-                var col = {quality: {invalidValues: []}};
+                var col = { quality: { invalidValues: [] } };
                 var value = 'my value';
                 var columnDef = gridColumns[1];
-                var dataContext = {__tdpRowDiff: 'delete'};
+                var dataContext = { __tdpRowDiff: 'delete' };
 
                 //when
                 var formatter = DatagridStyleService.columnFormatter(col);
@@ -346,10 +350,10 @@ describe('Datagrid style service', () => {
             it('should add "delete" class on a deleted cell', inject((DatagridStyleService) => {
                 //given
                 DatagridStyleService.init(gridMock);
-                var col = {quality: {invalidValues: []}};
+                var col = { quality: { invalidValues: [] } };
                 var value = 'my value';
                 var columnDef = gridColumns[1];
-                var dataContext = {__tdpDiff: {'0001': 'delete'}};
+                var dataContext = { __tdpDiff: { '0001': 'delete' } };
 
                 //when
                 var formatter = DatagridStyleService.columnFormatter(col);
@@ -367,7 +371,7 @@ describe('Datagrid style service', () => {
                 DatagridStyleService.hightlightedColumnId = '0001';
                 DatagridStyleService.hightlightedContent = 'my value';
 
-                var col = {id: '0001', quality: {invalidValues: []}};
+                var col = { id: '0001', quality: { invalidValues: [] } };
                 var value = 'my value';
                 var columnDef = gridColumns[1];
                 var dataContext = {};
@@ -386,7 +390,7 @@ describe('Datagrid style service', () => {
                 DatagridStyleService.hightlightedColumnId = '0000';
                 DatagridStyleService.hightlightedContent = 'my value';
 
-                var col = {id: '0001', quality: {invalidValues: []}};
+                var col = { id: '0001', quality: { invalidValues: [] } };
                 var value = 'my value';
                 var columnDef = gridColumns[1];
                 var dataContext = {};
@@ -405,7 +409,7 @@ describe('Datagrid style service', () => {
                 DatagridStyleService.hightlightedColumnId = '0001';
                 DatagridStyleService.hightlightedContent = 'my specific value';
 
-                var col = {id: '0001', quality: {invalidValues: []}};
+                var col = { id: '0001', quality: { invalidValues: [] } };
                 var value = 'my value';
                 var columnDef = gridColumns[1];
                 var dataContext = {};
@@ -424,7 +428,7 @@ describe('Datagrid style service', () => {
         it('should return "new" column style', inject((DatagridStyleService) => {
             //given
             DatagridStyleService.init(gridMock);
-            var col = {__tdpColumnDiff: 'new'};
+            var col = { __tdpColumnDiff: 'new' };
 
             //when
             var diffClass = DatagridStyleService.getColumnPreviewStyle(col);
@@ -436,7 +440,7 @@ describe('Datagrid style service', () => {
         it('should return "deleted" column style', inject((DatagridStyleService) => {
             //given
             DatagridStyleService.init(gridMock);
-            var col = {__tdpColumnDiff: 'delete'};
+            var col = { __tdpColumnDiff: 'delete' };
 
             //when
             var diffClass = DatagridStyleService.getColumnPreviewStyle(col);
@@ -448,7 +452,7 @@ describe('Datagrid style service', () => {
         it('should return "updated" column style', inject((DatagridStyleService) => {
             //given
             DatagridStyleService.init(gridMock);
-            var col = {__tdpColumnDiff: 'update'};
+            var col = { __tdpColumnDiff: 'update' };
 
             //when
             var diffClass = DatagridStyleService.getColumnPreviewStyle(col);

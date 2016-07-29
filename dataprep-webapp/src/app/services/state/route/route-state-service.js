@@ -13,14 +13,14 @@
 
 export const routeState = {
     previous: 'nav.index.preparations',
-    previousOptions: {folderId: ''},
+    previousOptions: { folderId: '' },
     next: 'nav.index.preparations',
-    nextOptions: {folderId: ''},
+    nextOptions: { folderId: '' },
 };
 
 export class RouteStateService {
     setPrevious(route, routeOptions) {
-        if(!route) {
+        if (!route) {
             return;
         }
         routeState.previous = route;
@@ -28,7 +28,7 @@ export class RouteStateService {
     }
 
     setNext(route, routeOptions) {
-        if(!route) {
+        if (!route) {
             return;
         }
         routeState.next = route;
@@ -37,12 +37,12 @@ export class RouteStateService {
 
     resetPrevious() {
         routeState.previous = 'nav.index.preparations';
-        routeState.previousOptions = {folderId: ''};
+        routeState.previousOptions = { folderId: '' };
     }
 
     resetNext() {
         routeState.next = 'nav.index.preparations';
-        routeState.nextOptions = {folderId: ''};
+        routeState.nextOptions = { folderId: '' };
     }
 
     reset() {

@@ -28,7 +28,6 @@ describe('Preparation breadcrumb component', () => {
         };
         $provide.constant('state', stateMock);
     }));
-    beforeEach(angular.mock.module('htmlTemplates'));
 
     beforeEach(inject(($rootScope, $compile) => {
         scope = $rootScope.$new(true);
@@ -64,17 +63,17 @@ describe('Preparation breadcrumb component', () => {
         it('should render each breadcrumb folder', () => {
             // given
             stateMock.inventory.breadcrumb = items;
-            
+
             // when
             createElement();
-            
+
             // then
             expect(element.find('.breadcrumb-item').length).toBe(3);
             expect(element.find('.breadcrumb-item').eq(0).text().trim()).toBe('HOME');
             expect(element.find('.breadcrumb-item').eq(1).text().trim()).toBe('JSO');
             expect(element.find('.breadcrumb-item').eq(2).text().trim()).toBe('Perso');
         });
-        
+
         it('should display children in dropdown', () => {
             // given
             stateMock.inventory.breadcrumb = items;
@@ -97,19 +96,19 @@ describe('Preparation breadcrumb component', () => {
             stateMock.inventory.breadcrumb = items;
             stateMock.inventory.breadcrumbChildren = itemsChildren;
             createElement();
-            
+
             spyOn($state, 'go').and.returnValue();
-            
+
             // when
             element.find('.breadcrumb-item').eq(1).find('.name').eq(0).click();
-            
+
             // then
             expect($state.go).toHaveBeenCalledWith(
-                'nav.index.preparations', 
+                'nav.index.preparations',
                 { folderId: items[1].id }
             );
         }));
-        
+
         it('should redirect to children folder on children click', inject(($state) => {
             // given
             stateMock.inventory.breadcrumb = items;
@@ -128,7 +127,7 @@ describe('Preparation breadcrumb component', () => {
             );
         }));
     });
-    
+
     describe('onListOpen', () => {
         it('should refresh children on folder dropdown open', inject((FolderService) => {
             // given

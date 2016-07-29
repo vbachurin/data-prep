@@ -37,7 +37,9 @@ describe('Inventory Rest Service', () => {
 
         //when
         InventoryRestService.search('test', $q.defer())
-            .then((response) => { result = response.data });
+            .then((response) => {
+                result = response.data
+            });
 
         $httpBackend.flush();
         $rootScope.$digest();
@@ -45,5 +47,4 @@ describe('Inventory Rest Service', () => {
         //then
         expect(result).toEqual(expectedResult);
     }));
-
 });

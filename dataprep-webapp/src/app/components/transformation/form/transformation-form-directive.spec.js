@@ -13,10 +13,11 @@
 
 describe('Transformation params directive', function () {
     'use strict';
-    var scope, createElement;
+    var scope;
+    var createElement;
 
     beforeEach(angular.mock.module('data-prep.transformation-form'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
@@ -83,8 +84,8 @@ describe('Transformation params directive', function () {
                     'type': 'select',
                     'configuration': {
                         'values': [
-                            {label: 'noParamChoice1', value: 'noParamChoice1'},
-                            {label: 'noParamChoice2', value: 'noParamChoice2'}
+                            { label: 'noParamChoice1', value: 'noParamChoice1' },
+                            { label: 'noParamChoice2', value: 'noParamChoice2' }
                         ]
                     },
                     'default': ''
@@ -114,7 +115,7 @@ describe('Transformation params directive', function () {
             'type': 'select',
             'configuration': {
                 'values': [
-                    {name: 'noParamChoice', value: 'noParamChoice'},
+                    { name: 'noParamChoice', value: 'noParamChoice' },
                     {
                         name: 'twoParams',
                         value: 'twoParams',

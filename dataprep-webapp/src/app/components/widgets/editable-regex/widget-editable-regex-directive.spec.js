@@ -14,10 +14,12 @@
 describe('Editable regex widget directive', function() {
     'use strict';
 
-    var scope, element, createElement;
+    var scope;
+    var element;
+    var createElement;
 
     beforeEach(angular.mock.module('talend.widget'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {

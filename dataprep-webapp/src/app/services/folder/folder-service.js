@@ -42,8 +42,8 @@ export default function FolderService($q, state, StateService, FolderRestService
      * @description Init the sort parameters and folder content
      */
     function init(id) {
-        _refreshPreparationsSort();
-        _refreshPreparationsOrder();
+        refreshPreparationsSort();
+        refreshPreparationsOrder();
         return refresh(id);
     }
 
@@ -89,26 +89,26 @@ export default function FolderService($q, state, StateService, FolderRestService
     /**
      * @ngdoc method
      * @methodOf data-prep.services.folder.service:FolderService
-     * @name _refreshPreparationsSort
+     * @name refreshPreparationsSort
      * @description Refresh the actual sort parameter
      * */
-    function _refreshPreparationsSort() {
+    function refreshPreparationsSort() {
         const savedSort = StorageService.getPreparationsSort();
         if (savedSort) {
-            StateService.setPreparationsSort(_.find(state.inventory.sortList, {id: savedSort}));
+            StateService.setPreparationsSort(_.find(state.inventory.sortList, { id: savedSort }));
         }
     }
 
     /**
      * @ngdoc method
      * @methodOf data-prep.services.folder.service:FolderService
-     * @name _refreshPreparationsOrder
+     * @name refreshPreparationsOrder
      * @description Refresh the actual order parameter
      */
-    function _refreshPreparationsOrder() {
+    function refreshPreparationsOrder() {
         const savedSortOrder = StorageService.getPreparationsOrder();
         if (savedSortOrder) {
-            StateService.setPreparationsOrder(_.find(state.inventory.orderList, {id: savedSortOrder}));
+            StateService.setPreparationsOrder(_.find(state.inventory.orderList, { id: savedSortOrder }));
         }
     }
 

@@ -98,9 +98,9 @@ describe('Export service', () => {
 
     beforeEach(angular.mock.module('data-prep.services.export'));
 
-    beforeEach(inject(($q, ExportRestService, TransformationService, StorageService) => {
+    beforeEach(inject(($q, ExportRestService, ParametersService, StorageService) => {
         spyOn(ExportRestService, 'exportTypes').and.returnValue($q.when(exportTypes));
-        spyOn(TransformationService, 'resetParamValue').and.returnValue();
+        spyOn(ParametersService, 'resetParamValue').and.returnValue();
         spyOn(StorageService, 'saveExportParams').and.returnValue();
     }));
 
@@ -154,17 +154,17 @@ describe('Export service', () => {
         expect(StorageService.saveExportParams).not.toHaveBeenCalled();
     }));
 
-    it('should reset parameters', inject((ExportService, TransformationService) => {
+    it('should reset parameters', inject((ExportService, ParametersService) => {
         // given
         ExportService.exportTypes = exportTypes;
-        expect(TransformationService.resetParamValue).not.toHaveBeenCalled();
+        expect(ParametersService.resetParamValue).not.toHaveBeenCalled();
 
         // when
         ExportService.reset();
 
         // then
-        expect(TransformationService.resetParamValue).toHaveBeenCalledWith(exportTypes[0].parameters);
-        expect(TransformationService.resetParamValue).toHaveBeenCalledWith(exportTypes[1].parameters);
-        expect(TransformationService.resetParamValue).toHaveBeenCalledWith(exportTypes[2].parameters);
+        expect(ParametersService.resetParamValue).toHaveBeenCalledWith(exportTypes[0].parameters);
+        expect(ParametersService.resetParamValue).toHaveBeenCalledWith(exportTypes[1].parameters);
+        expect(ParametersService.resetParamValue).toHaveBeenCalledWith(exportTypes[2].parameters);
     }));
 });

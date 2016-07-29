@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './transformation-cluster-params.html';
+
 /**
  * @ngdoc directive
  * @name data-prep.transformation-form.directive:TransformClusterParams
@@ -24,7 +26,7 @@ export default function TransformClusterParams($timeout) {
 
     return {
         restrict: 'E',
-        templateUrl: 'app/components/transformation/form/cluster/transformation-cluster-params.html',
+        templateUrl: template,
         scope: {
             details: '='
         },
@@ -38,7 +40,7 @@ export default function TransformClusterParams($timeout) {
              * @propertyOf data-prep.transformation-form.directive:TransformClusterParams
              * @description [PRIVATE] Each element contains
              */
-            var allActivationCheckboxes = [];
+            const allActivationCheckboxes = [];
 
             /**
              * @ngdoc method
@@ -49,9 +51,9 @@ export default function TransformClusterParams($timeout) {
             function updateStyles(activationValues) {
                 _.chain(allActivationCheckboxes)
                     .zip(activationValues)
-                    .forEach(function (zipItem) {
-                        var item = zipItem[0];
-                        var checked = zipItem[1];
+                    .forEach((zipItem) => {
+                        const item = zipItem[0];
+                        const checked = zipItem[1];
 
                         if (item.lastState !== checked) {
                             if (checked) {
@@ -68,15 +70,15 @@ export default function TransformClusterParams($timeout) {
                     .value();
             }
 
-            $timeout(function () {
-                var clustersRows = iElement.find('.cluster-body >.cluster-line');
+            $timeout(() => {
+                const clustersRows = iElement.find('.cluster-body >.cluster-line');
 
-                //attach change listener on each row enable/disable checkbox
-                clustersRows.each(function (index) {
-                    var row = clustersRows.eq(index);
-                    var rowInputs = row.find('input:not(.cluster-activation)');
-                    var rowSelects = row.find('select');
-                    var checkbox = row.find('>div:first >input.cluster-activation');
+                // attach change listener on each row enable/disable checkbox
+                clustersRows.each((index) => {
+                    const row = clustersRows.eq(index);
+                    const rowInputs = row.find('input:not(.cluster-activation)');
+                    const rowSelects = row.find('select');
+                    const checkbox = row.find('>div:first >input.cluster-activation');
 
                     allActivationCheckboxes[index] = {
                         checkbox: checkbox,
@@ -86,12 +88,10 @@ export default function TransformClusterParams($timeout) {
                     };
                 });
 
-                //refresh style on cluster active flag change
+                // refresh style on cluster active flag change
                 scope.$watchCollection(
-                    function () {
-                        return _.map(ctrl.details.clusters, 'active');
-                    },
-                    function (activationValues) {
+                    () => _.map(ctrl.details.clusters, 'active'),
+                    (activationValues) => {
                         ctrl.refreshToggleCheckbox();
                         updateStyles(activationValues);
                     }

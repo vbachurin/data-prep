@@ -14,16 +14,19 @@
 describe('Lookup directive', function () {
     'use strict';
 
-    var scope, createElement, element, StateMock;
+    var scope;
+    var createElement;
+    var element;
+    var StateMock;
 
     var sortList = [
-        {id: 'name', name: 'NAME_SORT', property: 'name'},
-        {id: 'date', name: 'DATE_SORT', property: 'created'}
+        { id: 'name', name: 'NAME_SORT', property: 'name' },
+        { id: 'date', name: 'DATE_SORT', property: 'created' }
     ];
 
     var orderList = [
-        {id: 'asc', name: 'ASC_ORDER'},
-        {id: 'desc', name: 'DESC_ORDER'}
+        { id: 'asc', name: 'ASC_ORDER' },
+        { id: 'desc', name: 'DESC_ORDER' }
     ];
 
     beforeEach(angular.mock.module('data-prep.lookup', function ($provide) {
@@ -44,7 +47,7 @@ describe('Lookup directive', function () {
         $provide.constant('state', StateMock);
     }));
 
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(inject(function ($rootScope, $compile) {
         scope = $rootScope.$new();
@@ -117,7 +120,7 @@ describe('Lookup directive', function () {
     it('should enable submit button when the there are 2 columns selected and the tdpId is not selected', function () {
         //given
         StateMock.playground.lookup.columnsToAdd = [1, 2];
-        StateMock.playground.lookup.selectedColumn = {id: '0001'};
+        StateMock.playground.lookup.selectedColumn = { id: '0001' };
 
         //when
         createElement();
@@ -130,7 +133,7 @@ describe('Lookup directive', function () {
     it('should disable submit button when in the main dataset the tdpId is selected', function () {
         //given
         StateMock.playground.lookup.columnsToAdd = [1, 2];
-        StateMock.playground.lookup.selectedColumn = {id: '0000'};
+        StateMock.playground.lookup.selectedColumn = { id: '0000' };
         StateMock.playground.grid.selectedColumn = null;
 
         //when
@@ -144,8 +147,8 @@ describe('Lookup directive', function () {
     it('should enable submit button when there are columns checked, the tdpId is not selected neither in the main nor in the lookup', function () {
         //given
         StateMock.playground.lookup.columnsToAdd = [1, 2];
-        StateMock.playground.lookup.selectedColumn = {id: '0000'};
-        StateMock.playground.grid.selectedColumn = {id: '0000'};
+        StateMock.playground.lookup.selectedColumn = { id: '0000' };
+        StateMock.playground.grid.selectedColumn = { id: '0000' };
 
         //when
         createElement();

@@ -11,6 +11,8 @@
 
  ============================================================================*/
 
+import template from './documentation-search.html';
+
 /**
  * @ngdoc directive
  * @name data-prep.data-prep.documentation-search
@@ -22,7 +24,7 @@
 import DocumentationSearchCtrl from './documentation-search-controller';
 
 const DocumentationSearch = {
-    templateUrl: 'app/components/search/documentation/documentation-search.html',
+    templateUrl: template,
     controller: DocumentationSearchCtrl
 };
 

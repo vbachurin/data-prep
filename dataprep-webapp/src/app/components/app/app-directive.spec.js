@@ -11,13 +11,16 @@
 
   ============================================================================*/
 
-describe('App directive', function() {
+import DataPrepAppModule from './app-module';
+
+describe('App directive', () => {
     'use strict';
 
-    var scope, createElement, element;
+    var scope;
+    var createElement;
+    var element;
 
-    beforeEach(angular.mock.module('data-prep.app'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    beforeEach(window.module(DataPrepAppModule));
 
     beforeEach(inject(function($rootScope, $compile) {
         scope = $rootScope.$new();
@@ -37,7 +40,7 @@ describe('App directive', function() {
             .expectGET(RestURLs.exportUrl + '/formats')
             .respond(200, {});
 
-        spyOn(UpgradeVersionService, "retrieveNewVersions").and.returnValue($q.when([]));
+        spyOn(UpgradeVersionService, 'retrieveNewVersions').and.returnValue($q.when([]));
     }));
 
     afterEach(function() {

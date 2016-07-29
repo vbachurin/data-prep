@@ -49,7 +49,7 @@ describe('Message service', () => {
             //given
             var titleId = 'TITLE';
             var contentId = 'CONTENT_WITH_ARG';
-            var args = {argValue: 'my value'};
+            var args = { argValue: 'my value' };
 
             expect(toaster.pop).not.toHaveBeenCalled();
 
@@ -82,7 +82,7 @@ describe('Message service', () => {
             //given
             var titleId = 'TITLE';
             var contentId = 'CONTENT_WITH_ARG';
-            var args = {argValue: 'my value'};
+            var args = { argValue: 'my value' };
 
             expect(toaster.pop).not.toHaveBeenCalled();
 
@@ -115,7 +115,7 @@ describe('Message service', () => {
             //given
             var titleId = 'TITLE';
             var contentId = 'CONTENT_WITH_ARG';
-            var args = {argValue: 'my value'};
+            var args = { argValue: 'my value' };
 
             expect(toaster.pop).not.toHaveBeenCalled();
 
@@ -133,7 +133,7 @@ describe('Message service', () => {
             //given
             var firstMessageTitleId = 'TITLE';
             var firstMessageContentId = 'CONTENT_WITH_ARG';
-            var firstMessageArgs = {argValue: 'my value'};
+            var firstMessageArgs = { argValue: 'my value' };
 
             var secondMessageTitleId = 'TITLE';
             var secondMessageContentId = 'CONTENT_WITHOUT_ARG';
@@ -155,7 +155,7 @@ describe('Message service', () => {
             //given
             var firstMessageTitleId = 'TITLE';
             var firstMessageContentId = 'CONTENT_WITH_ARG';
-            var firstMessageArgs = {argValue: 'my value'};
+            var firstMessageArgs = { argValue: 'my value' };
 
             var secondMessageTitleId = 'TITLE';
             var secondMessageContentId = 'CONTENT_WITHOUT_ARG';

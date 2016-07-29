@@ -105,7 +105,7 @@ class StepDescriptionCtrl {
         const allAddedCols = _.map(step.actionParameters.parameters.lookup_selected_cols, 'name');
         return {
             initialColsNbr: allAddedCols.length,
-            firstCol: allAddedCols.splice(0, 1).join(),//tab = []; tab[0]==>undefined, tab.join()==>''
+            firstCol: allAddedCols.splice(0, 1).join(), //tab = []; tab[0]==>undefined, tab.join()==>''
             secondCol: allAddedCols.splice(0, 1).join(),
             restOfColsNbr: allAddedCols.length,
             restOfCols: allAddedCols.join(', '),

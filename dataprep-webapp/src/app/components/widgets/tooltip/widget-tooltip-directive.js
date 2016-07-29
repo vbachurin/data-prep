@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './tooltip.html';
+
 /**
  * @ngdoc directive
  * @name talend.widget.directive:TalendTooltip
@@ -31,7 +33,7 @@ export default function TalendTooltip($window, $document) {
 
     return {
         restrict: 'E',
-        templateUrl: 'app/components/widgets/tooltip/tooltip.html',
+        templateUrl: template,
         transclude: true,
         scope: {
             position: '=',
@@ -41,7 +43,8 @@ export default function TalendTooltip($window, $document) {
         controller: 'TalendTooltipCtrl',
         controllerAs: 'talendTooltipCtrl',
         link: function (scope, iElement, iAttrs, ctrl) {
-            var hasFocus, isOver;
+            var hasFocus;
+            var isOver;
             /**
              * @ngdoc method
              * @name processBlockUnblock

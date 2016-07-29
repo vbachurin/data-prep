@@ -11,16 +11,21 @@
 
  ============================================================================*/
 
+import angular from 'angular';
+import INVENTORY_TILE from '../../inventory/tile/inventory-tile-module';
+
 import PreparationPicker from './preparation-picker-component';
 
-(() => {
-    /**
-     * @ngdoc object
-     * @name data-prep.preparation-picker
-     * @description This module contains the preparation picker form
-     * @requires data-prep.inventory-tile
-     */
+const MODULE_NAME = 'data-prep.preparation-picker';
 
-    angular.module('data-prep.preparation-picker', ['data-prep.inventory-tile'])
-        .component('preparationPicker', PreparationPicker);
-})();
+/**
+ * @ngdoc object
+ * @name data-prep.preparation-picker
+ * @description This module contains the preparation picker form
+ * @requires data-prep.inventory-tile
+ */
+
+angular.module(MODULE_NAME, [INVENTORY_TILE])
+    .component('preparationPicker', PreparationPicker);
+
+export default MODULE_NAME;

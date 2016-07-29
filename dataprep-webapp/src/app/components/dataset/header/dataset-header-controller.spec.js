@@ -12,17 +12,18 @@
  ============================================================================*/
 
 describe('Dataset Header controller', () => {
-
-    let createController, scope, stateMock;
+    let createController;
+    let scope;
+    let stateMock;
 
     const sortList = [
-        {id: 'name', name: 'NAME_SORT', property: 'name'},
-        {id: 'date', name: 'DATE_SORT', property: 'created'}
+        { id: 'name', name: 'NAME_SORT', property: 'name' },
+        { id: 'date', name: 'DATE_SORT', property: 'created' }
     ];
 
     const orderList = [
-        {id: 'asc', name: 'ASC_ORDER'},
-        {id: 'desc', name: 'DESC_ORDER'}
+        { id: 'asc', name: 'ASC_ORDER' },
+        { id: 'desc', name: 'DESC_ORDER' }
     ];
 
     beforeEach(angular.mock.module('data-prep.dataset-header', ($provide) => {
@@ -40,7 +41,7 @@ describe('Dataset Header controller', () => {
     beforeEach(inject(($rootScope, $componentController, $q, StorageService, StateService) => {
         scope = $rootScope.$new();
 
-        createController = () => $componentController('datasetHeader', {$scope: scope});
+        createController = () => $componentController('datasetHeader', { $scope: scope });
 
         spyOn(StorageService, 'setDatasetsSort').and.returnValue();
         spyOn(StorageService, 'setDatasetsOrder').and.returnValue();

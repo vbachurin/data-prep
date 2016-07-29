@@ -11,10 +11,12 @@
 
  ============================================================================*/
 
+import template from './preparation-picker.html';
+
 import PreparationPickerCtrl from './preparation-picker-controller';
 
 const PreparationPicker = {
-    templateUrl: 'app/components/preparation/picker/preparation-picker.html',
+    templateUrl: template,
     bindings: {
         dataset: '<',
         fetchPreparations: '&',
@@ -22,4 +24,4 @@ const PreparationPicker = {
     },
     controller: PreparationPickerCtrl,
 };
-export default PreparationPicker
+export default PreparationPicker;

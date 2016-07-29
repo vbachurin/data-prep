@@ -16,10 +16,10 @@
  * @name data-prep.filter-search.controller:FilterSearchCtrl
  * @description Filter search controller.
  */
-export default function FilterSearchCtrl(FilterService) {
+export default function FilterSearchCtrl(FilterService, DatagridService) {
     'ngInject';
 
-    var vm = this;
+    const vm = this;
 
     /**
      * @ngdoc method
@@ -29,8 +29,8 @@ export default function FilterSearchCtrl(FilterService) {
      * @description [PRIVATE] Return a closure function that create a suggestion item from column id
      * @returns {function} the item creation closure
      */
-    var createSuggestionItem = function (term) {
-        return function (col) {
+    function createSuggestionItem(term) {
+        return (col) => {
             return {
                 label: term + ' in <b>' + col.name + '</b>',
                 value: term,
@@ -38,7 +38,7 @@ export default function FilterSearchCtrl(FilterService) {
                 columnName: col.name
             };
         };
-    };
+    }
 
     /**
      * @ngdoc method
@@ -48,35 +48,29 @@ export default function FilterSearchCtrl(FilterService) {
      * @description [PRIVATE] Create filter suggestions based on the typed term
      * @returns {function[]} the suggestion list
      */
-    var filterSuggestion = function (term) {
-        var cleanTerm = term.toLowerCase().trim();
-        var colContainingTerm = FilterService.getColumnsContaining(cleanTerm);
+    function filterSuggestion(term) {
+        const cleanTerm = term.toLowerCase().trim();
+        const colContainingTerm = DatagridService.getColumnsContaining(cleanTerm);
 
         return _.chain(colContainingTerm)
-            .sortBy(function (col) {
-                return col.name.toLowerCase();
-            })
+            .sortBy((col) => col.name.toLowerCase())
             .map(createSuggestionItem(cleanTerm))
             .value();
-    };
+    }
 
     /**
      * @ngdoc method
      * @name suggestionSelect
      * @methodOf data-prep.filter-search.controller:FilterSearchCtrl
      * @param {object} item - the filter infos
-     * @description [PRIVATE] Action when user select a suggestion : create the filter and reset the input
+     * @description Action when user select a suggestion:  create the filter and reset the input
      */
-    var suggestionSelect = function (item) {
+    function suggestionSelect(item) {
         FilterService.addFilter('contains', item.columnId, item.columnName, {
-            phrase: [
-                {
-                    value: item.value
-                }
-            ]
+            phrase: [{ value: item.value }]
         });
         vm.filterSearch = '';
-    };
+    }
 
     /**
      * @ngdoc property

@@ -20,29 +20,26 @@
  * @requires data-prep.services.playground.service:PlaygroundService
  * @requires data-prep.services.preparation.service:PreparationService
  * @requires data-prep.services.playground.service:PreviewService
- * @requires data-prep.services.recipe.service:RecipeService
- * @requires data-prep.services.recipe.service:RecipeBulletService
  * @requires data-prep.services.onboarding.service:OnboardingService
  * @requires data-prep.services.lookup.service:LookupService
  * @requires data-prep.services.utils.service:MessageService
  */
 export default function PlaygroundCtrl($timeout, $state, $stateParams, state, StateService,
-                                       PlaygroundService, DatasetService, PreparationService,
-                                       PreviewService, RecipeService, RecipeBulletService,
-                                       OnboardingService, LookupService, MessageService) {
+    PlaygroundService, DatasetService, PreparationService,
+    PreviewService,
+    OnboardingService, LookupService, MessageService) {
     'ngInject';
 
     const vm = this;
     vm.$stateParams = $stateParams;
     vm.state = state;
-    vm.recipeService = RecipeService;
 
-    vm.toggleRecipe = RecipeBulletService.toggleRecipe;
-    vm.openFeedbackForm = StateService.showFeedback;
-    vm.toggleParameters = StateService.toggleDatasetParameters;
-    vm.previewInProgress = PreviewService.previewInProgress;
-    vm.startOnBoarding = OnboardingService.startTour;
-    vm.fetchCompatiblePreparations = DatasetService.getCompatiblePreparations;
+    vm.openFeedbackForm = () => StateService.showFeedback();
+    vm.toggleParameters = () => StateService.toggleDatasetParameters();
+    vm.previewInProgress = () => PreviewService.previewInProgress();
+    vm.toggleRecipe = () => PlaygroundService.toggleRecipe();
+    vm.startOnBoarding = (tourId) => OnboardingService.startTour(tourId);
+    vm.fetchCompatiblePreparations = () => DatasetService.getCompatiblePreparations();
 
     /**
      * @ngdoc property
@@ -83,7 +80,7 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
     vm.applySteps = function applySteps(preparationId) {
         return PlaygroundService.copySteps(preparationId)
             .then(() => {
-                vm.displayPreparationPicker = false
+                vm.displayPreparationPicker = false;
             });
     };
 
@@ -100,7 +97,7 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
         const cleanName = name.trim();
         if (!vm.changeNameInProgress && cleanName) {
             changeName(cleanName)
-                .then((preparation) => $state.go('playground.preparation', {prepid: preparation.id}));
+                .then((preparation) => $state.go('playground.preparation', { prepid: preparation.id }));
         }
     };
 
@@ -182,15 +179,19 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
         const prepId = state.playground.preparation.id;
         const destinationId = vm.destinationFolder.id;
         const cleanName = vm.state.playground.preparationName.trim();
-        if(destinationId !== state.inventory.homeFolderId) {
-            operation = PreparationService.move(prepId, state.inventory.homeFolderId, destinationId, cleanName)
+        if (destinationId !== state.inventory.homeFolderId) {
+            operation = PreparationService.move(prepId, state.inventory.homeFolderId, destinationId, cleanName);
         }
         else {
             operation = PreparationService.setName(prepId, cleanName);
         }
         return operation
-            .then(() => { vm.close(); })
-            .finally(() => { StateService.setIsSavingPreparation(false); });
+            .then(() => {
+                vm.close();
+            })
+            .finally(() => {
+                StateService.setIsSavingPreparation(false);
+            });
     };
 
     /**
@@ -270,9 +271,9 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
      * @param {string} prepid The preparation id
      */
     function loadPreparation(prepid) {
-        const preparation = _.find(state.inventory.preparations, {id: prepid});
+        const preparation = _.find(state.inventory.preparations, { id: prepid });
         if (!preparation) {
-            errorGoBack({type: 'preparation'});
+            errorGoBack({ type: 'preparation' });
         }
         else {
             PlaygroundService.load(preparation)
@@ -281,7 +282,7 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
                         fetchStatistics();
                     }
                 })
-                .catch(() => errorGoBack({type: 'preparation'}));
+                .catch(() => errorGoBack({ type: 'preparation' }));
         }
     }
 
@@ -292,9 +293,9 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
      * @param {string} datasetid The dataset id
      */
     function loadDataset(datasetid) {
-        const dataset = _.find(state.inventory.datasets, {id: datasetid});
+        const dataset = _.find(state.inventory.datasets, { id: datasetid });
         if (!dataset) {
-            errorGoBack({type: 'dataset'});
+            errorGoBack({ type: 'dataset' });
         }
         else {
             PlaygroundService.initPlayground(dataset)
@@ -303,7 +304,7 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
                         fetchStatistics();
                     }
                 })
-                .catch(() => errorGoBack({type: 'dataset'}));
+                .catch(() => errorGoBack({ type: 'dataset' }));
         }
     }
 
@@ -320,8 +321,7 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
  * @name hasActiveStep
  * @propertyOf data-prep.playground.controller:PlaygroundCtrl
  * @description checks if there is at least 1 active step, by checking the 1st step in the recipe
- * It is bound to {@link data-prep.services.recipe.service:RecipeService RecipeService} status of the 1st step in the
- *     returned recipe array by the getRecipe() function
+ * It is bound to the status of the 1st step in the state
  * @type boolean
  */
 Object.defineProperty(PlaygroundCtrl.prototype,
@@ -329,10 +329,9 @@ Object.defineProperty(PlaygroundCtrl.prototype,
         enumerable: true,
         configurable: false,
         get: function () {
-            const firstStep = this.recipeService.getRecipe()[0];
+            const firstStep = this.state.playground.recipe.current.steps[0];
             return firstStep && !firstStep.inactive;
         },
         set: () => {
         }
     });
-

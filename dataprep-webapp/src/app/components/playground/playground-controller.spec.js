@@ -53,17 +53,18 @@ describe('Playground controller', () => {
         },
     ];
 
-    const createPreparation = { id: 'create-preparation-id'  };
+    const createPreparation = { id: 'create-preparation-id' };
 
     beforeEach(angular.mock.module('data-prep.playground', ($provide) => {
         stateMock = {
             route: {
-              previous: 'nav.index.preparations',
+                previous: 'nav.index.preparations',
             },
             playground: {
                 dataset: {},
                 lookup: { actions: [] },
                 preparationName: '',
+                recipe: { current: { steps: [] } },
             },
             inventory: {
                 homeFolderId: 'LW==',
@@ -92,24 +93,24 @@ describe('Playground controller', () => {
     }));
 
     describe('bindings', () => {
-        it('should bind hasActiveStep getter', inject((RecipeService) => {
+        it('should bind hasActiveStep getter', () => {
             //given
             const ctrl = createController();
             expect(ctrl.hasActiveStep).toBeFalsy();
 
             //when
-            RecipeService.getRecipe().push({inactive: false});
+            stateMock.playground.recipe.current.steps.push({ inactive: false });
 
             //then
             expect(ctrl.hasActiveStep).toBe(true);
-        }));
+        });
     });
 
     describe('initialization', () => {
         beforeEach(inject((MessageService, StateService) => {
             spyOn(StateService, 'setIsFetchingStats').and.returnValue();
             spyOn(MessageService, 'error').and.returnValue();
-            stateMock.inventory = {preparations: preparations, datasets: datasets};
+            stateMock.inventory = { preparations: preparations, datasets: datasets };
         }));
 
         describe('preparation', () => {
@@ -134,7 +135,7 @@ describe('Playground controller', () => {
                 createController();
 
                 //then
-                expect(MessageService.error).toHaveBeenCalledWith('PLAYGROUND_FILE_NOT_FOUND_TITLE', 'PLAYGROUND_FILE_NOT_FOUND', {type: 'preparation'});
+                expect(MessageService.error).toHaveBeenCalledWith('PLAYGROUND_FILE_NOT_FOUND_TITLE', 'PLAYGROUND_FILE_NOT_FOUND', { type: 'preparation' });
                 expect($state.go).toHaveBeenCalledWith('nav.index.preparations', undefined);
             }));
 
@@ -148,7 +149,7 @@ describe('Playground controller', () => {
                 createController();
 
                 //then
-                expect(MessageService.error).toHaveBeenCalledWith('PLAYGROUND_FILE_NOT_FOUND_TITLE', 'PLAYGROUND_FILE_NOT_FOUND', {type: 'preparation'});
+                expect(MessageService.error).toHaveBeenCalledWith('PLAYGROUND_FILE_NOT_FOUND_TITLE', 'PLAYGROUND_FILE_NOT_FOUND', { type: 'preparation' });
                 expect($state.go).toHaveBeenCalledWith('nav.index.preparations', undefined);
             }));
 
@@ -164,7 +165,7 @@ describe('Playground controller', () => {
                 expect(StateService.setIsFetchingStats).not.toHaveBeenCalled();
                 expect(PlaygroundService.updateStatistics).not.toHaveBeenCalled();
 
-                stateMock.playground.data = {metadata: {statistics: {frequencyTable: []}}}; // stats not computed
+                stateMock.playground.data = { metadata: { statistics: { frequencyTable: [] } } }; // stats not computed
                 scope.$digest();
 
                 //then
@@ -232,7 +233,7 @@ describe('Playground controller', () => {
                     metadata: {
                         columns: [{
                             statistics: {
-                                frequencyTable: [{      // stats already computed
+                                frequencyTable: [{ // stats already computed
                                     value: 'toto',
                                     frequency: 10
                                 }]
@@ -246,7 +247,6 @@ describe('Playground controller', () => {
                 expect(StateService.setIsFetchingStats).not.toHaveBeenCalled();
                 expect(PlaygroundService.updateStatistics).not.toHaveBeenCalled();
             }));
-
         });
 
         describe('dataset', () => {
@@ -275,7 +275,7 @@ describe('Playground controller', () => {
                 expect(StateService.setIsFetchingStats).not.toHaveBeenCalled();
                 expect(PlaygroundService.updateStatistics).not.toHaveBeenCalled();
 
-                stateMock.playground.data = {metadata: {statistics: {frequencyTable: []}}}; // stats not computed
+                stateMock.playground.data = { metadata: { statistics: { frequencyTable: [] } } }; // stats not computed
                 scope.$digest();
 
                 //then
@@ -343,7 +343,7 @@ describe('Playground controller', () => {
                     metadata: {
                         columns: [{
                             statistics: {
-                                frequencyTable: [{      // stats already computed
+                                frequencyTable: [{ // stats already computed
                                     value: 'toto',
                                     frequency: 10
                                 }]
@@ -367,7 +367,7 @@ describe('Playground controller', () => {
                 createController();
 
                 //then
-                expect(MessageService.error).toHaveBeenCalledWith('PLAYGROUND_FILE_NOT_FOUND_TITLE', 'PLAYGROUND_FILE_NOT_FOUND', {type: 'dataset'});
+                expect(MessageService.error).toHaveBeenCalledWith('PLAYGROUND_FILE_NOT_FOUND_TITLE', 'PLAYGROUND_FILE_NOT_FOUND', { type: 'dataset' });
                 expect($state.go).toHaveBeenCalledWith('nav.index.preparations', undefined);
             }));
 
@@ -381,7 +381,7 @@ describe('Playground controller', () => {
                 createController();
 
                 //then
-                expect(MessageService.error).toHaveBeenCalledWith('PLAYGROUND_FILE_NOT_FOUND_TITLE', 'PLAYGROUND_FILE_NOT_FOUND', {type: 'dataset'});
+                expect(MessageService.error).toHaveBeenCalledWith('PLAYGROUND_FILE_NOT_FOUND_TITLE', 'PLAYGROUND_FILE_NOT_FOUND', { type: 'dataset' });
                 expect($state.go).toHaveBeenCalledWith('nav.index.preparations', undefined);
             }));
         });
@@ -404,14 +404,14 @@ describe('Playground controller', () => {
             //given
             const ctrl = createController();
             stateMock.playground.preparationName = '  my new name  ';
-            stateMock.playground.preparation = {id: 'fe6843da512545e'};
+            stateMock.playground.preparation = { id: 'fe6843da512545e' };
 
             //when
             ctrl.confirmPrepNameEdition(stateMock.playground.preparationName);
             $rootScope.$digest();
 
             //then
-            expect($state.go).toHaveBeenCalledWith('playground.preparation', {prepid: createPreparation.id});
+            expect($state.go).toHaveBeenCalledWith('playground.preparation', { prepid: createPreparation.id });
         }));
 
         it('should not call service create/updateName service if name is blank on name edition confirmation', inject((PlaygroundService) => {
@@ -520,7 +520,7 @@ describe('Playground controller', () => {
         let preparation;
 
         beforeEach(inject(($q, PreparationService, StateService) => {
-            preparation = {id: '9af874865e42b546', draft: true};
+            preparation = { id: '9af874865e42b546', draft: true };
             stateMock.playground.preparation = preparation;
             stateMock.route.previous = 'nav.index.preparations';
 
@@ -690,7 +690,7 @@ describe('Playground controller', () => {
         it('should manage progress flag', inject((StateService) => {
             //given
             const ctrl = createController();
-            const parameters = {separator: ';', encoding: 'UTF-8'};
+            const parameters = { separator: ';', encoding: 'UTF-8' };
 
             expect(StateService.setIsSendingDatasetParameters).not.toHaveBeenCalled();
 
@@ -706,7 +706,7 @@ describe('Playground controller', () => {
         it('should call parameter change function', inject((PlaygroundService) => {
             //given
             const ctrl = createController();
-            const parameters = {separator: ';', encoding: 'UTF-8'};
+            const parameters = { separator: ';', encoding: 'UTF-8' };
 
             expect(PlaygroundService.changeDatasetParameters).not.toHaveBeenCalled();
 
@@ -720,7 +720,7 @@ describe('Playground controller', () => {
         it('should hide dataset parameters', inject((StateService) => {
             //given
             const ctrl = createController();
-            const parameters = {separator: ';', encoding: 'UTF-8'};
+            const parameters = { separator: ';', encoding: 'UTF-8' };
 
             expect(StateService.hideDatasetParameters).not.toHaveBeenCalled();
 

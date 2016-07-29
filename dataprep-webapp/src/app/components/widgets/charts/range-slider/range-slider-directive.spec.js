@@ -24,7 +24,7 @@ describe('Range slider directive', () => {
     let scope;
     let ctrl;
 
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
     beforeEach(angular.mock.module('talend.widget'));
 
     beforeEach(inject(($rootScope, $compile) => {
@@ -50,7 +50,9 @@ describe('Range slider directive', () => {
 
     afterEach(() => {
         scope.$destroy();
-        if(element) element.remove(); //TODO JSO
+        if (element) { //TODO JSO
+            element.remove();
+        }
     });
 
     describe('brush', () => {
@@ -63,17 +65,17 @@ describe('Range slider directive', () => {
                 maxBrush: 15,
             };
             const fullWidth = 215; // 250 - margins
-            
+
             // when
             createElement();
             $timeout.flush();
             flushAllD3Transitions();
-            
+
             // then
             expect(d3.select('.extent').attr('width')).toBe('' + (fullWidth / 2));   // brush width 
             expect(d3.select('.extent').attr('x')).toBe('' + (fullWidth / 4));       // brush position = 5 on 20 -> 1/4th of the width
         }));
-        
+
         it('should render brush with provided date values', inject(($timeout) => {
             // given
             scope.rangeLimits = {
@@ -84,17 +86,17 @@ describe('Range slider directive', () => {
                 maxBrush: 1750000000,
             };
             const fullWidth = 215; // 250 - margins
-            
+
             // when
             createElement();
             $timeout.flush();
             flushAllD3Transitions();
-            
+
             // then
             expect(d3.select('.extent').attr('width')).toBe('' + (fullWidth / 2));   // brush width 
             expect(d3.select('.extent').attr('x')).toBe('' + (fullWidth / 4));       // brush position = 1250000 on 2000000 -> 1/4th of the width
         }));
-        
+
         it('should render brush with number min/max when there is no provided values', inject(($timeout) => {
             // given
             scope.rangeLimits = {
@@ -140,13 +142,13 @@ describe('Range slider directive', () => {
                 minBrush: 5,
                 maxBrush: 15,
             };
-            
+
             createElement();
             $timeout.flush();
             flushAllD3Transitions();
-            
+
             expect(element.find('svg').length).toBe(1);
-            
+
             // when
             scope.rangeLimits = null;
             scope.$digest();
@@ -194,15 +196,15 @@ describe('Range slider directive', () => {
                 min: 0,
                 max: 20,
             };
-            
+
             // when
             createElement();
-            
+
             // then
             expect(element.find('input').eq(0).length).toBe(1);
             expect(element.find('input').eq(0).val()).toBe('0');
         });
-        
+
         it('should render number min number input with provided min value', () => {
             // given
             scope.rangeLimits = {
@@ -211,10 +213,10 @@ describe('Range slider directive', () => {
                 max: 20,
                 minFilterVal: 10,
             };
-            
+
             // when
             createElement();
-            
+
             // then
             expect(element.find('input').eq(0).length).toBe(1);
             expect(element.find('input').eq(0).val()).toBe('10');
@@ -252,7 +254,7 @@ describe('Range slider directive', () => {
             expect(element.find('input').eq(1).length).toBe(1);
             expect(element.find('input').eq(1).val()).toBe('15');
         });
-        
+
         it('should render date min input', () => {
             // given
             scope.rangeLimits = {
@@ -261,10 +263,10 @@ describe('Range slider directive', () => {
                 max: + new Date('2018/06/27'),
                 minFilterVal: + new Date('2016/06/27'),
             };
-            
+
             // when
             createElement();
-            
+
             // then
             expect(element.find('input').eq(0).length).toBe(1);
             expect(element.find('input').eq(0).val()).toBe('06-27-2016');
@@ -294,11 +296,11 @@ describe('Range slider directive', () => {
             createElement();
             expect(element.find('.error[translate-once="INVALID_VALUE_RANGE_SLIDER"]').length).toBe(0);
             expect(element.find('.error[translate-once="INVALID_VALUE_RANGE_SLIDER_CONTENT"]').length).toBe(0);
-            
+
             // when
             ctrl.invalidNumber = true;
             scope.$digest();
-            
+
             // then
             expect(element.find('.error[translate-once="INVALID_VALUE_RANGE_SLIDER"]').length).toBe(1);
             expect(element.find('.error[translate-once="INVALID_VALUE_RANGE_SLIDER_CONTENT"]').length).toBe(0);

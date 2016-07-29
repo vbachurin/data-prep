@@ -14,10 +14,12 @@
 describe('Editable select directive', function() {
     'use strict';
 
-    var scope, createElement, element;
+    var scope;
+    var createElement;
+    var element;
 
     beforeEach(angular.mock.module('talend.widget'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(inject(function($rootScope, $compile) {
         scope = $rootScope.$new();

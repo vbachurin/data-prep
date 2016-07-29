@@ -44,4 +44,3 @@ class SearchBarCtrl {
 }
 
 export default SearchBarCtrl;
-

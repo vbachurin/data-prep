@@ -14,25 +14,24 @@
 describe('Upload File directive', function() {
     'use strict';
 
-    var element, createElement;
+    var element;
+    var createElement;
     var body = angular.element('body');
     var scope;
     beforeEach(angular.mock.module('talend.widget'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(inject(function($rootScope, $compile) {
         createElement = function() {
-
             scope = $rootScope.$new();
             scope.updateDatasetFile = 'file';
             scope.uploadUpdatedDatasetFile = function(){};
 
             element = angular.element('<talend-file-selector button-data-icon="E" button-title="REPLACE_FILE_CONTENT" file-model="updateDatasetFile" on-file-change="uploadUpdatedDatasetFile(dataset)">'+
-                   '</talend-file-selector>');
+                '</talend-file-selector>');
             body.append(element);
             $compile(element)(scope);
             scope.$digest();
-
         };
     }));
 

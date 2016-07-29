@@ -14,10 +14,13 @@
 describe('History control directive', function() {
     'use strict';
 
-    var createElement, element, scope, body;
+    var createElement;
+    var element;
+    var scope;
+    var body;
 
     beforeEach(angular.mock.module('data-prep.history-control'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(inject(function($rootScope, $compile, HistoryService) {
         body = angular.element('body');

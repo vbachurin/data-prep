@@ -11,21 +11,29 @@
 
  ============================================================================*/
 
+import angular from 'angular';
+import uiRouter from 'angular-ui-router';
+import INVENTORY_SEARCH_MODULE from '../search/inventory/inventory-search-module';
+import SERVICES_DATASET_MODULE from '../../services/dataset/dataset-module';
+import SERVICES_FEEDBACK_MODULE from '../../services/feedback/feedback-module';
+import SERVICES_ONBOARDING_MODULE from '../../services/onboarding/onboarding-module';
+import SERVICES_UTILS_MODULE from '../../services/utils/utils-module';
+
 import NavbarCtrl from './navbar-controller';
 import Navbar from './navbar-directive';
 
-(() => {
-    'use strict';
+const MODULE_NAME = 'data-prep.navbar';
 
-    angular.module('data-prep.navbar',
-        [
-            'ui.router',
-            'data-prep.services.dataset',
-            'data-prep.services.feedback',
-            'data-prep.services.onboarding',
-            'data-prep.services.utils',
-            'data-prep.inventory-search',
-        ])
-        .controller('NavbarCtrl', NavbarCtrl)
-        .directive('navbar', Navbar);
-})();
+angular.module(MODULE_NAME,
+    [
+        uiRouter,
+        INVENTORY_SEARCH_MODULE,
+        SERVICES_DATASET_MODULE,
+        SERVICES_FEEDBACK_MODULE,
+        SERVICES_ONBOARDING_MODULE,
+        SERVICES_UTILS_MODULE,
+    ])
+    .controller('NavbarCtrl', NavbarCtrl)
+    .directive('navbar', Navbar);
+
+export default MODULE_NAME;

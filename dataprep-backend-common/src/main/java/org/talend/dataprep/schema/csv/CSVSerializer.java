@@ -30,10 +30,10 @@ import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.schema.Serializer;
 
-import au.com.bytecode.opencsv.CSVReader;
-
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
+
+import au.com.bytecode.opencsv.CSVReader;
 
 @Service("serializer#csv")
 public class CSVSerializer implements Serializer {
@@ -60,7 +60,7 @@ public class CSVSerializer implements Serializer {
                         reader.readNext(); // Skip all header lines
                     }
                     generator.writeStartArray();
-                    writeLineContent(reader, metadata, generator, separator);
+                    writeLineContent(reader, metadata, generator, separator, limit);
                     generator.writeEndArray();
                     generator.flush();
                 } catch (Exception e) {
@@ -90,14 +90,15 @@ public class CSVSerializer implements Serializer {
      * @param metadata the dataset metadata to use to get the columns.
      * @param generator the json generator used to actually write the line content.
      * @param separator the csv separator to use.
+     * @param limit The maximum number of lines in the exported content.
      * @throws IOException if an error occurs.
      */
-    private void writeLineContent(CSVReader reader, DataSetMetadata metadata, JsonGenerator generator, String separator)
+    private void writeLineContent(CSVReader reader, DataSetMetadata metadata, JsonGenerator generator, String separator, long limit)
             throws IOException {
         String[] line;
+        int current = 0;
 
-        while ((line = reader.readNext()) != null) {
-
+        while ((line = reader.readNext()) != null && withinLimit(limit, current)) {
             // skip empty lines
             if (line.length == 1 && (StringUtils.isEmpty(line[0]) || line[0].charAt(0) == '\u0000')) {
                 continue;
@@ -126,7 +127,12 @@ public class CSVSerializer implements Serializer {
                 }
             }
             generator.writeEndObject();
+            current++;
         }
+    }
+
+    private boolean withinLimit(long limit, int current) {
+        return limit < 0 || current < limit;
     }
 
     private String cleanCharacters(final String value) {

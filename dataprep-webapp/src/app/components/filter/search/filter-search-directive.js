@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './filter-search.html';
+
 /**
  * @ngdoc directive
  * @name data-prep.filter-search.directive:FilterSearch
@@ -21,20 +23,20 @@
 export default function FilterSearch() {
     return {
         restrict: 'E',
-        templateUrl: 'app/components/filter/search/filter-search.html',
+        templateUrl: template,
         scope: {},
         bindToController: true,
         controllerAs: 'filterCtrl',
         controller: 'FilterSearchCtrl',
-        link: function (scope, iElement, attrs, ctrl) {
-            iElement.bind('keydown', function (e) {
+        link: (scope, iElement, attrs, ctrl) => {
+            iElement.bind('keydown', (e) => {
                 if (e.keyCode === 27) {
                     e.stopPropagation();
                 }
             });
 
-            var inputElement = iElement.find('input');
-            inputElement[0].onblur = function () {
+            const inputElement = iElement.find('input');
+            inputElement[0].onblur = () => {
                 ctrl.filterSearch = '';
             };
         }

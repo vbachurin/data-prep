@@ -33,16 +33,17 @@ export default class StorageService {
         this.$window = $window;
     }
 
-    //--------------------------------------------------------------------------------------------------------------
-    //-----------------------------------------------------Common---------------------------------------------------
-    //--------------------------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // ---------------------------------------Common-----------------------------------------------
+    // --------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
      * @name setItem
      * @methodOf data-prep.services.utils.service:StorageService
      * @param {string} key The localStorage key
      * @param {any} value The value to save
-     * @description Save the value with the provided key in localStorage. The value us stringified to get back the same type.
+     * @description Save the value with the provided key in localStorage.
+     * The value us stringified to get back the same type.
      */
     setItem(key, value) {
         this.$window.localStorage.setItem(key, JSON.stringify(value));
@@ -54,7 +55,8 @@ export default class StorageService {
      * @methodOf data-prep.services.utils.service:StorageService
      * @param {string} key The localStorage key
      * @param {any} defaultValue The default value to return when key is not in localStorage
-     * @description Get the value associated to the provided key. The result have the same type as the saved value.
+     * @description Get the value associated to the provided key.
+     * The result have the same type as the saved value.
      * @returns {any} The value associated to the provided key.
      */
     getItem(key, defaultValue) {
@@ -73,15 +75,16 @@ export default class StorageService {
         this.$window.localStorage.removeItem(key);
     }
 
-    //--------------------------------------------------------------------------------------------------------------
-    //---------------------------------------------------Feedback---------------------------------------------------
-    //--------------------------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // -------------------------------------------Feedback-----------------------------------------
+    // --------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
      * @name saveFeedbackUserMail
      * @methodOf data-prep.services.utils.service:StorageService
      * @param {any} value The value to save
-     * @description Save the value with the provided key in localStorage. The value us stringified to get back the same type.
+     * @description Save the value with the provided key in localStorage.
+     * The value us stringified to get back the same type.
      */
     saveFeedbackUserMail(value) {
         this.setItem(FEEDBACK_USER_MAIL_KEY, value);
@@ -91,16 +94,17 @@ export default class StorageService {
      * @ngdoc method
      * @name getFeedbackUserMail
      * @methodOf data-prep.services.utils.service:StorageService
-     * @description Get the value associated to the provided key. The result have the same type as the saved value.
+     * @description Get the value associated to the provided key.
+     * The result have the same type as the saved value.
      * @returns {string} The value associated to the provided key.
      */
     getFeedbackUserMail() {
         return this.getItem(FEEDBACK_USER_MAIL_KEY, '');
     }
 
-    //--------------------------------------------------------------------------------------------------------------
-    //---------------------------------------------------Export-----------------------------------------------------
-    //--------------------------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // ------------------------------------------Export--------------------------------------------
+    // --------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
      * @name saveExportParams
@@ -123,9 +127,9 @@ export default class StorageService {
         return this.getItem(EXPORT_PARAMS_KEY);
     }
 
-    //--------------------------------------------------------------------------------------------------------------
-    //---------------------------------------------------Aggregation------------------------------------------------
-    //--------------------------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // -------------------------------------------Aggregation--------------------------------------
+    // --------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
      * @name removeItem
@@ -137,8 +141,8 @@ export default class StorageService {
      */
     getAggregationKey(datasetId, preparationId, columnId) {
         let key = PREFIX + 'aggregation.';
-        key += (datasetId ? datasetId : '') + '.';
-        key += (preparationId ? preparationId : '') + '.';
+        key += (datasetId || '') + '.';
+        key += (preparationId || '') + '.';
         key += columnId;
 
         return key;
@@ -206,7 +210,9 @@ export default class StorageService {
             }
         }
 
-        aggregationsToRemove.forEach((key) => { this.removeItem(key) });
+        aggregationsToRemove.forEach((key) => {
+            this.removeItem(key);
+        });
     }
 
     /**
@@ -215,7 +221,8 @@ export default class StorageService {
      * @methodOf data-prep.services.utils.service:StorageService
      * @param {string} datasetId The dataset id
      * @param {string} preparationId The preparation id
-     * @description Get all the saved aggregations on the dataset and save them for the preparation.
+     * @description Get all the saved aggregations on the dataset
+     * and save them for the preparation.
      */
     savePreparationAggregationsFromDataset(datasetId, preparationId) {
         const datasetAggregationPrefix = this.getAggregationKey(datasetId, '', '');
@@ -251,7 +258,11 @@ export default class StorageService {
      * @description Move all preparation aggregation to another preparation id
      */
     moveAggregations(datasetId, oldPreparationId, newPreparationId) {
-        const preparationAggregationPrefix = this.getAggregationKey(datasetId, oldPreparationId, '');
+        const preparationAggregationPrefix = this.getAggregationKey(
+            datasetId,
+            oldPreparationId,
+            ''
+        );
         const aggregationsToMove = [];
 
         for (let i = 0, len = this.$window.localStorage.length; i < len; i++) {
@@ -265,14 +276,19 @@ export default class StorageService {
         }
 
         aggregationsToMove.forEach((aggregDef) => {
-            this.setAggregation(datasetId, newPreparationId, aggregDef.columnId, aggregDef.aggregation);
+            this.setAggregation(
+                datasetId,
+                newPreparationId,
+                aggregDef.columnId,
+                aggregDef.aggregation
+            );
             this.removeAggregation(datasetId, oldPreparationId, aggregDef.columnId);
         });
     }
 
-    //--------------------------------------------------------------------------------------------------------------
-    //---------------------------------------------------Lookup-----------------------------------------------------
-    //--------------------------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // -------------------------------------------Lookup-------------------------------------------
+    // --------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
      * @name getLookupDatasets
@@ -333,9 +349,9 @@ export default class StorageService {
         this.setItem(LOOKUP_DATASETS_ORDER_KEY, order);
     }
 
-    //--------------------------------------------------------------------------------------------------------------
-    //---------------------------------------------------Sort/Order-------------------------------------------------
-    //--------------------------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // ---------------------------------------------Sort/Order-------------------------------------
+    // --------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
      * @name getDatasetsSort

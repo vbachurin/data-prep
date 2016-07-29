@@ -76,7 +76,7 @@ export default function ColumnSuggestionService($q, state, StateService, Transfo
      * @returns {object} The suggestions category containing suggestions and 'filtered' category transformations
      */
     function prepareSuggestions(suggestions, transformationsCategories) {
-        var filterCategory = _.find(transformationsCategories, {category: FILTERED_CATEGORY});
+        var filterCategory = _.find(transformationsCategories, { category: FILTERED_CATEGORY });
 
         return {
             category: SUGGESTION_CATEGORY,

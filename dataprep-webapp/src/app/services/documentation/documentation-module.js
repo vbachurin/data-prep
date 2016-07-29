@@ -11,18 +11,21 @@
 
  ============================================================================*/
 
+import angular from 'angular';
+import SERVICES_UTILS_MODULE from '../utils/utils-module';
+
 import DocumentationService from './documentation-service';
 import DocumentationRestService from './rest/documentation-rest-service';
 
-(() => {
-    'use strict';
+const MODULE_NAME = 'data-prep.services.documentation';
 
-    /**
-     * @ngdoc object
-     * @name data-prep.services.documentation
-     * @description This module contains the services to manage the documentation
-     */
-    angular.module('data-prep.services.documentation', ['data-prep.services.utils'])
-        .service('DocumentationService', DocumentationService)
-        .service('DocumentationRestService', DocumentationRestService);
-})();
+/**
+ * @ngdoc object
+ * @name data-prep.services.documentation
+ * @description This module contains the services to manage the documentation
+ */
+angular.module(MODULE_NAME, [SERVICES_UTILS_MODULE])
+    .service('DocumentationService', DocumentationService)
+    .service('DocumentationRestService', DocumentationRestService);
+
+export default MODULE_NAME;

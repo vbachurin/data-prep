@@ -14,12 +14,15 @@
 describe('Slidable directive', function () {
     'use strict';
 
-    var scope, element, createElement, createResizableElement;
+    var scope;
+    var element;
+    var createElement;
+    var createResizableElement;
     var resizableId = 'resizableId';
     var widthStorageKey = 'org.talend.dataprep.' + resizableId + '.width';
 
     beforeEach(angular.mock.module('talend.widget'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     afterEach(inject(function ($window) {
         scope.$destroy();
@@ -160,7 +163,7 @@ describe('Slidable directive', function () {
     it('should set and configure resize feature on left slidable', function() {
         //when
         createResizableElement('left');
-        
+
         //then
         expect(element.find('.ui-resizable-handle').length).toBe(1);
         expect(element.find('.ui-resizable-handle').eq(0).hasClass('ui-resizable-e')).toBe(true);
@@ -211,7 +214,7 @@ describe('Slidable directive', function () {
         expect($window.localStorage.getItem(widthStorageKey)).toBeFalsy();
 
         //when
-        stop(null, {size: {width: 250}});
+        stop(null, { size: { width: 250 } });
         scope.$digest();
 
         //then
@@ -227,7 +230,7 @@ describe('Slidable directive', function () {
         expect(element[0].style.flex).toBeFalsy();
 
         //when
-        resize(null, {size: {width: 250}});
+        resize(null, { size: { width: 250 } });
         scope.$digest();
 
         //then

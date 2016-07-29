@@ -12,8 +12,9 @@
  ============================================================================*/
 
 describe('Datasets Filters Controller', () => {
-
-    let createController, scope, ctrl;
+    let createController;
+    let scope;
+    let ctrl;
 
     beforeEach(angular.mock.module('data-prep.datasets-filters'));
 
@@ -22,8 +23,8 @@ describe('Datasets Filters Controller', () => {
 
         createController = () => {
             return $componentController('datasetsFilters',
-                {$scope: scope},
-                {onFilterSelect: jasmine.createSpy()});
+                { $scope: scope },
+                { onFilterSelect: jasmine.createSpy() });
         };
     }));
 
@@ -31,7 +32,7 @@ describe('Datasets Filters Controller', () => {
         it('should select a datasets filter', () => {
             //given
             ctrl = createController();
-            let filter = {value: 'RECENT_DATASETS'};
+            let filter = { value: 'RECENT_DATASETS' };
 
             //when
             ctrl.selectFilter(filter);
@@ -39,13 +40,13 @@ describe('Datasets Filters Controller', () => {
             //then
             expect(ctrl.selectedFilter).toBe(filter);
             expect(ctrl.selectedFilter.isSelected).toBe(true);
-            expect(ctrl.onFilterSelect).toHaveBeenCalledWith({filter: filter.value});
+            expect(ctrl.onFilterSelect).toHaveBeenCalledWith({ filter: filter.value });
         });
 
         it('should NOT select a datasets filter while import', () => {
             //given
             ctrl = createController();
-            let filter = {value: 'RECENT_DATASETS'};
+            let filter = { value: 'RECENT_DATASETS' };
             ctrl.importing = true;
             expect(ctrl.onFilterSelect).not.toHaveBeenCalled();
 

@@ -11,9 +11,11 @@
 
   ============================================================================*/
 
-export default function DatagridHeaderCtrl () {
+import template from './app.html';
+
+export default function DatagridHeaderCtrl() {
     return {
         restrict: 'E',
-        templateUrl: 'app/components/app/app.html'
+        templateUrl: template
     };
 }

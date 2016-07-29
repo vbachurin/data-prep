@@ -14,11 +14,13 @@
 describe('Editable Text Widget', () => {
     'use strict';
 
-    let createController, scope;
-    let onValidateFn, onCancelFn;
+    let createController;
+    let scope;
+    let onValidateFn;
+    let onCancelFn;
 
     beforeEach(angular.mock.module('talend.widget'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(inject(($rootScope, $componentController) => {
         scope = $rootScope.$new();
@@ -27,7 +29,7 @@ describe('Editable Text Widget', () => {
 
         createController = () => {
             return $componentController('talendEditableText',
-                {$scope: scope},
+                { $scope: scope },
                 {
                     onValidate: onValidateFn,
                     onCancel: onCancelFn

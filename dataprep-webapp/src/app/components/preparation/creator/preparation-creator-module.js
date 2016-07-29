@@ -11,27 +11,36 @@
 
  ============================================================================*/
 
+import angular from 'angular';
+import DATASET_FILTERS from './datasets-filters/datasets-filters-module';
+import DATASET_UPDLOAD_LIST_MODULE from '../../dataset/upload-list/dataset-upload-list-module';
+import IMPORT_MODULE from '../../import/import-module';
+import INVENTORY_ITEM_MODULE from '../../inventory/item/inventory-item-module';
+import SERVICES_DATASET_MODULE from '../../../services/dataset/dataset-module';
+import SERVICES_PREPARATION_MODULE from '../../../services/preparation/preparation-module';
+import SERVICES_UTILS_MODULE from '../../../services/utils/utils-module';
+
 import PreparationCreatorComponent from './preparation-creator-component';
 
-(() => {
-    'use strict';
+const MODULE_NAME = 'data-prep.preparation-creator';
 
-    /**
-     * @ngdoc object
-     * @name data-prep.preparation-creator
-     * @description This module creates directly a preparation from a dataset
-     * @requires data-prep.inventory-item
-     * @requires data-prep.datasets-filters
-     */
-    angular.module('data-prep.preparation-creator',
-        [
-            'data-prep.inventory-item',
-            'data-prep.datasets-filters',
-            'data-prep.services.dataset',
-            'data-prep.dataset-upload-list',
-            'data-prep.import',
-            'data-prep.services.preparation',
-            'data-prep.services.utils',
-        ])
-        .component('preparationCreator', PreparationCreatorComponent);
-})();
+/**
+ * @ngdoc object
+ * @name data-prep.preparation-creator
+ * @description This module creates directly a preparation from a dataset
+ * @requires data-prep.inventory-item
+ * @requires data-prep.datasets-filters
+ */
+angular.module(MODULE_NAME,
+    [
+        DATASET_FILTERS,
+        DATASET_UPDLOAD_LIST_MODULE,
+        IMPORT_MODULE,
+        INVENTORY_ITEM_MODULE,
+        SERVICES_DATASET_MODULE,
+        SERVICES_PREPARATION_MODULE,
+        SERVICES_UTILS_MODULE,
+    ])
+    .component('preparationCreator', PreparationCreatorComponent);
+
+export default MODULE_NAME;

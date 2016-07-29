@@ -14,10 +14,14 @@
 describe('Import directive', () => {
     'use strict';
 
-    var scope, createElement, element, ctrl, StateMock;
+    var scope;
+    var createElement;
+    var element;
+    var ctrl;
+    var StateMock;
 
     beforeEach(angular.mock.module('data-prep.import'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(angular.mock.module('data-prep.import', ($provide) => {
         StateMock = {
@@ -70,7 +74,7 @@ describe('Import directive', () => {
 
         ctrl = $componentController(
             'import',
-            {$scope: scope}
+            { $scope: scope }
         );
     }));
 
@@ -93,7 +97,6 @@ describe('Import directive', () => {
         expect(element.find('#datasetFile').length).toBe(1);
 
         expect(angular.element('body').find('talend-modal').length).toBe(2);
-
     }));
 
     it('should render import types list', inject( () => {

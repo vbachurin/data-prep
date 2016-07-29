@@ -22,7 +22,8 @@ export default function DatagridTooltipService($timeout, state, TextFormatServic
     'ngInject';
 
     var grid;
-    var tooltipTimeout, tooltipShowPromise;
+    var tooltipTimeout;
+    var tooltipShowPromise;
     var tooltipDelay = 300;
 
     var service = {
@@ -43,7 +44,6 @@ export default function DatagridTooltipService($timeout, state, TextFormatServic
      */
     function cancelTooltip() {
         if (tooltipTimeout) {
-
             $timeout.cancel(tooltipTimeout);
             tooltipTimeout = null;
         }
@@ -142,7 +142,7 @@ export default function DatagridTooltipService($timeout, state, TextFormatServic
 
         // return if the content is bigger than the displayed box by computing the diff between the displayed box
         // and the hidden tooltip ruler size minus the cell padding
-        return (box.right - box.left - 12 ) <= ruler.width() || (box.bottom - box.top) < ruler.height();
+        return (box.right - box.left - 12) <= ruler.width() || (box.bottom - box.top) < ruler.height();
     }
 
     /**

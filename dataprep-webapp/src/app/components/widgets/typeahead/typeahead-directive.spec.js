@@ -14,13 +14,14 @@
 'use strict';
 
 describe('Typeahead directive', () => {
-    let scope, element, ctrl;
+    let scope;
+    let element;
+    let ctrl;
 
     beforeEach(angular.mock.module('talend.widget'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(inject(($rootScope, $compile) => {
-
         scope = $rootScope.$new();
         scope.search = jasmine.createSpy('search');
         scope.clickOnItem1 = jasmine.createSpy('clickOnItem1');
@@ -276,7 +277,6 @@ describe('Typeahead directive', () => {
             //then
             expect(ctrl.visible).toBe(true);
         }));
-
     });
 
     describe('click', () => {

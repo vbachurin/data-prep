@@ -258,8 +258,8 @@ describe('Range slider controller', () => {
                     type: 'number',
                     min: 10.2,
                     max: 45.6896,
-                    // minBrush not defined
-                    // maxBrush not defined
+                // minBrush not defined
+                // maxBrush not defined
                 };
                 expect(ctrl.lastValues).not.toBeDefined();
 
@@ -302,8 +302,8 @@ describe('Range slider controller', () => {
                     type: 'number',
                     min: 10.2,
                     max: 45.6896,
-                    // minFilterVal not defined
-                    // maxFilterVal not defined
+                // minFilterVal not defined
+                // maxFilterVal not defined
                 };
                 expect(ctrl.lastValues).not.toBeDefined();
 
@@ -843,7 +843,7 @@ describe('Range slider controller', () => {
                     interval: { min: 10, max: 115, isMaxReached: true }
                 });
             });
-            
+
             it('should do nothing when inputs have not changed', () => {
                 // given
                 const ctrl = createController();

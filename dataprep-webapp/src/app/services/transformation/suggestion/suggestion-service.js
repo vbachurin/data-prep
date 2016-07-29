@@ -21,11 +21,11 @@ export default function SuggestionService(LineSuggestionService, ColumnSuggestio
     'ngInject';
 
     var tabIndex = {
-        'TEXT': 0,
-        'CELL': 1,
-        'LINE': 2,
-        'COLUMN': 3,
-        'TABLE': 4
+        TEXT: 0,
+        CELL: 1,
+        LINE: 2,
+        COLUMN: 3,
+        TABLE: 4,
     };
 
     var service = {

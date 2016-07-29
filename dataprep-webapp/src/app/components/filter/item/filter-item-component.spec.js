@@ -12,11 +12,12 @@
  ============================================================================*/
 
 describe('Filter Item Component', () => {
-
-    let createElement, scope, element;
+    let createElement;
+    let scope;
+    let element;
 
     beforeEach(angular.mock.module('data-prep.filter-item'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(inject(($rootScope, $compile) => {
         scope = $rootScope.$new();
@@ -62,7 +63,6 @@ describe('Filter Item Component', () => {
     });
 
     describe('editable option', () => {
-
         it('should render editable values with inputs', () => {
             //given
             scope.editable = true;
@@ -118,7 +118,6 @@ describe('Filter Item Component', () => {
     });
 
     describe('removable option', () => {
-
         it('should render badge close button', () => {
             // given
             scope.removable = true;

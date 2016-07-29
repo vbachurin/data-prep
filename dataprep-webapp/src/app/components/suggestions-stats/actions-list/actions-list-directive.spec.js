@@ -14,11 +14,13 @@
 describe('Suggestions stats directive', function() {
     'use strict';
 
-    var scope, createElement, element;
+    var scope;
+    var createElement;
+    var element;
 
     beforeEach(angular.mock.module('ngSanitize'));
     beforeEach(angular.mock.module('data-prep.actions-list'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(inject(function($rootScope, $compile) {
         scope = $rootScope.$new();
@@ -51,17 +53,17 @@ describe('Suggestions stats directive', function() {
                     category: 'cat1',
                     categoryHtml: 'Category 1',
                     transformations: [
-                        {name: '1', labelHtml: 'action 1'},
-                        {name: '2', labelHtml: 'action 2'}
+                        { name: '1', labelHtml: 'action 1' },
+                        { name: '2', labelHtml: 'action 2' }
                     ]
                 },
                 {
                     category: 'cat2',
                     categoryHtml: 'Category 2',
                     transformations: [
-                        {name: '3', labelHtml: 'action 3'},
-                        {name: '4', labelHtml: 'action 4'},
-                        {name: '5', labelHtml: 'action 5'}
+                        { name: '3', labelHtml: 'action 3' },
+                        { name: '4', labelHtml: 'action 4' },
+                        { name: '5', labelHtml: 'action 5' }
                     ]
                 }
             ];
@@ -83,17 +85,17 @@ describe('Suggestions stats directive', function() {
                     category: 'cat1',
                     categoryHtml: 'Category 1',
                     transformations: [
-                        {name: '1', labelHtml: 'action 1'},
-                        {name: '2', labelHtml: 'action 2'}
+                        { name: '1', labelHtml: 'action 1' },
+                        { name: '2', labelHtml: 'action 2' }
                     ]
                 },
                 {
                     category: 'cat2',
                     categoryHtml: 'Category 2',
                     transformations: [
-                        {name: '3', labelHtml: 'action 3'},
-                        {name: '4', labelHtml: 'action 4'},
-                        {name: '5', labelHtml: 'action 5'}
+                        { name: '3', labelHtml: 'action 3' },
+                        { name: '4', labelHtml: 'action 4' },
+                        { name: '5', labelHtml: 'action 5' }
                     ]
                 }
             ];
@@ -123,17 +125,17 @@ describe('Suggestions stats directive', function() {
                     category: 'cat1',
                     categoryHtml: 'Category 1',
                     transformations: [
-                        {name: '1', labelHtml: 'action 1'},
-                        {name: '2', labelHtml: 'action 2'}
+                        { name: '1', labelHtml: 'action 1' },
+                        { name: '2', labelHtml: 'action 2' }
                     ]
                 },
                 {
                     category: 'cat2',
                     categoryHtml: 'Category 2',
                     transformations: [
-                        {name: '3', labelHtml: 'action 3'},
-                        {name: '4', labelHtml: 'action 4'},
-                        {name: '5', labelHtml: 'action 5'}
+                        { name: '3', labelHtml: 'action 3' },
+                        { name: '4', labelHtml: 'action 4' },
+                        { name: '5', labelHtml: 'action 5' }
                     ]
                 }
             ];
@@ -162,17 +164,17 @@ describe('Suggestions stats directive', function() {
                     category: 'cat1',
                     categoryHtml: 'Category 1',
                     transformations: [
-                        {name: '1', labelHtml: 'action 1'},
-                        {name: '2', labelHtml: 'action 2'}
+                        { name: '1', labelHtml: 'action 1' },
+                        { name: '2', labelHtml: 'action 2' }
                     ]
                 },
                 {
                     category: 'cat2',
                     categoryHtml: 'Category 2',
                     transformations: [
-                        {name: '3', labelHtml: 'action 3'},
-                        {name: '4', labelHtml: 'action 4'},
-                        {name: '5', labelHtml: 'action 5'}
+                        { name: '3', labelHtml: 'action 3' },
+                        { name: '4', labelHtml: 'action 4' },
+                        { name: '5', labelHtml: 'action 5' }
                     ]
                 }
             ];

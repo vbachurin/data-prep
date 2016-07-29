@@ -14,10 +14,13 @@
 'use strict';
 
 describe('Button Dropdown directive', function () {
-    var scope, element, createElementWithAction, createElementWithoutAction;
+    var scope;
+    var element;
+    var createElementWithAction;
+    var createElementWithoutAction;
 
     beforeEach(angular.mock.module('talend.widget'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     afterEach(function () {
         scope.$destroy();
@@ -44,16 +47,16 @@ describe('Button Dropdown directive', function () {
         };
 
         createElementWithoutAction = function() {
-             var html = '<talend-button-dropdown button-icon="m" button-text="Click Me" button-action="">' +
-                 '   <ul>' +
-                 '       <li>Menu 1</li>' +
-                 '       <li>Menu 2</li>' +
-                 '   </ul>' +
-                 '</talend-button-dropdown>';
-             element = $compile(html)(scope);
+            var html = '<talend-button-dropdown button-icon="m" button-text="Click Me" button-action="">' +
+                '   <ul>' +
+                '       <li>Menu 1</li>' +
+                '       <li>Menu 2</li>' +
+                '   </ul>' +
+                '</talend-button-dropdown>';
+            element = $compile(html)(scope);
             $timeout.flush();
-             scope.$digest();
-         };
+            scope.$digest();
+        };
     }));
 
     it('should call action on main button click', function() {
@@ -93,7 +96,6 @@ describe('Button Dropdown directive', function () {
 
         //then
         expect(menu.hasClass('show-menu')).toBe(true);
-
     });
 
     it('should show dropdown menu on side button click', function() {

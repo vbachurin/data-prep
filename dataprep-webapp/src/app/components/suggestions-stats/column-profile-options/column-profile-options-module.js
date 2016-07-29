@@ -11,16 +11,20 @@
 
  ============================================================================*/
 
+import angular from 'angular';
+import ngTranslate from 'angular-translate';
+import TALEND_WIDGET from '../../widgets/widget-module';
+
 import ColumnProfileOptionsComponent from './column-profile-options-component';
 
-(() => {
-    'use strict';
+const MODULE_NAME = 'data-prep.column-profile-options';
 
-    /**
-     * @ngdoc object
-     * @name data-prep.column-profile-options
-     * @description Column profile (charts) options
-     */
-    angular.module('data-prep.column-profile-options', ['pascalprecht.translate', 'talend.widget'])
-        .component('columnProfileOptions', ColumnProfileOptionsComponent);
-})();
+/**
+ * @ngdoc object
+ * @name data-prep.column-profile-options
+ * @description Column profile (charts) options
+ */
+angular.module(MODULE_NAME, [ngTranslate, TALEND_WIDGET])
+    .component('columnProfileOptions', ColumnProfileOptionsComponent);
+
+export default MODULE_NAME;

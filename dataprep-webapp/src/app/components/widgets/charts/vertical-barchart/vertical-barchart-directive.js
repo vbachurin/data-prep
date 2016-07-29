@@ -1,15 +1,18 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
+
+import d3 from 'd3';
+import d3Tip from 'd3-tip';
 
 /**
  * @ngdoc directive
@@ -75,16 +78,22 @@ export default function VerticalBarchart($timeout) {
             var oldVisuData;
             var labelTooltip = scope.keyLabel;
             var activeLimits = scope.activeLimits;
-            var renderPrimaryTimeout, renderSecondaryTimeout, updateLimitsTimeout;
+            var renderPrimaryTimeout;
+            var renderSecondaryTimeout;
+            var updateLimitsTimeout;
             var containerId = '#' + attrs.id;
 
             // Define chart sizes and margin
-            var margin, containerWidth, containerHeight, width, height;
+            var margin;
+            var containerWidth;
+            var containerHeight;
+            var width;
+            var height;
 
             //------------------------------------------------------------------------------------------------------
             //----------------------------------------------- Tooltip ----------------------------------------------
             //------------------------------------------------------------------------------------------------------
-            var tooltip = d3.tip()
+            var tooltip = d3Tip()
                 .attr('class', 'vertical-barchart-cls d3-tip')
                 .offset([0, -11])
                 .direction('w')
@@ -126,7 +135,7 @@ export default function VerticalBarchart($timeout) {
                 return data[scope.secondaryValueField];
             }
 
-            function getBottomMargin (){
+            function getBottomMargin() {
                 const labelLength = getRangeLabel(scope.primaryData[0]).length;
                 return labelLength * 8;// the longer the label is, the more space we need
             }
@@ -134,7 +143,9 @@ export default function VerticalBarchart($timeout) {
             //------------------------------------------------------------------------------------------------------
             //------------------------------------------- Chart utils ----------------------------------------------
             //------------------------------------------------------------------------------------------------------
-            var svg, xScale, yScale;
+            var svg;
+            var xScale;
+            var yScale;
 
             function initChartSizes() {
                 margin = {
@@ -207,9 +218,9 @@ export default function VerticalBarchart($timeout) {
                         return yScale(0);
                     })
                     .attr('height', 0)
-                    .transition().ease('cubic').delay(function (d, i) {
-                        return i * 10;
-                    })
+                    .transition()
+                    .ease('cubic')
+                    .delay((d, i) => i * 10)
                     .attr('height', function (d) {
                         var realHeight = height - yScale(getValue(d));
                         return adaptToMinHeight(realHeight);
@@ -221,8 +232,8 @@ export default function VerticalBarchart($timeout) {
 
                 //update
                 bars.transition().ease('exp').delay(function (d, i) {
-                        return i * 30;
-                    })
+                    return i * 30;
+                })
                     .attr('height', function (d) {
                         var realHeight = height - yScale(getValue(d));
                         return adaptToMinHeight(realHeight);
@@ -308,15 +319,15 @@ export default function VerticalBarchart($timeout) {
                     .on('click', function (d) {
                         //create a new reference as the data object could be modified outside the component
                         const interval = _.extend({}, getRangeInfos(d));
-                        if(d3.event.ctrlKey || d3.event.metaKey) {
-                            scope.onCtrlClick({interval});
+                        if (d3.event.ctrlKey || d3.event.metaKey) {
+                            scope.onCtrlClick({ interval });
                             return;
                         }
-                        else if(d3.event.shiftKey) {
-                            scope.onShiftClick({interval});
+                        else if (d3.event.shiftKey) {
+                            scope.onShiftClick({ interval });
                             return;
                         }
-                        scope.onClick({interval});
+                        scope.onClick({ interval });
                     });
             }
 

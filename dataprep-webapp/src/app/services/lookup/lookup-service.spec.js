@@ -182,7 +182,8 @@ describe('Lookup service', () => {
                     visibility: false,
                     addedActions: []
                 },
-                grid: {}
+                grid: {},
+                recipe: { current: { steps: [] } },
             },
             inventory: {
                 datasets: datasets,
@@ -199,7 +200,6 @@ describe('Lookup service', () => {
         spyOn(StateService, 'setLookupActions').and.returnValue();
         spyOn(StateService, 'setLookupAddMode').and.returnValue();
         spyOn(StateService, 'setLookupUpdateMode').and.returnValue();
-
     }));
 
     describe('init lookup', () => {
@@ -274,9 +274,9 @@ describe('Lookup service', () => {
         });
 
         describe('with lookup step on selected column', () => {
-            it('should load the step action as lookup update', inject(($rootScope, LookupService, DatasetRestService, RecipeService, StateService) => {
+            it('should load the step action as lookup update', inject(($rootScope, LookupService, DatasetRestService, StateService) => {
                 //given
-                spyOn(RecipeService, 'getRecipe').and.returnValue([lookupStep]);
+                stateMock.playground.recipe.current.steps = [lookupStep];
                 stateMock.playground.data = { metadata: { columns: [{ id: '0000' }] } };
                 stateMock.playground.lookup.addedActions = lookupActions;
                 stateMock.playground.grid.selectedColumn = { 'id': '0000' };
@@ -305,12 +305,12 @@ describe('Lookup service', () => {
             expect(StateService.setLookupAddMode).toHaveBeenCalledWith(firstLookupAction, dsLookupContent);
         }));
 
-        it('should load action as lookup update when selected column has this lookup action as step', inject(($rootScope, LookupService, RecipeService, StateService) => {
+        it('should load action as lookup update when selected column has this lookup action as step', inject(($rootScope, LookupService, StateService) => {
             //given
             stateMock.playground.data = { metadata: { columns: [{ id: '0000' }] } };
             stateMock.playground.lookup.addedActions = lookupActions;
             stateMock.playground.grid.selectedColumn = { id: '0000' };
-            spyOn(RecipeService, 'getRecipe').and.returnValue([lookupStep]);
+            stateMock.playground.recipe.current.steps = [lookupStep];
 
             //when
             LookupService.loadFromAction(firstLookupAction);
@@ -399,14 +399,14 @@ describe('Lookup service', () => {
             expect(StateService.setLookupAddMode).toHaveBeenCalledWith(firstLookupAction, dsLookupContent);
         }));
 
-        it('should load action as lookup update when the new selected column has this lookup action as step', inject(($rootScope, LookupService, RecipeService, StateService) => {
+        it('should load action as lookup update when the new selected column has this lookup action as step', inject(($rootScope, LookupService, StateService) => {
             //given
             stateMock.playground.data = { metadata: { columns: [{ id: '0000' }] } };
             stateMock.playground.lookup.addedActions = lookupActions;
             stateMock.playground.lookup.dataset = firstLookupAction;
             stateMock.playground.lookup.visibility = true;
             stateMock.playground.grid.selectedColumn = { id: '0000' };
-            spyOn(RecipeService, 'getRecipe').and.returnValue([lookupStep]);
+            stateMock.playground.recipe.current.steps = [lookupStep];
 
             //when
             LookupService.updateTargetColumn();
@@ -448,14 +448,14 @@ describe('Lookup service', () => {
     });
 
     describe('add datasets to lookup', () => {
-        it('should disable datasets which are used in recipe steps', inject(($rootScope, LookupService, RecipeService) => {
+        it('should disable datasets which are used in recipe steps', inject(($rootScope, LookupService) => {
             //given
             stateMock.playground.lookup.datasets = [
                 { id: '9e739b88-5ec9-4b58-84b5-2127a7e2eac7' },
                 { id: '3' },
                 { id: '2' }
             ];
-            spyOn(RecipeService, 'getRecipe').and.returnValue([lookupStep]);
+            stateMock.playground.recipe.current.steps = [lookupStep];
 
             //when
             LookupService.disableDatasetsUsedInRecipe();
@@ -466,7 +466,7 @@ describe('Lookup service', () => {
             expect(stateMock.playground.lookup.datasets[2].enableToAddToLookup).toBe(true);
         }));
 
-        it('should initialize lookup datasets', inject(($q, $rootScope, LookupService, StorageService, RecipeService, StateService, TransformationRestService) => {
+        it('should initialize lookup datasets', inject(($q, $rootScope, LookupService, StorageService, StateService, TransformationRestService) => {
             //given
             stateMock.playground.lookup.datasets = [
                 { id: '9e739b88-5ec9-4b58-84b5-2127a7e2eac7', addedToLookup: false, created: 80 },
@@ -476,12 +476,11 @@ describe('Lookup service', () => {
 
             stateMock.playground.lookup.actions = lookupActions;
             stateMock.playground.lookup.addedActions = [];
-
             stateMock.playground.lookup.sort = { id: 'date', name: 'DATE_SORT', property: 'created' };
             stateMock.playground.lookup.order = { id: 'desc', name: 'DESC_ORDER' };
+            stateMock.playground.recipe.current.steps = [lookupStep];
 
             spyOn(StorageService, 'getLookupDatasets').and.returnValue(['1']);
-            spyOn(RecipeService, 'getRecipe').and.returnValue([lookupStep]);
             spyOn(StorageService, 'setLookupDatasets').and.returnValue();
             spyOn(StateService, 'setLookupAddedActions').and.returnValue();
             spyOn(TransformationRestService, 'getDatasetTransformations').and.returnValue($q.when({ data: lookupActions }));
@@ -501,7 +500,7 @@ describe('Lookup service', () => {
             expect(StateService.setLookupAddedActions).toHaveBeenCalledWith(lookupActions);
         }));
 
-        it('should update lookup datasets', inject(($q, $rootScope, LookupService, StorageService, RecipeService, StateService) => {
+        it('should update lookup datasets', inject(($q, $rootScope, LookupService, StorageService, StateService) => {
             //given
             stateMock.playground.lookup.datasets = [
                 { id: '9e739b88-5ec9-4b58-84b5-2127a7e2eac7', addedToLookup: true, created: 100 },

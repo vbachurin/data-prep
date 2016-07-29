@@ -29,8 +29,10 @@
  * @param {function}    onSelect function to call when selecting an item of the breadcrumb
  */
 
+import template from './breadcrumb.html';
+
 const BreadcrumbComponent = {
-    templateUrl: 'app/components/breadcrumb/breadcrumb.html',
+    templateUrl: template,
     bindings: {
         children: '<',
         items: '<',

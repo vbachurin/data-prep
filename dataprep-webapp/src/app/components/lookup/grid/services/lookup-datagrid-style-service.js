@@ -111,7 +111,6 @@ export default function LookupDatagridStyleService($timeout, ConverterService, T
      * @param {object} col The column to format
      */
     function columnFormatter(col) {
-
         var invalidValues = col.quality.invalidValues;
         var isInvalid = function isInvalid(value) {
             return invalidValues.indexOf(value) >= 0;

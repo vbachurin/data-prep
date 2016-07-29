@@ -40,12 +40,11 @@ export default function UpdateWorkflowService(StateService, MessageService, Data
                 dataset.progress = parseInt(100.0 * event.loaded / event.total);
             })
             .then(function () {
-                MessageService.success('DATASET_UPDATE_SUCCESS_TITLE', 'DATASET_UPDATE_SUCCESS', {dataset: dataset.name});
+                MessageService.success('DATASET_UPDATE_SUCCESS_TITLE', 'DATASET_UPDATE_SUCCESS', { dataset: dataset.name });
 
                 //Force the update currentMetadata of the dataset
                 StateService.resetPlayground();
                 DatasetService.getDatasetById(dataset.id).then(UploadWorkflowService.openDataset);
-
             })
             .catch(function () {
                 dataset.error = true;
@@ -54,5 +53,4 @@ export default function UpdateWorkflowService(StateService, MessageService, Data
                 StateService.finishUploadingDataset(dataset);
             });
     };
-
 }

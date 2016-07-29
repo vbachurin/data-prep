@@ -3,7 +3,7 @@
   Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
   This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+  https:// github.com/Talend/data-prep/blob/master/LICENSE
 
   You should have received a copy of the agreement
   along with this program; if not, write to Talend SA
@@ -18,10 +18,10 @@ export const state = {};
  * @name data-prep.services.state.service:StateService
  * @description Entry level for State services
  */
-export function StateService(RouteStateService, routeState, //
-                             PlaygroundStateService, playgroundState, //
-                             DatasetStateService, datasetState, //
-                             EasterEggsStateService, easterEggsState, //
+export function StateService(RouteStateService, routeState,
+                             PlaygroundStateService, playgroundState,
+                             DatasetStateService, datasetState,
+                             EasterEggsStateService, easterEggsState,
                              InventoryStateService, inventoryState,
                              FeedbackStateService, feedbackState,
                              ImportStateService, importState) {
@@ -36,14 +36,14 @@ export function StateService(RouteStateService, routeState, //
     state.import = importState;
 
     return {
-        //route
+        // route
         setPreviousRoute: RouteStateService.setPrevious,
         setNextRoute: RouteStateService.setNext,
         resetPreviousRoute: RouteStateService.resetPrevious,
         resetNextRoute: RouteStateService.resetNext,
         resetRoute: RouteStateService.reset.bind(RouteStateService),
 
-        //playground
+        // playground
         resetPlayground: PlaygroundStateService.reset,
         setCurrentDataset: PlaygroundStateService.setDataset,
         setCurrentData: PlaygroundStateService.setData,
@@ -55,21 +55,25 @@ export function StateService(RouteStateService, routeState, //
         updateDatasetStatistics: PlaygroundStateService.updateDatasetStatistics,
         updateDatasetRecord: PlaygroundStateService.updateDatasetRecord,
 
-        //playground - dataset parameters
+        // playground - dataset parameters
         toggleDatasetParameters: PlaygroundStateService.toggleDatasetParameters,
         hideDatasetParameters: PlaygroundStateService.hideDatasetParameters,
         setIsSendingDatasetParameters: PlaygroundStateService.setIsSendingDatasetParameters,
         setDatasetEncodings: PlaygroundStateService.setDatasetEncodings,
 
-        //playground - recipe
+        // playground - recipe
         hideRecipe: PlaygroundStateService.hideRecipe,
         showRecipe: PlaygroundStateService.showRecipe,
+        setRecipeSteps: PlaygroundStateService.setRecipeSteps,
+        setRecipePreviewSteps: PlaygroundStateService.setRecipePreviewSteps,
+        restoreRecipeBeforePreview: PlaygroundStateService.restoreRecipeBeforePreview,
+        disableRecipeStepsAfter: PlaygroundStateService.disableRecipeStepsAfter,
 
-        //playground - grid
+        // playground - grid
         setColumnFocus: PlaygroundStateService.setColumnFocus,
         setGridSelection: PlaygroundStateService.setGridSelection,
 
-        //playground - lookup
+        // playground - lookup
         setLookupActions: PlaygroundStateService.setLookupActions,
         setLookupAddedActions: PlaygroundStateService.setLookupAddedActions,
         setLookupDatasets: PlaygroundStateService.setLookupDatasets,
@@ -81,7 +85,7 @@ export function StateService(RouteStateService, routeState, //
         setLookupDatasetsSort: PlaygroundStateService.setLookupDatasetsSort,
         setLookupDatasetsOrder: PlaygroundStateService.setLookupDatasetsOrder,
 
-        //playground - filters
+        // playground - filters
         addGridFilter: PlaygroundStateService.addGridFilter,
         removeGridFilter: PlaygroundStateService.removeGridFilter,
         removeAllGridFilters: PlaygroundStateService.removeAllGridFilters,
@@ -89,7 +93,7 @@ export function StateService(RouteStateService, routeState, //
         enableFilters: PlaygroundStateService.enableFilters,
         disableFilters: PlaygroundStateService.disableFilters,
 
-        //playground - Suggestions
+        // playground - Suggestions
         setColumnTransformations: PlaygroundStateService.setColumnTransformations,
         setLineTransformations: PlaygroundStateService.setLineTransformations,
         setSuggestionsLoading: PlaygroundStateService.setSuggestionsLoading,
@@ -97,7 +101,7 @@ export function StateService(RouteStateService, routeState, //
         setTransformationsForInvalidCells: PlaygroundStateService.setTransformationsForInvalidCells,
         updateFilteredTransformations: PlaygroundStateService.updateFilteredTransformations,
 
-        //playground - Statistics
+        // playground - Statistics
         setStatisticsBoxPlot: PlaygroundStateService.setStatisticsBoxPlot,
         setStatisticsDetails: PlaygroundStateService.setStatisticsDetails,
         setStatisticsRangeLimits: PlaygroundStateService.setStatisticsRangeLimits,
@@ -107,15 +111,15 @@ export function StateService(RouteStateService, routeState, //
         setStatisticsPatterns: PlaygroundStateService.setStatisticsPatterns,
         setStatisticsFilteredPatterns: PlaygroundStateService.setStatisticsFilteredPatterns,
 
-        //dataset
+        // dataset
         startUploadingDataset: DatasetStateService.startUploadingDataset,
         finishUploadingDataset: DatasetStateService.finishUploadingDataset,
 
-        //easter eggs
+        // easter eggs
         enableEasterEgg: EasterEggsStateService.enableEasterEgg,
         disableEasterEgg: EasterEggsStateService.disableEasterEgg,
 
-        //inventory
+        // inventory
         setDatasetName: InventoryStateService.setDatasetName,
         setPreparations: InventoryStateService.setPreparations,
         removePreparation: InventoryStateService.removePreparation,
@@ -134,11 +138,11 @@ export function StateService(RouteStateService, routeState, //
         setFetchingInventoryDatasets: InventoryStateService.setFetchingDatasets,
         setFetchingInventoryPreparations: InventoryStateService.setFetchingPreparations,
 
-        //feedback
+        // feedback
         showFeedback: FeedbackStateService.show,
         hideFeedback: FeedbackStateService.hide,
 
-        //import
+        // import
         setImportTypes: ImportStateService.setImportTypes,
         setCurrentImportType: ImportStateService.setCurrentImportType
     };

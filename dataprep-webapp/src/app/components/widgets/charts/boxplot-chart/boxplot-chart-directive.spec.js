@@ -12,55 +12,57 @@
   ============================================================================*/
 
 describe('Boxplot chart directive', function () {
-	'use strict';
+    'use strict';
 
-	var createElement, element, scope, boxValues;
+    var createElement;
+    var element;
+    var scope;
+    var boxValues;
 
-	beforeEach(angular.mock.module('talend.widget'));
-	beforeEach(inject(function ($rootScope, $compile) {
-		boxValues = {
-			min:0,
-			max:100,
-			q1:8,
-			q2:90,
-			median:58,
-			mean:59.79,
-			variance:2051033.15
-		};
+    beforeEach(angular.mock.module('talend.widget'));
+    beforeEach(inject(function ($rootScope, $compile) {
+        boxValues = {
+            min:0,
+            max:100,
+            q1:8,
+            q2:90,
+            median:58,
+            mean:59.79,
+            variance:2051033.15
+        };
 
-		createElement = function () {
-			scope = $rootScope.$new();
-			scope.boxValues = null;
-			element = angular.element('<boxplot-chart id="boxplotId" width="200" height="400" boxplot-data="boxValues"></boxplot-chart>');
+        createElement = function () {
+            scope = $rootScope.$new();
+            scope.boxValues = null;
+            element = angular.element('<boxplot-chart id="boxplotId" width="200" height="400" boxplot-data="boxValues"></boxplot-chart>');
 
-			angular.element('body').append(element);
-			$compile(element)(scope);
-			scope.$digest();
-		};
-	}));
+            angular.element('body').append(element);
+            $compile(element)(scope);
+            scope.$digest();
+        };
+    }));
 
-	afterEach(function () {
-		scope.$destroy();
-		element.remove();
-	});
+    afterEach(function () {
+        scope.$destroy();
+        element.remove();
+    });
 
-	it('should render the different basic components of the boxplot after a 100ms delay', inject(function ($timeout) {
-		//given
-		createElement();
+    it('should render the different basic components of the boxplot after a 100ms delay', inject(function ($timeout) {
+        //given
+        createElement();
 
-		//when
-		scope.boxValues = boxValues;
-		scope.$digest();
-		$timeout.flush(100);
+        //when
+        scope.boxValues = boxValues;
+        scope.$digest();
+        $timeout.flush(100);
 
-		//then
-		expect(element.find('rect').length).toBe(2);
-		expect(element.find('.up-quantile-labels').length).toBe(2);
-		expect(element.find('.low-quantile-labels').length).toBe(2);
-		expect(element.find('.center').length).toBe(1);
-		expect(element.find('.mean-labels').length).toBe(1);
-		expect(element.find('.whiskerPolyg').length).toBe(2);
-		expect(element.find('.max-min-labels').length).toBe(4);
-	}));
-
+        //then
+        expect(element.find('rect').length).toBe(2);
+        expect(element.find('.up-quantile-labels').length).toBe(2);
+        expect(element.find('.low-quantile-labels').length).toBe(2);
+        expect(element.find('.center').length).toBe(1);
+        expect(element.find('.mean-labels').length).toBe(1);
+        expect(element.find('.whiskerPolyg').length).toBe(2);
+        expect(element.find('.max-min-labels').length).toBe(4);
+    }));
 });

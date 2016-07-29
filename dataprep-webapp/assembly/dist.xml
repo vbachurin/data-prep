@@ -22,7 +22,7 @@
     </formats>
     <fileSets>
         <fileSet>
-            <directory>${project.basedir}/dist</directory>
+            <directory>${project.basedir}/build</directory>
             <outputDirectory>/META-INF/resources/dist/</outputDirectory>
         </fileSet>
     </fileSets>

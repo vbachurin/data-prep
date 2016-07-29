@@ -1,15 +1,17 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
+
+import template from './loading.html';
 
 /**
  * @ngdoc directive
@@ -30,24 +32,24 @@ export default function TalendLoading($rootScope, $timeout) {
 
     return {
         restrict: 'E',
-        templateUrl: 'app/components/widgets/loading/loading.html',
-        link: function (scope, iElement) {
-            var loadingTimeout;
+        templateUrl: template,
+        link: (scope, iElement) => {
+            let loadingTimeout;
 
-            var unregisterStartFn = $rootScope.$on('talend.loading.start', function () {
+            const unregisterStartFn = $rootScope.$on('talend.loading.start', () => {
                 $timeout.cancel(loadingTimeout);
                 iElement[0].className = 'is-loading';
 
-                loadingTimeout = $timeout(function () {
+                loadingTimeout = $timeout(() => {
                     iElement[0].className = 'is-loading show-loading';
                 }, 200, false);
             });
-            var unregisterStopFn = $rootScope.$on('talend.loading.stop', function () {
+            const unregisterStopFn = $rootScope.$on('talend.loading.stop', () => {
                 $timeout.cancel(loadingTimeout);
                 iElement[0].className = '';
             });
 
-            scope.$on('$destroy', function() {
+            scope.$on('$destroy', () => {
                 unregisterStartFn();
                 unregisterStopFn();
             });

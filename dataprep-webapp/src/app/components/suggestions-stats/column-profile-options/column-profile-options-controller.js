@@ -35,11 +35,11 @@ export default class ColumnProfileOptionsCtrl {
     }
 
     $onChanges(changes) {
-        if(changes.numericColumns || changes.group) {
+        if (changes.numericColumns || changes.group) {
             this._updateNumericColumns();
         }
 
-        if(changes.column || changes.aggregation || changes.group) {
+        if (changes.column || changes.aggregation || changes.group) {
             this._updateCurrentDescription();
             this._updateCurrentShortDescription();
         }
@@ -142,7 +142,9 @@ export default class ColumnProfileOptionsCtrl {
             };
 
             this.$translate('AGGREGATION_DETAILS', currentOptions)
-                .then((desc) => { this.description = desc });
+                .then((desc) => {
+                    this.description = desc;
+                });
         }
     }
 
@@ -153,9 +155,11 @@ export default class ColumnProfileOptionsCtrl {
      * @description Update the short description of initial aggregation values
      */
     _updateCurrentShortDescription() {
-        if(this.aggregation) {
+        if (this.aggregation) {
             this.$translate(this.aggregation)
-                .then((aggreg) => { this.shortDescription =  `${aggreg} ${this.column.name}` })
+                .then((aggreg) => {
+                    this.shortDescription =  `${aggreg} ${this.column.name}`;
+                });
         }
         else {
             this.shortDescription =  this.$translate.instant(LINE_COUNT);

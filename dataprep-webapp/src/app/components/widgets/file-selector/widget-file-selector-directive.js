@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './file-selector.html';
+
 /**
  * @ngdoc directive
  * @name talend.widget.directive:TalendLoading
@@ -28,7 +30,7 @@
 export default function TalendFileSelector() {
     return {
         restrict: 'E',
-        templateUrl: 'app/components/widgets/file-selector/file-selector.html',
+        templateUrl: template,
         scope: {
             buttonDataIcon: '@',
             buttonTitle: '@',
@@ -37,9 +39,10 @@ export default function TalendFileSelector() {
         },
         bindToController: true,
         controllerAs: 'talendFileSelectorCtrl',
-        controller: () => {},
-        link: function (scope, element) {
-            element.find('span').bind('click', function () {
+        controller: () => {
+        },
+        link: (scope, element) => {
+            element.find('span').bind('click', () => {
                 element.find('input').click();
             });
         }

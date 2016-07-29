@@ -269,7 +269,7 @@ describe('Preparation REST Service', () => {
             $httpBackend.flush();
             $rootScope.$digest();
 
-            //then : append request to have been called
+        //then : append request to have been called
         }));
 
         it('should append a transformation step in the current preparation at a provided insertion point', inject(($rootScope, RestURLs, PreparationRestService) => {
@@ -298,7 +298,7 @@ describe('Preparation REST Service', () => {
             $httpBackend.flush();
             $rootScope.$digest();
 
-            //then : append request to have been called
+        //then : append request to have been called
         }));
 
         it('should append a list of transformation step in the current preparation', inject(($rootScope, RestURLs, PreparationRestService) => {
@@ -325,7 +325,7 @@ describe('Preparation REST Service', () => {
             $httpBackend.flush();
             $rootScope.$digest();
 
-            //then : update request to have been called
+        //then : update request to have been called
         }));
 
         it('should update a transformation step in the current preparation', inject(($rootScope, RestURLs, PreparationRestService) => {
@@ -353,7 +353,7 @@ describe('Preparation REST Service', () => {
             $httpBackend.flush();
             $rootScope.$digest();
 
-            //then : update request to have been called
+        //then : update request to have been called
         }));
 
         it('should remove a transformation step in the preparation', inject(($rootScope, RestURLs, PreparationRestService) => {
@@ -370,7 +370,7 @@ describe('Preparation REST Service', () => {
             $httpBackend.flush();
             $rootScope.$digest();
 
-            //then : delete request to have been called
+        //then : delete request to have been called
         }));
 
         it('should move preparation head', inject(($rootScope, RestURLs, PreparationRestService) => {
@@ -387,7 +387,7 @@ describe('Preparation REST Service', () => {
             $httpBackend.flush();
             $rootScope.$digest();
 
-            //then : put request to have been called
+        //then : put request to have been called
         }));
 
         it('should copy preparation reference steps', inject(($rootScope, RestURLs, PreparationRestService) => {
@@ -404,7 +404,7 @@ describe('Preparation REST Service', () => {
             $httpBackend.flush();
             $rootScope.$digest();
 
-            //then : put request to have been called
+        //then : put request to have been called
         }));
     });
 
@@ -626,5 +626,4 @@ describe('Preparation REST Service', () => {
             expect(canceled).toBe(true);
         }));
     });
-
 });

@@ -57,6 +57,10 @@ export function PlaygroundStateService(RecipeStateService, recipeState,
         //recipe
         showRecipe: RecipeStateService.show,
         hideRecipe: RecipeStateService.hide,
+        setRecipeSteps: RecipeStateService.setSteps,
+        setRecipePreviewSteps: RecipeStateService.setPreviewSteps,
+        restoreRecipeBeforePreview: RecipeStateService.restoreBeforePreview,
+        disableRecipeStepsAfter: RecipeStateService.disableStepsAfter,
 
         //datagrid
         setColumnFocus: GridStateService.setColumnFocus,
@@ -112,9 +116,10 @@ export function PlaygroundStateService(RecipeStateService, recipeState,
         playgroundState.data = data;
         GridStateService.setData(data);
 
-        if(filterState.enabled) {
+        if (filterState.enabled) {
             GridStateService.setFilter(filterState.gridFilters, playgroundState.data);
-        } else {
+        }
+        else {
             GridStateService.setFilter([], playgroundState.data);
         }
     }
@@ -133,7 +138,7 @@ export function PlaygroundStateService(RecipeStateService, recipeState,
 
     function updateDatasetStatistics(metadata) {
         _.forEach(playgroundState.data.metadata.columns, function (col) {
-            var correspondingColumn = _.find(metadata.columns, {id: col.id});
+            var correspondingColumn = _.find(metadata.columns, { id: col.id });
             col.statistics = correspondingColumn.statistics;
             col.quality = correspondingColumn.quality;
         });
@@ -146,7 +151,7 @@ export function PlaygroundStateService(RecipeStateService, recipeState,
     function setIsFetchingStats(value) {
         playgroundState.isFetchingStats = value;
     }
-    
+
     function setIsSavingPreparation(value) {
         playgroundState.isSavingPreparation = value;
     }

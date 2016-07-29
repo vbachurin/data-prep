@@ -14,7 +14,9 @@
 describe('Stats-details controller', function () {
     'use strict';
 
-    var createController, scope, stateMock;
+    var createController;
+    var scope;
+    var stateMock;
 
     beforeEach(angular.mock.module('data-prep.stats-details', function($provide) {
         stateMock = {
@@ -39,7 +41,7 @@ describe('Stats-details controller', function () {
     it('should add a new "pattern" filter', inject(function (FilterService) {
         //given
         var ctrl = createController();
-        var obj = {'data': 'Ulysse', 'occurrences': 5, pattern:'Aa9'};
+        var obj = { 'data': 'Ulysse', 'occurrences': 5, pattern:'Aa9' };
 
         stateMock.playground.grid.selectedColumn = {
             id: '0001',
@@ -62,7 +64,7 @@ describe('Stats-details controller', function () {
     it('should add a new "empty" filter if pattern is empty', inject(function (FilterService) {
         //given
         var ctrl = createController();
-        var obj = {'data': 'Ulysse', 'occurrences': 5};
+        var obj = { 'data': 'Ulysse', 'occurrences': 5 };
 
         stateMock.playground.grid.selectedColumn = {
             id: '0001',
@@ -75,5 +77,4 @@ describe('Stats-details controller', function () {
         //then
         expect(FilterService.addFilterAndDigest).toHaveBeenCalledWith('empty_records', '0001', 'firstname', null, null, null);
     }));
-
 });

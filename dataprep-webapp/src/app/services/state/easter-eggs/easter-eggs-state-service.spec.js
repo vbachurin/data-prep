@@ -12,33 +12,29 @@
   ============================================================================*/
 
 describe('Easter Eggs', function () {
-	'use strict';
+    'use strict';
 
-	beforeEach(angular.mock.module('data-prep.services.state'));
+    beforeEach(angular.mock.module('data-prep.services.state'));
 
-	describe('state service', function() {
+    describe('state service', function() {
+        it('should enable an easter egg', inject(function (easterEggsState, EasterEggsStateService) {
+            //given
+            //when
+            EasterEggsStateService.enableEasterEgg('back to the future');
 
-		it('should enable an easter egg', inject(function (easterEggsState, EasterEggsStateService) {
-			//given
-			//when
-			EasterEggsStateService.enableEasterEgg('back to the future');
+            //then
+            expect(easterEggsState.currentEasterEgg).toBe('back to the future');
+            expect(easterEggsState.displayEasterEgg).toBe(true);
+        }));
 
-			//then
-			expect(easterEggsState.currentEasterEgg).toBe('back to the future');
-			expect(easterEggsState.displayEasterEgg).toBe(true);
-		}));
+        it('should disable an easter egg', inject(function (easterEggsState, EasterEggsStateService) {
+            //given
+            //when
+            EasterEggsStateService.disableEasterEgg();
 
-		it('should disable an easter egg', inject(function (easterEggsState, EasterEggsStateService) {
-			//given
-			//when
-			EasterEggsStateService.disableEasterEgg();
-
-			//then
-			expect(easterEggsState.currentEasterEgg).toBe('');
-			expect(easterEggsState.displayEasterEgg).toBe(false);
-		}));
-
-	});
-
-
+            //then
+            expect(easterEggsState.currentEasterEgg).toBe('');
+            expect(easterEggsState.displayEasterEgg).toBe(false);
+        }));
+    });
 });

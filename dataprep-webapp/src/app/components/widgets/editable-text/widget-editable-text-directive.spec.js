@@ -14,10 +14,12 @@
 describe('Editable Text widget directive', () => {
     'use strict';
 
-    let scope, element, createElement;
+    let scope;
+    let element;
+    let createElement;
 
     beforeEach(angular.mock.module('talend.widget'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(angular.mock.module('pascalprecht.translate', ($translateProvider) => {
         $translateProvider.translations('en', {

@@ -13,8 +13,10 @@
 
 import PreparationHeaderCtrl from './preparation-header-controller';
 
+import template from './preparation-header.html';
+
 const PreparationHeaderComponent = {
-    templateUrl: 'app/components/preparation/header/preparation-header.html',
+    templateUrl: template,
     controller: PreparationHeaderCtrl,
 };
 

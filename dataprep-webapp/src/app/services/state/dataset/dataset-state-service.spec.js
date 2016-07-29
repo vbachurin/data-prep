@@ -12,33 +12,33 @@
   ============================================================================*/
 
 describe('dataset state service', function(){
-	'use strict';
+    'use strict';
 
-	var dataset = {};
+    var dataset = {};
 
-	beforeEach(angular.mock.module('data-prep.services.state'));
-	beforeEach(angular.mock.module('data-prep.services.playground'));
+    beforeEach(angular.mock.module('data-prep.services.state'));
+    beforeEach(angular.mock.module('data-prep.services.playground'));
 
-	it('should add 2 currently added datasets to be shown in the progress bar', inject(function (DatasetStateService, datasetState) {
-		//given
-		expect(datasetState.uploadingDatasets.length).toBe(0);
+    it('should add 2 currently added datasets to be shown in the progress bar', inject(function (DatasetStateService, datasetState) {
+        //given
+        expect(datasetState.uploadingDatasets.length).toBe(0);
 
-		//when
-		DatasetStateService.startUploadingDataset(dataset);
-		DatasetStateService.startUploadingDataset(dataset);
+        //when
+        DatasetStateService.startUploadingDataset(dataset);
+        DatasetStateService.startUploadingDataset(dataset);
 
-		//then
-		expect(datasetState.uploadingDatasets.length).toBe(2);
-	}));
+        //then
+        expect(datasetState.uploadingDatasets.length).toBe(2);
+    }));
 
-	it('should remove 1 currently being added dataset among the 2 existing', inject(function (DatasetStateService, datasetState) {
-		//given
-		expect(datasetState.uploadingDatasets.length).toBe(2);
+    it('should remove 1 currently being added dataset among the 2 existing', inject(function (DatasetStateService, datasetState) {
+        //given
+        expect(datasetState.uploadingDatasets.length).toBe(2);
 
-		//when
-		DatasetStateService.finishUploadingDataset(dataset);
+        //when
+        DatasetStateService.finishUploadingDataset(dataset);
 
-		//then
-		expect(datasetState.uploadingDatasets.length).toBe(1);
-	}));
+        //then
+        expect(datasetState.uploadingDatasets.length).toBe(1);
+    }));
 });

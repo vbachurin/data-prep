@@ -26,11 +26,10 @@ export default function TransformChoiceParamCtrl() {
      * @description [PRIVATE] Init choice element default value (either the parameter default value or the first value in the select)
      */
     var initParamValues = function () {
-
         if (!vm.parameter.value && (vm.parameter.configuration.values.length > 0)) {
             // init with the default value
             if (vm.parameter.default) {
-                var defaultValue = _.find(vm.parameter.configuration.values, {value: vm.parameter.default});
+                var defaultValue = _.find(vm.parameter.configuration.values, { value: vm.parameter.default });
                 vm.parameter.value = defaultValue.value;
             }
             // or with the first value in the list

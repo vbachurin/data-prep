@@ -74,19 +74,15 @@
     }
 
     .inventory-text {
-      .inventory-title {
-        @include ellipsis(300px);
-      }
       .edit-btn {
         display: block;
       }
     }
 
     .inventory-actions {
-      @include flex-grow(1);
-      @include flex-shrink(0);
-
       @include display(flex);
+      @include flex-grow(0);
+      @include flex-shrink(0);
       @include align-items(center);
       @include justify-content(flex-end);
 
@@ -183,6 +179,9 @@
 
   .inventory-icon {
     @include display(flex);
+    @include flex-grow(0);
+    @include flex-shrink(0);
+    @include flex-basis(50px);
     @include align-items(center);
 
     padding: 0 3px;
@@ -216,7 +215,6 @@
     padding-left: 10px;
 
     .inventory-title {
-      @include ellipsis(750px);
       padding: 3px 0;
       cursor: pointer;
 
@@ -229,9 +227,6 @@
       color: $medium-gray;
       font-weight: 300;
       font-size: .8em;
-
-      overflow: hidden;
-      white-space: normal;
       max-height: 2.8em;
     }
 

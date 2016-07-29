@@ -11,11 +11,15 @@
 
  ============================================================================*/
 
+import DataViewMock from '../../../../../mocks/DataView.mock';
+import SlickGridMock from '../../../../../mocks/SlickGrid.mock';
+
 describe('Lookup Datagrid grid service', function () {
     'use strict';
 
     var realSlickGrid = Slick;
-    var dataViewMock, stateMock;
+    var dataViewMock;
+    var stateMock;
 
     beforeEach(angular.mock.module('data-prep.lookup'));
 
@@ -56,7 +60,7 @@ describe('Lookup Datagrid grid service', function () {
 
     describe('on creation', function () {
         it('should init the other datagrid services', inject(function (LookupDatagridGridService, LookupDatagridColumnService,
-                                                                       LookupDatagridStyleService, LookupDatagridTooltipService) {
+            LookupDatagridStyleService, LookupDatagridTooltipService) {
             //when
             LookupDatagridGridService.initGrid();
 
@@ -98,7 +102,7 @@ describe('Lookup Datagrid grid service', function () {
             spyOn(grid, 'invalidateRows').and.returnValue();
             spyOn(grid, 'render').and.returnValue();
 
-            var args = {rows: []};
+            var args = { rows: [] };
 
             //when
             var onRowsChanged = stateMock.playground.lookup.dataView.onRowsChanged.subscribe.calls.argsFor(0)[0];

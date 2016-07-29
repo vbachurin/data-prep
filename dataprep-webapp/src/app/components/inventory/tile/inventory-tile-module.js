@@ -10,16 +10,20 @@
  9 rue Pages 92150 Suresnes, France
 
  ============================================================================*/
+
+import angular from 'angular';
+import SERVICES_UTILS_MODULE from '../../../services/utils/utils-module';
+
 import inventoryTile from './inventory-tile-directive';
 
-(() => {
+const MODULE_NAME = 'data-prep.inventory-tile';
 
-    /**
-     * @ngdoc object
-     * @name data-prep.inventory-tile
-     * @description This module contains the inventory tile used for preparation display
-     */
+/**
+ * @ngdoc object
+ * @name data-prep.inventory-tile
+ * @description This module contains the inventory tile used for preparation display
+ */
+angular.module(MODULE_NAME, [SERVICES_UTILS_MODULE])
+    .directive('inventoryTile', inventoryTile);
 
-    angular.module('data-prep.inventory-tile', ['data-prep.services.utils'])
-        .directive('inventoryTile', inventoryTile);
-})();
+export default MODULE_NAME;

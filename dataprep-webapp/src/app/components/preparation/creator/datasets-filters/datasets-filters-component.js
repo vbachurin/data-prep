@@ -33,21 +33,21 @@ export default {
         importing: '<'
     },
     template: `
-    <div class="dataset-filter" ng-class="{'selected-filter': filter.isSelected}"
-        ng-repeat="filter in $ctrl.datasetsFilters track by $index"
-        ng-click="$ctrl.selectFilter(filter)">
-        <div class="dataset-filter-icon"
-             ng-switch="filter.value">
-            <div ng-switch-when="RECENT_DATASETS"><img ng-src="{{filter.imageUrl}}"/></div>
-            <div ng-switch-when="FAVORITE_DATASETS" data-icon="{{filter.icon}}" class="favorite"></div>
-            <div ng-switch-when="CERTIFIED_DATASETS" ><img ng-src="{{filter.imageUrl}}"/></div>
-            <div ng-switch-when="ALL_DATASETS"><img ng-src="{{filter.imageUrl}}"/></div>
+        <div class="dataset-filter" ng-class="{'selected-filter': filter.isSelected}"
+            ng-repeat="filter in $ctrl.datasetsFilters track by $index"
+            ng-click="$ctrl.selectFilter(filter)">
+            <div class="dataset-filter-icon"
+                 ng-switch="filter.value">
+                <div ng-switch-when="RECENT_DATASETS"><img ng-src="{{filter.imageUrl}}"/></div>
+                <div ng-switch-when="FAVORITE_DATASETS" data-icon="{{filter.icon}}" class="favorite"></div>
+                <div ng-switch-when="CERTIFIED_DATASETS" ><img ng-src="{{filter.imageUrl}}"/></div>
+                <div ng-switch-when="ALL_DATASETS"><img ng-src="{{filter.imageUrl}}"/></div>
+            </div>
+    
+            <div class="dataset-filter-text">
+                <span class="dataset-filter-title" translate-once="{{filter.value}}"></span>
+                <div class="dataset-filter-description" translate-once="{{filter.description}}"></div>
+            </div>
         </div>
-
-        <div class="dataset-filter-text">
-            <span class="dataset-filter-title" translate-once="{{filter.value}}"></span>
-            <div class="dataset-filter-description" translate-once="{{filter.description}}"></div>
-        </div>
-    </div>
-`
-}
+    `
+};

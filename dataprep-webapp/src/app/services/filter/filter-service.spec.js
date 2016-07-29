@@ -17,14 +17,14 @@ describe('Filter service', function () {
     var stateMock;
     beforeEach(angular.mock.module('data-prep.services.filter', function ($provide) {
         var columns = [
-            {id: '0000', name: 'id'},
-            {id: '0001', name: 'name'}
+            { id: '0000', name: 'id' },
+            { id: '0001', name: 'name' }
         ];
 
         stateMock = {
             playground: {
-                filter: {gridFilters: []},
-                data: {metadata: {columns: columns}}
+                filter: { gridFilters: [] },
+                data: { metadata: { columns: columns } }
             }
         };
         $provide.constant('state', stateMock);
@@ -39,10 +39,10 @@ describe('Filter service', function () {
         it('should construct range label', inject(function (FilterService) {
             //given
             const intervals = [
-                {input: {min: 0, max: 10, isMaxReached: false}, output: '[0 .. 10['},
-                {input: {min: 10, max: 10, isMaxReached: false}, output: '[10]'},
-                {input: {min: 0, max: 10, isMaxReached: true}, output: '[0 .. 10]'},
-                {input: {min: 'Jan 2015', max: 'Mar 2015', isMaxReached: true}, output: '[Jan 2015 .. Mar 2015]'}
+                { input: { min: 0, max: 10, isMaxReached: false }, output: '[0 .. 10[' },
+                { input: { min: 10, max: 10, isMaxReached: false }, output: '[10]' },
+                { input: { min: 0, max: 10, isMaxReached: true }, output: '[0 .. 10]' },
+                { input: { min: 'Jan 2015', max: 'Mar 2015', isMaxReached: true }, output: '[Jan 2015 .. Mar 2015]' }
             ];
 
             //when
@@ -57,15 +57,15 @@ describe('Filter service', function () {
         it('should isolate range values', inject(function (FilterService) {
             //given
             const labels = [
-                {input: '', output: ['']},
-                {input: '[]', output: ['']},
-                {input: '[10]', output: ['10']},
-                {input: '[0,10]', output: ['0', '10']},
-                {input: '[0,10[', output: ['0', '10']},
-                {input: '[0 .. 10]', output: ['0', '10']},
-                {input: '[0 .. 10[', output: ['0', '10']},
-                {input: '[Jan 2016,Jan 2017]', output: ['Jan 2016', 'Jan 2017']},
-                {input: '[Jan 2016 .. Jan 2017[', output: ['Jan 2016', 'Jan 2017']}
+                { input: '', output: [''] },
+                { input: '[]', output: [''] },
+                { input: '[10]', output: ['10'] },
+                { input: '[0,10]', output: ['0', '10'] },
+                { input: '[0,10[', output: ['0', '10'] },
+                { input: '[0 .. 10]', output: ['0', '10'] },
+                { input: '[0 .. 10[', output: ['0', '10'] },
+                { input: '[Jan 2016,Jan 2017]', output: ['Jan 2016', 'Jan 2017'] },
+                { input: '[Jan 2016 .. Jan 2017[', output: ['Jan 2016', 'Jan 2017'] }
             ];
 
             //when
@@ -80,8 +80,7 @@ describe('Filter service', function () {
         describe('with "contains" type', function () {
             it('should create filter', inject(function (FilterService, StateService) {
                 //given
-                var removeFnCallback = function () {
-                };
+                var removeFnCallback = function () {};
                 expect(StateService.addGridFilter).not.toHaveBeenCalled();
 
                 //when
@@ -112,9 +111,9 @@ describe('Filter service', function () {
                         }
                     ]
                 });
-                expect(filterInfo.filterFn()({col1: ' toto\nest ici'})).toBeTruthy();
-                expect(filterInfo.filterFn()({col1: ' toto est ici'})).toBeFalsy();
-                expect(filterInfo.filterFn()({col1: ' tata est ici'})).toBeFalsy();
+                expect(filterInfo.filterFn()({ col1: ' toto\nest ici' })).toBeTruthy();
+                expect(filterInfo.filterFn()({ col1: ' toto est ici' })).toBeFalsy();
+                expect(filterInfo.filterFn()({ col1: ' tata est ici' })).toBeFalsy();
                 expect(filterInfo.removeFilterFn).toBe(removeFnCallback);
             }));
 
@@ -135,8 +134,8 @@ describe('Filter service', function () {
                 expect(StateService.addGridFilter).toHaveBeenCalled();
 
                 var filterInfo = StateService.addGridFilter.calls.argsFor(0)[0];
-                expect(filterInfo.filterFn()({col1: ' toto est ici'})).toBeTruthy();
-                expect(filterInfo.filterFn()({col1: ' tata est ici'})).toBeFalsy();
+                expect(filterInfo.filterFn()({ col1: ' toto est ici' })).toBeTruthy();
+                expect(filterInfo.filterFn()({ col1: ' tata est ici' })).toBeFalsy();
             }));
 
             it('should remove filter when it already exists', inject(function (FilterService, StateService) {
@@ -207,7 +206,6 @@ describe('Filter service', function () {
                         }
                     ]
                 });
-
             }));
         });
 
@@ -240,11 +238,11 @@ describe('Filter service', function () {
                     caseSensitive: true
                 });
 
-                expect(filterInfo.filterFn()({col1: 'toici\n'})).toBeTruthy();
-                expect(filterInfo.filterFn()({col1: 'toici'})).toBeFalsy();
-                expect(filterInfo.filterFn()({col1: 'Toici'})).toBeFalsy();
-                expect(filterInfo.filterFn()({col1: ' toici'})).toBeFalsy();
-                expect(filterInfo.filterFn()({col1: 'toici '})).toBeFalsy();
+                expect(filterInfo.filterFn()({ col1: 'toici\n' })).toBeTruthy();
+                expect(filterInfo.filterFn()({ col1: 'toici' })).toBeFalsy();
+                expect(filterInfo.filterFn()({ col1: 'Toici' })).toBeFalsy();
+                expect(filterInfo.filterFn()({ col1: ' toici' })).toBeFalsy();
+                expect(filterInfo.filterFn()({ col1: 'toici ' })).toBeFalsy();
             }));
 
             it('should create filter without caseSensitive', inject(function (FilterService, StateService) {
@@ -265,9 +263,9 @@ describe('Filter service', function () {
                 expect(StateService.addGridFilter).toHaveBeenCalled();
 
                 var filterInfo = StateService.addGridFilter.calls.argsFor(0)[0];
-                expect(filterInfo.filterFn()({col1: 'Toici'})).toBeTruthy();
-                expect(filterInfo.filterFn()({col1: ' toici'})).toBeFalsy();
-                expect(filterInfo.filterFn()({col1: 'toici '})).toBeFalsy();
+                expect(filterInfo.filterFn()({ col1: 'Toici' })).toBeTruthy();
+                expect(filterInfo.filterFn()({ col1: ' toici' })).toBeFalsy();
+                expect(filterInfo.filterFn()({ col1: 'toici ' })).toBeFalsy();
             }));
 
             it('should remove filter when it already exists', inject(function (FilterService, StateService) {
@@ -289,11 +287,11 @@ describe('Filter service', function () {
                 //when
                 FilterService.addFilter('exact', 'col1', 'column name', {
                     phrase:
-                        [
-                            {
-                                value: 'toto'
-                            }
-                        ]
+                    [
+                        {
+                            value: 'toto'
+                        }
+                    ]
                 }, null);
 
                 //then
@@ -339,7 +337,6 @@ describe('Filter service', function () {
                         }
                     ]
                 });
-
             }));
         });
 
@@ -351,8 +348,8 @@ describe('Filter service', function () {
                 var data = {
                     metadata: {
                         columns: [
-                            {id: 'col0', quality: {invalidValues: []}},
-                            {id: 'col1', quality: {invalidValues: invalidValues}}
+                            { id: 'col0', quality: { invalidValues: [] } },
+                            { id: 'col1', quality: { invalidValues: invalidValues } }
                         ]
                     }
                 };
@@ -370,13 +367,13 @@ describe('Filter service', function () {
                 expect(filterInfo.value[0].label).toBe('invalid records');
                 expect(filterInfo.editable).toBe(false);
                 expect(filterInfo.args).toBeFalsy();
-                expect(filterInfo.filterFn(data)({col1: 'NA'})).toBeTruthy();
-                expect(filterInfo.filterFn(data)({col1: ' tata est ici'})).toBeFalsy();
+                expect(filterInfo.filterFn(data)({ col1: 'NA' })).toBeTruthy();
+                expect(filterInfo.filterFn(data)({ col1: ' tata est ici' })).toBeFalsy();
             }));
 
             it('should remove filter when it already exists', inject(function (FilterService, StateService) {
                 //given
-                var oldFilter = {colId: 'col1', type: 'invalid_records'};
+                var oldFilter = { colId: 'col1', type: 'invalid_records' };
                 stateMock.playground.filter.gridFilters = [oldFilter];
                 spyOn(StateService, 'removeGridFilter').and.returnValue();
 
@@ -406,13 +403,13 @@ describe('Filter service', function () {
                 expect(filterInfo.value[0].label).toBe('empty records');
                 expect(filterInfo.editable).toBe(false);
                 expect(filterInfo.args).toBeFalsy();
-                expect(filterInfo.filterFn()({col1: ''})).toBeTruthy();
-                expect(filterInfo.filterFn()({col1: ' tata est ici'})).toBeFalsy();
+                expect(filterInfo.filterFn()({ col1: '' })).toBeTruthy();
+                expect(filterInfo.filterFn()({ col1: ' tata est ici' })).toBeFalsy();
             }));
 
             it('should remove filter', inject(function (FilterService, StateService) {
                 //given
-                var oldFilter = {colId: 'col1', type: 'empty_records'};
+                var oldFilter = { colId: 'col1', type: 'empty_records' };
                 stateMock.playground.filter.gridFilters = [oldFilter];
                 spyOn(StateService, 'removeGridFilter').and.returnValue();
 
@@ -432,8 +429,8 @@ describe('Filter service', function () {
                 var data = {
                     metadata: {
                         columns: [
-                            {id: 'col0', quality: {invalidValues: []}},
-                            {id: 'col1', quality: {invalidValues: invalidValues}}
+                            { id: 'col0', quality: { invalidValues: [] } },
+                            { id: 'col1', quality: { invalidValues: invalidValues } }
                         ]
                     }
                 };
@@ -451,14 +448,14 @@ describe('Filter service', function () {
                 expect(filterInfo.value[0].label).toBe('valid records');
                 expect(filterInfo.editable).toBe(false);
                 expect(filterInfo.args).toBeFalsy();
-                expect(filterInfo.filterFn(data)({col1: 'a'})).toBeTruthy();
-                expect(filterInfo.filterFn(data)({col1: 'm'})).toBeFalsy();
-                expect(filterInfo.filterFn(data)({col1: ''})).toBeFalsy();
+                expect(filterInfo.filterFn(data)({ col1: 'a' })).toBeTruthy();
+                expect(filterInfo.filterFn(data)({ col1: 'm' })).toBeFalsy();
+                expect(filterInfo.filterFn(data)({ col1: '' })).toBeFalsy();
             }));
 
             it('should remove filter', inject(function (FilterService, StateService) {
                 //given
-                var oldFilter = {colId: 'col1', type: 'valid_records'};
+                var oldFilter = { colId: 'col1', type: 'valid_records' };
                 stateMock.playground.filter.gridFilters = [oldFilter];
                 spyOn(StateService, 'removeGridFilter').and.returnValue();
 
@@ -517,9 +514,9 @@ describe('Filter service', function () {
                     type: 'integer',
                     isMaxReached: true
                 });
-                expect(filterInfo.filterFn()({col1: '5'})).toBeTruthy();
-                expect(filterInfo.filterFn()({col1: '-5'})).toBeFalsy();
-                expect(filterInfo.filterFn()({col1: ''})).toBeFalsy();
+                expect(filterInfo.filterFn()({ col1: '5' })).toBeTruthy();
+                expect(filterInfo.filterFn()({ col1: '-5' })).toBeFalsy();
+                expect(filterInfo.filterFn()({ col1: '' })).toBeFalsy();
 
                 var filterInfo2 = StateService.addGridFilter.calls.argsFor(1)[0];
                 expect(filterInfo2.type).toBe('inside_range');
@@ -542,9 +539,9 @@ describe('Filter service', function () {
                     type: 'integer',
                     isMaxReached: false
                 });
-                expect(filterInfo2.filterFn()({col2: '1000'})).toBeTruthy();
-                expect(filterInfo2.filterFn()({col2: '-5'})).toBeFalsy();
-                expect(filterInfo2.filterFn()({col2: ''})).toBeFalsy();
+                expect(filterInfo2.filterFn()({ col2: '1000' })).toBeTruthy();
+                expect(filterInfo2.filterFn()({ col2: '-5' })).toBeFalsy();
+                expect(filterInfo2.filterFn()({ col2: '' })).toBeFalsy();
             }));
 
             it('should create date filter', inject(function (FilterService, StateService) {
@@ -553,7 +550,7 @@ describe('Filter service', function () {
                     selectedColumn: {
                         id: 'col1',
                         statistics: {
-                            patternFrequencyTable: [{pattern: 'yyyy-MM-dd'}]
+                            patternFrequencyTable: [{ pattern: 'yyyy-MM-dd' }]
                         }
                     }
                 };
@@ -609,9 +606,9 @@ describe('Filter service', function () {
                     ],
                     type: 'date'
                 });
-                expect(filterInfo.filterFn()({col1: '2014-01-10'})).toBe(true);
-                expect(filterInfo.filterFn()({col1: '2015-12-10'})).toBe(false);
-                expect(filterInfo.filterFn()({col1: 'NA'})).toBe(false);
+                expect(filterInfo.filterFn()({ col1: '2014-01-10' })).toBe(true);
+                expect(filterInfo.filterFn()({ col1: '2015-12-10' })).toBe(false);
+                expect(filterInfo.filterFn()({ col1: 'NA' })).toBe(false);
             }));
 
             it('should remove filter', inject(function (FilterService, StateService) {
@@ -662,9 +659,9 @@ describe('Filter service', function () {
                 expect(StateService.addGridFilter).toHaveBeenCalled();
 
                 var filterInfo = StateService.addGridFilter.calls.argsFor(0)[0];
-                expect(filterInfo.filterFn()({col1: '2015 12 o\'clock d 12'})).toBeFalsy();
-                expect(filterInfo.filterFn()({col1: 'Aa9'})).toBeFalsy();
-                expect(filterInfo.filterFn()({col1: ''})).toBeTruthy();
+                expect(filterInfo.filterFn()({ col1: '2015 12 o\'clock d 12' })).toBeFalsy();
+                expect(filterInfo.filterFn()({ col1: 'Aa9' })).toBeFalsy();
+                expect(filterInfo.filterFn()({ col1: '' })).toBeTruthy();
             }));
 
             it('should create filter with alphanumeric patterns', inject(function (FilterService, StateService) {
@@ -684,9 +681,9 @@ describe('Filter service', function () {
                 expect(StateService.addGridFilter).toHaveBeenCalled();
 
                 var filterInfo = StateService.addGridFilter.calls.argsFor(0)[0];
-                expect(filterInfo.filterFn()({col1: 'Ha6/.,'})).toBeTruthy();
-                expect(filterInfo.filterFn()({col1: ' ha6/.,'})).toBeFalsy();
-                expect(filterInfo.filterFn()({col1: ' hah/.,'})).toBeFalsy();
+                expect(filterInfo.filterFn()({ col1: 'Ha6/.,' })).toBeTruthy();
+                expect(filterInfo.filterFn()({ col1: ' ha6/.,' })).toBeFalsy();
+                expect(filterInfo.filterFn()({ col1: ' hah/.,' })).toBeFalsy();
             }));
 
             it('should create filter with date patterns', inject(function (FilterService, StateService) {
@@ -706,9 +703,9 @@ describe('Filter service', function () {
                 expect(StateService.addGridFilter).toHaveBeenCalled();
 
                 var filterInfo = StateService.addGridFilter.calls.argsFor(0)[0];
-                expect(filterInfo.filterFn()({col1: '2015-12-12'})).toBeTruthy();
-                expect(filterInfo.filterFn()({col1: '2015-12-13'})).toBeFalsy();
-                expect(filterInfo.filterFn()({col1: '2015/12/13'})).toBeFalsy();
+                expect(filterInfo.filterFn()({ col1: '2015-12-12' })).toBeTruthy();
+                expect(filterInfo.filterFn()({ col1: '2015-12-13' })).toBeFalsy();
+                expect(filterInfo.filterFn()({ col1: '2015/12/13' })).toBeFalsy();
             }));
 
             it('should create filter with customized date patterns', inject(function (FilterService, StateService) {
@@ -728,10 +725,10 @@ describe('Filter service', function () {
                 expect(StateService.addGridFilter).toHaveBeenCalled();
 
                 var filterInfo = StateService.addGridFilter.calls.argsFor(0)[0];
-                expect(filterInfo.filterFn()({col1: '2015 12 o\'clock d 12 00:00:00'})).toBeTruthy();
-                expect(filterInfo.filterFn()({col1: '2015 12 o\'clock D 12'})).toBeFalsy();
-                expect(filterInfo.filterFn()({col1: '2015 12 12'})).toBeFalsy();
-                expect(filterInfo.filterFn()({col1: '2015 12 \'o\'\'clock\' 13'})).toBeFalsy();
+                expect(filterInfo.filterFn()({ col1: '2015 12 o\'clock d 12 00:00:00' })).toBeTruthy();
+                expect(filterInfo.filterFn()({ col1: '2015 12 o\'clock D 12' })).toBeFalsy();
+                expect(filterInfo.filterFn()({ col1: '2015 12 12' })).toBeFalsy();
+                expect(filterInfo.filterFn()({ col1: '2015 12 \'o\'\'clock\' 13' })).toBeFalsy();
             }));
 
             it('should remove filter when it already exists', inject(function (FilterService, StateService) {
@@ -799,7 +796,6 @@ describe('Filter service', function () {
                         value:'Aa9'
                     }
                 ]);
-
             }));
         });
 
@@ -821,7 +817,7 @@ describe('Filter service', function () {
 
             var filterInfo = StateService.addGridFilter.calls.argsFor(0)[0];
             expect(filterInfo.type).toBe('contains');
-            expect(filterInfo.filterFn()({col1: ' toto est ici'})).toBeFalsy();
+            expect(filterInfo.filterFn()({ col1: ' toto est ici' })).toBeFalsy();
         }));
 
         it('should not throw exception on non existing column (that could be removed by a step) in exact filter', inject(function (FilterService, StateService) {
@@ -842,13 +838,12 @@ describe('Filter service', function () {
 
             var filterInfo = StateService.addGridFilter.calls.argsFor(0)[0];
             expect(filterInfo.type).toBe('exact');
-            expect(filterInfo.filterFn()({col1: ' toto est ici'})).toBeFalsy();
+            expect(filterInfo.filterFn()({ col1: ' toto est ici' })).toBeFalsy();
         }));
 
         it('should trigger statistics update', inject(function (FilterService, StatisticsService) {
             //given
-            var removeFnCallback = function () {
-            };
+            var removeFnCallback = function () {};
             expect(StatisticsService.updateFilteredStatistics).not.toHaveBeenCalled();
 
             //when
@@ -868,8 +863,7 @@ describe('Filter service', function () {
     describe('add filter and digest', function () {
         it('should add a filter wrapped in $timeout to trigger a digest', inject(function ($timeout, FilterService, StateService) {
             //given
-            var removeFnCallback = function () {
-            };
+            var removeFnCallback = function () {};
             expect(StateService.addGridFilter).not.toHaveBeenCalled();
 
             //when
@@ -901,9 +895,9 @@ describe('Filter service', function () {
                     }
                 ]
             });
-            expect(filterInfo.filterFn()({col1: ' toto\nest ici'})).toBeTruthy();
-            expect(filterInfo.filterFn()({col1: ' toto est ici'})).toBeFalsy();
-            expect(filterInfo.filterFn()({col1: ' tata est ici'})).toBeFalsy();
+            expect(filterInfo.filterFn()({ col1: ' toto\nest ici' })).toBeTruthy();
+            expect(filterInfo.filterFn()({ col1: ' toto est ici' })).toBeFalsy();
+            expect(filterInfo.filterFn()({ col1: ' tata est ici' })).toBeFalsy();
             expect(filterInfo.removeFilterFn).toBe(removeFnCallback);
         }));
     });
@@ -927,8 +921,8 @@ describe('Filter service', function () {
             var removeFn1 = jasmine.createSpy('removeFilterCallback');
             var removeFn2 = jasmine.createSpy('removeFilterCallback');
             var filter0 = {};
-            var filter1 = {removeFilterFn: removeFn1};
-            var filter2 = {removeFilterFn: removeFn2};
+            var filter1 = { removeFilterFn: removeFn1 };
+            var filter2 = { removeFilterFn: removeFn2 };
             var filter3 = {};
             stateMock.playground.filter.gridFilters = [filter0, filter1, filter2, filter3];
 
@@ -954,7 +948,7 @@ describe('Filter service', function () {
         it('should call filter remove callback', inject(function (FilterService) {
             //given
             var removeFn = jasmine.createSpy('removeFilterCallback');
-            var filter = {removeFilterFn: removeFn};
+            var filter = { removeFilterFn: removeFn };
 
             //when
             FilterService.removeFilter(filter);
@@ -1005,8 +999,7 @@ describe('Filter service', function () {
                         }
                     ]
                 },
-                filterFn: function () {
-                }
+                filterFn: function () {}
             };
             expect(StateService.updateGridFilter).not.toHaveBeenCalled();
 
@@ -1032,9 +1025,8 @@ describe('Filter service', function () {
                 }
             ]);
 
-            expect(newFilter.filterFn()({col2: ' Tata\\n est ici'})).toBeTruthy();
-            expect(newFilter.filterFn()({col2: ' Tata\n est ici'})).toBeFalsy();
-
+            expect(newFilter.filterFn()({ col2: ' Tata\\n est ici' })).toBeTruthy();
+            expect(newFilter.filterFn()({ col2: ' Tata\n est ici' })).toBeFalsy();
         }));
 
         it('should update "exact" filter', inject(function (FilterService, StateService) {
@@ -1050,8 +1042,7 @@ describe('Filter service', function () {
                         }
                     ]
                 },
-                filterFn: function () {
-                }
+                filterFn: function () {}
             };
 
             expect(StateService.updateGridFilter).not.toHaveBeenCalled();
@@ -1083,8 +1074,8 @@ describe('Filter service', function () {
                 }
             ]);
 
-            expect(newFilter.filterFn()({col2: 'Tata\\n'})).toBeTruthy();
-            expect(newFilter.filterFn()({col2: 'Tata\n'})).toBeFalsy();
+            expect(newFilter.filterFn()({ col2: 'Tata\\n' })).toBeTruthy();
+            expect(newFilter.filterFn()({ col2: 'Tata\n' })).toBeFalsy();
         }));
 
         it('should update "inside_range" filter after a brush', inject(function (FilterService, StateService) {
@@ -1102,8 +1093,7 @@ describe('Filter service', function () {
                     ],
                     type: 'integer'
                 },
-                filterFn: function () {
-                }
+                filterFn: function () {}
             };
 
             expect(StateService.updateGridFilter).not.toHaveBeenCalled();
@@ -1160,15 +1150,14 @@ describe('Filter service', function () {
                     ],
                     type: 'date'
                 },
-                filterFn: function () {
-                }
+                filterFn: function () {}
             };
 
             stateMock.playground.grid = {
                 selectedColumn: {
                     id: '0000',
                     statistics: {
-                        patternFrequencyTable: [{pattern: 'yyyy-MM-dd'}]
+                        patternFrequencyTable: [{ pattern: 'yyyy-MM-dd' }]
                     }
                 }
             };
@@ -1221,8 +1210,7 @@ describe('Filter service', function () {
 
         it('should update "inside range" filter when adding an existing range filter', inject(function (FilterService, StateService) {
             //given
-            var removeCallback = function () {
-            };
+            var removeCallback = function () {};
             FilterService.addFilter('inside_range', 'col1', 'column name', {
                 intervals: [
                     {
@@ -1243,7 +1231,7 @@ describe('Filter service', function () {
                 }
             ]);
 
-            expect(filterInfo.filterFn({col1: '4'})).toBeTruthy();
+            expect(filterInfo.filterFn({ col1: '4' })).toBeTruthy();
             stateMock.playground.filter.gridFilters = [filterInfo];
 
             //when
@@ -1287,9 +1275,9 @@ describe('Filter service', function () {
                 ],
                 type: 'integer'
             });
-            expect(newFilterInfos.filterFn()({col1: '8'})).toBeTruthy();
+            expect(newFilterInfos.filterFn()({ col1: '8' })).toBeTruthy();
             //the 4 is no more inside the brush range
-            expect(newFilterInfos.filterFn()({col1: '4'})).toBeFalsy();
+            expect(newFilterInfos.filterFn()({ col1: '4' })).toBeFalsy();
             expect(newFilterInfos.removeFilterFn).toBe(removeCallback);
         }));
 
@@ -1306,8 +1294,7 @@ describe('Filter service', function () {
                         }
                     ]
                 },
-                filterFn: function () {
-                }
+                filterFn: function () {}
             };
             expect(StatisticsService.updateFilteredStatistics).not.toHaveBeenCalled();
 
@@ -1335,8 +1322,7 @@ describe('Filter service', function () {
                         }
                     ]
                 },
-                filterFn: function () {
-                }
+                filterFn: function () {}
             };
 
             //when
@@ -1350,13 +1336,13 @@ describe('Filter service', function () {
             var newFilter = StateService.updateGridFilter.calls.argsFor(0)[1];
             expect(newFilter).not.toBe(oldFilter);
             expect(newFilter.args.phrase).toEqual([
-                {value: 'Toto'},
-                {value: 'Tata'}
+                { value: 'Toto' },
+                { value: 'Tata' }
             ]);
 
-            expect(newFilter.filterFn()({col2: 'Toto'})).toBeTruthy();
-            expect(newFilter.filterFn()({col2: 'Tata'})).toBeTruthy();
-            expect(newFilter.filterFn()({col2: 'Titi'})).toBeFalsy();
+            expect(newFilter.filterFn()({ col2: 'Toto' })).toBeTruthy();
+            expect(newFilter.filterFn()({ col2: 'Tata' })).toBeTruthy();
+            expect(newFilter.filterFn()({ col2: 'Titi' })).toBeFalsy();
         }));
 
         it('should update range filter while several values are selected', inject(function (FilterService, StateService) {
@@ -1377,15 +1363,14 @@ describe('Filter service', function () {
                     ],
                     type: 'date'
                 },
-                filterFn: function () {
-                }
+                filterFn: function () {}
             };
 
             stateMock.playground.grid = {
                 selectedColumn: {
                     id: '0000',
                     statistics: {
-                        patternFrequencyTable: [{pattern: 'yyyy-MM-dd'}]
+                        patternFrequencyTable: [{ pattern: 'yyyy-MM-dd' }]
                     }
                 }
             };
@@ -1424,9 +1409,9 @@ describe('Filter service', function () {
                 type: 'date'
             });
 
-            expect(newFilter.filterFn()({col1: '2014-01-01'})).toBeTruthy();
-            expect(newFilter.filterFn()({col1: '2014-02-01'})).toBeTruthy();
-            expect(newFilter.filterFn()({col1: '2014-03-01'})).toBeFalsy();
+            expect(newFilter.filterFn()({ col1: '2014-01-01' })).toBeTruthy();
+            expect(newFilter.filterFn()({ col1: '2014-02-01' })).toBeTruthy();
+            expect(newFilter.filterFn()({ col1: '2014-03-01' })).toBeFalsy();
         }));
 
         it('should update range filter while from-to values are selected', inject(function (FilterService, StateService) {
@@ -1447,15 +1432,14 @@ describe('Filter service', function () {
                     ],
                     type: 'date'
                 },
-                filterFn: function () {
-                }
+                filterFn: function () {}
             };
 
             stateMock.playground.grid = {
                 selectedColumn: {
                     id: '0000',
                     statistics: {
-                        patternFrequencyTable: [{pattern: 'yyyy-MM-dd'}]
+                        patternFrequencyTable: [{ pattern: 'yyyy-MM-dd' }]
                     }
                 }
             };
@@ -1485,9 +1469,9 @@ describe('Filter service', function () {
                     }
                 ]
             );
-            expect(newFilter.filterFn()({col1: '2014-02-01'})).toBeTruthy();
-            expect(newFilter.filterFn()({col1: '2014-03-01'})).toBeTruthy();
-            expect(newFilter.filterFn()({col1: '2014-05-01'})).toBeFalsy();
+            expect(newFilter.filterFn()({ col1: '2014-02-01' })).toBeTruthy();
+            expect(newFilter.filterFn()({ col1: '2014-03-01' })).toBeTruthy();
+            expect(newFilter.filterFn()({ col1: '2014-05-01' })).toBeFalsy();
         }));
     });
 });

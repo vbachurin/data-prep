@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './dropdown.html';
+
 /**
  * @ngdoc directive
  * @name talend.widget.directive:TalendDropdown
@@ -50,7 +52,7 @@ export default function TalendDropdown($window, $timeout) {
     return {
         restrict: 'EA',
         transclude: true,
-        templateUrl: 'app/components/widgets/dropdown/dropdown.html',
+        templateUrl: template,
         scope: {
             closeOnSelect: '=',
             onOpen: '&',
@@ -178,7 +180,7 @@ export default function TalendDropdown($window, $timeout) {
                 }
 
                 iElement.on('click', (e) => {
-                    if(e.target.classList.contains('dropdown-close')) {
+                    if (e.target.classList.contains('dropdown-close')) {
                         hideMenu();
                     }
                 });

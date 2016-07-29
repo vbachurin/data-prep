@@ -14,16 +14,18 @@
 'use strict';
 
 describe('Button Switch directive', function () {
-    var scope, element, createElement;
+    var scope;
+    var element;
+    var createElement;
 
     var values = [
-        {id: 'name', name: 'NAME_SORT'},
-        {id: 'date', name: 'DATE_SORT'},
-        {id: 'owner', name: 'OWNER_SORT'}
+        { id: 'name', name: 'NAME_SORT' },
+        { id: 'date', name: 'DATE_SORT' },
+        { id: 'owner', name: 'OWNER_SORT' }
     ];
 
     beforeEach(angular.mock.module('talend.widget'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     afterEach(function () {
         scope.$destroy();
@@ -38,7 +40,7 @@ describe('Button Switch directive', function () {
             scope.values = values;
 
             var html =
-                '<talend-button-switch' +
+            '<talend-button-switch' +
                 '   values="values"' +
                 '   display-key="name"' +
                 '   current-value="currentValue"' +
@@ -47,7 +49,6 @@ describe('Button Switch directive', function () {
             element = $compile(html)(scope);
             scope.$digest();
         };
-
     }));
 
     it('should render text from current value and display key', function () {

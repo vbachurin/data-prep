@@ -30,10 +30,17 @@ describe('Playground Service', () => {
     };
 
     let createdPreparation;
-    const stateMock = {};
-    const lastActiveStep = { inactive: false };
+    let stateMock;
 
     beforeEach(angular.mock.module('data-prep.services.playground', ($provide) => {
+        stateMock = {
+            playground: {
+                recipe: { current: { steps: [] } },
+                filter: {},
+                grid: {}
+            },
+            inventory: { homeFolderId: 'Lw==' },
+        };
         $provide.constant('state', stateMock);
     }));
 
@@ -47,9 +54,7 @@ describe('Playground Service', () => {
     beforeEach(inject(($q, $state, StateService, DatasetService, RecipeService, DatagridService,
                        PreparationService, TransformationCacheService,
                        HistoryService, PreviewService, ExportService) => {
-        stateMock.playground = {
-            preparationName: ''
-        };
+        stateMock.playground.preparationName = '';
         createdPreparation = {
             id: '32cd7869f8426465e164ab85',
             name: 'created preparation name',
@@ -68,8 +73,8 @@ describe('Playground Service', () => {
         spyOn(PreparationService, 'setHead').and.returnValue($q.when());
         spyOn(PreparationService, 'setName').and.returnValue($q.when(createdPreparation));
         spyOn(PreviewService, 'reset').and.returnValue();
-        spyOn(RecipeService, 'disableStepsAfter').and.returnValue();
         spyOn(RecipeService, 'refresh').and.returnValue($q.when());
+        spyOn(StateService, 'disableRecipeStepsAfter').and.returnValue();
         spyOn(StateService, 'resetPlayground').and.returnValue();
         spyOn(StateService, 'setCurrentData').and.returnValue();
         spyOn(StateService, 'setCurrentDataset').and.returnValue();
@@ -103,7 +108,8 @@ describe('Playground Service', () => {
         }));
 
         describe('history', () => {
-            let undo, redo;
+            let undo;
+            let redo;
             const oldName = 'My preparation';
             const newName = 'My new preparation name';
 
@@ -161,10 +167,9 @@ describe('Playground Service', () => {
         let assertNewPreparationInitialization;
 
         beforeEach(inject(($rootScope, TransformationCacheService,
-                           HistoryService, RecipeService,
+                           HistoryService,
                            PreviewService, StateService, ExportService) => {
             spyOn($rootScope, '$emit').and.returnValue();
-            spyOn(RecipeService, 'reset').and.returnValue();
             assertNewPreparationInitialization = () => {
                 expect(StateService.resetPlayground).toHaveBeenCalled();
                 expect(StateService.setCurrentDataset).toHaveBeenCalledWith(dataset);
@@ -173,7 +178,6 @@ describe('Playground Service', () => {
                 expect(HistoryService.clear).toHaveBeenCalled();
                 expect(PreviewService.reset).toHaveBeenCalledWith(false);
                 expect(ExportService.reset).toHaveBeenCalled();
-                expect(RecipeService.reset).toHaveBeenCalled();
             };
         }));
 
@@ -187,7 +191,6 @@ describe('Playground Service', () => {
 
             // then
             assertNewPreparationInitialization();
-
         }));
 
         it('should manage loading spinner', inject(($rootScope, PlaygroundService) => {
@@ -266,7 +269,8 @@ describe('Playground Service', () => {
             columns: [{ id: '0001' }],
             records: [{ id: '0', firstname: 'toto' }, { id: '1', firstname: 'tata' }, { id: '2', firstname: 'titi' }],
         };
-        let assertDatasetLoadInitialized, assertDatasetLoadNotInitialized;
+        let assertDatasetLoadInitialized;
+        let assertDatasetLoadNotInitialized;
 
         beforeEach(inject(($rootScope, $q, StateService,
                            PreparationService, RecipeService,
@@ -381,7 +385,7 @@ describe('Playground Service', () => {
             expect(StateService.resetPlayground).not.toHaveBeenCalled();
             expect(StateService.setCurrentDataset).not.toHaveBeenCalled();
             expect(RecipeService.refresh).not.toHaveBeenCalled();
-            expect(RecipeService.disableStepsAfter).toHaveBeenCalledWith(step);
+            expect(StateService.disableRecipeStepsAfter).toHaveBeenCalledWith(step);
             expect(PreviewService.reset).toHaveBeenCalledWith(false);
             expect(DatagridService.updateData).toHaveBeenCalledWith(data);
             expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.stop');
@@ -516,13 +520,15 @@ describe('Playground Service', () => {
         }));
     });
 
-    describe('transformation steps', () => {
-        let preparationHeadContent, metadata;
+    describe('preparation steps', () => {
+        let preparationHeadContent;
+        let metadata;
         const lastStepId = 'a151e543456413ef51';
         const previousLastStepId = '3248fa65e45f588cb464';
         const lastStep = { transformation: { stepId: lastStepId } };
         const previousLastStep = { transformation: { stepId: previousLastStepId } };
-        beforeEach(inject(($rootScope, $q, PlaygroundService, PreparationService, RecipeService) => {
+        const previousStep = { column: { id: '0003' } };
+        beforeEach(inject(($rootScope, $q, PlaygroundService, PreparationService, StepUtilsService) => {
             preparationHeadContent = {
                 'records': [{
                     'firstname': 'Grover',
@@ -555,9 +561,9 @@ describe('Playground Service', () => {
             spyOn(PreparationService, 'updateStep').and.returnValue($q.when());
             spyOn(PreparationService, 'removeStep').and.returnValue($q.when());
             spyOn(PreparationService, 'getContent').and.returnValue($q.when(preparationHeadContent));
-            spyOn(RecipeService, 'getLastStep').and.returnValue(lastStep);
-            spyOn(RecipeService, 'getPreviousStep').and.callFake((step) => {
-                return step === lastStep ? previousLastStep : null;
+            spyOn(StepUtilsService, 'getLastStep').and.returnValue(lastStep);
+            spyOn(StepUtilsService, 'getPreviousStep').and.callFake((recipeState, step) => {
+                return step === lastStep ? previousLastStep : previousStep;
             });
         }));
 
@@ -569,7 +575,6 @@ describe('Playground Service', () => {
                     name: 'my dataset name'
                 };
                 stateMock.playground.preparation = null;
-                stateMock.inventory = {homeFolderId: 'Lw=='};
                 const action = 'uppercase';
                 const parameters = {
                     param1: 'param1Value',
@@ -710,8 +715,8 @@ describe('Playground Service', () => {
                 let undo;
                 const preparationId = '15de46846f8a46';
 
-                beforeEach(inject((RecipeService) => {
-                    spyOn(RecipeService, 'getLastActiveStep').and.returnValue(lastStep); //loaded step is the last step
+                beforeEach(inject((StepUtilsService) => {
+                    spyOn(StepUtilsService, 'getLastActiveStep').and.returnValue(lastStep); //loaded step is the last step
                 }));
 
                 beforeEach(inject(($rootScope, PlaygroundService, HistoryService) => {
@@ -802,9 +807,9 @@ describe('Playground Service', () => {
                 }
             };
 
-            beforeEach(inject((RecipeService) => {
-                spyOn(RecipeService, 'getActiveThresholdStepIndex').and.returnValue(lastActiveIndex);
-                spyOn(RecipeService, 'getStep').and.callFake((index) => {
+            beforeEach(inject((StepUtilsService) => {
+                spyOn(StepUtilsService, 'getActiveThresholdStepIndex').and.returnValue(lastActiveIndex);
+                spyOn(StepUtilsService, 'getStep').and.callFake((recipeState, index) => {
                     if (index === lastActiveIndex) {
                         return lastActiveStep;
                     }
@@ -865,7 +870,8 @@ describe('Playground Service', () => {
 
             it('should load previous last active step', inject(($rootScope, PlaygroundService, PreparationService, DatagridService, PreviewService) => {
                 // given
-                stateMock.playground.preparation = { id: '456415ae348e6046dc' };
+                const preparation = { id: '456415ae348e6046dc' };
+                stateMock.playground.preparation = preparation;
                 const parameters = { value: 'tata', column_id: '0001' };
 
                 // when
@@ -873,7 +879,7 @@ describe('Playground Service', () => {
                 $rootScope.$digest();
 
                 // then
-                expect(PreparationService.getContent).toHaveBeenCalledWith('456415ae348e6046dc', lastActiveStep.transformation.stepId);
+                expect(PreparationService.getContent).toHaveBeenCalledWith(preparation.id, lastActiveStep.transformation.stepId);
                 expect(DatagridService.updateData).toHaveBeenCalledWith(preparationHeadContent);
                 expect(PreviewService.reset).toHaveBeenCalledWith(false);
             }));
@@ -882,8 +888,8 @@ describe('Playground Service', () => {
                 let undo;
                 const preparationId = '456415ae348e6046dc';
 
-                beforeEach(inject((RecipeService) => {
-                    spyOn(RecipeService, 'getLastActiveStep').and.returnValue(lastActiveStep); //loaded step is not the last step
+                beforeEach(inject((StepUtilsService) => {
+                    spyOn(StepUtilsService, 'getLastActiveStep').and.returnValue(lastActiveStep); //loaded step is not the last step
                 }));
 
                 beforeEach(inject(($rootScope, PlaygroundService, HistoryService) => {
@@ -927,14 +933,13 @@ describe('Playground Service', () => {
                     expect(RecipeService.refresh.calls.count()).toBe(2);
                 }));
 
-                it('should refresh datagrid content at the last active step on UNDO', inject(($rootScope, PreparationService, DatagridService, RecipeService) => {
+                it('should refresh datagrid content at the last active step on UNDO', inject(($rootScope, PreparationService, DatagridService) => {
                     // given
                     expect(PreparationService.getContent.calls.count()).toBe(1);
                     expect(DatagridService.updateData.calls.count()).toBe(1);
 
                     // when
                     undo();
-                    spyOn(RecipeService, 'getActiveThresholdStep').and.returnValue(); //emulate last active step different to the step to load
                     $rootScope.$digest();
 
                     // then
@@ -958,16 +963,6 @@ describe('Playground Service', () => {
                 }
             };
             const preparationId = '43ab15436f12e3456';
-
-            const allActionsFromStepToDelete = [
-                { action: 'tolowercase', parameters: { column_id: '0003' } },
-                { action: 'deleteempty', parameters: { column_id: '0003' } },
-                { action: 'touppercase', parameters: { column_id: '0004' } }
-            ];
-
-            beforeEach(inject((RecipeService) => {
-                spyOn(RecipeService, 'getAllActionsFrom').and.returnValue(allActionsFromStepToDelete);
-            }));
 
             it('should remove preparation step', inject(($rootScope, PlaygroundService, PreparationService) => {
                 // given
@@ -1023,8 +1018,8 @@ describe('Playground Service', () => {
             describe('history', () => {
                 let undo;
 
-                beforeEach(inject((RecipeService) => {
-                    spyOn(RecipeService, 'getLastActiveStep').and.returnValue(lastStep); //loaded step is the last step
+                beforeEach(inject((StepUtilsService) => {
+                    spyOn(StepUtilsService, 'getLastActiveStep').and.returnValue(lastStep); //loaded step is the last step
                 }));
 
                 beforeEach(inject(($rootScope, HistoryService, PlaygroundService) => {
@@ -1080,15 +1075,325 @@ describe('Playground Service', () => {
                 }));
             });
         });
+
+        describe('edit Cell', () => {
+            beforeEach(inject(($q, PlaygroundService, FilterAdapterService) => {
+                spyOn(PlaygroundService, 'appendStep').and.returnValue($q.when());
+                spyOn(FilterAdapterService, 'toTree').and.returnValue({
+                    filter: {
+                        eq: {
+                            field: '0001',
+                            value: 'john'
+                        }
+                    }
+                });
+            }));
+
+            it('should append step on cell scope', inject((PlaygroundService) => {
+                //given
+                const rowItem = { tdpId: 58, '0000': 'McDonald', '0001': 'Ronald' };
+                const column = { id: '0001', name: 'firstname' };
+                const newValue = 'Donald';
+                const updateAllCellWithValue = false; // only selected cell
+            
+                stateMock.playground.grid.selectedLine = { tdpId: 58 };
+                stateMock.playground.grid.selectedColumn = { id: '0001', name: 'firstname' };
+                stateMock.playground.filter.applyTransformationOnFilters = false;
+            
+                //when
+                PlaygroundService.editCell(rowItem, column, newValue, updateAllCellWithValue);
+            
+                //then
+                const expectedParams = {
+                    cell_value: {
+                        token: 'Ronald',
+                        operator: 'equals'
+                    },
+                    replace_value: 'Donald',
+                    scope: 'cell',
+                    row_id: 58,
+                    column_id: '0001',
+                    column_name: 'firstname'
+                };
+                expect(PlaygroundService.appendStep).toHaveBeenCalledWith('replace_on_value', expectedParams);
+            }));
+            
+            it('should append step on column scope', inject((PlaygroundService) => {
+                //given
+                const rowItem = { tdpId: 58, '0000': 'McDonald', '0001': 'Ronald' };
+                const column = { id: '0001', name: 'firstname' };
+                const newValue = 'Donald';
+                const updateAllCellWithValue = true; // all cells in column
+            
+                stateMock.playground.grid.selectedLine = { tdpId: 58 };
+                stateMock.playground.grid.selectedColumn = { id: '0001', name: 'firstname' };
+                stateMock.playground.filter.applyTransformationOnFilters = false;
+            
+                //when
+                PlaygroundService.editCell(rowItem, column, newValue, updateAllCellWithValue);
+            
+                //then
+                const expectedParams = {
+                    cell_value: {
+                        token: 'Ronald',
+                        operator: 'equals'
+                    },
+                    replace_value: 'Donald',
+                    scope: 'column',
+                    row_id: 58,
+                    column_id: '0001',
+                    column_name: 'firstname'
+                };
+                expect(PlaygroundService.appendStep).toHaveBeenCalledWith('replace_on_value', expectedParams);
+            }));
+            
+            it('should append step with filters', inject((PlaygroundService) => {
+                //given
+                const rowItem = { tdpId: 58, '0000': 'McDonald', '0001': 'Ronald' };
+                const column = { id: '0001', name: 'firstname' };
+                const newValue = 'Donald';
+                const updateAllCellWithValue = true;
+            
+                stateMock.playground.grid.selectedLine = { tdpId: 58 };
+                stateMock.playground.grid.selectedColumn = { id: '0001', name: 'firstname' };
+                stateMock.playground.filter.applyTransformationOnFilters = true; // apply on filter
+            
+                //when
+                PlaygroundService.editCell(rowItem, column, newValue, updateAllCellWithValue);
+            
+                //then
+                const expectedParams = {
+                    cell_value: {
+                        token: 'Ronald',
+                        operator: 'equals'
+                    },
+                    replace_value: 'Donald',
+                    scope: 'column',
+                    row_id: 58,
+                    column_id: '0001',
+                    column_name: 'firstname',
+                    filter: {
+                        eq: {
+                            field: '0001',
+                            value: 'john'
+                        }
+                    }
+                };
+                expect(PlaygroundService.appendStep).toHaveBeenCalledWith('replace_on_value', expectedParams);
+            }));
+        });
+
+        describe('params completion and append Step', () => {
+            beforeEach(inject(($q, PlaygroundService, FilterAdapterService) => {
+                spyOn(PlaygroundService, 'appendStep').and.returnValue($q.when());
+                spyOn(FilterAdapterService, 'toTree').and.returnValue({
+                    filter: {
+                        eq: {
+                            field: '0001',
+                            value: 'john'
+                        }
+                    }
+                });
+            }));
+          
+            it('should call appendStep with column', inject((PlaygroundService) => {
+                //given
+                var transformation = { name: 'tolowercase' };
+                var scope = 'column';
+                var params = { param: 'value' };
+                stateMock.playground.grid.selectedColumn = { id: '0001', name: 'firstname' };
+                stateMock.playground.filter.applyTransformationOnFilters = false;
+        
+                //when
+                PlaygroundService.completeParamsAndAppend(transformation, scope, params);
+        
+                //then
+                var expectedParams = {
+                    param: 'value',
+                    scope: 'column',
+                    column_id: '0001',
+                    column_name: 'firstname',
+                    row_id: undefined
+                };
+                expect(PlaygroundService.appendStep).toHaveBeenCalledWith('tolowercase', expectedParams);
+            }));
+        
+            it('should call appendStep with row', inject((PlaygroundService) => {
+                //given
+                var transformation = { name: 'tolowercase' };
+                var scope = 'line';
+                var params = { param: 'value' };
+                stateMock.playground.grid.selectedLine = { tdpId: 125 };
+                stateMock.playground.filter.applyTransformationOnFilters = false;
+        
+                //when
+                PlaygroundService.completeParamsAndAppend(transformation, scope, params);
+        
+                //then
+                var expectedParams = {
+                    param: 'value',
+                    scope: 'line',
+                    column_id: undefined,
+                    column_name: undefined,
+                    row_id: 125
+                };
+                expect(PlaygroundService.appendStep).toHaveBeenCalledWith('tolowercase', expectedParams);
+            }));
+        
+            it('should call appendStep without param', inject((PlaygroundService) => {
+                //given
+                var transformation = { name: 'tolowercase' };
+                var scope = 'column';
+                stateMock.playground.grid.selectedColumn = { id: '0001', name: 'firstname' };
+                stateMock.playground.filter.applyTransformationOnFilters = false;
+        
+                //when
+                PlaygroundService.completeParamsAndAppend(transformation, scope);
+        
+                //then
+                var expectedParams = {
+                    scope: 'column',
+                    column_id: '0001',
+                    column_name: 'firstname',
+                    row_id: undefined
+                };
+                expect(PlaygroundService.appendStep).toHaveBeenCalledWith('tolowercase', expectedParams);
+            }));
+        
+            it('should call appendStep with filter', inject((PlaygroundService) => {
+                //given
+                var transformation = { name: 'tolowercase' };
+                var scope = 'column';
+                stateMock.playground.grid.selectedColumn = { id: '0001', name: 'firstname' };
+                stateMock.playground.filter.applyTransformationOnFilters = true;
+        
+                //when
+                PlaygroundService.completeParamsAndAppend(transformation, scope);
+        
+                //then
+                var expectedParams = {
+                    scope: 'column',
+                    column_id: '0001',
+                    column_name: 'firstname',
+                    row_id: undefined,
+                    filter: {
+                        eq: {
+                            field: '0001',
+                            value: 'john'
+                        }
+                    }
+                };
+                expect(PlaygroundService.appendStep).toHaveBeenCalledWith('tolowercase', expectedParams);
+            }));
+        
+            it('should create an append closure', inject((PlaygroundService) => {
+                //given
+                var transformation = { name: 'tolowercase' };
+                var scope = 'column';
+                var params = { param: 'value' };
+                stateMock.playground.grid.selectedColumn = { id: '0001', name: 'firstname' };
+                stateMock.playground.grid.selectedLine = { tdpId: 125 };
+                stateMock.playground.filter.applyTransformationOnFilters = false;
+        
+                //when
+                var closure = PlaygroundService.createAppendStepClosure(transformation, scope);
+                closure(params);
+        
+                //then
+                var expectedParams = {
+                    param: 'value',
+                    scope: 'column',
+                    column_id: '0001',
+                    column_name: 'firstname',
+                    row_id: 125
+                };
+                expect(PlaygroundService.appendStep).toHaveBeenCalledWith('tolowercase', expectedParams);
+            }));
+        });
+
+        describe('toggle step', () => {
+            beforeEach(inject((PlaygroundService) => {
+                spyOn(PlaygroundService, 'loadStep').and.returnValue();
+            }));
+
+            it('should load current step content if the step is first inactive', inject((PlaygroundService) => {
+                //given
+                const step = { inactive: true, column: { id: '0001' } };
+
+                //when
+                PlaygroundService.toggleStep(step);
+
+                //then
+                expect(PlaygroundService.loadStep).toHaveBeenCalledWith(step);
+            }));
+
+            it('should load previous step content if the step is first active', inject((PlaygroundService) => {
+                //given
+                const step = { inactive: false, column: { id: '0001' } };
+
+                //when
+                PlaygroundService.toggleStep(step);
+
+                //then
+                expect(PlaygroundService.loadStep).toHaveBeenCalledWith(previousStep);
+            }));
+        });
+
+        describe('toggle recipe', () => {
+
+            beforeEach(inject((StepUtilsService, PlaygroundService) => {
+                spyOn(PlaygroundService, 'loadStep').and.returnValue();
+            }));
+
+            it('should deactivate all the recipe', inject((PlaygroundService) => {
+                //given
+                const step1 = { inactive: false, column: { id: '0005' } };
+                const step2 = { inactive: false, column: { id: '0004' } };
+                stateMock.playground.recipe.current.steps = [step1, step2];
+
+                //when
+                PlaygroundService.toggleRecipe();
+
+                //then
+                expect(PlaygroundService.loadStep).toHaveBeenCalledWith(previousStep);
+            }));
+
+            it('should reactivate all the recipe', inject((PlaygroundService) => {
+                //given
+                const step1 = { inactive: true, column: { id: '0005' } };
+                const step2 = { inactive: true, column: { id: '0004' } };
+                stateMock.playground.recipe.current.steps = [step1, step2];
+
+                //when
+                PlaygroundService.toggleRecipe();
+
+                //then
+                expect(PlaygroundService.loadStep).toHaveBeenCalledWith(step2);
+            }));
+
+            it('should reactivate the recipe at the last active step before deactivation action', inject((PlaygroundService) => {
+                //given
+                const step1 = { inactive: true, column: { id: '0005' } };
+                const step2 = { inactive: true, column: { id: '0004' } };
+                stateMock.playground.recipe.current.steps = [step1, step2];
+
+                PlaygroundService.lastToggled = step1;
+
+                //when
+                PlaygroundService.toggleRecipe();
+
+                //then
+                expect(PlaygroundService.loadStep).toHaveBeenCalledWith(step1);
+            }));
+        })
     });
 
     describe('preparation name edition mode', () => {
-
-        beforeEach(inject(($q, PreparationService, RecipeService) => {
+        beforeEach(inject(($q, PreparationService) => {
             spyOn(PreparationService, 'getContent').and.returnValue($q.when({ columns: [{}] }));
             spyOn(PreparationService, 'appendStep').and.callFake(() => {
-                RecipeService.getRecipe().push({});
-                return $q.when(true);
+                stateMock.playground.recipe.current.steps.push({});
+                return $q.when();
             });
         }));
 
@@ -1122,100 +1427,15 @@ describe('Playground Service', () => {
         }));
     });
 
-    describe('update preview', () => {
-        beforeEach(inject(($q, RecipeService, PreviewService) => {
-            spyOn(PreviewService, 'getPreviewUpdateRecords').and.returnValue($q.when(true));
-            spyOn(RecipeService, 'getLastActiveStep').and.returnValue(lastActiveStep);
-            const preparationId = '64f3543cd466f545';
-            stateMock.playground.preparation = { id: preparationId };
-        }));
-
-
-        it('should call update preview', inject(($rootScope, PreviewService, PlaygroundService) => {
-            // given
-            $rootScope.$digest();
-            const step = {
-                column: { id: '0', name: 'state' },
-                transformation: {
-                    stepId: 'a598bc83fc894578a8b823',
-                    name: 'cut'
-                },
-                actionParameters: {
-                    action: 'cut',
-                    parameters: { pattern: '.', column_id: '0', column_name: 'state', scope: 'column' }
-                }
-            };
-            const parameters = { pattern: '--' };
-            // when
-            PlaygroundService.updatePreview(step, parameters);
-            $rootScope.$digest();
-
-            // then
-            expect(PreviewService.getPreviewUpdateRecords).toHaveBeenCalledWith(
-                stateMock.playground.preparation.id,
-                lastActiveStep,
-                step,
-                { pattern: '--', column_id: '0', column_name: 'state', scope: 'column' });
-        }));
-
-        it('should do nothing on update preview if the step is inactive', inject(($rootScope, PreviewService, PlaygroundService) => {
-            // given
-            const step = {
-                column: { id: 'state' },
-                transformation: {
-                    stepId: 'a598bc83fc894578a8b823',
-                    name: 'cut'
-                },
-                actionParameters: {
-                    action: 'cut',
-                    parameters: { pattern: '.', column_name: 'state' }
-                },
-                inactive: true
-            };
-            const parameters = { pattern: '--' };
-
-            // when
-            PlaygroundService.updatePreview(step, parameters);
-            $rootScope.$digest();
-
-            // then
-            expect(PreviewService.getPreviewUpdateRecords).not.toHaveBeenCalled();
-        }));
-
-        it('should do nothing on update preview if the params have not changed', inject(($rootScope, PreviewService, PlaygroundService) => {
-            // given
-            const step = {
-                column: { id: '0', name: 'state' },
-                transformation: {
-                    stepId: 'a598bc83fc894578a8b823',
-                    name: 'cut'
-                },
-                actionParameters: {
-                    action: 'cut',
-                    parameters: { pattern: '.', column_id: '0', column_name: 'state' }
-                }
-            };
-            const parameters = { pattern: '.' };
-
-            // when
-            PlaygroundService.updatePreview(step, parameters);
-            $rootScope.$digest();
-
-            // then
-            expect(PreviewService.getPreviewUpdateRecords).not.toHaveBeenCalled();
-        }));
-    });
-
     describe('dataset parameters', () => {
-        let assertNewPlaygroundIsInitWith, assertPreparationStepIsLoadedWith;
+        let assertNewPlaygroundIsInitWith;
+        let assertPreparationStepIsLoadedWith;
 
-        beforeEach(inject((StateService, RecipeService, TransformationCacheService, HistoryService, PreviewService, ExportService, DatagridService) => {
-            spyOn(RecipeService, 'reset').and.returnValue();
+        beforeEach(inject((StateService, TransformationCacheService, HistoryService, PreviewService, ExportService, DatagridService) => {
             assertNewPlaygroundIsInitWith = (dataset) => {
                 expect(StateService.resetPlayground).toHaveBeenCalled();
                 expect(StateService.setCurrentDataset).toHaveBeenCalledWith(dataset);
                 expect(StateService.setCurrentData).toHaveBeenCalledWith(datasetColumns);
-                expect(RecipeService.reset).toHaveBeenCalled();
                 expect(TransformationCacheService.invalidateCache).toHaveBeenCalled();
                 expect(HistoryService.clear).toHaveBeenCalled();
                 expect(PreviewService.reset).toHaveBeenCalledWith(false);
@@ -1224,7 +1444,7 @@ describe('Playground Service', () => {
 
             assertPreparationStepIsLoadedWith = (dataset, data, step) => {
                 expect(DatagridService.updateData).toHaveBeenCalledWith(data);
-                expect(RecipeService.disableStepsAfter).toHaveBeenCalledWith(step);
+                expect(StateService.disableRecipeStepsAfter).toHaveBeenCalledWith(step);
                 expect(PreviewService.reset).toHaveBeenCalled();
             };
         }));
@@ -1260,7 +1480,7 @@ describe('Playground Service', () => {
             assertNewPlaygroundIsInitWith(dataset);
         }));
 
-        it('should reinit playground with preparation at active step after parameters update', inject(($rootScope, $q, PlaygroundService, RecipeService, PreparationService) => {
+        it('should reinit playground with preparation at active step after parameters update', inject(($rootScope, $q, PlaygroundService, StepUtilsService, PreparationService) => {
             // given
             const parameters = { separator: ';', encoding: 'UTF-8' };
             const dataset = { id: '32549c18046cd54b265' };
@@ -1275,8 +1495,8 @@ describe('Playground Service', () => {
 
             // given : step mocks
             const step = { transformation: { stepId: '5874de8432c543' } };
-            spyOn(RecipeService, 'getActiveThresholdStepIndex').and.returnValue(5);
-            spyOn(RecipeService, 'getStep').and.callFake((index) => {
+            spyOn(StepUtilsService, 'getActiveThresholdStepIndex').and.returnValue(5);
+            spyOn(StepUtilsService, 'getStep').and.callFake((recipeState, index) => {
                 if (index === 5) {
                     return step;
                 }
@@ -1293,16 +1513,16 @@ describe('Playground Service', () => {
     });
 
     describe('on step append', () => {
-        beforeEach(inject(($q, PreparationService, RecipeService) => {
+        beforeEach(inject(($q, PreparationService, StepUtilsService) => {
             spyOn(PreparationService, 'getContent').and.returnValue($q.when({ columns: [{}] }));
             spyOn(PreparationService, 'appendStep').and.callFake(() => {
-                RecipeService.getRecipe().push({});
+                stateMock.playground.recipe.current.steps.push({});
                 return $q.when();
             });
-            spyOn(RecipeService, 'getLastStep').and.returnValue({
+            spyOn(StepUtilsService, 'getLastStep').and.returnValue({
                 transformation: { stepId: 'a151e543456413ef51' }
             });
-            spyOn(RecipeService, 'getPreviousStep').and.returnValue({
+            spyOn(StepUtilsService, 'getPreviousStep').and.returnValue({
                 transformation: { stepId: '84f654a8e64fc5' }
             });
         }));
@@ -1346,11 +1566,11 @@ describe('Playground Service', () => {
                 expect(StateService.showRecipe).toHaveBeenCalled();
             }));
 
-            it('should NOT force recipe display on second step', inject(($rootScope, PlaygroundService, RecipeService, StateService) => {
+            it('should NOT force recipe display on second step', inject(($rootScope, PlaygroundService, StateService) => {
                 // given
                 stateMock.playground.preparation = { id: '123456' };
                 expect(StateService.showRecipe).not.toHaveBeenCalled();
-                RecipeService.getRecipe().push({});
+                stateMock.playground.recipe.current.steps.push({});
 
                 const action = 'uppercase';
                 const column = { id: 'firstname' };
@@ -1435,19 +1655,6 @@ describe('Playground Service', () => {
     });
 
     describe('update preparation details', () => {
-        it('should reset recipe', inject(($rootScope, RecipeService, PlaygroundService) => {
-            // given
-            spyOn(RecipeService, 'reset');
-            stateMock.playground.preparation = null;
-
-            // when
-            PlaygroundService.updatePreparationDetails();
-            $rootScope.$digest();
-
-            // then
-            expect(RecipeService.reset).toHaveBeenCalled();
-        }));
-
         it('should get details for first step', inject(($rootScope, PlaygroundService, RecipeService, PreparationService) => {
             // given
             stateMock.playground.preparation = { id: '79db821355a65cd96' };
@@ -1461,7 +1668,6 @@ describe('Playground Service', () => {
             expect(RecipeService.refresh).toHaveBeenCalled();
         }));
     });
-
 
     describe('copy steps', () => {
         beforeEach(inject(($rootScope, $q, PreparationService) => {

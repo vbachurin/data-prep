@@ -22,22 +22,23 @@
  * @requires data-prep.services.folder.service:FolderService
  */
 export default function DatasetXlsPreviewCtrl($timeout, $state, state,
-                                              DatasetSheetPreviewService, DatasetService,
-                                              PlaygroundService, StateService, PreparationService) {
+    DatasetSheetPreviewService, DatasetService,
+    PlaygroundService, StateService, PreparationService) {
     'ngInject';
 
-    var vm = this;
+    const vm = this;
     vm.datasetSheetPreviewService = DatasetSheetPreviewService;
 
     /**
      * @ngdoc method
      * @name initGrid
      * @methodOf data-prep.dataset-xls-preview.controller:DatasetPreviewXlsCtrl
-     * @description [PRIVATE] Initialize the grid and set it in the service. The service will provide the data in it.
+     * @description [PRIVATE] Initialize the grid and set it in the service.
+     * The service will provide the data in it.
      * This is called at controller creation
      */
     vm.initGrid = function () {
-        var options = {
+        const options = {
             enableColumnReorder: false,
             editable: false,
             enableAddRow: false,
@@ -45,7 +46,12 @@ export default function DatasetXlsPreviewCtrl($timeout, $state, state,
             enableTextSelectionOnCells: false
         };
 
-        DatasetSheetPreviewService.grid = new Slick.Grid('#datasetSheetPreviewGrid', [], [], options);
+        DatasetSheetPreviewService.grid = new Slick.Grid(
+            '#datasetSheetPreviewGrid',
+            [],
+            [],
+            options
+        );
     };
 
     /**
@@ -54,7 +60,7 @@ export default function DatasetXlsPreviewCtrl($timeout, $state, state,
      * @methodOf data-prep.dataset-xls-preview.controller:DatasetPreviewXlsCtrl
      * @description Load a sheet preview in the grid
      */
-    vm.selectSheet = function () {
+    vm.selectSheet = function selectSheet() {
         return DatasetSheetPreviewService.loadSheet(vm.selectedSheetName);
     };
 
@@ -64,10 +70,11 @@ export default function DatasetXlsPreviewCtrl($timeout, $state, state,
      * @methodOf data-prep.dataset-xls-preview.controller:DatasetPreviewXlsCtrl
      * @description Disable dataset Sheet confirm button
      */
-    vm.disableDatasetSheetConfirm = function () {
-        if(DatasetSheetPreviewService.addPreparation) {
-            return _.some(state.inventory.folder.content.preparations, {name: vm.metadata.name});
-        } else {
+    vm.disableDatasetSheetConfirm = function disableDatasetSheetConfirm() {
+        if (DatasetSheetPreviewService.addPreparation) {
+            return _.some(state.inventory.folder.content.preparations, { name: vm.metadata.name });
+        }
+        else {
             return false;
         }
     };
@@ -85,14 +92,23 @@ export default function DatasetXlsPreviewCtrl($timeout, $state, state,
                 vm.visible = false;
             })
             .then(() => {
-                if(DatasetSheetPreviewService.addPreparation) {
-                    PreparationService.create(vm.metadata.id, DatasetSheetPreviewService.preparationName, state.inventory.folder.metadata.id)
+                if (DatasetSheetPreviewService.addPreparation) {
+                    PreparationService
+                        .create(
+                            vm.metadata.id,
+                            DatasetSheetPreviewService.preparationName,
+                            state.inventory.folder.metadata.id
+                    )
                         .then((newPreparation) => {
-                            $state.go('playground.preparation', {prepid: newPreparation.id});
+                            $state.go(
+                                'playground.preparation',
+                                { prepid: newPreparation.id }
+                            );
                         });
-                } else {
+                }
+                else {
                     StateService.setPreviousRoute('nav.index.datasets');
-                    $state.go('playground.dataset', {datasetid: vm.metadata.id});
+                    $state.go('playground.dataset', { datasetid: vm.metadata.id });
                 }
             });
     };

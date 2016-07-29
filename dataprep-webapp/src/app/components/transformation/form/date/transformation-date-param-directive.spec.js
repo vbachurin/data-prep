@@ -13,10 +13,11 @@
 
 describe('Transformation date param directive', function () {
     'use strict';
-    var scope, createElement;
+    var scope;
+    var createElement;
 
     beforeEach(angular.mock.module('data-prep.transformation-form'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(inject(function($rootScope, $compile) {
         scope = $rootScope.$new();

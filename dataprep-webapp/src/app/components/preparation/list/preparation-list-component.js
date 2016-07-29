@@ -11,6 +11,8 @@
 
  ============================================================================*/
 
+import template from './preparation-list.html';
+
 import PreparationListCtrl from './preparation-list-controller';
 
 /**
@@ -20,7 +22,7 @@ import PreparationListCtrl from './preparation-list-controller';
  * @restrict E
  */
 const PreparationListComponent = {
-    templateUrl: 'app/components/preparation/list/preparation-list.html',
+    templateUrl: template,
     controller: PreparationListCtrl,
 };
 

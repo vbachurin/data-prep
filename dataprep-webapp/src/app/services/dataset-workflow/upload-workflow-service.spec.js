@@ -31,18 +31,18 @@ describe('UploadWorkflow Service', () => {
 
         it('should redirect to playground when dataset is not a draft', inject(($state, UploadWorkflowService) => {
             //given
-            const dataset = {name: 'Customers (50 lines)', id: 'aA2bc348e933bc2'};
+            const dataset = { name: 'Customers (50 lines)', id: 'aA2bc348e933bc2' };
 
             //when
             UploadWorkflowService.openDataset(dataset);
 
             //then
-            expect($state.go).toHaveBeenCalledWith('playground.dataset', {datasetid: dataset.id});
+            expect($state.go).toHaveBeenCalledWith('playground.dataset', { datasetid: dataset.id });
         }));
 
         it('should set back route before redirection when dataset is not a draft', inject((UploadWorkflowService, StateService) => {
             //given
-            const dataset = {name: 'Customers (50 lines)', id: 'aA2bc348e933bc2'};
+            const dataset = { name: 'Customers (50 lines)', id: 'aA2bc348e933bc2' };
             //when
             UploadWorkflowService.openDataset(dataset);
 
@@ -83,7 +83,7 @@ describe('UploadWorkflow Service', () => {
 
             //then
             expect($state.go).not.toHaveBeenCalled();
-            expect($state.href).toHaveBeenCalledWith('playground.dataset', {datasetid: dataset.id}, {absolute: true});
+            expect($state.href).toHaveBeenCalledWith('playground.dataset', { datasetid: dataset.id }, { absolute: true });
             expect($window.open).toHaveBeenCalledWith('absoluetUrl', '_blank');
         }));
 
@@ -103,7 +103,7 @@ describe('UploadWorkflow Service', () => {
 
             //then
             expect($state.go).not.toHaveBeenCalled();
-            expect($state.href).toHaveBeenCalledWith('playground.dataset', {datasetid: dataset.id}, {absolute: true});
+            expect($state.href).toHaveBeenCalledWith('playground.dataset', { datasetid: dataset.id }, { absolute: true });
             expect($window.open).toHaveBeenCalledWith('absoluetUrl', '_blank');
         }));
 
@@ -123,7 +123,7 @@ describe('UploadWorkflow Service', () => {
 
             //then
             expect($state.go).not.toHaveBeenCalled();
-            expect($state.href).toHaveBeenCalledWith('playground.dataset', {datasetid: dataset.id}, {absolute: true});
+            expect($state.href).toHaveBeenCalledWith('playground.dataset', { datasetid: dataset.id }, { absolute: true });
             expect($window.open).toHaveBeenCalledWith('absoluetUrl', '_blank');
         }));
     });
@@ -131,7 +131,7 @@ describe('UploadWorkflow Service', () => {
     describe('draft', () => {
         it('should load excel preview and display it', inject(($rootScope, UploadWorkflowService, DatasetSheetPreviewService) => {
             //given
-            const draft = {type: 'application/vnd.ms-excel'};
+            const draft = { type: 'application/vnd.ms-excel' };
 
             //when
             UploadWorkflowService.openDraft(draft, true, 'test');
@@ -144,7 +144,7 @@ describe('UploadWorkflow Service', () => {
 
         it('should display error message with unknown type', inject((DatasetSheetPreviewService, UploadWorkflowService, MessageService) => {
             //given
-            const draft = {type: 'application/myCustomType'};
+            const draft = { type: 'application/myCustomType' };
 
             //when
             UploadWorkflowService.openDraft(draft);

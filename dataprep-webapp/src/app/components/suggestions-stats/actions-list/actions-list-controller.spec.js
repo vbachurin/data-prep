@@ -14,14 +14,15 @@
 describe('Actions list controller', function () {
     'use strict';
 
-    var createController, scope;
+    var createController;
+    var scope;
     var stateMock;
 
     beforeEach(angular.mock.module('data-prep.actions-list', function ($provide) {
-        stateMock = {playground: {
-            grid: {},
-            filter: {}
-        }};
+        stateMock = { playground: {
+                grid: {},
+                filter: {}
+        } };
         $provide.constant('state', stateMock);
     }));
 
@@ -35,8 +36,8 @@ describe('Actions list controller', function () {
         };
     }));
 
-    beforeEach(inject(function ($q, TransformationApplicationService, TransformationService, EarlyPreviewService) {
-        spyOn(TransformationApplicationService, 'append').and.returnValue($q.when());
+    beforeEach(inject(function ($q, PlaygroundService, TransformationService, EarlyPreviewService) {
+        spyOn(PlaygroundService, 'completeParamsAndAppend').and.returnValue($q.when());
         spyOn(TransformationService, 'initDynamicParameters').and.returnValue($q.when());
         spyOn(EarlyPreviewService, 'activatePreview').and.returnValue();
         spyOn(EarlyPreviewService, 'deactivatePreview').and.returnValue();
@@ -60,7 +61,7 @@ describe('Actions list controller', function () {
     describe('early preview', function() {
         it('should trigger early preview with current scope', inject(function(EarlyPreviewService) {
             //given
-            var transformation = {name: 'delete'};
+            var transformation = { name: 'delete' };
             var ctrl = createController();
             ctrl.scope = 'column';
 
@@ -73,10 +74,10 @@ describe('Actions list controller', function () {
     });
 
     describe('transform', function() {
-        it('should call appendStep function on transform closure execution', inject(function (TransformationApplicationService) {
+        it('should call appendStep function on transform closure execution', inject((PlaygroundService) => {
             //given
-            var transformation = {name: 'tolowercase'};
-            var params = {param: 'value'};
+            var transformation = { name: 'tolowercase' };
+            var params = { param: 'value' };
             var ctrl = createController();
             ctrl.scope = 'column';
 
@@ -85,13 +86,13 @@ describe('Actions list controller', function () {
             closure(params);
 
             //then
-            expect(TransformationApplicationService.append).toHaveBeenCalledWith(transformation, 'column', params);
+            expect(PlaygroundService.completeParamsAndAppend).toHaveBeenCalledWith(transformation, 'column', params);
         }));
 
         it('should hide modal after step append', function () {
             //given
-            var transformation = {name: 'tolowercase'};
-            var params = {param: 'value'};
+            var transformation = { name: 'tolowercase' };
+            var params = { param: 'value' };
             var ctrl = createController();
             ctrl.scope = 'column';
             ctrl.showDynamicModal = true;
@@ -105,9 +106,9 @@ describe('Actions list controller', function () {
             expect(ctrl.showDynamicModal).toBe(false);
         });
 
-        it('should append new step on static transformation selection', inject(function (TransformationApplicationService) {
+        it('should append new step on static transformation selection', inject((PlaygroundService) => {
             //given
-            var transformation = {name: 'tolowercase'};
+            var transformation = { name: 'tolowercase' };
             var ctrl = createController();
             ctrl.scope = 'column';
 
@@ -115,13 +116,13 @@ describe('Actions list controller', function () {
             ctrl.select(transformation);
 
             //then
-            expect(TransformationApplicationService.append).toHaveBeenCalledWith(transformation, 'column', undefined);
+            expect(PlaygroundService.completeParamsAndAppend).toHaveBeenCalledWith(transformation, 'column', undefined);
         }));
 
         it('should cancel pending preview and disable it', inject(function (EarlyPreviewService) {
             //given
-            var transformation = {name: 'tolowercase'};
-            var params = {param: 'value'};
+            var transformation = { name: 'tolowercase' };
+            var params = { param: 'value' };
             var ctrl = createController();
             ctrl.scope = 'column';
             ctrl.showDynamicModal = true;
@@ -137,8 +138,8 @@ describe('Actions list controller', function () {
 
         it('should re-enable early preview after 500ms', inject(function ($timeout, EarlyPreviewService) {
             //given
-            var transformation = {name: 'tolowercase'};
-            var params = {param: 'value'};
+            var transformation = { name: 'tolowercase' };
+            var params = { param: 'value' };
             var ctrl = createController();
             ctrl.scope = 'column';
             ctrl.showDynamicModal = true;
@@ -158,14 +159,14 @@ describe('Actions list controller', function () {
 
     describe('dynamic parameters', function() {
         beforeEach(function() {
-            stateMock.playground.grid.selectedColumn = {id: '0001'};
+            stateMock.playground.grid.selectedColumn = { id: '0001' };
         });
 
         it('should set current dynamic transformation on dynamic transformation selection', function () {
             //given
-            stateMock.playground.dataset = {id: '41fa397a8239cd051b35'};
+            stateMock.playground.dataset = { id: '41fa397a8239cd051b35' };
 
-            var transformation = {name: 'cluster', dynamic: true};
+            var transformation = { name: 'cluster', dynamic: true };
             var ctrl = createController();
             ctrl.dynamicTransformation = null;
 
@@ -178,10 +179,10 @@ describe('Actions list controller', function () {
 
         it('should init dynamic params on dynamic transformation selection for current dataset', inject(function (TransformationService) {
             //given
-            stateMock.playground.dataset = {id: '41fa397a8239cd051b35'};
+            stateMock.playground.dataset = { id: '41fa397a8239cd051b35' };
             stateMock.playground.preparation = null;
 
-            var transformation = {name: 'cluster', dynamic: true};
+            var transformation = { name: 'cluster', dynamic: true };
 
             var ctrl = createController();
 
@@ -198,10 +199,10 @@ describe('Actions list controller', function () {
 
         it('should init dynamic params on dynamic transformation selection for current preparation', inject(function (TransformationService) {
             //given
-            stateMock.playground.dataset = {id: '41fa397a8239cd051b35'};
-            stateMock.playground.preparation = {id: '35da66fc454568f4a52'};
+            stateMock.playground.dataset = { id: '41fa397a8239cd051b35' };
+            stateMock.playground.preparation = { id: '35da66fc454568f4a52' };
 
-            var transformation = {name: 'cluster', dynamic: true};
+            var transformation = { name: 'cluster', dynamic: true };
             var ctrl = createController();
 
             //when
@@ -217,8 +218,8 @@ describe('Actions list controller', function () {
 
         it('should update fetch progress flag during dynamic parameters init', inject(function ($rootScope) {
             //given
-            stateMock.playground.dataset = {id: '41fa397a8239cd051b35'};
-            var transformation = {name: 'cluster', dynamic: true};
+            stateMock.playground.dataset = { id: '41fa397a8239cd051b35' };
+            var transformation = { name: 'cluster', dynamic: true };
 
             var ctrl = createController();
             ctrl.dynamicFetchInProgress = false;
@@ -234,8 +235,8 @@ describe('Actions list controller', function () {
 
         it('should show NO CLUSTERS WERE FOUND message', inject(function ($rootScope) {
             //given
-            stateMock.playground.dataset = {id: '41fa397a8239cd051b35'};
-            var dynamicTransformation = {name: 'cluster', dynamic: true, cluster: {clusters: []}};
+            stateMock.playground.dataset = { id: '41fa397a8239cd051b35' };
+            var dynamicTransformation = { name: 'cluster', dynamic: true, cluster: { clusters: [] } };
             var ctrl = createController();
 
             //when
@@ -249,8 +250,8 @@ describe('Actions list controller', function () {
 
         it('should show NO PARAMETERS WERE FOUND message', inject(function ($rootScope) {
             //given
-            stateMock.playground.dataset = {id: '41fa397a8239cd051b35'};
-            var dynamicTransformation = {name: 'choices', dynamic: true, parameters: []};
+            stateMock.playground.dataset = { id: '41fa397a8239cd051b35' };
+            var dynamicTransformation = { name: 'choices', dynamic: true, parameters: [] };
             var ctrl = createController();
 
             //when
@@ -264,11 +265,11 @@ describe('Actions list controller', function () {
 
         it('should show dynamic cluster transformation in a modal', inject(function ($rootScope) {
             //given
-            stateMock.playground.dataset = {id: '41fa397a8239cd051b35'};
+            stateMock.playground.dataset = { id: '41fa397a8239cd051b35' };
             var dynamicTransformation = {
                 name: 'cluster',
                 dynamic: true,
-                cluster: {clusters: [{parameters: [], replace: {}}]}
+                cluster: { clusters: [{ parameters: [], replace: {} }] }
             };
             var ctrl = createController();
 
@@ -282,9 +283,9 @@ describe('Actions list controller', function () {
 
         it('should show dynamic parameters in a modal', inject(function ($rootScope) {
             //given
-            stateMock.playground.dataset = {id: '41fa397a8239cd051b35'};
+            stateMock.playground.dataset = { id: '41fa397a8239cd051b35' };
             var ctrl = createController();
-            var dynamicTransformation = {name: 'items', dynamic: true, parameters: [{}]};
+            var dynamicTransformation = { name: 'items', dynamic: true, parameters: [{}] };
 
             //when
             ctrl.select(dynamicTransformation);

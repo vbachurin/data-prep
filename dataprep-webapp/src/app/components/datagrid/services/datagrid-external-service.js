@@ -1,15 +1,15 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
 
 /**
  * @ngdoc service
@@ -55,7 +55,7 @@ export default class DatagridExternalService {
         const columnHasChanged = column !== this.lastSelectedColumn;
         const lineHasChanged = line !== this.lastSelectedLine;
 
-        if(!columnHasChanged && !lineHasChanged) {
+        if (!columnHasChanged && !lineHasChanged) {
             return;
         }
 
@@ -67,12 +67,12 @@ export default class DatagridExternalService {
         this.SuggestionService.selectTab(this.lastSelectedTab);
 
         //reset charts if we have no selected column
-        if(!this.lastSelectedColumn) {
+        if (!this.lastSelectedColumn) {
             this.StatisticsService.reset();
         }
 
         //update line scope transformations if line has changed
-        if(this.lastSelectedLine && lineHasChanged) {
+        if (this.lastSelectedLine && lineHasChanged) {
             this.SuggestionService.setLine(this.lastSelectedLine);
         }
 

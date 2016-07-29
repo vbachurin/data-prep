@@ -12,8 +12,8 @@
  ============================================================================*/
 
 describe('Inventory Header controller', () => {
-
-    let createController, scope;
+    let createController;
+    let scope;
 
     beforeEach(angular.mock.module('data-prep.inventory-header'));
 
@@ -109,7 +109,6 @@ describe('Inventory Header controller', () => {
 
             //then
             expect(ctrl.showAddPrepModal).toBe(true);
-
         });
     });
 });

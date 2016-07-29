@@ -162,7 +162,7 @@ describe('Import REST Service', function () {
         let params = null;
         $httpBackend
             .expectGET(RestURLs.exportUrl+ '/imports/http/parameters')
-            .respond(200, {name: 'url'});
+            .respond(200, { name: 'url' });
 
         //when
         ImportRestService.importParameters('http')
@@ -173,6 +173,6 @@ describe('Import REST Service', function () {
         $rootScope.$digest();
 
         //then
-        expect(params).toEqual({name: 'url'});
+        expect(params).toEqual({ name: 'url' });
     }));
 });

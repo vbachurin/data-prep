@@ -12,7 +12,10 @@
  ============================================================================*/
 
 describe('Datasets filters component', () => {
-    let scope, createElement, element, controller;
+    let scope;
+    let createElement;
+    let element;
+    let controller;
 
     beforeEach(angular.mock.module('data-prep.datasets-filters'));
 
@@ -22,8 +25,6 @@ describe('Datasets filters component', () => {
             'RECENT_DATASETS_DESCRIPTION':'10 Last modified datasets',
             'FAVORITE_DATASETS':'Favorite Datasets',
             'FAVORITE_DATASETS_DESCRIPTION':'',
-            'CERTIFIED_DATASETS':'Certified Datasets',
-            'CERTIFIED_DATASETS_DESCRIPTION':'',
             'ALL_DATASETS':'All Datasets',
             'ALL_DATASETS_DESCRIPTION':'',
         });
@@ -54,11 +55,11 @@ describe('Datasets filters component', () => {
             createElement();
 
             //then
-            expect(element.find('.dataset-filter').length).toBe(4);
-            expect(element.find('.dataset-filter-icon').length).toBe(4);
-            expect(element.find('.dataset-filter-text').length).toBe(4);
-            expect(element.find('.dataset-filter-title').length).toBe(4);
-            expect(element.find('.dataset-filter-description').length).toBe(4);
+            expect(element.find('.dataset-filter').length).toBe(3);
+            expect(element.find('.dataset-filter-icon').length).toBe(3);
+            expect(element.find('.dataset-filter-text').length).toBe(3);
+            expect(element.find('.dataset-filter-title').length).toBe(3);
+            expect(element.find('.dataset-filter-description').length).toBe(3);
         });
 
         it('should select 1st filter by default', () => {
@@ -79,8 +80,7 @@ describe('Datasets filters component', () => {
             //then
             expect(element.find('.dataset-filter-icon').eq(0).find('img').attr('src')).toBe('/assets/images/inventory/recent-datasets.png');
             expect(element.find('.dataset-filter-icon').eq(1).find('.favorite').eq(0).attr('data-icon')).toBe('f');
-            expect(element.find('.dataset-filter-icon').eq(2).find('img').attr('src')).toBe('/assets/images/inventory/certified_no_shadow.png');
-            expect(element.find('.dataset-filter-icon').eq(3).find('img').attr('src')).toBe('/assets/images/inventory/all-datasets.png');
+            expect(element.find('.dataset-filter-icon').eq(2).find('img').attr('src')).toBe('/assets/images/inventory/all-datasets.png');
         });
 
         it('should render filters titles', () => {
@@ -90,8 +90,7 @@ describe('Datasets filters component', () => {
             //then
             expect(element.find('.dataset-filter-title').eq(0).text().trim()).toBe('Recent Datasets');
             expect(element.find('.dataset-filter-title').eq(1).text().trim()).toBe('Favorite Datasets');
-            expect(element.find('.dataset-filter-title').eq(2).text().trim()).toBe('Certified Datasets');
-            expect(element.find('.dataset-filter-title').eq(3).text().trim()).toBe('All Datasets');
+            expect(element.find('.dataset-filter-title').eq(2).text().trim()).toBe('All Datasets');
         });
 
         it('should render filters descriptions', () => {
@@ -102,7 +101,6 @@ describe('Datasets filters component', () => {
             expect(element.find('.dataset-filter-description').eq(0).text().trim()).toBe('10 Last modified datasets');
             expect(element.find('.dataset-filter-description').eq(1).text().trim()).toBe('');
             expect(element.find('.dataset-filter-description').eq(2).text().trim()).toBe('');
-            expect(element.find('.dataset-filter-description').eq(3).text().trim()).toBe('');
         });
     });
 

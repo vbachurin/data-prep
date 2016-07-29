@@ -25,7 +25,7 @@ class PreparationPickerCtrl {
      **/
     $onInit() {
         this.isFetchingPreparations = true;
-        this.fetchPreparations({datasetId: this.dataset.id})
+        this.fetchPreparations({ datasetId: this.dataset.id })
             .then((compatiblePreparations) => {
                 this.candidatePreparations = compatiblePreparations;
             })
@@ -35,4 +35,4 @@ class PreparationPickerCtrl {
     }
 }
 
-export default PreparationPickerCtrl
+export default PreparationPickerCtrl;

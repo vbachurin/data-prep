@@ -72,7 +72,7 @@ export default class HomeCtrl {
      * @methodOf data-prep.home.controller:HomeCtrl
      * @description Update the displayed icon to toggle right panel
      */
-     updateRightPanelIcon() {
+    updateRightPanelIcon() {
         this.showRightPanelIcon = this.showRightPanel ? 't' : 'u';
     }
 
@@ -82,7 +82,7 @@ export default class HomeCtrl {
      * @methodOf data-prep.home.controller:HomeCtrl
      * @description Get the data inventory panel parameters from localStorage
      */
-     getRightPanelState() {
+    getRightPanelState() {
         let params = this.$window.localStorage.getItem(this.DATA_INVENTORY_PANEL_KEY);
         return params ? JSON.parse(params) : false;
     }
@@ -93,7 +93,7 @@ export default class HomeCtrl {
      * @methodOf data-prep.home.controller:HomeCtrl
      * @description Save the data inventory panel parameters in localStorage
      */
-     saveRightPanelState() {
+    saveRightPanelState() {
         this.$window.localStorage.setItem(this.DATA_INVENTORY_PANEL_KEY, JSON.stringify(this.showRightPanel));
     }
 }

@@ -14,16 +14,19 @@
 describe('Feedback directive', function() {
     'use strict';
 
-    var scope, createElement, element, stateMock;
+    var scope;
+    var createElement;
+    var element;
+    var stateMock;
     var body = angular.element('body');
     beforeEach(angular.mock.module('data-prep.feedback', function ($provide) {
-        stateMock = {feedback: {
-            visible: false
-        }};
+        stateMock = { feedback: {
+                visible: false
+        } };
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(inject(function($rootScope, $compile) {
         scope = $rootScope.$new();

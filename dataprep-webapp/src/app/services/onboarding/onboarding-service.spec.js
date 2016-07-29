@@ -11,24 +11,11 @@
 
  ============================================================================*/
 
-describe('Onboarding service', function () {
+describe('Onboarding service', () => {
     'use strict';
 
     const TOUR_OPTIONS_KEY = 'org.talend.dataprep.tour_options';
     let stateMock;
-    const introJsMock = {
-        setOptions: function () {
-            return this;
-        },
-        oncomplete: function () {
-            return this;
-        },
-        onexit: function () {
-            return this;
-        },
-        start: function () {
-        }
-    };
 
     beforeEach(angular.mock.module('data-prep.services.onboarding', ($provide) => {
         stateMock = {
@@ -39,68 +26,62 @@ describe('Onboarding service', function () {
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(inject(function ($state, $window) {
-        $window.introJs = function () {
-            return introJsMock;
-        };
-
-        spyOn(introJsMock, 'setOptions').and.callThrough();
-        spyOn(introJsMock, 'oncomplete').and.callThrough();
-        spyOn(introJsMock, 'onexit').and.callThrough();
-        spyOn(introJsMock, 'start').and.callThrough();
+    beforeEach(inject(($state) => {
         spyOn($state, 'go').and.returnValue();
     }));
 
-    afterEach(inject(function ($window) {
+    afterEach(inject(($window) => {
         $window.localStorage.removeItem(TOUR_OPTIONS_KEY);
     }));
 
-    it('should return true when tour has not been completed yet', inject(function ($window, OnboardingService) {
-        //given
+    it('should return true when tour has not been completed yet', inject(($window, OnboardingService) => {
+        // given
         $window.localStorage.removeItem(TOUR_OPTIONS_KEY);
 
-        //when
+        // when
         var result = OnboardingService.shouldStartTour('preparation');
 
-        //then
+        // then
         expect(result).toBe(true);
     }));
 
-    it('should return false when tour has already been completed', inject(function ($window, OnboardingService) {
-        //given
-        $window.localStorage.setItem(TOUR_OPTIONS_KEY, JSON.stringify({preparation: true}));
+    it('should return false when tour has already been completed', inject(($window, OnboardingService) => {
+        // given
+        $window.localStorage.setItem(TOUR_OPTIONS_KEY, JSON.stringify({ preparation: true }));
 
-        //when
+        // when
         var result = OnboardingService.shouldStartTour('preparation');
 
-        //then
+        // then
         expect(result).toBe(false);
     }));
 
-    it('should configure intro.js options', inject(function ($timeout, OnboardingService) {
-        //given
+    it('should configure intro.js options', inject(($timeout, OnboardingService) => {
+        // given
+        expect(OnboardingService.currentTour).toBeFalsy();
 
-        //when
+        // when
         OnboardingService.startTour('preparation');
         $timeout.flush(200);
 
-        //then
-        expect(introJsMock.setOptions).toHaveBeenCalled();
-        var options = introJsMock.setOptions.calls.argsFor(0)[0];
+        // then
+        const options = OnboardingService.currentTour._options;
         expect(options.nextLabel).toBe('NEXT');
         expect(options.prevLabel).toBe('BACK');
         expect(options.skipLabel).toBe('SKIP');
         expect(options.doneLabel).toBe('LET ME TRY');
     }));
 
-    it('should create/adapt preparation tour step', inject(function ($timeout, OnboardingService) {
-        //when
+    it('should create/adapt preparation tour step', inject(($timeout, OnboardingService) => {
+        // given
+        expect(OnboardingService.currentTour).toBeFalsy();
+        
+        // when
         OnboardingService.startTour('preparation');
         $timeout.flush(200);
 
-        //then
-        expect(introJsMock.setOptions).toHaveBeenCalled();
-        var options = introJsMock.setOptions.calls.argsFor(0)[0];
+        // then
+        const options = OnboardingService.currentTour._options;
         expect(options.steps[0]).toEqual({
             element: '#nav_home_preparations',
             position: 'right',
@@ -108,14 +89,16 @@ describe('Onboarding service', function () {
         });
     }));
 
-    it('should create/adapt playground step', inject(function ($timeout, OnboardingService) {
-        //when
+    it('should create/adapt playground step', inject(($timeout, OnboardingService) => {
+        // given
+        expect(OnboardingService.currentTour).toBeFalsy();
+        
+        // when
         OnboardingService.startTour('playground');
         $timeout.flush(200);
 
-        //then
-        expect(introJsMock.setOptions).toHaveBeenCalled();
-        var options = introJsMock.setOptions.calls.argsFor(0)[0];
+        // then
+        const options = OnboardingService.currentTour._options;
         expect(options.steps[0]).toEqual({
             element: '.no-js',
             position: 'right',
@@ -123,14 +106,16 @@ describe('Onboarding service', function () {
         });
     }));
 
-    it('should create/adapt column selection', inject(function ($timeout, OnboardingService) {
-        //when
+    it('should create/adapt column selection', inject(($timeout, OnboardingService) => {
+        // given
+        expect(OnboardingService.currentTour).toBeFalsy();
+        
+        // when
         OnboardingService.startTour('playground');
         $timeout.flush(200);
 
-        //then
-        expect(introJsMock.setOptions).toHaveBeenCalled();
-        var options = introJsMock.setOptions.calls.argsFor(0)[0];
+        // then
+        const options = OnboardingService.currentTour._options;
         expect(options.steps[1]).toEqual({
             element: '#datagrid .slick-header-columns-right > .slick-header-column',
             position: 'right',
@@ -138,14 +123,16 @@ describe('Onboarding service', function () {
         });
     }));
 
-    it('should create/adapt recipe tour step', inject(function ($timeout, OnboardingService) {
-        //when
+    it('should create/adapt recipe tour step', inject(($timeout, OnboardingService) => {
+        // given
+        expect(OnboardingService.currentTour).toBeFalsy();
+        
+        // when
         OnboardingService.startTour('recipe');
         $timeout.flush(200);
 
-        //then
-        expect(introJsMock.setOptions).toHaveBeenCalled();
-        var options = introJsMock.setOptions.calls.argsFor(0)[0];
+        // then
+        const options = OnboardingService.currentTour._options;
         expect(options.steps[0]).toEqual({
             element: '#help-recipe > .recipe',
             position: 'right',
@@ -153,82 +140,72 @@ describe('Onboarding service', function () {
         });
     }));
 
-    it('should save "preparation" state in localstorage on tour complete', inject(function ($timeout, $window, OnboardingService) {
-        //given
+    it('should save "preparation" state in localstorage on tour complete', inject(($timeout, $window, OnboardingService) => {
+        // given
         $window.localStorage.removeItem(TOUR_OPTIONS_KEY);
 
+        expect(OnboardingService.currentTour).toBeFalsy();
         OnboardingService.startTour('preparation');
         $timeout.flush(200);
-        expect(introJsMock.oncomplete).toHaveBeenCalled();
 
-        var oncomplete = introJsMock.oncomplete.calls.argsFor(0)[0];
+        const oncomplete = OnboardingService.currentTour._introCompleteCallback;
 
-        //when
+        // when
         oncomplete();
 
-        //then
-        var options = JSON.parse($window.localStorage.getItem(TOUR_OPTIONS_KEY));
+        // then
+        const options = JSON.parse($window.localStorage.getItem(TOUR_OPTIONS_KEY));
         expect(options.preparation).toBe(true);
     }));
 
-    it('should save "preparation" state in localstorage on tour exit', inject(function ($timeout, $window, OnboardingService) {
-        //given
+    it('should save "preparation" state in localstorage on tour exit', inject(($timeout, $window, OnboardingService) => {
+        // given
         $window.localStorage.removeItem(TOUR_OPTIONS_KEY);
 
+        expect(OnboardingService.currentTour).toBeFalsy();
         OnboardingService.startTour('preparation');
         $timeout.flush(200);
-        expect(introJsMock.onexit).toHaveBeenCalled();
-
-        var onexit = introJsMock.onexit.calls.argsFor(0)[0];
-
-        //when
+        const onexit = OnboardingService.currentTour._introExitCallback;
+        
+        // when
         onexit();
 
-        //then
-        var options = JSON.parse($window.localStorage.getItem(TOUR_OPTIONS_KEY));
+        // then
+        const options = JSON.parse($window.localStorage.getItem(TOUR_OPTIONS_KEY));
         expect(options.preparation).toBe(true);
-    }));
-
-    it('should start onboarding', inject(function ($timeout, $window, OnboardingService) {
-        //when
-        OnboardingService.startTour('preparation');
-        $timeout.flush(200);
-
-        //then
-        expect(introJsMock.start).toHaveBeenCalled();
     }));
 
     it('should redirect to "preparations" before starting onboarding', inject(($state, OnboardingService) => {
-        //given
+        // given
         $state.current = {
             name: 'nav.index.datasets'
         };
 
-        //when
+        // when
         OnboardingService.startTour('preparation');
 
-        //then
-        expect($state.go).toHaveBeenCalledWith('nav.index.preparations', {folderId: stateMock.inventory.homeFolderId});
+        // then
+        expect($state.go).toHaveBeenCalledWith('nav.index.preparations', { folderId: stateMock.inventory.homeFolderId });
     }));
 
     it('should redirect BACK to "datasets" after redirecting to "preparations" ', inject(($timeout, $state, OnboardingService) => {
-        //given
+        // given
         $state.current = {
             name: 'nav.index.datasets'
         };
 
+        expect(OnboardingService.currentTour).toBeFalsy();
         OnboardingService.startTour('preparation');
-        expect($state.go).toHaveBeenCalledWith('nav.index.preparations', {folderId: stateMock.inventory.homeFolderId})
+        expect($state.go).toHaveBeenCalledWith('nav.index.preparations', { folderId: stateMock.inventory.homeFolderId });
 
-        //when
+        // when
         $timeout.flush(200);
-        expect(introJsMock.onexit).toHaveBeenCalled();
-        var onexit = introJsMock.onexit.calls.argsFor(0)[0];
+        const onexit = OnboardingService.currentTour._introExitCallback;
 
-        //when
+        // when
         onexit();
 
-        //then
+        // then
         expect($state.go).toHaveBeenCalledWith('nav.index.datasets');
     }));
 });

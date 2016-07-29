@@ -16,10 +16,10 @@
  * @name data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
  * @description Actions suggestion controller
  * @requires data-prep.services.transformation.service:TransformationService
- * @requires data-prep.services.transformation.service:TransformationApplicationService
- * @requires data-prep.services.playground.service:EarlyPreviewService
+ * @requires data-prep.services.playground.service:PlaygroundService
+ * @requires data-prep.services.early-preview.service:EarlyPreviewService
  */
-export default function ActionsListCtrl($timeout, state, TransformationService, TransformationApplicationService, EarlyPreviewService) {
+export default function ActionsListCtrl($timeout, state, TransformationService, PlaygroundService, EarlyPreviewService) {
     'ngInject';
 
     var vm = this;
@@ -147,7 +147,7 @@ export default function ActionsListCtrl($timeout, state, TransformationService, 
             EarlyPreviewService.deactivatePreview();
             EarlyPreviewService.cancelPendingPreview();
 
-            TransformationApplicationService.append(action, vm.scope, params)
+            PlaygroundService.completeParamsAndAppend(action, vm.scope, params)
                 .then(function () {
                     vm.showDynamicModal = false;
                 })

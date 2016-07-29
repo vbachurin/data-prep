@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './recipe.html';
+
 /**
  * @ngdoc directive
  * @name data-prep.recipe.directive:Recipe
@@ -23,12 +25,12 @@ export default function Recipe($timeout) {
 
     return {
         restrict: 'E',
-        templateUrl: 'app/components/recipe/recipe.html',
+        templateUrl: template,
         controllerAs: 'recipeCtrl',
         controller: 'RecipeCtrl',
         link: function (scope, iElement, iAttrs, ctrl) {
-            function attachDeleteMouseOver(recipe) {
-                _.forEach(recipe, function (step) {
+            function attachDeleteMouseOver(allSteps) {
+                _.forEach(allSteps, function (step) {
                     var stepId = step.transformation.stepId;
                     var hasDiff = step.diff && step.diff.createdColumns && step.diff.createdColumns.length;
 
@@ -38,7 +40,7 @@ export default function Recipe($timeout) {
                             step.diff.createdColumns.indexOf(stepToTest.actionParameters.parameters.column_id) > -1); //step on a column that will be removed
                     }
 
-                    var stepsToRemove = _.chain(recipe)
+                    var stepsToRemove = _.chain(allSteps)
                         .filter(shouldBeRemoved)
                         .map(function (step) {
                             return iElement.find('#step-' + step.transformation.stepId);
@@ -60,9 +62,9 @@ export default function Recipe($timeout) {
             }
 
             scope.$watch(function () {
-                return ctrl.recipe;
-            }, function (recipe) {
-                $timeout(attachDeleteMouseOver.bind(null, recipe), 0, false);
+                return ctrl.state.playground.recipe.current.steps;
+            }, function (allSteps) {
+                $timeout(attachDeleteMouseOver.bind(null, allSteps), 0, false);
             });
         }
     };

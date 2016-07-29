@@ -20,11 +20,10 @@
  * @requires data-prep.services.utils.service:ConverterService
  * @requires data-prep.services.playground.service:PlaygroundService
  * @requires data-prep.services.filter.service:FilterService
- * @requires data-prep.services.transformation.service:TransformationApplicationService
  * @requires data-prep.services.transformation.service:ColumnSuggestionService
  */
 export default function DatagridHeaderCtrl($scope, state, TransformationCacheService, ConverterService, PlaygroundService,
-                                           FilterService, TransformationApplicationService, ColumnSuggestionService) {
+    FilterService, ColumnSuggestionService) {
     'ngInject';
 
     const ACTION_SCOPE = 'column_metadata';
@@ -34,7 +33,7 @@ export default function DatagridHeaderCtrl($scope, state, TransformationCacheSer
     const vm = this;
     vm.converterService = ConverterService;
     vm.filterService = FilterService;
-    vm.transformationApplicationService = TransformationApplicationService;
+    vm.PlaygroundService = PlaygroundService;
     vm.columnSuggestionService = ColumnSuggestionService;
     vm.state = state;
 
@@ -81,7 +80,9 @@ export default function DatagridHeaderCtrl($scope, state, TransformationCacheSer
                         (menu) => (menu.actionScope.indexOf(ACTION_SCOPE) !== -1)
                     );
                 })
-                .catch(() => { vm.transformationsRetrieveError = true })
+                .catch(() => {
+                    vm.transformationsRetrieveError = true;
+                })
                 .finally(() => {
                     transformationsMustBeRetrieved = false;
                     vm.initTransformationsInProgress = false;
@@ -154,7 +155,7 @@ export default function DatagridHeaderCtrl($scope, state, TransformationCacheSer
     $scope.$watch(
         () => vm.column,
         () => {
-            transformationsMustBeRetrieved = true
+            transformationsMustBeRetrieved = true;
         }
     );
 }

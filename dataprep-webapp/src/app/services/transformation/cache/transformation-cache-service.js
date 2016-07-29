@@ -21,8 +21,8 @@
 export default function TransformationCacheService($q, $cacheFactory, TransformationService) {
     'ngInject';
 
-    var transformationsCache = $cacheFactory('transformationsCache', {capacity: 10});
-    var suggestionsCache = $cacheFactory('suggestionsCache', {capacity: 10});
+    var transformationsCache = $cacheFactory('transformationsCache', { capacity: 10 });
+    var suggestionsCache = $cacheFactory('suggestionsCache', { capacity: 10 });
 
     return {
         invalidateCache: invalidateCache,

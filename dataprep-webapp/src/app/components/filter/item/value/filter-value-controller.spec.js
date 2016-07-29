@@ -14,10 +14,13 @@
 describe('Filter item value controller', () => {
     'use strict';
 
-    let createController, scope;
-    let filterValue,
-        editable, onEditFn,
-        removable, onRemoveFn;
+    let createController;
+    let scope;
+    let filterValue;
+    let editable;
+    let onEditFn;
+    let removable;
+    let onRemoveFn;
 
     const originalFilterValue = 'lorem ipsum';
     const newFilterValue = 'LOREM ISPUM DOLOR';

@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './quality-bar.html';
+
 /**
  * @ngdoc directive
  * @name data-prep.quality-bar.directive:QualityBar
@@ -33,7 +35,7 @@ export default function QualityBar($timeout) {
 
     return {
         restrict: 'E',
-        templateUrl: 'app/components/widgets/quality-bar/quality-bar.html',
+        templateUrl: template,
         scope: {
             enterAnimation: '@',
             quality: '<',

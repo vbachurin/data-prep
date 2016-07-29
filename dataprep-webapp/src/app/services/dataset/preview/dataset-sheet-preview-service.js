@@ -107,8 +107,8 @@ export default function DatasetSheetPreviewService(DatasetService) {
             return {
                 id: col.id,
                 name: '<div class="grid-header">' +
-                '<div class="grid-header-title dropdown-button ng-binding">' + col.name + '</div>' +
-                '</div>',
+                    '<div class="grid-header-title dropdown-button ng-binding">' + col.name + '</div>' +
+                    '</div>',
                 field: col.id,
                 minWidth: 100
             };
@@ -166,5 +166,4 @@ export default function DatasetSheetPreviewService(DatasetService) {
     this.setDatasetSheet = function (sheetName) {
         return DatasetService.setDatasetSheet(self.currentMetadata, sheetName);
     };
-
 }

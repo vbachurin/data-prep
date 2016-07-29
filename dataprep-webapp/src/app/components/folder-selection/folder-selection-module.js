@@ -11,6 +11,15 @@
 
  ============================================================================*/
 
+import angular from 'angular';
+import SERVICES_FOLDER_MODULE from '../../services/folder/folder-module';
+
+import FolderSelection from './folder-selection-component';
+import FolderTreeComponent from './folder-tree/folder-tree-component';
+import FolderTreeNodeComponent from './folder-tree-node/folder-tree-node-component';
+
+const MODULE_NAME = 'data-prep.folder-selection';
+
 /**
  * @ngdoc object
  * @name data-prep.folder-selection
@@ -18,14 +27,9 @@
  * @requires data-prep.services.state
  * @requires data-prep.services.folder
  */
+angular.module(MODULE_NAME, [SERVICES_FOLDER_MODULE])
+    .component('folderTreeNode', FolderTreeNodeComponent)
+    .component('folderTree', FolderTreeComponent)
+    .component('folderSelection', FolderSelection);
 
-import FolderSelection from './folder-selection-component';
-import FolderTreeComponent from './folder-tree/folder-tree-component';
-import FolderTreeNodeComponent from './folder-tree-node/folder-tree-node-component';
-
-(() => {
-    angular.module('data-prep.folder-selection', ['data-prep.services.folder'])
-        .component('folderTreeNode', FolderTreeNodeComponent)
-        .component('folderTree', FolderTreeComponent)
-        .component('folderSelection', FolderSelection);
-})();
+export default MODULE_NAME;

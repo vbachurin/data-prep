@@ -11,14 +11,21 @@
 
  ============================================================================*/
 
+import angular from 'angular';
+import BREADCRUMB_MODULE from '../../breadcrumb/breadcrumb-module';
+import SERVICES_FOLDER_MODULE from '../../../services/folder/folder-module';
+import SERVICES_STATE_MODULE from '../../../services/state/state-module';
+
 import PreparationBreadcrumbComponent from './preparation-breadcrumb-component';
 
-(() => {
-    angular.module('data-prep.preparation-breadcrumb', 
-        [
-            'data-prep.breadcrumb',
-            'data-prep.services.state',
-            'data-prep.services.folder',
-        ])
-        .component('preparationBreadcrumb', PreparationBreadcrumbComponent)
-})();
+const MODULE_NAME = 'data-prep.preparation-breadcrumb';
+
+angular.module(MODULE_NAME,
+    [
+        BREADCRUMB_MODULE,
+        SERVICES_FOLDER_MODULE,
+        SERVICES_STATE_MODULE,
+    ])
+    .component('preparationBreadcrumb', PreparationBreadcrumbComponent);
+
+export default MODULE_NAME;

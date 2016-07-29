@@ -14,7 +14,11 @@
 describe('Home controller', () => {
     'use strict';
 
-    let ctrl, createController, scope, $httpBackend, StateMock;
+    let ctrl;
+    let createController;
+    let scope;
+    let $httpBackend;
+    let StateMock;
     const DATA_INVENTORY_PANEL_KEY = 'org.talend.dataprep.data_inventory_panel_display';
     const dataset = { id: 'ec4834d9bc2af8', name: 'Customers (50 lines)', draft: false };
 
@@ -54,7 +58,6 @@ describe('Home controller', () => {
     }));
 
     describe('with created controller', () => {
-
         beforeEach(inject( () => {
             ctrl = createController();
         }));

@@ -14,7 +14,9 @@
 describe('Column profile options component', () => {
     'use strict';
 
-    let createElement, scope, element;
+    let createElement;
+    let scope;
+    let element;
 
     beforeEach(angular.mock.module('pascalprecht.translate', ($translateProvider) => {
         $translateProvider.translations('en_US', {
@@ -32,7 +34,7 @@ describe('Column profile options component', () => {
     }));
 
     beforeEach(angular.mock.module('data-prep.column-profile-options'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
     beforeEach(angular.mock.module('ngSanitize'));
 
     beforeEach(inject(($rootScope, $compile) => {

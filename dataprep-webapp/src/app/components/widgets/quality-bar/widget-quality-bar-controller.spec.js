@@ -14,7 +14,8 @@
 describe('Quality bar controller', function () {
     'use strict';
 
-    var createController, scope;
+    var createController;
+    var scope;
 
     beforeEach(angular.mock.module('talend.widget'));
 

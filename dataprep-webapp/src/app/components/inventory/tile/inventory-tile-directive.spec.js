@@ -12,7 +12,10 @@
  ============================================================================*/
 
 describe('Inventory Tile Component', () => {
-    let htmlConfig, scope, createElement, element;
+    let htmlConfig;
+    let scope;
+    let createElement;
+    let element;
 
     beforeEach(angular.mock.module('pascalprecht.translate', ($translateProvider) => {
         $translateProvider.translations('en_US', {
@@ -25,7 +28,7 @@ describe('Inventory Tile Component', () => {
     }));
 
     beforeEach(angular.mock.module('data-prep.inventory-tile'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(inject(($rootScope, $compile) => {
         scope = $rootScope.$new();

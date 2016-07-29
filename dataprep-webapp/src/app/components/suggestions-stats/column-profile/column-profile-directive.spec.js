@@ -11,10 +11,13 @@
 
   ============================================================================*/
 
-describe('Suggestions Profile directive', () => {
+describe('Column Profile directive', () => {
     'use strict';
 
-    let scope, createElement, element, stateMock;
+    let scope;
+    let createElement;
+    let element;
+    let stateMock;
 
     beforeEach(angular.mock.module('data-prep.suggestions-stats', ($provide) => {
         stateMock = {
@@ -27,7 +30,7 @@ describe('Suggestions Profile directive', () => {
         };
         $provide.constant('state', stateMock);
     }));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(inject(($rootScope, $compile, $timeout) => {
         scope = $rootScope.$new();

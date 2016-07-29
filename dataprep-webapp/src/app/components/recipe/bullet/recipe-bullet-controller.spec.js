@@ -14,14 +14,16 @@
 describe('Recipe Bullet controller', function () {
     'use strict';
 
-    var createController, scope, step;
+    var createController;
+    var scope;
+    var step;
 
     beforeEach(angular.mock.module('data-prep.recipe-bullet'));
 
     beforeEach(inject(function ($rootScope, $controller) {
         scope = $rootScope.$new();
         step = {
-            transformation: {stepId: '138ea798bc56', column:{id:'0002'}}
+            transformation: { stepId: '138ea798bc56', column:{ id:'0002' } }
         };
 
         createController = function () {
@@ -31,70 +33,64 @@ describe('Recipe Bullet controller', function () {
             ctrlFn.instance.step = step;
             return ctrlFn();
         };
-
     }));
 
-    it('should init step index', inject(function (RecipeService) {
+    it('should init step index', inject(function (StepUtilsService) {
         //given
-        spyOn(RecipeService, 'getStepIndex').and.returnValue(3);
+        spyOn(StepUtilsService, 'getStepIndex').and.returnValue(3);
 
         //when
         var ctrl = createController();
 
         //then
         expect(ctrl.stepIndex).toBe(3);
-        expect(RecipeService.getStepIndex).toHaveBeenCalledWith(step);
     }));
 
-    it('should return true when step is the first step', inject(function (RecipeService) {
+    it('should return true when step is the first step', inject(function (StepUtilsService) {
         //given
-        spyOn(RecipeService, 'isFirstStep').and.returnValue(true);
+        spyOn(StepUtilsService, 'isFirstStep').and.returnValue(true);
         var ctrl = createController();
 
         //when
         var isFirst = ctrl.isStartChain();
 
         //then
-        expect(RecipeService.isFirstStep).toHaveBeenCalledWith(step);
         expect(isFirst).toBe(true);
     }));
 
-    it('should return false when step is NOT the first step', inject(function (RecipeService) {
+    it('should return false when step is NOT the first step', inject(function (StepUtilsService) {
         //given
-        spyOn(RecipeService, 'isFirstStep').and.returnValue(false);
+        spyOn(StepUtilsService, 'isFirstStep').and.returnValue(false);
         var ctrl = createController();
 
         //when
         var isFirst = ctrl.isStartChain();
 
         //then
-        expect(RecipeService.isFirstStep).toHaveBeenCalledWith(step);
         expect(isFirst).toBe(false);
     }));
 
-    it('should return true when step is the last step', inject(function (RecipeService) {
+    it('should return true when step is the last step', inject(function (StepUtilsService) {
         //given
-        spyOn(RecipeService, 'isLastStep').and.returnValue(true);
+        spyOn(StepUtilsService, 'isLastStep').and.returnValue(true);
         var ctrl = createController();
 
         //when
         var isLast = ctrl.isEndChain();
 
         //then
-        expect(RecipeService.isLastStep).toHaveBeenCalledWith(step);
         expect(isLast).toBe(true);
     }));
 
-    it('should return false when step is NOT the last step', inject(function (RecipeService) {
+    it('should return false when step is NOT the last step', inject(function (StepUtilsService) {
         //given
-        spyOn(RecipeService, 'isLastStep').and.returnValue(false);
+        spyOn(StepUtilsService, 'isLastStep').and.returnValue(false);
         var ctrl = createController();
 
         //when
         var isLast = ctrl.isEndChain();
 
         //then
-        expect(RecipeService.isLastStep).toHaveBeenCalledWith(step);
         expect(isLast).toBe(false);
     }));
 
@@ -122,16 +118,16 @@ describe('Recipe Bullet controller', function () {
         expect(RecipeBulletService.stepHoverEnd).toHaveBeenCalledWith(step);
     }));
 
-    it('should call toggle step action', inject(function (RecipeBulletService) {
+    it('should call toggle step action', inject((PlaygroundService) => {
         //given
-        spyOn(RecipeBulletService, 'toggleStep').and.returnValue();
-        var ctrl = createController();
+        spyOn(PlaygroundService, 'toggleStep').and.returnValue();
+        const ctrl = createController();
 
         //when
         ctrl.toggleStep();
 
         //then
-        expect(RecipeBulletService.toggleStep).toHaveBeenCalledWith(step);
+        expect(PlaygroundService.toggleStep).toHaveBeenCalledWith(step);
     }));
 
     describe('active step', function () {
@@ -139,11 +135,11 @@ describe('Recipe Bullet controller', function () {
         var activeStepThreshold = 5;
         var allSvgs = [2, 5, 8, 58, 4, 212, 87, 52];
 
-        beforeEach(inject(function (RecipeService) {
+        beforeEach(inject(function (StepUtilsService) {
             step.inactive = false;
 
-            spyOn(RecipeService, 'getStepIndex').and.returnValue(stepIndex);
-            spyOn(RecipeService, 'getActiveThresholdStepIndex').and.returnValue(activeStepThreshold);
+            spyOn(StepUtilsService, 'getStepIndex').and.returnValue(stepIndex);
+            spyOn(StepUtilsService, 'getActiveThresholdStepIndex').and.returnValue(activeStepThreshold);
         }));
 
         it('should get all steps after the current when step is active', function () {
@@ -156,7 +152,6 @@ describe('Recipe Bullet controller', function () {
             //then
             expect(bullets).toEqual(allSvgs.slice(stepIndex));
         });
-
     });
 
     describe('inactive step', function () {
@@ -164,11 +159,11 @@ describe('Recipe Bullet controller', function () {
         var activeStepThreshold = 2;
         var allSvgs = [2, 5, 8, 58, 4, 212, 87, 52];
 
-        beforeEach(inject(function (RecipeService) {
+        beforeEach(inject(function (StepUtilsService) {
             step.inactive = true;
 
-            spyOn(RecipeService, 'getStepIndex').and.returnValue(stepIndex);
-            spyOn(RecipeService, 'getActiveThresholdStepIndex').and.returnValue(activeStepThreshold);
+            spyOn(StepUtilsService, 'getStepIndex').and.returnValue(stepIndex);
+            spyOn(StepUtilsService, 'getActiveThresholdStepIndex').and.returnValue(activeStepThreshold);
         }));
 
         it('should get all steps after the current when step is active', function () {
@@ -181,7 +176,5 @@ describe('Recipe Bullet controller', function () {
             //then
             expect(bullets).toEqual(allSvgs.slice(3, 6));
         });
-
     });
-
 });

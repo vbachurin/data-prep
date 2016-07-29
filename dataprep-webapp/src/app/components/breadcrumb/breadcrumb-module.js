@@ -11,9 +11,13 @@
 
  ============================================================================*/
 
+import angular from 'angular';
+import sunchoke from 'sunchoke';
 import BreadcrumbComponent from './breadcrumb-component';
 
-(() => {
-    angular.module('data-prep.breadcrumb', ['talend.sunchoke.dropdown'])
-        .component('breadcrumb', BreadcrumbComponent)
-})();
+const MODULE_NAME = 'data-prep.breadcrumb';
+
+angular.module(MODULE_NAME, [sunchoke.dropdown])
+    .component('breadcrumb', BreadcrumbComponent);
+
+export default MODULE_NAME;

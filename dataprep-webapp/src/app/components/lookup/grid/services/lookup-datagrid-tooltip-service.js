@@ -22,7 +22,8 @@ export default function LookupDatagridTooltipService($timeout, state, TextFormat
     'ngInject';
 
     var grid;
-    var tooltipTimeout, tooltipShowPromise;
+    var tooltipTimeout;
+    var tooltipShowPromise;
     var tooltipDelay = 300;
 
     var service = {
@@ -141,7 +142,7 @@ export default function LookupDatagridTooltipService($timeout, state, TextFormat
 
         // return if the content is bigger than the displayed box by computing the diff between the displayed box
         // and the hidden tooltip ruler size minus the cell padding
-        return (box.right - box.left - 12 ) <= ruler.width() || (box.bottom - box.top) < ruler.height();
+        return (box.right - box.left - 12) <= ruler.width() || (box.bottom - box.top) < ruler.height();
     }
 
     /**

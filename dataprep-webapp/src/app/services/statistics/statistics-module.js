@@ -11,28 +11,33 @@
 
  ============================================================================*/
 
+import angular from 'angular';
+import SERVICES_FILTER_ADAPTER_MODULE from '../filter/adapter/filter-adapter-module';
+import SERVICES_STATE_MODULE from '../state/state-module';
+import SERVICES_UTILS_MODULE from '../utils/utils-module';
+
 import StatisticsTooltipService from './statistics-tooltip-service';
 import StatisticsRestService from './rest/statistics-rest-service';
 import StatisticsService from './statistics-service';
 
-(() => {
-    'use strict';
+const MODULE_NAME = 'data-prep.services.statistics';
 
-    /**
-     * @ngdoc object
-     * @name data-prep.services.statistics
-     * @description This module contains the statistics service
-     * @requires data-prep.services.playground
-     * @requires data-prep.services.state
-     * @requires data-prep.services.utils
-     */
-    angular.module('data-prep.services.statistics',
-        [
-            'data-prep.services.playground',
-            'data-prep.services.state',
-            'data-prep.services.utils',
-        ])
-        .service('StatisticsTooltipService', StatisticsTooltipService)
-        .service('StatisticsRestService', StatisticsRestService)
-        .service('StatisticsService', StatisticsService);
-})();
+/**
+ * @ngdoc object
+ * @name data-prep.services.statistics
+ * @description This module contains the statistics service
+ * @requires data-prep.services.playground
+ * @requires data-prep.services.state
+ * @requires data-prep.services.utils
+ */
+angular.module(MODULE_NAME,
+    [
+        SERVICES_FILTER_ADAPTER_MODULE,
+        SERVICES_STATE_MODULE,
+        SERVICES_UTILS_MODULE,
+    ])
+    .service('StatisticsTooltipService', StatisticsTooltipService)
+    .service('StatisticsRestService', StatisticsRestService)
+    .service('StatisticsService', StatisticsService);
+
+export default MODULE_NAME;

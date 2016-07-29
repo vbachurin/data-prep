@@ -13,11 +13,6 @@
 
 @import "css/vendors/customisation/sunchoke";
 
-/* Do not remove the comments below. It's the markers used by wiredep to inject
-   sass dependencies when defined in the bower.json of your dependencies */
-// bower:scss
-// endbower
-
 @import "css/vendors/libs/libs";
 @import "css/utils/utils";
 
@@ -26,7 +21,79 @@
 @import "css/components/components";
 @import "css/pages/pages";
 
-/* Do not remove the comments below. It's the markers used by gulp-inject to inject
-   all your sass files automatically */
-// injector
-// endinjector
+@import "components/breadcrumb/_breadcrumb.scss";
+@import "components/datagrid/_datagrid.scss";
+@import "components/export/_export.scss";
+@import "components/feedback/_feedback.scss";
+@import "components/folder-selection/_folder-selection.scss";
+@import "components/history-control/_history.scss";
+@import "components/home/_home.scss";
+@import "components/home/_menu.scss";
+@import "components/home/_subheader.scss";
+@import "components/import/import.scss";
+@import "components/lookup/_lookup.scss";
+@import "components/navbar/_navigation.scss";
+@import "components/playground/_playground.scss";
+@import "components/recipe/_recipe.scss";
+@import "components/suggestions-stats/_suggestions-stats.scss";
+@import "components/upgrade-version/_upgrade-version.scss";
+@import "components/datagrid/header/_datagrid-header.scss";
+@import "components/dataset/list/_dataset-list.scss";
+@import "components/dataset/parameters/_dataset-parameters.scss";
+@import "components/dataset/preview/_dataset-xls-preview.scss";
+@import "components/dataset/upload-list/_dataset-upload-list.scss";
+@import "components/easter-eggs/star-wars/_star-wars.scss";
+@import "components/filter/bar/_filter-bar.scss";
+@import "components/filter/item/_filter-item.scss";
+@import "components/filter/list/_filter-list.scss";
+@import "components/filter/monitor/_filter-monitor.scss";
+@import "components/filter/search/_filter-search.scss";
+@import "components/folder-selection/folder-tree-node/_folder-tree-node.scss";
+@import "components/inventory/copy-move/_inventory-copy-move.scss";
+@import "components/inventory/header/_inventory-header.scss";
+@import "components/inventory/item/_inventory-item.scss";
+@import "components/inventory/tile/_inventory-tile.scss";
+@import "components/lookup/grid/_lookup-datagrid.scss";
+@import "components/playground/header/_playground-header-left.scss";
+@import "components/playground/header/_playground-header-right.scss";
+@import "components/playground/header/_playground-header.scss";
+@import "components/preparation/breadcrumb/_preparation-breadcrumb.scss";
+@import "components/preparation/creator/_preparation-creator.scss";
+@import "components/preparation/list/_preparation-list.scss";
+@import "components/preparation/picker/_preparation-picker.scss";
+@import "components/recipe/bullet/_bullet-recipe.scss";
+@import "components/search/bar/_search-bar.scss";
+@import "components/search/documentation/_documentation-search.scss";
+@import "components/suggestions-stats/actions-list/_actions-list.scss";
+@import "components/suggestions-stats/actions-suggestions/_action-suggestions.scss";
+@import "components/suggestions-stats/column-profile-options/_column-profile-options.scss";
+@import "components/suggestions-stats/stats-details/_stats-details.scss";
+@import "components/transformation/form/_transformation-form.scss";
+@import "components/widgets/badge/_badge.scss";
+@import "components/widgets/button-dropdown/_button-dropdown.scss";
+@import "components/widgets/button-loader/_button-loader.scss";
+@import "components/widgets/dropdown/_dropdown.scss";
+@import "components/widgets/editable-regex/_editable-regex.scss";
+@import "components/widgets/editable-select/_editable-select.scss";
+@import "components/widgets/editable-text/_editable-text.scss";
+@import "components/widgets/file-selector/_file-selector.scss";
+@import "components/widgets/loading/_loading.scss";
+@import "components/widgets/modal/_modal.scss";
+@import "components/widgets/navbar/_navigation.scss";
+@import "components/widgets/navigation-list/_navigation-list.scss";
+@import "components/widgets/quality-bar/_quality-bar.scss";
+@import "components/widgets/search/_search-input.scss";
+@import "components/widgets/slidable/_slidable.scss";
+@import "components/widgets/tooltip/_tooltip.scss";
+@import "components/widgets/typeahead/_typeahead.scss";
+@import "components/filter/item/value/_filter-value.scss";
+@import "components/lookup/grid/header/_lookup-datagrid-header.scss";
+@import "components/preparation/creator/datasets-filters/_datasets-filters-component.scss";
+@import "components/transformation/form/choice/_transformation-choice-param.scss";
+@import "components/transformation/form/cluster/_transformation-cluster-params.scss";
+@import "components/transformation/form/date/_transformation-date-param.scss";
+@import "components/transformation/form/simple/_transformation-simple-param.scss";
+@import "components/widgets/charts/boxplot-chart/boxplot-chart.scss";
+@import "components/widgets/charts/horizontal-barchart/horizontal-barchart.scss";
+@import "components/widgets/charts/range-slider/range-slider.scss";
+@import "components/widgets/charts/vertical-barchart/vertical-barchart.scss";

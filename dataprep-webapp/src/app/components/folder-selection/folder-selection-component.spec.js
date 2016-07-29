@@ -12,14 +12,13 @@
  ============================================================================*/
 
 describe('folder selection component', () => {
-
     let createElement;
     let scope;
     let element;
     let tree;
 
     beforeEach(angular.mock.module('data-prep.folder-selection'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
     beforeEach(angular.mock.module('pascalprecht.translate', ($translateProvider) => {
         $translateProvider.translations('en', {
             "FOLDER_PATH": "(Path: {{path}})"
@@ -39,21 +38,21 @@ describe('folder selection component', () => {
 
     beforeEach(inject(($q, FolderService) => {
         tree = {
-            folder: {                                           // HOME
+            folder: { // HOME
                 id: '1',
                 name: 'HOME',
                 path: '/',
             },
             children: [
                 {
-                    folder: {                                   // /folder1
+                    folder: { // /folder1
                         id: '2',
                         name: 'folder1',
                         path: '/folder1',
                     },
                     children: [
                         {
-                            folder: {                           // /folder1/subfolder1
+                            folder: { // /folder1/subfolder1
                                 id: '4',
                                 name: 'subfolder1',
                                 path: '/folder1/subfolder1',
@@ -61,7 +60,7 @@ describe('folder selection component', () => {
                             children: [],
                         },
                         {
-                            folder: {                           // /folder1/subfolder2
+                            folder: { // /folder1/subfolder2
                                 id: '5',
                                 name: 'subfolder2',
                                 path: '/folder1/subfolder2',
@@ -71,14 +70,14 @@ describe('folder selection component', () => {
                     ]
                 },
                 {
-                    folder: {                                   // /folder2
+                    folder: { // /folder2
                         id: '3',
                         name: 'folder2',
                         path: '/folder2',
                     },
                     children: [
                         {
-                            folder: {                           // /folder2/subfolder3
+                            folder: { // /folder2/subfolder3
                                 id: '6',
                                 name: 'subfolder3',
                                 path: '/folder2/subfolder3',
@@ -108,7 +107,7 @@ describe('folder selection component', () => {
     it('should render folder tree', () => {
         //given
         scope.selectedFolder = { id: '5' };
-        
+
         //when
         createElement();
 
@@ -121,15 +120,15 @@ describe('folder selection component', () => {
         expect(element.find('.folder-tree-node').eq(3).text().trim()).toBe('subfolder2');
         expect(element.find('.folder-tree-node').eq(4).text().trim()).toBe('folder2');
     });
-    
+
     it('should render search items', () => {
         //given
         scope.selectedFolder = { id: '5' };
         createElement();
-        
+
         const ctrl = element.controller('folderSelection');
         ctrl.searchFolderQuery = 'folder1';
-        
+
         //when
         ctrl.performSearch();
         scope.$digest();

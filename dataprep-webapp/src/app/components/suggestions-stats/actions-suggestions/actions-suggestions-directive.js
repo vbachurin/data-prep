@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './actions-suggestions.html';
+
 /**
  * @ngdoc directive
  * @name data-prep.actions-suggestions.directive:actionsSuggestions
@@ -23,30 +25,29 @@ export default function ActionsSuggestions($timeout) {
 
     return {
         restrict: 'E',
-        templateUrl: 'app/components/suggestions-stats/actions-suggestions/actions-suggestions.html',
+        templateUrl: template,
         bindToController: true,
         controllerAs: 'actionsSuggestionsCtrl',
         controller: 'ActionsSuggestionsCtrl',
-        link: function (scope, iElement, iAttrs, ctrl) {
-
+        link: (scope, iElement, iAttrs, ctrl) => {
             //Scroll the actual tab container to the bottom of the element to display
             ctrl.scrollToBottom = function scrollToBottom() {
                 $timeout(function () {
-                    var splitHandler = angular.element('.split-handler').eq(0);
-                    var tabContainer = iElement.find('.action-suggestion-tab-items').eq(0);
-                    var elementToDisplay = tabContainer.find('sc-accordion-item > .sc-accordion.open').eq(0);
-                    var etdContainer = elementToDisplay.find('>.content-container').eq(0);
+                    const splitHandler = angular.element('.split-handler').eq(0);
+                    const tabContainer = iElement.find('.action-suggestion-tab-items').eq(0);
+                    const elementToDisplay = tabContainer.find('sc-accordion-item > .sc-accordion.open').eq(0);
+                    const etdContainer = elementToDisplay.find('>.content-container').eq(0);
                     if (!etdContainer.length) {
                         return;
                     }
 
-                    var tabOffset = tabContainer.offset();
-                    var etdOffset = etdContainer.offset();
+                    const tabOffset = tabContainer.offset();
+                    const etdOffset = etdContainer.offset();
 
-                    var etdHeight = etdContainer.height();
+                    const etdHeight = etdContainer.height();
 
-                    var availableTopSpace = etdOffset.top - tabOffset.top;
-                    var scrollDistance;
+                    const availableTopSpace = etdOffset.top - tabOffset.top;
+                    let scrollDistance;
                     if (availableTopSpace >= etdHeight) {
                         if (etdOffset.top > (splitHandler.offset().top - etdHeight)) {
                             scrollDistance = tabContainer[0].scrollTop + etdHeight;
@@ -56,7 +57,7 @@ export default function ActionsSuggestions($timeout) {
                         }
                     }
                     else {
-                        var accordionTriggerHeight = elementToDisplay.find('>.trigger-container').height();
+                        const accordionTriggerHeight = elementToDisplay.find('>.trigger-container').height();
                         scrollDistance = tabContainer[0].scrollTop + availableTopSpace - accordionTriggerHeight;
                         tabContainer.animate({
                             scrollTop: scrollDistance

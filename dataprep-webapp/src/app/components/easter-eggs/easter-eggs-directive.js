@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './easter-eggs.html';
+
 /**
  * @ngdoc directive
  * @name data-prep.easter-eggs.directive:EasterEggs
@@ -21,7 +23,7 @@
 export default function EasterEggs() {
     return {
         restrict: 'E',
-        templateUrl: 'app/components/easter-eggs/easter-eggs.html',
+        templateUrl: template,
         bindToController: true,
         controllerAs: 'easterEggsCtrl',
         controller: 'EasterEggsCtrl'

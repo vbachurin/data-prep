@@ -14,15 +14,19 @@
 /*eslint-disable */
 
 export default function TalendEditor(validationFn, translatedMsg) {
-
     return function TalendEditorClosure(args) {
-        var $container, $input, $checkboxContainer, $checkbox;
-        var defaultValue, previousValue, currentValue;
+        var $container;
+        var $input;
+        var $checkboxContainer;
+        var $checkbox;
+        var defaultValue;
+        var previousValue;
+        var currentValue;
         var inputLineHeight;
 
         function updateRowsNb() {
             currentValue = $input.val();
-            if(currentValue === previousValue) {
+            if (currentValue === previousValue) {
                 return;
             }
 
@@ -47,7 +51,7 @@ export default function TalendEditor(validationFn, translatedMsg) {
                             break;
 
                         case $.ui.keyCode.ENTER:
-                            if(e.altKey) {
+                            if (e.altKey) {
                                 var value = $input.val() + '\n';
                                 $input.val(value);
                             }
@@ -61,7 +65,7 @@ export default function TalendEditor(validationFn, translatedMsg) {
                     updateRowsNb();
                 })
                 .keyup(function(e) {
-                    if(e.keyCode === $.ui.keyCode.BACKSPACE || e.keyCode === $.ui.keyCode.DELETE) {
+                    if (e.keyCode === $.ui.keyCode.BACKSPACE || e.keyCode === $.ui.keyCode.DELETE) {
                         updateRowsNb();
                     }
                 })
@@ -124,17 +128,7 @@ export default function TalendEditor(validationFn, translatedMsg) {
         };
 
         /*********** OPTIONAL METHODS ***********/
-
-            //this.hide = function() {
-            //    // if implemented, this will be called if the cell being edited is scrolled out of the view
-            //    // implement this is your UI is not appended to the cell itself or if you open any secondary
-            //    // selector controls (like a calendar for a datepicker input)
-            //};
-            //
-            //this.show = function() {
-            //    // pretty much the opposite of hide
-            //};
-            //
+        
         this.position = function(cellBox) {
             // if implemented, this will be called by the grid if any of the cell containers are scrolled
             // and the absolute position of the edited cell is changed
@@ -142,14 +136,14 @@ export default function TalendEditor(validationFn, translatedMsg) {
             // position of the elements as the position of the cell changes
             //
             // the cellBox: { top, left, bottom, right, width, height, visible }
-            if(args.gridPosition.bottom - cellBox.bottom < 50) {
+            if (args.gridPosition.bottom - cellBox.bottom < 50) {
                 $container.addClass('bottom');
             }
             else {
                 $container.removeClass('bottom');
             }
 
-            if(cellBox.left + $input.width() > args.gridPosition.right) {
+            if (cellBox.left + $input.width() > args.gridPosition.right) {
                 $container.css('right', 0);
                 $container.css('position', 'absolute');
             }
@@ -160,4 +154,5 @@ export default function TalendEditor(validationFn, translatedMsg) {
         init();
     };
 }
+
 /*eslint-enable */

@@ -14,14 +14,17 @@
 describe('Home Dataset Component', () => {
     'use strict';
 
-    let scope, createElement, element, StateMock;
-    beforeEach(angular.mock.module('htmlTemplates'));
+    let scope;
+    let createElement;
+    let element;
+    let StateMock;
+    
 
     beforeEach(angular.mock.module('data-prep.home', ($provide) => {
         StateMock = {
             dataset: { uploadingDatasets: [] },
             inventory: {},
-            import: {importTypes : [] }
+            import: { importTypes : [] }
         };
         $provide.constant('state', StateMock);
     }));
@@ -38,7 +41,6 @@ describe('Home Dataset Component', () => {
         spyOn(StateService, 'setFetchingInventoryDatasets').and.returnValue();
         spyOn(DatasetService, 'init').and.returnValue();
         spyOn(PreparationService, 'refreshPreparations').and.returnValue();
-
     }));
 
     afterEach(() => {
@@ -57,7 +59,7 @@ describe('Home Dataset Component', () => {
 
     it('should render dataset-upload-list', () => {
         //given
-        StateMock.dataset.uploadingDatasets = [{id: 'datasetId'}];
+        StateMock.dataset.uploadingDatasets = [{ id: 'datasetId' }];
 
         //when
         createElement();
@@ -92,5 +94,4 @@ describe('Home Dataset Component', () => {
         //then
         expect(element.find('dataset-list').length).toBe(1);
     });
-
 });

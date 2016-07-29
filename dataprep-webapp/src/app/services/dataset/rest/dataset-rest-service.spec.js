@@ -128,14 +128,16 @@ describe('Dataset Rest Service', () => {
 
             //when
             DatasetRestService.getDatasetByName('toto')
-                .then((response) => { dataset = response; });
+                .then((response) => {
+                    dataset = response;
+                });
             $httpBackend.flush();
             $rootScope.$digest();
 
             //then
             expect(dataset).toEqual(searchResult.datasets[0]);
         }));
-        
+
         it('should call dataset list by name and return undefined', inject(($rootScope, $q, DatasetRestService, RestURLs) => {
             //given
             let dataset = null;
@@ -146,7 +148,9 @@ describe('Dataset Rest Service', () => {
 
             //when
             DatasetRestService.getDatasetByName('toto')
-                .then((response) => { dataset = response; });
+                .then((response) => {
+                    dataset = response;
+                });
             $httpBackend.flush();
             $rootScope.$digest();
 
@@ -298,8 +302,8 @@ describe('Dataset Rest Service', () => {
             $httpBackend.flush();
             $rootScope.$digest();
 
-            //then
-            //expect PUT not to throw any exception
+        //then
+        //expect PUT not to throw any exception
         }));
 
         it('should call dataset metadata update rest service', inject(($rootScope, DatasetRestService, RestURLs) => {
@@ -315,8 +319,8 @@ describe('Dataset Rest Service', () => {
             $httpBackend.flush();
             $rootScope.$digest();
 
-            //then
-            //expect PUT not to throw any exception
+        //then
+        //expect PUT not to throw any exception
         }));
 
         it('should call update column service', inject(($rootScope, DatasetRestService, RestURLs) => {
@@ -336,8 +340,8 @@ describe('Dataset Rest Service', () => {
             $httpBackend.flush();
             $rootScope.$digest();
 
-            //then
-            //expect POST not to throw any exception;
+        //then
+        //expect POST not to throw any exception;
         }));
     });
 
@@ -360,8 +364,8 @@ describe('Dataset Rest Service', () => {
             $httpBackend.flush();
             $rootScope.$digest();
 
-            //then
-            //expect DELETE not to throw any exception
+        //then
+        //expect DELETE not to throw any exception
         }));
     });
 
@@ -423,8 +427,8 @@ describe('Dataset Rest Service', () => {
             $httpBackend.flush();
             $rootScope.$digest();
 
-            //then
-            //expect PUT not to throw any exception
+        //then
+        //expect PUT not to throw any exception
         }));
     });
 
@@ -512,8 +516,8 @@ describe('Dataset Rest Service', () => {
             $httpBackend.flush();
             $rootScope.$digest();
 
-            //then
-            //expect POST not to throw any exception;
+        //then
+        //expect POST not to throw any exception;
         }));
     });
 
@@ -531,8 +535,8 @@ describe('Dataset Rest Service', () => {
             $httpBackend.flush();
             $rootScope.$digest();
 
-            //then
-            //expect GET not to throw any exception;
+        //then
+        //expect GET not to throw any exception;
         }));
     });
 

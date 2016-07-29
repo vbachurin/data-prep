@@ -14,7 +14,10 @@
 describe('Single recipeBullet directive ', function () {
     'use strict';
 
-    var createElement, element, scope, steps;
+    var createElement;
+    var element;
+    var scope;
+    var steps;
 
     function getSvgElementAttribute(elementName, elementIndex, attr) {
         var allSvg = element.find('svg');
@@ -40,12 +43,12 @@ describe('Single recipeBullet directive ', function () {
     }
 
     beforeEach(angular.mock.module('data-prep.recipe-bullet'));
-    beforeEach(angular.mock.module('htmlTemplates'));
-    beforeEach(inject(function ($rootScope, $compile, $timeout, RecipeService, RecipeBulletService) {
+    
+    beforeEach(inject(function ($rootScope, $compile, $timeout, RecipeBulletService, PlaygroundService) {
         steps = [
             {
-                column: {id: 'col2'},
-                transformation: {name: 'uppercase', label: 'To uppercase', category: 'case', parameters: [], items: []},
+                column: { id: 'col2' },
+                transformation: { name: 'uppercase', label: 'To uppercase', category: 'case', parameters: [], items: [] },
                 inactive: false
             }
         ];
@@ -62,7 +65,7 @@ describe('Single recipeBullet directive ', function () {
 
         spyOn(RecipeBulletService, 'stepHoverStart').and.returnValue();
         spyOn(RecipeBulletService, 'stepHoverEnd').and.returnValue();
-        spyOn(RecipeBulletService, 'toggleStep').and.returnValue();
+        spyOn(PlaygroundService, 'toggleStep').and.returnValue();
     }));
 
     afterEach(function () {
@@ -71,22 +74,19 @@ describe('Single recipeBullet directive ', function () {
     });
 
     describe('Middle bullet ', function () {
-
-        beforeEach(inject(function ($rootScope, $compile, $timeout, RecipeService) {
-
-            spyOn(RecipeService, 'isFirstStep').and.callFake(function () {
+        beforeEach(inject(function ($rootScope, $compile, $timeout, StepUtilsService) {
+            spyOn(StepUtilsService, 'isFirstStep').and.callFake(function () {
                 return false;
             });
-            spyOn(RecipeService, 'isLastStep').and.callFake(function () {
+            spyOn(StepUtilsService, 'isLastStep').and.callFake(function () {
                 return false;
             });
-            spyOn(RecipeService, 'getActiveThresholdStepIndex').and.callFake(function () {
+            spyOn(StepUtilsService, 'getActiveThresholdStepIndex').and.callFake(function () {
                 return 1;
             });
-            spyOn(RecipeService, 'getStepIndex').and.callFake(function () {
+            spyOn(StepUtilsService, 'getStepIndex').and.callFake(function () {
                 return 1;
             });
-
         }));
 
         it('should init circle position', function () {
@@ -115,7 +115,6 @@ describe('Single recipeBullet directive ', function () {
             var dimensions = getBottomCablesDimensions();
             expect(dimensions[0]).toBe('M 15 29 L 15 105 Z');
         });
-
     });
 });
 
@@ -123,7 +122,10 @@ describe('Single recipeBullet directive ', function () {
 describe('Multi recipeBullet directive', function () {
     'use strict';
 
-    var createElement, element, scope, steps;
+    var createElement;
+    var element;
+    var scope;
+    var steps;
 
     function getSvgElementAttribute(elementName, elementIndex, attr) {
         var allSvg = element.find('svg');
@@ -148,16 +150,16 @@ describe('Multi recipeBullet directive', function () {
     }
 
     beforeEach(angular.mock.module('data-prep.recipe-bullet'));
-    beforeEach(angular.mock.module('htmlTemplates'));
-    beforeEach(inject(function ($rootScope, $compile, $timeout, RecipeService, RecipeBulletService) {
+
+    beforeEach(inject(($rootScope, $compile, $timeout, StepUtilsService, RecipeBulletService, PlaygroundService) => {
         steps = [
             {
-                column: {id: 'col2'},
-                transformation: {name: 'uppercase', label: 'To uppercase', category: 'case', parameters: [], items: []},
+                column: { id: 'col2' },
+                transformation: { name: 'uppercase', label: 'To uppercase', category: 'case', parameters: [], items: [] },
                 inactive: false
             },
             {
-                column: {id: 'col1'},
+                column: { id: 'col1' },
                 transformation: {
                     name: 'lowerercase',
                     label: 'To uppercase',
@@ -168,12 +170,12 @@ describe('Multi recipeBullet directive', function () {
                 inactive: false
             },
             {
-                column: {id: 'col3'},
-                transformation: {name: 'negate', label: 'To uppercase', category: 'case', parameters: [], items: []},
+                column: { id: 'col3' },
+                transformation: { name: 'negate', label: 'To uppercase', category: 'case', parameters: [], items: [] },
                 inactive: true
             },
             {
-                column: {id: 'col4'},
+                column: { id: 'col4' },
                 transformation: {
                     name: 'propercase',
                     label: 'To uppercase',
@@ -184,8 +186,8 @@ describe('Multi recipeBullet directive', function () {
                 inactive: true
             },
             {
-                column: {id: 'col1'},
-                transformation: {name: 'rename', label: 'To uppercase', category: 'case', parameters: [], items: []},
+                column: { id: 'col1' },
+                transformation: { name: 'rename', label: 'To uppercase', category: 'case', parameters: [], items: [] },
                 inactive: false
             }
         ];
@@ -212,21 +214,21 @@ describe('Multi recipeBullet directive', function () {
             $timeout.flush();
         };
 
-        spyOn(RecipeService, 'isFirstStep').and.callFake(function (step) {
+        spyOn(StepUtilsService, 'isFirstStep').and.callFake(function (recipeState, step) {
             return step === steps[0];
         });
-        spyOn(RecipeService, 'isLastStep').and.callFake(function (step) {
+        spyOn(StepUtilsService, 'isLastStep').and.callFake(function (recipeState, step) {
             return step === steps[4];
         });
-        spyOn(RecipeService, 'getActiveThresholdStepIndex').and.callFake(function () {
+        spyOn(StepUtilsService, 'getActiveThresholdStepIndex').and.callFake(function () {
             return 1;
         });
-        spyOn(RecipeService, 'getStepIndex').and.callFake(function (step) {
+        spyOn(StepUtilsService, 'getStepIndex').and.callFake(function (recipeState, step) {
             return steps.indexOf(step);
         });
         spyOn(RecipeBulletService, 'stepHoverStart').and.returnValue();
         spyOn(RecipeBulletService, 'stepHoverEnd').and.returnValue();
-        spyOn(RecipeBulletService, 'toggleStep').and.returnValue();
+        spyOn(PlaygroundService, 'toggleStep').and.returnValue();
     }));
 
     afterEach(function () {
@@ -247,7 +249,7 @@ describe('Multi recipeBullet directive', function () {
         expect(element.find('.all-svg-cls').eq(4).attr('class').indexOf('maillon-circle') > -1).toBe(true);
     });
 
-    it('should hide top cable on first step only', function () {
+    it('should hide top cable on first step only', () => {
         //when
         createElement();
 
@@ -351,5 +353,4 @@ describe('Multi recipeBullet directive', function () {
         expect(classes[2]).toBeFalsy();
         expect(classes[3]).toBeFalsy();
     });
-
 });

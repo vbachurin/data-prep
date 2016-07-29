@@ -83,7 +83,7 @@ export default function TalendEditableRegexCtrl($translate) {
      * @return {String} the type key
      */
     vm.getTypeKey = function getTypeKey() {
-        var currentType = _.find(vm.types, {operator: vm.value.operator});
+        var currentType = _.find(vm.types, { operator: vm.value.operator });
         return currentType.key;
     };
 }

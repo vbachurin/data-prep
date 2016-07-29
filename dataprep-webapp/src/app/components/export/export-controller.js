@@ -22,7 +22,7 @@
  * @requires data-prep.services.utils.service:StorageService
  */
 export default class ExportCtrl {
-    constructor($timeout, state, RestURLs, RecipeService, ExportService, StorageService) {
+    constructor($timeout, state, RestURLs, StepUtilsService, ExportService, StorageService) {
         'ngInject';
 
         this.$timeout = $timeout;
@@ -30,7 +30,7 @@ export default class ExportCtrl {
         this.RestURLs = RestURLs;
         this.ExportService = ExportService;
         this.StorageService = StorageService;
-        this.RecipeService = RecipeService;
+        this.StepUtilsService = StepUtilsService;
 
         this.exportParams = StorageService.getExportParams();
         this.selectedType = ExportService.getType(this.exportParams.exportType);
@@ -117,14 +117,13 @@ export default class ExportCtrl {
  * @name stepId
  * @propertyOf data-prep.export.controller:ExportCtrl
  * @description The current stepId
- * It is bound to {@link data-prep.services.recipe.service:RecipeService RecipeService}.getLastActiveStep()
  */
 Object.defineProperty(ExportCtrl.prototype,
     'stepId', {
         enumerable: true,
         configurable: false,
         get: function () {
-            var step = this.RecipeService.getLastActiveStep();
+            const step = this.StepUtilsService.getLastActiveStep(this.state.playground.recipe);
             return step ? step.transformation.stepId : '';
         }
     });

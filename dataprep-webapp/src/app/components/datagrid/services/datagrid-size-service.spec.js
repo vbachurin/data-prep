@@ -11,10 +11,15 @@
 
   ============================================================================*/
 
+import SlickGridMock from '../../../../mocks/SlickGrid.mock';
+
 describe('Datagrid size service', function () {
     'use strict';
 
-    var gridMock, windowMock, gridColumns, stateMock;
+    var gridMock;
+    var windowMock;
+    var gridColumns;
+    var stateMock;
 
     var storageKey = 'org.talend.dataprep.col_size_00000000';
 
@@ -27,20 +32,20 @@ describe('Datagrid size service', function () {
             return windowMock;
         });
 
-        stateMock = {playground: {}};
+        stateMock = { playground: {} };
         $provide.constant('state', stateMock);
     }));
 
     beforeEach(inject(function (_$window_, $window) {
         gridMock = new SlickGridMock();
         gridColumns = [
-            {id: '0000', name: 'col0', width: 10, minWidth: 80},
-            {id: '0001', name: 'col1', width: 20, minWidth: 80},
-            {id: '0002', name: 'col2', width: 30, minWidth: 80},
-            {id: '0003', name: 'col3', width: 40, minWidth: 80},
-            {id: '0004', name: 'col4', width: 50, minWidth: 80}
+            { id: '0000', name: 'col0', width: 10, minWidth: 80 },
+            { id: '0001', name: 'col1', width: 20, minWidth: 80 },
+            { id: '0002', name: 'col2', width: 30, minWidth: 80 },
+            { id: '0003', name: 'col3', width: 40, minWidth: 80 },
+            { id: '0004', name: 'col4', width: 50, minWidth: 80 }
         ];
-        stateMock.playground.dataset = {id: '00000000'};
+        stateMock.playground.dataset = { id: '00000000' };
 
         spyOn(gridMock.onColumnsResized, 'subscribe').and.returnValue();
         spyOn(gridMock, 'resizeCanvas').and.returnValue();
@@ -110,7 +115,6 @@ describe('Datagrid size service', function () {
     });
 
     describe('auto size columns', function() {
-
         it('should set column sizes from localStorage', inject(function ($window, DatagridSizeService) {
             //given
             DatagridSizeService.init(gridMock);
@@ -173,7 +177,7 @@ describe('Datagrid size service', function () {
                 '0001': 70,
                 '0002': 80,
                 '0003': 90
-                //missing 0004 entry
+            //missing 0004 entry
             }));
 
             expect(gridColumns[4].width).toBe(50);

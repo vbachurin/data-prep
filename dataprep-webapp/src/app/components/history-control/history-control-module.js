@@ -11,17 +11,20 @@
 
  ============================================================================*/
 
+import angular from 'angular';
+import SERVICES_HISTORY_MODULE from '../../services/history/history-module';
+
 import HistoryControl from './history-control-directive';
 
-(() => {
-    'use strict';
+const MODULE_NAME = 'data-prep.history-control';
 
-    /**
-     * @ngdoc object
-     * @name data-prep.history-control
-     * @description This module contains the history control buttons and shortcut
-     * @requires data-prep.services.history
-     */
-    angular.module('data-prep.history-control', ['data-prep.services.history'])
-        .directive('historyControl', HistoryControl);
-})();
+/**
+ * @ngdoc object
+ * @name data-prep.history-control
+ * @description This module contains the history control buttons and shortcut
+ * @requires data-prep.services.history
+ */
+angular.module(MODULE_NAME, [SERVICES_HISTORY_MODULE])
+    .directive('historyControl', HistoryControl);
+
+export default MODULE_NAME;

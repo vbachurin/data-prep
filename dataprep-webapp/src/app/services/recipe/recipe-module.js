@@ -11,29 +11,42 @@
 
  ============================================================================*/
 
+import angular from 'angular';
+import SERVICES_FILTER_MODULE from '../filter/filter-module';
+import SERVICES_PARAMETERS_MODULE from '../parameters/parameters-module';
+import SERVICES_PREPARATION_MODULE from '../preparation/preparation-module';
+import SERVICES_PREVIEW_MODULE from '../../services/preview/preview-module';
+import SERVICES_STATE_MODULE from '../state/state-module';
+import SERVICES_TRANSFORMATION_MODULE from '../transformation/transformation-module';
+import SERVICES_UTILS_MODULE from '../utils/utils-module';
+
 import RecipeBulletService from './bullet/recipe-bullet-service';
 import RecipeService from './recipe-service';
 
-(() => {
-    'use strict';
+const MODULE_NAME = 'data-prep.services.recipe';
 
-    /**
-     * @ngdoc object
-     * @name data-prep.services.recipe
-     * @description This module contains the services to manipulate the recipe
-     * @requires data-prep.services.preparation
-     * @requires data-prep.services.transformation
-     * @requires data-prep.services.playground
-     * @requires data-prep.services.state
-     */
-    angular.module('data-prep.services.recipe',
-        [
-            'data-prep.services.filter',
-            'data-prep.services.playground',
-            'data-prep.services.preparation',
-            'data-prep.services.state',
-            'data-prep.services.transformation',
-        ])
-        .service('RecipeBulletService', RecipeBulletService)
-        .service('RecipeService', RecipeService);
-})();
+/**
+ * @ngdoc object
+ * @name data-prep.services.recipe
+ * @description This module contains the services to manipulate the recipe
+ * @requires data-prep.services.preparation
+ * @requires data-prep.services.transformation
+ * @requires data-prep.services.playground
+ * @requires data-prep.services.preview
+ * @requires data-prep.services.state
+ * @requires data-prep.services.utils
+ */
+angular.module(MODULE_NAME,
+    [
+        SERVICES_FILTER_MODULE,
+        SERVICES_PARAMETERS_MODULE,
+        SERVICES_PREPARATION_MODULE,
+        SERVICES_PREVIEW_MODULE,
+        SERVICES_STATE_MODULE,
+        SERVICES_TRANSFORMATION_MODULE,
+        SERVICES_UTILS_MODULE,
+    ])
+    .service('RecipeBulletService', RecipeBulletService)
+    .service('RecipeService', RecipeService);
+
+export default MODULE_NAME;

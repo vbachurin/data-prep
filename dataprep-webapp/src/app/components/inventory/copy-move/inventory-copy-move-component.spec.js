@@ -12,15 +12,18 @@
  ============================================================================*/
 
 describe('InventoryCopyMove component', () => {
-    let scope, createElement, element, controller;
+    let scope;
+    let createElement;
+    let element;
+    let controller;
 
     beforeEach(angular.mock.module('data-prep.inventory-copy-move'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(inject(($rootScope, $compile) => {
         scope = $rootScope.$new();
-        scope.item = {name: 'my item'};
-        scope.initialFolder = {path: '0-folder1/1-folder11'};
+        scope.item = { name: 'my item' };
+        scope.initialFolder = { path: '0-folder1/1-folder11' };
 
         createElement = () => {
             element = angular.element(
@@ -123,7 +126,6 @@ describe('InventoryCopyMove component', () => {
         });
 
         describe('copy', () => {
-
             beforeEach(() => {
                 createElement();
                 controller.copy = jasmine.createSpy('copy');

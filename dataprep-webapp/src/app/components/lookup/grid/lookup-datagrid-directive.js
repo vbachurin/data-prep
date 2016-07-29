@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './lookup-datagrid.html';
+
 /**
  * @ngdoc directive
  * @name data-prep.lookup.directive:LookupDatagrid
@@ -28,12 +30,12 @@
  * @restrict E
  */
 export default function LookupDatagrid($timeout, state, LookupDatagridGridService, LookupDatagridColumnService,
-                                       LookupDatagridStyleService, LookupDatagridTooltipService) {
+    LookupDatagridStyleService, LookupDatagridTooltipService) {
     'ngInject';
 
     return {
         restrict: 'E',
-        templateUrl: 'app/components/lookup/grid/lookup-datagrid.html',
+        templateUrl: template,
         bindToController: true,
         controllerAs: 'lookupDatagridCtrl',
         controller: 'LookupDatagridCtrl',
@@ -81,7 +83,7 @@ export default function LookupDatagrid($timeout, state, LookupDatagridGridServic
                     columnTimeout = $timeout(function () {
                         columns = LookupDatagridColumnService.createColumns(data.metadata.columns);
 
-                        selectedColumn = stateSelectedColumn ? _.find(columns, {id: stateSelectedColumn.id}) : null;
+                        selectedColumn = stateSelectedColumn ? _.find(columns, { id: stateSelectedColumn.id }) : null;
 
                         LookupDatagridStyleService.updateColumnClass(columns, selectedColumn);
                         grid.setColumns(columns); // IMPORTANT : this set columns in the grid
@@ -118,4 +120,3 @@ export default function LookupDatagrid($timeout, state, LookupDatagridGridServic
         }
     };
 }
-

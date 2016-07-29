@@ -12,9 +12,10 @@
   ============================================================================*/
 
 describe('Type validation directive', function() {
-   'use strict';
+    'use strict';
 
-    var scope, createElement;
+    var scope;
+    var createElement;
 
     beforeEach(angular.mock.module('data-prep.validation'));
 

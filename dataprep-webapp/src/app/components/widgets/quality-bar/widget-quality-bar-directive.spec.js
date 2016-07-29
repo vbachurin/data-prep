@@ -14,10 +14,13 @@
 describe('Quality bar directive', () => {
     'use strict';
 
-    let scope, element, createElement, controller;
+    let scope;
+    let element;
+    let createElement;
+    let controller;
 
     beforeEach(angular.mock.module('talend.widget'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(inject(($rootScope, $compile) => {
         scope = $rootScope.$new();
@@ -211,7 +214,6 @@ describe('Quality bar directive', () => {
     });
 
     describe('with no trusted statistics', () => {
-
         it('should not render its content', () => {
             //given
             scope.quality = {

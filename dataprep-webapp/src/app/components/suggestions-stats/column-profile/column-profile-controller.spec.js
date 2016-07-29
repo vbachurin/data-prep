@@ -14,9 +14,11 @@
 describe('ColumnProfile controller', () => {
     'use strict';
 
-    let createController, scope;
+    let createController;
+    let scope;
     let stateMock;
-    const removeFilterFn = () => {};
+    const removeFilterFn = () => {
+    };
 
     beforeEach(angular.mock.module('data-prep.column-profile', ($provide) => {
         stateMock = {
@@ -47,7 +49,7 @@ describe('ColumnProfile controller', () => {
         it('should add a "exact" filter', inject((FilterService) => {
             //given
             const ctrl = createController();
-            const obj = {'data': 'Ulysse', 'occurrences': 5};
+            const obj = { 'data': 'Ulysse', 'occurrences': 5 };
 
             stateMock.playground.grid.selectedColumn = {
                 id: '0001',
@@ -133,7 +135,7 @@ describe('ColumnProfile controller', () => {
                 {
                     intervals: [
                         {
-                            label: '[5 .. 15[', 
+                            label: '[5 .. 15[',
                             value: [5, 15],
                             isMaxReached: false
                         }
@@ -222,18 +224,15 @@ describe('ColumnProfile controller', () => {
 
         it('should add a date "range" filter from time', inject((StatisticsService, FilterService) => {
             //given
-            const
-                ctrl = createController(),
-
-                minDateTime = new Date(2016, 0, 1).getTime(),
-                maxDateTime = new Date(2016, 11, 1).getTime(),
-
-                interval = {
-                    min: minDateTime,
-                    max: maxDateTime,
-                    label: undefined,
-                    isMaxReached: undefined
-                };
+            const ctrl = createController();
+            const minDateTime = new Date(2016, 0, 1).getTime();
+            const maxDateTime = new Date(2016, 11, 1).getTime();
+            const interval = {
+                min: minDateTime,
+                max: maxDateTime,
+                label: undefined,
+                isMaxReached: undefined
+            };
 
             stateMock.playground.grid.selectedColumn = {
                 id: '0001',
@@ -267,7 +266,7 @@ describe('ColumnProfile controller', () => {
         it('should add a "empty_records" filter from exact_filter on barchart click callback', inject((StatisticsService, FilterService) => {
             //given
             const ctrl = createController();
-            const obj = {'data': '', 'occurrences': 5};
+            const obj = { 'data': '', 'occurrences': 5 };
 
             stateMock.playground.grid.selectedColumn = {
                 id: '0001',
@@ -288,8 +287,8 @@ describe('ColumnProfile controller', () => {
             spyOn(StatisticsService, 'processAggregation').and.returnValue();
             const ctrl = createController();
 
-            const column = {id: '0001'};
-            const aggregation = {name: 'MAX'};
+            const column = { id: '0001' };
+            const aggregation = { name: 'MAX' };
 
             //when
             ctrl.changeAggregation(column, aggregation);

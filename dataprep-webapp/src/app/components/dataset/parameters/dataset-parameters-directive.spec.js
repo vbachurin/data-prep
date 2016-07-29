@@ -14,7 +14,9 @@
 describe('Dataset parameters directive', function() {
     'use strict';
 
-    var scope, createElement, element;
+    var scope;
+    var createElement;
+    var element;
 
     beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
@@ -32,21 +34,21 @@ describe('Dataset parameters directive', function() {
 
 
     beforeEach(angular.mock.module('data-prep.dataset-parameters'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(inject(function($rootScope, $compile) {
         scope = $rootScope.$new();
         scope.validate = jasmine.createSpy('validation');
         scope.configuration = {
             separators: [
-                {label: ';', value: ';'},
-                {label: ',', value: ','},
-                {label: '<space>', value: ' '},
-                {label: '<tab>', value: '\t'}
+                { label: ';', value: ';' },
+                { label: ',', value: ',' },
+                { label: '<space>', value: ' ' },
+                { label: '<tab>', value: '\t' }
             ],
             encodings: ['UTF-8', 'UTF-16', 'ISO-8859-1']
         };
-        scope.parameters = {separator: ';', encoding: 'UTF-8'};
+        scope.parameters = { separator: ';', encoding: 'UTF-8' };
 
         createElement = function() {
             var html = '<dataset-parameters ' +
@@ -149,7 +151,7 @@ describe('Dataset parameters directive', function() {
         describe('separator', function() {
             it('should NOT render separators on NON csv', function() {
                 //given
-                scope.dataset = {type: 'other'};
+                scope.dataset = { type: 'other' };
 
                 //when
                 createElement();
@@ -160,7 +162,7 @@ describe('Dataset parameters directive', function() {
 
             it('should render separators on csv dataset', function() {
                 //given
-                scope.dataset = {type: 'text/csv'};
+                scope.dataset = { type: 'text/csv' };
 
                 //when
                 createElement();
@@ -185,7 +187,7 @@ describe('Dataset parameters directive', function() {
 
             it('should render custom separator input only when separator is not in the configuration list', function() {
                 //given
-                scope.dataset = {type: 'text/csv'};
+                scope.dataset = { type: 'text/csv' };
                 createElement();
 
                 var separatorContainer = element.find('.dataset-parameters-separator').eq(0);
@@ -201,34 +203,34 @@ describe('Dataset parameters directive', function() {
         });
 
         describe('button', function() {
-           it('should enable button when processing is falsy', function() {
-               //given
-               scope.processing = false;
+            it('should enable button when processing is falsy', function() {
+                //given
+                scope.processing = false;
 
-               //when
-               createElement();
+                //when
+                createElement();
 
-               //then
-               expect(element.find('button').attr('disabled')).toBeFalsy();
-           });
+                //then
+                expect(element.find('button').attr('disabled')).toBeFalsy();
+            });
 
-           it('should disable button when processing is truthy', function() {
-               //given
-               scope.processing = true;
+            it('should disable button when processing is truthy', function() {
+                //given
+                scope.processing = true;
 
-               //when
-               createElement();
+                //when
+                createElement();
 
-               //then
-               expect(element.find('button').attr('disabled')).toBeTruthy();
-           });
+                //then
+                expect(element.find('button').attr('disabled')).toBeTruthy();
+            });
         });
     });
 
     describe('validation', function() {
         it('should call validation callback on form submit', function() {
             //given
-            scope.dataset = {id: '54a146cf854b54', type: 'text/csv'};
+            scope.dataset = { id: '54a146cf854b54', type: 'text/csv' };
             scope.parameters.separator = '|';
             scope.parameters.encoding = 'UTF-16';
             createElement();
@@ -240,8 +242,8 @@ describe('Dataset parameters directive', function() {
 
             //then
             expect(scope.validate).toHaveBeenCalledWith(
-                {id: '54a146cf854b54', type: 'text/csv'},
-                {separator: '|', encoding: 'UTF-16'}
+                { id: '54a146cf854b54', type: 'text/csv' },
+                { separator: '|', encoding: 'UTF-16' }
             );
         });
     });

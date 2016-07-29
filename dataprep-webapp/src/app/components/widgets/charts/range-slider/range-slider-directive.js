@@ -11,6 +11,9 @@
 
  ============================================================================*/
 
+import d3 from 'd3';
+import template from './range-slider.html';
+
 /**
  * Return the timestamp at midnight
  */
@@ -52,7 +55,7 @@ export default function RangeSlider($timeout) {
         controller: 'RangeSliderCtrl',
         controllerAs: 'rangeSliderCtrl',
         bindToController: true,
-        templateUrl: 'app/components/widgets/charts/range-slider/range-slider.html',
+        templateUrl: template,
 
         link: function (scope, element, attrs, ctrl) {
             let renderTimeout;
@@ -122,7 +125,8 @@ export default function RangeSlider($timeout) {
                         .tickFormat((d) => {
                             return isDateType ? d3.time.format('%b %Y')(new Date(d)) : d3.format(',')(d);
                         }))
-                    .selectAll('text').attr('y', -13);
+                    .selectAll('text')
+                    .attr('y', -13);
             }
 
             /**
@@ -276,7 +280,7 @@ export default function RangeSlider($timeout) {
                 initContainer();
                 initBrush(
                     ctrl.isDateType(),
-                    ctrl.rangeLimits, 
+                    ctrl.rangeLimits,
                     ctrl.lastValues.brush,
                     ctrl.getLimitsText()
                 );
@@ -307,10 +311,18 @@ export default function RangeSlider($timeout) {
                 rangeLimits.min = setDateTimeToMidnight(rangeLimits.min);
                 rangeLimits.max = setDateTimeToMidnight(rangeLimits.max);
 
-                if (typeof rangeLimits.minBrush !== 'undefined') rangeLimits.minBrush = setDateTimeToMidnight(rangeLimits.minBrush);
-                if (typeof rangeLimits.maxBrush !== 'undefined') rangeLimits.maxBrush = setDateTimeToMidnight(rangeLimits.maxBrush);
-                if (typeof rangeLimits.minFilterVal !== 'undefined') rangeLimits.minFilterVal = setDateTimeToMidnight(rangeLimits.minFilterVal);
-                if (typeof rangeLimits.maxFilterVal !== 'undefined') rangeLimits.maxFilterVal = setDateTimeToMidnight(rangeLimits.maxFilterVal);
+                if (typeof rangeLimits.minBrush !== 'undefined') {
+                    rangeLimits.minBrush = setDateTimeToMidnight(rangeLimits.minBrush);
+                }
+                if (typeof rangeLimits.maxBrush !== 'undefined') {
+                    rangeLimits.maxBrush = setDateTimeToMidnight(rangeLimits.maxBrush);
+                }
+                if (typeof rangeLimits.minFilterVal !== 'undefined') {
+                    rangeLimits.minFilterVal = setDateTimeToMidnight(rangeLimits.minFilterVal);
+                }
+                if (typeof rangeLimits.maxFilterVal !== 'undefined') {
+                    rangeLimits.maxFilterVal = setDateTimeToMidnight(rangeLimits.maxFilterVal);
+                }
             }
 
             /**
@@ -333,7 +345,6 @@ export default function RangeSlider($timeout) {
                     if (!newRangeLimits) {
                         element.find('svg').remove();
                     }
-
                     else {
                         adaptDateRangeLimits(newRangeLimits);
                         if (!shouldRerender(newRangeLimits, oldRangeLimits)) {

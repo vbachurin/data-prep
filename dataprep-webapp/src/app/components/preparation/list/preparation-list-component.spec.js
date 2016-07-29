@@ -14,7 +14,10 @@
 describe('Preparation list component', () => {
     'use strict';
 
-    let scope, createElement, element, stateMock;
+    let scope;
+    let createElement;
+    let element;
+    let stateMock;
 
     const preparations = [
         {
@@ -33,7 +36,7 @@ describe('Preparation list component', () => {
             actions: [
                 {
                     action: 'lowercase',
-                    parameters: { column_name: 'birth'  },
+                    parameters: { column_name: 'birth' },
                 },
                 {
                     action: 'uppercase',
@@ -85,9 +88,9 @@ describe('Preparation list component', () => {
     ];
 
     const folders = [
-        {id: '001', path: '/tata/titi', name: 'titi' },
-        {id: '002', path: '/tata/toto', name: 'toto' },
-        {id: '003', path: '/tata/tutu', name: 'tutu' },
+        { id: '001', path: '/tata/titi', name: 'titi' },
+        { id: '002', path: '/tata/toto', name: 'toto' },
+        { id: '003', path: '/tata/tutu', name: 'tutu' },
     ];
 
     beforeEach(angular.mock.module('data-prep.preparation-list', ($provide) => {
@@ -105,7 +108,7 @@ describe('Preparation list component', () => {
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(inject(($q, $rootScope, $compile, StateService, FolderService) => {
         scope = $rootScope.$new();
@@ -154,7 +157,10 @@ describe('Preparation list component', () => {
 
 describe('Preparation list component loading', () => {
     'use strict';
-    let scope, createElement, element, stateMock;
+    let scope;
+    let createElement;
+    let element;
+    let stateMock;
 
     beforeEach(angular.mock.module('data-prep.preparation-list', ($provide) => {
         stateMock = {
@@ -165,7 +171,7 @@ describe('Preparation list component loading', () => {
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(inject(($q, $rootScope, $compile, StateService, FolderService) => {
         scope = $rootScope.$new();
@@ -212,7 +218,10 @@ describe('Preparation list component loading', () => {
 
 describe('Preparation list component with no preparations', () => {
     'use strict';
-    let scope, createElement, element, stateMock;
+    let scope;
+    let createElement;
+    let element;
+    let stateMock;
 
     beforeEach(angular.mock.module('data-prep.preparation-list', ($provide) => {
         stateMock = {
@@ -230,7 +239,7 @@ describe('Preparation list component with no preparations', () => {
         $translateProvider.preferredLanguage('en');
     }));
 
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(inject(($q, $rootScope, $compile, StateService, FolderService) => {
         scope = $rootScope.$new();

@@ -49,11 +49,14 @@ class DocumentationService {
      */
     _thcParser(thcCsv) {
         return thcCsv
-            .replace(/[^\x00-\x7F]/g, " ")                  // remove non ascii du to THC encoding
+            // remove non ascii du to THC encoding
+            .replace(/[^\x00-\x7F]/g, ' ') // eslint-disable-line no-control-regex
             .split('\n')
             .map((line) => line.trim())
-            .filter((line) => line)                         // remove empty lines
-            .map((line) => line.replace(/^"(.*)"$/, '$1'))  // strip leading/trailing quotes
+            // remove empty lines
+            .filter((line) => line)
+            // strip leading/trailing quotes
+            .map((line) => line.replace(/^"(.*)"$/, '$1'))
             .map((line) => line.split('","'))
             .filter((lineParts) => lineParts.length === properties.length)
             .map((lineParts) => this._createDocElement(lineParts));
@@ -68,8 +71,8 @@ class DocumentationService {
      * @returns {object} The documentation elements
      */
     _createDocElement(parts) {
-        const doc = {inventoryType: 'documentation'};
-        for(let i = 0; i < properties.length; ++i) {
+        const doc = { inventoryType: 'documentation' };
+        for (let i = 0; i < properties.length; ++i) {
             const name = properties[i];
             const value = parts[i];
             doc[name] = value;

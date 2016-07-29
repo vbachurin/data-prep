@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './recipe-bullet.html';
+
 /**
  * @ngdoc directive
  * @name data-prep.recipe-bullet.directive:RecipeBullet
@@ -31,7 +33,7 @@ export default function RecipeBullet($timeout) {
         controller: 'RecipeBulletCtrl',
         controllerAs: 'recipeBulletCtrl',
         bindToController: true,
-        templateUrl: 'app/components/recipe/bullet/recipe-bullet.html',
+        templateUrl: template,
         link: function (scope, iElement, iAttrs, ctrl) {
             /**
              * @ngdoc property
@@ -197,7 +199,8 @@ export default function RecipeBullet($timeout) {
                 activateAllCables();
                 if (!ctrl.step.inactive && !ctrl.isStartChain()) {
                     deActivateBottomCable(ctrl.stepIndex - 1);
-                } else if (!ctrl.isEndChain()) {
+                }
+                else if (!ctrl.isEndChain()) {
                     deActivateBottomCable(ctrl.stepIndex);
                 }
             };
@@ -219,7 +222,8 @@ export default function RecipeBullet($timeout) {
             if (!ctrl.isEndChain()) {
                 iElement.mouseenter(mouseEnterListener);
                 iElement.mouseleave(mouseLeaveListener);
-            } else {
+            }
+            else {
                 bulletCircleElement.addEventListener('mouseenter', mouseEnterListener);
                 bulletCircleElement.addEventListener('mouseleave', mouseLeaveListener);
             }
@@ -240,7 +244,6 @@ export default function RecipeBullet($timeout) {
             });
 
             $timeout(updateSVGSizes, 0, false);
-
         }
     };
 }

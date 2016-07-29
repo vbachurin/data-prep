@@ -19,7 +19,6 @@ describe('Breadcrumb component', () => {
     let itemsChildren;
 
     beforeEach(angular.mock.module('data-prep.breadcrumb'));
-    beforeEach(angular.mock.module('htmlTemplates'));
 
     beforeEach(inject(($rootScope, $compile) => {
         scope = $rootScope.$new(true);
@@ -60,17 +59,17 @@ describe('Breadcrumb component', () => {
         it('should render each items', () => {
             // given
             scope.items = items;
-            
+
             // when
             createElement();
-            
+
             // then
             expect(element.find('.breadcrumb-item').length).toBe(3);
             expect(element.find('.breadcrumb-item').eq(0).text().trim()).toBe('HOME');
             expect(element.find('.breadcrumb-item').eq(1).text().trim()).toBe('JSO');
             expect(element.find('.breadcrumb-item').eq(2).text().trim()).toBe('Perso');
         });
-        
+
         it('should display children in dropdown', () => {
             // given
             scope.items = items;
@@ -93,23 +92,23 @@ describe('Breadcrumb component', () => {
             scope.onSelect = jasmine.createSpy('onSelect');
             scope.items = items;
             createElement();
-            
+
             expect(scope.onSelect).not.toHaveBeenCalled();
 
             // when
             element.find('.breadcrumb-item').eq(1).find('.name').eq(0).click();
-            
+
             // then
             expect(scope.onSelect).toHaveBeenCalledWith(items[1]);
         });
-        
+
         it('should trigger callback on children click', () => {
             // given
             scope.onSelect = jasmine.createSpy('onSelect');
             scope.items = items;
             scope.children = itemsChildren;
             createElement();
-            
+
             expect(scope.onSelect).not.toHaveBeenCalled();
 
             // when
@@ -118,7 +117,7 @@ describe('Breadcrumb component', () => {
             expect(scope.onSelect).toHaveBeenCalledWith(itemsChildren['1'][0]);
         });
     });
-    
+
     describe('onListOpen', () => {
         it('should trigger callback on dropdown open', () => {
             // given
@@ -133,7 +132,7 @@ describe('Breadcrumb component', () => {
             element.find('.breadcrumb-item').eq(0)
                 .find('.sc-dropdown-trigger').eq(0)
                 .click();
-            
+
             // then
             expect(scope.onListOpen).toHaveBeenCalledWith(items[0]);
         });

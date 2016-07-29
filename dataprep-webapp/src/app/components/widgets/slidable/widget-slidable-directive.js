@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './slidable.html';
+
 /**
  * @ngdoc directive
  * @name talend.widget.directive:TalendSlidable
@@ -50,7 +52,7 @@ export default function TalendSlidable($window) {
     return {
         restrict: 'E',
         transclude: true,
-        templateUrl: 'app/components/widgets/slidable/slidable.html',
+        templateUrl: template,
         scope: {
             side: '@',
             visible: '=',
@@ -102,7 +104,7 @@ export default function TalendSlidable($window) {
             scope.$watch(
                 () => ctrl.visible,
                 (visible) => {
-                    if(visible) {
+                    if (visible) {
                         iElement.removeClass('slide-hide');
                     }
                     else {

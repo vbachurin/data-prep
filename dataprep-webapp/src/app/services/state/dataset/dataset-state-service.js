@@ -16,16 +16,15 @@ export const datasetState = {
 };
 
 export function DatasetStateService() {
-
     return {
-        //uploading datasets
+        // uploading datasets
         startUploadingDataset: startUploadingDataset,
         finishUploadingDataset: finishUploadingDataset
     };
 
-    //--------------------------------------------------------------------------------------------------------------
-    //----------------------------------------------UPLOADING DATASETS----------------------------------------------
-    //--------------------------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // ------------------------------------------UPLOADING DATASETS--------------------------------
+    // --------------------------------------------------------------------------------------------
     function startUploadingDataset(dataset) {
         datasetState.uploadingDatasets.push(dataset);
     }

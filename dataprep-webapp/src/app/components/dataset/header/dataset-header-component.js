@@ -12,9 +12,10 @@
  ============================================================================*/
 
 import DatasetHeaderCtrl from './dataset-header-controller';
+import template from './dataset-header.html';
 
 const DatasetHeaderComponent = {
-    templateUrl: 'app/components/dataset/header/dataset-header.html',
+    templateUrl: template,
     controller: DatasetHeaderCtrl,
 };
 

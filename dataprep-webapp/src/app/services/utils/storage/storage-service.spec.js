@@ -56,12 +56,12 @@ describe('Storage service', () => {
             const email = StorageService.getExportParams();
 
             // then
-            expect(email).toEqual({exportType: 'XLSX'});
+            expect(email).toEqual({ exportType: 'XLSX' });
         }));
 
         it('should save the export params in local storage', inject(($window, StorageService) => {
             // given
-            const params = {exportType: 'XLSX'};
+            const params = { exportType: 'XLSX' };
 
             // when
             StorageService.saveExportParams(params);

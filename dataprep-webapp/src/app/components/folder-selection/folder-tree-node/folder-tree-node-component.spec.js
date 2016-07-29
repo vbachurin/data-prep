@@ -12,13 +12,12 @@
  ============================================================================*/
 
 describe('Folder Tree Node Component', () => {
-
     let createElement;
     let scope;
     let element;
-    
+
     beforeEach(angular.mock.module('data-prep.folder-selection'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
     beforeEach(angular.mock.module('pascalprecht.translate', ($translateProvider) => {
         $translateProvider.translations('en', {
             "FOLDER_PATH": "(Path: {{path}})"
@@ -242,7 +241,7 @@ describe('Folder Tree Node Component', () => {
             //then
             expect(scope.onSelect).toHaveBeenCalled();
         });
-        
+
         it('should trigger callback on icon click', () => {
             //given
             scope.onSelect = jasmine.createSpy('onSelect');

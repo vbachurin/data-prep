@@ -12,20 +12,20 @@
  ============================================================================*/
 
 describe('Preparation Creator Controller', () => {
-
-    let createController, scope, ctrl, stateMock;
+    let createController;
+    let scope;
+    let ctrl;
+    let stateMock;
 
     const urlQueries = {
         RECENT_DATASETS: '/api/datasets?sort=MODIF&limit=true&name=',
         FAVORITE_DATASETS: '/api/datasets?favorite=true&name=',
-        CERTIFIED_DATASETS: '/api/datasets?certified=true&name=',
         ALL_DATASETS: '/api/datasets?name='
     };
 
     const FILTERS_TYPES = {
         'RECENT': 'RECENT_DATASETS',
         'FAVORITE': 'FAVORITE_DATASETS',
-        'CERTIFIED': 'CERTIFIED_DATASETS',
         'ALL': 'ALL_DATASETS',
     };
 
@@ -42,8 +42,8 @@ describe('Preparation Creator Controller', () => {
                 folder: {
                     content: {
                         preparations: [
-                            {id: 'abc-def', name: 'my dataset Preparation'},
-                            {id: 'a95-def', name: 'my dataset Preparation (1)'},
+                            { id: 'abc-def', name: 'my dataset Preparation' },
+                            { id: 'a95-def', name: 'my dataset Preparation (1)' },
                         ]
                     }
                 }
@@ -57,8 +57,8 @@ describe('Preparation Creator Controller', () => {
 
         createController = () => {
             return $componentController('preparationCreator',
-                {$scope: scope},
-                {showAddPrepModal: true});
+                { $scope: scope },
+                { showAddPrepModal: true });
         };
     }));
 
@@ -82,15 +82,15 @@ describe('Preparation Creator Controller', () => {
 
     describe('load filtered datasets', () => {
         let filteredDs = [
-            {id: 'def12535-212', name: 'datasetName1'},
-            {id: 'abc15455-212', name: 'datasetName1'}
+            { id: 'def12535-212', name: 'datasetName1' },
+            { id: 'abc15455-212', name: 'datasetName1' }
         ];
 
         beforeEach(inject(($q, DatasetService) => {
             spyOn(DatasetService, 'loadFilteredDatasets').and.returnValue($q.when(filteredDs));
         }));
 
-        it('should query the recent datsets without Name filter', inject((DatasetService) => {
+        it('should query the recent datasets without Name filter', inject((DatasetService) => {
             //given
             ctrl = createController();
 
@@ -101,7 +101,7 @@ describe('Preparation Creator Controller', () => {
             expect(DatasetService.loadFilteredDatasets).toHaveBeenCalledWith(urlQueries.RECENT_DATASETS);
         }));
 
-        it('should query the favorite datsets without Name filter', inject((DatasetService) => {
+        it('should query the favorite datasets without Name filter', inject((DatasetService) => {
             //given
             ctrl = createController();
 
@@ -112,18 +112,7 @@ describe('Preparation Creator Controller', () => {
             expect(DatasetService.loadFilteredDatasets).toHaveBeenCalledWith(urlQueries.FAVORITE_DATASETS);
         }));
 
-        it('should query the certified datsets without Name filter', inject((DatasetService) => {
-            //given
-            ctrl = createController();
-
-            //when
-            ctrl.loadDatasets(FILTERS_TYPES.CERTIFIED);
-
-            //then
-            expect(DatasetService.loadFilteredDatasets).toHaveBeenCalledWith(urlQueries.CERTIFIED_DATASETS);
-        }));
-
-        it('should query all the datsets without Name filter', inject((DatasetService) => {
+        it('should query all the datasets without Name filter', inject((DatasetService) => {
             //given
             ctrl = createController();
 
@@ -171,7 +160,6 @@ describe('Preparation Creator Controller', () => {
     });
 
     describe('Import', () => {
-
         beforeEach(inject(($q, DatasetService) => {
             spyOn(DatasetService, 'createDatasetInfo').and.returnValue();
             spyOn(DatasetService, 'create').and.returnValue($q.when(true));
@@ -186,7 +174,7 @@ describe('Preparation Creator Controller', () => {
             it('should call the unique name generator service', inject(($q, DatasetService) => {
                 //given
                 ctrl = createController();
-                ctrl.datasetFile = [{name: 'my Dataset name (1).csv'}];
+                ctrl.datasetFile = [{ name: 'my Dataset name (1).csv' }];
 
                 //when
                 ctrl.import();
@@ -200,7 +188,7 @@ describe('Preparation Creator Controller', () => {
             it('should call create dataset function', inject(($q, DatasetService) => {
                 //given
                 ctrl = createController();
-                ctrl.datasetFile = [{name: 'my Dataset name (1).csv'}];
+                ctrl.datasetFile = [{ name: 'my Dataset name (1).csv' }];
 
                 //when
                 ctrl.import();
@@ -222,7 +210,7 @@ describe('Preparation Creator Controller', () => {
             it('should check the dataset name availability', inject(($q, DatasetService) => {
                 //given
                 ctrl = createController();
-                ctrl.datasetFile = [{name: 'my Dataset name (1).csv'}];
+                ctrl.datasetFile = [{ name: 'my Dataset name (1).csv' }];
 
                 //when
                 ctrl.import();
@@ -234,7 +222,7 @@ describe('Preparation Creator Controller', () => {
             it('should call create dataset function', inject(($q, DatasetService) => {
                 //given
                 ctrl = createController();
-                ctrl.datasetFile = [{name: 'my Dataset name (1).csv'}];
+                ctrl.datasetFile = [{ name: 'my Dataset name (1).csv' }];
 
                 //when
                 ctrl.import();
@@ -246,11 +234,11 @@ describe('Preparation Creator Controller', () => {
                 expect(DatasetService.create).toHaveBeenCalled();
             }));
         });
-
     });
 
     describe('dataset creation', () => {
-        let uploadDefer, dataset;
+        let uploadDefer;
+        let dataset;
         beforeEach(inject(($q, DatasetService) => {
             spyOn(DatasetService, 'checkNameAvailability').and.returnValue($q.when(true));
             dataset = {
@@ -264,7 +252,7 @@ describe('Preparation Creator Controller', () => {
             spyOn(DatasetService, 'createDatasetInfo').and.returnValue(dataset);
 
             ctrl = createController();
-            ctrl.datasetFile = [{name: 'my Dataset name (1).csv'}];
+            ctrl.datasetFile = [{ name: 'my Dataset name (1).csv' }];
             scope.$digest();
         }));
 
@@ -278,7 +266,7 @@ describe('Preparation Creator Controller', () => {
 
         beforeEach(inject(($q, $state) => {
             spyOn($state, 'go').and.returnValue();
-            ctrl.addPreparationForm = {$commitViewValue: jasmine.createSpy('$commitViewValue').and.returnValue()};
+            ctrl.addPreparationForm = { $commitViewValue: jasmine.createSpy('$commitViewValue').and.returnValue() };
         }));
 
         describe('succeeds', () => {
@@ -297,7 +285,7 @@ describe('Preparation Creator Controller', () => {
                 ctrl.import();
                 expect(ctrl.whileImport).toBe(true);
                 expect(ctrl.uploadingDatasets.length).toBe(0);
-                uploadDefer.resolve({data: dataset.id});
+                uploadDefer.resolve({ data: dataset.id });
                 scope.$digest();
 
                 //then
@@ -310,10 +298,10 @@ describe('Preparation Creator Controller', () => {
 
             it('should create a preparation with a generated unique name', inject(($q, DatasetService) => {
                 //given
-                ctrl.datasetFile = [{name: 'my dataset.csv'}];
+                ctrl.datasetFile = [{ name: 'my dataset.csv' }];
                 ctrl.userHasTypedName = false;
                 ctrl.enteredName = '';
-                spyOn(DatasetService, 'getDatasetById').and.returnValue($q.when({id:'123', name:'my dataset'}));
+                spyOn(DatasetService, 'getDatasetById').and.returnValue($q.when({ id:'123', name:'my dataset' }));
 
                 //when
                 ctrl.import();
@@ -326,14 +314,14 @@ describe('Preparation Creator Controller', () => {
 
             it('should create a preparation with with the entered name by the user', inject(($q, DatasetService) => {
                 //given
-                ctrl.datasetFile = [{name: 'my dataset.csv'}];
+                ctrl.datasetFile = [{ name: 'my dataset.csv' }];
                 ctrl.userHasTypedName = true;
                 ctrl.enteredName = 'prep name by user';
-                spyOn(DatasetService, 'getDatasetById').and.returnValue($q.when({id: '123', name: 'my dataset'}));
+                spyOn(DatasetService, 'getDatasetById').and.returnValue($q.when({ id: '123', name: 'my dataset' }));
 
                 //when
                 ctrl.import();
-                uploadDefer.resolve({data: dataset.id});
+                uploadDefer.resolve({ data: dataset.id });
                 scope.$digest();
 
                 //then
@@ -395,10 +383,10 @@ describe('Preparation Creator Controller', () => {
         it('should call create preparation service', inject(($state, PreparationService) => {
             //given
             ctrl = createController();
-            ctrl.baseDataset = {id: 'abc-54'};
+            ctrl.baseDataset = { id: 'abc-54' };
             ctrl.enteredName = 'prep name';
-            stateMock.inventory.folder.metadata = {path: '/amaa'};
-            ctrl.addPreparationForm = {$commitViewValue: jasmine.createSpy('$commitViewValue').and.returnValue()};
+            stateMock.inventory.folder.metadata = { path: '/amaa' };
+            ctrl.addPreparationForm = { $commitViewValue: jasmine.createSpy('$commitViewValue').and.returnValue() };
 
             //when
             ctrl.createPreparation();
@@ -407,13 +395,13 @@ describe('Preparation Creator Controller', () => {
             //then
             expect(PreparationService.create).toHaveBeenCalledWith(ctrl.baseDataset.id, ctrl.enteredName, stateMock.inventory.folder.metadata.id);
             expect(ctrl.showAddPrepModal).toBe(false);
-            expect($state.go).toHaveBeenCalledWith('playground.preparation', {prepid: newPreparation.id});
+            expect($state.go).toHaveBeenCalledWith('playground.preparation', { prepid: newPreparation.id });
         }));
 
         it('should call UploadWorkflowService openDraft for multisheet dataset', inject((UploadWorkflowService) => {
             //given
             ctrl = createController();
-            ctrl.baseDataset = {draft: true, id: 'abc-54', name: 'test'};
+            ctrl.baseDataset = { draft: true, id: 'abc-54', name: 'test' };
             ctrl.enteredName = 'test';
 
             //when

@@ -14,19 +14,21 @@
 describe('Filter bar directive', function() {
     'use strict';
 
-    var scope, createElement, element;
+    var scope;
+    var createElement;
+    var element;
 
     var stateMock;
     beforeEach(angular.mock.module('data-prep.filter-bar', function($provide) {
-        stateMock = {playground: {
-            filter : {
-                gridFilters: [{}]
-            }
-        }};
+        stateMock = { playground: {
+                filter : {
+                    gridFilters: [{}]
+                }
+        } };
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
     beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
             'REMOVE_ALL_FILTERS': 'Remove all filters'

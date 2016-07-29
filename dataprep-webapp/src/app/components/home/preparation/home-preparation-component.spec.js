@@ -14,8 +14,11 @@
 describe('Home Preparation Component', () => {
     'use strict';
 
-    let scope, createElement, element, StateMock;
-    beforeEach(angular.mock.module('htmlTemplates'));
+    let scope;
+    let createElement;
+    let element;
+    let StateMock;
+    
 
     beforeEach(angular.mock.module('data-prep.home', ($provide) => {
         StateMock = {
@@ -35,7 +38,6 @@ describe('Home Preparation Component', () => {
 
         spyOn(StateService, 'setFetchingInventoryPreparations').and.returnValue();
         spyOn(FolderService, 'init').and.returnValue($q.when());
-
     }));
 
     afterEach(() => {
@@ -70,5 +72,4 @@ describe('Home Preparation Component', () => {
         //then
         expect(element.find('preparation-list').length).toBe(1);
     });
-
 });

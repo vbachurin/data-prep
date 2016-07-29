@@ -14,18 +14,19 @@
 describe('Documentation Search controller', () => {
     'use strict';
 
-    var component, scope;
+    var component;
+    var scope;
 
     beforeEach(angular.mock.module('data-prep.documentation-search'));
 
     beforeEach(inject(($rootScope, $componentController) => {
         scope = $rootScope.$new();
-        component = $componentController('documentationSearch', {$scope: scope});
+        component = $componentController('documentationSearch', { $scope: scope });
     }));
 
     describe('search ', () => {
         it('should call documentation search service', inject(($q, DocumentationService) => {
-            const results = [{url: 'url', name: 'name', description: 'description'}];
+            const results = [{ url: 'url', name: 'name', description: 'description' }];
             spyOn(DocumentationService, 'search').and.returnValue($q.when(results));
 
             //when
@@ -37,7 +38,7 @@ describe('Documentation Search controller', () => {
         }));
 
         it('should set results', inject(($q, DocumentationService) => {
-            const results = [{url: 'url', name: 'name', description: 'description'}];
+            const results = [{ url: 'url', name: 'name', description: 'description' }];
             spyOn(DocumentationService, 'search').and.returnValue($q.when(results));
 
             //when
@@ -49,7 +50,7 @@ describe('Documentation Search controller', () => {
         }));
 
         it('should NOT set results when the search is out of date', inject(($q, DocumentationService) => {
-            const results = [{url: 'url', name: 'name', description: 'description'}];
+            const results = [{ url: 'url', name: 'name', description: 'description' }];
             spyOn(DocumentationService, 'search').and.returnValue($q.when(results));
 
             //when

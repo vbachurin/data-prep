@@ -13,7 +13,8 @@
 
 describe('Transformation column param directive', function () {
     'use strict';
-    var scope, createElement;
+    var scope;
+    var createElement;
 
     var stateMock = {
         playground: {
@@ -21,9 +22,9 @@ describe('Transformation column param directive', function () {
             data: {
                 metadata: {
                     columns: [
-                        {id: '0001', name: 'first name'},
-                        {id: '0002', name: 'last name'},
-                        {id: '0003', name: 'birth date'}
+                        { id: '0001', name: 'first name' },
+                        { id: '0002', name: 'last name' },
+                        { id: '0003', name: 'birth date' }
                     ]
                 }
             },
@@ -42,7 +43,7 @@ describe('Transformation column param directive', function () {
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(angular.mock.module('htmlTemplates'));
+    
 
     beforeEach(inject(function($rootScope, $compile) {
         scope = $rootScope.$new();
@@ -55,7 +56,7 @@ describe('Transformation column param directive', function () {
         };
     }));
 
-    
+
     it('should render an action with a column parameter', function() {
         //given
         scope.parameter = {
@@ -74,6 +75,5 @@ describe('Transformation column param directive', function () {
         //then
         expect(element.find('.param-name').text().trim()).toBe('The Column to concatenate:');
         expect(element.find('.param-input').find('option').length).toBe(stateMock.playground.data.metadata.columns.length);
-
     });
 });

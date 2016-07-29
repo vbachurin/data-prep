@@ -11,6 +11,8 @@
 
  ============================================================================*/
 
+import template from './datagrid.html';
+
 /**
  * @ngdoc directive
  * @name data-prep.datagrid.directive:Datagrid
@@ -33,12 +35,12 @@
  * @restrict E
  */
 export default function Datagrid($timeout, state, DatagridGridService, DatagridColumnService, DatagridStyleService, DatagridSizeService,
-                                 DatagridTooltipService, DatagridExternalService) {
+    DatagridTooltipService, DatagridExternalService) {
     'ngInject';
 
     return {
         restrict: 'E',
-        templateUrl: 'app/components/datagrid/datagrid.html',
+        templateUrl: template,
         bindToController: true,
         controllerAs: 'datagridCtrl',
         controller: function () {
@@ -47,7 +49,11 @@ export default function Datagrid($timeout, state, DatagridGridService, DatagridC
         },
         link: function (scope, iElement) {
             var grid;
-            var columnTimeout, columnStyleTimeout, cellHighlightTimeout, externalTimeout, focusTimeout;
+            var columnTimeout;
+            var columnStyleTimeout;
+            var cellHighlightTimeout;
+            var externalTimeout;
+            var focusTimeout;
 
             //------------------------------------------------------------------------------------------------------
             //--------------------------------------------------GETTERS---------------------------------------------
@@ -112,12 +118,12 @@ export default function Datagrid($timeout, state, DatagridGridService, DatagridC
                 return state.playground.filter.enabled;
             }
 
-                /**
-             * @ngdoc method
-             * @name getResizeCondition
-             * @methodOf data-prep.datagrid.directive:Datagrid
-             * @description Return condition that trigger a grid resize
-             */
+            /**
+                     * @ngdoc method
+                     * @name getResizeCondition
+                     * @methodOf data-prep.datagrid.directive:Datagrid
+                     * @description Return condition that trigger a grid resize
+                     */
             function getResizeCondition() {
                 return state.playground.lookup.visibility;
             }
@@ -241,10 +247,10 @@ export default function Datagrid($timeout, state, DatagridGridService, DatagridC
 
                     if (stateSelectedLine && stateGridData && !stateGridData.preview) {
                         cellHighlightTimeout = $timeout(() => {
-                                const colId = stateSelectedColumn && stateSelectedColumn.id;
-                                const content = stateSelectedLine[colId];
-                                DatagridStyleService.highlightCellsContaining(colId, content);
-                            },
+                            const colId = stateSelectedColumn && stateSelectedColumn.id;
+                            const content = stateSelectedLine[colId];
+                            DatagridStyleService.highlightCellsContaining(colId, content);
+                        },
                             500,
                             false
                         );

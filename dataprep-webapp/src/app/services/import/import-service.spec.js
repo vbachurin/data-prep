@@ -134,7 +134,7 @@ describe('Import service', () => {
     beforeEach(angular.mock.module('data-prep.services.import'));
 
     beforeEach(inject(($q, ImportRestService) => {
-        spyOn(ImportRestService, 'importTypes').and.returnValue($q.when({data: importTypes}));
+        spyOn(ImportRestService, 'importTypes').and.returnValue($q.when({ data: importTypes }));
     }));
 
     it('should fetch import types list from REST call', inject(($rootScope, ImportService, StateService) => {
@@ -148,5 +148,4 @@ describe('Import service', () => {
         //then
         expect(StateService.setImportTypes).toHaveBeenCalledWith(importTypes);
     }));
-
 });

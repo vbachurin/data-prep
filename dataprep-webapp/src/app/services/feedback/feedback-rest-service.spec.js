@@ -25,7 +25,7 @@ describe('Feedback Rest Service', function () {
 
     it('should send feed back', inject(function ($rootScope, FeedbackRestService, RestURLs) {
         //given
-        var feedback = { title: ''};
+        var feedback = { title: '' };
 
         $httpBackend
             .expectPUT(RestURLs.mailUrl, feedback)
@@ -35,8 +35,7 @@ describe('Feedback Rest Service', function () {
         FeedbackRestService.sendFeedback(feedback);
         $httpBackend.flush();
 
-        //then
-        //Expect http call to be performed. If not an error is thrown by $httpBackend
+    //then
+    //Expect http call to be performed. If not an error is thrown by $httpBackend
     }));
-
 });

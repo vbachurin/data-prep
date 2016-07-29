@@ -17,8 +17,9 @@
  * @description The recipeBullet controller
  * @requires data-prep.services.recipe.service:RecipeService
  * @requires data-prep.services.recipe.service:RecipeBulletService
+ * @requires data-prep.services.playground.service:PlaygroundService
  */
-export default function RecipeBulletCtrl(RecipeService, RecipeBulletService) {
+export default function RecipeBulletCtrl(state, StepUtilsService, RecipeService, RecipeBulletService, PlaygroundService) {
     'ngInject';
 
     var vm = this;
@@ -39,7 +40,10 @@ export default function RecipeBulletCtrl(RecipeService, RecipeBulletService) {
      * @description The step index in the recipe
      * @type {number}
      */
-    vm.stepIndex = RecipeService.getStepIndex(vm.step);
+    vm.stepIndex = StepUtilsService.getStepIndex(
+        state.playground.recipe,
+        vm.step
+    );
 
     /**
      * @ngdoc method
@@ -56,7 +60,7 @@ export default function RecipeBulletCtrl(RecipeService, RecipeBulletService) {
         }
         //current step inactive : we should activate the steps from last inactive to the current
         else {
-            var lastActiveStepIndex = RecipeService.getActiveThresholdStepIndex();
+            var lastActiveStepIndex = StepUtilsService.getActiveThresholdStepIndex(state.playground.recipe);
             return allSvgs.slice(lastActiveStepIndex + 1, vm.stepIndex + 1);
         }
     };
@@ -69,7 +73,7 @@ export default function RecipeBulletCtrl(RecipeService, RecipeBulletService) {
      * @returns {boolean} true if step is the first step
      */
     vm.isStartChain = function () {
-        return RecipeService.isFirstStep(vm.step);
+        return StepUtilsService.isFirstStep(state.playground.recipe, vm.step);
     };
 
     /**
@@ -80,7 +84,7 @@ export default function RecipeBulletCtrl(RecipeService, RecipeBulletService) {
      * @returns {boolean} true if step is the last step
      */
     vm.isEndChain = function () {
-        return RecipeService.isLastStep(vm.step);
+        return StepUtilsService.isLastStep(state.playground.recipe, vm.step);
     };
 
     /**
@@ -110,6 +114,6 @@ export default function RecipeBulletCtrl(RecipeService, RecipeBulletService) {
      * @description Enable/disable step
      */
     vm.toggleStep = function () {
-        RecipeBulletService.toggleStep(vm.step);
+        PlaygroundService.toggleStep(vm.step);
     };
 }

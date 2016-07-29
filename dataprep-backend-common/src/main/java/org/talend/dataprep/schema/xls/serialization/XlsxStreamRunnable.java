@@ -13,14 +13,11 @@
 
 package org.talend.dataprep.schema.xls.serialization;
 
-import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
@@ -90,6 +87,9 @@ public class XlsxStreamRunnable implements Runnable {
                         workbook.getSheetAt(0) : workbook.getSheet(metadata.getSheetName());
                 generator.writeStartArray();
                 for (Row row : sheet) {
+                    if (limit > 0 && row.getRowNum() > limit) {
+                        break;
+                    }
                     if (!XlsSerializer.isHeaderLine(row.getRowNum(), metadata.getRowMetadata().getColumns())) {
                         generator.writeStartObject();
                         // data quality Analyzer doesn't like to not have all columns even if we don't have any values
@@ -107,9 +107,6 @@ public class XlsxStreamRunnable implements Runnable {
                             i++;
                         }
                         generator.writeEndObject();
-                    }
-                    if (limit > 0 && row.getRowNum() > limit) {
-                        break;
                     }
                 }
                 generator.writeEndArray();
