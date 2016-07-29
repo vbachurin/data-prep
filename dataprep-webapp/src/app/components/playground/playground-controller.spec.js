@@ -484,6 +484,19 @@ describe('Playground controller', () => {
             expect(ctrl.displayPreparationPicker).toBe(true);
         });
 
+        it('should fetch compatible preparations', inject((DatasetService) => {
+            //given
+            spyOn(DatasetService, 'getCompatiblePreparations').and.returnValue();
+            const ctrl = createController();
+            const datasetId = 'abcde-123';
+
+            //when
+            ctrl.fetchCompatiblePreparations(datasetId);
+
+            //then
+            expect(DatasetService.getCompatiblePreparations).toHaveBeenCalledWith(datasetId);
+        }));
+
         it('should copy reference steps', inject(($q, PlaygroundService) => {
             //given
             const referenceId = '17614ef63541ba25c48';
@@ -667,6 +680,21 @@ describe('Playground controller', () => {
         }));
     });
 
+    describe('onboarding', () => {
+        it('should start onboarding tour', inject((OnboardingService) => {
+            //given
+            spyOn(OnboardingService, 'startTour').and.returnValue();
+            const ctrl = createController();
+            const tourId = 'tour-123';
+
+            //when
+            ctrl.startOnBoarding(tourId);
+
+            //then
+            expect(OnboardingService.startTour).toHaveBeenCalledWith(tourId);
+        }));
+    });
+
     describe('dataset parameters', () => {
         beforeEach(inject(($q, StateService, PlaygroundService) => {
             spyOn(StateService, 'hideDatasetParameters').and.returnValue();
@@ -730,6 +758,34 @@ describe('Playground controller', () => {
 
             //then
             expect(StateService.hideDatasetParameters).toHaveBeenCalled();
+        }));
+    });
+
+    describe('preview in progress', () => {
+        it('should check if preview is in progress', inject((PreviewService) => {
+            //given
+            spyOn(PreviewService, 'previewInProgress').and.returnValue();
+            const ctrl = createController();
+
+            //when
+            ctrl.previewInProgress();
+
+            //then
+            expect(PreviewService.previewInProgress).toHaveBeenCalled();
+        }));
+    });
+
+    describe('toggle recipe', () => {
+        it('should toggle recipe', inject((PlaygroundService) => {
+            //given
+            spyOn(PlaygroundService, 'toggleRecipe').and.returnValue();
+            const ctrl = createController();
+
+            //when
+            ctrl.toggleRecipe();
+
+            //then
+            expect(PlaygroundService.toggleRecipe).toHaveBeenCalled();
         }));
     });
 });

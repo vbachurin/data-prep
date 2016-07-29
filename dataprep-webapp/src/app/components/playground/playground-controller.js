@@ -39,7 +39,7 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
     vm.previewInProgress = () => PreviewService.previewInProgress();
     vm.toggleRecipe = () => PlaygroundService.toggleRecipe();
     vm.startOnBoarding = (tourId) => OnboardingService.startTour(tourId);
-    vm.fetchCompatiblePreparations = () => DatasetService.getCompatiblePreparations();
+    vm.fetchCompatiblePreparations = (datasetId) => DatasetService.getCompatiblePreparations(datasetId);
 
     /**
      * @ngdoc property
