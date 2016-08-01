@@ -98,15 +98,6 @@ function addPlugins(config, options) {
     config.plugins.push(
 
         /*
-         * Plugin: NoErrorsPlugin
-         * Description: Only emit files when there are no errors
-         * Copies project static assets.
-         *
-         * See: http://webpack.github.io/docs/list-of-plugins.html#noerrorsplugin
-         */
-        new webpack.NoErrorsPlugin(),
-
-        /*
          * Plugin: CopyWebpackPlugin
          * Description: Copy files and directories in webpack.
          * Copies project static assets.

@@ -31,8 +31,9 @@
     </prerequisites>
     <properties>
         <docker.registry.name>registry.talend.com:5000</docker.registry.name>
-        <docker.tools.image.name>${docker.registry.name}/talend/data-prep-webapp-tools:1.4</docker.tools.image.name>
+        <docker.tools.image.name>${docker.registry.name}/talend/data-prep-webapp-tools:1.8</docker.tools.image.name>
         <docker.user>1000</docker.user>
+        <docker.path.dataprep>/data-prep</docker.path.dataprep>
     </properties>
     <profiles>
         <profile>
@@ -99,6 +100,7 @@
                                 </goals>
                                 <phase>test</phase>
                                 <configuration>
+                                    <skip>${skipTests}</skip>
                                     <executable>npm</executable>
                                     <arguments>
                                         <argument>test</argument>
@@ -194,14 +196,12 @@
                                         <argument>--user</argument>
                                         <argument>${docker.user}</argument>
                                         <argument>-v</argument>
-                                        <argument>${basedir}:/dataprep-webapp</argument>
+                                        <argument>${basedir}:${docker.path.dataprep}</argument>
                                         <argument>--rm=true</argument>
                                         <argument>${docker.tools.image.name}</argument>
                                         <argument>/bin/sh</argument>
                                         <argument>-c</argument>
-                                        <argument>
-                                            npm prune
-                                        </argument>
+                                        <argument>npm prune</argument>
                                     </arguments>
                                 </configuration>
                             </execution>
@@ -218,14 +218,12 @@
                                         <argument>--user</argument>
                                         <argument>${docker.user}</argument>
                                         <argument>-v</argument>
-                                        <argument>${basedir}:/dataprep-webapp</argument>
+                                        <argument>${basedir}:${docker.path.dataprep}</argument>
                                         <argument>--rm=true</argument>
                                         <argument>${docker.tools.image.name}</argument>
                                         <argument>/bin/sh</argument>
                                         <argument>-c</argument>
-                                        <argument>
-                                            npm install
-                                        </argument>
+                                        <argument>npm install</argument>
                                     </arguments>
                                 </configuration>
                             </execution>
@@ -243,7 +241,7 @@
                                         <argument>--user</argument>
                                         <argument>${docker.user}</argument>
                                         <argument>-v</argument>
-                                        <argument>${basedir}:/dataprep-webapp</argument>
+                                        <argument>${basedir}:${docker.path.dataprep}</argument>
                                         <argument>--rm=true</argument>
                                         <argument>${docker.tools.image.name}</argument>
                                         <argument>/bin/sh</argument>
@@ -253,19 +251,20 @@
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>(docker) np run test:ci</id>
+                                <id>(docker) npm run test:ci</id>
                                 <goals>
                                     <goal>exec</goal>
                                 </goals>
                                 <phase>test</phase>
                                 <configuration>
+                                    <skip>${skipTests}</skip>
                                     <executable>docker</executable>
                                     <arguments>
                                         <argument>run</argument>
                                         <argument>--user</argument>
                                         <argument>${docker.user}</argument>
                                         <argument>-v</argument>
-                                        <argument>${basedir}:/dataprep-webapp</argument>
+                                        <argument>${basedir}:${docker.path.dataprep}</argument>
                                         <argument>--rm=true</argument>
                                         <argument>${docker.tools.image.name}</argument>
                                         <argument>/bin/sh</argument>
