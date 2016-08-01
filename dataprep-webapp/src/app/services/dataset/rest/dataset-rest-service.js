@@ -22,30 +22,30 @@ export default function DatasetRestService($rootScope, $upload, $http, RestURLs)
     'ngInject';
 
     return {
-        create: create,
-        update: update,
+        create,
+        update,
         delete: deleteDataset,
         clone: cloneDataset,
 
-        updateColumn: updateColumn,
+        updateColumn,
 
-        getDatasets: getDatasets,
-        loadFilteredDatasets: loadFilteredDatasets,
-        updateMetadata: updateMetadata,
-        getMetadata: getMetadata,
-        getContent: getContent,
-        getSheetPreview: getSheetPreview,
-        getEncodings: getEncodings,
-        getDatasetByName: getDatasetByName,
+        getDatasets,
+        loadFilteredDatasets,
+        updateMetadata,
+        getMetadata,
+        getContent,
+        getSheetPreview,
+        getEncodings,
+        getDatasetByName,
 
-        processCertification: processCertification,
-        toggleFavorite: toggleFavorite,
+        processCertification,
+        toggleFavorite,
 
-        getCompatiblePreparations: getCompatiblePreparations,
+        getCompatiblePreparations,
     };
 
     //--------------------------------------------------------------------------------------------------------------
-    //---------------------------------------------------Dataset----------------------------------------------------
+    // ---------------------------------------------------Dataset----------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
@@ -58,7 +58,7 @@ export default function DatasetRestService($rootScope, $upload, $http, RestURLs)
      * @returns {Promise} The POST promise
      */
     function create(parameters, contentType, file) {
-        var req = {
+        const req = {
             url: RestURLs.datasetUrl + '?name=' + encodeURIComponent(parameters.name),
             headers: {
                 'Content-Type': contentType,
@@ -110,7 +110,7 @@ export default function DatasetRestService($rootScope, $upload, $http, RestURLs)
     }
 
     //--------------------------------------------------------------------------------------------------------------
-    //---------------------------------------------------Metadata---------------------------------------------------
+    // ---------------------------------------------------Metadata---------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
@@ -134,7 +134,7 @@ export default function DatasetRestService($rootScope, $upload, $http, RestURLs)
         }
 
         return $http({
-            url: url,
+            url,
             method: 'GET',
             timeout: deferredAbort.promise,
         });
@@ -212,7 +212,7 @@ export default function DatasetRestService($rootScope, $upload, $http, RestURLs)
     }
 
     //--------------------------------------------------------------------------------------------------------------
-    //---------------------------------------------------Content----------------------------------------------------
+    // ---------------------------------------------------Content----------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
@@ -242,7 +242,7 @@ export default function DatasetRestService($rootScope, $upload, $http, RestURLs)
     }
 
     //--------------------------------------------------------------------------------------------------------------
-    //------------------------------------------------Sheet Preview-------------------------------------------------
+    // ------------------------------------------------Sheet Preview-------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
@@ -263,7 +263,7 @@ export default function DatasetRestService($rootScope, $upload, $http, RestURLs)
     }
 
     //--------------------------------------------------------------------------------------------------------------
-    //------------------------------------------------Toggle Favorite-----------------------------------------------
+    // ------------------------------------------------Toggle Favorite-----------------------------------------------
     //--------------------------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
@@ -278,7 +278,7 @@ export default function DatasetRestService($rootScope, $upload, $http, RestURLs)
     }
 
     //--------------------------------------------------------------------------------------------------------------
-    //---------------------------------------------------Encodings--------------------------------------------------
+    // ---------------------------------------------------Encodings--------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------
     /**
      * @ngdoc method

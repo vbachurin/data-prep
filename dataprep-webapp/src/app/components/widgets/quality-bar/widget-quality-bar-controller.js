@@ -17,8 +17,8 @@
  * @description Quality bar controller
  */
 export default function QualityBarCtrl() {
-    var MIN_QUALITY_WIDTH = 10;
-    var vm = this;
+    const MIN_QUALITY_WIDTH = 10;
+    const vm = this;
 
     /**
      * @ngdoc method
@@ -27,12 +27,12 @@ export default function QualityBarCtrl() {
      * @param {string} type The bar type
      * @description [PRIVATE] Return the adapted width to have a min value if the real value is greater than 0
      */
-    var getMinimalPercent = function getMinimalPercent(type) {
+    const getMinimalPercent = function getMinimalPercent(type) {
         if (vm.quality[type] <= 0) {
             return 0;
         }
 
-        var percent = vm.percent[type];
+        const percent = vm.percent[type];
         if (percent < MIN_QUALITY_WIDTH) {
             return MIN_QUALITY_WIDTH;
         }
@@ -48,14 +48,14 @@ export default function QualityBarCtrl() {
      * @description [PRIVATE] Return the modifiable object keys sorted by object value desc.
      * An entry is modifiable if the value is greater than the minimum width
      */
-    var getOrderedModifiableKeys = function getOrderedKeys(widthObject) {
+    const getOrderedModifiableKeys = function getOrderedKeys(widthObject) {
         return _.chain(Object.keys(widthObject))
-            //filter : only keep values > min width.
-            //those with min width are not reducable
+            // filter : only keep values > min width.
+            // those with min width are not reducable
             .filter(function (key) {
                 return widthObject[key] > MIN_QUALITY_WIDTH;
             })
-            //sort by width value in reverse order
+            // sort by width value in reverse order
             .sortBy(function (key) {
                 return widthObject[key];
             })
@@ -71,19 +71,19 @@ export default function QualityBarCtrl() {
      * @param {number} amount The amount to remove from the bars
      * @description [PRIVATE] Reduce the bars width to fit 100%. The amount value is removed.
      */
-    var reduce = function reduce(widthObject, amount) {
+    const reduce = function reduce(widthObject, amount) {
         if (amount <= 0) {
             return;
         }
 
-        var orderedKeys = getOrderedModifiableKeys(widthObject);
+        const orderedKeys = getOrderedModifiableKeys(widthObject);
         if (amount <= 2) {
             widthObject[orderedKeys[0]] -= amount;
             return;
         }
 
-        var bigAmountKey = orderedKeys[0];
-        var smallAmountKey = orderedKeys.length > 1 ? orderedKeys[1] : orderedKeys[0];
+        const bigAmountKey = orderedKeys[0];
+        const smallAmountKey = orderedKeys.length > 1 ? orderedKeys[1] : orderedKeys[0];
         widthObject[bigAmountKey] -= 2;
         widthObject[smallAmountKey] -= 1;
 
@@ -98,13 +98,13 @@ export default function QualityBarCtrl() {
      * WARNING : the percentages must be computed before this function call
      */
     vm.computeQualityWidth = function computeQualityWidth() {
-        var widthObject = {
+        const widthObject = {
             invalid: getMinimalPercent('invalid'),
             empty: getMinimalPercent('empty'),
             valid: getMinimalPercent('valid'),
         };
 
-        var diff = (widthObject.invalid + widthObject.empty + widthObject.valid) - 100;
+        const diff = (widthObject.invalid + widthObject.empty + widthObject.valid) - 100;
         if (diff > 0) {
             reduce(widthObject, diff);
         }
@@ -119,7 +119,7 @@ export default function QualityBarCtrl() {
      * @description [PRIVATE] Compute quality bars percentage
      */
     vm.computePercent = function computePercent() {
-        var total = vm.quality.empty + vm.quality.invalid + vm.quality.valid;
+        const total = vm.quality.empty + vm.quality.invalid + vm.quality.valid;
 
         vm.percent = {
             invalid: vm.quality.invalid <= 0 ? 0 : Math.round(vm.quality.invalid * 100 / total),

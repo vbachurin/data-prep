@@ -52,15 +52,15 @@ class PreparationCreatorCtrl {
         this.lastFilterValue = filterValue;
         let url = this.restURLs.datasetUrl;
         switch (filterValue) {
-            case 'RECENT_DATASETS':
-                url += '?sort=MODIF&limit=true&name=';
-                break;
-            case 'FAVORITE_DATASETS':
-                url += '?favorite=true&name=';
-                break;
-            case 'ALL_DATASETS':
-                url += '?name=';
-                break;
+        case 'RECENT_DATASETS':
+            url += '?sort=MODIF&limit=true&name=';
+            break;
+        case 'FAVORITE_DATASETS':
+            url += '?favorite=true&name=';
+            break;
+        case 'ALL_DATASETS':
+            url += '?name=';
+            break;
         }
         url += this.enteredFilterText;
         this.isFetchingDatasets = true;
@@ -110,7 +110,7 @@ class PreparationCreatorCtrl {
         const params = {
             datasetFile: '',
             type: 'local',
-            name: name,
+            name,
         };
 
         const dataset = this.datasetService.createDatasetInfo(file, name);

@@ -18,8 +18,8 @@ export const datasetState = {
 export function DatasetStateService() {
     return {
         // uploading datasets
-        startUploadingDataset: startUploadingDataset,
-        finishUploadingDataset: finishUploadingDataset,
+        startUploadingDataset,
+        finishUploadingDataset,
     };
 
     // --------------------------------------------------------------------------------------------

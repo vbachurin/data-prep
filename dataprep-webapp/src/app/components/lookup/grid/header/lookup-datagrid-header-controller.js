@@ -22,7 +22,7 @@
 export default function LookupDatagridHeaderCtrl(ConverterService, state, StateService) {
     'ngInject';
 
-    var vm = this;
+    const vm = this;
     vm.converterService = ConverterService;
     vm.state = state;
 
@@ -48,7 +48,7 @@ export default function LookupDatagridHeaderCtrl(ConverterService, state, StateS
      * @description updates the array of the selected columns to be added to the lookup
      */
     vm.updateColsToAdd = function updateColsToAdd(e) {
-        //stop event propagation in order not to select the column
+        // stop event propagation in order not to select the column
         e.stopPropagation();
         StateService.updateLookupColumnsToAdd();
     };

@@ -8,20 +8,23 @@
   "private": true,
   "main": "src/app/index-module.js",
   "scripts": {
-    "clean": "npm run clean:build && npm run clean:dist && npm run clean:coverage",
+    "clean": "npm run clean:build && npm run clean:coverage",
     "clean:build": "rimraf ./build",
-    "clean:dist": "rimraf ./dist",
     "clean:coverage": "rimraf ./coverage",
+
     "build": "webpack --config config/webpack.config.dev.js --progress --profile --color --display-error-details --display-cached",
     "prebuild": "npm run clean:build",
     "build:dist": "webpack --config config/webpack.config.prod.js --progress --profile --color --display-error-details --display-cached",
     "prebuild:dist": "npm run clean:dist",
+
     "start": "npm run serve",
     "serve": "webpack-dev-server --config config/webpack.config.dev.js --progress --colors --open",
     "serve:dist": "webpack-dev-server --config config/webpack.config.prod.js --progress --colors --open --compress",
+
     "test": "karma start",
     "test:ci": "karma start karma.conf.ci.js",
     "test:auto": "karma start --auto",
+
     "lint:es": "eslint --config .eslintrc src/app/**/*.js",
     "lint:sass": "sass-lint -c .sass-lint.yml 'src/app/**/*.scss' -v -q"
   },

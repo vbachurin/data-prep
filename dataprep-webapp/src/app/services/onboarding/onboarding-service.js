@@ -95,12 +95,12 @@ export default class OnboardingService {
      */
     getTour(tour) {
         switch (tour) {
-            case 'playground':
-                return this.playgroundTour;
-            case 'recipe':
-                return this.recipeTour;
-            case 'preparation':
-                return this.preparationTour;
+        case 'playground':
+            return this.playgroundTour;
+        case 'recipe':
+            return this.recipeTour;
+        case 'preparation':
+            return this.preparationTour;
         }
     }
 

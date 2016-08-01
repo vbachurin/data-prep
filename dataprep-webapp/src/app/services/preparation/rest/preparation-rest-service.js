@@ -22,33 +22,33 @@ export default function PreparationRestService($http, RestURLs) {
     'ngInject';
 
     return {
-        //lifecycle
-        create: create,
-        copy: copy,
-        move: move,
-        update: update,
+        // lifecycle
+        create,
+        copy,
+        move,
+        update,
         delete: deletePreparation,
 
-        //step
-        appendStep: appendStep,
-        updateStep: updateStep,
-        removeStep: removeStep,
-        setHead: setHead,
-        copySteps: copySteps,
+        // step
+        appendStep,
+        updateStep,
+        removeStep,
+        setHead,
+        copySteps,
 
-        //getter : list, content, details
-        getPreparations: getPreparations,
-        getContent: getContent,
-        getDetails: getDetails,
+        // getter : list, content, details
+        getPreparations,
+        getContent,
+        getDetails,
 
-        //preview
-        getPreviewDiff: getPreviewDiff,
-        getPreviewUpdate: getPreviewUpdate,
-        getPreviewAdd: getPreviewAdd,
+        // preview
+        getPreviewDiff,
+        getPreviewUpdate,
+        getPreviewAdd,
     };
 
     //---------------------------------------------------------------------------------
-    //----------------------------------------GETTERS----------------------------------
+    // ----------------------------------------GETTERS----------------------------------
     //---------------------------------------------------------------------------------
     /**
      * @ngdoc method
@@ -88,7 +88,7 @@ export default function PreparationRestService($http, RestURLs) {
     }
 
     //---------------------------------------------------------------------------------
-    //---------------------------------------LIFECYCLE---------------------------------
+    // ---------------------------------------LIFECYCLE---------------------------------
     //---------------------------------------------------------------------------------
     /**
      * @ngdoc method
@@ -105,7 +105,7 @@ export default function PreparationRestService($http, RestURLs) {
             method: 'POST',
             url: `${RestURLs.preparationUrl}?folder=${folderId}`,
             data: {
-                name: name,
+                name,
                 dataSetId: datasetId,
             },
         };
@@ -186,7 +186,7 @@ export default function PreparationRestService($http, RestURLs) {
     }
 
     //---------------------------------------------------------------------------------
-    //-----------------------------------------STEPS-----------------------------------
+    // -----------------------------------------STEPS-----------------------------------
     //---------------------------------------------------------------------------------
     /**
      * @ngdoc method
@@ -199,7 +199,7 @@ export default function PreparationRestService($http, RestURLs) {
      */
     function adaptTransformAction(actionParams, insertionStepId) {
         return {
-            insertionStepId: insertionStepId,
+            insertionStepId,
             actions: actionParams instanceof Array ? actionParams : [actionParams],
         };
     }
@@ -290,7 +290,7 @@ export default function PreparationRestService($http, RestURLs) {
     }
 
     //---------------------------------------------------------------------------------
-    //----------------------------------------PREVIEW----------------------------------
+    // ----------------------------------------PREVIEW----------------------------------
     //---------------------------------------------------------------------------------
     /**
      * @ngdoc method

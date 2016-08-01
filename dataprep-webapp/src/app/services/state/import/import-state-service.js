@@ -17,7 +17,7 @@ export const importState = {
 
 export function ImportStateService() {
     return {
-        setImportTypes: setImportTypes,
+        setImportTypes,
     };
 
     function setImportTypes(importTypes) {

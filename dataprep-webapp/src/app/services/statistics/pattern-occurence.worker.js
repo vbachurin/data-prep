@@ -56,17 +56,17 @@ function convertPatternToRegexp(pattern) {
     let regexp = '';
     for (let i = 0, len = pattern.length; i < len; i++) {
         switch (pattern[i]) {
-            case 'A':
-                regexp += '[A-Z]';
-                break;
-            case 'a':
-                regexp += '[a-z]';
-                break;
-            case '9':
-                regexp += '[0-9]';
-                break;
-            default:
-                regexp += escapeRegex(pattern[i]);
+        case 'A':
+            regexp += '[A-Z]';
+            break;
+        case 'a':
+            regexp += '[a-z]';
+            break;
+        case '9':
+            regexp += '[0-9]';
+            break;
+        default:
+            regexp += escapeRegex(pattern[i]);
         }
     }
 

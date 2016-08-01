@@ -50,7 +50,7 @@ export default class ExportService {
      * @description Get the type by id
      */
     getType(id) {
-        return _.find(this.exportTypes, { id: id });
+        return _.find(this.exportTypes, { id });
     }
 
     /**

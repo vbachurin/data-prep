@@ -21,13 +21,13 @@ import moment from 'moment-jdateformatparser';
  */
 export default function TextFormatService() {
     return {
-        adaptToGridConstraints: adaptToGridConstraints,
-        escapeRegex: escapeRegex,
-        escapeRegexpExceptStar: escapeRegexpExceptStar,
-        convertPatternToRegexp: convertPatternToRegexp,
-        convertJavaDateFormatToMomentDateFormat: convertJavaDateFormatToMomentDateFormat,
-        highlight: highlight,
-        valueMatchPatternFn: valueMatchPatternFn,
+        adaptToGridConstraints,
+        escapeRegex,
+        escapeRegexpExceptStar,
+        convertPatternToRegexp,
+        convertJavaDateFormatToMomentDateFormat,
+        highlight,
+        valueMatchPatternFn,
     };
 
     // --------------------------------------------------------------------------------------------
@@ -111,7 +111,7 @@ export default function TextFormatService() {
         let returnStr = '';
         const hiddenCharsRegExpMatch = value.match(/(^\s*)?([\s\S]*?)(\s*$)/);
 
-        //leading hidden chars found
+        // leading hidden chars found
         if (hiddenCharsRegExpMatch[1]) {
             returnStr = '<span class="hiddenChars">' +
                 hiddenCharsRegExpMatch[1].replace(
@@ -121,10 +121,10 @@ export default function TextFormatService() {
                 '</span>';
         }
 
-        //trimmed value
+        // trimmed value
         returnStr += hiddenCharsRegExpMatch[2];
 
-        //trailing hidden chars
+        // trailing hidden chars
         if (hiddenCharsRegExpMatch[3]) {
             returnStr += '<span class="hiddenChars">' +
                 hiddenCharsRegExpMatch[3].replace(
@@ -159,17 +159,17 @@ export default function TextFormatService() {
         let regexp = '';
         for (let i = 0, len = pattern.length; i < len; i++) {
             switch (pattern[i]) {
-                case 'A':
-                    regexp += '[A-Z]';
-                    break;
-                case 'a':
-                    regexp += '[a-z]';
-                    break;
-                case '9':
-                    regexp += '[0-9]';
-                    break;
-                default:
-                    regexp += escapeRegex(pattern[i]);
+            case 'A':
+                regexp += '[A-Z]';
+                break;
+            case 'a':
+                regexp += '[a-z]';
+                break;
+            case '9':
+                regexp += '[0-9]';
+                break;
+            default:
+                regexp += escapeRegex(pattern[i]);
             }
         }
 
@@ -224,7 +224,7 @@ export default function TextFormatService() {
      * @description highlight an item of the object
      */
     function highlight(object, key, highlightText, hightlightCssClass) {
-        let originalValue = object[key];
+        const originalValue = object[key];
         if (originalValue.toLowerCase().indexOf(highlightText.toLowerCase()) !== -1) {
             object[key] = originalValue.replace(
                 new RegExp('(' + escapeRegex(highlightText) + ')', 'gi'),
@@ -272,7 +272,7 @@ export default function TextFormatService() {
      * @param {string} pattern The pattern to match
      */
     function valueMatchRegexFn(pattern) {
-        var regex = convertPatternToRegexp(pattern);
+        const regex = convertPatternToRegexp(pattern);
         return function (value) {
             return value && value.match(regex);
         };

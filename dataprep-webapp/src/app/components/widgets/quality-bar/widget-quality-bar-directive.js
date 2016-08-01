@@ -50,8 +50,8 @@ export default function QualityBar($timeout) {
         bindToController: true,
         controller: 'QualityBarCtrl',
         controllerAs: 'qualityBarCtrl',
-        link: function (scope, iElement, iAttrs, ctrl) {
-            var initializing = true;
+        link(scope, iElement, iAttrs, ctrl) {
+            let initializing = true;
 
             /**
              * @ngdoc method
@@ -59,7 +59,7 @@ export default function QualityBar($timeout) {
              * @methodOf talend.widget.directive:QualityBar
              * @description [PRIVATE] Enable animation
              */
-            var enableTransition = function enableTransition() {
+            const enableTransition = function enableTransition() {
                 ctrl.blockTransition = false;
             };
 
@@ -69,7 +69,7 @@ export default function QualityBar($timeout) {
              * @methodOf talend.widget.directive:QualityBar
              * @description [PRIVATE] Block animation, reset width to 0 and calculate the new width with animation enabling
              */
-            var refreshBarsWithAnimation = function refreshBarsWithAnimation() {
+            const refreshBarsWithAnimation = function refreshBarsWithAnimation() {
                 ctrl.width = {
                     invalid: 0,
                     empty: 0,
@@ -92,8 +92,8 @@ export default function QualityBar($timeout) {
              * @description [PRIVATE] Refresh the quality bars infos (percent and width)
              * When enterAnimation === 'false', we do NOT animate on first render
              */
-            var refreshBars = function refreshBars() {
-                //Do NOT animate on first values and enterAnimation is false
+            const refreshBars = function refreshBars() {
+                // Do NOT animate on first values and enterAnimation is false
                 if (initializing && ctrl.enterAnimation === 'false') {
                     initializing = false;
                     ctrl.blockTransition = true;

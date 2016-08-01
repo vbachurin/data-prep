@@ -46,17 +46,17 @@ const VALID_RECORDS_VALUES = [{
  */
 export default function FilterAdapterService() {
     return {
-        EMPTY_RECORDS_LABEL: EMPTY_RECORDS_LABEL,
-        INVALID_RECORDS_LABEL: INVALID_RECORDS_LABEL,
-        VALID_RECORDS_LABEL: VALID_RECORDS_LABEL,
+        EMPTY_RECORDS_LABEL,
+        INVALID_RECORDS_LABEL,
+        VALID_RECORDS_LABEL,
 
-        createFilter: createFilter,
-        toTree: toTree,
-        fromTree: fromTree,
+        createFilter,
+        toTree,
+        fromTree,
     };
 
     //--------------------------------------------------------------------------------------------------------------
-    //-----------------------------------------------------CREATION-------------------------------------------------
+    // -----------------------------------------------------CREATION-------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
@@ -73,14 +73,14 @@ export default function FilterAdapterService() {
      * @returns {Object} instance of the Filter
      */
     function createFilter(type, colId, colName, editable, args, filterFn, removeFilterFn) {
-        var filter = {
-            type: type,
-            colId: colId,
-            colName: colName,
-            editable: editable,
-            args: args,
-            filterFn: filterFn,
-            removeFilterFn: removeFilterFn,
+        const filter = {
+            type,
+            colId,
+            colName,
+            editable,
+            args,
+            filterFn,
+            removeFilterFn,
         };
 
         filter.__defineGetter__('value', getFilterValueGetter.bind(filter)); // eslint-disable-line no-underscore-dangle
@@ -98,20 +98,20 @@ export default function FilterAdapterService() {
      */
     function getFilterValueGetter() {
         switch (this.type) {
-            case CONTAINS:
-                return this.args.phrase;
-            case EXACT:
-                return this.args.phrase;
-            case INVALID_RECORDS:
-                return INVALID_RECORDS_VALUES;
-            case EMPTY_RECORDS:
-                return EMPTY_RECORDS_VALUES;
-            case VALID_RECORDS:
-                return VALID_RECORDS_VALUES;
-            case INSIDE_RANGE:
-                return this.args.intervals;
-            case MATCHES:
-                return this.args.patterns;
+        case CONTAINS:
+            return this.args.phrase;
+        case EXACT:
+            return this.args.phrase;
+        case INVALID_RECORDS:
+            return INVALID_RECORDS_VALUES;
+        case EMPTY_RECORDS:
+            return EMPTY_RECORDS_VALUES;
+        case VALID_RECORDS:
+            return VALID_RECORDS_VALUES;
+        case INSIDE_RANGE:
+            return this.args.intervals;
+        case MATCHES:
+            return this.args.patterns;
         }
     }
 
@@ -124,18 +124,18 @@ export default function FilterAdapterService() {
      */
     function getFilterValueSetter(newValue) {
         switch (this.type) {
-            case CONTAINS:
-                this.args.phrase = newValue;
-                break;
-            case EXACT:
-                this.args.phrase = newValue;
-                break;
-            case INSIDE_RANGE:
-                this.args.intervals = newValue;
-                break;
-            case MATCHES:
-                this.args.patterns = newValue;
-                break;
+        case CONTAINS:
+            this.args.phrase = newValue;
+            break;
+        case EXACT:
+            this.args.phrase = newValue;
+            break;
+        case INSIDE_RANGE:
+            this.args.intervals = newValue;
+            break;
+        case MATCHES:
+            this.args.patterns = newValue;
+            break;
         }
     }
 
@@ -170,8 +170,8 @@ export default function FilterAdapterService() {
         const colId = this.colId;
         const value = this.value;
         switch (this.type) {
-            case CONTAINS:
-                return value
+        case CONTAINS:
+            return value
                     .map(filterValue => {
                         return {
                             contains: {
@@ -181,8 +181,8 @@ export default function FilterAdapterService() {
                         };
                     })
                     .reduce(reduceOrFn);
-            case EXACT:
-                return value
+        case EXACT:
+            return value
                     .map(filterValue => {
                         return {
                             eq: {
@@ -192,31 +192,31 @@ export default function FilterAdapterService() {
                         };
                     })
                     .reduce(reduceOrFn);
-            case INVALID_RECORDS:
-                return {
-                    invalid: {
-                        field: colId,
-                    },
-                };
-            case EMPTY_RECORDS:
-                return {
-                    empty: {
-                        field: colId,
-                    },
-                };
-            case VALID_RECORDS:
-                return {
-                    valid: {
-                        field: colId,
-                    },
-                };
-            case INSIDE_RANGE: {
-                const argsType = args.type;
-                return value
+        case INVALID_RECORDS:
+            return {
+                invalid: {
+                    field: colId,
+                },
+            };
+        case EMPTY_RECORDS:
+            return {
+                empty: {
+                    field: colId,
+                },
+            };
+        case VALID_RECORDS:
+            return {
+                valid: {
+                    field: colId,
+                },
+            };
+        case INSIDE_RANGE: {
+            const argsType = args.type;
+            return value
                     .map(filterValue => {
                         const min = filterValue.value[0];
                         const max = filterValue.value[1];
-                        //on date we shift timestamp to fit UTC timezone
+                        // on date we shift timestamp to fit UTC timezone
                         let offset = 0;
                         if (argsType === 'date') {
                             const minDate = new Date(min);
@@ -234,10 +234,10 @@ export default function FilterAdapterService() {
                         };
                     })
                     .reduce(reduceOrFn);
-            }
+        }
 
-            case MATCHES:
-                return value
+        case MATCHES:
+            return value
                     .map(filterValue => {
                         return {
                             matches: {
@@ -251,8 +251,8 @@ export default function FilterAdapterService() {
     }
 
     //--------------------------------------------------------------------------------------------------------------
-    //---------------------------------------------------CONVERTION-------------------------------------------------
-    //-------------------------------------------------FILTER ==> TREE----------------------------------------------
+    // ---------------------------------------------------CONVERTION-------------------------------------------------
+    // -------------------------------------------------FILTER ==> TREE----------------------------------------------
     //--------------------------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
@@ -276,7 +276,7 @@ export default function FilterAdapterService() {
      * @returns {Object} The combined filter/accumulator tree
      */
     function reduceAndFn(accu, filterItem) {
-        var nextAccuFilter = filterItem.toTree();
+        let nextAccuFilter = filterItem.toTree();
 
         if (accu.filter) {
             nextAccuFilter = {
@@ -290,8 +290,8 @@ export default function FilterAdapterService() {
     }
 
     //--------------------------------------------------------------------------------------------------------------
-    //---------------------------------------------------CONVERTION-------------------------------------------------
-    //-------------------------------------------------TREE ==> FILTER----------------------------------------------
+    // ---------------------------------------------------CONVERTION-------------------------------------------------
+    // -------------------------------------------------TREE ==> FILTER----------------------------------------------
     //--------------------------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
@@ -303,17 +303,17 @@ export default function FilterAdapterService() {
      * @returns {Array} The filters definition array
      */
     function fromTree(tree, columns) {
-        //no tree, no filter
+        // no tree, no filter
         if (!tree) {
             return;
         }
 
-        //it is a leaf
+        // it is a leaf
         if (!tree.and && !tree.or) {
             return [leafToFilter(tree, columns)];
         }
 
-        //it is an "or" node
+        // it is an "or" node
         if (tree.or) {
             const reducedOrTree = _.reduce(tree.or, (accu, nodeChild) => {
                 const existingFilter = accu;
@@ -324,16 +324,16 @@ export default function FilterAdapterService() {
                     const getExistingArgs = getFilterValueGetter.bind(existingFilterFirstValue);
                     const newValues = getExistingArgs().concat(newFilterFirstValue.value);
                     switch (existingFilterFirstValue.type) {
-                        case CONTAINS:
-                        case EXACT:
-                            existingFilterFirstValue.args.phrase = newValues;
-                            break;
-                        case INSIDE_RANGE:
-                            existingFilterFirstValue.args.intervals = newValues;
-                            break;
-                        case MATCHES:
-                            existingFilterFirstValue.args.patterns = newValues;
-                            break;
+                    case CONTAINS:
+                    case EXACT:
+                        existingFilterFirstValue.args.phrase = newValues;
+                        break;
+                    case INSIDE_RANGE:
+                        existingFilterFirstValue.args.intervals = newValues;
+                        break;
+                    case MATCHES:
+                        existingFilterFirstValue.args.patterns = newValues;
+                        break;
                     }
                     return existingFilter;
                 }
@@ -343,7 +343,7 @@ export default function FilterAdapterService() {
             return reducedOrTree;
         }
 
-        //it is an "and" node
+        // it is an "and" node
         return _.reduce(tree.and, (accu, nodeChild) => accu.concat(fromTree(nodeChild, columns)), []);
     }
 
@@ -357,10 +357,10 @@ export default function FilterAdapterService() {
      * @returns {Object} The resulting filter definition
      */
     function leafToFilter(leaf, columns) {
-        var type;
-        var args;
-        var condition;
-        var editable = false;
+        let type;
+        let args;
+        let condition;
+        const editable = false;
 
         if ('contains' in leaf) {
             type = CONTAINS;
@@ -388,10 +388,10 @@ export default function FilterAdapterService() {
             type = INSIDE_RANGE;
             condition = leaf.range;
 
-            //on date we shift timestamp to fit UTC timezone
-            var offset = 0;
+            // on date we shift timestamp to fit UTC timezone
+            let offset = 0;
             if (condition.type === 'date') {
-                var minDate = new Date(condition.start);
+                const minDate = new Date(condition.start);
                 offset = minDate.getTimezoneOffset() * 60 * 1000;
             }
 
@@ -427,9 +427,9 @@ export default function FilterAdapterService() {
             };
         }
 
-        var colId = condition.field;
-        var filteredColumn = _.find(columns, { id: colId });
-        var colName = (filteredColumn && filteredColumn.name) || colId;
+        const colId = condition.field;
+        const filteredColumn = _.find(columns, { id: colId });
+        const colName = (filteredColumn && filteredColumn.name) || colId;
         return createFilter(type, colId, colName, editable, args, null, null);
     }
 }

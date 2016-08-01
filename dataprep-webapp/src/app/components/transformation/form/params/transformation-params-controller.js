@@ -29,15 +29,15 @@ export default function TransformParamsCtrl() {
     vm.getParameterType = function getParameterType(parameter) {
         const type = parameter.type.toLowerCase();
         switch (type) {
-            case 'select':
-            case 'cluster':
-            case 'date':
-            case 'column':
-            case 'regex':
-            case 'hidden':
-                return type;
-            default:
-                return 'simple';
+        case 'select':
+        case 'cluster':
+        case 'date':
+        case 'column':
+        case 'regex':
+        case 'hidden':
+            return type;
+        default:
+            return 'simple';
         }
     };
 }

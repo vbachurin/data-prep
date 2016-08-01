@@ -22,7 +22,7 @@
 export default function RecipeBulletCtrl(state, StepUtilsService, RecipeService, RecipeBulletService, PlaygroundService) {
     'ngInject';
 
-    var vm = this;
+    const vm = this;
 
     /**
      * @ngdoc property
@@ -54,13 +54,13 @@ export default function RecipeBulletCtrl(state, StepUtilsService, RecipeService,
      * @returns {Array} The bullets elements to changed
      */
     vm.getBulletsToChange = function (allSvgs) {
-        //current step active : we should deactivate all the steps from current to the end
+        // current step active : we should deactivate all the steps from current to the end
         if (!vm.step.inactive) {
             return allSvgs.slice(vm.stepIndex);
         }
-        //current step inactive : we should activate the steps from last inactive to the current
+        // current step inactive : we should activate the steps from last inactive to the current
         else {
-            var lastActiveStepIndex = StepUtilsService.getActiveThresholdStepIndex(state.playground.recipe);
+            const lastActiveStepIndex = StepUtilsService.getActiveThresholdStepIndex(state.playground.recipe);
             return allSvgs.slice(lastActiveStepIndex + 1, vm.stepIndex + 1);
         }
     };

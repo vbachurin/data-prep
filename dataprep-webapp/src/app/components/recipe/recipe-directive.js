@@ -28,26 +28,26 @@ export default function Recipe($timeout) {
         templateUrl: template,
         controllerAs: 'recipeCtrl',
         controller: 'RecipeCtrl',
-        link: function (scope, iElement, iAttrs, ctrl) {
+        link(scope, iElement, iAttrs, ctrl) {
             function attachDeleteMouseOver(allSteps) {
                 _.forEach(allSteps, function (step) {
-                    var stepId = step.transformation.stepId;
-                    var hasDiff = step.diff && step.diff.createdColumns && step.diff.createdColumns.length;
+                    const stepId = step.transformation.stepId;
+                    const hasDiff = step.diff && step.diff.createdColumns && step.diff.createdColumns.length;
 
                     function shouldBeRemoved(stepToTest) {
                         return stepToTest.transformation.stepId === stepId || // current step
                             (hasDiff && stepToTest.actionParameters &&
-                            step.diff.createdColumns.indexOf(stepToTest.actionParameters.parameters.column_id) > -1); //step on a column that will be removed
+                            step.diff.createdColumns.indexOf(stepToTest.actionParameters.parameters.column_id) > -1); // step on a column that will be removed
                     }
 
-                    var stepsToRemove = _.chain(allSteps)
+                    const stepsToRemove = _.chain(allSteps)
                         .filter(shouldBeRemoved)
                         .map(function (step) {
                             return iElement.find('#step-' + step.transformation.stepId);
                         })
                         .value();
 
-                    var removeElement = iElement.find('#step-' + stepId).find('#step-remove-' + stepId);
+                    const removeElement = iElement.find('#step-' + stepId).find('#step-remove-' + stepId);
                     removeElement.on('mouseover', function () {
                         _.forEach(stepsToRemove, function (stepElement) {
                             stepElement.addClass('remove');

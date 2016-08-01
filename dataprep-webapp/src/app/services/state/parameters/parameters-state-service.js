@@ -36,12 +36,12 @@ export const parametersState = {
  */
 export function ParametersStateService() {
     return {
-        show: show,
-        hide: hide,
-        setIsSending: setIsSending,
-        setEncodings: setEncodings,
-        update: update,
-        reset: reset,
+        show,
+        hide,
+        setIsSending,
+        setEncodings,
+        update,
+        reset,
     };
 
     /**

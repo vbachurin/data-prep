@@ -83,21 +83,21 @@ export default function ImportCtrl($document,
     vm.startImport = (importType) => {
         vm.currentInputType = importType;
         switch (importType.locationType) {
-            case 'local':
-                $document.find('#datasetFile').eq(0).click();
-                break;
-            default:
-                vm.showModal = true;
-                if (vm.currentInputType.dynamic) {
-                    vm.isFetchingParameters = true;
-                    ImportRestService.importParameters(vm.currentInputType.locationType)
+        case 'local':
+            $document.find('#datasetFile').eq(0).click();
+            break;
+        default:
+            vm.showModal = true;
+            if (vm.currentInputType.dynamic) {
+                vm.isFetchingParameters = true;
+                ImportRestService.importParameters(vm.currentInputType.locationType)
                         .then((response) => {
                             vm.currentInputType.parameters = response.data;
                         })
                         .finally(() => {
                             vm.isFetchingParameters = false;
                         });
-                }
+            }
 
         }
     };

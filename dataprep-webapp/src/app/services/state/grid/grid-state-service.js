@@ -25,12 +25,12 @@ const NUMERIC_TYPES = ['numeric', 'integer', 'double', 'float', 'decimal'];
  */
 export function GridStateService() {
     return {
-        reset: reset,
+        reset,
 
-        setColumnFocus: setColumnFocus,
-        setData: setData,
-        setFilter: setFilter,
-        setGridSelection: setGridSelection,
+        setColumnFocus,
+        setData,
+        setFilter,
+        setGridSelection,
     };
 
     /**
@@ -97,11 +97,11 @@ export function GridStateService() {
          * @returns {boolean} True if the item pass all the filters
          */
         const allFilterFn = function allFilterFn(item, args) {
-            //init filters with actual data
+            // init filters with actual data
             const initializedFilters = _.map(args.filters, function (filter) {
                 return filter(data);
             });
-            //execute each filter on the value
+            // execute each filter on the value
             for (let i = 0; i < initializedFilters.length; i++) {
                 const filter = initializedFilters[i];
                 if (!filter(item)) {
@@ -158,7 +158,7 @@ export function GridStateService() {
      * @description Determine the selected column or line
      */
     function updateSelectedColumnLine(data) {
-        //in preview we do not change anything
+        // in preview we do not change anything
         if (data.preview) {
             return;
         }
@@ -181,11 +181,11 @@ export function GridStateService() {
      * @description Determine the selected column from the new data
      */
     function updateSelectedColumn(data) {
-        //if there is already a selected column, we update the column metadata to reference one of the new columns
+        // if there is already a selected column, we update the column metadata to reference one of the new columns
         if (gridState.selectedColumn) {
             gridState.selectedColumn = _.find(data.metadata.columns, { id: gridState.selectedColumn.id }) || data.metadata.columns[0];
         }
-        //the first column is selected by default
+        // the first column is selected by default
         else {
             gridState.selectedColumn = data.metadata.columns[0];
         }

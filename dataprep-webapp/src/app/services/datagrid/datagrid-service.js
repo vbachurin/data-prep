@@ -25,26 +25,26 @@
 export default function DatagridService(state, StateService, ConverterService, TextFormatService) {
     'ngInject';
 
-    var DELETE = 'DELETE';
-    var REPLACE = 'REPLACE';
-    var INSERT = 'INSERT';
+    const DELETE = 'DELETE';
+    const REPLACE = 'REPLACE';
+    const INSERT = 'INSERT';
 
-    var service = {
-        focusedColumn: null, //TODO JSO : put this in state
+    const service = {
+        focusedColumn: null, // TODO JSO : put this in state
 
-        //grid data
-        updateData: updateData, //updata data in the current dataset
-        getColumns: getColumns,
-        getColumnsContaining: getColumnsContaining,
+        // grid data
+        updateData, // updata data in the current dataset
+        getColumns,
+        getColumnsContaining,
 
-        //preview
-        execute: execute,
-        previewDataExecutor: previewDataExecutor,
+        // preview
+        execute,
+        previewDataExecutor,
     };
     return service;
 
     //------------------------------------------------------------------------------------------------------
-    //---------------------------------------------------DATA-----------------------------------------------
+    // ---------------------------------------------------DATA-----------------------------------------------
     //------------------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
@@ -54,9 +54,9 @@ export default function DatagridService(state, StateService, ConverterService, T
      * @description Get the last new created column
      */
     function getLastNewColumnId(columns) {
-        var ancientColumnsIds = _.map(state.playground.data.metadata.columns, 'id');
-        var newColumnsIds = _.map(columns, 'id');
-        var diffIds = _.difference(newColumnsIds, ancientColumnsIds);
+        const ancientColumnsIds = _.map(state.playground.data.metadata.columns, 'id');
+        const newColumnsIds = _.map(columns, 'id');
+        const diffIds = _.difference(newColumnsIds, ancientColumnsIds);
 
         return diffIds[diffIds.length - 1];
     }
@@ -77,7 +77,7 @@ export default function DatagridService(state, StateService, ConverterService, T
     }
 
     //------------------------------------------------------------------------------------------------------
-    //--------------------------------------------------PREVIEW---------------------------------------------
+    // --------------------------------------------------PREVIEW---------------------------------------------
     //------------------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
@@ -93,41 +93,41 @@ export default function DatagridService(state, StateService, ConverterService, T
             return;
         }
 
-        var revertInstructions = [];
+        const revertInstructions = [];
 
         state.playground.grid.dataView.beginUpdate();
         _.forEach(executor.instructions, function (step) {
             switch (step.type) {
-                case INSERT:
-                    state.playground.grid.dataView.insertItem(step.index, step.row);
-                    revertInstructions.push({
-                        type: DELETE,
-                        row: step.row,
-                    });
-                    break;
-                case DELETE:
-                    var index = state.playground.grid.dataView.getIdxById(step.row.tdpId);
-                    state.playground.grid.dataView.deleteItem(step.row.tdpId);
-                    revertInstructions.push({
-                        type: INSERT,
-                        row: step.row,
-                        index: index,
-                    });
-                    break;
-                case REPLACE:
-                    var originalRow = state.playground.grid.dataView.getItemById(step.row.tdpId);
-                    state.playground.grid.dataView.updateItem(step.row.tdpId, step.row);
-                    revertInstructions.push({
-                        type: REPLACE,
-                        row: originalRow,
-                    });
-                    break;
+            case INSERT:
+                state.playground.grid.dataView.insertItem(step.index, step.row);
+                revertInstructions.push({
+                    type: DELETE,
+                    row: step.row,
+                });
+                break;
+            case DELETE:
+                var index = state.playground.grid.dataView.getIdxById(step.row.tdpId);
+                state.playground.grid.dataView.deleteItem(step.row.tdpId);
+                revertInstructions.push({
+                    type: INSERT,
+                    row: step.row,
+                    index,
+                });
+                break;
+            case REPLACE:
+                var originalRow = state.playground.grid.dataView.getItemById(step.row.tdpId);
+                state.playground.grid.dataView.updateItem(step.row.tdpId, step.row);
+                revertInstructions.push({
+                    type: REPLACE,
+                    row: originalRow,
+                });
+                break;
             }
         });
 
         state.playground.grid.dataView.endUpdate();
 
-        var reverter = {
+        const reverter = {
             instructions: revertInstructions,
             preview: state.playground.data.preview,
             metadata: state.playground.data.metadata,
@@ -154,26 +154,26 @@ export default function DatagridService(state, StateService, ConverterService, T
      * @description Create an executor that reflect the provided preview data, in order to update the current dataset
      */
     function previewDataExecutor(data) {
-        var executor = {
+        const executor = {
             metadata: data.metadata,
             instructions: [],
             preview: true,
         };
 
-        var nextInsertionIndex = state.playground.grid.dataView.getIdxById(data.records[0].tdpId);
+        let nextInsertionIndex = state.playground.grid.dataView.getIdxById(data.records[0].tdpId);
         _.forEach(data.records, function (row) {
             if (row.__tdpRowDiff || row.__tdpDiff) { // eslint-disable-line no-underscore-dangle
                 if (row.__tdpRowDiff === 'new') { // eslint-disable-line no-underscore-dangle
                     executor.instructions.push({
                         type: INSERT,
-                        row: row,
+                        row,
                         index: nextInsertionIndex,
                     });
                 }
                 else {
                     executor.instructions.push({
                         type: REPLACE,
-                        row: row,
+                        row,
                     });
                 }
             }
@@ -185,7 +185,7 @@ export default function DatagridService(state, StateService, ConverterService, T
     }
 
     //------------------------------------------------------------------------------------------------------
-    //------------------------------------------------DATA UTILS--------------------------------------------
+    // ------------------------------------------------DATA UTILS--------------------------------------------
     //------------------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
@@ -197,11 +197,11 @@ export default function DatagridService(state, StateService, ConverterService, T
      * @returns {Object[]} - the column list that match the desired filters (id & name)
      */
     function getColumns(excludeNumeric, excludeBoolean) {
-        var cols = state.playground.data.metadata.columns;
+        let cols = state.playground.data.metadata.columns;
 
         if (excludeNumeric) {
             cols = _.filter(cols, function (col) {
-                var simplifiedType = ConverterService.simplifyType(col.type);
+                const simplifiedType = ConverterService.simplifyType(col.type);
                 return simplifiedType !== 'integer' && simplifiedType !== 'decimal';
             });
         }
@@ -225,26 +225,26 @@ export default function DatagridService(state, StateService, ConverterService, T
      * @returns {Object[]} The column list that contains a value that match the regexp (col.id & col.name)
      */
     function getColumnsContaining(phrase) {
-        var results = [];
+        const results = [];
 
         if (!phrase) {
             return results;
         }
 
-        var regexp = new RegExp(TextFormatService.escapeRegexpExceptStar(phrase));
-        var canBeNumeric = !isNaN(phrase.replace(/\*/g, ''));
-        var canBeBoolean = 'true'.match(regexp) || 'false'.match(regexp);
+        const regexp = new RegExp(TextFormatService.escapeRegexpExceptStar(phrase));
+        const canBeNumeric = !isNaN(phrase.replace(/\*/g, ''));
+        const canBeBoolean = 'true'.match(regexp) || 'false'.match(regexp);
 
-        var data = state.playground.data.records;
-        var potentialColumns = getColumns(!canBeNumeric, !canBeBoolean);
+        const data = state.playground.data.records;
+        let potentialColumns = getColumns(!canBeNumeric, !canBeBoolean);
 
-        //we loop over data while there is data and potential columns that can contains the searched term
-        //if a col value for a row contains the term, we add it to result
-        var dataIndex = 0;
+        // we loop over data while there is data and potential columns that can contains the searched term
+        // if a col value for a row contains the term, we add it to result
+        let dataIndex = 0;
         while (dataIndex < data.length && potentialColumns.length) {
-            var record = data[dataIndex];
-            for (var colIndex in potentialColumns) {
-                var col = potentialColumns[colIndex];
+            const record = data[dataIndex];
+            for (const colIndex in potentialColumns) {
+                const col = potentialColumns[colIndex];
                 if (record[col.id].toLowerCase().match(regexp)) {
                     potentialColumns.splice(colIndex, 1);
                     results.push(col);

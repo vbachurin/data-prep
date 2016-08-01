@@ -21,13 +21,13 @@
 export default function LookupDatagridStyleService($timeout, ConverterService, TextFormatService) {
     'ngInject';
 
-    var grid;
-    var columnClassTimeout;
+    let grid;
+    let columnClassTimeout;
 
     return {
-        init: init,
-        updateColumnClass: updateColumnClass,
-        columnFormatter: columnFormatter,
+        init,
+        updateColumnClass,
+        columnFormatter,
     };
 
     //--------------------------------------------------------------------------------------------------------------
@@ -76,7 +76,7 @@ export default function LookupDatagridStyleService($timeout, ConverterService, T
      * @param {object} column the target column
      */
     function updateNumbersClass(column) {
-        var simplifiedType = ConverterService.simplifyType(column.tdpColMetadata.type);
+        const simplifiedType = ConverterService.simplifyType(column.tdpColMetadata.type);
         if (simplifiedType === 'integer' || simplifiedType === 'decimal') {
             addClass(column, 'numbers');
         }
@@ -111,14 +111,14 @@ export default function LookupDatagridStyleService($timeout, ConverterService, T
      * @param {object} col The column to format
      */
     function columnFormatter(col) {
-        var invalidValues = col.quality.invalidValues;
-        var isInvalid = function isInvalid(value) {
+        const invalidValues = col.quality.invalidValues;
+        const isInvalid = function isInvalid(value) {
             return invalidValues.indexOf(value) >= 0;
         };
 
         return function formatter(row, cell, value) {
-            //hidden characters need to be shown
-            var returnStr = TextFormatService.adaptToGridConstraints(value);
+            // hidden characters need to be shown
+            const returnStr = TextFormatService.adaptToGridConstraints(value);
             return returnStr + (isInvalid(value) ? '<div title="Invalid Value" class="red-rect"></div>' : '<div class="invisible-rect"></div>');
         };
     }
@@ -154,8 +154,8 @@ export default function LookupDatagridStyleService($timeout, ConverterService, T
      * @description Cancel the previous scheduled task and schedule a new one to update columns classes.
      */
     function scheduleUpdateColumnClass(colIndex) {
-        var columns = grid.getColumns();
-        var column = columns[colIndex];
+        const columns = grid.getColumns();
+        const column = columns[colIndex];
 
         $timeout.cancel(columnClassTimeout);
         columnClassTimeout = $timeout(function () {

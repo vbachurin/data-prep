@@ -33,14 +33,14 @@ export default function ColumnProfileCtrl($translate, $timeout, state, Statistic
     vm.changeAggregation = changeAggregation;
 
     //------------------------------------------------------------------------------------------------------
-    //------------------------------------------------FILTER------------------------------------------------
+    // ------------------------------------------------FILTER------------------------------------------------
     //------------------------------------------------------------------------------------------------------
     function addExactFilter(value, keyName = null) {
         const column = state.playground.grid.selectedColumn;
         const args = {
             phrase: [
                 {
-                    value: value,
+                    value,
                 },
             ],
             caseSensitive: true,

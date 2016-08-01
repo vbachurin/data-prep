@@ -22,13 +22,13 @@ export default function FolderRestService($http, RestURLs) {
     'ngInject';
 
     return {
-        children: children,
-        create: create,
-        getContent: getContent,
-        rename: rename,
-        remove: remove,
-        tree: tree,
-        getById: getById,
+        children,
+        create,
+        getContent,
+        rename,
+        remove,
+        tree,
+        getById,
     };
 
     /**

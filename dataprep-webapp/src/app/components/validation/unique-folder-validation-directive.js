@@ -26,7 +26,7 @@ export default function UniqueFolderValidation() {
         scope: {
             uniqueFolder: '=',
         },
-        link: function (scope, elm, attrs, ctrl) {
+        link(scope, elm, attrs, ctrl) {
             ctrl.$validators.uniqueFolderValidation = (name) => {
                 if (name === '') {
                     return false;

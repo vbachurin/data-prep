@@ -23,7 +23,7 @@
 export default function UploadWorkflowService($state, $window, StateService, DatasetSheetPreviewService, DatasetService, MessageService) {
     'ngInject';
 
-    var self = this;
+    const self = this;
 
     /**
      * @ngdoc method

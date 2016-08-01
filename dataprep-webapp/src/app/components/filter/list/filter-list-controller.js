@@ -12,7 +12,7 @@
   ============================================================================*/
 
 export default function FilterListCtrl() {
-    var vm = this;
+    const vm = this;
 
     vm.changeFilter = function changeFilter(filter, value) {
         vm.onFilterChange({ filter, value });

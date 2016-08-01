@@ -33,7 +33,7 @@ export default function TransformClusterParams($timeout) {
         bindToController: true,
         controllerAs: 'clusterParamsCtrl',
         controller: 'TransformClusterParamsCtrl',
-        link: function (scope, iElement, iAttrs, ctrl) {
+        link(scope, iElement, iAttrs, ctrl) {
             /**
              * @ngdoc property
              * @name allActivationCheckboxes
@@ -82,8 +82,8 @@ export default function TransformClusterParams($timeout) {
                     const checkbox = row.find('>div:first >input.cluster-activation');
 
                     allActivationCheckboxes[index] = {
-                        checkbox: checkbox,
-                        row: row,
+                        checkbox,
+                        row,
                         inputs: rowInputs,
                         selects: rowSelects,
                     };

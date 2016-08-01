@@ -29,7 +29,7 @@ export default function Playground($timeout) {
         controllerAs: 'playgroundCtrl',
         controller: 'PlaygroundCtrl',
         link: (scope, iElement, iAttrs, ctrl) => {
-            var container = iElement.find('.playground-container').eq(0);
+            const container = iElement.find('.playground-container').eq(0);
 
             container.bind('keydown', (e) => {
                 if (e.keyCode !== 27) {

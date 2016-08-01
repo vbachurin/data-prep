@@ -20,7 +20,7 @@ export default function InventoryRestService($http, RestURLs) {
     'ngInject';
 
     return {
-        search: search,
+        search,
     };
 
     /**

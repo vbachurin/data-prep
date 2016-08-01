@@ -65,7 +65,7 @@ export function RecipeStateService() {
     function setSteps(initialStep, steps) {
         recipeState.initialStep = initialStep;
         recipeState.current = {
-            steps: steps,
+            steps,
             lastActiveStep: null,
         };
         recipeState.beforePreview = null;

@@ -31,14 +31,14 @@ export const suggestionsState = {
 
 export function SuggestionsStateService() {
     return {
-        setColumnTransformations: setColumnTransformations,
-        setLineTransformations: setLineTransformations,
-        setTransformationsForEmptyCells: setTransformationsForEmptyCells,
-        setTransformationsForInvalidCells: setTransformationsForInvalidCells,
+        setColumnTransformations,
+        setLineTransformations,
+        setTransformationsForEmptyCells,
+        setTransformationsForInvalidCells,
 
-        setLoading: setLoading,
-        updateFilteredTransformations: updateFilteredTransformations,
-        reset: reset,
+        setLoading,
+        updateFilteredTransformations,
+        reset,
     };
 
     function setLoading(isLoading) {

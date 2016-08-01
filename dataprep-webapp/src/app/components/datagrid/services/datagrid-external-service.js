@@ -63,20 +63,20 @@ export default class DatagridExternalService {
         this.lastSelectedLine = line;
         this.lastSelectedTab = !column ? 'LINE' : 'COLUMN';
 
-        //change tab
+        // change tab
         this.SuggestionService.selectTab(this.lastSelectedTab);
 
-        //reset charts if we have no selected column
+        // reset charts if we have no selected column
         if (!this.lastSelectedColumn) {
             this.StatisticsService.reset();
         }
 
-        //update line scope transformations if line has changed
+        // update line scope transformations if line has changed
         if (this.lastSelectedLine && lineHasChanged) {
             this.SuggestionService.setLine(this.lastSelectedLine);
         }
 
-        //update column scope transformations and charts if we have a selected column that has changed
+        // update column scope transformations and charts if we have a selected column that has changed
         if (this.lastSelectedColumn && columnHasChanged) {
             this.SuggestionService.setColumn(this.lastSelectedColumn);
             this.StatisticsService.updateStatistics();

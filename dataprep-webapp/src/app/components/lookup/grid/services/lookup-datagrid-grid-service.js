@@ -25,16 +25,16 @@ export default function LookupDatagridGridService($timeout, $window, state, Stat
     LookupDatagridColumnService, LookupDatagridTooltipService) {
     'ngInject';
 
-    var grid = null;
-    var lastSelectedColumn;
-    var gridServices = [
+    let grid = null;
+    let lastSelectedColumn;
+    const gridServices = [
         LookupDatagridColumnService,
         LookupDatagridStyleService,
         LookupDatagridTooltipService,
     ];
 
     return {
-        initGrid: initGrid,
+        initGrid,
     };
 
     /**
@@ -63,14 +63,14 @@ export default function LookupDatagridGridService($timeout, $window, state, Stat
      * @description Set the selected column into state services
      */
     function updateSelectedLookupColumn(column) {
-        var columnHasChanged = column.tdpColMetadata !== lastSelectedColumn;
+        const columnHasChanged = column.tdpColMetadata !== lastSelectedColumn;
         if (!columnHasChanged) {
             return;
         }
 
         lastSelectedColumn = column.tdpColMetadata;
         $timeout(function () {
-            //if the selected column is the index col: column.tdpColMetadata === undefined
+            // if the selected column is the index col: column.tdpColMetadata === undefined
             StateService.setLookupSelectedColumn(column.tdpColMetadata);
         });
     }
@@ -84,7 +84,7 @@ export default function LookupDatagridGridService($timeout, $window, state, Stat
     function attachCellListeners() {
         grid.onActiveCellChanged.subscribe(function (e, args) {
             if (angular.isDefined(args.cell)) {
-                var column = grid.getColumns()[args.cell];
+                const column = grid.getColumns()[args.cell];
                 updateSelectedLookupColumn(column);
             }
         });
@@ -98,8 +98,8 @@ export default function LookupDatagridGridService($timeout, $window, state, Stat
      */
     function attachColumnListeners() {
         function attachColumnCallback(args) {
-            var columnId = args.column.id;
-            var column = _.find(grid.getColumns(), { id: columnId });
+            const columnId = args.column.id;
+            const column = _.find(grid.getColumns(), { id: columnId });
             updateSelectedLookupColumn(column);
         }
 
@@ -144,8 +144,8 @@ export default function LookupDatagridGridService($timeout, $window, state, Stat
      * @param {string} elementId The element where the grid will be inserted in the DOM. The element must exists
      */
     function initGrid(elementId) {
-        //create grid
-        var options = {
+        // create grid
+        const options = {
             autoEdit: false,
             editable: false,
             enableAddRow: false,
@@ -157,13 +157,13 @@ export default function LookupDatagridGridService($timeout, $window, state, Stat
         };
         grid = new Slick.Grid(elementId, state.playground.lookup.dataView, [{ id: 'tdpId' }], options);
 
-        //listeners
+        // listeners
         attachDataChangeListeners();
         attachCellListeners();
         attachColumnListeners();
         attachGridResizeListener();
 
-        //init other services
+        // init other services
         initGridServices();
 
         return grid;

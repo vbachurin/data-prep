@@ -26,16 +26,16 @@ export default function RecipeService(state, StateService, StepUtilsService, Pre
     'ngInject';
 
     return {
-        //recipe and steps manipulation
-        refresh: refresh,
+        // recipe and steps manipulation
+        refresh,
 
-        //append step preview
-        earlyPreview: earlyPreview,
-        cancelEarlyPreview: cancelEarlyPreview,
+        // append step preview
+        earlyPreview,
+        cancelEarlyPreview,
     };
 
     //--------------------------------------------------------------------------------------------------------------
-    //----------------------------------------------------STEP PARAMS-----------------------------------------------
+    // ----------------------------------------------------STEP PARAMS-----------------------------------------------
     //--------------------------------------------------------------------------------------------------------------
 
     /**
@@ -55,13 +55,13 @@ export default function RecipeService(state, StateService, StepUtilsService, Pre
         }
 
         function initOnStep(step) {
-            var oldStep = getOldStepById(step);
+            const oldStep = getOldStepById(step);
             if (oldStep) {
                 step.transformation.parameters = oldStep.transformation.parameters;
                 step.transformation.cluster = oldStep.transformation.cluster;
             }
             else {
-                var infos = {
+                const infos = {
                     columnId: step.column.id,
                     preparationId: state.playground.preparation.id,
                     stepId: StepUtilsService.getPreviousStep(state.playground.recipe, step)
@@ -84,7 +84,7 @@ export default function RecipeService(state, StateService, StepUtilsService, Pre
     }
 
     //--------------------------------------------------------------------------------------------------------------
-    //------------------------------------------------------STEPS--------------------------------------------------
+    // ------------------------------------------------------STEPS--------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
@@ -95,12 +95,12 @@ export default function RecipeService(state, StateService, StepUtilsService, Pre
      * @returns {object} - the adapted recipe item
      */
     function createItem(actionStep) {
-        var stepId = actionStep[0];
-        var actionValues = actionStep[1];
-        var metadata = actionStep[2];
-        var diff = actionStep[3];
+        const stepId = actionStep[0];
+        const actionValues = actionStep[1];
+        const metadata = actionStep[2];
+        const diff = actionStep[3];
 
-        var item = {
+        const item = {
             column: {
                 id: actionValues.parameters.column_id,
                 name: actionValues.parameters.column_name,
@@ -109,7 +109,7 @@ export default function RecipeService(state, StateService, StepUtilsService, Pre
                 id: actionValues.parameters.row_id,
             },
             transformation: {
-                stepId: stepId,
+                stepId,
                 name: actionValues.action,
                 label: metadata.label,
                 description: metadata.description,
@@ -117,7 +117,7 @@ export default function RecipeService(state, StateService, StepUtilsService, Pre
                 dynamic: metadata.dynamic,
             },
             actionParameters: actionValues,
-            diff: diff,
+            diff,
             filters: FilterAdapterService.fromTree(
                 actionValues.parameters.filter,
                 state.playground.data.metadata.columns
@@ -136,7 +136,7 @@ export default function RecipeService(state, StateService, StepUtilsService, Pre
      * @description Refresh recipe items with current preparation steps
      */
     function refresh(details) {
-        //steps ids are in reverse order and the last is the 'no-transformation' id
+        // steps ids are in reverse order and the last is the 'no-transformation' id
         const steps = details.steps.slice(0);
         const initialStepId = steps.shift();
         const initialStep = { transformation: { stepId: initialStepId } };
@@ -152,9 +152,9 @@ export default function RecipeService(state, StateService, StepUtilsService, Pre
             new: newRecipeSteps,
         });
 
-        //TODO : Move this in a recipe-bullet-directive
-        //remove "single-maillon-cables-disabled" class of bullet cables when refreshing recipe
-        var allDisabledCables = angular.element('.recipe').eq(0)
+        // TODO : Move this in a recipe-bullet-directive
+        // remove "single-maillon-cables-disabled" class of bullet cables when refreshing recipe
+        const allDisabledCables = angular.element('.recipe').eq(0)
             .find('.single-maillon-cables-disabled')
             .toArray();
         _.each(allDisabledCables, (cable) => {
@@ -165,7 +165,7 @@ export default function RecipeService(state, StateService, StepUtilsService, Pre
     }
 
     //--------------------------------------------------------------------------------------------------------------
-    //-----------------------------------------------------PREVIEW--------------------------------------------------
+    // -----------------------------------------------------PREVIEW--------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
@@ -180,7 +180,7 @@ export default function RecipeService(state, StateService, StepUtilsService, Pre
             state.playground.filter.gridFilters.slice(0) :
             [];
 
-        //create the preview step
+        // create the preview step
         const previewStep = {
             column: {
                 id: params.column_id,
@@ -206,7 +206,7 @@ export default function RecipeService(state, StateService, StepUtilsService, Pre
         };
         ParametersService.initParamsValues(previewStep.transformation, params);
 
-        //set the new state : add the step and enable all steps
+        // set the new state : add the step and enable all steps
         const previewSteps = state.playground.recipe.beforePreview ?
             state.playground.recipe.beforePreview.steps.slice(0) :
             state.playground.recipe.current.steps.slice(0);

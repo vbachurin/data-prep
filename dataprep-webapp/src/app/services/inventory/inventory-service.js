@@ -63,7 +63,7 @@ class InventoryService {
 
         if (data.datasets && data.datasets.length) {
             _.each(data.datasets, function (item) {
-                let itemToDisplay = {};
+                const itemToDisplay = {};
 
                 itemToDisplay.inventoryType = 'dataset';
                 itemToDisplay.author = item.author;

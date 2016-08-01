@@ -25,18 +25,18 @@ export default function HistoryControl($document, HistoryService) {
     return {
         restrict: 'E',
         templateUrl: template,
-        controller: function () {
+        controller() {
             this.service = HistoryService;
         },
 
         controllerAs: 'historyCtrl',
-        link: function (scope) {
+        link(scope) {
             function historyListener(event) {
-                //CTRL+Z
+                // CTRL+Z
                 if (event.keyCode === 90 && event.ctrlKey) {
                     HistoryService.undo();
                 }
-                //Ctrl+Y
+                // Ctrl+Y
                 else if (event.keyCode === 89 && event.ctrlKey) {
                     HistoryService.redo();
                 }

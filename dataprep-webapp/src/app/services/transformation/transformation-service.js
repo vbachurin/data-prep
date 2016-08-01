@@ -28,10 +28,10 @@ export default function TransformationService(TransformationRestService, Paramet
     const COLUMN_CATEGORY = 'column_metadata';
 
     return {
-        getLineTransformations: getLineTransformations,
-        getColumnTransformations: getColumnTransformations,
-        getColumnSuggestions: getColumnSuggestions,
-        initDynamicParameters: initDynamicParameters,
+        getLineTransformations,
+        getColumnTransformations,
+        getColumnSuggestions,
+        initDynamicParameters,
     };
 
     // --------------------------------------------------------------------------------------------
@@ -162,8 +162,8 @@ export default function TransformationService(TransformationRestService, Paramet
                 setHtmlDisplayLabels(allTransformations);
                 const allCategories = prepareTransformations(allTransformations);
                 return {
-                    allTransformations: allTransformations,
-                    allCategories: allCategories,
+                    allTransformations,
+                    allCategories,
                 };
             });
     }
@@ -186,8 +186,8 @@ export default function TransformationService(TransformationRestService, Paramet
                 setHtmlDisplayLabels(allTransformations);
                 const allCategories = prepareTransformations(allTransformations);
                 return {
-                    allTransformations: allTransformations,
-                    allCategories: allCategories,
+                    allTransformations,
+                    allCategories,
                 };
             });
     }

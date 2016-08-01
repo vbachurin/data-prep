@@ -21,7 +21,7 @@ export default function FilterBar(state, FilterService) {
         templateUrl: template,
         scope: {},
         bindToController: true,
-        controller: function () {
+        controller() {
             this.filterService = FilterService;
             this.state = state;
         },

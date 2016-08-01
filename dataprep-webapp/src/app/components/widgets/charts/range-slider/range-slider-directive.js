@@ -57,22 +57,22 @@ export default function RangeSlider($timeout) {
         bindToController: true,
         templateUrl: template,
 
-        link: function (scope, element, attrs, ctrl) {
+        link(scope, element, attrs, ctrl) {
             let renderTimeout;
 
-            //d3
+            // d3
             let scale;
             let svg;
             let brush;
             let brushg;
 
-            //the left and right margins MUST be the same as the vertical Barchart ones
+            // the left and right margins MUST be the same as the vertical Barchart ones
             const MARGIN = { top: 5, right: 20, bottom: 5, left: 15 };
             const WIDTH = attrs.width - MARGIN.left - MARGIN.right;
             const HEIGHT = attrs.height - MARGIN.top - MARGIN.bottom;
 
             //--------------------------------------------------------------------------------------------------
-            //----------------------------------------------CONTAINER-------------------------------------------
+            // ----------------------------------------------CONTAINER-------------------------------------------
             //--------------------------------------------------------------------------------------------------
             /**
              * @ngdoc method
@@ -104,7 +104,7 @@ export default function RangeSlider($timeout) {
             }
 
             //--------------------------------------------------------------------------------------------------
-            //------------------------------------------------BRUSH---------------------------------------------
+            // ------------------------------------------------BRUSH---------------------------------------------
             //--------------------------------------------------------------------------------------------------
             /**
              * @ngdoc method

@@ -132,26 +132,26 @@ export default class DatagridStyleService {
 
             // entire row modification preview
             switch (dataContext.__tdpRowDiff) { // eslint-disable-line no-underscore-dangle
-                case 'delete':
-                    classNames += ' cellDeletedValue';
-                    break;
-                case 'new':
-                    classNames += ' cellNewValue';
-                    break;
+            case 'delete':
+                classNames += ' cellDeletedValue';
+                break;
+            case 'new':
+                classNames += ' cellNewValue';
+                break;
             }
 
             // cell modification preview
             if (dataContext.__tdpDiff && dataContext.__tdpDiff[columnDef.id]) { // eslint-disable-line no-underscore-dangle
                 switch (dataContext.__tdpDiff[columnDef.id]) { // eslint-disable-line no-underscore-dangle
-                    case 'update':
-                        classNames += ' cellUpdateValue';
-                        break;
-                    case 'new':
-                        classNames += ' cellNewValue';
-                        break;
-                    case 'delete':
-                        classNames += ' cellDeletedValue';
-                        break;
+                case 'update':
+                    classNames += ' cellUpdateValue';
+                    break;
+                case 'new':
+                    classNames += ' cellNewValue';
+                    break;
+                case 'delete':
+                    classNames += ' cellDeletedValue';
+                    break;
                 }
             }
 
@@ -175,14 +175,14 @@ export default class DatagridStyleService {
      */
     getColumnPreviewStyle(col) {
         switch (col.__tdpColumnDiff) { // eslint-disable-line no-underscore-dangle
-            case 'new':
-                return 'newColumn';
-            case 'delete':
-                return 'deletedColumn';
-            case 'update':
-                return 'updatedColumn';
-            default:
-                return '';
+        case 'new':
+            return 'newColumn';
+        case 'delete':
+            return 'deletedColumn';
+        case 'update':
+            return 'updatedColumn';
+        default:
+            return '';
         }
     }
 

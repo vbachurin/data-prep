@@ -30,7 +30,7 @@ export default function ActionsSuggestions($timeout) {
         controllerAs: 'actionsSuggestionsCtrl',
         controller: 'ActionsSuggestionsCtrl',
         link: (scope, iElement, iAttrs, ctrl) => {
-            //Scroll the actual tab container to the bottom of the element to display
+            // Scroll the actual tab container to the bottom of the element to display
             ctrl.scrollToBottom = function scrollToBottom() {
                 $timeout(function () {
                     const splitHandler = angular.element('.split-handler').eq(0);

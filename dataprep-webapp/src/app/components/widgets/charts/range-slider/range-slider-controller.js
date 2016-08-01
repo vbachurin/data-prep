@@ -317,12 +317,12 @@ export default class RangeSliderCtrl {
      **/
     handleKey(event) {
         switch (event.keyCode) {
-            case 13:
-                this.onInputChange();
-                break;
-            case 27:
-                this.resetInputValues();
-                break;
+        case 13:
+            this.onInputChange();
+            break;
+        case 27:
+            this.resetInputValues();
+            break;
         }
     }
 

@@ -47,41 +47,41 @@ export default function NavigationList($timeout) {
         },
         bindToController: true,
         controllerAs: 'navigationListCtrl',
-        controller: function () {},
+        controller() {},
 
-        link: function (scope, iElement, iAttrs, ctrl) {
-            var ITEM_WIDTH = 200;
+        link(scope, iElement, iAttrs, ctrl) {
+            const ITEM_WIDTH = 200;
             ctrl.showAddButton = !!iAttrs.onAddItem;
 
             $timeout(function () {
-                var leftButton = iElement.find('.arrow-left').eq(0);
-                var rightButton = iElement.find('.arrow-right').eq(0);
-                var wrapper = iElement.find('.items-list-wrapper').eq(0);
-                var itemsList = iElement.find('.items-list').eq(0);
-                var posLeft = 0;
+                const leftButton = iElement.find('.arrow-left').eq(0);
+                const rightButton = iElement.find('.arrow-right').eq(0);
+                const wrapper = iElement.find('.items-list-wrapper').eq(0);
+                const itemsList = iElement.find('.items-list').eq(0);
+                let posLeft = 0;
 
                 function translate(leftPosition) {
                     itemsList.css('transform', 'translateX(' + leftPosition + 'px)');
                 }
 
                 function itemIsVisible(item) {
-                    var itemPosition = ctrl.list.indexOf(item) * ITEM_WIDTH;
-                    var actualPosition = posLeft + itemPosition;
+                    const itemPosition = ctrl.list.indexOf(item) * ITEM_WIDTH;
+                    const actualPosition = posLeft + itemPosition;
                     return actualPosition >= 0 && actualPosition <= (wrapper.width() - ITEM_WIDTH);
                 }
 
                 function getVisiblePosition(item) {
-                    var itemIndex = ctrl.list.indexOf(item);
-                    var itemPosition = itemIndex * ITEM_WIDTH;
-                    var actualPosition = posLeft + itemPosition;
+                    const itemIndex = ctrl.list.indexOf(item);
+                    const itemPosition = itemIndex * ITEM_WIDTH;
+                    const actualPosition = posLeft + itemPosition;
 
-                    //is not visible on the left
+                    // is not visible on the left
                     if (actualPosition < 0) {
                         return -itemPosition;
                     }
 
-                    //is not visible on the right
-                    var nbVisibleItems = Math.floor(wrapper.width() / ITEM_WIDTH) || 1;
+                    // is not visible on the right
+                    const nbVisibleItems = Math.floor(wrapper.width() / ITEM_WIDTH) || 1;
                     return -(itemIndex + 1 - nbVisibleItems) * ITEM_WIDTH;
                 }
 
@@ -109,7 +109,7 @@ export default function NavigationList($timeout) {
 
                 scope.$watchGroup([getList, getSelectedItem],
                     function () {
-                        var hasCorrectSelectedItem = ctrl.list && ctrl.selectedItem && ctrl.list.indexOf(ctrl.selectedItem) > -1;
+                        const hasCorrectSelectedItem = ctrl.list && ctrl.selectedItem && ctrl.list.indexOf(ctrl.selectedItem) > -1;
                         if (!hasCorrectSelectedItem) {
                             posLeft = 0;
                             translate(posLeft);

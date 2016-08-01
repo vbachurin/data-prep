@@ -57,7 +57,7 @@ export default function TalendEditableText() {
         bindToController: true,
         controller: TalendEditableTextCtrl,
         controllerAs: 'editableTextCtrl',
-        link: function (scope, iElement, iAttrs, ctrl) {
+        link(scope, iElement, iAttrs, ctrl) {
             const inputElement = iElement.find('.edition-text-input').eq(0);
             inputElement.keydown((e) => {
                 if (e.keyCode === 27) {

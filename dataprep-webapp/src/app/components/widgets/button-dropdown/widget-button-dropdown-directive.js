@@ -61,7 +61,7 @@ export default function TalendButtonDropdown($timeout) {
         link: (scope, iElement, attrs) => {
             if (!attrs.buttonAction) {
                 $timeout(function () {
-                    var action = iElement.find('.dropdown-action').eq(0);
+                    const action = iElement.find('.dropdown-action').eq(0);
 
                     iElement.find('.button-dropdown-main')
                         .on('click', function () {

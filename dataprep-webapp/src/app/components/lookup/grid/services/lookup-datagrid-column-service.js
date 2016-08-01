@@ -27,16 +27,16 @@
 export default function LookupDatagridColumnService(state, $rootScope, $compile, LookupDatagridStyleService) {
     'ngInject';
 
-    var grid;
-    var colIndexName = 'tdpId';
+    let grid;
+    const colIndexName = 'tdpId';
 
     return {
-        init: init,
-        createColumns: createColumns,
+        init,
+        createColumns,
     };
 
     //------------------------------------------------------------------------------------------------------
-    //-----------------------------------------------GRID COLUMNS-------------------------------------------
+    // -----------------------------------------------GRID COLUMNS-------------------------------------------
     //------------------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
@@ -70,11 +70,11 @@ export default function LookupDatagridColumnService(state, $rootScope, $compile,
      */
 
     function createColumns(columnsMetadata) {
-        //create new SlickGrid columns
-        var colIndexArray = [];
-        var colIndexNameTemplate = '<div class="lookup-slick-header-column-index">#</div>';
+        // create new SlickGrid columns
+        const colIndexArray = [];
+        const colIndexNameTemplate = '<div class="lookup-slick-header-column-index">#</div>';
 
-        //Add index column
+        // Add index column
         colIndexArray.push({
             id: colIndexName,
             name: colIndexNameTemplate,
@@ -94,7 +94,7 @@ export default function LookupDatagridColumnService(state, $rootScope, $compile,
     }
 
     //------------------------------------------------------------------------------------------------------
-    //-----------------------------------------------GRID HEADERS-------------------------------------------
+    // -----------------------------------------------GRID HEADERS-------------------------------------------
     //------------------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
@@ -108,10 +108,10 @@ export default function LookupDatagridColumnService(state, $rootScope, $compile,
      * </ul>
      */
     function createHeader(col) {
-        var headerScope = $rootScope.$new(true);
+        const headerScope = $rootScope.$new(true);
         headerScope.column = col;
         headerScope.added = _.find(state.playground.lookup.columnCheckboxes, { id: col.id });
-        var headerElement = angular.element('<lookup-datagrid-header column="column" added="added"></lookup-datagrid-header>');
+        const headerElement = angular.element('<lookup-datagrid-header column="column" added="added"></lookup-datagrid-header>');
         $compile(headerElement)(headerScope);
 
         return {
@@ -131,20 +131,20 @@ export default function LookupDatagridColumnService(state, $rootScope, $compile,
      * The existing header is then updated with the new column metadata.
      */
     function createAndAttachHeader(event, columnsArgs) {
-        var columnDef = columnsArgs.column;
+        const columnDef = columnsArgs.column;
         if (columnDef.id === colIndexName) {
             return;
         }
 
-        var headerDefinition = createHeader(columnDef.tdpColMetadata);
+        const headerDefinition = createHeader(columnDef.tdpColMetadata);
 
-        //Append the header
-        var node = angular.element(columnsArgs.node);
+        // Append the header
+        const node = angular.element(columnsArgs.node);
         node.append(headerDefinition.header);
     }
 
     //------------------------------------------------------------------------------------------------------
-    //--------------------------------------------------INIT------------------------------------------------
+    // --------------------------------------------------INIT------------------------------------------------
     //------------------------------------------------------------------------------------------------------
     /**
      * @ngdoc method

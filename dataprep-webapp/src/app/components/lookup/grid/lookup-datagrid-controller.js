@@ -36,7 +36,7 @@ Object.defineProperty(LookupDatagridCtrl.prototype,
     'tooltip', {
         enumerable: true,
         configurable: false,
-        get: function () {
+        get() {
             return this.datagridTooltipService.tooltip;
         },
     });
@@ -52,7 +52,7 @@ Object.defineProperty(LookupDatagridCtrl.prototype,
     'showTooltip', {
         enumerable: true,
         configurable: false,
-        get: function () {
+        get() {
             return this.datagridTooltipService.showTooltip;
         },
     });

@@ -17,7 +17,7 @@
  * @description InventoryItemCtrl controller.
  */
 export default function InventoryItemCtrl() {
-    var vm = this;
+    const vm = this;
 
     /**
      * @ngdoc method

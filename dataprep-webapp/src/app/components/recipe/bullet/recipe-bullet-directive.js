@@ -34,7 +34,7 @@ export default function RecipeBullet($timeout) {
         controllerAs: 'recipeBulletCtrl',
         bindToController: true,
         templateUrl: template,
-        link: function (scope, iElement, iAttrs, ctrl) {
+        link(scope, iElement, iAttrs, ctrl) {
             /**
              * @ngdoc property
              * @name recipeElement
@@ -42,7 +42,7 @@ export default function RecipeBullet($timeout) {
              * @description [PRIVATE] The recipe element
              * @type {object}
              */
-            var recipeElement = angular.element('.recipe').eq(0);
+            const recipeElement = angular.element('.recipe').eq(0);
             /**
              * @ngdoc property
              * @name bulletTopCable
@@ -50,7 +50,7 @@ export default function RecipeBullet($timeout) {
              * @description [PRIVATE] The top cable element
              * @type {object}
              */
-            var bulletTopCable = iElement.find('path').eq(0)[0];
+            const bulletTopCable = iElement.find('path').eq(0)[0];
             /**
              * @ngdoc property
              * @name bulletTopCable
@@ -58,7 +58,7 @@ export default function RecipeBullet($timeout) {
              * @description [PRIVATE] The circle element
              * @type {object}
              */
-            var bulletCircleElement = iElement.find('circle')[0];
+            const bulletCircleElement = iElement.find('circle')[0];
             /**
              * @ngdoc property
              * @name bulletBottomCable
@@ -66,7 +66,7 @@ export default function RecipeBullet($timeout) {
              * @description [PRIVATE] The bottom cable element
              * @type {object}
              */
-            var bulletBottomCable = iElement.find('path').eq(1)[0];
+            const bulletBottomCable = iElement.find('path').eq(1)[0];
             /**
              * @ngdoc property
              * @name bulletsToBeChanged
@@ -75,7 +75,7 @@ export default function RecipeBullet($timeout) {
              * This is saved to be able to revert the changes at mouse leave.
              * @type {Array}
              */
-            var bulletsToBeChanged = [];
+            let bulletsToBeChanged = [];
 
             /**
              * @ngdoc method
@@ -84,7 +84,7 @@ export default function RecipeBullet($timeout) {
              * @description [PRIVATE] Get all bullet circle SVG element
              * @returns {Array} An array containing all bullet circle svg element
              */
-            var getAllBulletsCircle = function () {
+            const getAllBulletsCircle = function () {
                 return recipeElement.find('recipe-bullet').find('circle').toArray();
             };
 
@@ -96,7 +96,7 @@ export default function RecipeBullet($timeout) {
              * @pparam {number} index The index of the wanted element
              * @returns {object} The bullet svg element at provided index
              */
-            var getBulletSvgAtIndex = function (index) {
+            const getBulletSvgAtIndex = function (index) {
                 return recipeElement.find('.all-svg-cls').eq(index);
             };
 
@@ -108,7 +108,7 @@ export default function RecipeBullet($timeout) {
              * @pparam {string} newClass The new class string to set
              * @returns {function} The closure
              */
-            var setClass = function (newClass) {
+            const setClass = function (newClass) {
                 return function (circle) {
                     circle.setAttribute('class', newClass);
                 };
@@ -120,8 +120,8 @@ export default function RecipeBullet($timeout) {
              * @methodOf data-prep.recipe-bullet.directive:RecipeBullet
              * @description [PRIVATE] Remove all disable class of bullet cables
              */
-            var activateAllCables = function () {
-                var allDisabledCables = recipeElement.find('.single-maillon-cables-disabled').toArray();
+            const activateAllCables = function () {
+                const allDisabledCables = recipeElement.find('.single-maillon-cables-disabled').toArray();
                 _.each(allDisabledCables, function (cable) {
                     cable.setAttribute('class', '');
                 });
@@ -135,8 +135,8 @@ export default function RecipeBullet($timeout) {
              * @param {number} index The index of the element to deactivate
              */
             function deActivateBottomCable(index) {
-                var bullet = index === ctrl.stepIndex ? iElement.find('.all-svg-cls') : getBulletSvgAtIndex(index);
-                var branch = bullet.find('>path').eq(1)[0];
+                const bullet = index === ctrl.stepIndex ? iElement.find('.all-svg-cls') : getBulletSvgAtIndex(index);
+                const branch = bullet.find('>path').eq(1)[0];
                 branch.setAttribute('class', 'single-maillon-cables-disabled');
             }
 
@@ -146,12 +146,12 @@ export default function RecipeBullet($timeout) {
              * @methodOf data-prep.recipe-bullet.directive:RecipeBullet
              * @description [PRIVATE] Calculate and set the svg size infos (circle position, cables size)
              */
-            var updateSVGSizes = function () {
+            const updateSVGSizes = function () {
                 ctrl.height = iElement.height() + 5; // 5 : marge/padding
-                //circle Size = 20;
-                var topPath = 'M 15 0 L 15 10 Z';
-                var circleCenterY = 18;
-                var bottomPath = 'M 15 29 L 15 ' + ctrl.height + ' Z';
+                // circle Size = 20;
+                const topPath = 'M 15 0 L 15 10 Z';
+                const circleCenterY = 18;
+                const bottomPath = 'M 15 29 L 15 ' + ctrl.height + ' Z';
 
                 bulletTopCable.setAttribute('d', topPath);
                 bulletCircleElement.setAttribute('cy', circleCenterY);
@@ -165,12 +165,12 @@ export default function RecipeBullet($timeout) {
              * @description [PRIVATE] Element mouseenter listener.
              * It will update the bullet styles accordingly to the step state and the other bullets
              */
-            var mouseEnterListener = function () {
+            const mouseEnterListener = function () {
                 ctrl.stepHoverStart();
-                var allBulletsSvgs = getAllBulletsCircle();
+                const allBulletsSvgs = getAllBulletsCircle();
                 bulletsToBeChanged = ctrl.getBulletsToChange(allBulletsSvgs);
 
-                var newClass = ctrl.step.inactive ? 'maillon-circle-disabled-hovered' : 'maillon-circle-enabled-hovered';
+                const newClass = ctrl.step.inactive ? 'maillon-circle-disabled-hovered' : 'maillon-circle-enabled-hovered';
                 _.each(bulletsToBeChanged, setClass(newClass));
             };
 
@@ -181,7 +181,7 @@ export default function RecipeBullet($timeout) {
              * @description [PRIVATE] Element mouseleave listener.
              * It will cancel the style set during mouseenter
              */
-            var mouseLeaveListener = function () {
+            const mouseLeaveListener = function () {
                 ctrl.stepHoverEnd();
                 _.each(bulletsToBeChanged, setClass(''));
             };
@@ -193,7 +193,7 @@ export default function RecipeBullet($timeout) {
              * @description [PRIVATE] Circle Element click listener.
              * It will trigger the step activation/deactivation and redraw cables
              */
-            var circleClickListener = function (event) {
+            const circleClickListener = function (event) {
                 event.stopPropagation();
                 ctrl.toggleStep();
                 activateAllCables();
@@ -212,7 +212,7 @@ export default function RecipeBullet($timeout) {
              * @methodOf data-prep.recipe-bullet.directive:RecipeBullet
              * @description [PRIVATE] redraw all bullet recipe
              */
-            var updateAllBullets = function () {
+            const updateAllBullets = function () {
                 $timeout(function () {
                     angular.element('.accordion').trigger('mouseover');
                 }, 200, false);

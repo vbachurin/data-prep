@@ -33,7 +33,7 @@ export default function RecipeCtrl(state, StateService,
                                    LookupService, ParametersService) {
     'ngInject';
 
-    var vm = this;
+    const vm = this;
     vm.showModal = {};
     vm.state = state;
 
@@ -46,15 +46,15 @@ export default function RecipeCtrl(state, StateService,
      * Called on param accordion open.
      */
     vm.resetParams = function resetParams(step) {
-        //simple parameters
+        // simple parameters
         ParametersService.resetParamValue(step.transformation.parameters, null);
 
-        //clusters
+        // clusters
         ParametersService.resetParamValue(step.transformation.cluster, CLUSTER_TYPE);
     };
 
     //---------------------------------------------------------------------------------------------
-    //------------------------------------------UPDATE STEP----------------------------------------
+    // ------------------------------------------UPDATE STEP----------------------------------------
     //---------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
@@ -127,7 +127,7 @@ export default function RecipeCtrl(state, StateService,
             const updatedFilters = step.filters.filter((nextFilter) => nextFilter !== filter);
             const stepFiltersTree = FilterAdapterService.toTree(updatedFilters);
 
-            //get step parameters and replace filter field (it is removed when there is no filter anymore)
+            // get step parameters and replace filter field (it is removed when there is no filter anymore)
             const updatedParameters = {
                 ...step.actionParameters.parameters,
                 filter: stepFiltersTree.filter,
@@ -164,7 +164,7 @@ export default function RecipeCtrl(state, StateService,
     }
 
     //---------------------------------------------------------------------------------------------
-    //------------------------------------------DELETE STEP----------------------------------------
+    // ------------------------------------------DELETE STEP----------------------------------------
     //---------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
@@ -185,7 +185,7 @@ export default function RecipeCtrl(state, StateService,
     };
 
     //---------------------------------------------------------------------------------------------
-    //------------------------------------------PARAMETERS-----------------------------------------
+    // ------------------------------------------PARAMETERS-----------------------------------------
     //---------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
@@ -233,7 +233,7 @@ export default function RecipeCtrl(state, StateService,
     }
 
     //---------------------------------------------------------------------------------------------
-    //---------------------------------------------Preview-----------------------------------------
+    // ---------------------------------------------Preview-----------------------------------------
     //---------------------------------------------------------------------------------------------
 
     /**

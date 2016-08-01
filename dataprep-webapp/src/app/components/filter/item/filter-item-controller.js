@@ -29,17 +29,17 @@ export default class FilterItemCtrl {
         if (this.filter) {
             this.filterValues = this.filter.value;
             switch (this.filter.type) {
-                case 'contains':
-                    this.sign = ' ≅ ';
-                    break;
-                case 'exact':
-                    this.sign = ' = ';
-                    break;
-                case 'inside_range':
-                    this.sign = ' in ';
-                    break;
-                default:
-                    this.sign = this.$translate.instant('COLON');
+            case 'contains':
+                this.sign = ' ≅ ';
+                break;
+            case 'exact':
+                this.sign = ' = ';
+                break;
+            case 'inside_range':
+                this.sign = ' in ';
+                break;
+            default:
+                this.sign = this.$translate.instant('COLON');
             }
         }
     }

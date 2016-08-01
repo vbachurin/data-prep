@@ -22,7 +22,7 @@ import template from './modal.html';
  * @description Array of all modal inner element that is visible
  * @type {object[]}
  */
-var shownModalsInnerElements = [];
+let shownModalsInnerElements = [];
 
 /**
  * @ngdoc method
@@ -43,7 +43,7 @@ function registerShownElement(innerElement) {
  * @description Remove an element from list of visible modals
  */
 function deregisterShownElement(innerElement) {
-    var index = shownModalsInnerElements.indexOf(innerElement);
+    const index = shownModalsInnerElements.indexOf(innerElement);
     if (index > -1) {
         shownModalsInnerElements = shownModalsInnerElements.slice(0, index);
     }
@@ -137,15 +137,15 @@ export default function TalendModal($timeout) {
         },
         bindToController: true,
         controllerAs: 'talendModalCtrl',
-        controller: function () {
+        controller() {
         },
 
         link: {
-            post: function (scope, iElement, iAttrs, ctrl) {
-                var body = angular.element('body').eq(0);
-                var innerElement = iElement.find('.modal-inner').eq(0);
-                var primaryButton = iElement.find('.modal-primary-button').eq(0);
-                var hasBeforeEachFn = angular.isDefined(iAttrs.beforeClose);
+            post(scope, iElement, iAttrs, ctrl) {
+                const body = angular.element('body').eq(0);
+                const innerElement = iElement.find('.modal-inner').eq(0);
+                const primaryButton = iElement.find('.modal-primary-button').eq(0);
+                const hasBeforeEachFn = angular.isDefined(iAttrs.beforeClose);
 
                 /**
                  * @ngdoc method
@@ -153,7 +153,7 @@ export default function TalendModal($timeout) {
                  * @methodOf talend.widget.directive:TalendModal
                  * @description [PRIVATE] Hide modal action
                  */
-                var hideModal = function () {
+                const hideModal = function () {
                     $timeout(function () {
                         if (hasBeforeEachFn && !ctrl.beforeClose()) {
                             return;
@@ -169,9 +169,9 @@ export default function TalendModal($timeout) {
                  * @methodOf talend.widget.directive:TalendModal
                  * @description [PRIVATE] Deregister modal from list of shown modal and focus on the last shown modal
                  */
-                var deregisterAndFocusOnLastModal = function (innerElement) {
+                const deregisterAndFocusOnLastModal = function (innerElement) {
                     deregisterShownElement(innerElement);
-                    var mostAdvancedModal = getLastRegisteredInnerElement();
+                    const mostAdvancedModal = getLastRegisteredInnerElement();
                     if (mostAdvancedModal) {
                         mostAdvancedModal.focus();
                     }
@@ -187,7 +187,7 @@ export default function TalendModal($timeout) {
                  * @description [PRIVATE] Attach click listeners to elements that has `talend-modal-close` class
                  * and stop click propagation in inner modal to avoid a click on the dismiss screen
                  */
-                var attachListeners = function () {
+                const attachListeners = function () {
                     innerElement.on('click', function (e) {
                         e.stopPropagation();
                         if (e.target.classList.contains('talend-modal-close')) {
@@ -211,7 +211,7 @@ export default function TalendModal($timeout) {
                  *     <li>ENTER : click on the primary button (with `modal-primary-button` class)</li>
                  * </ul>
                  */
-                var attachKeyMap = function () {
+                const attachKeyMap = function () {
                     innerElement.bind('keydown', function (e) {
                         // hide modal on 'ESC' keydown
                         if (e.keyCode === 27 && !ctrl.disableCloseOnBackgroundClick) {
@@ -231,7 +231,7 @@ export default function TalendModal($timeout) {
                  * @methodOf talend.widget.directive:TalendModal
                  * @description [PRIVATE] Attach element to body directly to avoid parent styling
                  */
-                var attachModalToBody = function () {
+                const attachModalToBody = function () {
                     iElement.detach();
                     body.append(iElement);
                 };
@@ -246,20 +246,20 @@ export default function TalendModal($timeout) {
                     iElement.remove();
                 });
 
-                //enable/disable scroll on main body depending on modal display
-                //on show : modal focus
-                //on close : close callback and focus on last opened modal
+                // enable/disable scroll on main body depending on modal display
+                // on show : modal focus
+                // on close : close callback and focus on last opened modal
                 scope.$watch(() => ctrl.state,
                     (newValue, oldValue) => {
                         if (newValue) {
-                            //register modal in shown modal list and focus on inner element
+                            // register modal in shown modal list and focus on inner element
                             body.addClass('modal-open');
                             registerShownElement(innerElement);
                             innerElement.focus();
 
                             $timeout(function () {
-                                //focus on first input (ignore first because it's the state checkbox)
-                                var inputs = iElement.find('input:not(".no-focus")').eq(1);
+                                // focus on first input (ignore first because it's the state checkbox)
+                                const inputs = iElement.find('input:not(".no-focus")').eq(1);
                                 if (inputs.length) {
                                     inputs.focus();
                                     inputs.select();

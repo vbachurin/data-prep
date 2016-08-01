@@ -22,9 +22,9 @@
 export default function CanBeBlankValidation() {
     return {
         require: 'ngModel',
-        link: function (scope, elm, attrs, ctrl) {
+        link(scope, elm, attrs, ctrl) {
             ctrl.$validators.canBeBlankValidation = function (modelValue) {
-                var mandatory = attrs.canBeBlank === 'false';
+                const mandatory = attrs.canBeBlank === 'false';
 
                 // not mandatory OR (value not null AND not blank)
                 return !mandatory || (modelValue !== null && !!('' + modelValue).trim());

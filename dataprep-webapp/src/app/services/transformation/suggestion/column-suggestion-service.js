@@ -23,18 +23,18 @@
 export default function ColumnSuggestionService($q, state, StateService, TransformationCacheService, TextFormatService) {
     'ngInject';
 
-    var FILTERED_CATEGORY = 'filtered';
-    var SUGGESTION_CATEGORY = 'suggestion';
-    var EMPTY_CELLS = 'empty';
-    var INVALID_CELLS = 'invalid';
+    const FILTERED_CATEGORY = 'filtered';
+    const SUGGESTION_CATEGORY = 'suggestion';
+    const EMPTY_CELLS = 'empty';
+    const INVALID_CELLS = 'invalid';
 
     return {
-        initTransformations: initTransformations,
-        filterTransformations: filterTransformations,
+        initTransformations,
+        filterTransformations,
     };
 
     //--------------------------------------------------------------------------------------------------------------
-    //----------------------------------------------------INIT------------------------------------------------------
+    // ----------------------------------------------------INIT------------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------
 
     function resetDisplayLabels(transformations) {
@@ -59,7 +59,7 @@ export default function ColumnSuggestionService($q, state, StateService, Transfo
      * @returns {object} The transformations grouped by category without the 'filtering' category
      */
     function prepareTransformations(suggestions, transformationsCategories) {
-        var groupedTransfoWithoutFilterCat = _.filter(transformationsCategories, function (item) {
+        const groupedTransfoWithoutFilterCat = _.filter(transformationsCategories, function (item) {
             return item.category !== FILTERED_CATEGORY;
         });
 
@@ -76,7 +76,7 @@ export default function ColumnSuggestionService($q, state, StateService, Transfo
      * @returns {object} The suggestions category containing suggestions and 'filtered' category transformations
      */
     function prepareSuggestions(suggestions, transformationsCategories) {
-        var filterCategory = _.find(transformationsCategories, { category: FILTERED_CATEGORY });
+        const filterCategory = _.find(transformationsCategories, { category: FILTERED_CATEGORY });
 
         return {
             category: SUGGESTION_CATEGORY,
@@ -94,7 +94,7 @@ export default function ColumnSuggestionService($q, state, StateService, Transfo
      */
     function initTransformations(column) {
         StateService.setSuggestionsLoading(true);
-        StateService.setColumnTransformations(); //clear current transformations
+        StateService.setColumnTransformations(); // clear current transformations
 
         $q
             .all([
@@ -102,25 +102,25 @@ export default function ColumnSuggestionService($q, state, StateService, Transfo
                 TransformationCacheService.getColumnTransformations(column),
             ])
             .then(function (values) {
-                var suggestions = prepareSuggestions(values[0], values[1].allCategories);
-                var allCategories = prepareTransformations(suggestions, values[1].allCategories);
+                const suggestions = prepareSuggestions(values[0], values[1].allCategories);
+                const allCategories = prepareTransformations(suggestions, values[1].allCategories);
 
-                var colTransformations = {
+                const colTransformations = {
                     allSuggestions: values[0],
                     allTransformations: values[1].allTransformations,
                     filteredTransformations: allCategories,
-                    allCategories: allCategories,
+                    allCategories,
                     searchActionString: '',
                 };
                 StateService.setColumnTransformations(colTransformations);
 
                 if (!state.playground.suggestions.transformationsForEmptyCells.length) {
-                    var transfosForEmptyCells = _.filter(values[1].allTransformations, isAppliedToCells(EMPTY_CELLS));
+                    const transfosForEmptyCells = _.filter(values[1].allTransformations, isAppliedToCells(EMPTY_CELLS));
                     StateService.setTransformationsForEmptyCells(transfosForEmptyCells);
                 }
 
                 if (!state.playground.suggestions.transformationsForInvalidCells.length) {
-                    var transfosForInvalidCells = _.filter(values[1].allTransformations, isAppliedToCells(INVALID_CELLS));
+                    const transfosForInvalidCells = _.filter(values[1].allTransformations, isAppliedToCells(INVALID_CELLS));
                     StateService.setTransformationsForInvalidCells(transfosForInvalidCells);
                 }
             })
@@ -130,7 +130,7 @@ export default function ColumnSuggestionService($q, state, StateService, Transfo
     }
 
     //--------------------------------------------------------------------------------------------------------------
-    //----------------------------------------------------FILTER----------------------------------------------------
+    // ----------------------------------------------------FILTER----------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------
 
     function categoryMatchSearch(category, searchValue) {
@@ -146,19 +146,19 @@ export default function ColumnSuggestionService($q, state, StateService, Transfo
 
     function extractTransfosThatMatch(searchValue) {
         return function (catTransfos) {
-            var category = catTransfos.category;
-            var transformations = catTransfos.transformations;
+            const category = catTransfos.category;
+            let transformations = catTransfos.transformations;
 
-            //category matches : display all this category transformations
-            //category does NOT match : filter to only have matching displayed label or description
+            // category matches : display all this category transformations
+            // category does NOT match : filter to only have matching displayed label or description
             if (!categoryMatchSearch(category, searchValue)) {
                 transformations = _.filter(transformations, transfosMatchSearch(searchValue));
             }
 
             return {
-                category: category,
+                category,
                 categoryHtml: category.toUpperCase(),
-                transformations: transformations,
+                transformations,
             };
         };
     }
@@ -188,7 +188,7 @@ export default function ColumnSuggestionService($q, state, StateService, Transfo
         resetDisplayLabels(state.playground.suggestions.column.allSuggestions);
         resetDisplayLabels(state.playground.suggestions.column.allTransformations);
 
-        var searchValue = state.playground.suggestions.column.searchActionString.toLowerCase();
+        const searchValue = state.playground.suggestions.column.searchActionString.toLowerCase();
         StateService.updateFilteredTransformations(!searchValue ?
             state.playground.suggestions.column.allCategories :
             _.chain(state.playground.suggestions.column.allCategories)

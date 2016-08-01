@@ -37,8 +37,8 @@ export const lookupState = {
     step: null,                                                  // lookup step
     sort: sortList[1],
     order: orderList[1],
-    sortList: sortList,
-    orderList: orderList,
+    sortList,
+    orderList,
 };
 
 /**
@@ -48,21 +48,21 @@ export const lookupState = {
  */
 export function LookupStateService() {
     return {
-        reset: reset,
-        setVisibility: setVisibility,
+        reset,
+        setVisibility,
 
-        //lookup user selection update
-        setSelectedColumn: setSelectedColumn,
-        updateColumnsToAdd: updateColumnsToAdd,
+        // lookup user selection update
+        setSelectedColumn,
+        updateColumnsToAdd,
 
-        //init lookup
-        setActions: setActions,
-        setAddedActions: setAddedActions,
-        setDatasets: setDatasets,
-        setAddMode: setAddMode,
-        setUpdateMode: setUpdateMode,
-        setSort: setSort,
-        setOrder: setOrder,
+        // init lookup
+        setActions,
+        setAddedActions,
+        setDatasets,
+        setAddMode,
+        setUpdateMode,
+        setSort,
+        setOrder,
     };
 
 
@@ -187,7 +187,7 @@ export function LookupStateService() {
      * @description Create the checkboxes definition for each column
      */
     function createColumnsCheckboxes(data) {
-        var addedColIds = lookupState.step ?
+        const addedColIds = lookupState.step ?
             _.map(lookupState.step.actionParameters.parameters.lookup_selected_cols, 'id') :
             [];
         lookupState.columnCheckboxes = _.map(data.metadata.columns, function (col) {
@@ -239,8 +239,8 @@ export function LookupStateService() {
     function setAddMode(lookupAction, data) {
         lookupState.step = null;
         setDataset(lookupAction);
-        setData(data); //this updates the checkboxes
-        setSelectedColumn(data.metadata.columns[0]); //this update the columns to add
+        setData(data); // this updates the checkboxes
+        setSelectedColumn(data.metadata.columns[0]); // this update the columns to add
     }
 
     /**
@@ -253,11 +253,11 @@ export function LookupStateService() {
      * @description Set parameters for update mode
      */
     function setUpdateMode(lookupAction, data, step) {
-        var selectedColumn = _.find(data.metadata.columns, { id: step.actionParameters.parameters.lookup_join_on });
+        const selectedColumn = _.find(data.metadata.columns, { id: step.actionParameters.parameters.lookup_join_on });
         lookupState.step = step;
         setDataset(lookupAction);
-        setData(data); //this updates the checkboxes
-        setSelectedColumn(selectedColumn); //this update the columns to add
+        setData(data); // this updates the checkboxes
+        setSelectedColumn(selectedColumn); // this update the columns to add
     }
 
     /**

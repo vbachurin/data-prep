@@ -51,7 +51,7 @@ export default class HomeCtrl {
     }
 
     //--------------------------------------------------------------------------------------------------------------
-    //---------------------------------------------------Right panel------------------------------------------------
+    // ---------------------------------------------------Right panel------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
@@ -83,7 +83,7 @@ export default class HomeCtrl {
      * @description Get the data inventory panel parameters from localStorage
      */
     getRightPanelState() {
-        let params = this.$window.localStorage.getItem(this.DATA_INVENTORY_PANEL_KEY);
+        const params = this.$window.localStorage.getItem(this.DATA_INVENTORY_PANEL_KEY);
         return params ? JSON.parse(params) : false;
     }
 

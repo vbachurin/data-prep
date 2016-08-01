@@ -91,7 +91,7 @@ export default class PreparationListCtrl {
      * @description Trigger backend call to update preparation name
      */
     rename(preparation, newName) {
-        var cleanName = newName ? newName.trim() : '';
+        const cleanName = newName ? newName.trim() : '';
         if (cleanName) {
             return this.PreparationService.setName(preparation.id, newName)
                 .then(() => {

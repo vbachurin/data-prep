@@ -22,13 +22,13 @@ export default function TalendSearchInput() {
     return {
         restrict: 'A',
         require: 'ngModel',
-        link: function (scope, iElement, iAttrs, ngModel) {
-            //var margin = 5;
-            var wrapper = angular.element('<div class="search-input"></div>');
+        link(scope, iElement, iAttrs, ngModel) {
+            // var margin = 5;
+            const wrapper = angular.element('<div class="search-input"></div>');
             iElement.wrap(wrapper);
 
-            var clearButton = angular.element('<div class="search-input-icon clear-icon"><span class="icon" data-icon="d"></span></div>');
-            var searchIcon = angular.element('<div class="search-input-icon"><span class="icon" data-icon="D"></span></div>');
+            const clearButton = angular.element('<div class="search-input-icon clear-icon"><span class="icon" data-icon="d"></span></div>');
+            const searchIcon = angular.element('<div class="search-input-icon"><span class="icon" data-icon="D"></span></div>');
 
             iElement.parent().append(clearButton);
             iElement.parent().append(searchIcon);

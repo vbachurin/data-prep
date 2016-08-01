@@ -24,7 +24,7 @@
 export default function TalendConfirmCtrl($scope, TalendConfirmService) {
     'ngInject';
 
-    var vm = this;
+    const vm = this;
 
     /**
      * @ngdoc property

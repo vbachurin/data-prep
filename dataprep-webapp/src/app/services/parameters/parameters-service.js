@@ -50,28 +50,28 @@ export default class ParametersService {
         }
 
         switch (type) {
-            case CHOICE_TYPE:
-                _.forEach(params, (choice) => {
-                    choice.selectedValue = angular.isDefined(choice.initialValue) ?
+        case CHOICE_TYPE:
+            _.forEach(params, (choice) => {
+                choice.selectedValue = angular.isDefined(choice.initialValue) ?
                         choice.initialValue :
                         choice.default;
 
-                    _.forEach(choice.values, (choiceItem) => {
-                        executeOnSimpleParams(choiceItem.parameters);
-                    });
+                _.forEach(choice.values, (choiceItem) => {
+                    executeOnSimpleParams(choiceItem.parameters);
                 });
-                break;
+            });
+            break;
 
-            case CLUSTER_TYPE:
-                _.forEach(params.clusters, (cluster) => {
-                    cluster.active = cluster.initialActive;
-                    executeOnSimpleParams(cluster.parameters);
-                    executeOnSimpleParams([cluster.replace]);
-                });
-                break;
+        case CLUSTER_TYPE:
+            _.forEach(params.clusters, (cluster) => {
+                cluster.active = cluster.initialActive;
+                executeOnSimpleParams(cluster.parameters);
+                executeOnSimpleParams([cluster.replace]);
+            });
+            break;
 
-            default:
-                executeOnSimpleParams(params);
+        default:
+            executeOnSimpleParams(params);
         }
     }
 
@@ -124,12 +124,12 @@ export default class ParametersService {
                 .value();
             clusterItem.initialActive = !!firstActiveParam;
 
-            //get the replace value or the default if the cluster item is inactive
-            //and init the replace input value
+            // get the replace value or the default if the cluster item is inactive
+            // and init the replace input value
             const replaceValue = firstActiveParam ?
                 paramValues[firstActiveParam.name] :
                 clusterItem.replace.default;
-            const replaceParamValues = { replaceValue: replaceValue };
+            const replaceParamValues = { replaceValue };
             this.initParameters([clusterItem.replace], replaceParamValues);
         });
         return cluster;

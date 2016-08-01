@@ -19,7 +19,7 @@ const HomeDatasetComponent = {
             <dataset-list class="inventory-list-container"></dataset-list>
         </div>
     `,
-    controller: function (state) {
+    controller(state) {
         'ngInject';
         this.state = state;
     },

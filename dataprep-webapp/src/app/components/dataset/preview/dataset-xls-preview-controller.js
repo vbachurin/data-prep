@@ -125,11 +125,11 @@ Object.defineProperty(DatasetXlsPreviewCtrl.prototype,
     'visible', {
         enumerable: true,
         configurable: false,
-        get: function () {
+        get() {
             return this.datasetSheetPreviewService.showModal;
         },
 
-        set: function (value) {
+        set(value) {
             this.datasetSheetPreviewService.showModal = value;
         },
     });
@@ -145,7 +145,7 @@ Object.defineProperty(DatasetXlsPreviewCtrl.prototype,
     'metadata', {
         enumerable: true,
         configurable: false,
-        get: function () {
+        get() {
             return this.datasetSheetPreviewService.currentMetadata;
         },
     });
@@ -161,11 +161,11 @@ Object.defineProperty(DatasetXlsPreviewCtrl.prototype,
     'selectedSheetName', {
         enumerable: true,
         configurable: false,
-        get: function () {
+        get() {
             return this.datasetSheetPreviewService.selectedSheetName;
         },
 
-        set: function (newValue) {
+        set(newValue) {
             this.datasetSheetPreviewService.selectedSheetName = newValue;
         },
     });

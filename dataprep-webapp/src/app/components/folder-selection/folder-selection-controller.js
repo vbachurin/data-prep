@@ -72,7 +72,7 @@ class FolderSelectionCtrl {
         }
 
         if (node.children.length) {
-            for (let childKey in node.children) {
+            for (const childKey in node.children) {
                 const child = node.children[childKey];
                 const pathToFolder = this._locate(accu, child, predicate);
                 if (pathToFolder) {
@@ -89,7 +89,7 @@ class FolderSelectionCtrl {
         }
 
         if (node.children.length) {
-            for (let childKey in node.children) {
+            for (const childKey in node.children) {
                 const child = node.children[childKey];
                 nextAccu = this._search(nextAccu, child, name);
             }
@@ -136,7 +136,7 @@ class FolderSelectionCtrl {
      **/
     performSearch() {
         if (this.searchFolderQuery) {
-            //save tree selection
+            // save tree selection
             this.lastTreeSelection = this.lastTreeSelection || this.selectedFolder;
             this.searchItems = this._search([], this.tree, this.searchFolderQuery);
             if (this.searchItems.length) {

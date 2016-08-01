@@ -19,7 +19,7 @@
 export default function DatasetSheetPreviewService(DatasetService) {
     'ngInject';
 
-    var self = this;
+    const self = this;
 
     /**
      * @ngdoc property
@@ -90,7 +90,7 @@ export default function DatasetSheetPreviewService(DatasetService) {
      * @methodOf data-prep.services.dataset.service:DatasetSheetPreviewService
      * @description Remove all grid content
      */
-    var resetGrid = function () {
+    const resetGrid = function () {
         self.grid.setColumns([]);
         self.grid.setData([]);
     };
@@ -102,8 +102,8 @@ export default function DatasetSheetPreviewService(DatasetService) {
      * @param {object} data The new data containing columns and records
      * @description Set new grid content
      */
-    var setGridData = function (data) {
-        var columns = _.map(data.metadata.columns, function (col) {
+    const setGridData = function (data) {
+        const columns = _.map(data.metadata.columns, function (col) {
             return {
                 id: col.id,
                 name: '<div class="grid-header">' +

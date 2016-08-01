@@ -59,10 +59,10 @@ export default function inventoryTile() {
             onTitleClick: '&',
         },
         link: (scope, iElement, iAttrs, ctrl) => {
-            ctrl.editableTitle =  iAttrs.onRename;
+            ctrl.editableTitle = iAttrs.onRename;
             ctrl.showFavoriteIcon = iAttrs.onFavorite;
-            ctrl.showCloneIcon =  iAttrs.onClone;
-            ctrl.showRemoveIcon =  iAttrs.onRemove;
+            ctrl.showCloneIcon = iAttrs.onClone;
+            ctrl.showRemoveIcon = iAttrs.onRemove;
         },
     };
 }

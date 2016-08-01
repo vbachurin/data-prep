@@ -22,7 +22,7 @@
 export default function ActionsListCtrl($timeout, state, TransformationService, PlaygroundService, EarlyPreviewService) {
     'ngInject';
 
-    var vm = this;
+    const vm = this;
     vm.state = state;
 
     vm.cancelEarlyPreview = EarlyPreviewService.cancelEarlyPreview;
@@ -69,8 +69,8 @@ export default function ActionsListCtrl($timeout, state, TransformationService, 
      * @description [PRIVATE] Fetch the transformation dynamic parameters and inject them into transformation menu params
      * @returns {promise} The GET request promise
      */
-    var initDynamicParams = function (action) {
-        var infos = {
+    const initDynamicParams = function (action) {
+        const infos = {
             columnId: state.playground.grid.selectedColumn.id,
             datasetId: state.playground.dataset.id,
             preparationId: state.playground.preparation ? state.playground.preparation.id : null,
@@ -85,7 +85,7 @@ export default function ActionsListCtrl($timeout, state, TransformationService, 
      * @description [PRIVATE] sets the showHideModalContent and the emptyParamsMsg properties
      */
     function checkDynamicResponse() {
-        //transformation type :cluster
+        // transformation type :cluster
         if (vm.dynamicTransformation.cluster) {
             if (vm.dynamicTransformation.cluster.clusters.length) {
                 vm.showModalContent = true;
@@ -96,7 +96,7 @@ export default function ActionsListCtrl($timeout, state, TransformationService, 
             }
         }
 
-        //transformation type :simpleParams
+        // transformation type :simpleParams
         else if (vm.dynamicTransformation.parameters) {
             if (vm.dynamicTransformation.parameters.length) {
                 vm.showModalContent = true;
@@ -125,7 +125,7 @@ export default function ActionsListCtrl($timeout, state, TransformationService, 
             vm.dynamicFetchInProgress = true;
             vm.showDynamicModal = true;
 
-            //get new parameters
+            // get new parameters
             initDynamicParams(transformation).finally(function () {
                 checkDynamicResponse();
                 vm.dynamicFetchInProgress = false;

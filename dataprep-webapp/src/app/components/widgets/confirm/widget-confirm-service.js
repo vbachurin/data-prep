@@ -19,8 +19,8 @@
 export default function TalendConfirmService($rootScope, $compile, $document, $q, $timeout, $translate) {
     'ngInject';
 
-    var body = $document.find('body').eq(0);
-    var self = this;
+    const body = $document.find('body').eq(0);
+    const self = this;
 
     /**
      * @ngdoc method
@@ -31,7 +31,7 @@ export default function TalendConfirmService($rootScope, $compile, $document, $q
      * @description [PRIVATE] Translate the texts to display
      * @returns {promise} The promise that resolves the translated texts
      */
-    var translateTexts = function (textIds, textArgs) {
+    const translateTexts = function (textIds, textArgs) {
         return $translate(textIds, textArgs)
             .then(function (translations) {
                 return _.map(textIds, function (id) {
@@ -49,7 +49,7 @@ export default function TalendConfirmService($rootScope, $compile, $document, $q
      * @param {object} textArgs The translation args
      * @description [PRIVATE] Create confirm modal isolated scope
      */
-    var createScope = function (options, textIds, textArgs) {
+    const createScope = function (options, textIds, textArgs) {
         if (self.modalScope) {
             throw new Error('A confirm popup is already created');
         }
@@ -71,7 +71,7 @@ export default function TalendConfirmService($rootScope, $compile, $document, $q
      * @methodOf talend.widget.service:TalendConfirmService
      * @description [PRIVATE] Destroy the modal scope
      */
-    var removeScope = function () {
+    const removeScope = function () {
         self.modalScope.$destroy();
         self.modalScope = null;
     };
@@ -82,7 +82,7 @@ export default function TalendConfirmService($rootScope, $compile, $document, $q
      * @methodOf talend.widget.service:TalendConfirmService
      * @description [PRIVATE] Create the confirm modal element and attach it to the body
      */
-    var createElement = function () {
+    const createElement = function () {
         self.element = angular.element('<talend-confirm disable-enter="disableEnter" texts="texts"></talend-confirm>');
         $compile(self.element)(self.modalScope);
         body.append(self.element);
@@ -94,7 +94,7 @@ export default function TalendConfirmService($rootScope, $compile, $document, $q
      * @methodOf talend.widget.service:TalendConfirmService
      * @description [PRIVATE] Remove the the element
      */
-    var removeElement = function () {
+    const removeElement = function () {
         self.element.remove();
         self.element = null;
     };
@@ -105,7 +105,7 @@ export default function TalendConfirmService($rootScope, $compile, $document, $q
      * @methodOf talend.widget.service:TalendConfirmService
      * @description [PRIVATE] Remove the modal and reset everything
      */
-    var close = function () {
+    const close = function () {
         removeScope();
         removeElement();
 

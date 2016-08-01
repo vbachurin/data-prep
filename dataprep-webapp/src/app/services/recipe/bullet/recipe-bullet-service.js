@@ -21,15 +21,15 @@
 export default function RecipeBulletService($timeout, state, StepUtilsService, PreviewService) {
     'ngInject';
 
-    var previewTimeout;
+    let previewTimeout;
 
     return {
-        stepHoverStart: stepHoverStart,
-        stepHoverEnd: stepHoverEnd,
+        stepHoverStart,
+        stepHoverEnd,
     };
 
     //---------------------------------------------------------------------------------------------
-    //------------------------------------------Mouse Actions--------------------------------------
+    // ------------------------------------------Mouse Actions--------------------------------------
     //---------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
@@ -52,7 +52,7 @@ export default function RecipeBulletService($timeout, state, StepUtilsService, P
     function stepHoverStart(step) {
         cancelPendingPreview();
         previewTimeout = $timeout(function () {
-            var previewFn = step.inactive ? previewAppend : previewDisable;
+            const previewFn = step.inactive ? previewAppend : previewDisable;
             previewFn(step);
         }, 300, false);
     }
@@ -70,7 +70,7 @@ export default function RecipeBulletService($timeout, state, StepUtilsService, P
     }
 
     //---------------------------------------------------------------------------------------------
-    //---------------------------------------------Preview-----------------------------------------
+    // ---------------------------------------------Preview-----------------------------------------
     //---------------------------------------------------------------------------------------------
     /**
      * @ngdoc method

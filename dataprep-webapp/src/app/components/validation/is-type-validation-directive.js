@@ -27,29 +27,29 @@ export default function IsTypeValidation() {
     return {
         require: 'ngModel',
         link: (scope, elm, attrs, ctrl) => {
-            var type = attrs.isType;
+            const type = attrs.isType;
             ctrl.$validators.isTypeValidation = (modelValue, viewValue) => {
                 if (ctrl.$isEmpty(modelValue)) {
                     return true;
                 }
 
                 switch (type) {
-                    case 'integer':
-                        if (!INTEGER_REGEXP.test(viewValue)) {
-                            return false;
-                        }
+                case 'integer':
+                    if (!INTEGER_REGEXP.test(viewValue)) {
+                        return false;
+                    }
 
-                        break;
-                    case 'numeric':
-                    case 'double':
-                    case 'float':
-                        if (!DOUBLE_REGEXP.test(viewValue)) {
-                            return false;
-                        }
+                    break;
+                case 'numeric':
+                case 'double':
+                case 'float':
+                    if (!DOUBLE_REGEXP.test(viewValue)) {
+                        return false;
+                    }
 
-                        break;
-                    default:
-                        break;
+                    break;
+                default:
+                    break;
                 }
 
                 return true;

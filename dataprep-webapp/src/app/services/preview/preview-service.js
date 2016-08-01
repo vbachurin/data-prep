@@ -30,7 +30,7 @@ export default function PreviewService($q, state, DatagridService, PreparationSe
      * @description [PRIVATE] The revert executor
      * to apply on datagrid to go from current preview to original data
      */
-    var reverter;
+    let reverter;
 
     /**
      * @ngdoc property
@@ -38,7 +38,7 @@ export default function PreviewService($q, state, DatagridService, PreparationSe
      * @propertyOf data-prep.services.preview.service:PreviewService
      * @description [PRIVATE] The original data (columns and records) before switching to preview
      */
-    var originalData;
+    let originalData;
 
     /**
      * @ngdoc property
@@ -46,7 +46,7 @@ export default function PreviewService($q, state, DatagridService, PreparationSe
      * @propertyOf data-prep.services.preview.service:PreviewService
      * @description [PRIVATE] The list of records TDP indexes that is displayed in the viewport
      */
-    var displayedTdpIds;
+    let displayedTdpIds;
 
     /**
      * @ngdoc property
@@ -54,9 +54,9 @@ export default function PreviewService($q, state, DatagridService, PreparationSe
      * @propertyOf data-prep.services.preview.service:PreviewService
      * @description [PRIVATE] The preview cancel promise. When it is resolved, the pending request is rejected
      */
-    var previewCanceler;
+    let previewCanceler;
 
-    var service = {
+    const service = {
         /**
          * @ngdoc property
          * @name gridRangeIndex
@@ -66,15 +66,15 @@ export default function PreviewService($q, state, DatagridService, PreparationSe
          */
         gridRangeIndex: null,
 
-        updatePreview: updatePreview,
-        getPreviewDiffRecords: getPreviewDiffRecords,
-        getPreviewUpdateRecords: getPreviewUpdateRecords,
-        getPreviewAddRecords: getPreviewAddRecords,
+        updatePreview,
+        getPreviewDiffRecords,
+        getPreviewUpdateRecords,
+        getPreviewAddRecords,
 
-        previewInProgress: previewInProgress,
-        stopPendingPreview: stopPendingPreview,
-        reset: reset,
-        cancelPreview: cancelPreview,
+        previewInProgress,
+        stopPendingPreview,
+        reset,
+        cancelPreview,
     };
     return service;
 
@@ -86,7 +86,7 @@ export default function PreviewService($q, state, DatagridService, PreparationSe
      * @returns {object[]} The rows TDP ids in the range
      */
     function getDisplayedTdpIds() {
-        var indexes = _.range(service.gridRangeIndex.top, service.gridRangeIndex.bottom + 1);
+        const indexes = _.range(service.gridRangeIndex.top, service.gridRangeIndex.bottom + 1);
         return _.chain(indexes)
             .map(state.playground.grid.dataView.getItem)
             .map('tdpId')
@@ -107,7 +107,7 @@ export default function PreviewService($q, state, DatagridService, PreparationSe
      */
     function replaceRecords(response) {
         DatagridService.execute(reverter);
-        var executor = DatagridService.previewDataExecutor(response.data);
+        const executor = DatagridService.previewDataExecutor(response.data);
         reverter = DatagridService.execute(executor);
     }
 
@@ -144,7 +144,7 @@ export default function PreviewService($q, state, DatagridService, PreparationSe
         const originalParameters = updateStep.actionParameters.parameters;
         PreparationService.copyImplicitParameters(params, originalParameters);
 
-        //Parameters has not changed
+        // Parameters has not changed
         if (updateStep.inactive || !PreparationService.paramsHasChanged(updateStep, params)) {
             return $q.when();
         }
@@ -169,8 +169,8 @@ export default function PreviewService($q, state, DatagridService, PreparationSe
         stopPendingPreview();
         initPreviewIdNeeded();
 
-        var params = {
-            preparationId: preparationId,
+        const params = {
+            preparationId,
             currentStepId: currentStep.transformation.stepId,
             previewStepId: previewStep.transformation.stepId,
             tdpIds: displayedTdpIds,
@@ -203,8 +203,8 @@ export default function PreviewService($q, state, DatagridService, PreparationSe
         stopPendingPreview();
         initPreviewIdNeeded();
 
-        var params = {
-            preparationId: preparationId,
+        const params = {
+            preparationId,
             tdpIds: displayedTdpIds,
             currentStepId: currentStep.transformation.stepId,
             updateStepId: updateStep.transformation.stepId,
@@ -241,14 +241,14 @@ export default function PreviewService($q, state, DatagridService, PreparationSe
         stopPendingPreview();
         initPreviewIdNeeded();
 
-        var params = {
+        const params = {
             action: {
-                action: action,
+                action,
                 parameters: actionParams,
             },
             tdpIds: displayedTdpIds,
-            datasetId: datasetId,
-            preparationId: preparationId,
+            datasetId,
+            preparationId,
         };
         return PreparationService.getPreviewAdd(params, previewCanceler)
             .then(function (response) {

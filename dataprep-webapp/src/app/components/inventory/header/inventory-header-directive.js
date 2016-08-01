@@ -29,7 +29,7 @@ export default function InventoryHeaderDirective() {
         },
         controllerAs: '$ctrl',
         controller: 'InventoryHeaderCtrl',
-        link: function (scope, iElement, iAttrs, ctrl) {
+        link(scope, iElement, iAttrs, ctrl) {
             ctrl.canCreateFolder = iAttrs.onFolderCreation;
         },
     };

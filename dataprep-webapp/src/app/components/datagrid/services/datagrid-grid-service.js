@@ -134,7 +134,7 @@ export default class DatagridGridService {
      * @param {string} elementId The element where the grid will be inserted in the DOM. The element must exists
      */
     initGrid(elementId) {
-        //create grid
+        // create grid
         const options = {
             autoEdit: false,
             editable: true,
@@ -148,11 +148,11 @@ export default class DatagridGridService {
         };
         this.grid = new Slick.Grid(elementId, this.state.playground.grid.dataView, [{ id: 'tdpId' }], options);
 
-        //listeners
+        // listeners
         this._attachLongTableListeners();
         this._attachGridStateListeners();
 
-        //init other services
+        // init other services
         this._initGridServices();
         return this.grid;
     }

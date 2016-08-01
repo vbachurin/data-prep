@@ -28,7 +28,7 @@ export default function LookupCtrl($timeout, state, StateService,
                                    EarlyPreviewService, PreviewService, StorageService) {
     'ngInject';
 
-    var vm = this;
+    const vm = this;
     vm.state = state;
     vm.cancelEarlyPreview = EarlyPreviewService.cancelEarlyPreview;
     vm.loadFromAction = LookupService.loadFromAction;
@@ -41,7 +41,7 @@ export default function LookupCtrl($timeout, state, StateService,
      * @description refresh the actual sort parameter
      * */
     function refreshLookupDatasetsSort() {
-        var savedSort = StorageService.getLookupDatasetsSort();
+        const savedSort = StorageService.getLookupDatasetsSort();
         if (savedSort) {
             StateService.setLookupDatasetsSort(_.find(state.playground.lookup.sortList, { id: savedSort }));
         }
@@ -54,7 +54,7 @@ export default function LookupCtrl($timeout, state, StateService,
      * @description refresh the actual order parameter
      */
     function refreshLookupDatasetsOrder() {
-        var savedSortOrder = StorageService.getLookupDatasetsOrder();
+        const savedSortOrder = StorageService.getLookupDatasetsOrder();
         if (savedSortOrder) {
             StateService.setLookupDatasetsOrder(_.find(state.playground.lookup.orderList, { id: savedSortOrder }));
         }
@@ -71,7 +71,7 @@ export default function LookupCtrl($timeout, state, StateService,
             PreviewService.updatePreview(state.playground.lookup.step, getParams());
         }
         else {
-            var previewClosure = EarlyPreviewService.earlyPreview(state.playground.lookup.dataset, 'dataset');
+            const previewClosure = EarlyPreviewService.earlyPreview(state.playground.lookup.dataset, 'dataset');
             previewClosure(getParams());
         }
     };
@@ -110,7 +110,7 @@ export default function LookupCtrl($timeout, state, StateService,
      * @description returns the params of the lookup action
      */
     function getParams() {
-        var params = extractLookupParams(state.playground.lookup.dataset);
+        const params = extractLookupParams(state.playground.lookup.dataset);
         params.column_id = state.playground.grid.selectedColumn.id;
         params.column_name = state.playground.grid.selectedColumn.name;
         params.lookup_join_on = state.playground.lookup.selectedColumn.id;
@@ -128,8 +128,8 @@ export default function LookupCtrl($timeout, state, StateService,
     vm.submit = function submit() {
         EarlyPreviewService.deactivatePreview();
         EarlyPreviewService.cancelPendingPreview();
-        var promise;
-        var lookupStep = vm.state.playground.lookup.step;
+        let promise;
+        const lookupStep = vm.state.playground.lookup.step;
 
         if (lookupStep) {
             promise = PlaygroundService.updateStep(lookupStep, getParams());
@@ -165,7 +165,7 @@ export default function LookupCtrl($timeout, state, StateService,
         LookupService.updateLookupDatasets();
         vm.addLookupDatasetModal = false;
 
-        //refresh lookup panel by selecting the first action
+        // refresh lookup panel by selecting the first action
         if (state.playground.lookup.addedActions.length > 0) {
             LookupService.loadFromAction(state.playground.lookup.addedActions[0]);
         }

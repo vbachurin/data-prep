@@ -42,16 +42,16 @@ export default function TalendTooltip($window, $document) {
         bindToController: true,
         controller: 'TalendTooltipCtrl',
         controllerAs: 'talendTooltipCtrl',
-        link: function (scope, iElement, iAttrs, ctrl) {
-            var hasFocus;
-            var isOver;
+        link(scope, iElement, iAttrs, ctrl) {
+            let hasFocus;
+            let isOver;
             /**
              * @ngdoc method
              * @name processBlockUnblock
              * @methodOf talend.widget.directive:TalendTooltip
              * @description [PRIVATE] Block (mouse over || focus in) or unblock (mouse leave && focus out) the visibility change
              */
-            var processBlockUnblock = function () {
+            const processBlockUnblock = function () {
                 if (hasFocus || isOver) {
                     ctrl.blockState();
                 }
@@ -92,8 +92,8 @@ export default function TalendTooltip($window, $document) {
              * Otherwise, the tooltip is displayed on the left
              * @returns {object} {left: string, right: string} The calculated left and right css
              */
-            var calculateHorizontalPosition = function (position) {
-                var windowWidth = $window.innerWidth || $document.documentElement.clientWidth || $document.body.clientWidth;
+            const calculateHorizontalPosition = function (position) {
+                const windowWidth = $window.innerWidth || $document.documentElement.clientWidth || $document.body.clientWidth;
 
                 if (position.x < windowWidth / 2) {
                     return {
@@ -126,8 +126,8 @@ export default function TalendTooltip($window, $document) {
              * Otherwise, the tooltip is displayed on the top
              * @returns {object} {{top: String, bottom: String}} The calculated top and bottom css
              */
-            var calculateVerticalPosition = function (position) {
-                var windowHeight = $window.innerHeight || $document.documentElement.clientHeight || $document.body.clientHeight;
+            const calculateVerticalPosition = function (position) {
+                const windowHeight = $window.innerHeight || $document.documentElement.clientHeight || $document.body.clientHeight;
 
                 if (position.y < windowHeight / 2) {
                     return {
@@ -153,8 +153,8 @@ export default function TalendTooltip($window, $document) {
 
                 function (position) {
                     if (position) {
-                        var horizontalPosition = calculateHorizontalPosition(position);
-                        var verticalPosition = calculateVerticalPosition(position);
+                        const horizontalPosition = calculateHorizontalPosition(position);
+                        const verticalPosition = calculateVerticalPosition(position);
 
                         ctrl.updatePosition(horizontalPosition, verticalPosition);
                     }

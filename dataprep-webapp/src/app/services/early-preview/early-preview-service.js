@@ -24,17 +24,17 @@ export default function EarlyPreviewService($timeout, state, RecipeService, Prev
     // early preview delay is 1 second
     const DELAY = 700;
 
-    var previewDisabled = false;
-    var previewTimeout;
-    var previewCancelerTimeout;
+    let previewDisabled = false;
+    let previewTimeout;
+    let previewCancelerTimeout;
 
     return {
-        activatePreview: activatePreview,
-        deactivatePreview: deactivatePreview,
+        activatePreview,
+        deactivatePreview,
 
-        cancelPendingPreview: cancelPendingPreview,
-        earlyPreview: earlyPreview,
-        cancelEarlyPreview: cancelEarlyPreview,
+        cancelPendingPreview,
+        earlyPreview,
+        cancelEarlyPreview,
     };
 
     /**
@@ -85,9 +85,9 @@ export default function EarlyPreviewService($timeout, state, RecipeService, Prev
             cancelPendingPreview();
 
             previewTimeout = $timeout(function () {
-                var line = state.playground.grid.selectedLine;
-                var column = state.playground.grid.selectedColumn;
-                var preparationId = state.playground.preparation ? state.playground.preparation.id : null;
+                const line = state.playground.grid.selectedLine;
+                const column = state.playground.grid.selectedColumn;
+                const preparationId = state.playground.preparation ? state.playground.preparation.id : null;
 
                 params.scope = scope;
                 params.column_id = column && column.id;

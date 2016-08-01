@@ -122,7 +122,7 @@ Object.defineProperty(ExportCtrl.prototype,
     'stepId', {
         enumerable: true,
         configurable: false,
-        get: function () {
+        get() {
             const step = this.StepUtilsService.getLastActiveStep(this.state.playground.recipe);
             return step ? step.transformation.stepId : '';
         },

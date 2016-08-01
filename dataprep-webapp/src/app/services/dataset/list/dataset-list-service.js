@@ -24,21 +24,21 @@
 export default function DatasetListService($q, state, DatasetRestService, StateService) {
     'ngInject';
 
-    var deferredCancel;
-    var datasetsPromise;
+    let deferredCancel;
+    let datasetsPromise;
 
     return {
-        refreshDatasets: refreshDatasets,
-        getDatasetsPromise: getDatasetsPromise,
-        hasDatasetsPromise: hasDatasetsPromise,
+        refreshDatasets,
+        getDatasetsPromise,
+        hasDatasetsPromise,
 
-        create: create,
-        clone: clone,
-        update: update,
+        create,
+        clone,
+        update,
         delete: deleteDataset,
 
-        processCertification: processCertification,
-        toggleFavorite: toggleFavorite,
+        processCertification,
+        toggleFavorite,
     };
 
     /**
@@ -63,8 +63,8 @@ export default function DatasetListService($q, state, DatasetRestService, StateS
      */
     function refreshDatasets() {
         cancelPendingGetRequest();
-        var sort = state.inventory.datasetsSort.id;
-        var order = state.inventory.datasetsOrder.id;
+        const sort = state.inventory.datasetsSort.id;
+        const order = state.inventory.datasetsOrder.id;
 
         deferredCancel = $q.defer();
         datasetsPromise = DatasetRestService.getDatasets(sort, order, deferredCancel)
@@ -89,7 +89,7 @@ export default function DatasetListService($q, state, DatasetRestService, StateS
      * @returns {promise} The pending GET promise
      */
     function clone(dataset) {
-        var promise = DatasetRestService.clone(dataset);
+        const promise = DatasetRestService.clone(dataset);
         promise.then(refreshDatasets);
 
         return promise;
@@ -106,10 +106,10 @@ export default function DatasetListService($q, state, DatasetRestService, StateS
      * @returns {promise} The pending POST promise
      */
     function create(parameters, contentType, file) {
-        var promise = DatasetRestService.create(parameters, contentType, file);
+        const promise = DatasetRestService.create(parameters, contentType, file);
 
-        //The appended promise is not returned because DatasetRestService.import return a $upload object with progress function
-        //which is used by the caller
+        // The appended promise is not returned because DatasetRestService.import return a $upload object with progress function
+        // which is used by the caller
         promise.then(refreshDatasets);
 
         return promise;
@@ -124,10 +124,10 @@ export default function DatasetListService($q, state, DatasetRestService, StateS
      * @returns {promise} The pending POST promise
      */
     function update(dataset) {
-        var promise = DatasetRestService.update(dataset);
+        const promise = DatasetRestService.update(dataset);
 
-        //The appended promise is not returned because DatasetRestService.import return a $upload object with progress function
-        //which is used by the caller
+        // The appended promise is not returned because DatasetRestService.import return a $upload object with progress function
+        // which is used by the caller
         promise.then(refreshDatasets);
 
         return promise;

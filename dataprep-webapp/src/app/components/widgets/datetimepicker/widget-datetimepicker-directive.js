@@ -46,7 +46,7 @@ export default function TalendDatetimePicker($timeout) {
         },
 
         controllerAs: 'ctrl',
-        link: function (scope, iElement, iAttrs, ctrl) {
+        link(scope, iElement, iAttrs, ctrl) {
             Date.parseDate = function (input, format) {
                 return moment(input, format).toDate();
             };
@@ -68,11 +68,11 @@ export default function TalendDatetimePicker($timeout) {
             const input = iElement.find('.datetimepicker');
             input.datetimepicker({
                 lang: 'en',
-                format: format,
-                formatDate: formatDate,
-                formatTime: formatTime,
+                format,
+                formatDate,
+                formatTime,
                 timepicker: _.has(iAttrs, 'isDateTime'),
-                onSelectDate: onSelectDate,
+                onSelectDate,
             });
 
             input.bind('keydown', (event) => {

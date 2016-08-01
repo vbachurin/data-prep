@@ -64,34 +64,34 @@ export default function TalendDropdown($window, $timeout) {
 
         controllerAs: 'ctrl',
         link: {
-            post: function (scope, iElement, iAttrs, ctrl) {
-                var CARRET_HEIGHT = 5;
-                var body = angular.element('body').eq(0);
-                var windowElement = angular.element($window);
-                var container = iElement.find('.dropdown-container');
-                var action = iElement.find('.dropdown-action');
-                var menu = iElement.find('.dropdown-menu');
+            post(scope, iElement, iAttrs, ctrl) {
+                const CARRET_HEIGHT = 5;
+                const body = angular.element('body').eq(0);
+                const windowElement = angular.element($window);
+                const container = iElement.find('.dropdown-container');
+                const action = iElement.find('.dropdown-action');
+                const menu = iElement.find('.dropdown-menu');
 
-                //Set the focus on a specific element
+                // Set the focus on a specific element
                 function setFocusOn(element) {
                     $timeout(function () {
                         element.focus();
                     }, 100, false);
                 }
 
-                //Hide every dropdown in the page
+                // Hide every dropdown in the page
                 function hideAllDropDowns() {
                     angular.element('.dropdown-menu').removeClass('show-menu');
                 }
 
-                //Hide current dropdown menu
+                // Hide current dropdown menu
                 function hideMenu() {
                     resetMenuPosition();
                     windowElement.off('scroll', positionMenu);
                     windowElement.off('resize', resetMenuPosition);
                 }
 
-                //Show current dropdown menu and set focus on it
+                // Show current dropdown menu and set focus on it
                 function showMenu() {
                     menu.addClass('show-menu');
                     positionMenu();
@@ -128,36 +128,36 @@ export default function TalendDropdown($window, $timeout) {
                     menu.css('right', 'auto');
                 }
 
-                //Move the menu to the left if its left part is out of the window
-                //Otherwise it is positionned to the right
-                //if a side is forced by input, the position follows
+                // Move the menu to the left if its left part is out of the window
+                // Otherwise it is positionned to the right
+                // if a side is forced by input, the position follows
                 function positionHorizontalMenu() {
-                    var position = container.length ? container[0].getBoundingClientRect() : action[0].getBoundingClientRect();
+                    const position = container.length ? container[0].getBoundingClientRect() : action[0].getBoundingClientRect();
 
                     switch (ctrl.forceSide) {
-                        case 'left':
+                    case 'left':
+                        alignMenuLeft(position);
+                        break;
+                    case 'right':
+                        alignMenuRight(position);
+                        break;
+                    default:
+                        alignMenuRight(position);
+                        var menuPosition = menu[0].getBoundingClientRect();
+                        if (menuPosition.left < 0) {
                             alignMenuLeft(position);
-                            break;
-                        case 'right':
-                            alignMenuRight(position);
-                            break;
-                        default:
-                            alignMenuRight(position);
-                            var menuPosition = menu[0].getBoundingClientRect();
-                            if (menuPosition.left < 0) {
-                                alignMenuLeft(position);
-                            }
+                        }
                     }
                 }
 
-                //Move the menu to the top if its bottom is not visible (out of the window)
-                //Otherwise it is positionned at the bottom of trigger button
+                // Move the menu to the top if its bottom is not visible (out of the window)
+                // Otherwise it is positionned at the bottom of trigger button
                 function positionVerticalMenu() {
-                    var position = container.length ? container[0].getBoundingClientRect() : action[0].getBoundingClientRect();
-                    var menuHeight = menu[0].getBoundingClientRect().height;
-                    var menuTopPosition = position.bottom + CARRET_HEIGHT;
+                    const position = container.length ? container[0].getBoundingClientRect() : action[0].getBoundingClientRect();
+                    const menuHeight = menu[0].getBoundingClientRect().height;
+                    let menuTopPosition = position.bottom + CARRET_HEIGHT;
 
-                    //when menu bottom is outside of the window, we position the menu at the top of the button
+                    // when menu bottom is outside of the window, we position the menu at the top of the button
                     if (menuTopPosition + menuHeight > windowElement.height()) {
                         menuTopPosition = position.top - CARRET_HEIGHT - menuHeight;
                         menu.addClass('top');
@@ -169,9 +169,9 @@ export default function TalendDropdown($window, $timeout) {
                     menu.css('top', menuTopPosition);
                 }
 
-                //Click : Show/focus or hide menu on action zone click
+                // Click : Show/focus or hide menu on action zone click
                 function toggleMenu() {
-                    var isVisible = menu.hasClass('show-menu');
+                    const isVisible = menu.hasClass('show-menu');
                     hideAllDropDowns();
                     if (isVisible) {
                         hideMenu();
@@ -187,10 +187,10 @@ export default function TalendDropdown($window, $timeout) {
                     }
                 });
 
-                //Click : hide/show menu on left click
+                // Click : hide/show menu on left click
                 action.click(toggleMenu);
 
-                //Click : hide menu on item select if 'closeOnSelect' is not false
+                // Click : hide menu on item select if 'closeOnSelect' is not false
                 menu.click(function (event) {
                     if (ctrl.closeOnSelect !== false) {
                         event.stopPropagation();
@@ -198,12 +198,12 @@ export default function TalendDropdown($window, $timeout) {
                     }
                 });
 
-                //Mousedown : stop propagation not to hide dropdown
+                // Mousedown : stop propagation not to hide dropdown
                 menu.mousedown(function (event) {
                     event.stopPropagation();
                 });
 
-                //ESC keydown : hide menu, set focus on dropdown action and stop propagation
+                // ESC keydown : hide menu, set focus on dropdown action and stop propagation
                 menu.keydown(function (event) {
                     if (event.keyCode === 27) {
                         hideMenu();
@@ -212,14 +212,14 @@ export default function TalendDropdown($window, $timeout) {
                     }
                 });
 
-                //make action and menu focusable
+                // make action and menu focusable
                 action.attr('tabindex', '1');
                 menu.attr('tabindex', '2');
 
-                //hide menu on body mousedown
+                // hide menu on body mousedown
                 body.mousedown(hideMenu);
 
-                //on element destroy, we destroy the scope which unregister body mousedown and window scroll handlers
+                // on element destroy, we destroy the scope which unregister body mousedown and window scroll handlers
                 iElement.on('$destroy', function () {
                     scope.$destroy();
                 });

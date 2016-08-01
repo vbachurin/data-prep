@@ -24,14 +24,14 @@ import moment from 'moment';
 export default function IsDateTimeValidation() {
     return {
         require: 'ngModel',
-        link: function (scope, elm, attributes, ctrl) {
+        link(scope, elm, attributes, ctrl) {
             ctrl.$validators.isDateTimeValidation = function (modelValue) {
                 if (ctrl.$isEmpty(modelValue)) {
                     return false;
                 }
 
-                var format = attributes.format ? attributes.format : 'DD/MM/YYYY HH:mm:ss';
-                var isValid = moment(modelValue, format, true).isValid();
+                const format = attributes.format ? attributes.format : 'DD/MM/YYYY HH:mm:ss';
+                const isValid = moment(modelValue, format, true).isValid();
                 return isValid;
             };
         },

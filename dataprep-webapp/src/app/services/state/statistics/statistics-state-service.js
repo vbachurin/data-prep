@@ -15,16 +15,16 @@ export const statisticsState = {};
 
 export function StatisticsStateService() {
     return {
-        setBoxPlot: setBoxPlot,
-        setDetails: setDetails,
-        setRangeLimits: setRangeLimits,
-        setHistogram: setHistogram,
-        setFilteredHistogram: setFilteredHistogram,
-        setHistogramActiveLimits: setHistogramActiveLimits,
-        setPatterns: setPatterns,
-        setFilteredPatterns: setFilteredPatterns,
+        setBoxPlot,
+        setDetails,
+        setRangeLimits,
+        setHistogram,
+        setFilteredHistogram,
+        setHistogramActiveLimits,
+        setPatterns,
+        setFilteredPatterns,
 
-        reset: reset,
+        reset,
     };
 
     function setBoxPlot(boxPlot) {

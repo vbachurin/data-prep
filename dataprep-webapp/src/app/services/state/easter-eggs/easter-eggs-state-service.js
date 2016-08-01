@@ -23,8 +23,8 @@ export const easterEggsState = {
  */
 export function EasterEggsStateService() {
     return {
-        enableEasterEgg: enableEasterEgg,
-        disableEasterEgg: disableEasterEgg,
+        enableEasterEgg,
+        disableEasterEgg,
     };
 
     /**

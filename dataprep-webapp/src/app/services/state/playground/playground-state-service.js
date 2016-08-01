@@ -36,25 +36,25 @@ export function PlaygroundStateService(RecipeStateService, recipeState,
     playgroundState.parameters = parametersState;
 
     return {
-        //playground
-        reset: reset,
-        setDataset: setDataset,
-        setIsFetchingStats: setIsFetchingStats,
-        setIsSavingPreparation: setIsSavingPreparation,
-        setPreparation: setPreparation,
-        setPreparationName: setPreparationName,
-        setNameEditionMode: setNameEditionMode,
-        setData: setData,
-        updateDatasetRecord: updateDatasetRecord,
-        updateDatasetStatistics: updateDatasetStatistics,
+        // playground
+        reset,
+        setDataset,
+        setIsFetchingStats,
+        setIsSavingPreparation,
+        setPreparation,
+        setPreparationName,
+        setNameEditionMode,
+        setData,
+        updateDatasetRecord,
+        updateDatasetStatistics,
 
-        //parameters
-        toggleDatasetParameters: toggleDatasetParameters,
+        // parameters
+        toggleDatasetParameters,
         hideDatasetParameters: ParametersStateService.hide,
         setIsSendingDatasetParameters: ParametersStateService.setIsSending,
         setDatasetEncodings: ParametersStateService.setEncodings,
 
-        //recipe
+        // recipe
         showRecipe: RecipeStateService.show,
         hideRecipe: RecipeStateService.hide,
         setRecipeSteps: RecipeStateService.setSteps,
@@ -62,11 +62,11 @@ export function PlaygroundStateService(RecipeStateService, recipeState,
         restoreRecipeBeforePreview: RecipeStateService.restoreBeforePreview,
         disableRecipeStepsAfter: RecipeStateService.disableStepsAfter,
 
-        //datagrid
+        // datagrid
         setColumnFocus: GridStateService.setColumnFocus,
         setGridSelection: GridStateService.setGridSelection,
 
-        //lookup
+        // lookup
         setLookupActions: LookupStateService.setActions,
         setLookupAddedActions: LookupStateService.setAddedActions,
         setLookupDatasets: LookupStateService.setDatasets,
@@ -78,15 +78,15 @@ export function PlaygroundStateService(RecipeStateService, recipeState,
         setLookupDatasetsSort: LookupStateService.setSort,
         setLookupDatasetsOrder: LookupStateService.setOrder,
 
-        //filters
-        addGridFilter: addGridFilter,
-        updateGridFilter: updateGridFilter,
-        removeGridFilter: removeGridFilter,
-        removeAllGridFilters: removeAllGridFilters,
-        enableFilters: enableFilters,
-        disableFilters: disableFilters,
+        // filters
+        addGridFilter,
+        updateGridFilter,
+        removeGridFilter,
+        removeAllGridFilters,
+        enableFilters,
+        disableFilters,
 
-        //suggestion
+        // suggestion
         setColumnTransformations: SuggestionsStateService.setColumnTransformations,
         setLineTransformations: SuggestionsStateService.setLineTransformations,
         setSuggestionsLoading: SuggestionsStateService.setLoading,
@@ -94,7 +94,7 @@ export function PlaygroundStateService(RecipeStateService, recipeState,
         setTransformationsForInvalidCells: SuggestionsStateService.setTransformationsForInvalidCells,
         updateFilteredTransformations: SuggestionsStateService.updateFilteredTransformations,
 
-        //statistics
+        // statistics
         setStatisticsBoxPlot: StatisticsStateService.setBoxPlot,
         setStatisticsDetails: StatisticsStateService.setDetails,
         setStatisticsRangeLimits: StatisticsStateService.setRangeLimits,
@@ -106,7 +106,7 @@ export function PlaygroundStateService(RecipeStateService, recipeState,
     };
 
     //--------------------------------------------------------------------------------------------------------------
-    //--------------------------------------------------PLAYGROUND--------------------------------------------------
+    // --------------------------------------------------PLAYGROUND--------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------
     function setDataset(dataset) {
         playgroundState.dataset = dataset;
@@ -138,7 +138,7 @@ export function PlaygroundStateService(RecipeStateService, recipeState,
 
     function updateDatasetStatistics(metadata) {
         _.forEach(playgroundState.data.metadata.columns, function (col) {
-            var correspondingColumn = _.find(metadata.columns, { id: col.id });
+            const correspondingColumn = _.find(metadata.columns, { id: col.id });
             col.statistics = correspondingColumn.statistics;
             col.quality = correspondingColumn.quality;
         });
@@ -157,7 +157,7 @@ export function PlaygroundStateService(RecipeStateService, recipeState,
     }
 
     //--------------------------------------------------------------------------------------------------------------
-    //-------------------------------------------------PARAMETERS---------------------------------------------------
+    // -------------------------------------------------PARAMETERS---------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------
     function toggleDatasetParameters() {
         if (parametersState.visible) {
@@ -174,7 +174,7 @@ export function PlaygroundStateService(RecipeStateService, recipeState,
     }
 
     //--------------------------------------------------------------------------------------------------------------
-    //---------------------------------------------------FILTERS----------------------------------------------------
+    // ---------------------------------------------------FILTERS----------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------
     function addGridFilter(filter) {
         FilterStateService.addGridFilter(filter);

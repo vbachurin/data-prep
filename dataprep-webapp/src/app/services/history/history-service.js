@@ -25,27 +25,27 @@ export default function HistoryService($q) {
      * @propertyOf data-prep.services.history.service:HistoryService
      * @description The history actions. These actions can be canceled by the undo
      */
-    var history = [];
+    let history = [];
     /**
      * @ngdoc property
      * @name undoneHistory
      * @propertyOf data-prep.services.history.service:HistoryService
      * @description The history undone actions. These actions can be reexecuted by the redo.
      */
-    var undoneHistory = [];
+    let undoneHistory = [];
 
-    var service = {
+    const service = {
         undoing: false,
         redoing: false,
 
-        addAction: addAction,
-        clear: clear,
+        addAction,
+        clear,
 
-        canUndo: canUndo,
-        undo: undo,
+        canUndo,
+        undo,
 
-        canRedo: canRedo,
-        redo: redo,
+        canRedo,
+        redo,
     };
     return service;
 
@@ -61,7 +61,7 @@ export default function HistoryService($q) {
     }
 
     //----------------------------------------------------------------------------------------------------
-    //-----------------------------------------------ADD HISTORY------------------------------------------
+    // -----------------------------------------------ADD HISTORY------------------------------------------
     //----------------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
@@ -91,7 +91,7 @@ export default function HistoryService($q) {
     }
 
     //----------------------------------------------------------------------------------------------------
-    //---------------------------------------------------UNDO---------------------------------------------
+    // ---------------------------------------------------UNDO---------------------------------------------
     //----------------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
@@ -116,7 +116,7 @@ export default function HistoryService($q) {
         }
 
         service.undoing = true;
-        var action = history.pop();
+        const action = history.pop();
         $q.when()
             .then(function () {
                 return action.undo();
@@ -133,7 +133,7 @@ export default function HistoryService($q) {
     }
 
     //----------------------------------------------------------------------------------------------------
-    //---------------------------------------------------REDO---------------------------------------------
+    // ---------------------------------------------------REDO---------------------------------------------
     //----------------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
@@ -158,7 +158,7 @@ export default function HistoryService($q) {
         }
 
         service.redoing = true;
-        var action = undoneHistory.shift();
+        const action = undoneHistory.shift();
         $q.when()
             .then(function () {
                 return action.redo();

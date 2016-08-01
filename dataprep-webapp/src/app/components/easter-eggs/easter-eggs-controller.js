@@ -21,7 +21,7 @@
 export default function EasterEggsCtrl(state, StateService) {
     'ngInject';
 
-    var vm = this;
+    const vm = this;
     vm.state = state;
     vm.disableEasterEgg = StateService.disableEasterEgg;
 }
