@@ -42,7 +42,7 @@ const app = angular.module(MODULE_NAME,
         APP_MODULE, // app root
     ])
 
-    // Performance config
+// Performance config
     .config(($httpProvider) => {
         'ngInject';
         $httpProvider.useApplyAsync(true);
@@ -125,50 +125,51 @@ window.fetchConfiguration = function fetchConfiguration() {
     const initInjector = angular.injector(['ng']);
     const $http = initInjector.get('$http');
 
-        return $http.get('/assets/config/config.json')
-            .then((config) => config.data)
-            .then((config) => {
-                app
-                    // Debug config
-                    .config(($compileProvider) => {
-                        'ngInject';
-                        $compileProvider.debugInfoEnabled(config.enableDebug);
-                    })
-                    // Configure server api urls
-                    .run((RestURLs) => {
-                        'ngInject';
-                        RestURLs.setServerUrl(config.serverUrl);
-                    })
-                    // Fetch dynamic configuration (export types, supported encodings, ...)
-                    .run((ImportService, ExportService, DatasetService) => {
-                        'ngInject';
-                        ImportService.initImport();
-                        ExportService.refreshTypes();
-                        DatasetService.refreshSupportedEncodings();
-                    })
-                    // Open a keepalive websocket if requested
-                    .run(() => {
-                        if (!config.serverKeepAliveUrl) return;
-                        function setupWebSocket() {
-                            clearInterval(wsPing);
+    return $http.get('/assets/config/config.json')
+        .then((config) => config.data)
+        .then((config) => {
+            app
+            // Debug config
+                .config(($compileProvider) => {
+                    'ngInject';
+                    $compileProvider.debugInfoEnabled(config.enableDebug);
+                })
+                // Configure server api urls
+                .run((RestURLs) => {
+                    'ngInject';
+                    RestURLs.setServerUrl(config.serverUrl);
+                })
+                // Fetch dynamic configuration (export types, supported encodings, ...)
+                .run((ImportService, ExportService, DatasetService) => {
+                    'ngInject';
+                    ImportService.initImport();
+                    ExportService.refreshTypes();
+                    DatasetService.refreshSupportedEncodings();
+                })
+                // Open a keepalive websocket if requested
+                .run(() => {
+                    if (!config.serverKeepAliveUrl) return;
+                    function setupWebSocket() {
+                        clearInterval(wsPing);
 
-                            ws = new WebSocket(config.serverKeepAliveUrl);
-                            ws.onclose = () => {
-                                setTimeout(setupWebSocket, 1000);
-                            };
-                            wsPing = setInterval(() => {
-                                ws.send('ping');
-                            }, 3 * 60 * 1000);
-                        }
-                        setupWebSocket();
-                    });
+                        ws = new WebSocket(config.serverKeepAliveUrl);
+                        ws.onclose = () => {
+                            setTimeout(setupWebSocket, 1000);
+                        };
+                        wsPing = setInterval(() => {
+                            ws.send('ping');
+                        }, 3 * 60 * 1000);
+                    }
 
-                angular.module(SERVICES_UTILS_MODULE)
-                    .value('version', config.version)
-                    .value('copyRights', config.copyRights)
-                    .value('documentationSearchURL', config.documentationSearchURL);
-            });
-    };
+                    setupWebSocket();
+                });
+
+            angular.module(SERVICES_UTILS_MODULE)
+                .value('version', config.version)
+                .value('copyRights', config.copyRights)
+                .value('documentationSearchURL', config.documentationSearchURL);
+        });
+};
 
 window.bootstrapDataPrepApplication = function bootstrapDataPrepApplication(modules) {
     angular.element(document)
