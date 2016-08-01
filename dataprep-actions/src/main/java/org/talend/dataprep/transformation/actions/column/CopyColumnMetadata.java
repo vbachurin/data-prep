@@ -18,6 +18,7 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.transformation.actions.category.ActionCategory;
+import org.talend.dataprep.transformation.actions.category.ActionScope;
 import org.talend.dataprep.transformation.actions.common.*;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
@@ -69,12 +70,9 @@ public class CopyColumnMetadata extends AbstractActionMetadata implements Column
         return true;
     }
 
-    /**
-     * @see ActionMetadata#getActionScope()
-     */
     @Override
-    public List<String> getActionScope() {
-        return Collections.singletonList(COLUMN_METADATA.getDisplayName());
+    public List<ActionScope> getActionScope() {
+        return Collections.singletonList(COLUMN_METADATA);
     }
 
     @Override

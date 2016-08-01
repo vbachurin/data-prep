@@ -14,6 +14,7 @@
 package org.talend.dataprep.transformation.actions.delete;
 
 import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.transformation.actions.category.ActionScope;
 import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.transformation.actions.common.DataprepAction;
@@ -46,8 +47,8 @@ public class DeleteInvalid extends AbstractDelete {
      * @see ActionMetadata#getActionScope()
      */
     @Override
-    public List<String> getActionScope() {
-        return Collections.singletonList(INVALID.getDisplayName());
+    public List<ActionScope> getActionScope() {
+        return Collections.singletonList(INVALID);
     }
 
     /**

@@ -14,6 +14,7 @@
 package org.talend.dataprep.transformation.actions.clear;
 
 import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.transformation.actions.category.ActionScope;
 import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ColumnAction;
@@ -37,7 +38,7 @@ public class ClearInvalid extends AbstractClear implements ColumnAction {
     /** the action name. */
     public static final String ACTION_NAME = "clear_invalid"; //$NON-NLS-1$
 
-    private static final List<String> ACTION_SCOPE = Collections.singletonList(INVALID.getDisplayName());
+    private static final List<ActionScope> ACTION_SCOPE = Collections.singletonList(INVALID);
 
     /**
      * @see ActionMetadata#getName()
@@ -67,7 +68,7 @@ public class ClearInvalid extends AbstractClear implements ColumnAction {
      * @see ActionMetadata#getActionScope()
      */
     @Override
-    public List<String> getActionScope() {
+    public List<ActionScope> getActionScope() {
         return ACTION_SCOPE;
     }
 

@@ -38,52 +38,12 @@ public class Absolute extends AbstractActionMetadata implements ColumnAction {
 
     public static final String ABSOLUTE_ACTION_NAME = "absolute"; //$NON-NLS-1$
 
-    private final Type type;
-
     @Autowired
     private ApplicationContext applicationContext;
 
-    public Absolute() {
-        type = Type.INTEGER;
-    }
-
-    public Absolute(Type type) {
-        this.type = type;
-    }
-
-    /**
-     * Try to parse and return the absolute value of a long value as string
-     *
-     * @param value The value to execute action
-     * @return the absolute value or null
-     */
-    private String executeOnLong(final String value) {
-        try {
-            long longValue = Long.parseLong(value);
-            return Long.toString(Math.abs(longValue));
-        } catch (NumberFormatException nfe1) {
-            return null;
-        }
-    }
-
-    /**
-     * Try to parse and return the absolute value of a long value as string
-     *
-     * @param value The value to execute action
-     * @return the absolute value or null
-     */
-    private String executeOnFloat(final String value) {
-        try {
-            BigDecimal bd = BigDecimalParser.toBigDecimal(value);
-            return bd.abs().toPlainString();
-        } catch (NumberFormatException nfe2) {
-            return null;
-        }
-    }
-
     @Override
     public String getName() {
-        return ABSOLUTE_ACTION_NAME + "toto";
+        return ABSOLUTE_ACTION_NAME;
     }
 
     @Override
@@ -105,33 +65,19 @@ public class Absolute extends AbstractActionMetadata implements ColumnAction {
         if (value == null) {
             return;
         }
-        String absValueStr = null;
-        switch (type) {
-        case INTEGER:
-            absValueStr = executeOnLong(value);
-            if (absValueStr == null) {
-                absValueStr = executeOnFloat(value);
-            }
-            break;
-        case DOUBLE:
-        case FLOAT:
-            absValueStr = executeOnFloat(value);
-            if (absValueStr == null) {
-                absValueStr = executeOnLong(value);
-            }
-            break;
-        }
+        String absValueStr = executeAbs(value);
         if (absValueStr != null) {
             row.set(columnId, absValueStr);
         }
     }
 
-    @Override
-    public Absolute adapt(ColumnMetadata column) {
-        if (column == null || !acceptColumn(column)) {
-            return this;
+    private String executeAbs(final String value) {
+        try {
+            BigDecimal bd = BigDecimalParser.toBigDecimal(value);
+            return bd.abs().toPlainString();
+        } catch (NumberFormatException nfe2) {
+            return null;
         }
-        return applicationContext.getBean(getClass(), type);
     }
 
     @Override

@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.transformation.actions.category.ActionCategory;
+import org.talend.dataprep.transformation.actions.category.ActionScope;
 import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ColumnAction;
@@ -72,8 +73,8 @@ public class DeleteColumn extends AbstractActionMetadata implements ColumnAction
      * @see ActionMetadata#getActionScope()
      */
     @Override
-    public List<String> getActionScope() {
-        return Collections.singletonList(COLUMN_METADATA.getDisplayName());
+    public List<ActionScope> getActionScope() {
+        return Collections.singletonList(COLUMN_METADATA);
     }
 
     /**
