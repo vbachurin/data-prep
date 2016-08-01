@@ -38,10 +38,10 @@ export default function TransformForm() {
             transformation: '=',
             onSubmit: '&',
             onSubmitHoverOn: '&',
-            onSubmitHoverOff: '&'
+            onSubmitHoverOff: '&',
         },
         bindToController: true,
         controllerAs: 'formCtrl',
-        controller: 'TransformFormCtrl'
+        controller: 'TransformFormCtrl',
     };
 }

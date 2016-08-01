@@ -19,6 +19,6 @@ export default function StatsDetails() {
         templateUrl: template,
         bindToController: true,
         controllerAs: 'statsDetailsCtrl',
-        controller: 'StatsDetailsCtrl'
+        controller: 'StatsDetailsCtrl',
     };
 }

@@ -34,7 +34,7 @@ export default function PreparationListService(PreparationRestService, StateServ
         copy: copy,
         move: move,
         update: update,
-        delete: deletePreparation
+        delete: deletePreparation,
     };
 
     /**

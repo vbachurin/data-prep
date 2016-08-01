@@ -30,7 +30,7 @@ const MODULE_NAME = 'data-prep.services.export';
 angular.module(MODULE_NAME,
     [
         SERVICES_PARAMETERS_MODULE,
-        SERVICES_UTILS_MODULE
+        SERVICES_UTILS_MODULE,
     ])
     .service('ExportRestService', ExportRestService)
     .service('ExportService', ExportService);

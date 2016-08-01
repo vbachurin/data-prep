@@ -19,21 +19,21 @@ describe('Preparation header component', () => {
 
     const sortList = [
         { id: 'name', name: 'NAME_SORT', property: 'name' },
-        { id: 'date', name: 'DATE_SORT', property: 'created' }
+        { id: 'date', name: 'DATE_SORT', property: 'created' },
     ];
 
     const orderList = [
         { id: 'asc', name: 'ASC_ORDER' },
-        { id: 'desc', name: 'DESC_ORDER' }
+        { id: 'desc', name: 'DESC_ORDER' },
     ];
 
     beforeEach(angular.mock.module('pascalprecht.translate', ($translateProvider) => {
         $translateProvider.translations('en', {
-            'SORTED_BY': 'Sorted by',
-            'SORT_IN': 'in',
-            'SORT_ORDER': 'order',
-            'NAME_SORT': 'name',
-            'ASC_ORDER': 'asc'
+            SORTED_BY: 'Sorted by',
+            SORT_IN: 'in',
+            SORT_ORDER: 'order',
+            NAME_SORT: 'name',
+            ASC_ORDER: 'asc',
         });
         $translateProvider.preferredLanguage('en');
     }));
@@ -44,13 +44,11 @@ describe('Preparation header component', () => {
                 sortList: sortList,
                 orderList: orderList,
                 preparationsSort: sortList[0],
-                preparationsOrder: orderList[0]
-            }
+                preparationsOrder: orderList[0],
+            },
         };
         $provide.constant('state', stateMock);
     }));
-
-    
 
     beforeEach(inject(($rootScope, $compile) => {
         scope = $rootScope.$new();

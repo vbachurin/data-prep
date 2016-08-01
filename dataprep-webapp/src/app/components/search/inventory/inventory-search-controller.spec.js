@@ -25,7 +25,7 @@ describe('Inventory Search controller', () => {
     }));
 
     describe('search ', () => {
-        it('should call inventory search service', inject(($q,InventoryService, DocumentationService) => {
+        it('should call inventory search service', inject(($q, InventoryService, DocumentationService) => {
             const results = [{}, {}];
             const docResults = [{ url: 'url', name: 'name', description: 'description' }];
             spyOn(InventoryService, 'search').and.returnValue($q.when(results));

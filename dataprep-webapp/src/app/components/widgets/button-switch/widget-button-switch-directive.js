@@ -38,11 +38,12 @@ export default function TalendButtonSwitch() {
             currentValue: '=',
             displayKey: '@',
             values: '=',
-            changeAction: '&'
+            changeAction: '&',
         },
         bindToController: true,
         controller: () => {
         },
+
         controllerAs: 'buttonSwitchCtrl',
         link: (scope, iElement, attrs, ctrl) => {
             function next() {
@@ -55,6 +56,6 @@ export default function TalendButtonSwitch() {
             iElement.on('click', () => {
                 ctrl.changeAction({ selected: next() });
             });
-        }
+        },
     };
 }

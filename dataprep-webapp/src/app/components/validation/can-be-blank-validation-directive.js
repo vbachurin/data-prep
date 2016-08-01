@@ -29,6 +29,6 @@ export default function CanBeBlankValidation() {
                 // not mandatory OR (value not null AND not blank)
                 return !mandatory || (modelValue !== null && !!('' + modelValue).trim());
             };
-        }
+        },
     };
 }

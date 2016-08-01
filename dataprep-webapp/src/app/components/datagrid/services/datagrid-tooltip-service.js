@@ -30,7 +30,7 @@ export default function DatagridTooltipService($timeout, state, TextFormatServic
         showTooltip: false,
         tooltip: {},
         tooltipRuler: null,
-        init: init
+        init: init,
     };
     return service;
 
@@ -47,6 +47,7 @@ export default function DatagridTooltipService($timeout, state, TextFormatServic
             $timeout.cancel(tooltipTimeout);
             tooltipTimeout = null;
         }
+
         if (tooltipShowPromise) {
             $timeout.cancel(tooltipShowPromise);
             tooltipShowPromise = null;
@@ -78,9 +79,9 @@ export default function DatagridTooltipService($timeout, state, TextFormatServic
                     service.tooltip = {
                         position: {
                             x: event.clientX,
-                            y: event.clientY
+                            y: event.clientY,
                         },
-                        htmlStr: TextFormatService.adaptToGridConstraints(value)
+                        htmlStr: TextFormatService.adaptToGridConstraints(value),
                     };
                     service.showTooltip = true;
                 });

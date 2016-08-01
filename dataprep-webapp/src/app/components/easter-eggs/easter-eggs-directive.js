@@ -26,6 +26,6 @@ export default function EasterEggs() {
         templateUrl: template,
         bindToController: true,
         controllerAs: 'easterEggsCtrl',
-        controller: 'EasterEggsCtrl'
+        controller: 'EasterEggsCtrl',
     };
 }

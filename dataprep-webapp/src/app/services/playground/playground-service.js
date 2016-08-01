@@ -68,7 +68,7 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
         toggleRecipe: toggleRecipe,
 
         // parameters
-        changeDatasetParameters: changeDatasetParameters
+        changeDatasetParameters: changeDatasetParameters,
     };
     return service;
 
@@ -184,6 +184,7 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
                     if (!response.metadata.columns[0].statistics.frequencyTable.length) {
                         return $q.reject();
                     }
+
                     StateService.updateDatasetRecord(response.records.length);
                     return response.metadata;
                 });
@@ -194,6 +195,7 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
                     if (!response.columns[0].statistics.frequencyTable.length) {
                         return $q.reject();
                     }
+
                     StateService.updateDatasetRecord(response.records);
                     return response;
                 });
@@ -259,6 +261,7 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
                     StateService.showRecipe();
                     $timeout(OnboardingService.startTour('recipe'), 300, false);
                 }
+
                 return resp.data;
             });
     }
@@ -284,6 +287,7 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
                 return preparation;
             });
         }
+
         return promise;
     }
 
@@ -554,9 +558,9 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
         const params = {
             cell_value: {
                 token: rowItem[column.id],
-                operator: 'equals'
+                operator: 'equals',
             },
-            replace_value: newValue
+            replace_value: newValue,
         };
 
         return service.completeParamsAndAppend(action, scope, params);
@@ -599,6 +603,7 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
         else {
             stepToLoad = service.lastToggled || steps[steps.length - 1];
         }
+
         service.toggleStep(stepToLoad);
     }
 
@@ -659,6 +664,7 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
             MessageService.error('INVALID_DATASET_TITLE', 'INVALID_DATASET');
             throw Error('Empty data');
         }
+
         return data;
     }
 }

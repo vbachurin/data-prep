@@ -24,37 +24,37 @@ export default function TalendEditableRegexCtrl($translate) {
     var equals = {
         key: '=',
         label: $translate.instant('EQUALS'),
-        operator: 'equals'
+        operator: 'equals',
     };
 
     var contains = {
         key: '≅',
         label: $translate.instant('CONTAINS'),
-        operator: 'contains'
+        operator: 'contains',
     };
 
     var startsWith = {
         key: '>',
         label: $translate.instant('STARTS_WITH'),
-        operator: 'starts_with'
+        operator: 'starts_with',
     };
 
     var endsWith = {
         key: '<',
         label: $translate.instant('ENDS_WITH'),
-        operator: 'ends_with'
+        operator: 'ends_with',
     };
 
     var regex = {
         key: '^\\',
         label: $translate.instant('REGEX'),
-        operator: 'regex'
+        operator: 'regex',
     };
 
     //TODO should be removed as backend must initialize it
     vm.value = vm.value ? vm.value : {
         token: '',
-        operator: 'contains'
+        operator: 'contains',
     };
 
     /**

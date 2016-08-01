@@ -32,9 +32,9 @@ describe('Datagrid service', () => {
             { tdpId: 8, firstname: 'Pipi' },
             { tdpId: 9, firstname: 'Popo' },
             { tdpId: 10, firstname: 'Pupu' },
-            { tdpId: 11, firstname: 'Pypy' }
+            { tdpId: 11, firstname: 'Pypy' },
         ],
-        metadata: { columns: [{ id: '0000', name: 'lastname' }, { id: '0001', name: 'firstname' }] }
+        metadata: { columns: [{ id: '0000', name: 'lastname' }, { id: '0001', name: 'firstname' }] },
     };
 
     //diff result corresponding to gridRangeIndex
@@ -45,14 +45,14 @@ describe('Datagrid service', () => {
             { tdpId: 3, firstname: 'Toto', __tdpRowDiff: 'delete' }, //row is deleted in preview
             { tdpId: 6, firstname: 'Papa' },
             { tdpId: 7, firstname: 'Pepe 2', __tdpDiff: { firstname: 'update' } }, //firstname is updated in preview
-            { tdpId: 8, firstname: 'Pipi' }
+            { tdpId: 8, firstname: 'Pipi' },
         ],
         metadata: {
             columns: [{ id: '0000', name: 'lastname' }, { id: '0001', name: 'firstname' }, {
                 id: '0002',
-                name: 'age'
-            }]
-        }
+                name: 'age',
+            },],
+        },
     };
 
     beforeEach(angular.mock.module('data-prep.services.playground', ($provide) => {
@@ -90,9 +90,9 @@ describe('Datagrid service', () => {
                         { id: '0000', name: 'column 1', type: 'string' },
                         { id: '0001', name: 'column 2', type: 'numeric' },
                         { id: '0002', name: 'column 2', type: 'numeric' },
-                        { id: '0003', name: 'column 3', type: 'integer' }]
+                        { id: '0003', name: 'column 3', type: 'integer' },],
                 },
-                records: []
+                records: [],
             };
 
             //the result of the 2nd column duplication
@@ -103,9 +103,9 @@ describe('Datagrid service', () => {
                         { id: '0001', name: 'column 2', type: 'numeric' },
                         { id: '0004', name: 'column 1', type: 'string' },
                         { id: '0002', name: 'column 2', type: 'numeric' },
-                        { id: '0003', name: 'column 3', type: 'integer' }]
+                        { id: '0003', name: 'column 3', type: 'integer' },],
                 },
-                records: []
+                records: [],
             };
 
             //when
@@ -128,10 +128,10 @@ describe('Datagrid service', () => {
                         { id: 'col4', name: 'column 4', type: 'float' },
                         { id: 'col5', name: 'column 5', type: 'double' },
                         { id: 'col6', name: 'column 6', type: 'boolean' },
-                        { id: 'col7', name: 'column 7', type: 'string' }
-                    ]
+                        { id: 'col7', name: 'column 7', type: 'string' },
+                    ],
                 },
-                records: []
+                records: [],
             };
 
             //when
@@ -144,7 +144,7 @@ describe('Datagrid service', () => {
                 { id: 'col4', name: 'column 4' },
                 { id: 'col5', name: 'column 5' },
                 { id: 'col6', name: 'column 6' },
-                { id: 'col7', name: 'column 7' }]);
+                { id: 'col7', name: 'column 7' },]);
         }));
 
         it('should return non numeric col ids', inject((DatagridService) => {
@@ -158,10 +158,10 @@ describe('Datagrid service', () => {
                         { id: 'col4', name: 'column 4', type: 'float' },
                         { id: 'col5', name: 'column 5', type: 'double' },
                         { id: 'col6', name: 'column 6', type: 'boolean' },
-                        { id: 'col7', name: 'column 7', type: 'string' }
-                    ]
+                        { id: 'col7', name: 'column 7', type: 'string' },
+                    ],
                 },
-                records: []
+                records: [],
             };
 
             //when
@@ -170,7 +170,7 @@ describe('Datagrid service', () => {
             //then
             expect(allCols).toEqual([{ id: 'col1', name: 'column 1' },
                 { id: 'col6', name: 'column 6' },
-                { id: 'col7', name: 'column 7' }]);
+                { id: 'col7', name: 'column 7' },]);
         }));
 
         it('should return non boolean col ids', inject((DatagridService) => {
@@ -184,9 +184,9 @@ describe('Datagrid service', () => {
                         { id: 'col4', name: 'column 4', type: 'float' },
                         { id: 'col5', name: 'column 5', type: 'double' },
                         { id: 'col6', name: 'column 6', type: 'boolean' },
-                        { id: 'col7', name: 'column 7', type: 'string' }
-                    ]
-                }, records: []
+                        { id: 'col7', name: 'column 7', type: 'string' },
+                    ],
+                }, records: [],
             };
 
             //when
@@ -198,7 +198,7 @@ describe('Datagrid service', () => {
                 { id: 'col3', name: 'column 3' },
                 { id: 'col4', name: 'column 4' },
                 { id: 'col5', name: 'column 5' },
-                { id: 'col7', name: 'column 7' }]);
+                { id: 'col7', name: 'column 7' },]);
         }));
 
         it('should return non boolean and non numeric col ids', inject((DatagridService) => {
@@ -212,9 +212,9 @@ describe('Datagrid service', () => {
                         { id: 'col4', name: 'column 4', type: 'float' },
                         { id: 'col5', name: 'column 5', type: 'double' },
                         { id: 'col6', name: 'column 6', type: 'boolean' },
-                        { id: 'col7', name: 'column 7', type: 'string' }
-                    ]
-                }, records: []
+                        { id: 'col7', name: 'column 7', type: 'string' },
+                    ],
+                }, records: [],
             };
 
             //when
@@ -222,7 +222,7 @@ describe('Datagrid service', () => {
 
             //then
             expect(allCols).toEqual([{ id: 'col1', name: 'column 1' },
-                { id: 'col7', name: 'column 7' }]);
+                { id: 'col7', name: 'column 7' },]);
         }));
     });
 
@@ -249,7 +249,7 @@ describe('Datagrid service', () => {
             expect(executor.instructions).toEqual([
                 { type: 'INSERT', row: { tdpId: 2, firstname: 'Titi Bis', __tdpRowDiff: 'new' }, index: 2 },
                 { type: 'REPLACE', row: { tdpId: 3, firstname: 'Toto', __tdpRowDiff: 'delete' } },
-                { type: 'REPLACE', row: { tdpId: 7, firstname: 'Pepe 2', __tdpDiff: { firstname: 'update' } } }
+                { type: 'REPLACE', row: { tdpId: 7, firstname: 'Pepe 2', __tdpDiff: { firstname: 'update' } } },
             ]);
         }));
 
@@ -276,8 +276,8 @@ describe('Datagrid service', () => {
                 instructions: [
                     { type: 'INSERT', row: { tdpId: 2, firstname: 'Titi Bis', __tdpRowDiff: 'new' }, index: 2 },
                     { type: 'DELETE', row: { tdpId: 3, firstname: 'Toto', __tdpRowDiff: 'delete' } },
-                    { type: 'REPLACE', row: { tdpId: 7, firstname: 'Pepe 2', __tdpDiff: { firstname: 'update' } } }
-                ]
+                    { type: 'REPLACE', row: { tdpId: 7, firstname: 'Pepe 2', __tdpDiff: { firstname: 'update' } } },
+                ],
             };
 
             //when
@@ -287,13 +287,13 @@ describe('Datagrid service', () => {
             expect(stateMock.playground.grid.dataView.insertItem).toHaveBeenCalledWith(2, {
                 tdpId: 2,
                 firstname: 'Titi Bis',
-                __tdpRowDiff: 'new'
+                __tdpRowDiff: 'new',
             });
             expect(stateMock.playground.grid.dataView.deleteItem).toHaveBeenCalledWith(3);
             expect(stateMock.playground.grid.dataView.updateItem).toHaveBeenCalledWith(7, {
                 tdpId: 7,
                 firstname: 'Pepe 2',
-                __tdpDiff: { firstname: 'update' }
+                __tdpDiff: { firstname: 'update' },
             });
         }));
 
@@ -305,8 +305,8 @@ describe('Datagrid service', () => {
                 instructions: [
                     { type: 'INSERT', row: { tdpId: 2, firstname: 'Titi Bis', __tdpRowDiff: 'new' }, index: 2 },
                     { type: 'DELETE', row: { tdpId: 3, firstname: 'Toto', __tdpRowDiff: 'delete' } },
-                    { type: 'REPLACE', row: { tdpId: 7, firstname: 'Pepe 2', __tdpDiff: { firstname: 'update' } } }
-                ]
+                    { type: 'REPLACE', row: { tdpId: 7, firstname: 'Pepe 2', __tdpDiff: { firstname: 'update' } } },
+                ],
             };
 
             //when
@@ -324,8 +324,8 @@ describe('Datagrid service', () => {
                 instructions: [
                     { type: 'INSERT', row: { tdpId: 2, firstname: 'Titi Bis', __tdpRowDiff: 'new' }, index: 2 },
                     { type: 'DELETE', row: { tdpId: 3, firstname: 'Toto', __tdpRowDiff: 'delete' } },
-                    { type: 'REPLACE', row: { tdpId: 7, firstname: 'Pepe 2', __tdpDiff: { firstname: 'update' } } }
-                ]
+                    { type: 'REPLACE', row: { tdpId: 7, firstname: 'Pepe 2', __tdpDiff: { firstname: 'update' } } },
+                ],
             };
 
             //when
@@ -343,8 +343,8 @@ describe('Datagrid service', () => {
                 instructions: [
                     { type: 'INSERT', row: { tdpId: 2, firstname: 'Titi Bis', __tdpRowDiff: 'new' }, index: 2 },
                     { type: 'DELETE', row: { tdpId: 3, firstname: 'Toto' } },
-                    { type: 'REPLACE', row: { tdpId: 7, firstname: 'Pepe 2', __tdpDiff: { firstname: 'update' } } }
-                ]
+                    { type: 'REPLACE', row: { tdpId: 7, firstname: 'Pepe 2', __tdpDiff: { firstname: 'update' } } },
+                ],
             };
 
             //when
@@ -357,7 +357,7 @@ describe('Datagrid service', () => {
             expect(reverter.instructions).toEqual([
                 { type: 'DELETE', row: { tdpId: 2, firstname: 'Titi Bis', __tdpRowDiff: 'new' } },
                 { type: 'INSERT', row: { tdpId: 3, firstname: 'Toto' }, index: 3 },
-                { type: 'REPLACE', row: { tdpId: 7, firstname: 'Pepe' } }
+                { type: 'REPLACE', row: { tdpId: 7, firstname: 'Pepe' } },
             ]);
         }));
 
@@ -369,8 +369,8 @@ describe('Datagrid service', () => {
                 instructions: [
                     { type: 'INSERT', row: { tdpId: 2, firstname: 'Titi Bis', __tdpRowDiff: 'new' }, index: 2 },
                     { type: 'DELETE', row: { tdpId: 3, firstname: 'Toto' } },
-                    { type: 'REPLACE', row: { tdpId: 7, firstname: 'Pepe 2', __tdpDiff: { firstname: 'update' } } }
-                ]
+                    { type: 'REPLACE', row: { tdpId: 7, firstname: 'Pepe 2', __tdpDiff: { firstname: 'update' } } },
+                ],
             };
 
             //when
@@ -381,7 +381,7 @@ describe('Datagrid service', () => {
             const modifiedData = {
                 metadata: executor.metadata,
                 records: originalData.records,
-                preview: executor.preview
+                preview: executor.preview,
             };
 
             expect(StateService.setCurrentData).toHaveBeenCalledWith(modifiedData);

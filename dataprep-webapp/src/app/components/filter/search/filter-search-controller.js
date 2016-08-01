@@ -35,7 +35,7 @@ export default function FilterSearchCtrl(FilterService, DatagridService) {
                 label: term + ' in <b>' + col.name + '</b>',
                 value: term,
                 columnId: col.id,
-                columnName: col.name
+                columnName: col.name,
             };
         };
     }
@@ -67,7 +67,7 @@ export default function FilterSearchCtrl(FilterService, DatagridService) {
      */
     function suggestionSelect(item) {
         FilterService.addFilter('contains', item.columnId, item.columnName, {
-            phrase: [{ value: item.value }]
+            phrase: [{ value: item.value }],
         });
         vm.filterSearch = '';
     }
@@ -80,6 +80,6 @@ export default function FilterSearchCtrl(FilterService, DatagridService) {
      */
     vm.filterSuggestOptions = {
         suggest: filterSuggestion,
-        on_select: suggestionSelect
+        on_select: suggestionSelect,
     };
 }

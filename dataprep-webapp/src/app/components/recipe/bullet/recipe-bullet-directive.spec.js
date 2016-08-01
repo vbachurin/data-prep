@@ -43,16 +43,15 @@ describe('Single recipeBullet directive ', function () {
     }
 
     beforeEach(angular.mock.module('data-prep.recipe-bullet'));
-    
+
     beforeEach(inject(function ($rootScope, $compile, $timeout, RecipeBulletService, PlaygroundService) {
         steps = [
             {
                 column: { id: 'col2' },
                 transformation: { name: 'uppercase', label: 'To uppercase', category: 'case', parameters: [], items: [] },
-                inactive: false
-            }
+                inactive: false,
+            },
         ];
-
 
         createElement = function () {
             scope = $rootScope.$new();
@@ -78,12 +77,15 @@ describe('Single recipeBullet directive ', function () {
             spyOn(StepUtilsService, 'isFirstStep').and.callFake(function () {
                 return false;
             });
+
             spyOn(StepUtilsService, 'isLastStep').and.callFake(function () {
                 return false;
             });
+
             spyOn(StepUtilsService, 'getActiveThresholdStepIndex').and.callFake(function () {
                 return 1;
             });
+
             spyOn(StepUtilsService, 'getStepIndex').and.callFake(function () {
                 return 1;
             });
@@ -117,7 +119,6 @@ describe('Single recipeBullet directive ', function () {
         });
     });
 });
-
 
 describe('Multi recipeBullet directive', function () {
     'use strict';
@@ -156,7 +157,7 @@ describe('Multi recipeBullet directive', function () {
             {
                 column: { id: 'col2' },
                 transformation: { name: 'uppercase', label: 'To uppercase', category: 'case', parameters: [], items: [] },
-                inactive: false
+                inactive: false,
             },
             {
                 column: { id: 'col1' },
@@ -165,14 +166,14 @@ describe('Multi recipeBullet directive', function () {
                     label: 'To uppercase',
                     category: 'case',
                     parameters: [],
-                    items: []
+                    items: [],
                 },
-                inactive: false
+                inactive: false,
             },
             {
                 column: { id: 'col3' },
                 transformation: { name: 'negate', label: 'To uppercase', category: 'case', parameters: [], items: [] },
-                inactive: true
+                inactive: true,
             },
             {
                 column: { id: 'col4' },
@@ -181,17 +182,16 @@ describe('Multi recipeBullet directive', function () {
                     label: 'To uppercase',
                     category: 'case',
                     parameters: [],
-                    items: []
+                    items: [],
                 },
-                inactive: true
+                inactive: true,
             },
             {
                 column: { id: 'col1' },
                 transformation: { name: 'rename', label: 'To uppercase', category: 'case', parameters: [], items: [] },
-                inactive: false
-            }
+                inactive: false,
+            },
         ];
-
 
         createElement = function () {
             scope = $rootScope.$new();
@@ -217,15 +217,19 @@ describe('Multi recipeBullet directive', function () {
         spyOn(StepUtilsService, 'isFirstStep').and.callFake(function (recipeState, step) {
             return step === steps[0];
         });
+
         spyOn(StepUtilsService, 'isLastStep').and.callFake(function (recipeState, step) {
             return step === steps[4];
         });
+
         spyOn(StepUtilsService, 'getActiveThresholdStepIndex').and.callFake(function () {
             return 1;
         });
+
         spyOn(StepUtilsService, 'getStepIndex').and.callFake(function (recipeState, step) {
             return steps.indexOf(step);
         });
+
         spyOn(RecipeBulletService, 'stepHoverStart').and.returnValue();
         spyOn(RecipeBulletService, 'stepHoverEnd').and.returnValue();
         spyOn(PlaygroundService, 'toggleStep').and.returnValue();
@@ -272,6 +276,7 @@ describe('Multi recipeBullet directive', function () {
         for (var i = 0; i < 4; i++) {
             expect(classes[i] && classes[i].indexOf('ng-hide') > -1).toBeFalsy();
         }
+
         expect(classes[4] && classes[4].indexOf('ng-hide') > -1).toBeTruthy();
     });
 
@@ -333,7 +338,7 @@ describe('Multi recipeBullet directive', function () {
         expect(RecipeBulletService.stepHoverEnd).toHaveBeenCalled();
     }));
 
-    it('should remove "inactive hover class" on mouseleave', function() {
+    it('should remove "inactive hover class" on mouseleave', function () {
         //given
         createElement();
         var enterEvent = new angular.element.Event('mouseenter');

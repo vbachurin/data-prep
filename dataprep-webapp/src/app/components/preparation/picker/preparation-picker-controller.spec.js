@@ -21,11 +21,11 @@ describe('Preparation Picker controller', () => {
     let compatiblePreps = [
         {
             prepration: {
-                'id': 'ab136cbf0923a7f11bea713adb74ecf919e05cfa',
-                'dataSetId': 'de3cc32a-b624-484e-b8e7-dab9061a009c',
-                'author': 'anonymousUser',
-                'creationDate': 1427447300300,
-                'steps': [
+                id: 'ab136cbf0923a7f11bea713adb74ecf919e05cfa',
+                dataSetId: 'de3cc32a-b624-484e-b8e7-dab9061a009c',
+                author: 'anonymousUser',
+                creationDate: 1427447300300,
+                steps: [
                     '35890aabcf9115e4309d4ce93367bf5e4e77b82a',
                     '4ff5d9a6ca2e75ebe3579740a4297fbdb9b7894f',
                     '8a1c49d1b64270482e8db8232357c6815615b7cf',
@@ -36,11 +36,11 @@ describe('Preparation Picker controller', () => {
         },
         {
             prepration: {
-                'id': 'fbaa18e82e913e97e5f0e9d40f04413412be1126',
-                'dataSetId': '4d0a2718-bec6-4614-ad6c-8b3b326ff6c9',
-                'author': 'anonymousUser',
-                'creationDate': 1427447330693,
-                'steps': [
+                id: 'fbaa18e82e913e97e5f0e9d40f04413412be1126',
+                dataSetId: '4d0a2718-bec6-4614-ad6c-8b3b326ff6c9',
+                author: 'anonymousUser',
+                creationDate: 1427447330693,
+                steps: [
                     '47e2444dd1301120b539804507fd307072294048',
                     'ae1aebf4b3fa9b983c895486612c02c766305410',
                     '24dcd68f2117b9f93662cb58cc31bf36d6e2867a',
@@ -48,7 +48,7 @@ describe('Preparation Picker controller', () => {
                 ],
             },
             dataset: datasets[1],
-        }
+        },
     ];
 
     let createController;

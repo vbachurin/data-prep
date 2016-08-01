@@ -150,7 +150,7 @@ export default class OnboardingService {
                     prevLabel: 'BACK',
                     skipLabel: 'SKIP',
                     doneLabel: 'LET ME TRY',
-                    steps: this.createIntroSteps(this.getTour(tour))
+                    steps: this.createIntroSteps(this.getTour(tour)),
                 })
                 .oncomplete(() => {
                     this.setTourDone(tour);
@@ -160,6 +160,7 @@ export default class OnboardingService {
                     if (isOnDatasetsRoute) {
                         this.$state.go('nav.index.datasets');
                     }
+
                     this.currentTour = null;
                 });
             this.currentTour.start();

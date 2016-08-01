@@ -32,6 +32,7 @@ export default function ColumnTypesService($q, $http, RestURLs) {
         if (types) {
             return $q.when(types);
         }
+
         return $http.get(RestURLs.typesUrl).then((response) => {
             types = response.data;
             return types;

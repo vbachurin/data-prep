@@ -65,7 +65,6 @@ class FolderSelectionCtrl {
         }
     }
 
-
     _locate(accu, node, predicate) {
         const nextAccu = accu.concat(node);
         if (predicate(node)) {
@@ -95,6 +94,7 @@ class FolderSelectionCtrl {
                 nextAccu = this._search(nextAccu, child, name);
             }
         }
+
         return nextAccu;
     }
 

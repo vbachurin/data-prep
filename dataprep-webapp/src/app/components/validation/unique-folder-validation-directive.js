@@ -24,17 +24,18 @@ export default function UniqueFolderValidation() {
         restrict: 'A',
         require: 'ngModel',
         scope: {
-            uniqueFolder: '='
+            uniqueFolder: '=',
         },
         link: function (scope, elm, attrs, ctrl) {
             ctrl.$validators.uniqueFolderValidation = (name) => {
                 if (name === '') {
                     return false;
                 }
+
                 return !_.find(scope.uniqueFolder, (folder) => {
                     return folder.name.toLowerCase() === name.toLowerCase();
                 });
             };
-        }
+        },
     };
 }

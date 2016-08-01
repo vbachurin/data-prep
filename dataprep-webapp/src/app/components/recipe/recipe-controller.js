@@ -106,7 +106,7 @@ export default function RecipeCtrl(state, StateService,
 
         const updatedParameters = {
             ...step.actionParameters.parameters,
-            filter: stepFiltersTree.filter
+            filter: stepFiltersTree.filter,
         };
         vm.updateStep(step, updatedParameters);
     };
@@ -130,7 +130,7 @@ export default function RecipeCtrl(state, StateService,
             //get step parameters and replace filter field (it is removed when there is no filter anymore)
             const updatedParameters = {
                 ...step.actionParameters.parameters,
-                filter: stepFiltersTree.filter
+                filter: stepFiltersTree.filter,
             };
             vm.updateStep(step, updatedParameters);
         }

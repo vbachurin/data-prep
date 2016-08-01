@@ -12,7 +12,7 @@
   ============================================================================*/
 
 export const feedbackState = {
-    visible: false
+    visible: false,
 };
 
 /**
@@ -23,7 +23,7 @@ export const feedbackState = {
 export function FeedbackStateService() {
     return {
         show: show,
-        hide: hide
+        hide: hide,
     };
 
     /**

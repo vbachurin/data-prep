@@ -69,6 +69,7 @@ function convertPatternToRegexp(pattern) {
                 regexp += escapeRegex(pattern[i]);
         }
     }
+
     return '^' + regexp + '$';
 }
 

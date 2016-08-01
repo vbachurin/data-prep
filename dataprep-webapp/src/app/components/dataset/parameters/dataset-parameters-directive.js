@@ -46,10 +46,10 @@ export default function DatasetParameters() {
             onParametersChange: '&',
             configuration: '=',
             parameters: '=',
-            displayNbLines: '<'
+            displayNbLines: '<',
         },
         bindToController: true,
         controller: 'DatasetParametersCtrl',
-        controllerAs: 'datasetParametersCtrl'
+        controllerAs: 'datasetParametersCtrl',
     };
 }

@@ -49,6 +49,7 @@ export default function TalendConfirmCtrl($scope, TalendConfirmService) {
         function () {
             return vm.modalState;
         },
+
         function (newValue) {
             if (!newValue && !vm.buttonClicked) {
                 TalendConfirmService.reject('dismiss');

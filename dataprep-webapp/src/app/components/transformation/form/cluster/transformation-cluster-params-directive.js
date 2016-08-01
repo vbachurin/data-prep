@@ -28,7 +28,7 @@ export default function TransformClusterParams($timeout) {
         restrict: 'E',
         templateUrl: template,
         scope: {
-            details: '='
+            details: '=',
         },
         bindToController: true,
         controllerAs: 'clusterParamsCtrl',
@@ -62,6 +62,7 @@ export default function TransformClusterParams($timeout) {
                             else {
                                 item.row.addClass('disabled');
                             }
+
                             item.inputs.prop('disabled', !checked);
                             item.selects.prop('disabled', !checked);
                             item.lastState = checked;
@@ -84,7 +85,7 @@ export default function TransformClusterParams($timeout) {
                         checkbox: checkbox,
                         row: row,
                         inputs: rowInputs,
-                        selects: rowSelects
+                        selects: rowSelects,
                     };
                 });
 
@@ -97,6 +98,6 @@ export default function TransformClusterParams($timeout) {
                     }
                 );
             }, 0, false);
-        }
+        },
     };
 }

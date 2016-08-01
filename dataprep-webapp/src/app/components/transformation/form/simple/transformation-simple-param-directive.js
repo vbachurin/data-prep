@@ -42,10 +42,10 @@ export default function TransformSimpleParam() {
         scope: {
             editableSelect: '=',
             parameter: '=',
-            label: '@'
+            label: '@',
         },
         bindToController: true,
         controllerAs: 'simpleParamCtrl',
-        controller: 'TransformSimpleParamCtrl'
+        controller: 'TransformSimpleParamCtrl',
     };
 }

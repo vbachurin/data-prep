@@ -17,37 +17,37 @@ describe('Export REST Service', () => {
     let $httpBackend;
     const exportTypes = [
         {
-            'mimeType': 'text/csv',
-            'extension': '.csv',
-            'id': 'CSV',
-            'needParameters': 'true',
-            'defaultExport': 'false',
-            'parameters': [{
-                'name': 'csvSeparator',
-                'labelKey': 'CHOOSE_SEPARATOR',
-                'type': 'radio',
-                'defaultValue': { 'value': ';', 'labelKey': 'SEPARATOR_SEMI_COLON' },
-                'values': [
-                    { 'value': '&#09;', 'labelKey': 'SEPARATOR_TAB' },
-                    { 'value': ' ', 'labelKey': 'SEPARATOR_SPACE' },
-                    { 'value': ',', 'labelKey': 'SEPARATOR_COMMA' }
-                ]
-            }]
+            mimeType: 'text/csv',
+            extension: '.csv',
+            id: 'CSV',
+            needParameters: 'true',
+            defaultExport: 'false',
+            parameters: [{
+                name: 'csvSeparator',
+                labelKey: 'CHOOSE_SEPARATOR',
+                type: 'radio',
+                defaultValue: { value: ';', labelKey: 'SEPARATOR_SEMI_COLON' },
+                values: [
+                    { value: '&#09;', labelKey: 'SEPARATOR_TAB' },
+                    { value: ' ', labelKey: 'SEPARATOR_SPACE' },
+                    { value: ',', labelKey: 'SEPARATOR_COMMA' },
+                ],
+            },],
         },
         {
-            'mimeType': 'application/tde',
-            'extension': '.tde',
-            'id': 'TABLEAU',
-            'needParameters': 'false',
-            'defaultExport': 'false'
+            mimeType: 'application/tde',
+            extension: '.tde',
+            id: 'TABLEAU',
+            needParameters: 'false',
+            defaultExport: 'false',
         },
         {
-            'mimeType': 'application/vnd.ms-excel',
-            'extension': '.xls',
-            'id': 'XLS',
-            'needParameters': 'false',
-            'defaultExport': 'true'
-        }
+            mimeType: 'application/vnd.ms-excel',
+            extension: '.xls',
+            id: 'XLS',
+            needParameters: 'false',
+            defaultExport: 'true',
+        },
     ];
 
     beforeEach(angular.mock.module('data-prep.services.export'));
@@ -66,7 +66,7 @@ describe('Export REST Service', () => {
         //when
         ExportRestService.exportTypes()
             .then((response) => {
-                types = response
+                types = response;
             });
         $httpBackend.flush();
         $rootScope.$digest();

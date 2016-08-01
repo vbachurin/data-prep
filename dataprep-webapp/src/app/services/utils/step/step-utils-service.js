@@ -33,9 +33,11 @@ export default class StepUtilsService {
         if (index < 0) {
             return recipeState.initialStep;
         }
+
         if (index >= recipeState.current.steps.length || index < 0) {
             return defaultLast ? recipeState.current.steps[recipeState.current.steps.length - 1] : null;
         }
+
         return recipeState.current.steps[index];
     }
 

@@ -24,92 +24,91 @@ describe('InventoryItem component', () => {
     let ctrl;
 
     const dataset = {
-        'id': '12ce6c32-bf80-41c8-92e5-66d70f22ec1f',
-        'name': 'US States',
-        'author': 'anonymousUser',
-        'created': '1437020219741',
-        'type': 'text/csv',
-        'certificationStep': 'NONE',
-        'preparations': [{ name:'US States prepa' }, { name:'US States prepa 2' }],
-        'favorite' : true,
-        'owner': {
-            'displayName': "anonymousUser"
-        }
+        id: '12ce6c32-bf80-41c8-92e5-66d70f22ec1f',
+        name: 'US States',
+        author: 'anonymousUser',
+        created: '1437020219741',
+        type: 'text/csv',
+        certificationStep: 'NONE',
+        preparations: [{ name: 'US States prepa' }, { name: 'US States prepa 2' }],
+        favorite: true,
+        owner: {
+            displayName: 'anonymousUser',
+        },
     };
 
     const job_created_dataset = {
-        'id': '12ce6c32-bf80-41c8-92e5-66d70f22ec1f',
-        'name': 'US States',
-        'type': 'text/csv',
-        'tag': 'components'
+        id: '12ce6c32-bf80-41c8-92e5-66d70f22ec1f',
+        name: 'US States',
+        type: 'text/csv',
+        tag: 'components',
     };
 
     const csv_dataset = {
-        'id': '12ce6c32-bf80-41c8-92e5-66d70f22ec1f',
-        'name': 'US States',
-        'type': 'text/csv'
+        id: '12ce6c32-bf80-41c8-92e5-66d70f22ec1f',
+        name: 'US States',
+        type: 'text/csv',
     };
 
     const xls_dataset = {
-        'id': '12ce6c32-bf80-41c8-92e5-66d70f22ec1f',
-        'name': 'US States',
-        'type': 'application/vnd.ms-excel'
+        id: '12ce6c32-bf80-41c8-92e5-66d70f22ec1f',
+        name: 'US States',
+        type: 'application/vnd.ms-excel',
     };
 
     const job_dataset = {
-        'id': '12ce6c32-bf80-41c8-92e5-66d70f22ec1f',
-        'name': 'US States',
-        'type': 'application/vnd.remote-ds.job'
+        id: '12ce6c32-bf80-41c8-92e5-66d70f22ec1f',
+        name: 'US States',
+        type: 'application/vnd.remote-ds.job',
     };
 
     const preparation = {
-        'id': '12ce6c32-bf80-41c8-92e5-66d70f22ec1f',
-        'name': 'US States prep',
-        'author': 'anonymousUser',
-        'creationDate': '1437020219741',
-        'type': 'text/csv',
-        'certificationStep': 'NONE',
-        'steps': [{ name: 'US States prepa' }, { name: 'US States prepa 2' }],
-        'owner': {
-            'displayName': "anonymousUser"
-        }
+        id: '12ce6c32-bf80-41c8-92e5-66d70f22ec1f',
+        name: 'US States prep',
+        author: 'anonymousUser',
+        creationDate: '1437020219741',
+        type: 'text/csv',
+        certificationStep: 'NONE',
+        steps: [{ name: 'US States prepa' }, { name: 'US States prepa 2' }],
+        owner: {
+            displayName: 'anonymousUser',
+        },
     };
 
     const folder = {
-        'path': 'folder 1',
-        'name': 'folder 1',
-        'author': 'anonymousUser',
-        'creationDate': '1437020219741',
-        'nbPreparations': 3,
-        'owner': {
-            'displayName': "anonymousUser"
-        }
+        path: 'folder 1',
+        name: 'folder 1',
+        author: 'anonymousUser',
+        creationDate: '1437020219741',
+        nbPreparations: 3,
+        owner: {
+            displayName: 'anonymousUser',
+        },
     };
 
     const certifiedDataset = {
-        'id': '888888-bf80-41c8-92e5-66d70f22ec1f',
-        'name': 'cars',
-        'author': 'root',
-        'created': '1437020219741',
-        'type': 'text/csv',
-        'certificationStep': 'certified',
-        'preparations': [{ name:'US States prepa' }, { name:'US States prepa 2' }]
+        id: '888888-bf80-41c8-92e5-66d70f22ec1f',
+        name: 'cars',
+        author: 'root',
+        created: '1437020219741',
+        type: 'text/csv',
+        certificationStep: 'certified',
+        preparations: [{ name: 'US States prepa' }, { name: 'US States prepa 2' }],
     };
 
     beforeEach(angular.mock.module('data-prep.inventory-item'));
 
-    
     beforeEach(angular.mock.module('pascalprecht.translate', ($translateProvider) => {
         $translateProvider.translations('en', {
-            'OPEN_ACTION':'Open {{type}} \"{{name}}\"',
-            'DATASET_DETAILS': 'owned by {{owner.displayName}}, created {{created | TDPMoment}}, contains {{records}} lines',
-            "PREPARATION_DETAILS": "owned by {{owner.displayName}}, created {{creationDate | TDPMoment}}, contains {{steps.length -1}} step(s)",
-            "FOLDER_DETAILS": "owned by {{owner.displayName}}, created {{creationDate | TDPMoment}}, contains {{nbPreparations}} preparation(s)",
-            'COPY_MOVE_ACTION': 'Copy or Move {{type}} \"{{name}}\"',
-            'COPY_TO_ACTION': 'Copy {{type}} \"{{name}}\"',
-            'DELETE_ACTION': 'Delete {{type}} \"{{name}}\"',
-            'CERTIFY_ACTION': 'Certify {{type}} \"{{name}}\"',
-            'FAVORITE_ACTION': 'Add {{type}} \"{{name}}\" in your favorites'
+            OPEN_ACTION: 'Open {{type}} \"{{name}}\"',
+            DATASET_DETAILS: 'owned by {{owner.displayName}}, created {{created | TDPMoment}}, contains {{records}} lines',
+            PREPARATION_DETAILS: 'owned by {{owner.displayName}}, created {{creationDate | TDPMoment}}, contains {{steps.length -1}} step(s)',
+            FOLDER_DETAILS: 'owned by {{owner.displayName}}, created {{creationDate | TDPMoment}}, contains {{nbPreparations}} preparation(s)',
+            COPY_MOVE_ACTION: 'Copy or Move {{type}} \"{{name}}\"',
+            COPY_TO_ACTION: 'Copy {{type}} \"{{name}}\"',
+            DELETE_ACTION: 'Delete {{type}} \"{{name}}\"',
+            CERTIFY_ACTION: 'Certify {{type}} \"{{name}}\"',
+            FAVORITE_ACTION: 'Add {{type}} \"{{name}}\" in your favorites',
         });
         $translateProvider.preferredLanguage('en');
     }));
@@ -192,26 +191,36 @@ describe('InventoryItem component', () => {
             scope = $rootScope.$new();
 
             scope.dataset = dataset;
-            scope.openDataset = () =>{
+            scope.openDataset = () => {
             };
-            scope.openRelatedInventory = () =>{
+
+            scope.openRelatedInventory = () => {
             };
-            scope.copy = () =>{
+
+            scope.copy = () => {
             };
-            scope.processCertif = () =>{
+
+            scope.processCertif = () => {
             };
-            scope.rename = () =>{
+
+            scope.rename = () => {
             };
-            scope.open = () =>{
+
+            scope.open = () => {
             };
-            scope.update = () =>{
+
+            scope.update = () => {
             };
-            scope.remove = () =>{
+
+            scope.remove = () => {
             };
-            scope.openRelatedInv = () =>{
+
+            scope.openRelatedInv = () => {
             };
-            scope.toggleFavorite = () =>{
+
+            scope.toggleFavorite = () => {
             };
+
             scope.preparations = [];
             createElement = () => {
                 element = angular.element('<inventory-item ' +
@@ -229,7 +238,7 @@ describe('InventoryItem component', () => {
                     'remove="remove" ' +
                     'toggle-favorite="toggleFavorite" ' +
                     'update="update" ' +
-                    'process-certification-enabled="true"'+
+                    'process-certification-enabled="true"' +
                     'toggle-favorite-enabled="toggleFavorite"' +
                     'remove-enabled="remove"' +
                     '></inventory-item>');
@@ -280,7 +289,6 @@ describe('InventoryItem component', () => {
                 // then
                 expect(element.find('.inventory-description').eq(0).text()).toBe('owned by anonymousUser, created ' + momentize('1437020219741') + ', contains  lines');
             }));
-
 
             it('should display inventory title', () => {
                 // when
@@ -417,7 +425,6 @@ describe('InventoryItem component', () => {
                 expect(title.indexOf(dataset.name) >= 0).toBeTruthy();
             });
 
-
             it('should display READONLY title', () => {
                 // given
                 scope.rename = null;
@@ -440,7 +447,7 @@ describe('InventoryItem component', () => {
                 var links = element.find('a');
 
                 // then
-                for (var i=0; i<links.length; i++) {
+                for (var i = 0; i < links.length; i++) {
                     const icon = element.find('a').eq(i).attr('data-icon');
                     expect(icon).not.toBe('e');
                 }
@@ -604,11 +611,13 @@ describe('InventoryItem component', () => {
 
             scope.rename = () => {
             };
+
             scope.open = () => {
             };
 
             scope.remove = () => {
             };
+
             scope.preparations = [];
             createElement = () => {
                 element = angular.element('<inventory-item ' +
@@ -648,8 +657,10 @@ describe('InventoryItem component', () => {
 
             scope.rename = () => {
             };
+
             scope.open = () => {
             };
+
             scope.remove = () => {
             };
 
@@ -682,8 +693,8 @@ describe('InventoryItem component', () => {
             expect(element.find('.inventory-title').eq(0).text().indexOf('folder 1')).toBe(0);
             expect(element.find('.inventory-description').eq(0).text()).toBe('owned by anonymousUser, created ' + momentize('1437020219741') + ', contains 3 preparation(s)');
 
-            expect($(element).find('.folder-icon')[0].hasAttribute("insertion-folder-icon")).toBe(true);
-            expect(element.find('.folder-icon').eq(0).attr("folder")).toBe('$ctrl.item');
+            expect($(element).find('.folder-icon')[0].hasAttribute('insertion-folder-icon')).toBe(true);
+            expect(element.find('.folder-icon').eq(0).attr('folder')).toBe('$ctrl.item');
         }));
 
         it('should check folder icon attributes existence', inject(($filter) => {
@@ -691,8 +702,8 @@ describe('InventoryItem component', () => {
             createElement();
 
             //then
-            expect($(element).find('.folder-icon')[0].hasAttribute("insertion-folder-icon")).toBe(true);
-            expect(element.find('.folder-icon').eq(0).attr("folder")).toBe('$ctrl.item');
+            expect($(element).find('.folder-icon')[0].hasAttribute('insertion-folder-icon')).toBe(true);
+            expect(element.find('.folder-icon').eq(0).attr('folder')).toBe('$ctrl.item');
         }));
     });
 

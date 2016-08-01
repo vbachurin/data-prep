@@ -40,10 +40,10 @@ export default function ColumnProfileCtrl($translate, $timeout, state, Statistic
         const args = {
             phrase: [
                 {
-                    value: value
-                }
+                    value: value,
+                },
             ],
-            caseSensitive: true
+            caseSensitive: true,
         };
         return value.length || keyName === FilterService.CTRL_KEY_NAME ?
             FilterService.addFilterAndDigest('exact', column.id, column.name, args, null, keyName) :
@@ -79,10 +79,10 @@ export default function ColumnProfileCtrl($translate, $timeout, state, Statistic
                 {
                     label: interval.label || FilterService.getRangeLabelFor(interval, isDateRange),
                     value: [min, max],
-                    isMaxReached: interval.isMaxReached
-                }
+                    isMaxReached: interval.isMaxReached,
+                },
             ],
-            type: selectedColumn.type
+            type: selectedColumn.type,
         };
         FilterService.addFilterAndDigest('inside_range', selectedColumn.id, selectedColumn.name, args, removeFilterFn, keyName);
     }

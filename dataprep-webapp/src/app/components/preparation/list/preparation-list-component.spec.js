@@ -77,7 +77,7 @@ describe('Preparation list component', () => {
                     parameters: {
                         default_value: 'N/A',
                         column_name: 'state',
-                    }
+                    },
                 },
                 {
                     action: 'uppercase',
@@ -96,19 +96,17 @@ describe('Preparation list component', () => {
     beforeEach(angular.mock.module('data-prep.preparation-list', ($provide) => {
         stateMock = {
             inventory: {
-                isFetchingPreparations : false,
+                isFetchingPreparations: false,
                 folder: {
                     content: {
                         folders: folders,
                         preparations: preparations,
-                    }
-                }
-            }
+                    },
+                },
+            },
         };
         $provide.constant('state', stateMock);
     }));
-
-    
 
     beforeEach(inject(($q, $rootScope, $compile, StateService, FolderService) => {
         scope = $rootScope.$new();
@@ -165,13 +163,11 @@ describe('Preparation list component loading', () => {
     beforeEach(angular.mock.module('data-prep.preparation-list', ($provide) => {
         stateMock = {
             inventory: {
-                isFetchingPreparations : true,
-            }
+                isFetchingPreparations: true,
+            },
         };
         $provide.constant('state', stateMock);
     }));
-
-    
 
     beforeEach(inject(($q, $rootScope, $compile, StateService, FolderService) => {
         scope = $rootScope.$new();
@@ -215,7 +211,6 @@ describe('Preparation list component loading', () => {
     }));
 });
 
-
 describe('Preparation list component with no preparations', () => {
     'use strict';
     let scope;
@@ -226,20 +221,18 @@ describe('Preparation list component with no preparations', () => {
     beforeEach(angular.mock.module('data-prep.preparation-list', ($provide) => {
         stateMock = {
             inventory: {
-                isFetchingPreparations : false,
-            }
+                isFetchingPreparations: false,
+            },
         };
         $provide.constant('state', stateMock);
     }));
 
     beforeEach(angular.mock.module('pascalprecht.translate', ($translateProvider) => {
         $translateProvider.translations('en', {
-            'CLICK_ADD_PREPARATIONS': 'There are no preparations in this folder. Click on \'Add Preparation\' to add a preparation.'
+            CLICK_ADD_PREPARATIONS: 'There are no preparations in this folder. Click on \'Add Preparation\' to add a preparation.',
         });
         $translateProvider.preferredLanguage('en');
     }));
-
-    
 
     beforeEach(inject(($q, $rootScope, $compile, StateService, FolderService) => {
         scope = $rootScope.$new();

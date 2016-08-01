@@ -50,7 +50,7 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
         updateFilter: updateFilter,
         removeAllFilters: removeAllFilters,
         removeFilter: removeFilter,
-        toggleFilters: toggleFilters
+        toggleFilters: toggleFilters,
     };
     return service;
 
@@ -85,12 +85,14 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
             min = interval.min;
             max = interval.max;
         }
+
         if (min === max) {
             label = '[' + min + ']';
         }
         else {
             label = '[' + min + RANGE_SEPARATOR + max + (interval.isMaxReached ? ']' : '[');
         }
+
         return label;
     }
 
@@ -113,6 +115,7 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
         else {
             splittedLabel.push(label);
         }
+
         return splittedLabel;
     }
 
@@ -159,6 +162,7 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
                 if (currentItem) {
                     return fns(currentItem);
                 }
+
                 return false;
             };
         };
@@ -191,9 +195,11 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
                 if (hasEmptyRecords) {
                     return !currentItem || currentItem.match(regExpToMatch);
                 }
+
                 if (currentItem) {
                     return currentItem.match(regExpToMatch) !== null;
                 }
+
                 return false;
             };
         };
@@ -266,6 +272,7 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
                 if (!ConverterService.isNumber(item[colId])) {
                     return false;
                 }
+
                 const numberValue = ConverterService.adaptValue('numeric', item[colId]);
                 return intervals
                     .map(interval => {
@@ -301,6 +308,7 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
             const maxTimestamp = value[1];
             return DateService.isInDateLimits(minTimestamp, maxTimestamp, patterns);
         };
+
         const valueInDateLimitsFn = (item) => values
             .map(dateRange => getValueInDateLimitsFn(dateRange.value)(item))
             .reduce((oldResult, newResult) => oldResult || newResult);
@@ -353,6 +361,7 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
                 if (!filterValue.isEmpty) {
                     filterValue.label = filterValue.value.replace(regexp, '\\n');
                 }
+
                 return filterValue;
             });
     }
@@ -382,7 +391,7 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
         const emptyFilterValue = {
             label: FilterAdapterService.EMPTY_RECORDS_LABEL,
             value: '',
-            isEmpty: true
+            isEmpty: true,
         };
 
         switch (type) {
@@ -391,7 +400,7 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
                 // Then we need remove it before
                 sameColEmptyFilter = _.find(state.playground.filter.gridFilters, {
                     colId: colId,
-                    type: 'empty_records'
+                    type: 'empty_records',
                 });
                 if (sameColEmptyFilter) {
                     removeFilter(sameColEmptyFilter);
@@ -406,7 +415,7 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
 
                 argsToDisplay = {
                     phrase: getValuesToDisplay(args.phrase),
-                    caseSensitive: args.caseSensitive
+                    caseSensitive: args.caseSensitive,
                 };
 
                 createFilter = function createFilter() {
@@ -431,15 +440,17 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
                                 .reduce((oldValue, newValue) => oldValue.concat(newValue))
                         );
                     }
+
                     return false;
                 };
+
                 break;
             case 'exact':
                 // If we want to select records and a empty filter is already applied to that column
                 // Then we need remove it before
                 sameColEmptyFilter = _.find(state.playground.filter.gridFilters, {
                     colId: colId,
-                    type: 'empty_records'
+                    type: 'empty_records',
                 });
                 if (sameColEmptyFilter) {
                     removeFilter(sameColEmptyFilter);
@@ -454,7 +465,7 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
 
                 argsToDisplay = {
                     phrase: getValuesToDisplay(args.phrase),
-                    caseSensitive: args.caseSensitive
+                    caseSensitive: args.caseSensitive,
                 };
 
                 createFilter = function createFilter() {
@@ -479,8 +490,10 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
                                 .reduce((oldValue, newValue) => oldValue.concat(newValue))
                         );
                     }
+
                     return false;
                 };
+
                 break;
             case 'invalid_records':
                 createFilter = function createFilter() {
@@ -491,6 +504,7 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
                 filterExists = function filterExists() {
                     return sameColAndTypeFilter;
                 };
+
                 break;
             case 'empty_records': {
                 // If we want to select empty records and another filter is already applied to that column
@@ -498,7 +512,7 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
                 const sameColExactFilter = _.find(state.playground.filter.gridFilters, { colId: colId, type: 'exact' });
                 const sameColMatchFilter = _.find(state.playground.filter.gridFilters, {
                     colId: colId,
-                    type: 'matches'
+                    type: 'matches',
                 });
                 if (sameColExactFilter) {
                     hasEmptyRecordsExactFilter = (
@@ -525,8 +539,10 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
                 filterExists = function filterExists() {
                     return sameColAndTypeFilter || hasEmptyRecordsExactFilter || hasEmptyRecordsMatchFilter;
                 };
+
                 break;
             }
+
             case 'valid_records':
                 createFilter = function createFilter() {
                     filterFn = createValidFilterFn(colId);
@@ -536,6 +552,7 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
                 filterExists = function filterExists() {
                     return sameColAndTypeFilter;
                 };
+
                 break;
             case 'inside_range':
                 createFilter = function createFilter() {
@@ -562,15 +579,17 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
                                 .reduce((oldValue, newValue) => oldValue.concat(newValue))
                         );
                     }
+
                     return false;
                 };
+
                 break;
             case 'matches':
                 // If we want to select records and a empty filter is already applied to that column
                 // Then we need remove it before
                 sameColEmptyFilter = _.find(state.playground.filter.gridFilters, {
                     colId: colId,
-                    type: 'empty_records'
+                    type: 'empty_records',
                 });
                 if (sameColEmptyFilter) {
                     removeFilter(sameColEmptyFilter);
@@ -578,6 +597,7 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
                         args.patterns = [emptyFilterValue].concat(args.patterns);
                     }
                 }
+
                 if (args.patterns.length === 1 && args.patterns[0].value === '') {
                     args.patterns = [emptyFilterValue];
                 }
@@ -605,6 +625,7 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
                         );
                     }
                 };
+
                 break;
         }
 
@@ -663,8 +684,9 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
                 else {
                     newComputedValue = newValue;
                 }
+
                 newArgs = {
-                    phrase: newComputedValue
+                    phrase: newComputedValue,
                 };
                 newFilterFn = createContainFilterFn(oldFilter.colId, newValue);
                 editableFilter = true;
@@ -676,8 +698,9 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
                 else {
                     newComputedValue = newValue;
                 }
+
                 newArgs = {
-                    phrase: newComputedValue
+                    phrase: newComputedValue,
                 };
                 newFilterFn = createExactFilterFn(oldFilter.colId, newComputedValue, oldFilter.args.caseSensitive);
                 editableFilter = true;
@@ -696,13 +719,14 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
                 else {
                     newComputedRange = newValue;
                 }
+
                 if (newComputedArgs) {
                     newArgs = newComputedArgs;
                 }
                 else {
                     newArgs = {
                         intervals: newComputedRange,
-                        type: oldFilter.args.type
+                        type: oldFilter.args.type,
                     };
                 }
 
@@ -712,6 +736,7 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
                     createRangeFilterFn(oldFilter.colId, newComputedRange);
                 break;
             }
+
             case 'matches': {
                 let newComputedPattern;
                 if (addOrCriteria) {
@@ -720,8 +745,9 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
                 else {
                     newComputedPattern = newValue;
                 }
+
                 newArgs = {
-                    patterns: newComputedPattern
+                    patterns: newComputedPattern,
                 };
                 newFilterFn = createMatchFilterFn(oldFilter.colId, newComputedPattern);
                 editableFilter = false;
@@ -751,6 +777,7 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
             else {
                 oldCriteria.push(criterion);
             }
+
             mergedCriteria = oldCriteria;
         });
         return mergedCriteria;
@@ -887,6 +914,7 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
         if (filter.removeFilterFn) {
             filter.removeFilterFn(filter);
         }
+
         StatisticsService.updateFilteredStatistics();
     }
 
@@ -915,6 +943,7 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
         else {
             StateService.enableFilters();
         }
+
         StatisticsService.updateFilteredStatistics();
     }
 }

@@ -38,7 +38,7 @@ const BreadcrumbComponent = {
         items: '<',
         onListOpen: '&',
         onSelect: '&',
-    }
+    },
 };
 
 export default BreadcrumbComponent;

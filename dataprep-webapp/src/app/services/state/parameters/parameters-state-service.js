@@ -20,13 +20,13 @@ export const parametersState = {
             { label: ';', value: ';' },
             { label: ',', value: ',' },
             { label: '<space>', value: ' ' },
-            { label: '<tab>', value: '\t' }
-        ]
+            { label: '<tab>', value: '\t' },
+        ],
     },
     values: {
         separator: null,
-        encoding: null
-    }
+        encoding: null,
+    },
 };
 
 /**
@@ -41,7 +41,7 @@ export function ParametersStateService() {
         setIsSending: setIsSending,
         setEncodings: setEncodings,
         update: update,
-        reset: reset
+        reset: reset,
     };
 
     /**
@@ -109,7 +109,7 @@ export function ParametersStateService() {
         parametersState.isSending = false;
         parametersState.values = {
             separator: null,
-            encoding: null
+            encoding: null,
         };
     }
 }

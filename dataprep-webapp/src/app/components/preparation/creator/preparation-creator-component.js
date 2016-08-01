@@ -30,7 +30,7 @@ import template from './preparation-creator.html';
 export default {
     controller: PreparationCreatorCtrl,
     bindings: {
-        showAddPrepModal: '='
+        showAddPrepModal: '=',
     },
     templateUrl: template,
 };

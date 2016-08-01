@@ -15,8 +15,8 @@ describe('Early Preview Service', () => {
             playground: {
                 dataset: dataset,
                 preparation: preparation,
-                grid: {}
-            }
+                grid: {},
+            },
         };
         $provide.constant('state', stateMock);
     }));
@@ -27,11 +27,11 @@ describe('Early Preview Service', () => {
 
         transfoScope = 'column';
         transformation = {
-            name: 'replace_on_value'
+            name: 'replace_on_value',
         };
         params = {
             value: 'James',
-            replace: 'Jimmy'
+            replace: 'Jimmy',
         };
 
         spyOn(RecipeService, 'earlyPreview').and.returnValue();
@@ -57,7 +57,7 @@ describe('Early Preview Service', () => {
                 scope: transfoScope,
                 column_id: column.id,
                 column_name: column.name,
-                row_id: 125
+                row_id: 125,
             }
         );
         expect(PreviewService.getPreviewAddRecords).toHaveBeenCalledWith(
@@ -70,7 +70,7 @@ describe('Early Preview Service', () => {
                 scope: transfoScope,
                 column_id: column.id,
                 column_name: column.name,
-                row_id: 125
+                row_id: 125,
             }
         );
     }));
@@ -90,7 +90,7 @@ describe('Early Preview Service', () => {
                 scope: transfoScope,
                 column_id: column.id,
                 column_name: column.name,
-                row_id: 125
+                row_id: 125,
             }
         );
         expect(PreviewService.getPreviewAddRecords).toHaveBeenCalledWith(
@@ -103,7 +103,7 @@ describe('Early Preview Service', () => {
                 scope: transfoScope,
                 column_id: column.id,
                 column_name: column.name,
-                row_id: 125
+                row_id: 125,
             }
         );
     }));
@@ -182,7 +182,7 @@ describe('Early Preview Service', () => {
                 scope: transfoScope,
                 column_id: column.id,
                 column_name: column.name,
-                row_id: 125
+                row_id: 125,
             }
         );
         expect(PreviewService.getPreviewAddRecords).toHaveBeenCalledWith(
@@ -195,7 +195,7 @@ describe('Early Preview Service', () => {
                 scope: transfoScope,
                 column_id: column.id,
                 column_name: column.name,
-                row_id: 125
+                row_id: 125,
             }
         );
     }));

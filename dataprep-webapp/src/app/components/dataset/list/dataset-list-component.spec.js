@@ -22,55 +22,55 @@ describe('DatasetList component', () => {
     let stateMock;
     const datasets = [
         {
-            'id': '12ce6c32-bf80-41c8-92e5-66d70f22ec1f',
-            'name': 'US States',
-            'author': 'anonymousUser',
-            'created': '1437020219741',
-            'type': 'text/csv',
-            'certificationStep': 'NONE',
-            'preparations': [{ name: 'US States prepa' }, { name: 'US States prepa 2' }],
-            'owner': {
-                'displayName': 'anonymousUser'
-            }
+            id: '12ce6c32-bf80-41c8-92e5-66d70f22ec1f',
+            name: 'US States',
+            author: 'anonymousUser',
+            created: '1437020219741',
+            type: 'text/csv',
+            certificationStep: 'NONE',
+            preparations: [{ name: 'US States prepa' }, { name: 'US States prepa 2' }],
+            owner: {
+                displayName: 'anonymousUser',
+            },
         },
         {
-            'id': 'e93b9c92-e054-4f6a-a38f-ca52f22ead2b',
-            'name': 'Customers',
-            'author': 'anonymousUser',
-            'created': '143702021974',
-            'type': 'application/vnd.ms-excel',
-            'certificationStep': 'PENDING',
-            'preparations': [{ name: 'Customers prepa' }],
-            'owner': {
-                'displayName': 'anonymousUser'
-            }
+            id: 'e93b9c92-e054-4f6a-a38f-ca52f22ead2b',
+            name: 'Customers',
+            author: 'anonymousUser',
+            created: '143702021974',
+            type: 'application/vnd.ms-excel',
+            certificationStep: 'PENDING',
+            preparations: [{ name: 'Customers prepa' }],
+            owner: {
+                displayName: 'anonymousUser',
+            },
         },
         {
-            'id': 'e93b9c92-e054-4f6a-a38f-ca52f22ead3a',
-            'name': 'Customers 2',
-            'author': 'anonymousUser',
-            'created': '14370202197',
-            'certificationStep': 'CERTIFIED',
-            'preparations': [],
-            'owner': {
-                'displayName': 'anonymousUser'
-            }
-        }
+            id: 'e93b9c92-e054-4f6a-a38f-ca52f22ead3a',
+            name: 'Customers 2',
+            author: 'anonymousUser',
+            created: '14370202197',
+            certificationStep: 'CERTIFIED',
+            preparations: [],
+            owner: {
+                displayName: 'anonymousUser',
+            },
+        },
     ];
 
     beforeEach(angular.mock.module('pascalprecht.translate', ($translateProvider) => {
         $translateProvider.translations('en', {
-            'DATASET_DETAILS': 'owned by {{owner.displayName}}, created {{created | TDPMoment}}, contains {{records}} lines'
+            DATASET_DETAILS: 'owned by {{owner.displayName}}, created {{created | TDPMoment}}, contains {{records}} lines',
         });
         $translateProvider.preferredLanguage('en');
     }));
-    
+
     beforeEach(angular.mock.module('data-prep.dataset-list', ($provide) => {
         stateMock = {
             inventory: {
                 datasets: datasets,
-                isFetchingDatasets: false
-            }
+                isFetchingDatasets: false,
+            },
         };
         $provide.constant('state', stateMock);
     }));
@@ -141,19 +141,17 @@ describe('DatasetList component', () => {
     }));
 });
 
-
 describe('DatasetList component loading', () => {
     let scope;
     let createElement;
     let element;
     let stateMock;
 
-    
     beforeEach(angular.mock.module('data-prep.dataset-list', ($provide) => {
         stateMock = {
             inventory: {
-                isFetchingDatasets: true
-            }
+                isFetchingDatasets: true,
+            },
         };
         $provide.constant('state', stateMock);
     }));
@@ -208,19 +206,18 @@ describe('DatasetList component with no datasets', () => {
     let element;
     let stateMock;
 
-    
     beforeEach(angular.mock.module('data-prep.dataset-list', ($provide) => {
         stateMock = {
             inventory: {
-                isFetchingDatasets: false
-            }
+                isFetchingDatasets: false,
+            },
         };
         $provide.constant('state', stateMock);
     }));
 
     beforeEach(angular.mock.module('pascalprecht.translate', ($translateProvider) => {
         $translateProvider.translations('en', {
-            'CLICK_ADD_DATASETS': 'There are no datasets to display. Click on \'Add Dataset\' to add a dataset.'
+            CLICK_ADD_DATASETS: 'There are no datasets to display. Click on \'Add Dataset\' to add a dataset.',
         });
         $translateProvider.preferredLanguage('en');
     }));

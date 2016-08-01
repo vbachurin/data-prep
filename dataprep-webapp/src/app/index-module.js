@@ -87,14 +87,14 @@ const app = angular.module(MODULE_NAME,
             .state('nav.index.datasets', {
                 url: '/datasets',
                 views: {
-                    'home-content': { template: '<home-dataset></home-dataset>' }
-                }
+                    'home-content': { template: '<home-dataset></home-dataset>' },
+                },
             })
             .state('nav.index.preparations', {
                 url: '/preparations/{folderId:.*}',
                 views: {
-                    'home-content': { template: '<home-preparation></home-preparation>' }
-                }
+                    'home-content': { template: '<home-preparation></home-preparation>' },
+                },
             })
             .state('playground', {
                 url: '/playground',
@@ -156,6 +156,7 @@ window.fetchConfiguration = function fetchConfiguration() {
                         ws.onclose = () => {
                             setTimeout(setupWebSocket, 1000);
                         };
+
                         wsPing = setInterval(() => {
                             ws.send('ping');
                         }, 3 * 60 * 1000);

@@ -110,9 +110,10 @@ export default function DatasetSheetPreviewService(DatasetService) {
                     '<div class="grid-header-title dropdown-button ng-binding">' + col.name + '</div>' +
                     '</div>',
                 field: col.id,
-                minWidth: 100
+                minWidth: 100,
             };
         });
+
         self.grid.setColumns(columns);
         self.grid.setData(data.records);
         self.grid.autosizeColumns();

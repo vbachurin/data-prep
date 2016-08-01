@@ -133,11 +133,12 @@ export default function TalendModal($timeout) {
             disableEnter: '=',
             beforeClose: '&',
             onClose: '&',
-            disableCloseOnBackgroundClick: '='
+            disableCloseOnBackgroundClick: '=',
         },
         bindToController: true,
         controllerAs: 'talendModalCtrl',
         controller: function () {},
+
         link: {
             post: function (scope, iElement, iAttrs, ctrl) {
                 var body = angular.element('body').eq(0);
@@ -156,6 +157,7 @@ export default function TalendModal($timeout) {
                         if (hasBeforeEachFn && !ctrl.beforeClose()) {
                             return;
                         }
+
                         ctrl.state = false;
                     });
                 };
@@ -249,6 +251,7 @@ export default function TalendModal($timeout) {
                 scope.$watch(function () {
                     return ctrl.state;
                 }, function (newValue, oldValue) {
+
                     if (newValue) {
                         //register modal in shown modal list and focus on inner element
                         body.addClass('modal-open');
@@ -269,7 +272,7 @@ export default function TalendModal($timeout) {
                         deregisterAndFocusOnLastModal(innerElement);
                     }
                 });
-            }
-        }
+            },
+        },
     };
 }

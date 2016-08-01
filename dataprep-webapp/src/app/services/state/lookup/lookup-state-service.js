@@ -15,14 +15,13 @@
 
 const sortList = [
     { id: 'name', name: 'NAME_SORT', property: 'name' },
-    { id: 'date', name: 'DATE_SORT', property: 'created' }
+    { id: 'date', name: 'DATE_SORT', property: 'created' },
 ];
 
 const orderList = [
     { id: 'asc', name: 'ASC_ORDER' },
-    { id: 'desc', name: 'DESC_ORDER' }
+    { id: 'desc', name: 'DESC_ORDER' },
 ];
-
 
 export const lookupState = {
     actions: [],                                                // Actions list to add to the lookup  (1 action per dataset)
@@ -39,7 +38,7 @@ export const lookupState = {
     sort: sortList[1],
     order: orderList[1],
     sortList: sortList,
-    orderList: orderList
+    orderList: orderList,
 };
 
 /**
@@ -63,7 +62,7 @@ export function LookupStateService() {
         setAddMode: setAddMode,
         setUpdateMode: setUpdateMode,
         setSort: setSort,
-        setOrder: setOrder
+        setOrder: setOrder,
     };
 
 
@@ -77,6 +76,7 @@ export function LookupStateService() {
             function (dataset) {
                 return _.isNumber(dataset[lookupState.sort.property]) ? dataset[lookupState.sort.property] : dataset[lookupState.sort.property].toLowerCase();
             });
+
         if (lookupState.order.id === 'desc') {
             lookupState.datasets = lookupState.datasets.reverse();
         }
@@ -194,7 +194,7 @@ export function LookupStateService() {
             return {
                 id: col.id,
                 name: col.name,
-                isAdded: addedColIds.indexOf(col.id) > -1
+                isAdded: addedColIds.indexOf(col.id) > -1,
             };
         });
     }

@@ -26,7 +26,7 @@ export default function TransformationRestService($http, RestURLs) {
         getDynamicParameters: getDynamicParameters,
         getColumnSuggestions: getColumnSuggestions,
         getColumnTransformations: getColumnTransformations,
-        getLineTransformations: getLineTransformations
+        getLineTransformations: getLineTransformations,
     };
 
     /**

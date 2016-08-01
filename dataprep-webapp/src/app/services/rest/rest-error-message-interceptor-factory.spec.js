@@ -65,7 +65,7 @@ describe('Rest message interceptor factory', function () {
         var request = {
             method: 'POST',
             url: 'testService',
-            timeout: canceler.promise
+            timeout: canceler.promise,
         };
         $httpBackend.expectPOST('testService').respond(500);
 
@@ -80,7 +80,7 @@ describe('Rest message interceptor factory', function () {
 
     it('should show expected error message if exist', inject(function ($rootScope, $http, MessageService) {
         //given
-        $httpBackend.expectGET('testService').respond(400, { message_title : 'TDP_API_DATASET_STILL_IN_USE_TITLE', message: 'TDP_API_DATASET_STILL_IN_USE' });
+        $httpBackend.expectGET('testService').respond(400, { message_title: 'TDP_API_DATASET_STILL_IN_USE_TITLE', message: 'TDP_API_DATASET_STILL_IN_USE' });
 
         //when
         $http.get('testService');

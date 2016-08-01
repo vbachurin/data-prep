@@ -7,24 +7,24 @@ describe('Playground Service', () => {
         data: [],
     };
     const datasetColumns = {
-        columns: [{ id: '0001', statistics: { frequencyTable: [{ 'toto': 2 }] } }],
+        columns: [{ id: '0001', statistics: { frequencyTable: [{ toto: 2 }] } }],
         records: [],
         data: [],
     };
     const datasetMetadata = {
         records: 19,
-        columns: [{ id: '0001', statistics: { frequencyTable: [{ 'toto': 2 }] } }],
+        columns: [{ id: '0001', statistics: { frequencyTable: [{ toto: 2 }] } }],
     };
 
     const preparationMetadata = {
         metadata: {
-            columns: [{ id: '0001', statistics: { frequencyTable: [{ 'toto': 2 }] } }]
+            columns: [{ id: '0001', statistics: { frequencyTable: [{ toto: 2 }] } }],
         },
         records: [{}],
     };
     const preparationMetadataWithoutStatistics = {
         metadata: {
-            columns: [{ id: '0001', statistics: { frequencyTable: [] } }]
+            columns: [{ id: '0001', statistics: { frequencyTable: [] } }],
         },
         records: [],
     };
@@ -37,7 +37,7 @@ describe('Playground Service', () => {
             playground: {
                 recipe: { current: { steps: [] } },
                 filter: {},
-                grid: {}
+                grid: {},
             },
             inventory: { homeFolderId: 'Lw==' },
         };
@@ -46,7 +46,7 @@ describe('Playground Service', () => {
 
     beforeEach(angular.mock.module('pascalprecht.translate', ($translateProvider) => {
         $translateProvider.translations('en', {
-            'PREPARATION': 'Preparation'
+            PREPARATION: 'Preparation',
         });
         $translateProvider.preferredLanguage('en');
     }));
@@ -61,7 +61,7 @@ describe('Playground Service', () => {
         };
 
         spyOn(PreparationService, 'getDetails').and.returnValue($q.when({
-            data: []
+            data: [],
         }));
         spyOn($state, 'go').and.returnValue();
         spyOn(DatagridService, 'updateData').and.returnValue();
@@ -162,7 +162,7 @@ describe('Playground Service', () => {
     describe('load dataset', () => {
         const dataset = {
             id: 'e85afAa78556d5425bc2',
-            name: 'dataset name'
+            name: 'dataset name',
         };
         let assertNewPreparationInitialization;
 
@@ -287,6 +287,7 @@ describe('Playground Service', () => {
                 expect(HistoryService.clear).toHaveBeenCalled();
                 expect(PreviewService.reset).toHaveBeenCalledWith(false);
             };
+
             assertDatasetLoadNotInitialized = () => {
                 expect(StateService.resetPlayground).not.toHaveBeenCalled();
                 expect(StateService.setCurrentDataset).not.toHaveBeenCalled();
@@ -302,7 +303,7 @@ describe('Playground Service', () => {
             // given
             const preparation = {
                 id: '6845521254541',
-                dataset: { id: '1' }
+                dataset: { id: '1' },
             };
             stateMock.playground.preparation = { id: '5746518486846' };
 
@@ -318,7 +319,7 @@ describe('Playground Service', () => {
             // given
             const preparation = {
                 id: '6845521254541',
-                dataset: { id: '1' }
+                dataset: { id: '1' },
             };
             stateMock.playground.preparation = { id: '5746518486846' };
 
@@ -335,7 +336,7 @@ describe('Playground Service', () => {
             // given
             const preparation = {
                 id: '6845521254541',
-                dataSetId: '1'
+                dataSetId: '1',
             };
             stateMock.playground.preparation = { id: '5746518486846' };
 
@@ -351,7 +352,7 @@ describe('Playground Service', () => {
             // given
             const preparation = {
                 id: '6845521254541',
-                dataset: { id: '1', name: 'my dataset' }
+                dataset: { id: '1', name: 'my dataset' },
             };
             stateMock.playground.dataset = {};
             stateMock.playground.preparation = preparation;
@@ -369,7 +370,7 @@ describe('Playground Service', () => {
             // given
             const step = {
                 column: { id: '0000' },
-                transformation: { stepId: 'a4353089cb0e039ac2' }
+                transformation: { stepId: 'a4353089cb0e039ac2' },
             };
             const metadata = { id: '1', name: 'my dataset' };
             const preparation = { id: '2542154454' };
@@ -396,7 +397,7 @@ describe('Playground Service', () => {
             expect(StateService.showRecipe).not.toHaveBeenCalled();
             const preparation = {
                 id: '6845521254541',
-                dataset: { id: '1' }
+                dataset: { id: '1' },
             };
 
             // when
@@ -530,27 +531,27 @@ describe('Playground Service', () => {
         const previousStep = { column: { id: '0003' } };
         beforeEach(inject(($rootScope, $q, PlaygroundService, PreparationService, StepUtilsService) => {
             preparationHeadContent = {
-                'records': [{
-                    'firstname': 'Grover',
-                    'avgAmount': '82.4',
-                    'city': 'BOSTON',
-                    'birth': '01-09-1973',
-                    'registration': '17-02-2008',
-                    'id': '1',
-                    'state': 'AR',
-                    'nbCommands': '41',
-                    'lastname': 'Quincy'
+                records: [{
+                    firstname: 'Grover',
+                    avgAmount: '82.4',
+                    city: 'BOSTON',
+                    birth: '01-09-1973',
+                    registration: '17-02-2008',
+                    id: '1',
+                    state: 'AR',
+                    nbCommands: '41',
+                    lastname: 'Quincy',
                 }, {
-                    'firstname': 'Warren',
-                    'avgAmount': '87.6',
-                    'city': 'NASHVILLE',
-                    'birth': '11-02-1960',
-                    'registration': '18-08-2007',
-                    'id': '2',
-                    'state': 'WA',
-                    'nbCommands': '17',
-                    'lastname': 'Johnson'
-                }]
+                    firstname: 'Warren',
+                    avgAmount: '87.6',
+                    city: 'NASHVILLE',
+                    birth: '11-02-1960',
+                    registration: '18-08-2007',
+                    id: '2',
+                    state: 'WA',
+                    nbCommands: '17',
+                    lastname: 'Johnson',
+                },],
             };
 
             metadata = { id: 'e85afAa78556d5425bc2' };
@@ -572,7 +573,7 @@ describe('Playground Service', () => {
                 // given
                 stateMock.playground.dataset = {
                     id: '76a415cf854d8654',
-                    name: 'my dataset name'
+                    name: 'my dataset name',
                 };
                 stateMock.playground.preparation = null;
                 const action = 'uppercase';
@@ -581,7 +582,7 @@ describe('Playground Service', () => {
                     param2: 4,
                     scope: 'column',
                     column_id: '0001',
-                    column_name: 'firstname'
+                    column_name: 'firstname',
                 };
 
                 expect(createdPreparation.draft).toBeFalsy();
@@ -606,11 +607,11 @@ describe('Playground Service', () => {
                     param2: 4,
                     scope: 'column',
                     column_id: '0001',
-                    column_name: 'firstname'
+                    column_name: 'firstname',
                 };
                 const actionParameters = {
                     action: action,
-                    parameters: parameters
+                    parameters: parameters,
                 };
 
                 expect(createdPreparation.draft).toBeFalsy();
@@ -633,11 +634,11 @@ describe('Playground Service', () => {
                     param2: 4,
                     scope: 'column',
                     column_id: '0001',
-                    column_name: 'firstname'
+                    column_name: 'firstname',
                 };
                 const actionParameters = {
                     action: action,
-                    parameters: parameters
+                    parameters: parameters,
                 };
 
                 // when
@@ -657,7 +658,7 @@ describe('Playground Service', () => {
                     param2: 4,
                     scope: 'column',
                     column_id: '0001',
-                    column_name: 'firstname'
+                    column_name: 'firstname',
                 };
 
                 // when
@@ -678,7 +679,7 @@ describe('Playground Service', () => {
                     param2: 4,
                     scope: 'column',
                     column_id: '0001',
-                    column_name: 'firstname'
+                    column_name: 'firstname',
                 };
 
                 // when
@@ -728,7 +729,7 @@ describe('Playground Service', () => {
                         param2: 4,
                         scope: 'column',
                         column_id: '0001',
-                        column_name: 'firstname'
+                        column_name: 'firstname',
                     };
                     expect(HistoryService.addAction).not.toHaveBeenCalled();
 
@@ -794,8 +795,8 @@ describe('Playground Service', () => {
                 column: { id: '0000' },
                 transformation: { stepId: '24a457bc464e645' },
                 actionParameters: {
-                    action: 'touppercase'
-                }
+                    action: 'touppercase',
+                },
             };
             const oldParameters = { value: 'toto', column_id: '0001' };
             const stepToUpdate = {
@@ -803,8 +804,8 @@ describe('Playground Service', () => {
                 transformation: { stepId: '98a7565e4231fc2c7' },
                 actionParameters: {
                     action: 'delete_on_value',
-                    parameters: oldParameters
-                }
+                    parameters: oldParameters,
+                },
             };
 
             beforeEach(inject((StepUtilsService) => {
@@ -813,6 +814,7 @@ describe('Playground Service', () => {
                     if (index === lastActiveIndex) {
                         return lastActiveStep;
                     }
+
                     return stepToUpdate;
                 });
             }));
@@ -959,8 +961,8 @@ describe('Playground Service', () => {
                 transformation: { stepId: stepToDeleteId },
                 actionParameters: {
                     action: 'delete_on_value',
-                    parameters: { value: 'toto', column_id: '0001' }
-                }
+                    parameters: { value: 'toto', column_id: '0001' },
+                },
             };
             const preparationId = '43ab15436f12e3456';
 
@@ -1083,9 +1085,9 @@ describe('Playground Service', () => {
                     filter: {
                         eq: {
                             field: '0001',
-                            value: 'john'
-                        }
-                    }
+                            value: 'john',
+                        },
+                    },
                 });
             }));
 
@@ -1095,77 +1097,77 @@ describe('Playground Service', () => {
                 const column = { id: '0001', name: 'firstname' };
                 const newValue = 'Donald';
                 const updateAllCellWithValue = false; // only selected cell
-            
+
                 stateMock.playground.grid.selectedLine = { tdpId: 58 };
                 stateMock.playground.grid.selectedColumn = { id: '0001', name: 'firstname' };
                 stateMock.playground.filter.applyTransformationOnFilters = false;
-            
+
                 //when
                 PlaygroundService.editCell(rowItem, column, newValue, updateAllCellWithValue);
-            
+
                 //then
                 const expectedParams = {
                     cell_value: {
                         token: 'Ronald',
-                        operator: 'equals'
+                        operator: 'equals',
                     },
                     replace_value: 'Donald',
                     scope: 'cell',
                     row_id: 58,
                     column_id: '0001',
-                    column_name: 'firstname'
+                    column_name: 'firstname',
                 };
                 expect(PlaygroundService.appendStep).toHaveBeenCalledWith('replace_on_value', expectedParams);
             }));
-            
+
             it('should append step on column scope', inject((PlaygroundService) => {
                 //given
                 const rowItem = { tdpId: 58, '0000': 'McDonald', '0001': 'Ronald' };
                 const column = { id: '0001', name: 'firstname' };
                 const newValue = 'Donald';
                 const updateAllCellWithValue = true; // all cells in column
-            
+
                 stateMock.playground.grid.selectedLine = { tdpId: 58 };
                 stateMock.playground.grid.selectedColumn = { id: '0001', name: 'firstname' };
                 stateMock.playground.filter.applyTransformationOnFilters = false;
-            
+
                 //when
                 PlaygroundService.editCell(rowItem, column, newValue, updateAllCellWithValue);
-            
+
                 //then
                 const expectedParams = {
                     cell_value: {
                         token: 'Ronald',
-                        operator: 'equals'
+                        operator: 'equals',
                     },
                     replace_value: 'Donald',
                     scope: 'column',
                     row_id: 58,
                     column_id: '0001',
-                    column_name: 'firstname'
+                    column_name: 'firstname',
                 };
                 expect(PlaygroundService.appendStep).toHaveBeenCalledWith('replace_on_value', expectedParams);
             }));
-            
+
             it('should append step with filters', inject((PlaygroundService) => {
                 //given
                 const rowItem = { tdpId: 58, '0000': 'McDonald', '0001': 'Ronald' };
                 const column = { id: '0001', name: 'firstname' };
                 const newValue = 'Donald';
                 const updateAllCellWithValue = true;
-            
+
                 stateMock.playground.grid.selectedLine = { tdpId: 58 };
                 stateMock.playground.grid.selectedColumn = { id: '0001', name: 'firstname' };
                 stateMock.playground.filter.applyTransformationOnFilters = true; // apply on filter
-            
+
                 //when
                 PlaygroundService.editCell(rowItem, column, newValue, updateAllCellWithValue);
-            
+
                 //then
                 const expectedParams = {
                     cell_value: {
                         token: 'Ronald',
-                        operator: 'equals'
+                        operator: 'equals',
                     },
                     replace_value: 'Donald',
                     scope: 'column',
@@ -1175,9 +1177,9 @@ describe('Playground Service', () => {
                     filter: {
                         eq: {
                             field: '0001',
-                            value: 'john'
-                        }
-                    }
+                            value: 'john',
+                        },
+                    },
                 };
                 expect(PlaygroundService.appendStep).toHaveBeenCalledWith('replace_on_value', expectedParams);
             }));
@@ -1190,12 +1192,12 @@ describe('Playground Service', () => {
                     filter: {
                         eq: {
                             field: '0001',
-                            value: 'john'
-                        }
-                    }
+                            value: 'john',
+                        },
+                    },
                 });
             }));
-          
+
             it('should call appendStep with column', inject((PlaygroundService) => {
                 //given
                 var transformation = { name: 'tolowercase' };
@@ -1203,21 +1205,21 @@ describe('Playground Service', () => {
                 var params = { param: 'value' };
                 stateMock.playground.grid.selectedColumn = { id: '0001', name: 'firstname' };
                 stateMock.playground.filter.applyTransformationOnFilters = false;
-        
+
                 //when
                 PlaygroundService.completeParamsAndAppend(transformation, scope, params);
-        
+
                 //then
                 var expectedParams = {
                     param: 'value',
                     scope: 'column',
                     column_id: '0001',
                     column_name: 'firstname',
-                    row_id: undefined
+                    row_id: undefined,
                 };
                 expect(PlaygroundService.appendStep).toHaveBeenCalledWith('tolowercase', expectedParams);
             }));
-        
+
             it('should call appendStep with row', inject((PlaygroundService) => {
                 //given
                 var transformation = { name: 'tolowercase' };
@@ -1225,51 +1227,51 @@ describe('Playground Service', () => {
                 var params = { param: 'value' };
                 stateMock.playground.grid.selectedLine = { tdpId: 125 };
                 stateMock.playground.filter.applyTransformationOnFilters = false;
-        
+
                 //when
                 PlaygroundService.completeParamsAndAppend(transformation, scope, params);
-        
+
                 //then
                 var expectedParams = {
                     param: 'value',
                     scope: 'line',
                     column_id: undefined,
                     column_name: undefined,
-                    row_id: 125
+                    row_id: 125,
                 };
                 expect(PlaygroundService.appendStep).toHaveBeenCalledWith('tolowercase', expectedParams);
             }));
-        
+
             it('should call appendStep without param', inject((PlaygroundService) => {
                 //given
                 var transformation = { name: 'tolowercase' };
                 var scope = 'column';
                 stateMock.playground.grid.selectedColumn = { id: '0001', name: 'firstname' };
                 stateMock.playground.filter.applyTransformationOnFilters = false;
-        
+
                 //when
                 PlaygroundService.completeParamsAndAppend(transformation, scope);
-        
+
                 //then
                 var expectedParams = {
                     scope: 'column',
                     column_id: '0001',
                     column_name: 'firstname',
-                    row_id: undefined
+                    row_id: undefined,
                 };
                 expect(PlaygroundService.appendStep).toHaveBeenCalledWith('tolowercase', expectedParams);
             }));
-        
+
             it('should call appendStep with filter', inject((PlaygroundService) => {
                 //given
                 var transformation = { name: 'tolowercase' };
                 var scope = 'column';
                 stateMock.playground.grid.selectedColumn = { id: '0001', name: 'firstname' };
                 stateMock.playground.filter.applyTransformationOnFilters = true;
-        
+
                 //when
                 PlaygroundService.completeParamsAndAppend(transformation, scope);
-        
+
                 //then
                 var expectedParams = {
                     scope: 'column',
@@ -1279,13 +1281,13 @@ describe('Playground Service', () => {
                     filter: {
                         eq: {
                             field: '0001',
-                            value: 'john'
-                        }
-                    }
+                            value: 'john',
+                        },
+                    },
                 };
                 expect(PlaygroundService.appendStep).toHaveBeenCalledWith('tolowercase', expectedParams);
             }));
-        
+
             it('should create an append closure', inject((PlaygroundService) => {
                 //given
                 var transformation = { name: 'tolowercase' };
@@ -1294,18 +1296,18 @@ describe('Playground Service', () => {
                 stateMock.playground.grid.selectedColumn = { id: '0001', name: 'firstname' };
                 stateMock.playground.grid.selectedLine = { tdpId: 125 };
                 stateMock.playground.filter.applyTransformationOnFilters = false;
-        
+
                 //when
                 var closure = PlaygroundService.createAppendStepClosure(transformation, scope);
                 closure(params);
-        
+
                 //then
                 var expectedParams = {
                     param: 'value',
                     scope: 'column',
                     column_id: '0001',
                     column_name: 'firstname',
-                    row_id: 125
+                    row_id: 125,
                 };
                 expect(PlaygroundService.appendStep).toHaveBeenCalledWith('tolowercase', expectedParams);
             }));
@@ -1385,7 +1387,7 @@ describe('Playground Service', () => {
                 //then
                 expect(PlaygroundService.loadStep).toHaveBeenCalledWith(step1);
             }));
-        })
+        });
     });
 
     describe('preparation name edition mode', () => {
@@ -1415,7 +1417,7 @@ describe('Playground Service', () => {
             expect(StateService.setNameEditionMode).not.toHaveBeenCalled();
             const preparation = {
                 id: '6845521254541',
-                dataset: { id: '1' }
+                dataset: { id: '1' },
             };
 
             // when
@@ -1500,6 +1502,7 @@ describe('Playground Service', () => {
                 if (index === 5) {
                     return step;
                 }
+
                 return null;
             });
 
@@ -1520,10 +1523,10 @@ describe('Playground Service', () => {
                 return $q.when();
             });
             spyOn(StepUtilsService, 'getLastStep').and.returnValue({
-                transformation: { stepId: 'a151e543456413ef51' }
+                transformation: { stepId: 'a151e543456413ef51' },
             });
             spyOn(StepUtilsService, 'getPreviousStep').and.returnValue({
-                transformation: { stepId: '84f654a8e64fc5' }
+                transformation: { stepId: '84f654a8e64fc5' },
             });
         }));
 
@@ -1651,7 +1654,7 @@ describe('Playground Service', () => {
                 expect(StateService.showRecipe.calls.count()).toBe(1);
                 expect(OnboardingService.startTour).not.toHaveBeenCalled();
             }));
-        })
+        });
     });
 
     describe('update preparation details', () => {

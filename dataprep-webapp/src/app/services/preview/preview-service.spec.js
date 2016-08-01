@@ -21,9 +21,9 @@ describe('Preview Service', () => {
             { tdpId: 8, firstname: 'Pipi' },
             { tdpId: 9, firstname: 'Popo' },
             { tdpId: 10, firstname: 'Pupu' },
-            { tdpId: 11, firstname: 'Pypy' }
+            { tdpId: 11, firstname: 'Pypy' },
         ],
-        metadata: { columns: [{ id: '0000', name: 'lastname' }, { id: '0001', name: 'firstname' }] }
+        metadata: { columns: [{ id: '0000', name: 'lastname' }, { id: '0001', name: 'firstname' }] },
     };
 
     //diff result corresponding to gridRangeIndex
@@ -35,10 +35,10 @@ describe('Preview Service', () => {
                 { tdpId: 3, firstname: 'Toto', __tdpRowDiff: 'delete' }, //row is deleted in preview
                 { tdpId: 6, firstname: 'Papa' },
                 { tdpId: 7, firstname: 'Pepe 2', __tdpDiff: { firstname: 'update' } }, //firstname is updated in preview
-                { tdpId: 8, firstname: 'Pipi' }
+                { tdpId: 8, firstname: 'Pipi' },
             ],
-            metadata: { columns: [{ id: '0000', name: 'lastname' }, { id: '0001', name: 'firstname' }] }
-        }
+            metadata: { columns: [{ id: '0000', name: 'lastname' }, { id: '0001', name: 'firstname' }] },
+        },
     };
 
     const previewExecutor = {};
@@ -100,11 +100,11 @@ describe('Preview Service', () => {
             const preparationId = '86c4135ab218646f54';
             const currentStep = {
                 column: { id: '0001' },
-                transformation: { stepId: '1' }
+                transformation: { stepId: '1' },
             };
             const previewStep = {
                 column: { id: '0000' },
-                transformation: { stepId: '2' }
+                transformation: { stepId: '2' },
             };
 
             //when
@@ -119,7 +119,7 @@ describe('Preview Service', () => {
                 preparationId: preparationId,
                 currentStepId: currentStep.transformation.stepId,
                 previewStepId: previewStep.transformation.stepId,
-                tdpIds: displayedTdpIds
+                tdpIds: displayedTdpIds,
             });
 
             expect(DatagridService.execute).toHaveBeenCalledWith(undefined); //reverter but no preview to revert
@@ -131,11 +131,11 @@ describe('Preview Service', () => {
             const preparationId = '86c4135ab218646f54';
             const currentStep = {
                 column: { id: '0001' },
-                transformation: { stepId: '1' }
+                transformation: { stepId: '1' },
             };
             const previewStep = {
                 column: { id: '0000' },
-                transformation: { stepId: '2' }
+                transformation: { stepId: '2' },
             };
             shouldPreviewReturnError = true;
             let rejected = false;
@@ -156,11 +156,11 @@ describe('Preview Service', () => {
             const preparationId = '86c4135ab218646f54';
             const currentStep = {
                 column: { id: '0001' },
-                transformation: { stepId: '1' }
+                transformation: { stepId: '1' },
             };
             const previewStep = {
                 column: { id: '0000' },
-                transformation: { stepId: '2' }
+                transformation: { stepId: '2' },
             };
             const focusColumnId = '0000';
 
@@ -177,11 +177,11 @@ describe('Preview Service', () => {
             const preparationId = '86c4135ab218646f54';
             const currentStep = {
                 column: { id: '0001' },
-                transformation: { stepId: '1' }
+                transformation: { stepId: '1' },
             };
             const previewStep = {
                 column: { id: '0000' },
-                transformation: { stepId: '2' }
+                transformation: { stepId: '2' },
             };
 
             PreviewService.getPreviewDiffRecords(preparationId, currentStep, previewStep, null);
@@ -205,12 +205,12 @@ describe('Preview Service', () => {
             const currentStep = {
                 column: { id: '0001' },
                 transformation: { stepId: '1' },
-                actionParameters: { action: 'fillEmptyWithValue' }
+                actionParameters: { action: 'fillEmptyWithValue' },
             };
             const updateStep = {
                 column: { id: '0000' },
                 transformation: { stepId: '2' },
-                actionParameters: { action: 'fillEmptyWithValue' }
+                actionParameters: { action: 'fillEmptyWithValue' },
             };
             const newParams = { value: '--' };
 
@@ -229,8 +229,8 @@ describe('Preview Service', () => {
                 updateStepId: updateStep.transformation.stepId,
                 action: {
                     action: updateStep.actionParameters.action,
-                    parameters: newParams
-                }
+                    parameters: newParams,
+                },
             });
 
             expect(DatagridService.execute).toHaveBeenCalledWith(undefined); //reverter but no preview to revert
@@ -243,12 +243,12 @@ describe('Preview Service', () => {
             const currentStep = {
                 column: { id: '0001' },
                 transformation: { stepId: '1' },
-                actionParameters: { action: 'fillEmptyWithValue' }
+                actionParameters: { action: 'fillEmptyWithValue' },
             };
             const updateStep = {
                 column: { id: '0000' },
                 transformation: { stepId: '2' },
-                actionParameters: { action: 'fillEmptyWithValue' }
+                actionParameters: { action: 'fillEmptyWithValue' },
             };
             const newParams = { value: '--' };
 
@@ -272,12 +272,12 @@ describe('Preview Service', () => {
             const currentStep = {
                 column: { id: '0001' },
                 transformation: { stepId: '1' },
-                actionParameters: { action: 'fillEmptyWithValue' }
+                actionParameters: { action: 'fillEmptyWithValue' },
             };
             const updateStep = {
                 column: { id: '0000' },
                 transformation: { stepId: '2' },
-                actionParameters: { action: 'fillEmptyWithValue' }
+                actionParameters: { action: 'fillEmptyWithValue' },
             };
             const newParams = { value: '--' };
 
@@ -295,12 +295,12 @@ describe('Preview Service', () => {
             const currentStep = {
                 column: { id: '0001' },
                 transformation: { stepId: '1' },
-                actionParameters: { action: 'fillEmptyWithValue' }
+                actionParameters: { action: 'fillEmptyWithValue' },
             };
             const updateStep = {
                 column: { id: '0000' },
                 transformation: { stepId: '2' },
-                actionParameters: { action: 'fillEmptyWithValue' }
+                actionParameters: { action: 'fillEmptyWithValue' },
             };
             const newParams = { value: '--' };
 
@@ -327,7 +327,7 @@ describe('Preview Service', () => {
             const actionParams = {
                 scope: 'column',
                 column_id: '0001',
-                value: '--'
+                value: '--',
             };
 
             //when
@@ -341,11 +341,11 @@ describe('Preview Service', () => {
             expect(previewArgs[0]).toEqual({
                 action: {
                     action: action,
-                    parameters: actionParams
+                    parameters: actionParams,
                 },
                 tdpIds: displayedTdpIds,
                 datasetId: datasetId,
-                preparationId: preparationId
+                preparationId: preparationId,
             });
 
             expect(DatagridService.execute).toHaveBeenCalledWith(undefined); //reverter but no preview to revert
@@ -360,7 +360,7 @@ describe('Preview Service', () => {
             const actionParams = {
                 scope: 'column',
                 column_id: '0001',
-                value: '--'
+                value: '--',
             };
 
             shouldPreviewReturnError = true;
@@ -385,7 +385,7 @@ describe('Preview Service', () => {
             const params = {
                 scope: 'column',
                 column_id: '0001',
-                value: '--'
+                value: '--',
             };
 
             //when
@@ -404,7 +404,7 @@ describe('Preview Service', () => {
             const params = {
                 scope: 'column',
                 column_id: '0001',
-                value: '--'
+                value: '--',
             };
 
             PreviewService.getPreviewAddRecords(preparationId, datasetId, action, params);
@@ -427,11 +427,11 @@ describe('Preview Service', () => {
         beforeEach(inject(($rootScope, PreviewService) => {
             const currentStep = {
                 column: { id: '0001' },
-                transformation: { stepId: '1' }
+                transformation: { stepId: '1' },
             };
             const previewStep = {
                 column: { id: '0000' },
-                transformation: { stepId: '2' }
+                transformation: { stepId: '2' },
             };
 
             PreviewService.getPreviewDiffRecords(preparationId, currentStep, previewStep, null);
@@ -513,14 +513,13 @@ describe('Preview Service', () => {
 
     describe('update preview', () => {
         const lastActiveStep = { inactive: false };
-        
+
         beforeEach(inject(($q, StepUtilsService, PreviewService) => {
             spyOn(PreviewService, 'getPreviewUpdateRecords').and.returnValue($q.when());
             spyOn(StepUtilsService, 'getLastActiveStep').and.returnValue(lastActiveStep);
             const preparationId = '64f3543cd466f545';
             stateMock.playground.preparation = { id: preparationId };
         }));
-
 
         it('should call update preview', inject(($rootScope, PreviewService) => {
             // given
@@ -529,12 +528,12 @@ describe('Preview Service', () => {
                 column: { id: '0', name: 'state' },
                 transformation: {
                     stepId: 'a598bc83fc894578a8b823',
-                    name: 'cut'
+                    name: 'cut',
                 },
                 actionParameters: {
                     action: 'cut',
-                    parameters: { pattern: '.', column_id: '0', column_name: 'state', scope: 'column' }
-                }
+                    parameters: { pattern: '.', column_id: '0', column_name: 'state', scope: 'column' },
+                },
             };
             const parameters = { pattern: '--' };
 
@@ -556,13 +555,13 @@ describe('Preview Service', () => {
                 column: { id: 'state' },
                 transformation: {
                     stepId: 'a598bc83fc894578a8b823',
-                    name: 'cut'
+                    name: 'cut',
                 },
                 actionParameters: {
                     action: 'cut',
-                    parameters: { pattern: '.', column_name: 'state' }
+                    parameters: { pattern: '.', column_name: 'state' },
                 },
-                inactive: true
+                inactive: true,
             };
             const parameters = { pattern: '--' };
 
@@ -580,12 +579,12 @@ describe('Preview Service', () => {
                 column: { id: '0', name: 'state' },
                 transformation: {
                     stepId: 'a598bc83fc894578a8b823',
-                    name: 'cut'
+                    name: 'cut',
                 },
                 actionParameters: {
                     action: 'cut',
-                    parameters: { pattern: '.', column_id: '0', column_name: 'state' }
-                }
+                    parameters: { pattern: '.', column_id: '0', column_name: 'state' },
+                },
             };
             const parameters = { pattern: '.' };
 

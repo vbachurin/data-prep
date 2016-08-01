@@ -117,6 +117,6 @@ export default function LookupDatagrid($timeout, state, LookupDatagridGridServic
              * Update grid columns and invalidate grid on data change
              */
             scope.$watch(getData, onDataChange);
-        }
+        },
     };
 }

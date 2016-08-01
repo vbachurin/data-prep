@@ -11,7 +11,6 @@
 
  ============================================================================*/
 
-
 describe('Step Description Component', () => {
     let scope;
     let createElement;
@@ -21,14 +20,14 @@ describe('Step Description Component', () => {
 
     beforeEach(angular.mock.module('pascalprecht.translate', ($translateProvider) => {
         $translateProvider.translations('en', {
-            'RECIPE_ITEM_ON_COL': '{{index}}. {{label}} on column <b>{{columnName}}</b>',
-            'RECIPE_ITEM_ON_CELL': '{{index}}. {{label}} on cell',
-            'RECIPE_ITEM_ON_LINE': '{{index}}. {{label}} on line <b>#{{rowId}}</b>',
+            RECIPE_ITEM_ON_COL: '{{index}}. {{label}} on column <b>{{columnName}}</b>',
+            RECIPE_ITEM_ON_CELL: '{{index}}. {{label}} on cell',
+            RECIPE_ITEM_ON_LINE: '{{index}}. {{label}} on line <b>#{{rowId}}</b>',
 
-            'LOOKUP_STEP_DESCRIPTION': '{{index}}. {{label}} done with dataset <span class=\"recipe-column-name\">{{lookupDsName}}</span>. Join has been set between <span class=\"recipe-column-name\">{{mainColName}}</span> and <span class=\"recipe-column-name\">{{lookupColName}}. </span>',
-            'ONLY_1_ADDED_COL': 'The column <span class=\"recipe-column-name\">{{firstCol}}</span> has been added.',
-            'ONLY_2_ADDED_COLS': 'The columns <span class=\"recipe-column-name\">{{firstCol}}</span> and <span class=\"recipe-column-name\">{{secondCol}}</span> have been added.',
-            'MORE_THEN_2_ADDED_COLS': 'The columns <span class=\"recipe-column-name\">{{firstCol}}</span>, <span class=\"recipe-column-name\">{{secondCol}}</span> and <span class=\"recipe-column-name\" title=\"{{restOfCols}}\">{{restOfColsNbr}}</span> other(s) have been added.',
+            LOOKUP_STEP_DESCRIPTION: '{{index}}. {{label}} done with dataset <span class=\"recipe-column-name\">{{lookupDsName}}</span>. Join has been set between <span class=\"recipe-column-name\">{{mainColName}}</span> and <span class=\"recipe-column-name\">{{lookupColName}}. </span>',
+            ONLY_1_ADDED_COL: 'The column <span class=\"recipe-column-name\">{{firstCol}}</span> has been added.',
+            ONLY_2_ADDED_COLS: 'The columns <span class=\"recipe-column-name\">{{firstCol}}</span> and <span class=\"recipe-column-name\">{{secondCol}}</span> have been added.',
+            MORE_THEN_2_ADDED_COLS: 'The columns <span class=\"recipe-column-name\">{{firstCol}}</span>, <span class=\"recipe-column-name\">{{secondCol}}</span> and <span class=\"recipe-column-name\" title=\"{{restOfCols}}\">{{restOfColsNbr}}</span> other(s) have been added.',
         });
         $translateProvider.preferredLanguage('en');
     }));
@@ -152,45 +151,45 @@ describe('Step Description Component', () => {
             //given
             scope.index = 1;
             scope.step = {
-                'column': {
-                    'id': '0000',
-                    'name': 'id',
+                column: {
+                    id: '0000',
+                    name: 'id',
                 },
                 transformation: {
                     parameters: [],
                     label: 'Lookup',
                     name: 'lookup',
                 },
-                'actionParameters': {
-                    'action': 'lookup',
-                    'parameters': {
-                        'column_id': '0000',
-                        'filter': '',
-                        'lookup_ds_name': 'customers_100_with_pb',
-                        'lookup_ds_id': '14d116a0-b180-4c5f-ba25-46807fc61e42',
-                        'lookup_ds_url': 'http://172.17.0.30:8080/datasets/14d116a0-b180-4c5f-ba25-46807fc61e42/content?metadata=true',
-                        'lookup_join_on': '0000',
-                        'lookup_join_on_name': 'id',
-                        'lookup_selected_cols': [
+                actionParameters: {
+                    action: 'lookup',
+                    parameters: {
+                        column_id: '0000',
+                        filter: '',
+                        lookup_ds_name: 'customers_100_with_pb',
+                        lookup_ds_id: '14d116a0-b180-4c5f-ba25-46807fc61e42',
+                        lookup_ds_url: 'http://172.17.0.30:8080/datasets/14d116a0-b180-4c5f-ba25-46807fc61e42/content?metadata=true',
+                        lookup_join_on: '0000',
+                        lookup_join_on_name: 'id',
+                        lookup_selected_cols: [
                             {
-                                'name': 'firstname',
-                                'id': '0001'
+                                name: 'firstname',
+                                id: '0001',
                             },
                             {
-                                'name': 'lastname',
-                                'id': '0002'
+                                name: 'lastname',
+                                id: '0002',
                             },
                             {
-                                'name': 'state',
-                                'id': '0003'
+                                name: 'state',
+                                id: '0003',
                             },
                             {
-                                'name': 'registration',
-                                'id': '0004'
-                            }
+                                name: 'registration',
+                                id: '0004',
+                            },
                         ],
-                        'column_name': 'id',
-                        'scope': 'dataset',
+                        column_name: 'id',
+                        scope: 'dataset',
                     },
                 },
             };

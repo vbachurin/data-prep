@@ -28,10 +28,10 @@ export default function TransformMenu() {
         templateUrl: template,
         scope: {
             column: '=',
-            menuItems: '='
+            menuItems: '=',
         },
         bindToController: true,
         controllerAs: 'menuCtrl',
-        controller: 'TransformMenuCtrl'
+        controller: 'TransformMenuCtrl',
     };
 }

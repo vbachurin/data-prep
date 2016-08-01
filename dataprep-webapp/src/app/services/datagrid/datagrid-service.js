@@ -39,7 +39,7 @@ export default function DatagridService(state, StateService, ConverterService, T
 
         //preview
         execute: execute,
-        previewDataExecutor: previewDataExecutor
+        previewDataExecutor: previewDataExecutor,
     };
     return service;
 
@@ -72,6 +72,7 @@ export default function DatagridService(state, StateService, ConverterService, T
         if (state.playground.data.metadata.columns.length < data.metadata.columns.length) {
             service.focusedColumn = getLastNewColumnId(data.metadata.columns);
         }
+
         StateService.setCurrentData(data);
     }
 
@@ -101,7 +102,7 @@ export default function DatagridService(state, StateService, ConverterService, T
                     state.playground.grid.dataView.insertItem(step.index, step.row);
                     revertInstructions.push({
                         type: DELETE,
-                        row: step.row
+                        row: step.row,
                     });
                     break;
                 case DELETE:
@@ -110,7 +111,7 @@ export default function DatagridService(state, StateService, ConverterService, T
                     revertInstructions.push({
                         type: INSERT,
                         row: step.row,
-                        index: index
+                        index: index,
                     });
                     break;
                 case REPLACE:
@@ -118,17 +119,18 @@ export default function DatagridService(state, StateService, ConverterService, T
                     state.playground.grid.dataView.updateItem(step.row.tdpId, step.row);
                     revertInstructions.push({
                         type: REPLACE,
-                        row: originalRow
+                        row: originalRow,
                     });
                     break;
             }
         });
+
         state.playground.grid.dataView.endUpdate();
 
         var reverter = {
             instructions: revertInstructions,
             preview: state.playground.data.preview,
-            metadata: state.playground.data.metadata
+            metadata: state.playground.data.metadata,
         };
 
         if (state.playground.data.metadata.columns.length < executor.metadata.columns.length) {
@@ -138,7 +140,7 @@ export default function DatagridService(state, StateService, ConverterService, T
         StateService.setCurrentData({
             metadata: executor.metadata,
             records: state.playground.data.records,
-            preview: executor.preview
+            preview: executor.preview,
         });
 
         return reverter;
@@ -155,7 +157,7 @@ export default function DatagridService(state, StateService, ConverterService, T
         var executor = {
             metadata: data.metadata,
             instructions: [],
-            preview: true
+            preview: true,
         };
 
         var nextInsertionIndex = state.playground.grid.dataView.getIdxById(data.records[0].tdpId);
@@ -165,16 +167,17 @@ export default function DatagridService(state, StateService, ConverterService, T
                     executor.instructions.push({
                         type: INSERT,
                         row: row,
-                        index: nextInsertionIndex
+                        index: nextInsertionIndex,
                     });
                 }
                 else {
                     executor.instructions.push({
                         type: REPLACE,
-                        row: row
+                        row: row,
                     });
                 }
             }
+
             nextInsertionIndex++;
         });
 
@@ -202,6 +205,7 @@ export default function DatagridService(state, StateService, ConverterService, T
                 return simplifiedType !== 'integer' && simplifiedType !== 'decimal';
             });
         }
+
         if (excludeBoolean) {
             cols = _.filter(cols, function (col) {
                 return col.type !== 'boolean';

@@ -53,6 +53,7 @@ export default function TalendConfirmService($rootScope, $compile, $document, $q
         if (self.modalScope) {
             throw new Error('A confirm popup is already created');
         }
+
         self.modalScope = $rootScope.$new(true);
         translateTexts(textIds, textArgs)
             .then(function (translatedTexts) {

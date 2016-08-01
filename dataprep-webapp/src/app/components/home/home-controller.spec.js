@@ -25,7 +25,7 @@ describe('Home controller', () => {
     beforeEach(angular.mock.module('data-prep.home', ($provide) => {
         StateMock = {
             dataset: { uploadingDatasets: [] },
-            inventory: {}
+            inventory: {},
         };
         $provide.constant('state', StateMock);
     }));
@@ -58,7 +58,7 @@ describe('Home controller', () => {
     }));
 
     describe('with created controller', () => {
-        beforeEach(inject( () => {
+        beforeEach(inject(() => {
             ctrl = createController();
         }));
 

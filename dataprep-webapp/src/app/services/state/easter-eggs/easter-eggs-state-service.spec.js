@@ -16,7 +16,7 @@ describe('Easter Eggs', function () {
 
     beforeEach(angular.mock.module('data-prep.services.state'));
 
-    describe('state service', function() {
+    describe('state service', function () {
         it('should enable an easter egg', inject(function (easterEggsState, EasterEggsStateService) {
             //given
             //when

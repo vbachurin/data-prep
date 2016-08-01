@@ -25,7 +25,7 @@ import ImportCtrl from './import-controller';
 
 const ImportComponent = {
     templateUrl: template,
-    controller: ImportCtrl
+    controller: ImportCtrl,
 };
 
 export default ImportComponent;

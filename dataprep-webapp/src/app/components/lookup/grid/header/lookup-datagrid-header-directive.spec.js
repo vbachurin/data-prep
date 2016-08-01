@@ -19,20 +19,19 @@ describe('Dataset column header directive', function () {
     var ctrl;
     var body = angular.element('body');
     var column = {
-        'id': '0001',
-        'name': 'MostPopulousCity',
-        'quality': {
-            'empty': 5,
-            'invalid': 10,
-            'valid': 72
+        id: '0001',
+        name: 'MostPopulousCity',
+        quality: {
+            empty: 5,
+            invalid: 10,
+            valid: 72,
         },
-        'type': 'string'
+        type: 'string',
     };
 
     var added = { isAdded: false };
 
     beforeEach(angular.mock.module('data-prep.lookup-datagrid-header'));
-    
 
     beforeEach(inject(function ($rootScope, $compile, $timeout) {
         scope = $rootScope.$new(true);
@@ -53,7 +52,7 @@ describe('Dataset column header directive', function () {
         };
     }));
 
-    beforeEach(function() {
+    beforeEach(function () {
         jasmine.clock().install();
     });
 
@@ -107,7 +106,6 @@ describe('Dataset column header directive', function () {
         expect(ctrl.updateColsToAdd).toHaveBeenCalled();
         expect(element.find('input[type=checkbox]').is(':checked')).toBeTruthy();
     });
-
 
     it('should uncheck checkbox when clicking on add-to-lookup div and the column is already selected', function () {
         //given

@@ -110,7 +110,7 @@ class PreparationCreatorCtrl {
         const params = {
             datasetFile: '',
             type: 'local',
-            name: name
+            name: name,
         };
 
         const dataset = this.datasetService.createDatasetInfo(file, name);
@@ -128,6 +128,7 @@ class PreparationCreatorCtrl {
                         if (!this.userHasTypedName) {
                             this._getUniquePrepName();
                         }
+
                         this.createPreparation();
                     });
             })
@@ -205,6 +206,7 @@ class PreparationCreatorCtrl {
         if (from === 'user') {
             this.userHasTypedName = true;
         }
+
         this.alreadyExistingName = _.some(
             this.state.inventory.folder.content.preparations,
             { name: this.enteredName }
@@ -232,6 +234,7 @@ class PreparationCreatorCtrl {
         if (this.lastSelectedDataset) {
             this.lastSelectedDataset.isSelected = false;
         }
+
         this.lastSelectedDataset = dataset;
         dataset.isSelected = true;
         this.baseDataset = dataset;
@@ -279,6 +282,7 @@ class PreparationCreatorCtrl {
         if (this.alreadyExistingName) {
             return 'TRY_CHANGING_NAME';
         }
+
         return 'IMPORT_FILE_DESCRIPTION';
     }
 }

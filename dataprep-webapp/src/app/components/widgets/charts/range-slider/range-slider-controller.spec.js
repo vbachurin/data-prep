@@ -39,7 +39,7 @@ describe('Range slider controller', () => {
 
             // then
             expect(ctrl.dateFormat).toBe('MM-DD-YYYY');
-        })
+        });
     });
 
     describe('utils', () => {
@@ -95,8 +95,8 @@ describe('Range slider controller', () => {
 
                 // when
                 const adaptedValues = ctrl.adaptToInputValue({
-                    min: + new Date('2016/06/27'),
-                    max: + new Date('2018/06/27'),
+                    min: +new Date('2016/06/27'),
+                    max: +new Date('2018/06/27'),
                 });
 
                 // then
@@ -139,8 +139,8 @@ describe('Range slider controller', () => {
 
                 // then
                 expect(adaptedValues).toEqual({
-                    min: + new Date('2016/06/27'),
-                    max: + new Date('2018/06/27'),
+                    min: +new Date('2016/06/27'),
+                    max: +new Date('2018/06/27'),
                 });
             });
         });
@@ -170,8 +170,8 @@ describe('Range slider controller', () => {
                 const ctrl = createController();
                 ctrl.rangeLimits = {
                     type: 'date',
-                    min: + new Date('2016/06/27'),
-                    max: + new Date('2018/06/27'),
+                    min: +new Date('2016/06/27'),
+                    max: +new Date('2018/06/27'),
                 };
 
                 // when
@@ -258,8 +258,8 @@ describe('Range slider controller', () => {
                     type: 'number',
                     min: 10.2,
                     max: 45.6896,
-                // minBrush not defined
-                // maxBrush not defined
+                    // minBrush not defined
+                    // maxBrush not defined
                 };
                 expect(ctrl.lastValues).not.toBeDefined();
 
@@ -302,8 +302,8 @@ describe('Range slider controller', () => {
                     type: 'number',
                     min: 10.2,
                     max: 45.6896,
-                // minFilterVal not defined
-                // maxFilterVal not defined
+                    // minFilterVal not defined
+                    // maxFilterVal not defined
                 };
                 expect(ctrl.lastValues).not.toBeDefined();
 
@@ -438,8 +438,8 @@ describe('Range slider controller', () => {
 
                 // when
                 ctrl.setInputValue({
-                    min: + new Date('2016/06/27'),
-                    max: + new Date('2018/06/27'),
+                    min: +new Date('2016/06/27'),
+                    max: +new Date('2018/06/27'),
                 });
 
                 // then
@@ -658,7 +658,7 @@ describe('Range slider controller', () => {
 
                 // then
                 expect(ctrl.onBrushEnd).toHaveBeenCalledWith({
-                    interval: { min: 12, max: 25, isMaxReached: false }
+                    interval: { min: 12, max: 25, isMaxReached: false },
                 });
             });
 
@@ -840,7 +840,7 @@ describe('Range slider controller', () => {
 
                 // then
                 expect(ctrl.onBrushEnd).toHaveBeenCalledWith({
-                    interval: { min: 10, max: 115, isMaxReached: true }
+                    interval: { min: 10, max: 115, isMaxReached: true },
                 });
             });
 

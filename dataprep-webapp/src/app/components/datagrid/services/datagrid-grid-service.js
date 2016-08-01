@@ -44,7 +44,7 @@ export default class DatagridGridService {
             DatagridStyleService,
             DatagridSizeService,
             DatagridExternalService,
-            DatagridTooltipService
+            DatagridTooltipService,
         ];
     }
 
@@ -80,6 +80,7 @@ export default class DatagridGridService {
                     const column = this.grid.getColumns()[args.cell];
                     columnMetadata = column && column.tdpColMetadata;
                 }
+
                 this.StateService.setGridSelection(columnMetadata, args.row);
             });
         });
@@ -143,7 +144,7 @@ export default class DatagridGridService {
             syncColumnCellResize: false,
             frozenColumn: 0,
             asyncEditorLoading: true,
-            asyncEditorLoadDelay: 150
+            asyncEditorLoadDelay: 150,
         };
         this.grid = new Slick.Grid(elementId, this.state.playground.grid.dataView, [{ id: 'tdpId' }], options);
 

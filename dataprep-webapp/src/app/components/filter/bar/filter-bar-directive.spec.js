@@ -11,7 +11,7 @@
 
   ============================================================================*/
 
-describe('Filter bar directive', function() {
+describe('Filter bar directive', function () {
     'use strict';
 
     var scope;
@@ -19,38 +19,37 @@ describe('Filter bar directive', function() {
     var element;
 
     var stateMock;
-    beforeEach(angular.mock.module('data-prep.filter-bar', function($provide) {
+    beforeEach(angular.mock.module('data-prep.filter-bar', function ($provide) {
         stateMock = { playground: {
-                filter : {
-                    gridFilters: [{}]
-                }
-        } };
+                filter: {
+                    gridFilters: [{}],
+                },
+            }, };
         $provide.constant('state', stateMock);
     }));
 
-    
     beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
-            'REMOVE_ALL_FILTERS': 'Remove all filters'
+            REMOVE_ALL_FILTERS: 'Remove all filters',
         });
         $translateProvider.preferredLanguage('en');
     }));
 
-    beforeEach(inject(function($rootScope, $compile) {
+    beforeEach(inject(function ($rootScope, $compile) {
         scope = $rootScope.$new();
-        createElement = function() {
+        createElement = function () {
             element = angular.element('<filter-bar></filter-bar>');
             $compile(element)(scope);
             scope.$digest();
         };
     }));
 
-    afterEach(function() {
+    afterEach(function () {
         scope.$destroy();
         element.remove();
     });
 
-    it('should render "remove all" icon when there are filters', function() {
+    it('should render "remove all" icon when there are filters', function () {
         //when
         createElement();
 
@@ -59,7 +58,7 @@ describe('Filter bar directive', function() {
         expect(element.find('#reset-filters').attr('title')).toBe('Remove all filters');
     });
 
-    it('should NOT render "remove all" icon when there are not filters', function() {
+    it('should NOT render "remove all" icon when there are not filters', function () {
         //when
         stateMock.playground.filter.gridFilters = [];
         createElement();
@@ -68,7 +67,7 @@ describe('Filter bar directive', function() {
         expect(element.find('#reset-filters').length).toBe(0);
     });
 
-    it('should execute reset callback on "remove all" icon click', function() {
+    it('should execute reset callback on "remove all" icon click', function () {
         //given
         createElement();
 
@@ -82,7 +81,7 @@ describe('Filter bar directive', function() {
         expect(ctrl.filterService.removeAllFilters).toHaveBeenCalled();
     });
 
-    it('should render filter search', function() {
+    it('should render filter search', function () {
         //when
         createElement();
 
@@ -90,7 +89,7 @@ describe('Filter bar directive', function() {
         expect(element.find('filter-search').length).toBe(1);
     });
 
-    it('should render filter list', function() {
+    it('should render filter list', function () {
         //when
         createElement();
 
@@ -98,7 +97,7 @@ describe('Filter bar directive', function() {
         expect(element.find('filter-list').length).toBe(1);
     });
 
-    it('should render filter monitor', function() {
+    it('should render filter monitor', function () {
         //when
         createElement();
 

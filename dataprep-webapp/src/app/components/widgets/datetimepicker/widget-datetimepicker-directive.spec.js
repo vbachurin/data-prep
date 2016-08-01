@@ -27,13 +27,13 @@ describe('Datetimepicker directive', function () {
         jasmine.clock().install();
     });
 
-
-    beforeEach(inject(function($rootScope, $compile) {
+    beforeEach(inject(function ($rootScope, $compile) {
         scope = $rootScope.$new();
         scope.minModel = 1465895872052;
         scope.onMouseBlur = () => {
         };
-        createElement = function() {
+
+        createElement = function () {
             element = angular.element(`<html><body><div>
                             <talend-datetime-picker ng-model="minModel"
                                 format="m/d/Y"

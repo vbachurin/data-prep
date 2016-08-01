@@ -3,13 +3,13 @@ describe('Recipe service', function () {
 
     var preparationDetails = function () {
         return {
-            'id': '627766216e4b3c99ee5c8621f32ac42f4f87f1b4',
-            'dataSetId': 'db6c4ad8-77da-4a30-b29f-ca552706b058',
-            'author': 'anonymousUser',
-            'name': 'JSO prep',
-            'creationDate': 1427980028390,
-            'lastModificationDate': 1427980216038,
-            'steps': [
+            id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4',
+            dataSetId: 'db6c4ad8-77da-4a30-b29f-ca552706b058',
+            author: 'anonymousUser',
+            name: 'JSO prep',
+            creationDate: 1427980028390,
+            lastModificationDate: 1427980216038,
+            steps: [
                 'f6e172c33bdacbc69bca9d32b2bd78174712a171',
                 '329ccf0cce42db4dc0ffa9f389c05ff7d75c1748',
                 'ec87e2acda2b181fc7eb7c22d91e128c6d0434fc',
@@ -17,429 +17,429 @@ describe('Recipe service', function () {
                 '1e1f41dd6d4554705abebd8d1896022acdbad217',
                 'add60ff0f6de4c703fa75725ada38fb37af065e6',
                 '2aba0e60054728f046d35315830bce9abc3c5249',
-                '3543514689a35456884d54584fe5463c14dd6846'
+                '3543514689a35456884d54584fe5463c14dd6846',
             ],
-            'actions': [
+            actions: [
                 {
-                    'action': 'uppercase',
-                    'parameters': {
-                        'column_name': 'country',
+                    action: 'uppercase',
+                    parameters: {
+                        column_name: 'country',
                         filter: {
                             valid: {
-                                field: '0000'
-                            }
-                        }
-                    }
-                },
-                {
-                    'action': 'fillemptywithdefault',
-                    'parameters': {
-                        'default_value': 'M',
-                        'column_name': 'gender'
-                    }
-                },
-                {
-                    'action': 'negate',
-                    'parameters': {
-                        'column_name': 'campain'
-                    }
-                },
-                {
-                    'action': 'cut',
-                    'parameters': {
-                        'pattern': '.',
-                        'column_name': 'first_item'
-                    }
-                },
-                {
-                    'action': 'textclustering',
-                    'parameters': {
-                        'Texa': 'Texas',
-                        'Tixass': 'Texas',
-                        'Tex@s': 'Texas',
-                        'Massachusetts': 'Massachussets',
-                        'Masachusetts': 'Massachussets',
-                        'Massachussetts': 'Massachussets',
-                        'Massachusets': 'Massachussets',
-                        'Masachussets': 'Massachussets',
-                        'column_name': 'uglystate',
-                        'column_id': '1'
-                    }
-                },
-                {
-                    'action': 'fillemptywithdefaultboolean',
-                    'parameters': {
-                        'default_value': 'True',
-                        'column_name': 'campain'
-                    }
-                },
-                {
-                    'action': 'delete',
-                    'parameters': {
-                        row_id: '125'
-                    }
-                }
-            ],
-            'metadata': [
-                {
-                    'compatibleColumnTypes': [
-                        'STRING'
-                    ],
-                    'category': 'case',
-                    'name': 'uppercase',
-                    'parameters': [
-                        {
-                            'name': 'column_name',
-                            'type': 'string',
-                            'description': 'parameter.column_name.desc',
-                            'label': 'parameter.column_name.label',
-                            'default': '',
-                            implicit: true
-                        }
-                    ],
-                    'description': 'action.uppercase.desc',
-                    'label': 'action.uppercase.label'
-                },
-                {
-                    'compatibleColumnTypes': [
-                        'STRING'
-                    ],
-                    'name': 'fillemptywithdefault',
-                    'parameters': [
-                        {
-                            'name': 'column_name',
-                            'type': 'string',
-                            'description': 'parameter.column_name.desc',
-                            'label': 'parameter.column_name.label',
-                            'default': '',
-                            implicit: true
-                        },
-                        {
-                            'name': 'default_value',
-                            'type': 'string',
-                            'description': 'parameter.default_value.desc',
-                            'label': 'parameter.default_value.label',
-                            'default': ''
-                        }
-                    ],
-                    'category': 'repair',
-                    'description': 'action.fillemptywithdefault.desc',
-                    'label': 'action.fillemptywithdefault.label'
-                },
-                {
-                    'compatibleColumnTypes': [
-                        'BOOLEAN'
-                    ],
-                    'category': 'boolean',
-                    'name': 'negate',
-                    'parameters': [
-                        {
-                            'name': 'column_name',
-                            'type': 'string',
-                            'description': 'parameter.column_name.desc',
-                            'label': 'parameter.column_name.label',
-                            'default': '',
-                            implicit: true
-                        }
-                    ],
-                    'description': 'action.negate.desc',
-                    'label': 'action.negate.label'
-                },
-                {
-                    'compatibleColumnTypes': [
-                        'STRING'
-                    ],
-                    'category': 'repair',
-                    'name': 'cut',
-                    'parameters': [
-                        {
-                            'name': 'column_name',
-                            'type': 'string',
-                            'description': 'parameter.column_name.desc',
-                            'label': 'parameter.column_name.label',
-                            'default': '',
-                            implicit: true
-                        },
-                        {
-                            'name': 'pattern',
-                            'type': 'string',
-                            'description': 'parameter.pattern.desc',
-                            'label': 'parameter.pattern.label',
-                            'default': ''
-                        }
-                    ],
-                    'description': 'action.cut.desc',
-                    'label': 'action.cut.label'
-                },
-                {
-                    'compatibleColumnTypes': [
-                        'STRING'
-                    ],
-                    'category': 'quickfix',
-                    'name': 'textclustering',
-                    'dynamic': true,
-                    'parameters': [
-                        {
-                            'name': 'column_name',
-                            'type': 'string',
-                            'description': 'The column on which apply this action to',
-                            'label': 'Column',
-                            'default': '',
-                            implicit: true
-                        }
-                    ],
-                    'description': 'Replace all similar values with the right one',
-                    'label': 'Cluster'
-                },
-                {
-                    'compatibleColumnTypes': [
-                        'BOOLEAN'
-                    ],
-                    'name': 'fillemptywithdefaultboolean',
-                    'parameters': [
-                        {
-                            'name': 'column_name',
-                            'type': 'string',
-                            'description': 'parameter.column_name.desc',
-                            'label': 'parameter.column_name.label',
-                            'default': '',
-                            implicit: true
-                        },
-                        {
-                            'name': 'default_value',
-                            'type': 'select',
-                            'description': 'parameter.default_value.desc',
-                            'label': 'parameter.default_value.label',
-                            'configuration': {
-                                'values': [
-                                    { 'name': 'True', 'value': 'True' },
-                                    { 'name': 'False', 'value': 'False' }
-                                ]
+                                field: '0000',
                             },
-                            'default': 'True'
-                        }
-                    ],
-                    'category': 'repair',
-                    'description': 'action.fillemptywithdefaultboolean.desc',
-                    'label': 'action.fillemptywithdefaultboolean.label'
+                        },
+                    },
                 },
                 {
-                    'name': 'delete line',
-                    'parameters': [
-                        {
-                            'name': 'row_id',
-                            'type': 'string',
-                            'description': 'parameter.row_id.desc',
-                            'label': 'parameter.row_id.label',
-                            implicit: true
-                        }
+                    action: 'fillemptywithdefault',
+                    parameters: {
+                        default_value: 'M',
+                        column_name: 'gender',
+                    },
+                },
+                {
+                    action: 'negate',
+                    parameters: {
+                        column_name: 'campain',
+                    },
+                },
+                {
+                    action: 'cut',
+                    parameters: {
+                        pattern: '.',
+                        column_name: 'first_item',
+                    },
+                },
+                {
+                    action: 'textclustering',
+                    parameters: {
+                        Texa: 'Texas',
+                        Tixass: 'Texas',
+                        'Tex@s': 'Texas',
+                        Massachusetts: 'Massachussets',
+                        Masachusetts: 'Massachussets',
+                        Massachussetts: 'Massachussets',
+                        Massachusets: 'Massachussets',
+                        Masachussets: 'Massachussets',
+                        column_name: 'uglystate',
+                        column_id: '1',
+                    },
+                },
+                {
+                    action: 'fillemptywithdefaultboolean',
+                    parameters: {
+                        default_value: 'True',
+                        column_name: 'campain',
+                    },
+                },
+                {
+                    action: 'delete',
+                    parameters: {
+                        row_id: '125',
+                    },
+                },
+            ],
+            metadata: [
+                {
+                    compatibleColumnTypes: [
+                        'STRING',
                     ],
-                    'category': 'clean',
-                    'description': 'action.delete_single_line.desc',
-                    'label': 'action.delete_single_line.label'
-                }
-            ]
+                    category: 'case',
+                    name: 'uppercase',
+                    parameters: [
+                        {
+                            name: 'column_name',
+                            type: 'string',
+                            description: 'parameter.column_name.desc',
+                            label: 'parameter.column_name.label',
+                            default: '',
+                            implicit: true,
+                        },
+                    ],
+                    description: 'action.uppercase.desc',
+                    label: 'action.uppercase.label',
+                },
+                {
+                    compatibleColumnTypes: [
+                        'STRING',
+                    ],
+                    name: 'fillemptywithdefault',
+                    parameters: [
+                        {
+                            name: 'column_name',
+                            type: 'string',
+                            description: 'parameter.column_name.desc',
+                            label: 'parameter.column_name.label',
+                            default: '',
+                            implicit: true,
+                        },
+                        {
+                            name: 'default_value',
+                            type: 'string',
+                            description: 'parameter.default_value.desc',
+                            label: 'parameter.default_value.label',
+                            default: '',
+                        },
+                    ],
+                    category: 'repair',
+                    description: 'action.fillemptywithdefault.desc',
+                    label: 'action.fillemptywithdefault.label',
+                },
+                {
+                    compatibleColumnTypes: [
+                        'BOOLEAN',
+                    ],
+                    category: 'boolean',
+                    name: 'negate',
+                    parameters: [
+                        {
+                            name: 'column_name',
+                            type: 'string',
+                            description: 'parameter.column_name.desc',
+                            label: 'parameter.column_name.label',
+                            default: '',
+                            implicit: true,
+                        },
+                    ],
+                    description: 'action.negate.desc',
+                    label: 'action.negate.label',
+                },
+                {
+                    compatibleColumnTypes: [
+                        'STRING',
+                    ],
+                    category: 'repair',
+                    name: 'cut',
+                    parameters: [
+                        {
+                            name: 'column_name',
+                            type: 'string',
+                            description: 'parameter.column_name.desc',
+                            label: 'parameter.column_name.label',
+                            default: '',
+                            implicit: true,
+                        },
+                        {
+                            name: 'pattern',
+                            type: 'string',
+                            description: 'parameter.pattern.desc',
+                            label: 'parameter.pattern.label',
+                            default: '',
+                        },
+                    ],
+                    description: 'action.cut.desc',
+                    label: 'action.cut.label',
+                },
+                {
+                    compatibleColumnTypes: [
+                        'STRING',
+                    ],
+                    category: 'quickfix',
+                    name: 'textclustering',
+                    dynamic: true,
+                    parameters: [
+                        {
+                            name: 'column_name',
+                            type: 'string',
+                            description: 'The column on which apply this action to',
+                            label: 'Column',
+                            default: '',
+                            implicit: true,
+                        },
+                    ],
+                    description: 'Replace all similar values with the right one',
+                    label: 'Cluster',
+                },
+                {
+                    compatibleColumnTypes: [
+                        'BOOLEAN',
+                    ],
+                    name: 'fillemptywithdefaultboolean',
+                    parameters: [
+                        {
+                            name: 'column_name',
+                            type: 'string',
+                            description: 'parameter.column_name.desc',
+                            label: 'parameter.column_name.label',
+                            default: '',
+                            implicit: true,
+                        },
+                        {
+                            name: 'default_value',
+                            type: 'select',
+                            description: 'parameter.default_value.desc',
+                            label: 'parameter.default_value.label',
+                            configuration: {
+                                values: [
+                                    { name: 'True', value: 'True' },
+                                    { name: 'False', value: 'False' },
+                                ],
+                            },
+                            default: 'True',
+                        },
+                    ],
+                    category: 'repair',
+                    description: 'action.fillemptywithdefaultboolean.desc',
+                    label: 'action.fillemptywithdefaultboolean.label',
+                },
+                {
+                    name: 'delete line',
+                    parameters: [
+                        {
+                            name: 'row_id',
+                            type: 'string',
+                            description: 'parameter.row_id.desc',
+                            label: 'parameter.row_id.label',
+                            implicit: true,
+                        },
+                    ],
+                    category: 'clean',
+                    description: 'action.delete_single_line.desc',
+                    label: 'action.delete_single_line.label',
+                },
+            ],
         };
     };
 
     var initialCluster = function () {
         return {
-            'titles': [
+            titles: [
                 'We found these values',
-                'And we\'ll keep this value'
+                'And we\'ll keep this value',
             ],
-            'clusters': [
+            clusters: [
                 {
-                    'parameters': [
+                    parameters: [
                         {
-                            'name': 'Texa',
-                            'type': 'boolean',
-                            'description': 'parameter.Texa.desc',
-                            'label': 'parameter.Texa.label',
-                            'default': null
+                            name: 'Texa',
+                            type: 'boolean',
+                            description: 'parameter.Texa.desc',
+                            label: 'parameter.Texa.label',
+                            default: null,
                         },
                         {
-                            'name': 'Tixass',
-                            'type': 'boolean',
-                            'description': 'parameter.Tixass.desc',
-                            'label': 'parameter.Tixass.label',
-                            'default': null
+                            name: 'Tixass',
+                            type: 'boolean',
+                            description: 'parameter.Tixass.desc',
+                            label: 'parameter.Tixass.label',
+                            default: null,
                         },
                         {
-                            'name': 'Tex@s',
-                            'type': 'boolean',
-                            'description': 'parameter.Tex@s.desc',
-                            'label': 'parameter.Tex@s.label',
-                            'default': null
-                        }
+                            name: 'Tex@s',
+                            type: 'boolean',
+                            description: 'parameter.Tex@s.desc',
+                            label: 'parameter.Tex@s.label',
+                            default: null,
+                        },
                     ],
-                    'replace': {
-                        'name': 'replaceValue',
-                        'type': 'string',
-                        'description': 'parameter.replaceValue.desc',
-                        'label': 'parameter.replaceValue.label',
-                        'default': 'Texas'
-                    }
+                    replace: {
+                        name: 'replaceValue',
+                        type: 'string',
+                        description: 'parameter.replaceValue.desc',
+                        label: 'parameter.replaceValue.label',
+                        default: 'Texas',
+                    },
                 },
                 {
-                    'parameters': [
+                    parameters: [
                         {
-                            'name': 'Massachusetts',
-                            'type': 'boolean',
-                            'description': 'parameter.Massachusetts.desc',
-                            'label': 'parameter.Massachusetts.label',
-                            'default': null
+                            name: 'Massachusetts',
+                            type: 'boolean',
+                            description: 'parameter.Massachusetts.desc',
+                            label: 'parameter.Massachusetts.label',
+                            default: null,
                         },
                         {
-                            'name': 'Masachusetts',
-                            'type': 'boolean',
-                            'description': 'parameter.Masachusetts.desc',
-                            'label': 'parameter.Masachusetts.label',
-                            'default': null
+                            name: 'Masachusetts',
+                            type: 'boolean',
+                            description: 'parameter.Masachusetts.desc',
+                            label: 'parameter.Masachusetts.label',
+                            default: null,
                         },
                         {
-                            'name': 'Massachussetts',
-                            'type': 'boolean',
-                            'description': 'parameter.Massachussetts.desc',
-                            'label': 'parameter.Massachussetts.label',
-                            'default': null
+                            name: 'Massachussetts',
+                            type: 'boolean',
+                            description: 'parameter.Massachussetts.desc',
+                            label: 'parameter.Massachussetts.label',
+                            default: null,
                         },
                         {
-                            'name': 'Massachusets',
-                            'type': 'boolean',
-                            'description': 'parameter.Massachusets.desc',
-                            'label': 'parameter.Massachusets.label',
-                            'default': null
+                            name: 'Massachusets',
+                            type: 'boolean',
+                            description: 'parameter.Massachusets.desc',
+                            label: 'parameter.Massachusets.label',
+                            default: null,
                         },
                         {
-                            'name': 'Masachussets',
-                            'type': 'boolean',
-                            'description': 'parameter.Masachussets.desc',
-                            'label': 'parameter.Masachussets.label',
-                            'default': null
-                        }
+                            name: 'Masachussets',
+                            type: 'boolean',
+                            description: 'parameter.Masachussets.desc',
+                            label: 'parameter.Masachussets.label',
+                            default: null,
+                        },
                     ],
-                    'replace': {
-                        'name': 'replaceValue',
-                        'type': 'string',
-                        'description': 'parameter.replaceValue.desc',
-                        'label': 'parameter.replaceValue.label',
-                        'default': 'Massachussets'
-                    }
-                }
-            ]
+                    replace: {
+                        name: 'replaceValue',
+                        type: 'string',
+                        description: 'parameter.replaceValue.desc',
+                        label: 'parameter.replaceValue.label',
+                        default: 'Massachussets',
+                    },
+                },
+            ],
         };
     };
 
     var expectedInitializedCluster = {
-        'titles': [
+        titles: [
             'We found these values',
-            'And we\'ll keep this value'
+            'And we\'ll keep this value',
         ],
-        'clusters': [
+        clusters: [
             {
-                'parameters': [
+                parameters: [
                     {
-                        'name': 'Texa',
-                        'type': 'boolean',
-                        'description': 'parameter.Texa.desc',
-                        'label': 'parameter.Texa.label',
-                        'default': null,
-                        'value': true,
-                        'initialValue': true
+                        name: 'Texa',
+                        type: 'boolean',
+                        description: 'parameter.Texa.desc',
+                        label: 'parameter.Texa.label',
+                        default: null,
+                        value: true,
+                        initialValue: true,
                     },
                     {
-                        'name': 'Tixass',
-                        'type': 'boolean',
-                        'description': 'parameter.Tixass.desc',
-                        'label': 'parameter.Tixass.label',
-                        'default': null,
-                        'value': true,
-                        'initialValue': true
+                        name: 'Tixass',
+                        type: 'boolean',
+                        description: 'parameter.Tixass.desc',
+                        label: 'parameter.Tixass.label',
+                        default: null,
+                        value: true,
+                        initialValue: true,
                     },
                     {
-                        'name': 'Tex@s',
-                        'type': 'boolean',
-                        'description': 'parameter.Tex@s.desc',
-                        'label': 'parameter.Tex@s.label',
-                        'default': null,
-                        'value': true,
-                        'initialValue': true
-                    }
+                        name: 'Tex@s',
+                        type: 'boolean',
+                        description: 'parameter.Tex@s.desc',
+                        label: 'parameter.Tex@s.label',
+                        default: null,
+                        value: true,
+                        initialValue: true,
+                    },
                 ],
-                'replace': {
-                    'name': 'replaceValue',
-                    'type': 'string',
-                    'description': 'parameter.replaceValue.desc',
-                    'label': 'parameter.replaceValue.label',
-                    'default': 'Texas',
-                    'value': 'Texas',
-                    'initialValue': 'Texas',
-                    'inputType': 'text'
+                replace: {
+                    name: 'replaceValue',
+                    type: 'string',
+                    description: 'parameter.replaceValue.desc',
+                    label: 'parameter.replaceValue.label',
+                    default: 'Texas',
+                    value: 'Texas',
+                    initialValue: 'Texas',
+                    inputType: 'text',
                 },
-                'initialActive': true
+                initialActive: true,
             },
             {
-                'parameters': [
+                parameters: [
                     {
-                        'name': 'Massachusetts',
-                        'type': 'boolean',
-                        'description': 'parameter.Massachusetts.desc',
-                        'label': 'parameter.Massachusetts.label',
-                        'default': null,
-                        'value': true,
-                        'initialValue': true
+                        name: 'Massachusetts',
+                        type: 'boolean',
+                        description: 'parameter.Massachusetts.desc',
+                        label: 'parameter.Massachusetts.label',
+                        default: null,
+                        value: true,
+                        initialValue: true,
                     },
                     {
-                        'name': 'Masachusetts',
-                        'type': 'boolean',
-                        'description': 'parameter.Masachusetts.desc',
-                        'label': 'parameter.Masachusetts.label',
-                        'default': null,
-                        'value': true,
-                        'initialValue': true
+                        name: 'Masachusetts',
+                        type: 'boolean',
+                        description: 'parameter.Masachusetts.desc',
+                        label: 'parameter.Masachusetts.label',
+                        default: null,
+                        value: true,
+                        initialValue: true,
                     },
                     {
-                        'name': 'Massachussetts',
-                        'type': 'boolean',
-                        'description': 'parameter.Massachussetts.desc',
-                        'label': 'parameter.Massachussetts.label',
-                        'default': null,
-                        'value': true,
-                        'initialValue': true
+                        name: 'Massachussetts',
+                        type: 'boolean',
+                        description: 'parameter.Massachussetts.desc',
+                        label: 'parameter.Massachussetts.label',
+                        default: null,
+                        value: true,
+                        initialValue: true,
                     },
                     {
-                        'name': 'Massachusets',
-                        'type': 'boolean',
-                        'description': 'parameter.Massachusets.desc',
-                        'label': 'parameter.Massachusets.label',
-                        'default': null,
-                        'value': true,
-                        'initialValue': true
+                        name: 'Massachusets',
+                        type: 'boolean',
+                        description: 'parameter.Massachusets.desc',
+                        label: 'parameter.Massachusets.label',
+                        default: null,
+                        value: true,
+                        initialValue: true,
                     },
                     {
-                        'name': 'Masachussets',
-                        'type': 'boolean',
-                        'description': 'parameter.Masachussets.desc',
-                        'label': 'parameter.Masachussets.label',
-                        'default': null,
-                        'value': true,
-                        'initialValue': true
-                    }
+                        name: 'Masachussets',
+                        type: 'boolean',
+                        description: 'parameter.Masachussets.desc',
+                        label: 'parameter.Masachussets.label',
+                        default: null,
+                        value: true,
+                        initialValue: true,
+                    },
                 ],
-                'replace': {
-                    'name': 'replaceValue',
-                    'type': 'string',
-                    'description': 'parameter.replaceValue.desc',
-                    'label': 'parameter.replaceValue.label',
-                    'default': 'Massachussets',
-                    'value': 'Massachussets',
-                    'initialValue': 'Massachussets',
-                    'inputType': 'text'
+                replace: {
+                    name: 'replaceValue',
+                    type: 'string',
+                    description: 'parameter.replaceValue.desc',
+                    label: 'parameter.replaceValue.label',
+                    default: 'Massachussets',
+                    value: 'Massachussets',
+                    initialValue: 'Massachussets',
+                    inputType: 'text',
                 },
-                'initialActive': true
-            }
-        ]
+                initialActive: true,
+            },
+        ],
     };
 
     var filtersFromTree = [];
@@ -452,7 +452,7 @@ describe('Recipe service', function () {
                 recipe: {
                     current: {
                         steps: [],
-                    }
+                    },
                 },
                 data: {
                     metadata: {
@@ -460,13 +460,14 @@ describe('Recipe service', function () {
                             { id: '1', name: 'firstname' },
                             { id: '2', name: 'lastname' },
                             { id: '3', name: 'age' },
-                        ]
+                        ],
                     },
                 },
             },
         };
         $provide.constant('state', stateMock);
     }));
+
     beforeEach(inject(($q, StateService, ParametersService, TransformationService, FilterAdapterService) => {
         spyOn(ParametersService, 'resetParamValue').and.returnValue();
         spyOn(ParametersService, 'initParamsValues').and.callThrough();
@@ -483,7 +484,7 @@ describe('Recipe service', function () {
     }));
 
     describe('refresh', () => {
-        it('should set recipe steps with row infos when a preparation is loaded', inject(($rootScope,StateService,  RecipeService) => {
+        it('should set recipe steps with row infos when a preparation is loaded', inject(($rootScope, StateService,  RecipeService) => {
             //given
             stateMock.playground.preparation = { id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4' };
 
@@ -498,7 +499,7 @@ describe('Recipe service', function () {
             const steps = args[1];
 
             expect(initialStep).toEqual({
-                transformation: { stepId: 'f6e172c33bdacbc69bca9d32b2bd78174712a171' }
+                transformation: { stepId: 'f6e172c33bdacbc69bca9d32b2bd78174712a171' },
             });
             expect(steps.length).toBe(7);
             expect(steps[6].row.id).toBe('125');
@@ -555,8 +556,8 @@ describe('Recipe service', function () {
                     default: '',
                     initialValue: 'M',
                     value: 'M',
-                    inputType: 'text'
-                }]);
+                    inputType: 'text',
+                },]);
 
             expect(steps[3].column.name).toBe('first_item');
             expect(steps[3].transformation.stepId).toBe('1e1f41dd6d4554705abebd8d1896022acdbad217');
@@ -570,8 +571,8 @@ describe('Recipe service', function () {
                     default: '',
                     initialValue: '.',
                     value: '.',
-                    inputType: 'text'
-                }]);
+                    inputType: 'text',
+                },]);
         }));
 
         it('should get recipe from preparation and init recipe choices', inject(($rootScope, StateService, RecipeService) => {
@@ -601,19 +602,19 @@ describe('Recipe service', function () {
                             values: [
                                 {
                                     name: 'True',
-                                    value: 'True'
+                                    value: 'True',
                                 },
                                 {
                                     name: 'False',
-                                    value: 'False'
-                                }
-                            ]
+                                    value: 'False',
+                                },
+                            ],
                         },
                         default: 'True',
                         value: 'True',
                         initialValue: 'True',
-                        inputType: 'text'
-                    }
+                        inputType: 'text',
+                    },
                 ]
             );
         }));
@@ -641,7 +642,7 @@ describe('Recipe service', function () {
             expect(TransformationService.initDynamicParameters).toHaveBeenCalledWith(steps[4].transformation, {
                 columnId: '1',
                 preparationId: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4',
-                stepId: '1e1f41dd6d4554705abebd8d1896022acdbad217'
+                stepId: '1e1f41dd6d4554705abebd8d1896022acdbad217',
             });
             expect(ParametersService.initParamsValues).toHaveBeenCalledWith(steps[4].transformation, steps[4].actionParameters.parameters);
         }));
@@ -701,16 +702,16 @@ describe('Recipe service', function () {
             const steps = StateService.setRecipeSteps.calls.argsFor(0)[1];
             expect(steps[0].actionParameters).toEqual({
                 action: 'uppercase',
-                parameters: { column_name: 'country', filter: { valid: { field: '0000' } } }
+                parameters: { column_name: 'country', filter: { valid: { field: '0000' } } },
             });
             expect(steps[1].actionParameters).toEqual({
                 action: 'fillemptywithdefault',
-                parameters: { default_value: 'M', column_name: 'gender' }
+                parameters: { default_value: 'M', column_name: 'gender' },
             });
             expect(steps[2].actionParameters).toEqual({ action: 'negate', parameters: { column_name: 'campain' } });
             expect(steps[3].actionParameters).toEqual({
                 action: 'cut',
-                parameters: { pattern: '.', column_name: 'first_item' }
+                parameters: { pattern: '.', column_name: 'first_item' },
             });
             expect(steps[4].actionParameters).toEqual({
                 action: 'textclustering',
@@ -724,12 +725,12 @@ describe('Recipe service', function () {
                     Massachusets: 'Massachussets',
                     Masachussets: 'Massachussets',
                     column_id: '1',
-                    column_name: 'uglystate'
-                }
+                    column_name: 'uglystate',
+                },
             });
             expect(steps[5].actionParameters).toEqual({
                 action: 'fillemptywithdefaultboolean',
-                parameters: { default_value: 'True', column_name: 'campain' }
+                parameters: { default_value: 'True', column_name: 'campain' },
             });
         }));
     });
@@ -745,7 +746,7 @@ describe('Recipe service', function () {
             const steps = [
                 { transformation: { id: '1' } },
                 { transformation: { id: '2' }, inactive: true },
-                { transformation: { id: '3' }, inactive: true }
+                { transformation: { id: '3' }, inactive: true },
             ];
             stateMock.playground.recipe.current = {
                 steps: steps,
@@ -756,7 +757,7 @@ describe('Recipe service', function () {
             //params
             column = {
                 id: '0001',
-                name: 'firstname'
+                name: 'firstname',
             };
             transformation = {
                 name: 'replace_on_value',
@@ -765,21 +766,21 @@ describe('Recipe service', function () {
                 parameters: [
                     { name: 'value', type: 'string' },
                     { name: 'replace', type: 'string' },
-                    { name: 'dummy param', type: 'select' }
+                    { name: 'dummy param', type: 'select' },
                 ],
-                dynamic: false
+                dynamic: false,
             };
             params = {
                 scope: 'column',
                 column_id: '0001',
                 column_name: 'firstname',
                 value: 'James',
-                replace: 'Jimmy'
+                replace: 'Jimmy',
             };
 
             stateMock.playground.filter = {
                 applyTransformationOnFilters: true,
-                gridFilters: [88]
+                gridFilters: [88],
             };
         });
 
@@ -798,7 +799,7 @@ describe('Recipe service', function () {
             expect(steps[3]).toEqual({
                 column: {
                     id: column.id,
-                    name: column.name
+                    name: column.name,
                 },
                 row: { id: undefined },
                 transformation: {
@@ -814,17 +815,17 @@ describe('Recipe service', function () {
                             type: 'select',
                             value: undefined,
                             initialValue: undefined,
-                            inputType: 'text'
-                        }
+                            inputType: 'text',
+                        },
                     ],
-                    dynamic: transformation.dynamic
+                    dynamic: transformation.dynamic,
                 },
                 actionParameters: {
                     action: transformation.name,
-                    parameters: params
+                    parameters: params,
                 },
                 preview: true,
-                filters: [88]
+                filters: [88],
             });
             expect(steps[3].transformation.parameters).not.toBe(transformation.parameters);
         }));
@@ -832,7 +833,7 @@ describe('Recipe service', function () {
         it('should cancel preview and set back previous state', inject((StateService, RecipeService) => {
             // given
             expect(StateService.restoreRecipeBeforePreview).not.toHaveBeenCalled();
-            
+
             // when
             RecipeService.cancelEarlyPreview();
 

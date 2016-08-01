@@ -30,7 +30,7 @@ export default function ColumnSuggestionService($q, state, StateService, Transfo
 
     return {
         initTransformations: initTransformations,
-        filterTransformations: filterTransformations
+        filterTransformations: filterTransformations,
     };
 
     //--------------------------------------------------------------------------------------------------------------
@@ -81,7 +81,7 @@ export default function ColumnSuggestionService($q, state, StateService, Transfo
         return {
             category: SUGGESTION_CATEGORY,
             categoryHtml: SUGGESTION_CATEGORY.toUpperCase(),
-            transformations: (filterCategory ? filterCategory.transformations : []).concat(suggestions)
+            transformations: (filterCategory ? filterCategory.transformations : []).concat(suggestions),
         };
     }
 
@@ -99,7 +99,7 @@ export default function ColumnSuggestionService($q, state, StateService, Transfo
         $q
             .all([
                 TransformationCacheService.getColumnSuggestions(column),
-                TransformationCacheService.getColumnTransformations(column)
+                TransformationCacheService.getColumnTransformations(column),
             ])
             .then(function (values) {
                 var suggestions = prepareSuggestions(values[0], values[1].allCategories);
@@ -110,7 +110,7 @@ export default function ColumnSuggestionService($q, state, StateService, Transfo
                     allTransformations: values[1].allTransformations,
                     filteredTransformations: allCategories,
                     allCategories: allCategories,
-                    searchActionString: ''
+                    searchActionString: '',
                 };
                 StateService.setColumnTransformations(colTransformations);
 
@@ -158,7 +158,7 @@ export default function ColumnSuggestionService($q, state, StateService, Transfo
             return {
                 category: category,
                 categoryHtml: category.toUpperCase(),
-                transformations: transformations
+                transformations: transformations,
             };
         };
     }
@@ -173,6 +173,7 @@ export default function ColumnSuggestionService($q, state, StateService, Transfo
             _.forEach(catTransfo.transformations, function (transfo) {
                 TextFormatService.highlight(transfo, 'labelHtml', searchValue, 'highlighted');
             });
+
             return catTransfo;
         };
     }

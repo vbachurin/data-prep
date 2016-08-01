@@ -39,7 +39,7 @@ export default function DatasetParametersCtrl() {
     vm.validate = function validate() {
         vm.onParametersChange({
             dataset: vm.dataset,
-            parameters: vm.parameters
+            parameters: vm.parameters,
         });
     };
 }

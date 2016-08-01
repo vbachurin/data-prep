@@ -29,7 +29,7 @@ describe('Inventory Rest Service', () => {
         const expectedResult = {
             folders: [],
             preparations: [],
-            datasets: []
+            datasets: [],
         };
         $httpBackend
             .expectGET(RestURLs.searchUrl + '?path=/&name=test')
@@ -38,7 +38,7 @@ describe('Inventory Rest Service', () => {
         //when
         InventoryRestService.search('test', $q.defer())
             .then((response) => {
-                result = response.data
+                result = response.data;
             });
 
         $httpBackend.flush();

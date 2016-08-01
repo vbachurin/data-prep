@@ -20,11 +20,10 @@ describe('Transformation params directive', function () {
     beforeEach(angular.mock.module('data-prep.transformation-form', function ($provide) {
         stateMock = { playground: {
                 data: { metadata: { columns: [] } },
-                grid: { selectedColumn: '0001' }
-        } };
+                grid: { selectedColumn: '0001' },
+            }, };
         $provide.constant('state', stateMock);
     }));
-    
 
     beforeEach(inject(function ($rootScope, $compile) {
         scope = $rootScope.$new();
@@ -37,7 +36,7 @@ describe('Transformation params directive', function () {
         };
     }));
 
-    afterEach(function() {
+    afterEach(function () {
         scope.$destroy();
     });
 
@@ -45,19 +44,19 @@ describe('Transformation params directive', function () {
         //given
         scope.parameters = [
             {
-                'name': 'param1',
-                'label': 'Param 1',
-                'type': 'string',
-                'inputType': 'text',
-                'default': '.'
+                name: 'param1',
+                label: 'Param 1',
+                type: 'string',
+                inputType: 'text',
+                default: '.',
             },
             {
-                'name': 'param2',
-                'label': 'Param 2',
-                'type': 'integer',
-                'inputType': 'number',
-                'default': '5'
-            }
+                name: 'param2',
+                label: 'Param 2',
+                type: 'integer',
+                inputType: 'number',
+                default: '5',
+            },
         ];
 
         //when
@@ -71,11 +70,11 @@ describe('Transformation params directive', function () {
         //given
         scope.parameters = [
             {
-                'name': 'param1',
-                'label': 'Param 1',
-                'type': 'regex',
-                'default': ''
-            }
+                name: 'param1',
+                label: 'Param 1',
+                type: 'regex',
+                default: '',
+            },
         ];
 
         //when
@@ -89,17 +88,17 @@ describe('Transformation params directive', function () {
         //given
         scope.parameters = [
             {
-                'name': 'myChoice',
-                'label': 'my choice',
-                'type': 'select',
-                'configuration': {
-                    'values': [
+                name: 'myChoice',
+                label: 'my choice',
+                type: 'select',
+                configuration: {
+                    values: [
                         { name: 'noParamChoice1', value: 'noParamChoice1' },
-                        { name: 'noParamChoice2', value: 'noParamChoice2' }
-                    ]
+                        { name: 'noParamChoice2', value: 'noParamChoice2' },
+                    ],
                 },
-                'default': ''
-            }
+                default: '',
+            },
         ];
 
         //when
@@ -113,11 +112,11 @@ describe('Transformation params directive', function () {
         //given
         scope.parameters = [
             {
-                'name': 'param1',
-                'label': 'Param 1',
-                'type': 'date',
-                'default': '02/01/2012 10:00:12'
-            }
+                name: 'param1',
+                label: 'Param 1',
+                type: 'date',
+                default: '02/01/2012 10:00:12',
+            },
         ];
 
         //when
@@ -137,8 +136,8 @@ describe('Transformation params directive', function () {
                 canBeBlank: false,
                 description: 'Combine the content of this column with the current one',
                 label: 'The Column to concatenate',
-                default: ''
-            }
+                default: '',
+            },
         ];
 
         //when

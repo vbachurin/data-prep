@@ -19,37 +19,37 @@ describe('Playground controller', () => {
     let stateMock;
     const datasets = [
         {
-            'id': 'de3cc32a-b624-484e-b8e7-dab9061a009c',
-            'name': 'customers_jso_light',
-            'author': 'anonymousUser',
-            'records': 15,
-            'nbLinesHeader': 1,
-            'nbLinesFooter': 0,
-            'created': '03-30-2015 08:06',
+            id: 'de3cc32a-b624-484e-b8e7-dab9061a009c',
+            name: 'customers_jso_light',
+            author: 'anonymousUser',
+            records: 15,
+            nbLinesHeader: 1,
+            nbLinesFooter: 0,
+            created: '03-30-2015 08:06',
         },
         {
-            'id': '3b21388c-f54a-4334-9bef-748912d0806f',
-            'name': 'customers_jso',
-            'author': 'anonymousUser',
-            'records': 1000,
-            'nbLinesHeader': 1,
-            'nbLinesFooter': 0,
-            'created': '03-30-2015 07:35',
+            id: '3b21388c-f54a-4334-9bef-748912d0806f',
+            name: 'customers_jso',
+            author: 'anonymousUser',
+            records: 1000,
+            nbLinesHeader: 1,
+            nbLinesFooter: 0,
+            created: '03-30-2015 07:35',
         },
     ];
 
     const preparations = [
         {
-            'id': 'ab136cbf0923a7f11bea713adb74ecf919e05cfa',
-            'dataSetId': 'de3cc32a-b624-484e-b8e7-dab9061a009c',
-            'author': 'anonymousUser',
-            'creationDate': 1427447300300,
+            id: 'ab136cbf0923a7f11bea713adb74ecf919e05cfa',
+            dataSetId: 'de3cc32a-b624-484e-b8e7-dab9061a009c',
+            author: 'anonymousUser',
+            creationDate: 1427447300300,
         },
         {
-            'id': 'fbaa18e82e913e97e5f0e9d40f04413412be1126',
-            'dataSetId': '3b21388c-f54a-4334-9bef-748912d0806f',
-            'author': 'anonymousUser',
-            'creationDate': 1427447330693,
+            id: 'fbaa18e82e913e97e5f0e9d40f04413412be1126',
+            dataSetId: '3b21388c-f54a-4334-9bef-748912d0806f',
+            author: 'anonymousUser',
+            creationDate: 1427447330693,
         },
     ];
 
@@ -199,10 +199,10 @@ describe('Playground controller', () => {
                     metadata: {
                         columns: [{
                             statistics: {
-                                frequencyTable: []       // stats not computed
-                            }
-                        }]
-                    }
+                                frequencyTable: [],       // stats not computed
+                            },
+                        },],
+                    },
                 };
                 scope.$digest();
 
@@ -235,11 +235,11 @@ describe('Playground controller', () => {
                             statistics: {
                                 frequencyTable: [{ // stats already computed
                                     value: 'toto',
-                                    frequency: 10
-                                }]
-                            }
-                        }]
-                    }
+                                    frequency: 10,
+                                },],
+                            },
+                        },],
+                    },
                 };
                 scope.$digest();
 
@@ -309,10 +309,10 @@ describe('Playground controller', () => {
                     metadata: {
                         columns: [{
                             statistics: {
-                                frequencyTable: []       // stats not computed
-                            }
-                        }]
-                    }
+                                frequencyTable: [],       // stats not computed
+                            },
+                        },],
+                    },
                 };
                 scope.$digest();
 
@@ -345,11 +345,11 @@ describe('Playground controller', () => {
                             statistics: {
                                 frequencyTable: [{ // stats already computed
                                     value: 'toto',
-                                    frequency: 10
-                                }]
-                            }
-                        }]
-                    }
+                                    frequency: 10,
+                                },],
+                            },
+                        },],
+                    },
                 };
                 scope.$digest();
 

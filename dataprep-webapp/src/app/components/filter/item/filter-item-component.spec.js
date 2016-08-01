@@ -17,7 +17,6 @@ describe('Filter Item Component', () => {
     let element;
 
     beforeEach(angular.mock.module('data-prep.filter-item'));
-    
 
     beforeEach(inject(($rootScope, $compile) => {
         scope = $rootScope.$new();
@@ -27,15 +26,15 @@ describe('Filter Item Component', () => {
             type: 'exact',
             value: [
                 {
-                    value: 'lorem ipsum dolor 1'
+                    value: 'lorem ipsum dolor 1',
                 },
                 {
-                    value: 'lorem ipsum dolor 2'
+                    value: 'lorem ipsum dolor 2',
                 },
                 {
-                    value: 'lorem ipsum dolor 3'
-                }
-            ]
+                    value: 'lorem ipsum dolor 3',
+                },
+            ],
         };
         scope.editable = false;
         scope.removable = false;
@@ -71,7 +70,6 @@ describe('Filter Item Component', () => {
             //then
             expect(element.find('.filter-value input').size()).toBe(3);
         });
-
 
         it('should submit editable value while pressing enter key', () => {
             //given

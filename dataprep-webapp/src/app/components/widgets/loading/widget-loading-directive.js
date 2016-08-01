@@ -53,6 +53,6 @@ export default function TalendLoading($rootScope, $timeout) {
                 unregisterStartFn();
                 unregisterStopFn();
             });
-        }
+        },
     };
 }

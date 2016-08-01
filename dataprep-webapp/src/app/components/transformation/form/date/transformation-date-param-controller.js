@@ -32,6 +32,7 @@ export default function TransformDateParamCtrl() {
         if (!param.value) {
             param.value = param.default;
         }
+
         if (!param.value) {
             param.value = moment(new Date()).format('DD/MM/YYYY HH:mm:ss');
         }

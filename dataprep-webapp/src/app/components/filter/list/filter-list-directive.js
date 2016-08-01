@@ -39,6 +39,6 @@ export default function FilterList() {
         },
         bindToController: true,
         controllerAs: 'filterCtrl',
-        controller: 'FilterListCtrl'
+        controller: 'FilterListCtrl',
     };
 }

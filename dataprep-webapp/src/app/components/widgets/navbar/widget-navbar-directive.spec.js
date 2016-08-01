@@ -13,14 +13,13 @@
 
 'use strict';
 
-describe('Navbar directive', function() {
+describe('Navbar directive', function () {
     var scope;
     var element;
 
     beforeEach(angular.mock.module('talend.widget'));
-    
 
-    beforeEach(inject(function($rootScope, $compile) {
+    beforeEach(inject(function ($rootScope, $compile) {
         scope = $rootScope.$new();
 
         element = angular.element('<talend-navbar>' +
@@ -47,7 +46,7 @@ describe('Navbar directive', function() {
         element.remove();
     });
 
-    it('should remove navigation-menu "show" class', function() {
+    it('should remove navigation-menu "show" class', function () {
         //then
         expect(element.find('.navigation-menu').hasClass('show')).toBe(false);
     });

@@ -15,18 +15,18 @@
 
 const sortList = [
     { id: 'name', name: 'NAME_SORT', property: 'name' },
-    { id: 'date', name: 'DATE_SORT', property: 'created' }
+    { id: 'date', name: 'DATE_SORT', property: 'created' },
 ];
 
 const orderList = [
     { id: 'asc', name: 'ASC_ORDER' },
-    { id: 'desc', name: 'DESC_ORDER' }
+    { id: 'desc', name: 'DESC_ORDER' },
 ];
 
 const HOME_FOLDER = {
     id: 'Lw==',
     path: '/',
-    name: 'Home'
+    name: 'Home',
 };
 
 export const inventoryState = {

@@ -39,7 +39,7 @@ export default function TransformMenuCtrl(state, PlaygroundService, ParametersSe
             datasetId: state.playground.dataset.id,
             preparationId: state.playground.preparation ?
                 state.playground.preparation.id :
-                null
+                null,
         };
         return TransformationService.initDynamicParameters(menu, infos);
     }

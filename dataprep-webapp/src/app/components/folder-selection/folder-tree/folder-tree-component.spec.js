@@ -18,7 +18,6 @@ describe('Folder Tree Component', () => {
     let node;
 
     beforeEach(angular.mock.module('data-prep.folder-selection'));
-    
 
     beforeEach(inject(($rootScope, $compile) => {
         node = {
@@ -34,10 +33,10 @@ describe('Folder Tree Component', () => {
                     folder: {
                         id: '2',
                         name: 'tata',
-                        path: '/path/to/toto/tata,'
-                    }
-                }
-            ]
+                        path: '/path/to/toto/tata,',
+                    },
+                },
+            ],
         };
 
         scope = $rootScope.$new(true);

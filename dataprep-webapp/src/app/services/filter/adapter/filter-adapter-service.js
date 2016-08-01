@@ -26,17 +26,17 @@ const INVALID_RECORDS_LABEL = 'invalid records';
 const VALID_RECORDS_LABEL = 'valid records';
 
 const INVALID_RECORDS_VALUES = [{
-    label: INVALID_RECORDS_LABEL
-}];
+    label: INVALID_RECORDS_LABEL,
+},];
 
 const EMPTY_RECORDS_VALUES = [{
     label: EMPTY_RECORDS_LABEL,
-    isEmpty: true
-}];
+    isEmpty: true,
+},];
 
 const VALID_RECORDS_VALUES = [{
-    label: VALID_RECORDS_LABEL
-}];
+    label: VALID_RECORDS_LABEL,
+},];
 
 /**
  * @ngdoc service
@@ -52,7 +52,7 @@ export default function FilterAdapterService() {
 
         createFilter: createFilter,
         toTree: toTree,
-        fromTree: fromTree
+        fromTree: fromTree,
     };
 
     //--------------------------------------------------------------------------------------------------------------
@@ -80,7 +80,7 @@ export default function FilterAdapterService() {
             editable: editable,
             args: args,
             filterFn: filterFn,
-            removeFilterFn: removeFilterFn
+            removeFilterFn: removeFilterFn,
         };
 
         filter.__defineGetter__('value', getFilterValueGetter.bind(filter)); // eslint-disable-line no-underscore-dangle
@@ -151,9 +151,10 @@ export default function FilterAdapterService() {
     function reduceOrFn(oldFilter, newFilter) {
         if (oldFilter) {
             newFilter = {
-                or: [oldFilter, newFilter]
+                or: [oldFilter, newFilter],
             };
         }
+
         return newFilter;
     }
 
@@ -175,8 +176,8 @@ export default function FilterAdapterService() {
                         return {
                             contains: {
                                 field: colId,
-                                value: filterValue.value
-                            }
+                                value: filterValue.value,
+                            },
                         };
                     })
                     .reduce(reduceOrFn);
@@ -186,28 +187,28 @@ export default function FilterAdapterService() {
                         return {
                             eq: {
                                 field: colId,
-                                value: filterValue.value
-                            }
+                                value: filterValue.value,
+                            },
                         };
                     })
                     .reduce(reduceOrFn);
             case INVALID_RECORDS:
                 return {
                     invalid: {
-                        field: colId
-                    }
+                        field: colId,
+                    },
                 };
             case EMPTY_RECORDS:
                 return {
                     empty: {
-                        field: colId
-                    }
+                        field: colId,
+                    },
                 };
             case VALID_RECORDS:
                 return {
                     valid: {
-                        field: colId
-                    }
+                        field: colId,
+                    },
                 };
             case INSIDE_RANGE: {
                 const argsType = args.type;
@@ -221,26 +222,28 @@ export default function FilterAdapterService() {
                             const minDate = new Date(min);
                             offset = minDate.getTimezoneOffset() * 60 * 1000;
                         }
+
                         return {
                             range: {
                                 field: colId,
                                 start: min - offset,
                                 end: max - offset,
                                 type: argsType,
-                                label: filterValue.label
-                            }
+                                label: filterValue.label,
+                            },
                         };
                     })
                     .reduce(reduceOrFn);
             }
+
             case MATCHES:
                 return value
                     .map(filterValue => {
                         return {
                             matches: {
                                 field: colId,
-                                value: filterValue.value
-                            }
+                                value: filterValue.value,
+                            },
                         };
                     })
                     .reduce(reduceOrFn);
@@ -277,12 +280,12 @@ export default function FilterAdapterService() {
 
         if (accu.filter) {
             nextAccuFilter = {
-                and: [accu.filter, nextAccuFilter]
+                and: [accu.filter, nextAccuFilter],
             };
         }
 
         return {
-            filter: nextAccuFilter
+            filter: nextAccuFilter,
         };
     }
 
@@ -334,6 +337,7 @@ export default function FilterAdapterService() {
                     }
                     return existingFilter;
                 }
+
                 return accu.concat(newFilter);
             }, []);
             return reducedOrTree;
@@ -364,9 +368,9 @@ export default function FilterAdapterService() {
             args = {
                 phrase: [
                     {
-                        value: condition.value
-                    }
-                ]
+                        value: condition.value,
+                    },
+                ],
             };
         }
         else if ('eq' in leaf) {
@@ -375,9 +379,9 @@ export default function FilterAdapterService() {
             args = {
                 phrase: [
                     {
-                        value: condition.value
-                    }
-                ]
+                        value: condition.value,
+                    },
+                ],
             };
         }
         else if ('range' in leaf) {
@@ -394,9 +398,9 @@ export default function FilterAdapterService() {
             args = {
                 intervals: [{
                     label: condition.label,
-                    value: [condition.start + offset, condition.end + offset]
-                }],
-                type: condition.type
+                    value: [condition.start + offset, condition.end + offset],
+                },],
+                type: condition.type,
             };
         }
         else if ('invalid' in leaf) {
@@ -417,9 +421,9 @@ export default function FilterAdapterService() {
             args = {
                 patterns: [
                     {
-                        value: condition.value
-                    }
-                ]
+                        value: condition.value,
+                    },
+                ],
             };
         }
 

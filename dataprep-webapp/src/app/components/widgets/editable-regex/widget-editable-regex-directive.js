@@ -26,10 +26,10 @@ export default function TalendEditableRegex() {
         restrict: 'E',
         templateUrl: template,
         scope: {
-            value: '=ngModel'
+            value: '=ngModel',
         },
         bindToController: true,
         controller: 'TalendEditableRegexCtrl',
-        controllerAs: 'editableRegexCtrl'
+        controllerAs: 'editableRegexCtrl',
     };
 }

@@ -79,7 +79,7 @@ describe('Storage service', () => {
             const columnId = '0001';
             const aggregation = {
                 aggregation: 'MAX',
-                aggregationColumnId: '0002'
+                aggregationColumnId: '0002',
             };
 
             const expectedKey = 'org.talend.dataprep.aggregation.87a646f763bd545b684.72515d3212cf565b624.0001';
@@ -98,7 +98,7 @@ describe('Storage service', () => {
             var columnId = '0001';
             var aggregation = {
                 aggregation: 'MAX',
-                aggregationColumnId: '0002'
+                aggregationColumnId: '0002',
             };
 
             var expectedKey = 'org.talend.dataprep.aggregation..72515d3212cf565b624.0001';
@@ -117,7 +117,7 @@ describe('Storage service', () => {
             var columnId = '0001';
             var aggregation = {
                 aggregation: 'MAX',
-                aggregationColumnId: '0002'
+                aggregationColumnId: '0002',
             };
 
             var expectedKey = 'org.talend.dataprep.aggregation.87a646f763bd545b684..0001';
@@ -137,7 +137,7 @@ describe('Storage service', () => {
             var columnId = '0001';
             var aggregation = {
                 aggregation: 'MAX',
-                aggregationColumnId: '0002'
+                aggregationColumnId: '0002',
             };
 
             var expectedKey = 'org.talend.dataprep.aggregation.87a646f763bd545b684.72515d3212cf565b624.0001';
@@ -157,7 +157,7 @@ describe('Storage service', () => {
             var columnId = '0001';
             var aggregation = {
                 aggregation: 'MAX',
-                aggregationColumnId: '0002'
+                aggregationColumnId: '0002',
             };
 
             var expectedKey = 'org.talend.dataprep.aggregation.87a646f763bd545b684.72515d3212cf565b624.0001';
@@ -176,7 +176,7 @@ describe('Storage service', () => {
             const preparationId = '72515d3212cf565b624';
             const aggregation = {
                 aggregation: 'MAX',
-                aggregationColumnId: '0002'
+                aggregationColumnId: '0002',
             };
 
             const key1 = 'org.talend.dataprep.aggregation.87a646f763bd545b684.72515d3212cf565b624.0001';
@@ -201,15 +201,15 @@ describe('Storage service', () => {
             const preparationId = '72515d3212cf565b624';
             const aggregation1 = JSON.stringify({
                 aggregation: 'MAX',
-                aggregationColumnId: '0002'
+                aggregationColumnId: '0002',
             });
             const aggregation2 = JSON.stringify({
                 aggregation: 'SUM',
-                aggregationColumnId: '0003'
+                aggregationColumnId: '0003',
             });
             const otherAggregation = JSON.stringify({
                 aggregation: 'MIN',
-                aggregationColumnId: '0003'
+                aggregationColumnId: '0003',
             });
 
             const key1 = 'org.talend.dataprep.aggregation.87a646f763bd545b684..0001';
@@ -236,15 +236,15 @@ describe('Storage service', () => {
             const newPreparationId = '8ef6254d6214554bb68';
             const aggregation1 = JSON.stringify({
                 aggregation: 'MAX',
-                aggregationColumnId: '0002'
+                aggregationColumnId: '0002',
             });
             const aggregation2 = JSON.stringify({
                 aggregation: 'SUM',
-                aggregationColumnId: '0003'
+                aggregationColumnId: '0003',
             });
             const otherAggregation = JSON.stringify({
                 aggregation: 'MIN',
-                aggregationColumnId: '0003'
+                aggregationColumnId: '0003',
             });
 
             const oldPrepKey1 = 'org.talend.dataprep.aggregation.87a646f763bd545b684.72515d3212cf565b624.0001';

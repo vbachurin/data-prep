@@ -36,7 +36,7 @@ export default function DatagridHeader($timeout) {
         restrict: 'E',
         templateUrl: template,
         scope: {
-            column: '='
+            column: '=',
         },
         bindToController: true,
         controllerAs: 'datagridHeaderCtrl',
@@ -175,6 +175,7 @@ export default function DatagridHeader($timeout) {
                     function () {
                         return ctrl.transformationsRetrieveError;
                     },
+
                     function (newValue) {
                         if (newValue) {
                             $timeout(() => {
@@ -187,7 +188,7 @@ export default function DatagridHeader($timeout) {
                 iElement.on('$destroy', function () {
                     scope.$destroy();
                 });
-            }
-        }
+            },
+        },
     };
 }

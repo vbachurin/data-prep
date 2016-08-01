@@ -38,6 +38,7 @@ export default function IsTypeValidation() {
                         if (!INTEGER_REGEXP.test(viewValue)) {
                             return false;
                         }
+
                         break;
                     case 'numeric':
                     case 'double':
@@ -45,6 +46,7 @@ export default function IsTypeValidation() {
                         if (!DOUBLE_REGEXP.test(viewValue)) {
                             return false;
                         }
+
                         break;
                     default:
                         break;
@@ -52,6 +54,6 @@ export default function IsTypeValidation() {
 
                 return true;
             };
-        }
+        },
     };
 }

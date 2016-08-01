@@ -20,18 +20,17 @@ describe('Inventory header directive', () => {
 
     beforeEach(angular.mock.module('pascalprecht.translate', ($translateProvider) => {
         $translateProvider.translations('en', {
-            'SORTED_BY': 'Sorted by',
-            'SORT_IN': 'in',
-            'SORT_ORDER': 'order',
-            'NAME_SORT': 'name',
-            'ASC_ORDER': 'asc',
-            'ADD_PREPARATION': 'Add Preparation',
-            "CREATE_FOLDER": "Create Folder",
+            SORTED_BY: 'Sorted by',
+            SORT_IN: 'in',
+            SORT_ORDER: 'order',
+            NAME_SORT: 'name',
+            ASC_ORDER: 'asc',
+            ADD_PREPARATION: 'Add Preparation',
+            CREATE_FOLDER: 'Create Folder',
         });
         $translateProvider.preferredLanguage('en');
     }));
     beforeEach(angular.mock.module('data-prep.inventory-header'));
-    
 
     beforeEach(inject(($rootScope, $compile) => {
         scope = $rootScope.$new(true);

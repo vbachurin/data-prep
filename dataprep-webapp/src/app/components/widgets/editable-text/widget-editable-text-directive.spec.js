@@ -19,11 +19,10 @@ describe('Editable Text widget directive', () => {
     let createElement;
 
     beforeEach(angular.mock.module('talend.widget'));
-    
 
     beforeEach(angular.mock.module('pascalprecht.translate', ($translateProvider) => {
         $translateProvider.translations('en', {
-            'MY_PLACEHOLDER': 'My translated placeholder'
+            MY_PLACEHOLDER: 'My translated placeholder',
         });
         $translateProvider.preferredLanguage('en');
     }));

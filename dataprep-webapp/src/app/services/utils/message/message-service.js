@@ -55,11 +55,13 @@ export default class MessageService {
         if (messageAlreadyPending) {
             return;
         }
+
         this.pendingMessages.push(message);
 
         if (this.messagePromise) {
             return;
         }
+
         this.messagePromise = this.$timeout(() => {
             const messages = this.pendingMessages;
             this.pendingMessages = [];
@@ -83,7 +85,7 @@ export default class MessageService {
             title: titleKey,
             content: contentKey,
             args: args,
-            timeout: 0
+            timeout: 0,
         };
         this._bufferPop(message);
     }
@@ -103,7 +105,7 @@ export default class MessageService {
             title: titleKey,
             content: contentKey,
             args: args,
-            timeout: 5000
+            timeout: 5000,
         };
         this._bufferPop(message);
     }
@@ -123,7 +125,7 @@ export default class MessageService {
             title: titleKey,
             content: contentKey,
             args: args,
-            timeout: 0
+            timeout: 0,
         };
         this._bufferPop(message);
     }

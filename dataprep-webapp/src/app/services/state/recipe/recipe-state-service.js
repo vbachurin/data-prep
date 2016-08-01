@@ -31,7 +31,7 @@ export function RecipeStateService() {
         setPreviewSteps,
         restoreBeforePreview,
         disableStepsAfter,
-        reset
+        reset,
     };
 
     /**

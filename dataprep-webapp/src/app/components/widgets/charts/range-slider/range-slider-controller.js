@@ -20,11 +20,11 @@ const d3DateFormatter = d3.time.format(D3_DATE_FORMAT);
 const d3NumberFormatter = d3.format(D3_NUMBER_DECIMAL);
 
 const numberFormatter = {
-    format: (value) => d3NumberFormatter(value)
+    format: (value) => d3NumberFormatter(value),
 };
 const dateFormatter = {
     parse: (string) => d3DateFormatter.parse(string),
-    format: (timestamp) => d3DateFormatter(new Date(timestamp))
+    format: (timestamp) => d3DateFormatter(new Date(timestamp)),
 };
 
 /**
@@ -34,7 +34,7 @@ function adaptSelection(selection, maxValue) {
     return {
         min: selection.min,
         max: selection.max,
-        isMaxReached: selection.max >= maxValue || selection.min >= selection
+        isMaxReached: selection.max >= maxValue || selection.min >= selection,
     };
 }
 
@@ -106,7 +106,7 @@ export default class RangeSliderCtrl {
     adaptToInputValue(values) {
         return {
             min: this.isDateType() ? dateFormatter.format(values.min) : '' + values.min,
-            max: this.isDateType() ? dateFormatter.format(values.max) : '' + values.max
+            max: this.isDateType() ? dateFormatter.format(values.max) : '' + values.max,
         };
     }
 
@@ -153,7 +153,7 @@ export default class RangeSliderCtrl {
     adaptToInboundValues(values) {
         return {
             min: Math.max(this.rangeLimits.min, values.min),
-            max: Math.min(this.rangeLimits.max, values.max)
+            max: Math.min(this.rangeLimits.max, values.max),
         };
     }
 
@@ -178,13 +178,13 @@ export default class RangeSliderCtrl {
             // the brush values
             brush: {
                 min: minBrush,
-                max: maxBrush
+                max: maxBrush,
             },
             // the input values
             input: {
                 min: minFilter,
-                max: maxFilter
-            }
+                max: maxFilter,
+            },
         };
     }
 

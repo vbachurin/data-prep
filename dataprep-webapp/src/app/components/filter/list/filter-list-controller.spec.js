@@ -28,7 +28,7 @@ describe('filter list controller', function () {
 
         createController = function () {
             var ctrl = $controller('FilterListCtrl', {
-                $scope: scope
+                $scope: scope,
             });
             ctrl.onFilterChange = onFilterChange;
             ctrl.onFilterRemove = onFilterRemove;
@@ -45,11 +45,11 @@ describe('filter list controller', function () {
             args: {
                 phrase: [
                     {
-                        value: 'toto'
-                    }
-                ]
+                        value: 'toto',
+                    },
+                ],
 
-            }
+            },
         };
 
         //when
@@ -66,8 +66,8 @@ describe('filter list controller', function () {
             column: '0001',
             type: 'contains',
             args: {
-                value: 'toto'
-            }
+                value: 'toto',
+            },
         };
 
         //when
@@ -75,7 +75,7 @@ describe('filter list controller', function () {
 
         //then
         expect(onFilterRemove).toHaveBeenCalledWith({
-            filter: filter
+            filter: filter,
         });
     });
 });

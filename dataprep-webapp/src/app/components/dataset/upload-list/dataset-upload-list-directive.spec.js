@@ -11,23 +11,22 @@
 
   ============================================================================*/
 
-describe('Dataset upload list directive', function() {
+describe('Dataset upload list directive', function () {
     var scope;
     var createElement;
 
     beforeEach(angular.mock.module('data-prep.dataset-upload-list'));
-    
 
     beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
-            'UPLOAD_PROCESSING':'Profiling data, please wait...'
+            UPLOAD_PROCESSING: 'Profiling data, please wait...',
         });
         $translateProvider.preferredLanguage('en');
     }));
 
-    beforeEach(inject(function($rootScope, $compile) {
+    beforeEach(inject(function ($rootScope, $compile) {
         scope = $rootScope.$new();
-        createElement = function(directiveScope) {
+        createElement = function (directiveScope) {
             var element = angular.element('<dataset-upload-list datasets="datasets"></dataset-upload-list>');
             $compile(element)(directiveScope);
             directiveScope.$digest();
@@ -35,10 +34,10 @@ describe('Dataset upload list directive', function() {
         };
     }));
 
-    it('should render progressing upload dataset', function() {
+    it('should render progressing upload dataset', function () {
         //given
         scope.datasets = [
-            { name: 'Customers (50 lines)', progress: 10, error: false, type: 'file' }
+            { name: 'Customers (50 lines)', progress: 10, error: false, type: 'file' },
         ];
 
         //when
@@ -53,10 +52,10 @@ describe('Dataset upload list directive', function() {
         expect(progress.eq(0).hasClass('error')).toBe(false);
     });
 
-    it('should show profiling data message once the upload reaches the 100%', function() {
+    it('should show profiling data message once the upload reaches the 100%', function () {
         //given
         scope.datasets = [
-            { name: 'Customers (50 lines)', progress: 100, error: false, type: 'file' }
+            { name: 'Customers (50 lines)', progress: 100, error: false, type: 'file' },
         ];
 
         //when
@@ -67,10 +66,10 @@ describe('Dataset upload list directive', function() {
         expect(progress.eq(0).text().trim()).toBe('Profiling data, please wait...');
     });
 
-    it('should render progressing remote dataset import', function() {
+    it('should render progressing remote dataset import', function () {
         //given
         scope.datasets = [
-            { name: 'remote 1', progress: 0, error: false, type: 'remote' }
+            { name: 'remote 1', progress: 0, error: false, type: 'remote' },
         ];
 
         //when
@@ -84,10 +83,10 @@ describe('Dataset upload list directive', function() {
         expect(progress.eq(0).hasClass('error')).toBe(false);
     });
 
-    it('should render upload error dataset', function() {
+    it('should render upload error dataset', function () {
         //given
         scope.datasets = [
-            { name: 'Customers (50 lines)', progress: 10, error: true }
+            { name: 'Customers (50 lines)', progress: 10, error: true },
         ];
 
         //when
@@ -102,12 +101,12 @@ describe('Dataset upload list directive', function() {
         expect(progress.eq(0).hasClass('error')).toBe(true);
     });
 
-    it('should render multiple datasets', function() {
+    it('should render multiple datasets', function () {
         //given
         scope.datasets = [
             { name: 'Customers (50 lines)', progress: 10, error: false, type: 'file' },
             { name: 'Us states', progress: 20, error: false, type: 'file' },
-            { name: 'Customers (1K lines)', progress: 30, error: true, type: 'file' }
+            { name: 'Customers (1K lines)', progress: 30, error: true, type: 'file' },
         ];
 
         //when

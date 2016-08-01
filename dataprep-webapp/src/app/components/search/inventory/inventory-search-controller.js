@@ -68,6 +68,7 @@ class InventorySearchCtrl {
                 if (searchInput === this.currentInput && response.length) {
                     this.results = (this.results || []).concat(response);
                 }
+
                 return response;
             });
     }
@@ -84,6 +85,7 @@ class InventorySearchCtrl {
                 if (searchInput === this.currentInput && response.length) {
                     this.results = response.concat(this.results || []);
                 }
+
                 return response;
             });
     }

@@ -56,7 +56,7 @@ describe('UploadWorkflow Service', () => {
                 name: 'Customers (50 lines)',
                 id: 'aA2bc348e933bc2',
                 type: 'application/vnd.ms-excel',
-                draft: true
+                draft: true,
             };
 
             //when
@@ -71,11 +71,11 @@ describe('UploadWorkflow Service', () => {
         it('should open a dataset in a new tab on scroll click', inject(($stateParams, $rootScope, $state, $window, StateService, UploadWorkflowService) => {
             //given
             const event = {
-                which: 2
+                which: 2,
             };
             spyOn($window, 'open').and.returnValue();
             const dataset = {
-                id: 'de618c62ef97b3a95b5c171bc077ffe22e1d6f79'
+                id: 'de618c62ef97b3a95b5c171bc077ffe22e1d6f79',
             };
 
             //when
@@ -91,11 +91,11 @@ describe('UploadWorkflow Service', () => {
             //given
             const event = {
                 which: 1,
-                ctrlKey: true
+                ctrlKey: true,
             };
             spyOn($window, 'open').and.returnValue();
             const dataset = {
-                id: 'de618c62ef97b3a95b5c171bc077ffe22e1d6f79'
+                id: 'de618c62ef97b3a95b5c171bc077ffe22e1d6f79',
             };
 
             //when
@@ -111,11 +111,11 @@ describe('UploadWorkflow Service', () => {
             //given
             const event = {
                 which: 1,
-                metaKey: true
+                metaKey: true,
             };
             spyOn($window, 'open').and.returnValue();
             const dataset = {
-                id: 'de618c62ef97b3a95b5c171bc077ffe22e1d6f79'
+                id: 'de618c62ef97b3a95b5c171bc077ffe22e1d6f79',
             };
 
             //when

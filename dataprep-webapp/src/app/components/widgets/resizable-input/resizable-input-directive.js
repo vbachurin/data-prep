@@ -30,7 +30,7 @@ const InputResizable = () => {
     return {
         restrict: 'A',
         scope: {
-            resizableInputOffset: '<'
+            resizableInputOffset: '<',
         },
         require: 'ngModel',
         link: (scope, element, attrs, ngModel) => {
@@ -48,6 +48,7 @@ const InputResizable = () => {
                 if (!inputValue || !inputValue.length) {
                     return;
                 }
+
                 const resizableInputOffset = scope.resizableInputOffset;
                 const inputWidth = ((inputValue.length + 1 + (inputValue.split('\t').length - 1) * 8) * 7) + (resizableInputOffset);
                 input.css('width', (inputWidth < minInputWidth ? minInputWidth : inputWidth) + 'px');
@@ -56,11 +57,11 @@ const InputResizable = () => {
             scope.$watchGroup(
                 [
                     () => ngModel.$modelValue,
-                    () => scope.resizableInputOffset
+                    () => scope.resizableInputOffset,
                 ],
                 updateSize
             );
-        }
+        },
     };
 };
 

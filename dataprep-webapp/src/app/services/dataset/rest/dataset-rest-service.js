@@ -41,7 +41,7 @@ export default function DatasetRestService($rootScope, $upload, $http, RestURLs)
         processCertification: processCertification,
         toggleFavorite: toggleFavorite,
 
-        getCompatiblePreparations: getCompatiblePreparations
+        getCompatiblePreparations: getCompatiblePreparations,
     };
 
     //--------------------------------------------------------------------------------------------------------------
@@ -61,7 +61,7 @@ export default function DatasetRestService($rootScope, $upload, $http, RestURLs)
         var req = {
             url: RestURLs.datasetUrl + '?name=' + encodeURIComponent(parameters.name),
             headers: {
-                'Content-Type': contentType
+                'Content-Type': contentType,
             },
             data: file || parameters,
         };
@@ -81,7 +81,7 @@ export default function DatasetRestService($rootScope, $upload, $http, RestURLs)
             url: RestURLs.datasetUrl + '/' + dataset.id + '?name=' + encodeURIComponent(dataset.name),
             method: 'PUT',
             headers: { 'Content-Type': 'text/plain' },
-            data: dataset.file
+            data: dataset.file,
         });
     }
 
@@ -128,6 +128,7 @@ export default function DatasetRestService($rootScope, $upload, $http, RestURLs)
         if (sortType) {
             url += '?sort=' + sortType;
         }
+
         if (sortOrder) {
             url += (sortType ? '&' : '?') + 'order=' + sortOrder;
         }
@@ -135,7 +136,7 @@ export default function DatasetRestService($rootScope, $upload, $http, RestURLs)
         return $http({
             url: url,
             method: 'GET',
-            timeout: deferredAbort.promise
+            timeout: deferredAbort.promise,
         });
     }
 
@@ -166,7 +167,7 @@ export default function DatasetRestService($rootScope, $upload, $http, RestURLs)
     function loadFilteredDatasets(urlWithParams) {
         return $http({
             method: 'GET',
-            url: urlWithParams
+            url: urlWithParams,
         })
             .then((resp) => resp.data);
     }

@@ -40,7 +40,7 @@ class InventoryCopyMoveCtrl {
             {
                 item: this.item,
                 destination: this.destinationFolder,
-                name: this.newName
+                name: this.newName,
             })
             .catch(() => {
                 this._focusOnNameInput();
@@ -64,7 +64,7 @@ class InventoryCopyMoveCtrl {
             {
                 item: this.item,
                 destination: this.destinationFolder,
-                name: this.newName
+                name: this.newName,
             })
             .catch(() => {
                 this._focusOnNameInput();

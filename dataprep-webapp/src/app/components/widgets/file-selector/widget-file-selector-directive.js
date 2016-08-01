@@ -35,16 +35,17 @@ export default function TalendFileSelector() {
             buttonDataIcon: '@',
             buttonTitle: '@',
             fileModel: '=',
-            onFileChange: '&'
+            onFileChange: '&',
         },
         bindToController: true,
         controllerAs: 'talendFileSelectorCtrl',
         controller: () => {
         },
+
         link: (scope, element) => {
             element.find('span').bind('click', () => {
                 element.find('input').click();
             });
-        }
+        },
     };
 }

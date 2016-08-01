@@ -19,18 +19,18 @@ describe('Lookup Datagrid controller', function () {
 
     beforeEach(angular.mock.module('data-prep.lookup'));
 
-    beforeEach(inject(function($rootScope, $controller) {
+    beforeEach(inject(function ($rootScope, $controller) {
         scope = $rootScope.$new();
 
         createController = function () {
             var ctrl = $controller('LookupDatagridCtrl', {
-                $scope: scope
+                $scope: scope,
             });
             return ctrl;
         };
     }));
 
-    it('should bind tooltip getter to LookupDatagridTooltipService', inject(function(LookupDatagridTooltipService) {
+    it('should bind tooltip getter to LookupDatagridTooltipService', inject(function (LookupDatagridTooltipService) {
         //given
         var newTooltip = { colId: '0000' };
 
@@ -44,7 +44,7 @@ describe('Lookup Datagrid controller', function () {
         expect(ctrl.tooltip).toEqual(newTooltip);
     }));
 
-    it('should bind showTooltip getter to LookupDatagridTooltipService', inject(function(LookupDatagridTooltipService) {
+    it('should bind showTooltip getter to LookupDatagridTooltipService', inject(function (LookupDatagridTooltipService) {
         //given
         var ctrl = createController();
         expect(ctrl.showTooltip).toEqual(false);

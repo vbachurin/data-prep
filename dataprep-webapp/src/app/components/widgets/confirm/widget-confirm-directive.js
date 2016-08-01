@@ -37,10 +37,10 @@ export default function TalendConfirm() {
         templateUrl: template,
         scope: {
             disableEnter: '=',
-            texts: '='
+            texts: '=',
         },
         bindToController: true,
         controller: 'TalendConfirmCtrl',
-        controllerAs: 'confirmCtrl'
+        controllerAs: 'confirmCtrl',
     };
 }

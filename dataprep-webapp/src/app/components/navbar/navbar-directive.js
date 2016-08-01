@@ -20,6 +20,6 @@ export default function Navbar() {
         scope: {},
         bindToController: true,
         controller: 'NavbarCtrl',
-        controllerAs: 'navbarCtrl'
+        controllerAs: 'navbarCtrl',
     };
 }

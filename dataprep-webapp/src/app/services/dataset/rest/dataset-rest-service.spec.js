@@ -32,7 +32,7 @@ describe('Dataset Rest Service', () => {
             const datasets = [
                 { name: 'Customers (50 lines)' },
                 { name: 'Us states' },
-                { name: 'Customers (1K lines)' }
+                { name: 'Customers (1K lines)' },
             ];
             $httpBackend
                 .expectGET(RestURLs.datasetUrl)
@@ -55,7 +55,7 @@ describe('Dataset Rest Service', () => {
             const datasets = [
                 { name: 'Customers (50 lines)' },
                 { name: 'Us states' },
-                { name: 'Customers (1K lines)' }
+                { name: 'Customers (1K lines)' },
             ];
             $httpBackend
                 .expectGET(RestURLs.datasetUrl + '?sort=name&order=asc')
@@ -78,7 +78,7 @@ describe('Dataset Rest Service', () => {
             const datasets = [
                 { name: 'Customers (50 lines)' },
                 { name: 'Us states' },
-                { name: 'Customers (1K lines)' }
+                { name: 'Customers (1K lines)' },
             ];
             $httpBackend
                 .expectGET(RestURLs.datasetUrl + '?sort=name')
@@ -101,7 +101,7 @@ describe('Dataset Rest Service', () => {
             const datasets = [
                 { name: 'Customers (50 lines)' },
                 { name: 'Us states' },
-                { name: 'Customers (1K lines)' }
+                { name: 'Customers (1K lines)' },
             ];
             $httpBackend
                 .expectGET(RestURLs.datasetUrl + '?order=asc')
@@ -163,7 +163,7 @@ describe('Dataset Rest Service', () => {
             let result = null;
             const datasets = [
                 { name: 'Customers (50 lines)' },
-                { name: 'Customers (1K lines)' }
+                { name: 'Customers (1K lines)' },
             ];
             $httpBackend
                 .expectGET(RestURLs.datasetUrl + '?name=Cust')
@@ -209,10 +209,10 @@ describe('Dataset Rest Service', () => {
             var importParameters = {
                 type: 'http',
                 name: 'greatremotedataset',
-                url: 'moc.dnelat//:ptth'
+                url: 'moc.dnelat//:ptth',
             };
             var file = { id: '0001' };
-            var headers = { 'Content-Type': 'text/plain', "Accept": "application/json, text/plain, */*" };
+            var headers = { 'Content-Type': 'text/plain', Accept: 'application/json, text/plain, */*' };
 
             $httpBackend
                 .expectPOST(RestURLs.datasetUrl + '?name=greatremotedataset', file, headers)
@@ -263,7 +263,7 @@ describe('Dataset Rest Service', () => {
             var file = null;
             var headers = {
                 'Content-Type': 'application/vnd.remote-ds.http',
-                "Accept": "application/json, text/plain, */*"
+                Accept: 'application/json, text/plain, */*',
             };
 
             $httpBackend
@@ -290,7 +290,7 @@ describe('Dataset Rest Service', () => {
                 name: 'my dataset',
                 file: { path: '/path/to/file' },
                 error: false,
-                id: 'e85afAa78556d5425bc2'
+                id: 'e85afAa78556d5425bc2',
             };
 
             $httpBackend
@@ -302,8 +302,8 @@ describe('Dataset Rest Service', () => {
             $httpBackend.flush();
             $rootScope.$digest();
 
-        //then
-        //expect PUT not to throw any exception
+            //then
+            //expect PUT not to throw any exception
         }));
 
         it('should call dataset metadata update rest service', inject(($rootScope, DatasetRestService, RestURLs) => {
@@ -319,8 +319,8 @@ describe('Dataset Rest Service', () => {
             $httpBackend.flush();
             $rootScope.$digest();
 
-        //then
-        //expect PUT not to throw any exception
+            //then
+            //expect PUT not to throw any exception
         }));
 
         it('should call update column service', inject(($rootScope, DatasetRestService, RestURLs) => {
@@ -328,7 +328,7 @@ describe('Dataset Rest Service', () => {
             const datasetId = '75b1547dc4145e218';
             const columnId = '24a5416584cf63b26';
             const params = {
-                domain: 'CITY'
+                domain: 'CITY',
             };
 
             $httpBackend
@@ -340,8 +340,8 @@ describe('Dataset Rest Service', () => {
             $httpBackend.flush();
             $rootScope.$digest();
 
-        //then
-        //expect POST not to throw any exception;
+            //then
+            //expect POST not to throw any exception;
         }));
     });
 
@@ -352,7 +352,7 @@ describe('Dataset Rest Service', () => {
                 name: 'my dataset',
                 file: { path: '/path/to/file' },
                 error: false,
-                id: 'e85afAa78556d5425bc2'
+                id: 'e85afAa78556d5425bc2',
             };
 
             $httpBackend
@@ -364,8 +364,8 @@ describe('Dataset Rest Service', () => {
             $httpBackend.flush();
             $rootScope.$digest();
 
-        //then
-        //expect DELETE not to throw any exception
+            //then
+            //expect DELETE not to throw any exception
         }));
     });
 
@@ -427,8 +427,8 @@ describe('Dataset Rest Service', () => {
             $httpBackend.flush();
             $rootScope.$digest();
 
-        //then
-        //expect PUT not to throw any exception
+            //then
+            //expect PUT not to throw any exception
         }));
     });
 
@@ -504,7 +504,7 @@ describe('Dataset Rest Service', () => {
             //given
             const dataset = {
                 name: 'my dataset', file: { path: '/path/to/file' }, error: false, id: 'e85afAa78556d5425bc2',
-                favorite: true
+                favorite: true,
             };
 
             $httpBackend
@@ -516,8 +516,8 @@ describe('Dataset Rest Service', () => {
             $httpBackend.flush();
             $rootScope.$digest();
 
-        //then
-        //expect POST not to throw any exception;
+            //then
+            //expect POST not to throw any exception;
         }));
     });
 
@@ -535,8 +535,8 @@ describe('Dataset Rest Service', () => {
             $httpBackend.flush();
             $rootScope.$digest();
 
-        //then
-        //expect GET not to throw any exception;
+            //then
+            //expect GET not to throw any exception;
         }));
     });
 
@@ -577,7 +577,7 @@ describe('Dataset Rest Service', () => {
             //when
             DatasetRestService.getCompatiblePreparations(datasetId)
                 .then((preps) => {
-                    result = preps
+                    result = preps;
                 });
             $httpBackend.flush();
             $rootScope.$digest();

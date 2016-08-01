@@ -125,5 +125,5 @@ Object.defineProperty(ExportCtrl.prototype,
         get: function () {
             const step = this.StepUtilsService.getLastActiveStep(this.state.playground.recipe);
             return step ? step.transformation.stepId : '';
-        }
+        },
     });

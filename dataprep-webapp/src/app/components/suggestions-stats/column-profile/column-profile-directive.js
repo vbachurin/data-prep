@@ -19,6 +19,6 @@ export default function ColumnProfile() {
         templateUrl: template,
         bindToController: true,
         controllerAs: 'columnProfileCtrl',
-        controller: 'ColumnProfileCtrl'
+        controller: 'ColumnProfileCtrl',
     };
 }

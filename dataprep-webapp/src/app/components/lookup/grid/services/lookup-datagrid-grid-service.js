@@ -30,11 +30,11 @@ export default function LookupDatagridGridService($timeout, $window, state, Stat
     var gridServices = [
         LookupDatagridColumnService,
         LookupDatagridStyleService,
-        LookupDatagridTooltipService
+        LookupDatagridTooltipService,
     ];
 
     return {
-        initGrid: initGrid
+        initGrid: initGrid,
     };
 
     /**
@@ -48,6 +48,7 @@ export default function LookupDatagridGridService($timeout, $window, state, Stat
             grid.updateRowCount();
             grid.render();
         });
+
         state.playground.lookup.dataView.onRowsChanged.subscribe(function (e, args) {
             grid.invalidateRows(args.rows);
             grid.render();
@@ -66,6 +67,7 @@ export default function LookupDatagridGridService($timeout, $window, state, Stat
         if (!columnHasChanged) {
             return;
         }
+
         lastSelectedColumn = column.tdpColMetadata;
         $timeout(function () {
             //if the selected column is the index col: column.tdpColMetadata === undefined
@@ -151,7 +153,7 @@ export default function LookupDatagridGridService($timeout, $window, state, Stat
             enableTextSelectionOnCells: false,
             syncColumnCellResize: false,
             frozenColumn: 0,
-            forceFitColumns: true
+            forceFitColumns: true,
         };
         grid = new Slick.Grid(elementId, state.playground.lookup.dataView, [{ id: 'tdpId' }], options);
 

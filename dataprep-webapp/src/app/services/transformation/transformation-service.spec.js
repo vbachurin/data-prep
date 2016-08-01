@@ -3,125 +3,125 @@ describe('Transformation Service', () => {
 
     function textClusteringParams() {
         return {
-            'type': 'cluster',
-            'details': {
-                'titles': [
+            type: 'cluster',
+            details: {
+                titles: [
                     'We found these values',
-                    'And we\'ll keep this value'
+                    'And we\'ll keep this value',
                 ],
-                'clusters': [
+                clusters: [
                     {
-                        'parameters': [
+                        parameters: [
                             {
-                                'name': 'Texa',
-                                'type': 'boolean',
-                                'description': 'parameter.Texa.desc',
-                                'label': 'parameter.Texa.label',
-                                'default': null
+                                name: 'Texa',
+                                type: 'boolean',
+                                description: 'parameter.Texa.desc',
+                                label: 'parameter.Texa.label',
+                                default: null,
                             },
                             {
-                                'name': 'Tixass',
-                                'type': 'boolean',
-                                'description': 'parameter.Tixass.desc',
-                                'label': 'parameter.Tixass.label',
-                                'default': null
+                                name: 'Tixass',
+                                type: 'boolean',
+                                description: 'parameter.Tixass.desc',
+                                label: 'parameter.Tixass.label',
+                                default: null,
                             },
                             {
-                                'name': 'Tex@s',
-                                'type': 'boolean',
-                                'description': 'parameter.Tex@s.desc',
-                                'label': 'parameter.Tex@s.label',
-                                'default': null
-                            }
+                                name: 'Tex@s',
+                                type: 'boolean',
+                                description: 'parameter.Tex@s.desc',
+                                label: 'parameter.Tex@s.label',
+                                default: null,
+                            },
                         ],
-                        'replace': {
-                            'name': 'replaceValue',
-                            'type': 'string',
-                            'description': 'parameter.replaceValue.desc',
-                            'label': 'parameter.replaceValue.label',
-                            'default': 'Texas'
-                        }
+                        replace: {
+                            name: 'replaceValue',
+                            type: 'string',
+                            description: 'parameter.replaceValue.desc',
+                            label: 'parameter.replaceValue.label',
+                            default: 'Texas',
+                        },
                     },
                     {
-                        'parameters': [
+                        parameters: [
                             {
-                                'name': 'Massachusetts',
-                                'type': 'boolean',
-                                'description': 'parameter.Massachusetts.desc',
-                                'label': 'parameter.Massachusetts.label',
-                                'default': null
+                                name: 'Massachusetts',
+                                type: 'boolean',
+                                description: 'parameter.Massachusetts.desc',
+                                label: 'parameter.Massachusetts.label',
+                                default: null,
                             },
                             {
-                                'name': 'Masachusetts',
-                                'type': 'boolean',
-                                'description': 'parameter.Masachusetts.desc',
-                                'label': 'parameter.Masachusetts.label',
-                                'default': null
+                                name: 'Masachusetts',
+                                type: 'boolean',
+                                description: 'parameter.Masachusetts.desc',
+                                label: 'parameter.Masachusetts.label',
+                                default: null,
                             },
                             {
-                                'name': 'Massachussetts',
-                                'type': 'boolean',
-                                'description': 'parameter.Massachussetts.desc',
-                                'label': 'parameter.Massachussetts.label',
-                                'default': null
+                                name: 'Massachussetts',
+                                type: 'boolean',
+                                description: 'parameter.Massachussetts.desc',
+                                label: 'parameter.Massachussetts.label',
+                                default: null,
                             },
                             {
-                                'name': 'Massachusets',
-                                'type': 'boolean',
-                                'description': 'parameter.Massachusets.desc',
-                                'label': 'parameter.Massachusets.label',
-                                'default': null
+                                name: 'Massachusets',
+                                type: 'boolean',
+                                description: 'parameter.Massachusets.desc',
+                                label: 'parameter.Massachusets.label',
+                                default: null,
                             },
                             {
-                                'name': 'Masachussets',
-                                'type': 'boolean',
-                                'description': 'parameter.Masachussets.desc',
-                                'label': 'parameter.Masachussets.label',
-                                'default': null
-                            }
+                                name: 'Masachussets',
+                                type: 'boolean',
+                                description: 'parameter.Masachussets.desc',
+                                label: 'parameter.Masachussets.label',
+                                default: null,
+                            },
                         ],
-                        'replace': {
-                            'name': 'replaceValue',
-                            'type': 'string',
-                            'description': 'parameter.replaceValue.desc',
-                            'label': 'parameter.replaceValue.label',
-                            'default': 'Massachussets'
-                        }
+                        replace: {
+                            name: 'replaceValue',
+                            type: 'string',
+                            description: 'parameter.replaceValue.desc',
+                            label: 'parameter.replaceValue.label',
+                            default: 'Massachussets',
+                        },
                     },
                     {
-                        'parameters': [
+                        parameters: [
                             {
-                                'name': 'Tato',
-                                'type': 'boolean',
-                                'description': 'parameter.Tato.desc',
-                                'label': 'parameter.Tato.label',
-                                'default': null
+                                name: 'Tato',
+                                type: 'boolean',
+                                description: 'parameter.Tato.desc',
+                                label: 'parameter.Tato.label',
+                                default: null,
                             },
                             {
-                                'name': 'tata',
-                                'type': 'boolean',
-                                'description': 'parameter.tata.desc',
-                                'label': 'parameter.tata.label',
-                                'default': null
+                                name: 'tata',
+                                type: 'boolean',
+                                description: 'parameter.tata.desc',
+                                label: 'parameter.tata.label',
+                                default: null,
                             },
                             {
-                                'name': 't@t@',
-                                'type': 'boolean',
-                                'description': 'parameter.t@t@.desc',
-                                'label': 'parameter.t@t@.label',
-                                'default': null
-                            }
+                                name: 't@t@',
+                                type: 'boolean',
+                                description: 'parameter.t@t@.desc',
+                                label: 'parameter.t@t@.label',
+                                default: null,
+                            },
                         ],
-                        'replace': {
-                            'name': 'replaceValue',
-                            'type': 'string',
-                            'description': 'parameter.replaceValue.desc',
-                            'label': 'parameter.replaceValue.label',
-                            'default': 'Tata'
-                        }
-                    }
-                ]
-            }
+                        replace: {
+                            name: 'replaceValue',
+                            type: 'string',
+                            description: 'parameter.replaceValue.desc',
+                            label: 'parameter.replaceValue.label',
+                            default: 'Tata',
+                        },
+                    },
+                ],
+            },
         };
     };
 
@@ -133,8 +133,8 @@ describe('Transformation Service', () => {
                 category: 'case',
                 parameters: [
                     { name: 'column_name', type: 'string', implicit: true },
-                    { name: 'column_id', type: 'string', implicit: true }
-                ]
+                    { name: 'column_id', type: 'string', implicit: true },
+                ],
             },
             {
                 name: 'lowercase',
@@ -142,8 +142,8 @@ describe('Transformation Service', () => {
                 category: 'case',
                 parameters: [
                     { name: 'column_name', type: 'string', implicit: true },
-                    { name: 'column_id', type: 'string', implicit: true }
-                ]
+                    { name: 'column_id', type: 'string', implicit: true },
+                ],
             },
             {
                 name: 'cut',
@@ -152,8 +152,8 @@ describe('Transformation Service', () => {
                 parameters: [
                     { name: 'column_name', type: 'string', implicit: true },
                     { name: 'column_id', type: 'string', implicit: true },
-                    { name: 'value', type: 'string' }
-                ]
+                    { name: 'value', type: 'string' },
+                ],
             },
             {
                 name: 'split',
@@ -175,47 +175,47 @@ describe('Transformation Service', () => {
                                         {
                                             name: 'regexp',
                                             type: 'string',
-                                            default: '.'
-                                        }
-                                    ]
+                                            default: '.',
+                                        },
+                                    ],
                                 },
                                 {
                                     name: 'index',
                                     value: 'index',
-                                    'parameters': [
+                                    parameters: [
                                         {
-                                            'name': 'index',
-                                            'type': 'integer',
-                                            default: '5'
-                                        }
-                                    ]
+                                            name: 'index',
+                                            type: 'integer',
+                                            default: '5',
+                                        },
+                                    ],
                                 },
                                 {
                                     name: 'threeParams',
                                     value: 'threeParams',
-                                    'parameters': [
+                                    parameters: [
                                         {
-                                            'name': 'index',
-                                            'type': 'numeric',
-                                            'default': '5'
+                                            name: 'index',
+                                            type: 'numeric',
+                                            default: '5',
                                         },
                                         {
-                                            'name': 'index2',
-                                            'type': 'float',
-                                            'default': '5'
+                                            name: 'index2',
+                                            type: 'float',
+                                            default: '5',
                                         },
                                         {
-                                            'name': 'index3',
-                                            'type': 'double',
-                                            'default': '5'
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-                    }
-                ]
-            }
+                                            name: 'index3',
+                                            type: 'double',
+                                            default: '5',
+                                        },
+                                    ],
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
         ];
     };
 
@@ -236,12 +236,12 @@ describe('Transformation Service', () => {
                 category: 'quickfix',
                 dynamic: true,
                 parameters: [],
-                cluster: {}
+                cluster: {},
             };
             const infos = {
                 datasetId: '78bae6345aef9965e22b54',
                 preparationId: '721cd4455fb69e89543d4',
-                stepId: '6b9312964fa564e864'
+                stepId: '6b9312964fa564e864',
             };
 
             //when
@@ -259,12 +259,12 @@ describe('Transformation Service', () => {
                 category: 'quickfix',
                 dynamic: true,
                 parameters: [],
-                cluster: {}
+                cluster: {},
             };
             const infos = {
                 datasetId: '78bae6345aef9965e22b54',
                 preparationId: '721cd4455fb69e89543d4',
-                stepId: '6b9312964fa564e864'
+                stepId: '6b9312964fa564e864',
             };
 
             //when

@@ -11,7 +11,6 @@
 
  ============================================================================*/
 
-
 import StepDescriptionCtrl from './step-description-controller';
 
 const StepDescription = {

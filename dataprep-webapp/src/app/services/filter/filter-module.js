@@ -30,7 +30,7 @@ angular.module(MODULE_NAME,
     [
         SERVICES_FILTER_ADAPTER_MODULE,
         SERVICES_STATISTICS_MODULE,
-        SERVICES_UTILS_MODULE
+        SERVICES_UTILS_MODULE,
     ])
     .service('FilterService', FilterService);
 

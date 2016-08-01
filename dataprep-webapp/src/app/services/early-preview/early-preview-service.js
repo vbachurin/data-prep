@@ -34,7 +34,7 @@ export default function EarlyPreviewService($timeout, state, RecipeService, Prev
 
         cancelPendingPreview: cancelPendingPreview,
         earlyPreview: earlyPreview,
-        cancelEarlyPreview: cancelEarlyPreview
+        cancelEarlyPreview: cancelEarlyPreview,
     };
 
     /**

@@ -69,7 +69,7 @@ export default function TypeTransformMenuCtrl($scope, PlaygroundService, ColumnT
             column_name: vm.column.name,
             new_domain_id: domain.id,
             new_domain_label: domain.label,
-            new_domain_frequency: domain.frequency
+            new_domain_frequency: domain.frequency,
         };
         PlaygroundService.appendStep('domain_change', parameters)
             .catch(setColumnDomainAndType.bind(vm, originalDomain));
@@ -91,7 +91,7 @@ export default function TypeTransformMenuCtrl($scope, PlaygroundService, ColumnT
             scope: 'column',
             column_id: vm.column.id,
             column_name: vm.column.name,
-            new_type: type.id
+            new_type: type.id,
         };
         PlaygroundService.appendStep('type_change', parameters)
             .catch(setColumnDomainAndType.bind(vm, originalDomain, originalType));
@@ -153,7 +153,7 @@ export default function TypeTransformMenuCtrl($scope, PlaygroundService, ColumnT
         return {
             id: vm.column.domain,
             label: vm.column.domainLabel,
-            frequency: vm.column.domainFrequency
+            frequency: vm.column.domainFrequency,
         };
     }
 

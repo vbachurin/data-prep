@@ -54,7 +54,7 @@ export default function PreparationService($q, $state, $window, $stateParams, st
         //preview
         getPreviewDiff: PreparationRestService.getPreviewDiff,
         getPreviewUpdate: PreparationRestService.getPreviewUpdate,
-        getPreviewAdd: PreparationRestService.getPreviewAdd
+        getPreviewAdd: PreparationRestService.getPreviewAdd,
     };
 
     //---------------------------------------------------------------------------------
@@ -207,6 +207,7 @@ export default function PreparationService($q, $state, $window, $stateParams, st
         if ($event && ($event.which === 2 || ($event.which === 1 && ($event.metaKey || $event.ctrlKey)))) {
             shouldBeBlankTab = true;
         }
+
         if (shouldBeBlankTab) {
             $window.open($state.href('playground.preparation', { prepid: preparation.id }, { absolute: true }), '_blank');
         }

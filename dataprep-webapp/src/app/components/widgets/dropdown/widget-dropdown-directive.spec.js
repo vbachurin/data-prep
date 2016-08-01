@@ -16,7 +16,6 @@ describe('Dropdown directive', function () {
     var element;
 
     beforeEach(angular.mock.module('talend.widget'));
-    
 
     var clickDropdownToggle = function (elm) {
         elm = elm || element;
@@ -158,6 +157,7 @@ describe('Dropdown directive', function () {
             var mouseDownCallBack = function () {
                 bodyMouseDown = true;
             };
+
             angular.element('body').mousedown(mouseDownCallBack);
 
             //when
@@ -324,7 +324,7 @@ describe('Dropdown directive', function () {
         beforeEach(inject(function ($rootScope, $compile) {
             scope = $rootScope.$new();
 
-            createElement = function() {
+            createElement = function () {
                 var html = '<talend-dropdown id="dropdown1" force-side="{{side}}">' +
                     '    <div class="dropdown-container grid-header">' +
                     '        <div class="dropdown-action">Action</div>' +

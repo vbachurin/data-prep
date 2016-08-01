@@ -13,17 +13,16 @@
 
 'use strict';
 
-describe('Dataset upload list directive', function() {
+describe('Dataset upload list directive', function () {
     var scope;
     var createElement;
     var element;
 
     beforeEach(angular.mock.module('data-prep.dataset-xls-preview'));
-    
 
-    beforeEach(inject(function($rootScope, $compile, $timeout) {
+    beforeEach(inject(function ($rootScope, $compile, $timeout) {
         scope = $rootScope.$new();
-        createElement = function() {
+        createElement = function () {
             element = angular.element('<dataset-xls-preview></dataset-xls-preview>');
             $compile(element)(scope);
             $timeout.flush();
@@ -31,7 +30,7 @@ describe('Dataset upload list directive', function() {
         };
     }));
 
-    afterEach(function() {
+    afterEach(function () {
         scope.$destroy();
         element.remove();
     });
@@ -48,7 +47,7 @@ describe('Dataset upload list directive', function() {
         expect(ctrl.initGrid).toHaveBeenCalled();
     }));
 
-    it('should init metadata name input', inject(function(DatasetSheetPreviewService) {
+    it('should init metadata name input', inject(function (DatasetSheetPreviewService) {
         //given
         createElement();
         var nameInput = angular.element('body').find('.dataset-sheet-preview').find('input[ng-model="previewCtrl.metadata.name"]').eq(0)[0];
@@ -62,7 +61,7 @@ describe('Dataset upload list directive', function() {
         expect(nameInput.value).toBe('my sheet');
     }));
 
-    it('should init sheet listbox', inject(function(DatasetSheetPreviewService) {
+    it('should init sheet listbox', inject(function (DatasetSheetPreviewService) {
         //given
         createElement();
         var sheetSelection = angular.element('body').find('.dataset-sheet-preview').find('select[ng-model="previewCtrl.selectedSheetName"]').eq(0);
@@ -70,8 +69,8 @@ describe('Dataset upload list directive', function() {
         //when
         DatasetSheetPreviewService.currentMetadata = {
             schemaParserResult: {
-                sheetContents: [{ name: 'my first sheet' }, { name: 'my second sheet' }, { name: 'my third sheet' }]
-            }
+                sheetContents: [{ name: 'my first sheet' }, { name: 'my second sheet' }, { name: 'my third sheet' }],
+            },
         };
         DatasetSheetPreviewService.selectedSheetName = 'my second sheet';
         scope.$digest();

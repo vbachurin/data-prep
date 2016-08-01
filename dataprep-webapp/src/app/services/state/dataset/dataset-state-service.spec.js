@@ -11,7 +11,7 @@
 
   ============================================================================*/
 
-describe('dataset state service', function(){
+describe('dataset state service', function () {
     'use strict';
 
     var dataset = {};

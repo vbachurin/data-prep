@@ -24,7 +24,7 @@ describe('Quality bar controller', function () {
 
         createController = function () {
             return $controller('QualityBarCtrl', {
-                $scope: scope
+                $scope: scope,
             });
         };
     }));
@@ -35,7 +35,7 @@ describe('Quality bar controller', function () {
         ctrl.quality = {
             invalid: 10,
             empty: 5,
-            valid: 72
+            valid: 72,
         };
 
         //when
@@ -51,7 +51,7 @@ describe('Quality bar controller', function () {
         ctrl.quality = {
             invalid: 10,
             empty: 5,
-            valid: 72
+            valid: 72,
         };
 
         //when
@@ -69,7 +69,7 @@ describe('Quality bar controller', function () {
         ctrl.quality = {
             invalid: 25,
             empty: 33,
-            valid: 68
+            valid: 68,
         };
 
         //when
@@ -88,7 +88,7 @@ describe('Quality bar controller', function () {
         ctrl.quality = {
             invalid: 25,
             empty: 1,
-            valid: 68
+            valid: 68,
         };
 
         //when
@@ -107,7 +107,7 @@ describe('Quality bar controller', function () {
         ctrl.quality = {
             invalid: 1,
             empty: 25,
-            valid: 68
+            valid: 68,
         };
 
         //when
@@ -126,7 +126,7 @@ describe('Quality bar controller', function () {
         ctrl.quality = {
             invalid: 25,
             empty: 68,
-            valid: 1
+            valid: 1,
         };
 
         //when
@@ -145,7 +145,7 @@ describe('Quality bar controller', function () {
         ctrl.quality = {
             invalid: 25,
             empty: 0,
-            valid: 68
+            valid: 68,
         };
 
         //when
@@ -164,7 +164,7 @@ describe('Quality bar controller', function () {
         ctrl.quality = {
             invalid: 0,
             empty: 25,
-            valid: 68
+            valid: 68,
         };
 
         //when
@@ -183,7 +183,7 @@ describe('Quality bar controller', function () {
         ctrl.quality = {
             invalid: 25,
             empty: 68,
-            valid: 0
+            valid: 0,
         };
 
         //when
@@ -202,7 +202,7 @@ describe('Quality bar controller', function () {
         ctrl.quality = {
             invalid: 100000,
             empty: 1,
-            valid: 1
+            valid: 1,
         };
 
         //when

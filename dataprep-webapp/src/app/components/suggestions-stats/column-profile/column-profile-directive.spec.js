@@ -23,14 +23,13 @@ describe('Column Profile directive', () => {
         stateMock = {
             playground: {
                 suggestions: {
-                    isLoading: false
+                    isLoading: false,
                 },
-                statistics: {}
-            }
+                statistics: {},
+            },
         };
         $provide.constant('state', stateMock);
     }));
-    
 
     beforeEach(inject(($rootScope, $compile, $timeout) => {
         scope = $rootScope.$new();

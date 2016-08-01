@@ -16,7 +16,7 @@ describe('Documentation search url service', () => {
 
     beforeEach(angular.mock.module('data-prep.services.utils'));
 
-    it('should set value by default', inject((documentationSearchURL)=>{
+    it('should set value by default', inject((documentationSearchURL)=> {
         //then
         expect(documentationSearchURL).toBe('https://www.talendforge.org/find/api/index.php?source=DATA%20PREP&condition=AND&max=5');
     }));

@@ -47,6 +47,7 @@ export default function Datagrid($timeout, state, DatagridGridService, DatagridC
             this.state = state;
             this.datagridTooltipService = DatagridTooltipService;
         },
+
         link: function (scope, iElement) {
             var grid;
             var columnTimeout;
@@ -212,6 +213,7 @@ export default function Datagrid($timeout, state, DatagridGridService, DatagridC
                         else {
                             DatagridStyleService.resetStyles(selectedColumnId);
                         }
+
                         grid.invalidate();
                     }, 0, false);
 
@@ -251,6 +253,7 @@ export default function Datagrid($timeout, state, DatagridGridService, DatagridC
                             const content = stateSelectedLine[colId];
                             DatagridStyleService.highlightCellsContaining(colId, content);
                         },
+
                             500,
                             false
                         );
@@ -322,6 +325,6 @@ export default function Datagrid($timeout, state, DatagridGridService, DatagridC
              * when the active cell change
              */
             scope.$watchGroup([getSelectedLine, getSelectedColumn], onSelectionChange);
-        }
+        },
     };
 }

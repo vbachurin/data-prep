@@ -31,11 +31,12 @@ export default function EditableSelect() {
         templateUrl: template,
         scope: {
             list: '=',
-            value: '=ngModel'
+            value: '=ngModel',
         },
         bindToController: true,
         controller: () => {
         },
-        controllerAs: 'editableSelectCtrl'
+
+        controllerAs: 'editableSelectCtrl',
     };
 }

@@ -49,6 +49,7 @@ class StepDescriptionCtrl {
                 if (this.step.transformation.name === 'lookup') {
                     this.stepDescription = this._getLookupDetails(this.step);
                 }
+
                 if (this.step.transformation.name === 'reorder') {
                     this.stepDescription = this.$translate.instant('RECIPE_ITEM_ON_COL', {
                         index: (this.index + 1),
@@ -56,6 +57,7 @@ class StepDescriptionCtrl {
                         columnName: this.step.column.name.toUpperCase(),
                     });
                 }
+
                 break;
         }
     }

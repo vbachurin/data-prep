@@ -21,12 +21,12 @@ describe('Datasets filters component', () => {
 
     beforeEach(angular.mock.module('pascalprecht.translate', ($translateProvider) => {
         $translateProvider.translations('en', {
-            'RECENT_DATASETS':'Recent Datasets',
-            'RECENT_DATASETS_DESCRIPTION':'10 Last modified datasets',
-            'FAVORITE_DATASETS':'Favorite Datasets',
-            'FAVORITE_DATASETS_DESCRIPTION':'',
-            'ALL_DATASETS':'All Datasets',
-            'ALL_DATASETS_DESCRIPTION':'',
+            RECENT_DATASETS: 'Recent Datasets',
+            RECENT_DATASETS_DESCRIPTION: '10 Last modified datasets',
+            FAVORITE_DATASETS: 'Favorite Datasets',
+            FAVORITE_DATASETS_DESCRIPTION: '',
+            ALL_DATASETS: 'All Datasets',
+            ALL_DATASETS_DESCRIPTION: '',
         });
         $translateProvider.preferredLanguage('en');
     }));

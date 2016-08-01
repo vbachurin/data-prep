@@ -80,18 +80,22 @@ class InventoryService {
                 inventoryItems.push(itemToDisplay);
             });
         }
+
         if (data.preparations && data.preparations.length) {
             _.each(data.preparations, function (item) {
                 item.inventoryType = 'preparation';
                 item.tooltipName = item.name;
             });
+
             inventoryItems = inventoryItems.concat(data.preparations);
         }
+
         if (data.folders && data.folders.length) {
             _.each(data.folders, function (item) {
                 item.inventoryType = 'folder';
                 item.tooltipName = item.name;
             });
+
             inventoryItems = inventoryItems.concat(data.folders);
         }
 

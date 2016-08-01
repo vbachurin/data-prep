@@ -45,6 +45,6 @@ export default function Playground($timeout) {
             });
 
             container.focus();
-        }
+        },
     };
 }

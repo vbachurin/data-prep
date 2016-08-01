@@ -53,6 +53,7 @@ export default function Recipe($timeout) {
                             stepElement.addClass('remove');
                         });
                     });
+
                     removeElement.on('mouseout', function () {
                         _.forEach(stepsToRemove, function (stepElement) {
                             stepElement.removeClass('remove');
@@ -64,8 +65,9 @@ export default function Recipe($timeout) {
             scope.$watch(function () {
                 return ctrl.state.playground.recipe.current.steps;
             }, function (allSteps) {
+
                 $timeout(attachDeleteMouseOver.bind(null, allSteps), 0, false);
             });
-        }
+        },
     };
 }

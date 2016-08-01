@@ -19,7 +19,6 @@ describe('Playground header component', () => {
     let element;
 
     beforeEach(angular.mock.module('data-prep.playground'));
-    
 
     beforeEach(inject(($rootScope, $compile) => {
         scope = $rootScope.$new();

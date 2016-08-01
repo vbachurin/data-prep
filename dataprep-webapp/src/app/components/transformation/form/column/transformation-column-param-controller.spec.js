@@ -23,40 +23,39 @@ describe('Transform column param controller', function () {
         var columns =  [
             { id: '0001', name: 'first name' },
             { id: '0002', name: 'last name' },
-            { id: '0003', name: 'birth date' }
+            { id: '0003', name: 'birth date' },
         ];
         stateMock = {
             playground: {
                 // available dataset/preparation columns
                 data: {
                     metadata: {
-                        columns: columns
-                    }
+                        columns: columns,
+                    },
                 },
                 grid: {
                     // set the selected column to the first one
-                    selectedColumn: columns[0]
-                }
-            }
+                    selectedColumn: columns[0],
+                },
+            },
         };
 
         $provide.constant('state', stateMock);
     }));
 
-    describe('with undefined parameter value', function(){
+    describe('with undefined parameter value', function () {
         beforeEach(inject(function ($rootScope, $controller) {
             parameter = {};
             scope = $rootScope.$new();
 
             createController = function () {
                 var ctrlFn = $controller('TransformColumnParamCtrl', {
-                    $scope: scope
+                    $scope: scope,
                 }, true);
                 ctrlFn.instance.parameter = parameter;
                 return ctrlFn();
             };
         }));
-
 
         it('should set selected value to first column when value is undefined', function () {
             // when
@@ -78,16 +77,16 @@ describe('Transform column param controller', function () {
         });
     });
 
-    describe('with defined parameter value', function(){
+    describe('with defined parameter value', function () {
         beforeEach(inject(function ($rootScope, $controller) {
             parameter = {
-                value: '0002'
+                value: '0002',
             };
             scope = $rootScope.$new();
 
             createController = function () {
                 var ctrlFn = $controller('TransformColumnParamCtrl', {
-                    $scope: scope
+                    $scope: scope,
                 }, true);
                 ctrlFn.instance.parameter = parameter;
                 return ctrlFn();

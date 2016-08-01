@@ -40,11 +40,12 @@ export default function TalendButtonLoader() {
             buttonClass: '@',
             disableCondition: '=',
             loading: '=',
-            loadingClass: '@'
+            loadingClass: '@',
         },
         bindToController: true,
         controller: () => {
         },
-        controllerAs: 'buttonLoaderCtrl'
+
+        controllerAs: 'buttonLoaderCtrl',
     };
 }

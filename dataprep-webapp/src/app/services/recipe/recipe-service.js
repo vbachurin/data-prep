@@ -66,7 +66,7 @@ export default function RecipeService(state, StateService, StepUtilsService, Pre
                     preparationId: state.playground.preparation.id,
                     stepId: StepUtilsService.getPreviousStep(state.playground.recipe, step)
                         .transformation
-                        .stepId
+                        .stepId,
                 };
                 return TransformationService.initDynamicParameters(step.transformation, infos)
                     .then(() => {
@@ -103,10 +103,10 @@ export default function RecipeService(state, StateService, StepUtilsService, Pre
         var item = {
             column: {
                 id: actionValues.parameters.column_id,
-                name: actionValues.parameters.column_name
+                name: actionValues.parameters.column_name,
             },
             row: {
-                id: actionValues.parameters.row_id
+                id: actionValues.parameters.row_id,
             },
             transformation: {
                 stepId: stepId,
@@ -114,14 +114,14 @@ export default function RecipeService(state, StateService, StepUtilsService, Pre
                 label: metadata.label,
                 description: metadata.description,
                 parameters: metadata.parameters,
-                dynamic: metadata.dynamic
+                dynamic: metadata.dynamic,
             },
             actionParameters: actionValues,
             diff: diff,
             filters: FilterAdapterService.fromTree(
                 actionValues.parameters.filter,
                 state.playground.data.metadata.columns
-            )
+            ),
         };
 
         ParametersService.initParamsValues(item.transformation, actionValues.parameters);
@@ -149,7 +149,7 @@ export default function RecipeService(state, StateService, StepUtilsService, Pre
         StateService.setRecipeSteps(initialStep, newRecipeSteps);
         initDynamicParams({
             old: oldRecipeSteps,
-            new: newRecipeSteps
+            new: newRecipeSteps,
         });
 
         //TODO : Move this in a recipe-bullet-directive
@@ -184,10 +184,10 @@ export default function RecipeService(state, StateService, StepUtilsService, Pre
         const previewStep = {
             column: {
                 id: params.column_id,
-                name: params.column_name
+                name: params.column_name,
             },
             row: {
-                id: params.row_id
+                id: params.row_id,
             },
             transformation: {
                 stepId: 'early preview',
@@ -195,14 +195,14 @@ export default function RecipeService(state, StateService, StepUtilsService, Pre
                 label: transformation.label,
                 description: transformation.description,
                 parameters: _.cloneDeep(transformation.parameters),
-                dynamic: transformation.dynamic
+                dynamic: transformation.dynamic,
             },
             actionParameters: {
                 action: transformation.name,
-                parameters: params
+                parameters: params,
             },
             preview: true,
-            filters: stepFilters
+            filters: stepFilters,
         };
         ParametersService.initParamsValues(previewStep.transformation, params);
 

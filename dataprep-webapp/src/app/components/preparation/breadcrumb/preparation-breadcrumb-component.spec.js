@@ -24,7 +24,7 @@ describe('Preparation breadcrumb component', () => {
             inventory: {
                 breadcrumb: [],
                 breadcrumbChildren: [],
-            }
+            },
         };
         $provide.constant('state', stateMock);
     }));
@@ -47,10 +47,10 @@ describe('Preparation breadcrumb component', () => {
         ];
 
         itemsChildren = {
-            '1': [
+            1: [
                 { id: '2', name: 'JSO' },
                 { id: '4', name: 'Others' },
-            ]
+            ],
         };
     });
 

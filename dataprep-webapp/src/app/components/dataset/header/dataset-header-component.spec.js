@@ -19,21 +19,21 @@ describe('Dataset header component', () => {
 
     const sortList = [
         { id: 'name', name: 'NAME_SORT', property: 'name' },
-        { id: 'date', name: 'DATE_SORT', property: 'created' }
+        { id: 'date', name: 'DATE_SORT', property: 'created' },
     ];
 
     const orderList = [
         { id: 'asc', name: 'ASC_ORDER' },
-        { id: 'desc', name: 'DESC_ORDER' }
+        { id: 'desc', name: 'DESC_ORDER' },
     ];
 
     beforeEach(angular.mock.module('pascalprecht.translate', ($translateProvider) => {
         $translateProvider.translations('en', {
-            'SORTED_BY': 'Sorted by',
-            'SORT_IN': 'in',
-            'SORT_ORDER': 'order',
-            'NAME_SORT': 'name',
-            'ASC_ORDER': 'asc'
+            SORTED_BY: 'Sorted by',
+            SORT_IN: 'in',
+            SORT_ORDER: 'order',
+            NAME_SORT: 'name',
+            ASC_ORDER: 'asc',
         });
         $translateProvider.preferredLanguage('en');
     }));
@@ -44,37 +44,35 @@ describe('Dataset header component', () => {
                 sortList: sortList,
                 orderList: orderList,
                 datasetsSort: sortList[0],
-                datasetsOrder: orderList[0]
+                datasetsOrder: orderList[0],
             },
-            import:{
+            import: {
                 importTypes: [
                     {
-                        "locationType": "local",
-                        "contentType": "text/plain",
-                        "parameters": [
+                        locationType: 'local',
+                        contentType: 'text/plain',
+                        parameters: [
                             {
-                                "name": "datasetFile",
-                                "type": "file",
-                                "implicit": false,
-                                "canBeBlank": false,
-                                "placeHolder": "*.csv",
-                                "description": "File",
-                                "label": "File",
-                                "default": ""
-                            }
+                                name: 'datasetFile',
+                                type: 'file',
+                                implicit: false,
+                                canBeBlank: false,
+                                placeHolder: '*.csv',
+                                description: 'File',
+                                label: 'File',
+                                default: '',
+                            },
                         ],
-                        "dynamic": false,
-                        "defaultImport": true,
-                        "label": "Local File",
-                        "title": "Add local file dataset"
-                    }
-                ]
-            }
+                        dynamic: false,
+                        defaultImport: true,
+                        label: 'Local File',
+                        title: 'Add local file dataset',
+                    },
+                ],
+            },
         };
         $provide.constant('state', stateMock);
     }));
-
-    
 
     beforeEach(inject(($rootScope, $compile) => {
         scope = $rootScope.$new();
@@ -90,11 +88,11 @@ describe('Dataset header component', () => {
         element.remove();
     });
 
-/*    it('should render sort switch', () => {
-        //when
-        createElement();
+    /*    it('should render sort switch', () => {
+            //when
+            createElement();
 
-        //then
-        expect(element.find('.inventory-sort').text().replace(/[\s]+/g, ' ').trim()).toBe('Sorted by name in asc order');
-    });*/
+            //then
+            expect(element.find('.inventory-sort').text().replace(/[\s]+/g, ' ').trim()).toBe('Sorted by name in asc order');
+        });*/
 });

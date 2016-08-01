@@ -37,8 +37,8 @@ const FilterItemComponent = {
         editable: '<',
         onEdit: '&',
         removable: '<',
-        onRemove: '&'
-    }
+        onRemove: '&',
+    },
 };
 
 export default FilterItemComponent;

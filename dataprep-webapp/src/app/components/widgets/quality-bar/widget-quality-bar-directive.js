@@ -40,12 +40,12 @@ export default function QualityBar($timeout) {
             enterAnimation: '@',
             quality: '<',
             isTrusted: '<',
-            hasMenu: '<'
+            hasMenu: '<',
         },
         transclude: {
             'valid-quality-bar-menu': '?validMenuItems',
             'empty-quality-bar-menu': '?emptyMenuItems',
-            'invalid-quality-bar-menu': '?invalidMenuItems'
+            'invalid-quality-bar-menu': '?invalidMenuItems',
         },
         bindToController: true,
         controller: 'QualityBarCtrl',
@@ -73,7 +73,7 @@ export default function QualityBar($timeout) {
                 ctrl.width = {
                     invalid: 0,
                     empty: 0,
-                    valid: 0
+                    valid: 0,
                 };
 
                 enableTransition();
@@ -106,6 +106,6 @@ export default function QualityBar($timeout) {
             };
 
             scope.$watch(ctrl.hashQuality, refreshBars);
-        }
+        },
     };
 }

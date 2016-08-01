@@ -57,7 +57,7 @@ export default function TalendTooltipCtrl($scope) {
             left: horizontalPosition.left,
             right: horizontalPosition.right,
             top: verticalPosition.top,
-            bottom: verticalPosition.bottom
+            bottom: verticalPosition.bottom,
         };
     };
 
@@ -68,6 +68,7 @@ export default function TalendTooltipCtrl($scope) {
         () => {
             return vm.requestedState;
         },
+
         (newValue) => {
             if (!blocked) {
                 vm.innerState = newValue;

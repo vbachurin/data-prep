@@ -43,7 +43,7 @@ export default function ActionsList() {
             shouldRenderCategory: '=',
             shouldRenderAction: '=',
             scrollToBottom: '=',
-            scope: '@'
-        }
+            scope: '@',
+        },
     };
 }

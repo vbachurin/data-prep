@@ -23,6 +23,7 @@ export class RouteStateService {
         if (!route) {
             return;
         }
+
         routeState.previous = route;
         routeState.previousOptions = routeOptions;
     }
@@ -31,6 +32,7 @@ export class RouteStateService {
         if (!route) {
             return;
         }
+
         routeState.next = route;
         routeState.nextOptions = routeOptions;
     }

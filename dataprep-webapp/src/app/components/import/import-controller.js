@@ -211,6 +211,7 @@ export default function ImportCtrl($document,
                 if (cause === 'dismiss') {
                     return;
                 }
+
                 return DatasetService.getUniqueName(name)
                     .then((name) => {
                         return createDataset(

@@ -102,7 +102,7 @@ export function PlaygroundStateService(RecipeStateService, recipeState,
         setStatisticsFilteredHistogram: StatisticsStateService.setFilteredHistogram,
         setStatisticsHistogramActiveLimits: StatisticsStateService.setHistogramActiveLimits,
         setStatisticsPatterns: StatisticsStateService.setPatterns,
-        setStatisticsFilteredPatterns: StatisticsStateService.setFilteredPatterns
+        setStatisticsFilteredPatterns: StatisticsStateService.setFilteredPatterns,
     };
 
     //--------------------------------------------------------------------------------------------------------------
@@ -207,7 +207,6 @@ export function PlaygroundStateService(RecipeStateService, recipeState,
         FilterStateService.disableFilters();
         GridStateService.setFilter([], playgroundState.data);
     }
-
 
     function reset() {
         playgroundState.data = null;

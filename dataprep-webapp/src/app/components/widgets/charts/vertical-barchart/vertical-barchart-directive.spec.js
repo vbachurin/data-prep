@@ -25,6 +25,7 @@ describe('verticalBarchart directive', function () {
         Date.now = function () {
             return Infinity;
         };
+
         d3.timer.flush();
         Date.now = now;
     };
@@ -33,16 +34,16 @@ describe('verticalBarchart directive', function () {
 
     beforeEach(inject(function ($rootScope, $compile) {
         statsData = [
-            { 'data': { min: 0, max: 5, label: '[0 .. 5[' }, 'occurrences': 9 },
-            { 'data': { min: 5, max: 10 }, 'occurrences': 8 },
-            { 'data': { min: 10, max: 15 }, 'occurrences': 6 },
-            { 'data': { min: 15, max: 20 }, 'occurrences': 5 }
+            { data: { min: 0, max: 5, label: '[0 .. 5[' }, occurrences: 9 },
+            { data: { min: 5, max: 10 }, occurrences: 8 },
+            { data: { min: 10, max: 15 }, occurrences: 6 },
+            { data: { min: 15, max: 20 }, occurrences: 5 },
         ];
         secondaryStatsData = [
-            { 'data': { min: 0, max: 5 }, 'filteredOccurrences': 9 },
-            { 'data': { min: 5, max: 10 }, 'filteredOccurrences': 8 },
-            { 'data': { min: 10, max: 15 }, 'filteredOccurrences': 6 },
-            { 'data': { min: 15, max: 20 }, 'filteredOccurrences': 5 }
+            { data: { min: 0, max: 5 }, filteredOccurrences: 9 },
+            { data: { min: 5, max: 10 }, filteredOccurrences: 8 },
+            { data: { min: 10, max: 15 }, filteredOccurrences: 6 },
+            { data: { min: 15, max: 20 }, filteredOccurrences: 5 },
         ];
 
         createElement = function () {
@@ -50,7 +51,7 @@ describe('verticalBarchart directive', function () {
             scope.onClick = jasmine.createSpy('onClick');
 
             element = angular.element('<vertical-barchart id="barChart" width="250" height="400"' +
-                'show-x-axis="showXAxis"'+
+                'show-x-axis="showXAxis"' +
                 'on-click="onClick(interval)"' +
                 'key-field="data"' +
                 'key-label="Occurrences"' +
@@ -80,7 +81,7 @@ describe('verticalBarchart directive', function () {
         element.remove();
     });
 
-    describe('render', function() {
+    describe('render', function () {
         it('should render svg container with adapted bottom margin: with X-axis', inject(function ($timeout) {
             //given
             createElement();
@@ -250,9 +251,9 @@ describe('verticalBarchart directive', function () {
 
             //when
             scope.primaryData = [
-                { 'data': { min: 0, max: 5 }, 'occurrences': 9000000 },
-                { 'data': { min: 5, max: 10 }, 'occurrences': 0 },
-                { 'data': { min: 10, max: 15 }, 'occurrences': 1 }
+                { data: { min: 0, max: 5 }, occurrences: 9000000 },
+                { data: { min: 5, max: 10 }, occurrences: 0 },
+                { data: { min: 10, max: 15 }, occurrences: 1 },
             ];
             scope.$digest();
             $timeout.flush(100);
@@ -269,7 +270,7 @@ describe('verticalBarchart directive', function () {
         }));
     });
 
-    describe('active bars', function() {
+    describe('active bars', function () {
         it('should set the initial bars to full opacity', inject(function ($timeout) {
             //given
             createElement();

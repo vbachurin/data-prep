@@ -71,7 +71,7 @@ export default function VerticalBarchart($timeout) {
             secondaryData: '=',
             secondaryValueField: '@',
             showXAxis: '=',
-            tooltipContent: '&'
+            tooltipContent: '&',
         },
         link: function (scope, element, attrs) {
             var BAR_MIN_HEIGHT = 3;
@@ -103,7 +103,7 @@ export default function VerticalBarchart($timeout) {
                         keyLabel: scope.keyLabel,
                         key: getXAxisDomain(primaryDatum),
                         primaryValue: getPrimaryValue(primaryDatum),
-                        secondaryValue: secondaryDatum && getSecondaryValue(secondaryDatum)
+                        secondaryValue: secondaryDatum && getSecondaryValue(secondaryDatum),
                     });
                 });
 
@@ -152,7 +152,7 @@ export default function VerticalBarchart($timeout) {
                     top: 20,
                     right: 20,
                     bottom: scope.showXAxis ? getBottomMargin() : 10,
-                    left: 15
+                    left: 15,
                 };
                 containerWidth = +attrs.width;
                 containerHeight = +attrs.height + margin.bottom;
@@ -327,6 +327,7 @@ export default function VerticalBarchart($timeout) {
                             scope.onShiftClick({ interval });
                             return;
                         }
+
                         scope.onClick({ interval });
                     });
             }
@@ -343,6 +344,7 @@ export default function VerticalBarchart($timeout) {
                 if (scope.showXAxis) {
                     drawXAxis(firstVisuData);
                 }
+
                 drawBars('primaryBar', firstVisuData, getPrimaryValue, 'bar');
                 renderSecondVBars(secondVisuData);
 
@@ -419,6 +421,6 @@ export default function VerticalBarchart($timeout) {
                 $timeout.cancel(renderSecondaryTimeout);
                 $timeout.cancel(updateLimitsTimeout);
             });
-        }
+        },
     };
 }

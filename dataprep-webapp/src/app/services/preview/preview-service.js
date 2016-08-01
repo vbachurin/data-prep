@@ -74,7 +74,7 @@ export default function PreviewService($q, state, DatagridService, PreparationSe
         previewInProgress: previewInProgress,
         stopPendingPreview: stopPendingPreview,
         reset: reset,
-        cancelPreview: cancelPreview
+        cancelPreview: cancelPreview,
     };
     return service;
 
@@ -123,7 +123,7 @@ export default function PreviewService($q, state, DatagridService, PreparationSe
         if (!originalData) {
             originalData = {
                 columns: state.playground.data.metadata.columns.slice(0),
-                records: state.playground.data.records.slice(0)
+                records: state.playground.data.records.slice(0),
             };
             displayedTdpIds = getDisplayedTdpIds();
         }
@@ -173,7 +173,7 @@ export default function PreviewService($q, state, DatagridService, PreparationSe
             preparationId: preparationId,
             currentStepId: currentStep.transformation.stepId,
             previewStepId: previewStep.transformation.stepId,
-            tdpIds: displayedTdpIds
+            tdpIds: displayedTdpIds,
         };
         return PreparationService.getPreviewDiff(params, previewCanceler)
             .then(function (response) {
@@ -210,8 +210,8 @@ export default function PreviewService($q, state, DatagridService, PreparationSe
             updateStepId: updateStep.transformation.stepId,
             action: {
                 action: updateStep.actionParameters.action,
-                parameters: newParams
-            }
+                parameters: newParams,
+            },
         };
         return PreparationService.getPreviewUpdate(params, previewCanceler)
             .then(function (response) {
@@ -244,11 +244,11 @@ export default function PreviewService($q, state, DatagridService, PreparationSe
         var params = {
             action: {
                 action: action,
-                parameters: actionParams
+                parameters: actionParams,
             },
             tdpIds: displayedTdpIds,
             datasetId: datasetId,
-            preparationId: preparationId
+            preparationId: preparationId,
         };
         return PreparationService.getPreviewAdd(params, previewCanceler)
             .then(function (response) {
@@ -287,6 +287,7 @@ export default function PreviewService($q, state, DatagridService, PreparationSe
         if (restoreOriginalData && previewInProgress()) {
             DatagridService.execute(reverter);
         }
+
         originalData = null;
         displayedTdpIds = null;
         reverter = null;

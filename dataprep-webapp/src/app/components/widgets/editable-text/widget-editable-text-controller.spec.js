@@ -20,7 +20,6 @@ describe('Editable Text Widget', () => {
     let onCancelFn;
 
     beforeEach(angular.mock.module('talend.widget'));
-    
 
     beforeEach(inject(($rootScope, $componentController) => {
         scope = $rootScope.$new();
@@ -32,7 +31,7 @@ describe('Editable Text Widget', () => {
                 { $scope: scope },
                 {
                     onValidate: onValidateFn,
-                    onCancel: onCancelFn
+                    onCancel: onCancelFn,
                 }
             );
         };

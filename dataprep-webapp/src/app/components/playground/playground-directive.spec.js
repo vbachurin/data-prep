@@ -21,11 +21,11 @@ describe('Playground directive', () => {
     let stateMock;
 
     const metadata = {
-        'id': '12ce6c32-bf80-41c8-92e5-66d70f22ec1f',
-        'name': 'US States',
-        'author': 'anonymousUser',
-        'created': '02-03-2015 14:52',
-        'records': '3',
+        id: '12ce6c32-bf80-41c8-92e5-66d70f22ec1f',
+        name: 'US States',
+        author: 'anonymousUser',
+        created: '02-03-2015 14:52',
+        records: '3',
     };
 
     const sortList = [
@@ -50,7 +50,7 @@ describe('Playground directive', () => {
                     orderList: orderList,
                 },
                 grid: {
-                    selectedColumn: { 'id': '0001' },
+                    selectedColumn: { id: '0001' },
                     selectedLine: { '0001': '1' },
                 },
                 recipe: { current: { steps: [] } },
@@ -59,11 +59,10 @@ describe('Playground directive', () => {
                 datasets: [],
                 sortList: sortList,
                 orderList: orderList,
-            }
+            },
         };
         $provide.constant('state', stateMock);
     }));
-    
 
     beforeEach(inject(($rootScope, $compile) => {
         scope = $rootScope.$new();
@@ -143,8 +142,8 @@ describe('Playground directive', () => {
                     name: 'propercase',
                     parameters: [],
                     items: [],
-                    dynamic: false
-                }
+                    dynamic: false,
+                },
             };
             stateMock.playground.recipe.visible = true;
             stateMock.playground.recipe.current.steps.push(step);
@@ -171,8 +170,8 @@ describe('Playground directive', () => {
                     name: 'propercase',
                     parameters: [],
                     items: [],
-                    dynamic: false
-                }
+                    dynamic: false,
+                },
             };
             stateMock.playground.recipe.current.steps.push(step);
             createElement();
@@ -198,8 +197,8 @@ describe('Playground directive', () => {
                     name: 'propercase',
                     parameters: [],
                     items: [],
-                    dynamic: false
-                }
+                    dynamic: false,
+                },
             };
             stateMock.playground.recipe.current.steps.push(step);
             createElement();

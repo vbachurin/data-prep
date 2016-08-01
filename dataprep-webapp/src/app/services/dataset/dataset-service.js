@@ -70,7 +70,7 @@ export default function DatasetService($q, state, StateService, DatasetListServi
         getUniqueName: getUniqueName,
         createDatasetInfo: createDatasetInfo,
         checkNameAvailability: checkNameAvailability,
-        getLocationParamIteration: getParamIteration
+        getLocationParamIteration: getParamIteration,
     };
 
     //--------------------------------------------------------------------------------------------------------------
@@ -235,7 +235,7 @@ export default function DatasetService($q, state, StateService, DatasetListServi
             file: file,
             error: false,
             id: id,
-            type: file === null ? 'remote' : 'file'
+            type: file === null ? 'remote' : 'file',
         };
     }
 
@@ -319,7 +319,7 @@ export default function DatasetService($q, state, StateService, DatasetListServi
             preparations: metadata.preparations,
 
             separator: metadata.parameters.SEPARATOR,
-            encoding: metadata.encoding
+            encoding: metadata.encoding,
         };
     }
 
@@ -354,6 +354,7 @@ export default function DatasetService($q, state, StateService, DatasetListServi
                 }
             });
         }
+
         return paramsAccu;
     }
 

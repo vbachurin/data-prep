@@ -101,7 +101,7 @@ export default function QualityBarCtrl() {
         var widthObject = {
             invalid: getMinimalPercent('invalid'),
             empty: getMinimalPercent('empty'),
-            valid: getMinimalPercent('valid')
+            valid: getMinimalPercent('valid'),
         };
 
         var diff = (widthObject.invalid + widthObject.empty + widthObject.valid) - 100;
@@ -124,7 +124,7 @@ export default function QualityBarCtrl() {
         vm.percent = {
             invalid: vm.quality.invalid <= 0 ? 0 : Math.round(vm.quality.invalid * 100 / total),
             empty: vm.quality.empty <= 0 ? 0 : Math.round(vm.quality.empty * 100 / total),
-            valid: vm.quality.valid <= 0 ? 0 : Math.round(vm.quality.valid * 100 / total)
+            valid: vm.quality.valid <= 0 ? 0 : Math.round(vm.quality.valid * 100 / total),
         };
     };
 

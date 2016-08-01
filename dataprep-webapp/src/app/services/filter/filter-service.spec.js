@@ -18,19 +18,19 @@ describe('Filter service', function () {
     beforeEach(angular.mock.module('data-prep.services.filter', function ($provide) {
         var columns = [
             { id: '0000', name: 'id' },
-            { id: '0001', name: 'name' }
+            { id: '0001', name: 'name' },
         ];
 
         stateMock = {
             playground: {
                 filter: { gridFilters: [] },
-                data: { metadata: { columns: columns } }
-            }
+                data: { metadata: { columns: columns } },
+            },
         };
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(inject(function(StateService, StatisticsService) {
+    beforeEach(inject(function (StateService, StatisticsService) {
         spyOn(StateService, 'addGridFilter').and.returnValue();
         spyOn(StatisticsService, 'updateFilteredStatistics').and.returnValue();
     }));
@@ -42,7 +42,7 @@ describe('Filter service', function () {
                 { input: { min: 0, max: 10, isMaxReached: false }, output: '[0 .. 10[' },
                 { input: { min: 10, max: 10, isMaxReached: false }, output: '[10]' },
                 { input: { min: 0, max: 10, isMaxReached: true }, output: '[0 .. 10]' },
-                { input: { min: 'Jan 2015', max: 'Mar 2015', isMaxReached: true }, output: '[Jan 2015 .. Mar 2015]' }
+                { input: { min: 'Jan 2015', max: 'Mar 2015', isMaxReached: true }, output: '[Jan 2015 .. Mar 2015]' },
             ];
 
             //when
@@ -65,7 +65,7 @@ describe('Filter service', function () {
                 { input: '[0 .. 10]', output: ['0', '10'] },
                 { input: '[0 .. 10[', output: ['0', '10'] },
                 { input: '[Jan 2016,Jan 2017]', output: ['Jan 2016', 'Jan 2017'] },
-                { input: '[Jan 2016 .. Jan 2017[', output: ['Jan 2016', 'Jan 2017'] }
+                { input: '[Jan 2016 .. Jan 2017[', output: ['Jan 2016', 'Jan 2017'] },
             ];
 
             //when
@@ -81,6 +81,7 @@ describe('Filter service', function () {
             it('should create filter', inject(function (FilterService, StateService) {
                 //given
                 var removeFnCallback = function () {};
+
                 expect(StateService.addGridFilter).not.toHaveBeenCalled();
 
                 //when
@@ -89,9 +90,9 @@ describe('Filter service', function () {
                     caseSensitive: true,
                     phrase: [
                         {
-                            value: 'toto\n'
-                        }
-                    ]
+                            value: 'toto\n',
+                        },
+                    ],
                 }, removeFnCallback);
 
                 //then
@@ -107,9 +108,9 @@ describe('Filter service', function () {
                     phrase: [
                         {
                             label: 'toto\\n',
-                            value: 'toto\n'
-                        }
-                    ]
+                            value: 'toto\n',
+                        },
+                    ],
                 });
                 expect(filterInfo.filterFn()({ col1: ' toto\nest ici' })).toBeTruthy();
                 expect(filterInfo.filterFn()({ col1: ' toto est ici' })).toBeFalsy();
@@ -125,9 +126,9 @@ describe('Filter service', function () {
                 FilterService.addFilter('contains', 'col1', 'column name', {
                     phrase: [
                         {
-                            value: 'to*ici'
-                        }
-                    ]
+                            value: 'to*ici',
+                        },
+                    ],
                 });
 
                 //then
@@ -145,11 +146,11 @@ describe('Filter service', function () {
                     args: {
                         phrase: [
                             {
-                                value: 'toto'
-                            }
-                        ]
+                                value: 'toto',
+                            },
+                        ],
                     },
-                    type: 'contains'
+                    type: 'contains',
                 };
                 stateMock.playground.filter.gridFilters = [oldFilter];
                 spyOn(StateService, 'removeGridFilter').and.returnValue();
@@ -158,9 +159,9 @@ describe('Filter service', function () {
                 FilterService.addFilter('contains', 'col1', 'column name', {
                     phrase: [
                         {
-                            value: 'toto'
-                        }
-                    ]
+                            value: 'toto',
+                        },
+                    ],
                 }, null);
 
                 //then
@@ -174,11 +175,11 @@ describe('Filter service', function () {
                     args: {
                         phrase: [
                             {
-                                value: 'tata'
-                            }
-                        ]
+                                value: 'tata',
+                            },
+                        ],
                     },
-                    type: 'contains'
+                    type: 'contains',
                 };
                 stateMock.playground.filter.gridFilters = [oldFilter];
                 spyOn(StateService, 'updateGridFilter').and.returnValue();
@@ -187,9 +188,9 @@ describe('Filter service', function () {
                 FilterService.addFilter('contains', 'col1', 'column name', {
                     phrase: [
                         {
-                            value: 'toto'
-                        }
-                    ]
+                            value: 'toto',
+                        },
+                    ],
                 }, null);
 
                 //then
@@ -202,9 +203,9 @@ describe('Filter service', function () {
                     phrase: [
                         {
                             label: 'toto',
-                            value: 'toto'
-                        }
-                    ]
+                            value: 'toto',
+                        },
+                    ],
                 });
             }));
         });
@@ -218,10 +219,10 @@ describe('Filter service', function () {
                 FilterService.addFilter('exact', 'col1', 'column name', {
                     phrase: [
                         {
-                            value: 'toici\n'
-                        }
+                            value: 'toici\n',
+                        },
                     ],
-                    caseSensitive: true
+                    caseSensitive: true,
                 });
 
                 //then
@@ -232,10 +233,10 @@ describe('Filter service', function () {
                     phrase: [
                         {
                             label: 'toici\\n',
-                            value: 'toici\n'
-                        }
+                            value: 'toici\n',
+                        },
                     ],
-                    caseSensitive: true
+                    caseSensitive: true,
                 });
 
                 expect(filterInfo.filterFn()({ col1: 'toici\n' })).toBeTruthy();
@@ -253,10 +254,10 @@ describe('Filter service', function () {
                 FilterService.addFilter('exact', 'col1', 'column name', {
                     phrase: [
                         {
-                            value: 'toici'
-                        }
+                            value: 'toici',
+                        },
                     ],
-                    caseSensitive: false
+                    caseSensitive: false,
                 });
 
                 //then
@@ -275,11 +276,11 @@ describe('Filter service', function () {
                     args: {
                         phrase: [
                             {
-                                value: 'toto'
-                            }
-                        ]
+                                value: 'toto',
+                            },
+                        ],
                     },
-                    type: 'exact'
+                    type: 'exact',
                 };
                 stateMock.playground.filter.gridFilters = [oldFilter];
                 spyOn(StateService, 'removeGridFilter').and.returnValue();
@@ -289,9 +290,9 @@ describe('Filter service', function () {
                     phrase:
                     [
                         {
-                            value: 'toto'
-                        }
-                    ]
+                            value: 'toto',
+                        },
+                    ],
                 }, null);
 
                 //then
@@ -305,11 +306,11 @@ describe('Filter service', function () {
                     args: {
                         phrase: [
                             {
-                                value: 'tata'
-                            }
-                        ]
+                                value: 'tata',
+                            },
+                        ],
                     },
-                    type: 'exact'
+                    type: 'exact',
                 };
                 stateMock.playground.filter.gridFilters = [oldFilter];
                 spyOn(StateService, 'updateGridFilter').and.returnValue();
@@ -318,9 +319,9 @@ describe('Filter service', function () {
                 FilterService.addFilter('exact', 'col1', 'column name', {
                     phrase: [
                         {
-                            value: 'toto'
-                        }
-                    ]
+                            value: 'toto',
+                        },
+                    ],
                 }, null);
 
                 //then
@@ -333,9 +334,9 @@ describe('Filter service', function () {
                     phrase: [
                         {
                             label: 'toto',
-                            value: 'toto'
-                        }
-                    ]
+                            value: 'toto',
+                        },
+                    ],
                 });
             }));
         });
@@ -349,9 +350,9 @@ describe('Filter service', function () {
                     metadata: {
                         columns: [
                             { id: 'col0', quality: { invalidValues: [] } },
-                            { id: 'col1', quality: { invalidValues: invalidValues } }
-                        ]
-                    }
+                            { id: 'col1', quality: { invalidValues: invalidValues } },
+                        ],
+                    },
                 };
 
                 //when
@@ -430,9 +431,9 @@ describe('Filter service', function () {
                     metadata: {
                         columns: [
                             { id: 'col0', quality: { invalidValues: [] } },
-                            { id: 'col1', quality: { invalidValues: invalidValues } }
-                        ]
-                    }
+                            { id: 'col1', quality: { invalidValues: invalidValues } },
+                        ],
+                    },
                 };
 
                 //when
@@ -477,21 +478,21 @@ describe('Filter service', function () {
                     intervals: [
                         {
                             label: '[0 .. 22[',
-                            value: [0, 22]
-                        }
+                            value: [0, 22],
+                        },
                     ],
                     type: 'integer',
-                    isMaxReached: true
+                    isMaxReached: true,
                 });
                 FilterService.addFilter('inside_range', 'col2', 'column name2', {
                     intervals: [
                         {
                             label: '[0 .. 1,000,000[',
-                            value: [0, 1000000]
-                        }
+                            value: [0, 1000000],
+                        },
                     ],
                     type: 'integer',
-                    isMaxReached: false
+                    isMaxReached: false,
                 });
 
                 //then
@@ -508,11 +509,11 @@ describe('Filter service', function () {
                     intervals: [
                         {
                             label: '[0 .. 22[',
-                            value: [0, 22]
-                        }
+                            value: [0, 22],
+                        },
                     ],
                     type: 'integer',
-                    isMaxReached: true
+                    isMaxReached: true,
                 });
                 expect(filterInfo.filterFn()({ col1: '5' })).toBeTruthy();
                 expect(filterInfo.filterFn()({ col1: '-5' })).toBeFalsy();
@@ -525,19 +526,19 @@ describe('Filter service', function () {
                 expect(filterInfo2.value).toEqual([
                     {
                         label: '[0 .. 1,000,000[',
-                        value: [0, 1000000]
-                    }
+                        value: [0, 1000000],
+                    },
                 ]);
                 expect(filterInfo2.editable).toBe(false);
                 expect(filterInfo2.args).toEqual({
                     intervals: [
                         {
                             label: '[0 .. 1,000,000[',
-                            value: [0, 1000000]
-                        }
+                            value: [0, 1000000],
+                        },
                     ],
                     type: 'integer',
-                    isMaxReached: false
+                    isMaxReached: false,
                 });
                 expect(filterInfo2.filterFn()({ col2: '1000' })).toBeTruthy();
                 expect(filterInfo2.filterFn()({ col2: '-5' })).toBeFalsy();
@@ -550,9 +551,9 @@ describe('Filter service', function () {
                     selectedColumn: {
                         id: 'col1',
                         statistics: {
-                            patternFrequencyTable: [{ pattern: 'yyyy-MM-dd' }]
-                        }
-                    }
+                            patternFrequencyTable: [{ pattern: 'yyyy-MM-dd' }],
+                        },
+                    },
                 };
 
                 expect(StateService.addGridFilter).not.toHaveBeenCalled();
@@ -568,11 +569,11 @@ describe('Filter service', function () {
                                 label: 'Jan 2014',
                                 value: [
                                     new Date(2014, 0, 1).getTime(),
-                                    new Date(2014, 1, 1).getTime()
-                                ]
-                            }
+                                    new Date(2014, 1, 1).getTime(),
+                                ],
+                            },
                         ],
-                        type: 'date'
+                        type: 'date',
                     },
                     null
                 );
@@ -589,9 +590,9 @@ describe('Filter service', function () {
                         label: 'Jan 2014',
                         value: [
                             new Date(2014, 0, 1).getTime(),
-                            new Date(2014, 1, 1).getTime()
-                        ]
-                    }
+                            new Date(2014, 1, 1).getTime(),
+                        ],
+                    },
                 ]);
                 expect(filterInfo.editable).toBe(false);
                 expect(filterInfo.args).toEqual({
@@ -600,11 +601,11 @@ describe('Filter service', function () {
                             label: 'Jan 2014',
                             value: [
                                 new Date(2014, 0, 1).getTime(),
-                                new Date(2014, 1, 1).getTime()
-                            ]
-                        }
+                                new Date(2014, 1, 1).getTime(),
+                            ],
+                        },
                     ],
-                    type: 'date'
+                    type: 'date',
                 });
                 expect(filterInfo.filterFn()({ col1: '2014-01-10' })).toBe(true);
                 expect(filterInfo.filterFn()({ col1: '2015-12-10' })).toBe(false);
@@ -619,10 +620,10 @@ describe('Filter service', function () {
                     args: {
                         intervals: [
                             {
-                                value: [0, 22]
-                            }
-                        ]
-                    }
+                                value: [0, 22],
+                            },
+                        ],
+                    },
                 };
                 stateMock.playground.filter.gridFilters = [oldFilter];
                 spyOn(StateService, 'removeGridFilter').and.returnValue();
@@ -631,9 +632,9 @@ describe('Filter service', function () {
                 FilterService.addFilter('inside_range', 'col1', 'column name', {
                     intervals: [
                         {
-                            value: [0, 22]
-                        }
-                    ]
+                            value: [0, 22],
+                        },
+                    ],
                 });
 
                 //then
@@ -650,9 +651,9 @@ describe('Filter service', function () {
                 FilterService.addFilter('matches', 'col1', 'column name', {
                     patterns: [
                         {
-                            value: ''
-                        }
-                    ]
+                            value: '',
+                        },
+                    ],
                 });
 
                 //then
@@ -672,9 +673,9 @@ describe('Filter service', function () {
                 FilterService.addFilter('matches', 'col1', 'column name', {
                     patterns: [
                         {
-                            value:'Aa9/.,'
-                        }
-                    ]
+                            value: 'Aa9/.,',
+                        },
+                    ],
                 });
 
                 //then
@@ -694,9 +695,9 @@ describe('Filter service', function () {
                 FilterService.addFilter('matches', 'col1', 'column name', {
                     patterns: [
                         {
-                            value: 'yyyy-d-M'
-                        }
-                    ]
+                            value: 'yyyy-d-M',
+                        },
+                    ],
                 });
 
                 //then
@@ -716,9 +717,9 @@ describe('Filter service', function () {
                 FilterService.addFilter('matches', 'col1', 'column name', {
                     patterns: [
                         {
-                            value: 'yyyy d \'o\'\'clock d\' M HH:mm:ss'
-                        }
-                    ]
+                            value: 'yyyy d \'o\'\'clock d\' M HH:mm:ss',
+                        },
+                    ],
                 });
 
                 //then
@@ -738,11 +739,11 @@ describe('Filter service', function () {
                     args: {
                         patterns: [
                             {
-                                value: 'Aa'
-                            }
-                        ]
+                                value: 'Aa',
+                            },
+                        ],
                     },
-                    type: 'matches'
+                    type: 'matches',
                 };
                 stateMock.playground.filter.gridFilters = [oldFilter];
                 spyOn(StateService, 'removeGridFilter').and.returnValue();
@@ -751,9 +752,9 @@ describe('Filter service', function () {
                 FilterService.addFilter('matches', 'col1', 'column name', {
                     patterns: [
                         {
-                            value: 'Aa'
-                        }
-                    ]
+                            value: 'Aa',
+                        },
+                    ],
                 }, null);
 
                 //then
@@ -767,11 +768,11 @@ describe('Filter service', function () {
                     args: {
                         patterns: [
                             {
-                                value:'Aa'
-                            }
-                        ]
+                                value: 'Aa',
+                            },
+                        ],
                     },
-                    type: 'matches'
+                    type: 'matches',
                 };
                 stateMock.playground.filter.gridFilters = [oldFilter];
                 spyOn(StateService, 'updateGridFilter').and.returnValue();
@@ -780,9 +781,9 @@ describe('Filter service', function () {
                 FilterService.addFilter('matches', 'col1', 'column name', {
                     patterns: [
                         {
-                            value:'Aa9'
-                        }
-                    ]
+                            value: 'Aa9',
+                        },
+                    ],
                 }, null);
 
                 //then
@@ -793,8 +794,8 @@ describe('Filter service', function () {
                 expect(newFilter.colId).toBe('col1');
                 expect(newFilter.args.patterns).toEqual([
                     {
-                        value:'Aa9'
-                    }
+                        value: 'Aa9',
+                    },
                 ]);
             }));
         });
@@ -807,9 +808,9 @@ describe('Filter service', function () {
             FilterService.addFilter('contains', 'col_that_does_not_exist', 'column name', {
                 phrase: [
                     {
-                        value: 'toto'
-                    }
-                ]
+                        value: 'toto',
+                    },
+                ],
             });
 
             //then
@@ -828,9 +829,9 @@ describe('Filter service', function () {
             FilterService.addFilter('exact', 'col_that_does_not_exist', 'column name', {
                 phrase: [
                     {
-                        value: 'toto'
-                    }
-                ]
+                        value: 'toto',
+                    },
+                ],
             });
 
             //then
@@ -844,15 +845,16 @@ describe('Filter service', function () {
         it('should trigger statistics update', inject(function (FilterService, StatisticsService) {
             //given
             var removeFnCallback = function () {};
+
             expect(StatisticsService.updateFilteredStatistics).not.toHaveBeenCalled();
 
             //when
             FilterService.addFilter('contains', 'col1', 'column name', {
                 phrase: [
                     {
-                        value: 'toto'
-                    }
-                ]
+                        value: 'toto',
+                    },
+                ],
             }, removeFnCallback);
 
             //then
@@ -864,6 +866,7 @@ describe('Filter service', function () {
         it('should add a filter wrapped in $timeout to trigger a digest', inject(function ($timeout, FilterService, StateService) {
             //given
             var removeFnCallback = function () {};
+
             expect(StateService.addGridFilter).not.toHaveBeenCalled();
 
             //when
@@ -871,9 +874,9 @@ describe('Filter service', function () {
                 caseSensitive: true,
                 phrase: [
                     {
-                        value: 'toto\n'
-                    }
-                ]
+                        value: 'toto\n',
+                    },
+                ],
             }, removeFnCallback);
             expect(StateService.addGridFilter).not.toHaveBeenCalled();
             $timeout.flush();
@@ -891,9 +894,9 @@ describe('Filter service', function () {
                 phrase: [
                     {
                         label: 'toto\\n',
-                        value: 'toto\n'
-                    }
-                ]
+                        value: 'toto\n',
+                    },
+                ],
             });
             expect(filterInfo.filterFn()({ col1: ' toto\nest ici' })).toBeTruthy();
             expect(filterInfo.filterFn()({ col1: ' toto est ici' })).toBeFalsy();
@@ -995,19 +998,19 @@ describe('Filter service', function () {
                 args: {
                     phrase: [
                         {
-                            value: 'Tata'
-                        }
-                    ]
+                            value: 'Tata',
+                        },
+                    ],
                 },
-                filterFn: function () {}
+                filterFn: function () {},
             };
             expect(StateService.updateGridFilter).not.toHaveBeenCalled();
 
             //when
             FilterService.updateFilter(oldFilter, [
                 {
-                    value: 'Tata\\n'
-                }
+                    value: 'Tata\\n',
+                },
             ]);
 
             //then
@@ -1021,8 +1024,8 @@ describe('Filter service', function () {
             expect(newFilter.colName).toBe('column 2');
             expect(newFilter.args.phrase).toEqual([
                 {
-                    value: 'Tata\\n'
-                }
+                    value: 'Tata\\n',
+                },
             ]);
 
             expect(newFilter.filterFn()({ col2: ' Tata\\n est ici' })).toBeTruthy();
@@ -1038,11 +1041,11 @@ describe('Filter service', function () {
                 args: {
                     phrase: [
                         {
-                            value: 'Toto'
-                        }
-                    ]
+                            value: 'Toto',
+                        },
+                    ],
                 },
-                filterFn: function () {}
+                filterFn: function () {},
             };
 
             expect(StateService.updateGridFilter).not.toHaveBeenCalled();
@@ -1050,8 +1053,8 @@ describe('Filter service', function () {
             //when
             FilterService.updateFilter(oldFilter, [
                 {
-                    value: 'Tata\\n'
-                }
+                    value: 'Tata\\n',
+                },
             ]);
 
             //then
@@ -1065,13 +1068,13 @@ describe('Filter service', function () {
             expect(newFilter.colName).toBe('column 2');
             expect(newFilter.args.phrase).toEqual([
                 {
-                    value: 'Tata\\n'
-                }
+                    value: 'Tata\\n',
+                },
             ]);
             expect(newFilter.value).toEqual([
                 {
-                    value: 'Tata\\n'
-                }
+                    value: 'Tata\\n',
+                },
             ]);
 
             expect(newFilter.filterFn()({ col2: 'Tata\\n' })).toBeTruthy();
@@ -1088,12 +1091,12 @@ describe('Filter service', function () {
                     intervals: [
                         {
                             label: '[5 .. 10[',
-                            value: [5, 10]
-                        }
+                            value: [5, 10],
+                        },
                     ],
-                    type: 'integer'
+                    type: 'integer',
                 },
-                filterFn: function () {}
+                filterFn: function () {},
             };
 
             expect(StateService.updateGridFilter).not.toHaveBeenCalled();
@@ -1102,8 +1105,8 @@ describe('Filter service', function () {
             FilterService.updateFilter(oldFilter, [
                 {
                     value: [0, 22],
-                    label: '[0 .. 22['
-                }
+                    label: '[0 .. 22[',
+                },
             ]);
 
             //then
@@ -1119,16 +1122,16 @@ describe('Filter service', function () {
                 intervals: [
                     {
                         value: [0, 22],
-                        label: '[0 .. 22['
-                    }
+                        label: '[0 .. 22[',
+                    },
                 ],
-                type: 'integer'
+                type: 'integer',
             });
             expect(newFilter.value).toEqual([
                 {
                     value: [0, 22],
-                    label: '[0 .. 22['
-                }
+                    label: '[0 .. 22[',
+                },
             ]);
         }));
 
@@ -1144,24 +1147,23 @@ describe('Filter service', function () {
                             label: 'Jan 2014',
                             value: [
                                 new Date(2014, 0, 1).getTime(),
-                                new Date(2014, 1, 1).getTime()
-                            ]
-                        }
+                                new Date(2014, 1, 1).getTime(),
+                            ],
+                        },
                     ],
-                    type: 'date'
+                    type: 'date',
                 },
-                filterFn: function () {}
+                filterFn: function () {},
             };
 
             stateMock.playground.grid = {
                 selectedColumn: {
                     id: '0000',
                     statistics: {
-                        patternFrequencyTable: [{ pattern: 'yyyy-MM-dd' }]
-                    }
-                }
+                        patternFrequencyTable: [{ pattern: 'yyyy-MM-dd' }],
+                    },
+                },
             };
-
 
             expect(StateService.updateGridFilter).not.toHaveBeenCalled();
 
@@ -1171,9 +1173,9 @@ describe('Filter service', function () {
                     label: 'Mar 2015',
                     value: [
                         new Date(2015, 2, 1).getTime(),
-                        new Date(2015, 3, 1).getTime()
-                    ]
-                }
+                        new Date(2015, 3, 1).getTime(),
+                    ],
+                },
             ]);
 
             //then
@@ -1191,34 +1193,35 @@ describe('Filter service', function () {
                         label: 'Mar 2015',
                         value: [
                             new Date(2015, 2, 1).getTime(),
-                            new Date(2015, 3, 1).getTime()
-                        ]
-                    }
+                            new Date(2015, 3, 1).getTime(),
+                        ],
+                    },
                 ],
-                type: 'date'
+                type: 'date',
             });
             expect(newFilter.value).toEqual([
                 {
                     label: 'Mar 2015',
                     value: [
                         new Date(2015, 2, 1).getTime(),
-                        new Date(2015, 3, 1).getTime()
-                    ]
-                }
+                        new Date(2015, 3, 1).getTime(),
+                    ],
+                },
             ]);
         }));
 
         it('should update "inside range" filter when adding an existing range filter', inject(function (FilterService, StateService) {
             //given
             var removeCallback = function () {};
+
             FilterService.addFilter('inside_range', 'col1', 'column name', {
                 intervals: [
                     {
                         label: '[0 .. 22[',
-                        value: [0, 22]
-                    }
+                        value: [0, 22],
+                    },
                 ],
-                type: 'integer'
+                type: 'integer',
             }, removeCallback);
 
             expect(StateService.updateGridFilter).not.toHaveBeenCalled();
@@ -1227,8 +1230,8 @@ describe('Filter service', function () {
             expect(filterInfo.value).toEqual([
                 {
                     label: '[0 .. 22[',
-                    value: [0, 22]
-                }
+                    value: [0, 22],
+                },
             ]);
 
             expect(filterInfo.filterFn({ col1: '4' })).toBeTruthy();
@@ -1240,10 +1243,10 @@ describe('Filter service', function () {
                     {
                         label: '[5 .. 10[',
                         value: [5, 10],
-                        isMaxReached: true
-                    }
+                        isMaxReached: true,
+                    },
                 ],
-                type: 'integer'
+                type: 'integer',
             });
 
             //then
@@ -1261,8 +1264,8 @@ describe('Filter service', function () {
                 {
                     label: '[5 .. 10[',
                     value: [5, 10],
-                    isMaxReached: true
-                }
+                    isMaxReached: true,
+                },
             ]);
             expect(newFilterInfos.editable).toBe(false);
             expect(newFilterInfos.args).toEqual({
@@ -1270,10 +1273,10 @@ describe('Filter service', function () {
                     {
                         label: '[5 .. 10[',
                         value: [5, 10],
-                        isMaxReached: true
-                    }
+                        isMaxReached: true,
+                    },
                 ],
-                type: 'integer'
+                type: 'integer',
             });
             expect(newFilterInfos.filterFn()({ col1: '8' })).toBeTruthy();
             //the 4 is no more inside the brush range
@@ -1290,19 +1293,19 @@ describe('Filter service', function () {
                 args: {
                     phrase: [
                         {
-                            value: 'Tata'
-                        }
-                    ]
+                            value: 'Tata',
+                        },
+                    ],
                 },
-                filterFn: function () {}
+                filterFn: function () {},
             };
             expect(StatisticsService.updateFilteredStatistics).not.toHaveBeenCalled();
 
             //when
             FilterService.updateFilter(oldFilter, [
                 {
-                    value: 'Tata'
-                }
+                    value: 'Tata',
+                },
             ]);
 
             //then
@@ -1318,18 +1321,18 @@ describe('Filter service', function () {
                 args: {
                     phrase: [
                         {
-                            value: 'Toto'
-                        }
-                    ]
+                            value: 'Toto',
+                        },
+                    ],
                 },
-                filterFn: function () {}
+                filterFn: function () {},
             };
 
             //when
             FilterService.updateFilter(oldFilter, [
                 {
-                    value: 'Tata'
-                }
+                    value: 'Tata',
+                },
             ], 'ctrl');
 
             //then
@@ -1337,7 +1340,7 @@ describe('Filter service', function () {
             expect(newFilter).not.toBe(oldFilter);
             expect(newFilter.args.phrase).toEqual([
                 { value: 'Toto' },
-                { value: 'Tata' }
+                { value: 'Tata' },
             ]);
 
             expect(newFilter.filterFn()({ col2: 'Toto' })).toBeTruthy();
@@ -1357,22 +1360,22 @@ describe('Filter service', function () {
                             label: 'Jan 2014',
                             value: [
                                 new Date(2014, 0, 1).getTime(),
-                                new Date(2014, 1, 1).getTime()
-                            ]
-                        }
+                                new Date(2014, 1, 1).getTime(),
+                            ],
+                        },
                     ],
-                    type: 'date'
+                    type: 'date',
                 },
-                filterFn: function () {}
+                filterFn: function () {},
             };
 
             stateMock.playground.grid = {
                 selectedColumn: {
                     id: '0000',
                     statistics: {
-                        patternFrequencyTable: [{ pattern: 'yyyy-MM-dd' }]
-                    }
-                }
+                        patternFrequencyTable: [{ pattern: 'yyyy-MM-dd' }],
+                    },
+                },
             };
 
             //when
@@ -1381,9 +1384,9 @@ describe('Filter service', function () {
                     label: 'Feb 2014',
                     value: [
                         new Date(2014, 1, 1).getTime(),
-                        new Date(2014, 2, 1).getTime()
-                    ]
-                }
+                        new Date(2014, 2, 1).getTime(),
+                    ],
+                },
             ], FilterService.CTRL_KEY_NAME);
 
             //then
@@ -1395,18 +1398,18 @@ describe('Filter service', function () {
                         label: 'Jan 2014',
                         value: [
                             new Date(2014, 0, 1).getTime(),
-                            new Date(2014, 1, 1).getTime()
-                        ]
+                            new Date(2014, 1, 1).getTime(),
+                        ],
                     },
                     {
                         label: 'Feb 2014',
                         value: [
                             new Date(2014, 1, 1).getTime(),
-                            new Date(2014, 2, 1).getTime()
-                        ]
-                    }
+                            new Date(2014, 2, 1).getTime(),
+                        ],
+                    },
                 ],
-                type: 'date'
+                type: 'date',
             });
 
             expect(newFilter.filterFn()({ col1: '2014-01-01' })).toBeTruthy();
@@ -1426,22 +1429,22 @@ describe('Filter service', function () {
                             label: 'Jan 2014',
                             value: [
                                 new Date(2014, 0, 1).getTime(),
-                                new Date(2014, 1, 1).getTime()
-                            ]
-                        }
+                                new Date(2014, 1, 1).getTime(),
+                            ],
+                        },
                     ],
-                    type: 'date'
+                    type: 'date',
                 },
-                filterFn: function () {}
+                filterFn: function () {},
             };
 
             stateMock.playground.grid = {
                 selectedColumn: {
                     id: '0000',
                     statistics: {
-                        patternFrequencyTable: [{ pattern: 'yyyy-MM-dd' }]
-                    }
-                }
+                        patternFrequencyTable: [{ pattern: 'yyyy-MM-dd' }],
+                    },
+                },
             };
 
             //when
@@ -1450,9 +1453,9 @@ describe('Filter service', function () {
                     label: 'Apr 2014',
                     value: [
                         new Date(2014, 3, 1).getTime(),
-                        new Date(2014, 4, 1).getTime()
-                    ]
-                }
+                        new Date(2014, 4, 1).getTime(),
+                    ],
+                },
             ], FilterService.SHIFT_KEY_NAME);
 
             //then
@@ -1464,9 +1467,9 @@ describe('Filter service', function () {
                         label: '[Jan 2014 .. Apr 2014[',
                         value: [
                             new Date(2014, 0, 1).getTime(),
-                            new Date(2014, 4, 1).getTime()
-                        ]
-                    }
+                            new Date(2014, 4, 1).getTime(),
+                        ],
+                    },
                 ]
             );
             expect(newFilter.filterFn()({ col1: '2014-02-01' })).toBeTruthy();

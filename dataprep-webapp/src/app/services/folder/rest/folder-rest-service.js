@@ -74,9 +74,11 @@ export default function FolderRestService($http, RestURLs) {
         if (sortType) {
             options.push(`sort=${sortType}`);
         }
+
         if (sortOrder) {
             options.push(`order=${sortOrder}`);
         }
+
         if (options.length) {
             url = `${url}?${options.join('&')}`;
         }

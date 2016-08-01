@@ -28,10 +28,10 @@ export default function TransformDateParam() {
         templateUrl: template,
         scope: {
             parameter: '=',
-            label: '@'
+            label: '@',
         },
         bindToController: true,
         controllerAs: 'dateParamCtrl',
-        controller: 'TransformDateParamCtrl'
+        controller: 'TransformDateParamCtrl',
     };
 }

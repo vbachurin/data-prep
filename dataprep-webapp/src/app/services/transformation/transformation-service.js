@@ -31,7 +31,7 @@ export default function TransformationService(TransformationRestService, Paramet
         getLineTransformations: getLineTransformations,
         getColumnTransformations: getColumnTransformations,
         getColumnSuggestions: getColumnSuggestions,
-        initDynamicParameters: initDynamicParameters
+        initDynamicParameters: initDynamicParameters,
     };
 
     // --------------------------------------------------------------------------------------------
@@ -136,7 +136,7 @@ export default function TransformationService(TransformationRestService, Paramet
                 return {
                     category: key,
                     categoryHtml: key.toUpperCase(),
-                    transformations: groupedTransformations[key]
+                    transformations: groupedTransformations[key],
                 };
             })
             .value();
@@ -163,7 +163,7 @@ export default function TransformationService(TransformationRestService, Paramet
                 const allCategories = prepareTransformations(allTransformations);
                 return {
                     allTransformations: allTransformations,
-                    allCategories: allCategories
+                    allCategories: allCategories,
                 };
             });
     }
@@ -187,7 +187,7 @@ export default function TransformationService(TransformationRestService, Paramet
                 const allCategories = prepareTransformations(allTransformations);
                 return {
                     allTransformations: allTransformations,
-                    allCategories: allCategories
+                    allCategories: allCategories,
                 };
             });
     }

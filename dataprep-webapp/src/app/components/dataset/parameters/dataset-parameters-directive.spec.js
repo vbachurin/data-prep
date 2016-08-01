@@ -11,7 +11,7 @@
 
   ============================================================================*/
 
-describe('Dataset parameters directive', function() {
+describe('Dataset parameters directive', function () {
     'use strict';
 
     var scope;
@@ -20,23 +20,21 @@ describe('Dataset parameters directive', function() {
 
     beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
-            'DATASET_PARAMETERS': 'Dataset parameters',
-            'DATASET_PARAMETERS_ENCODING': 'Encoding',
-            'DATASET_PARAMETERS_SEPARATOR': 'Separator',
-            'FILE_DETAILS_LINES': '{{records}} lines',
-            'FILE_DETAILS_LIMIT': 'cut at {{records}} lines',
-            "NAME": "Name :",
-            "SIZE": "Size :",
-            "OTHER": "Other",
+            DATASET_PARAMETERS: 'Dataset parameters',
+            DATASET_PARAMETERS_ENCODING: 'Encoding',
+            DATASET_PARAMETERS_SEPARATOR: 'Separator',
+            FILE_DETAILS_LINES: '{{records}} lines',
+            FILE_DETAILS_LIMIT: 'cut at {{records}} lines',
+            NAME: 'Name :',
+            SIZE: 'Size :',
+            OTHER: 'Other',
         });
         $translateProvider.preferredLanguage('en');
     }));
 
-
     beforeEach(angular.mock.module('data-prep.dataset-parameters'));
-    
 
-    beforeEach(inject(function($rootScope, $compile) {
+    beforeEach(inject(function ($rootScope, $compile) {
         scope = $rootScope.$new();
         scope.validate = jasmine.createSpy('validation');
         scope.configuration = {
@@ -44,13 +42,13 @@ describe('Dataset parameters directive', function() {
                 { label: ';', value: ';' },
                 { label: ',', value: ',' },
                 { label: '<space>', value: ' ' },
-                { label: '<tab>', value: '\t' }
+                { label: '<tab>', value: '\t' },
             ],
-            encodings: ['UTF-8', 'UTF-16', 'ISO-8859-1']
+            encodings: ['UTF-8', 'UTF-16', 'ISO-8859-1'],
         };
         scope.parameters = { separator: ';', encoding: 'UTF-8' };
 
-        createElement = function() {
+        createElement = function () {
             var html = '<dataset-parameters ' +
                 'processing="processing" ' +
                 'dataset="dataset" ' +
@@ -66,13 +64,13 @@ describe('Dataset parameters directive', function() {
         };
     }));
 
-    afterEach(function() {
+    afterEach(function () {
         scope.$destroy();
         element.remove();
     });
 
-    describe('render', function() {
-        it('should render title', function() {
+    describe('render', function () {
+        it('should render title', function () {
             //when
             createElement();
 
@@ -85,7 +83,7 @@ describe('Dataset parameters directive', function() {
             scope.dataset = {
                 id: '12ce6c32-bf80-41c8-92e5-66d70f22ec1f',
                 name: 'US States',
-                records: '3'
+                records: '3',
             };
             scope.displayNbLines = true;
 
@@ -102,7 +100,7 @@ describe('Dataset parameters directive', function() {
                 id: '12ce6c32-bf80-41c8-92e5-66d70f22ec1f',
                 name: 'US States',
                 records: '3',
-                limit: 50
+                limit: 50,
             };
             scope.displayNbLines = true;
 
@@ -119,7 +117,7 @@ describe('Dataset parameters directive', function() {
                 id: '12ce6c32-bf80-41c8-92e5-66d70f22ec1f',
                 name: 'US States',
                 records: '3',
-                limit: 50
+                limit: 50,
             };
             scope.displayNbLines = false;
 
@@ -130,7 +128,7 @@ describe('Dataset parameters directive', function() {
             expect(element.find('.dataset-parameters-header').eq(0).text().trim().replace(/[\s]+/g, ' ')).toBe('Name : US States');
         });
 
-        it('should render encodings', function() {
+        it('should render encodings', function () {
             //when
             createElement();
 
@@ -148,8 +146,8 @@ describe('Dataset parameters directive', function() {
             expect(encodingOptions.eq(2).text()).toBe('ISO-8859-1');
         });
 
-        describe('separator', function() {
-            it('should NOT render separators on NON csv', function() {
+        describe('separator', function () {
+            it('should NOT render separators on NON csv', function () {
                 //given
                 scope.dataset = { type: 'other' };
 
@@ -160,7 +158,7 @@ describe('Dataset parameters directive', function() {
                 expect(element.find('.dataset-parameters-separator').length).toBe(0);
             });
 
-            it('should render separators on csv dataset', function() {
+            it('should render separators on csv dataset', function () {
                 //given
                 scope.dataset = { type: 'text/csv' };
 
@@ -185,7 +183,7 @@ describe('Dataset parameters directive', function() {
                 expect(separatorOptions.eq(4).text()).toBe('<tab>');
             });
 
-            it('should render custom separator input only when separator is not in the configuration list', function() {
+            it('should render custom separator input only when separator is not in the configuration list', function () {
                 //given
                 scope.dataset = { type: 'text/csv' };
                 createElement();
@@ -202,8 +200,8 @@ describe('Dataset parameters directive', function() {
             });
         });
 
-        describe('button', function() {
-            it('should enable button when processing is falsy', function() {
+        describe('button', function () {
+            it('should enable button when processing is falsy', function () {
                 //given
                 scope.processing = false;
 
@@ -214,7 +212,7 @@ describe('Dataset parameters directive', function() {
                 expect(element.find('button').attr('disabled')).toBeFalsy();
             });
 
-            it('should disable button when processing is truthy', function() {
+            it('should disable button when processing is truthy', function () {
                 //given
                 scope.processing = true;
 
@@ -227,8 +225,8 @@ describe('Dataset parameters directive', function() {
         });
     });
 
-    describe('validation', function() {
-        it('should call validation callback on form submit', function() {
+    describe('validation', function () {
+        it('should call validation callback on form submit', function () {
             //given
             scope.dataset = { id: '54a146cf854b54', type: 'text/csv' };
             scope.parameters.separator = '|';

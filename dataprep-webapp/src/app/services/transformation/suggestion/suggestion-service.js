@@ -40,7 +40,7 @@ export default function SuggestionService(LineSuggestionService, ColumnSuggestio
 
         setColumn: setColumn,
         setLine: setLine,
-        selectTab: selectTab
+        selectTab: selectTab,
     };
     return service;
 

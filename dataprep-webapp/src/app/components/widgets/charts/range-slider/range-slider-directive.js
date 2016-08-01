@@ -50,7 +50,7 @@ export default function RangeSlider($timeout) {
         restrict: 'E',
         scope: {
             rangeLimits: '<',
-            onBrushEnd: '&'
+            onBrushEnd: '&',
         },
         controller: 'RangeSliderCtrl',
         controllerAs: 'rangeSliderCtrl',
@@ -200,7 +200,7 @@ export default function RangeSlider($timeout) {
                 const brushExtent = brush.extent();
                 return [
                     ctrl.isDateType() ? setDateTimeToMidnight(brushExtent[0]) : +brushExtent[0].toFixed(ctrl.nbDecimals),
-                    ctrl.isDateType() ? setDateTimeToMidnight(brushExtent[1]) : +brushExtent[1].toFixed(ctrl.nbDecimals)
+                    ctrl.isDateType() ? setDateTimeToMidnight(brushExtent[1]) : +brushExtent[1].toFixed(ctrl.nbDecimals),
                 ];
             }
 
@@ -227,7 +227,7 @@ export default function RangeSlider($timeout) {
                         $timeout(() => {
                             ctrl.setInputValue({
                                 min: brushValues[0],
-                                max: brushValues[1]
+                                max: brushValues[1],
                             });
                         });
                     })
@@ -244,7 +244,7 @@ export default function RangeSlider($timeout) {
 
                         ctrl.onBrushChange({
                             min: brushValues[0],
-                            max: brushValues[1]
+                            max: brushValues[1],
                         });
                     });
             }
@@ -314,12 +314,15 @@ export default function RangeSlider($timeout) {
                 if (typeof rangeLimits.minBrush !== 'undefined') {
                     rangeLimits.minBrush = setDateTimeToMidnight(rangeLimits.minBrush);
                 }
+
                 if (typeof rangeLimits.maxBrush !== 'undefined') {
                     rangeLimits.maxBrush = setDateTimeToMidnight(rangeLimits.maxBrush);
                 }
+
                 if (typeof rangeLimits.minFilterVal !== 'undefined') {
                     rangeLimits.minFilterVal = setDateTimeToMidnight(rangeLimits.minFilterVal);
                 }
+
                 if (typeof rangeLimits.maxFilterVal !== 'undefined') {
                     rangeLimits.maxFilterVal = setDateTimeToMidnight(rangeLimits.maxFilterVal);
                 }
@@ -362,6 +365,6 @@ export default function RangeSlider($timeout) {
             scope.$on('$destroy', function () {
                 $timeout.cancel(renderTimeout);
             });
-        }
+        },
     };
 }

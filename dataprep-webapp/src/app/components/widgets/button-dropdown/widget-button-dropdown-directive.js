@@ -51,11 +51,12 @@ export default function TalendButtonDropdown($timeout) {
             buttonText: '@',
             buttonTitle: '@',
             buttonAction: '&',
-            closeOnSelect: '<'
+            closeOnSelect: '<',
         },
         bindToController: true,
         controller: () => {
         },
+
         controllerAs: 'buttonDropdownCtrl',
         link: (scope, iElement, attrs) => {
             if (!attrs.buttonAction) {
@@ -68,6 +69,6 @@ export default function TalendButtonDropdown($timeout) {
                         });
                 });
             }
-        }
+        },
     };
 }

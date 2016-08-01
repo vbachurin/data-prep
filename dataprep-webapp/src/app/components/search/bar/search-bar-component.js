@@ -28,9 +28,9 @@ const SearchBarComponent = {
     bindings: {
         items: '<',
         placeholder: '@',
-        search: '&'
+        search: '&',
     },
-    controller: SearchBarCtrl
+    controller: SearchBarCtrl,
 };
 
 export default SearchBarComponent;

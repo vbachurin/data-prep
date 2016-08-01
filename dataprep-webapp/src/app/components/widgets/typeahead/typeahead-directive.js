@@ -35,7 +35,7 @@ export default function Typeahead($timeout, $window) {
             search: '&',
             placeholder: '@',
             searchingText: '@',
-            customRender: '@'
+            customRender: '@',
         },
         bindToController: true,
         controller: TypeaheadCtrl,
@@ -61,7 +61,7 @@ export default function Typeahead($timeout, $window) {
                     const containerTop = container.offset().top;
                     if (nextTop < containerTop) {
                         container.animate({
-                            scrollTop: container.scrollTop() - (containerTop - nextTop)
+                            scrollTop: container.scrollTop() - (containerTop - nextTop),
                         }, 'fast');
                     }
 
@@ -69,7 +69,7 @@ export default function Typeahead($timeout, $window) {
                     const containerBottom = containerTop + container.height();
                     if (nextBottom > containerBottom) {
                         container.animate({
-                            scrollTop: container.scrollTop() + (nextBottom - containerBottom)
+                            scrollTop: container.scrollTop() + (nextBottom - containerBottom),
                         }, 'fast');
                     }
                 }
@@ -126,6 +126,7 @@ export default function Typeahead($timeout, $window) {
                                     current.children().click();
                                 }
                             }
+
                             break;
                     }
 
@@ -143,7 +144,7 @@ export default function Typeahead($timeout, $window) {
 
                 iElement.on('$destroy', () => scope.$destroy());
                 scope.$on('$destroy', () => body.off('click', hideResults));
-            }
-        }
+            },
+        },
     };
 }

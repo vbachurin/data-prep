@@ -18,24 +18,23 @@ describe('Transformation menu directive', function () {
     var element;
 
     var types = [
-        { 'id': 'ANY', 'name': 'any', 'labelKey': 'ANY' },
-        { 'id': 'STRING', 'name': 'string', 'labelKey': 'STRING' },
-        { 'id': 'NUMERIC', 'name': 'numeric', 'labelKey': 'NUMERIC' },
-        { 'id': 'INTEGER', 'name': 'integer', 'labelKey': 'INTEGER' },
-        { 'id': 'DOUBLE', 'name': 'double', 'labelKey': 'DOUBLE' },
-        { 'id': 'FLOAT', 'name': 'float', 'labelKey': 'FLOAT' },
-        { 'id': 'BOOLEAN', 'name': 'boolean', 'labelKey': 'BOOLEAN' },
-        { 'id': 'DATE', 'name': 'date', 'labelKey': 'DATE' }
+        { id: 'ANY', name: 'any', labelKey: 'ANY' },
+        { id: 'STRING', name: 'string', labelKey: 'STRING' },
+        { id: 'NUMERIC', name: 'numeric', labelKey: 'NUMERIC' },
+        { id: 'INTEGER', name: 'integer', labelKey: 'INTEGER' },
+        { id: 'DOUBLE', name: 'double', labelKey: 'DOUBLE' },
+        { id: 'FLOAT', name: 'float', labelKey: 'FLOAT' },
+        { id: 'BOOLEAN', name: 'boolean', labelKey: 'BOOLEAN' },
+        { id: 'DATE', name: 'date', labelKey: 'DATE' },
     ];
 
     beforeEach(angular.mock.module('data-prep.transformation-menu'));
-    
 
     beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
-            'COLUMN_TYPE_IS': 'This column is a ',
-            'COLUMN_TYPE_SET': 'Set as',
-            'FLOAT': 'DECIMAL'
+            COLUMN_TYPE_IS: 'This column is a ',
+            COLUMN_TYPE_SET: 'Set as',
+            FLOAT: 'DECIMAL',
         });
         $translateProvider.preferredLanguage('en');
     }));
@@ -54,8 +53,8 @@ describe('Transformation menu directive', function () {
                 { id: '', label: '', frequency: 15 },
                 { id: 'CITY', label: 'CITY', frequency: 18 },
                 { id: 'REGION', label: 'REGION', frequency: 6 },
-                { id: 'COUNTRY', label: 'COUNTRY', frequency: 17 }
-            ]
+                { id: 'COUNTRY', label: 'COUNTRY', frequency: 17 },
+            ],
         };
 
         createElement = function () {

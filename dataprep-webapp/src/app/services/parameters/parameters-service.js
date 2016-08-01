@@ -147,6 +147,7 @@ export default class ParametersService {
         if (transformation.parameters) {
             transformation.parameters = this.initParameters(transformation.parameters, paramValues);
         }
+
         if (transformation.cluster) {
             transformation.cluster = this.initCluster(transformation.cluster, paramValues);
         }

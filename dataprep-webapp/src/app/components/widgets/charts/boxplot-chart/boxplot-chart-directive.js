@@ -36,7 +36,7 @@ export default function BoxplotChart($timeout) {
     return {
         restrict: 'E',
         scope: {
-            boxplotData: '='
+            boxplotData: '=',
         },
         link: function (scope, element, attrs) {
             var renderTimeout;
@@ -344,6 +344,6 @@ export default function BoxplotChart($timeout) {
             scope.$on('$destroy', function () {
                 $timeout.cancel(renderTimeout);
             });
-        }
+        },
     };
 }

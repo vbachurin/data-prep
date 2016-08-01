@@ -11,7 +11,7 @@
 
   ============================================================================*/
 
-describe('History service', function() {
+describe('History service', function () {
     'use strict';
 
     var firstUndoAction;

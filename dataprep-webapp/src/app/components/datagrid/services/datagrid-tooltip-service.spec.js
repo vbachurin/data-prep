@@ -26,12 +26,14 @@ describe('Datagrid tooltip service', function () {
         text: function (savedText) {
             this.savedText = savedText;
         },
+
         width: function () {
             return this.savedText.length * 4;
         },
+
         height: function () {
             return ((this.savedText.match(new RegExp('\n', 'g')) || []).length + 1) * 20; //eslint-disable-line no-control-regex
-        }
+        },
     };
 
     //record on the line
@@ -41,7 +43,7 @@ describe('Datagrid tooltip service', function () {
         '0002': 'titititititititititititititititititi',         // should show tooltip because of length
         '0003': 'toto\ntoto',                                   // should show tooltip because of height
         '0004': '',                                             // should not show tooltip
-        'tdpId': 16678678678686786788888888888888888886872      // should show tooltip because of length
+        tdpId: 16678678678686786788888888888888888886872,      // should show tooltip because of length
     };
 
     //columns metadata
@@ -51,7 +53,7 @@ describe('Datagrid tooltip service', function () {
         { id: '0002', name: 'col2' },
         { id: '0003', name: 'col3' },
         { id: '0004', name: 'col4' },
-        { id: 'tdpId', name: '#' }
+        { id: 'tdpId', name: '#' },
     ];
 
     beforeEach(angular.mock.module('data-prep.datagrid', function ($provide) {
@@ -59,9 +61,9 @@ describe('Datagrid tooltip service', function () {
         stateMock = {
             playground: {
                 grid: {
-                    dataView: dataViewMock
-                }
-            }
+                    dataView: dataViewMock,
+                },
+            },
         };
 
         $provide.constant('state', stateMock);
@@ -186,7 +188,7 @@ describe('Datagrid tooltip service', function () {
             //then
             expect(DatagridTooltipService.tooltip).toEqual({
                 position: { x: 500, y: 300 },
-                htmlStr: '<span class="hiddenChars">  </span>tetetetetetetetetetetetetetetetetetetete<span class="hiddenChars"> </span>'
+                htmlStr: '<span class="hiddenChars">  </span>tetetetetetetetetetetetetetetetetetetete<span class="hiddenChars"> </span>',
             });
             expect(DatagridTooltipService.showTooltip).toBeTruthy();
         }));
@@ -215,7 +217,7 @@ describe('Datagrid tooltip service', function () {
             //then
             expect(DatagridTooltipService.tooltip).toEqual({
                 position: { x: 500, y: 300 },
-                htmlStr: 'titititititititititititititititititi'
+                htmlStr: 'titititititititititititititititititi',
             });
             expect(DatagridTooltipService.showTooltip).toBeTruthy();
         }));
@@ -243,7 +245,7 @@ describe('Datagrid tooltip service', function () {
             //then
             expect(DatagridTooltipService.tooltip).toEqual({
                 position: { x: 500, y: 300 },
-                htmlStr: 'toto↵\ntoto'
+                htmlStr: 'toto↵\ntoto',
             });
             expect(DatagridTooltipService.showTooltip).toBeTruthy();
         }));
@@ -302,7 +304,7 @@ describe('Datagrid tooltip service', function () {
             //then
             expect(DatagridTooltipService.tooltip).toEqual({
                 position: { x: 500, y: 300 },
-                htmlStr: '1.6678678678686786e+40'
+                htmlStr: '1.6678678678686786e+40',
             });
             expect(DatagridTooltipService.showTooltip).toBeTruthy();
         }));

@@ -28,15 +28,15 @@ describe('Column profile options controller', () => {
 
     beforeEach(angular.mock.module('pascalprecht.translate', ($translateProvider) => {
         $translateProvider.translations('en_US', {
-            'AVERAGE': 'Average',
-            'MAX': 'Max',
-            'MIN': 'Min',
-            'SUM': 'Sum',
-            'CURRENT_NO_AGGREGATION': 'No aggregation',
-            'REMOVE': 'Remove',
-            'CANCEL': 'Cancel',
-            'OK': 'Ok',
-            'AGGREGATION_DETAILS': '{{aggreg}} <span class=\"highlight\">{{col}}</span> group by <span class=\"highlight\">{{group}}</span>',
+            AVERAGE: 'Average',
+            MAX: 'Max',
+            MIN: 'Min',
+            SUM: 'Sum',
+            CURRENT_NO_AGGREGATION: 'No aggregation',
+            REMOVE: 'Remove',
+            CANCEL: 'Cancel',
+            OK: 'Ok',
+            AGGREGATION_DETAILS: '{{aggreg}} <span class=\"highlight\">{{col}}</span> group by <span class=\"highlight\">{{group}}</span>',
         });
         $translateProvider.preferredLanguage('en_US');
     }));
@@ -54,7 +54,7 @@ describe('Column profile options controller', () => {
                 column: initialColumn,
                 aggregation: initialAggreg,
                 group: group,
-                onAggregationChange: jasmine.createSpy('onAggregationChange')
+                onAggregationChange: jasmine.createSpy('onAggregationChange'),
             }
         );
     }));

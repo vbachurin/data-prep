@@ -45,7 +45,7 @@ export default function HistoryService($q) {
         undo: undo,
 
         canRedo: canRedo,
-        redo: redo
+        redo: redo,
     };
     return service;
 
@@ -74,7 +74,7 @@ export default function HistoryService($q) {
     function addAction(undoAction, redoAction) {
         history.push({
             undo: undoAction,
-            redo: redoAction
+            redo: redoAction,
         });
         undoneHistory = [];
     }

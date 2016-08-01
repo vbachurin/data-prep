@@ -26,10 +26,10 @@ export default function TransformColumnParam() {
         restrict: 'E',
         templateUrl: template,
         scope: {
-            parameter: '='
+            parameter: '=',
         },
         bindToController: true,
         controllerAs: 'columnParamCtrl',
-        controller: 'TransformColumnParamCtrl'
+        controller: 'TransformColumnParamCtrl',
     };
 }

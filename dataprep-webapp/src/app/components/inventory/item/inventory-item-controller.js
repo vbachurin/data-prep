@@ -55,11 +55,11 @@ export default function InventoryItemCtrl() {
         return isRelatedInventory && vm.relatedInventories && vm.relatedInventories.length ?
             {
                 type: vm.relatedInventoriesType,
-                name: vm.relatedInventories[0].name
+                name: vm.relatedInventories[0].name,
             } :
             {
                 type: vm.type,
-                name: vm.item.tooltipName ? vm.item.tooltipName : vm.item.name
+                name: vm.item.tooltipName ? vm.item.tooltipName : vm.item.name,
             };
     };
 }

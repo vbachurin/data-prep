@@ -25,6 +25,7 @@ export default function FilterBar(state, FilterService) {
             this.filterService = FilterService;
             this.state = state;
         },
-        controllerAs: 'filterBarCtrl'
+
+        controllerAs: 'filterBarCtrl',
     };
 }

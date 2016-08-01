@@ -34,7 +34,7 @@ export default function LookupDatagridHeader($timeout) {
         templateUrl: template,
         scope: {
             column: '=',
-            added: '='
+            added: '=',
         },
         bindToController: true,
         controllerAs: 'lookupDatagridHeaderCtrl',
@@ -52,6 +52,6 @@ export default function LookupDatagridHeader($timeout) {
                     }
                 });
             }, 250, false);
-        }
+        },
     };
 }

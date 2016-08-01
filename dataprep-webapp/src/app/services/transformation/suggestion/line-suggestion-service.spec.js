@@ -18,7 +18,7 @@ describe('Line suggestion service', function () {
         { name: 'delete', category: 'clean', label: 'c', labelHtml: 'c', description: 'test' },
         { name: 'tolowercase', category: 'case', label: 'v', labelHtml: 'v', description: 'test' },
         { name: 'touppercase', category: 'case', label: 'u', labelHtml: 'u', description: 'test',  actionScope: ['unknown'] },
-        { name: 'totitlecase', category: 'case', label: 't', labelHtml: 't', description: 'test', actionScope: ['invalid'] }
+        { name: 'totitlecase', category: 'case', label: 't', labelHtml: 't', description: 'test', actionScope: ['invalid'] },
     ];
 
     var allCategories = [
@@ -27,13 +27,13 @@ describe('Line suggestion service', function () {
             transformations: [
                 { name: 'totitlecase', category: 'case', label: 't', labelHtml: 't', description: 'test', actionScope: ['invalid'] },
                 { name: 'touppercase', category: 'case', label: 'u', labelHtml: 'u', description: 'test', actionScope: ['unknown'] },
-                { name: 'tolowercase', category: 'case', label: 'v', labelHtml: 'v', description: 'test' }
-            ]
+                { name: 'tolowercase', category: 'case', label: 'v', labelHtml: 'v', description: 'test' },
+            ],
         },
         {
             category: 'clean',
-            transformations: [{ name: 'delete', category: 'clean', label: 'c', labelHtml: 'c', description: 'test' }]
-        }
+            transformations: [{ name: 'delete', category: 'clean', label: 'c', labelHtml: 'c', description: 'test' }],
+        },
     ];
 
     beforeEach(angular.mock.module('data-prep.services.transformation'));
@@ -41,14 +41,14 @@ describe('Line suggestion service', function () {
     beforeEach(inject(function ($q, StateService, TransformationCacheService) {
         spyOn(TransformationCacheService, 'getLineTransformations').and.returnValue($q.when({
             allTransformations: allTransformations,
-            allCategories: allCategories
+            allCategories: allCategories,
         }));
 
         spyOn(StateService, 'setSuggestionsLoading').and.returnValue();
         spyOn(StateService, 'setLineTransformations').and.returnValue();
     }));
 
-    describe('fetch line transformations', function() {
+    describe('fetch line transformations', function () {
         it('should get transformations from TransformationCacheService', inject(function ($rootScope, LineSuggestionService, TransformationCacheService) {
             //when
             LineSuggestionService.initTransformations();
@@ -83,7 +83,7 @@ describe('Line suggestion service', function () {
             expect(StateService.setLineTransformations).toHaveBeenCalledWith({
                 allTransformations: allTransformations,
                 allCategories: allCategories,
-                filteredTransformations: allCategories
+                filteredTransformations: allCategories,
             });
         }));
     });

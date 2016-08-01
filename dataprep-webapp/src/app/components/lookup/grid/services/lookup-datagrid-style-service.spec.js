@@ -22,7 +22,7 @@ describe('Lookup Datagrid style service', function () {
     var stateMock;
 
     function assertColumnsHasNoStyles() {
-        gridColumns.forEach(function(column) {
+        gridColumns.forEach(function (column) {
             expect(column.cssClass).toBeFalsy();
         });
     }
@@ -39,7 +39,7 @@ describe('Lookup Datagrid style service', function () {
             { id: '0002', field: 'col2', tdpColMetadata: { id: '0002', name: 'col2', type: 'string' } },
             { id: '0003', field: 'col3', tdpColMetadata: { id: '0003', name: 'col3', type: 'string' } },
             { id: '0004', field: 'col4', tdpColMetadata: { id: '0004', name: 'col4', type: 'string' } },
-            { id: 'tdpId', field: 'tdpId', tdpColMetadata: { id: 'tdpId', name: '#' } }
+            { id: 'tdpId', field: 'tdpId', tdpColMetadata: { id: 'tdpId', name: '#' } },
         ];
 
         gridMock = new SlickGridMock();
@@ -131,7 +131,7 @@ describe('Lookup Datagrid style service', function () {
         it('should set reset cell styles', inject(function (LookupDatagridStyleService) {
             //given
             LookupDatagridStyleService.init(gridMock);
-            gridMock.setCellCssStyles('highlight', { '2': { '0000': 'highlight' } });
+            gridMock.setCellCssStyles('highlight', { 2: { '0000': 'highlight' } });
 
             var args = { column: gridColumns[1] };
 
@@ -266,7 +266,7 @@ describe('Lookup Datagrid style service', function () {
         }));
     });
 
-    describe('update column styles', function() {
+    describe('update column styles', function () {
         it('should set "selected" class on active cell column when this is NOT a preview', inject(function (LookupDatagridStyleService) {
             //given
             LookupDatagridStyleService.init(gridMock);
@@ -303,7 +303,7 @@ describe('Lookup Datagrid style service', function () {
         }));
     });
 
-    describe('column formatter', function() {
+    describe('column formatter', function () {
         it('should adapt value into html with leading/trailing spaces management', inject(function (LookupDatagridStyleService) {
             //given
             LookupDatagridStyleService.init(gridMock);

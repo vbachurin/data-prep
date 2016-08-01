@@ -38,7 +38,7 @@ Object.defineProperty(LookupDatagridCtrl.prototype,
         configurable: false,
         get: function () {
             return this.datagridTooltipService.tooltip;
-        }
+        },
     });
 
 /**
@@ -54,5 +54,5 @@ Object.defineProperty(LookupDatagridCtrl.prototype,
         configurable: false,
         get: function () {
             return this.datagridTooltipService.showTooltip;
-        }
+        },
     });

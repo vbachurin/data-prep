@@ -81,7 +81,7 @@ export default function DatagridColumnService($rootScope, $compile, $log, $trans
             _.template(gridHeaderPreviewTemplate)({
                 name: col.name,
                 diffClass: DatagridStyleService.getColumnPreviewStyle(col),
-                simpleType: col.domain ? col.domain : ConverterService.simplifyType(col.type)
+                simpleType: col.domain ? col.domain : ConverterService.simplifyType(col.type),
             }) :
             '';
         const translatedMsg = $translate.instant('APPLY_TO_ALL_CELLS');
@@ -98,7 +98,7 @@ export default function DatagridColumnService($rootScope, $compile, $log, $trans
                     PlaygroundService.editCell,
                     translatedMsg
                 ),
-            preview: preview
+            preview: preview,
         };
     }
 
@@ -135,8 +135,9 @@ export default function DatagridColumnService($rootScope, $compile, $log, $trans
             formatter: function formatterIndex(row, cell, value) {
                 return '<div class="index-cell">' + value + '</div>';
             },
+
             resizable: false,
-            selectable: false
+            selectable: false,
         });
 
         var columns = _.union(colIndexArray, _.map(columnsMetadata, function (col) {
@@ -211,6 +212,7 @@ export default function DatagridColumnService($rootScope, $compile, $log, $trans
                         if (col.id && col.id == movedCol.id) {
                             result.target = originalCols[index].id;
                         }
+
                         index++;
                     });
                     return result;
@@ -225,6 +227,7 @@ export default function DatagridColumnService($rootScope, $compile, $log, $trans
                     return result;
                 }
             }
+
             index++;
         });
         return result;
@@ -283,7 +286,7 @@ export default function DatagridColumnService($rootScope, $compile, $log, $trans
         return {
             id: col.id,
             scope: headerScope,
-            header: headerElement
+            header: headerElement,
         };
     }
 
@@ -319,7 +322,7 @@ export default function DatagridColumnService($rootScope, $compile, $log, $trans
             availableHeaders.push({
                 id: columnDef.id,
                 scope: scope,
-                header: header
+                header: header,
             });
         }
     }

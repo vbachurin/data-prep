@@ -56,11 +56,12 @@ export default function TalendDropdown($window, $timeout) {
         scope: {
             closeOnSelect: '=',
             onOpen: '&',
-            forceSide: '@'
+            forceSide: '@',
         },
         bindToController: true,
         controller: () => {
         },
+
         controllerAs: 'ctrl',
         link: {
             post: function (scope, iElement, iAttrs, ctrl) {
@@ -164,6 +165,7 @@ export default function TalendDropdown($window, $timeout) {
                     else {
                         menu.removeClass('top');
                     }
+
                     menu.css('top', menuTopPosition);
                 }
 
@@ -221,12 +223,13 @@ export default function TalendDropdown($window, $timeout) {
                 iElement.on('$destroy', function () {
                     scope.$destroy();
                 });
+
                 scope.$on('$destroy', function () {
                     body.off('mousedown', hideMenu);
                     windowElement.off('scroll', positionMenu);
                     windowElement.off('resize', resetMenuPosition);
                 });
-            }
-        }
+            },
+        },
     };
 }

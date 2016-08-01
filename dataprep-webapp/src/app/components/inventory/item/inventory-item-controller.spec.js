@@ -24,13 +24,13 @@ describe('Inventory Item controller', function () {
         scope = $rootScope.$new();
         createController = function () {
             return $controller('InventoryItemCtrl', {
-                $scope: scope
+                $scope: scope,
             });
         };
     }));
 
-    describe('call action when actions are enabled', function() {
-        beforeEach(inject(function() {
+    describe('call action when actions are enabled', function () {
+        beforeEach(inject(function () {
             ctrl = createController();
             ctrl.open = jasmine.createSpy('open');
             ctrl.openRelatedInventory = jasmine.createSpy('openRelatedInventory');
@@ -52,7 +52,7 @@ describe('Inventory Item controller', function () {
             ctrl.relatedInventories = [];
             ctrl.type = 'dataset';
             ctrl.item = {
-                name: 'my dataset name'
+                name: 'my dataset name',
             };
 
             //when
@@ -61,7 +61,7 @@ describe('Inventory Item controller', function () {
             //then
             expect(tooltipData).toEqual({
                 type: 'dataset',
-                name: 'my dataset name'
+                name: 'my dataset name',
             });
         }));
 
@@ -71,7 +71,7 @@ describe('Inventory Item controller', function () {
             ctrl.type = 'dataset';
             ctrl.item = {
                 name: 'my dataset name',
-                tooltipName: 'my dataset tooltip'
+                tooltipName: 'my dataset tooltip',
 
             };
 
@@ -81,13 +81,13 @@ describe('Inventory Item controller', function () {
             //then
             expect(tooltipData).toEqual({
                 type: 'dataset',
-                name: 'my dataset tooltip'
+                name: 'my dataset tooltip',
             });
         }));
 
         it('should process the tooltip data to compile it for related inventories', inject(function () {
             //given
-            ctrl.relatedInventories = [{ name:'prep1' }, { name:'prep2' }];
+            ctrl.relatedInventories = [{ name: 'prep1' }, { name: 'prep2' }];
             ctrl.relatedInventoriesType = 'preparation';
 
             //when
@@ -96,7 +96,7 @@ describe('Inventory Item controller', function () {
             //then
             expect(tooltipData).toEqual({
                 type: 'preparation',
-                name: 'prep1'
+                name: 'prep1',
             });
         }));
     });

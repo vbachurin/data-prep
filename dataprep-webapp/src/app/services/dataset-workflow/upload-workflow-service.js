@@ -65,6 +65,7 @@ export default function UploadWorkflowService($state, $window, StateService, Dat
         if ($event && ($event.which === 2 || ($event.which === 1 && ($event.metaKey || $event.ctrlKey)))) {
             shouldBeBlankTab = true;
         }
+
         if (dataset.draft) {
             self.openDraft(dataset, false, '');
         }

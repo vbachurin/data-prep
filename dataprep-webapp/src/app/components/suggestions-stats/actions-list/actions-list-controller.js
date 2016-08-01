@@ -73,7 +73,7 @@ export default function ActionsListCtrl($timeout, state, TransformationService, 
         var infos = {
             columnId: state.playground.grid.selectedColumn.id,
             datasetId: state.playground.dataset.id,
-            preparationId: state.playground.preparation ? state.playground.preparation.id : null
+            preparationId: state.playground.preparation ? state.playground.preparation.id : null,
         };
         return TransformationService.initDynamicParameters(action, infos);
     };

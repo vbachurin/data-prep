@@ -18,13 +18,12 @@ describe('Home Dataset Component', () => {
     let createElement;
     let element;
     let StateMock;
-    
 
     beforeEach(angular.mock.module('data-prep.home', ($provide) => {
         StateMock = {
             dataset: { uploadingDatasets: [] },
             inventory: {},
-            import: { importTypes : [] }
+            import: { importTypes: [] },
         };
         $provide.constant('state', StateMock);
     }));
@@ -47,7 +46,6 @@ describe('Home Dataset Component', () => {
         scope.$destroy();
         element.remove();
     });
-
 
     it('should NOT render dataset-upload-list', () => {
         //when

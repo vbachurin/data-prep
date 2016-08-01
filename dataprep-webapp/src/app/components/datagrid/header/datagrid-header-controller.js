@@ -101,7 +101,7 @@ export default function DatagridHeaderCtrl($scope, state, TransformationCacheSer
             new_column_name: vm.newName,
             scope: 'column',
             column_id: vm.column.id,
-            column_name: vm.column.name
+            column_name: vm.column.name,
         };
 
         PlaygroundService.appendStep(RENAME_ACTION, params)

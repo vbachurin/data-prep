@@ -144,6 +144,6 @@ export function StateService(RouteStateService, routeState,
 
         // import
         setImportTypes: ImportStateService.setImportTypes,
-        setCurrentImportType: ImportStateService.setCurrentImportType
+        setCurrentImportType: ImportStateService.setCurrentImportType,
     };
 }

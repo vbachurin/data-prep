@@ -26,10 +26,10 @@ export default function TypeTransformMenu() {
         restrict: 'E',
         templateUrl: template,
         scope: {
-            column: '='
+            column: '=',
         },
         bindToController: true,
         controllerAs: 'typeMenuCtrl',
-        controller: 'TypeTransformMenuCtrl'
+        controller: 'TypeTransformMenuCtrl',
     };
 }

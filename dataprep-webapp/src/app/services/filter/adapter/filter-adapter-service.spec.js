@@ -18,9 +18,9 @@ describe('Filter Adapter Service', () => {
         { id: '0001', name: 'lastname' },
         { id: '0002', name: 'birthdate' },
         { id: '0003', name: 'address' },
-        { id: '0004', name: 'gender' }
+        { id: '0004', name: 'gender' },
     ];
-    
+
     beforeEach(angular.mock.module('data-prep.services.filter-adapter'));
 
     describe('create filter', () => {
@@ -54,9 +54,9 @@ describe('Filter Adapter Service', () => {
                 var args = {
                     phrase: [
                         {
-                            value: 'Jimmy'
-                        }
-                    ]
+                            value: 'Jimmy',
+                        },
+                    ],
                 };
 
                 //when
@@ -65,8 +65,8 @@ describe('Filter Adapter Service', () => {
                 //then
                 expect(filter.value).toEqual([
                     {
-                        value: 'Jimmy'
-                    }
+                        value: 'Jimmy',
+                    },
                 ]);
             }));
 
@@ -76,9 +76,9 @@ describe('Filter Adapter Service', () => {
                 var args = {
                     phrase: [
                         {
-                            value: 'Jimmy'
-                        }
-                    ]
+                            value: 'Jimmy',
+                        },
+                    ],
                 };
 
                 //when
@@ -87,8 +87,8 @@ describe('Filter Adapter Service', () => {
                 //then
                 expect(filter.value).toEqual([
                     {
-                        value: 'Jimmy'
-                    }
+                        value: 'Jimmy',
+                    },
                 ]);
             }));
 
@@ -102,8 +102,8 @@ describe('Filter Adapter Service', () => {
                 //then
                 expect(filter.value).toEqual([
                     {
-                        label: 'invalid records'
-                    }
+                        label: 'invalid records',
+                    },
                 ]);
             }));
 
@@ -118,8 +118,8 @@ describe('Filter Adapter Service', () => {
                 expect(filter.value).toEqual([
                     {
                         label: 'empty records',
-                        isEmpty: true
-                    }
+                        isEmpty: true,
+                    },
                 ]);
             }));
 
@@ -133,8 +133,8 @@ describe('Filter Adapter Service', () => {
                 //then
                 expect(filter.value).toEqual([
                     {
-                        label: 'valid records'
-                    }
+                        label: 'valid records',
+                    },
                 ]);
             }));
 
@@ -145,10 +145,10 @@ describe('Filter Adapter Service', () => {
                     intervals: [
                         {
                             label: '[1,000 .. 2,000[',
-                            value: [1000, 2000]
-                        }
+                            value: [1000, 2000],
+                        },
                     ],
-                    type: 'integer'
+                    type: 'integer',
                 };
 
                 //when
@@ -158,8 +158,8 @@ describe('Filter Adapter Service', () => {
                 expect(filter.value).toEqual([
                     {
                         label: '[1,000 .. 2,000[',
-                        value: [1000, 2000]
-                    }
+                        value: [1000, 2000],
+                    },
                 ]);
             }));
 
@@ -169,9 +169,9 @@ describe('Filter Adapter Service', () => {
                 var args = {
                     patterns: [
                         {
-                            value: 'Aa9'
-                        }
-                    ]
+                            value: 'Aa9',
+                        },
+                    ],
                 };
 
                 //when
@@ -180,8 +180,8 @@ describe('Filter Adapter Service', () => {
                 //then
                 expect(filter.value).toEqual([
                     {
-                        value: 'Aa9'
-                    }
+                        value: 'Aa9',
+                    },
                 ]);
             }));
         });
@@ -194,9 +194,9 @@ describe('Filter Adapter Service', () => {
                 var args = {
                     phrase: [
                         {
-                            value: 'Jimmy'
-                        }
-                    ]
+                            value: 'Jimmy',
+                        },
+                    ],
                 };
 
                 var filter = FilterAdapterService.createFilter(type, colId, null, null, args, null, null);
@@ -208,8 +208,8 @@ describe('Filter Adapter Service', () => {
                 expect(tree).toEqual({
                     contains: {
                         field: '0001',
-                        value: 'Jimmy'
-                    }
+                        value: 'Jimmy',
+                    },
                 });
             }));
 
@@ -220,9 +220,9 @@ describe('Filter Adapter Service', () => {
                 var args = {
                     phrase: [
                         {
-                            value: 'Jimmy'
-                        }
-                    ]
+                            value: 'Jimmy',
+                        },
+                    ],
                 };
 
                 var filter = FilterAdapterService.createFilter(type, colId, null, null, args, null, null);
@@ -234,8 +234,8 @@ describe('Filter Adapter Service', () => {
                 expect(tree).toEqual({
                     eq: {
                         field: '0001',
-                        value: 'Jimmy'
-                    }
+                        value: 'Jimmy',
+                    },
                 });
             }));
 
@@ -246,15 +246,15 @@ describe('Filter Adapter Service', () => {
                 var args = {
                     phrase: [
                         {
-                            value: 'Jimmy'
+                            value: 'Jimmy',
                         },
                         {
-                            value: 'François'
+                            value: 'François',
                         },
                         {
-                            value: 'Vincent'
-                        }
-                    ]
+                            value: 'Vincent',
+                        },
+                    ],
                 };
 
                 var filter = FilterAdapterService.createFilter(type, colId, null, null, args, null, null);
@@ -270,24 +270,24 @@ describe('Filter Adapter Service', () => {
                                 {
                                     eq: {
                                         field: '0001',
-                                        value: 'Jimmy'
-                                    }
+                                        value: 'Jimmy',
+                                    },
                                 },
                                 {
                                     eq: {
                                         field: '0001',
-                                        value: 'François'
-                                    }
-                                }
-                            ]
+                                        value: 'François',
+                                    },
+                                },
+                            ],
                         },
                         {
                             eq: {
                                 field: '0001',
-                                value: 'Vincent'
-                            }
-                        }
-                    ]
+                                value: 'Vincent',
+                            },
+                        },
+                    ],
                 });
             }));
 
@@ -304,8 +304,8 @@ describe('Filter Adapter Service', () => {
                 //then
                 expect(tree).toEqual({
                     invalid: {
-                        field: '0001'
-                    }
+                        field: '0001',
+                    },
                 });
             }));
 
@@ -322,8 +322,8 @@ describe('Filter Adapter Service', () => {
                 //then
                 expect(tree).toEqual({
                     empty: {
-                        field: '0001'
-                    }
+                        field: '0001',
+                    },
                 });
             }));
 
@@ -340,8 +340,8 @@ describe('Filter Adapter Service', () => {
                 //then
                 expect(tree).toEqual({
                     valid: {
-                        field: '0001'
-                    }
+                        field: '0001',
+                    },
                 });
             }));
 
@@ -353,10 +353,10 @@ describe('Filter Adapter Service', () => {
                     intervals: [
                         {
                             label: '[1000 .. 2000[',
-                            value: [1000, 2000]
-                        }
+                            value: [1000, 2000],
+                        },
                     ],
-                    type: 'integer'
+                    type: 'integer',
                 };
 
                 var filter = FilterAdapterService.createFilter(type, colId, null, null, args, null, null);
@@ -371,8 +371,8 @@ describe('Filter Adapter Service', () => {
                         start: 1000,
                         end: 2000,
                         type: 'integer',
-                        label: '[1000 .. 2000['
-                    }
+                        label: '[1000 .. 2000[',
+                    },
                 });
             }));
 
@@ -383,9 +383,9 @@ describe('Filter Adapter Service', () => {
                 var args = {
                     patterns: [
                         {
-                            value:'Aa9'
-                        }
-                    ]
+                            value: 'Aa9',
+                        },
+                    ],
                 };
 
                 var filter = FilterAdapterService.createFilter(type, colId, null, null, args, null, null);
@@ -397,8 +397,8 @@ describe('Filter Adapter Service', () => {
                 expect(tree).toEqual({
                     matches: {
                         field: '0001',
-                        value: 'Aa9'
-                    }
+                        value: 'Aa9',
+                    },
                 });
             }));
         });
@@ -421,10 +421,10 @@ describe('Filter Adapter Service', () => {
                 intervals: [
                     {
                         label: '[1,000 .. 2,000[',
-                        value: [1000, 2000]
-                    }
+                        value: [1000, 2000],
+                    },
                 ],
-                type: 'integer'
+                type: 'integer',
             };
 
             var filter = FilterAdapterService.createFilter(type, colId, null, null, args, null, null);
@@ -440,9 +440,9 @@ describe('Filter Adapter Service', () => {
                         start: 1000,
                         end: 2000,
                         type: 'integer',
-                        label: '[1,000 .. 2,000['
-                    }
-                }
+                        label: '[1,000 .. 2,000[',
+                    },
+                },
             });
         }));
 
@@ -452,30 +452,30 @@ describe('Filter Adapter Service', () => {
                 intervals: [
                     {
                         label: '[1,000 .. 2,000[',
-                        value: [1000, 2000]
-                    }
+                        value: [1000, 2000],
+                    },
                 ],
-                type: 'integer'
+                type: 'integer',
             };
             var containsArgs = {
                 phrase: [
                     {
-                        value: 'Jimmy'
-                    }
-                ]
+                        value: 'Jimmy',
+                    },
+                ],
             };
             var exactArgs = {
                 phrase: [
                     {
-                        value: 'Jimmy'
+                        value: 'Jimmy',
                     },
                     {
-                        value: 'François'
+                        value: 'François',
                     },
                     {
-                        value: 'Vincent'
-                    }
-                ]
+                        value: 'Vincent',
+                    },
+                ],
             };
             var dateRangeOffset = new Date(-631152000000).getTimezoneOffset() * 60 * 1000;
             var dateRangeArgs = {
@@ -484,11 +484,11 @@ describe('Filter Adapter Service', () => {
                         label: '[1950, 1960[',
                         value: [
                             -631152000000 + dateRangeOffset,
-                            -315619200000 + dateRangeOffset
-                        ]
-                    }
+                            -315619200000 + dateRangeOffset,
+                        ],
+                    },
                 ],
-                type: 'date'
+                type: 'date',
             };
 
             var rangeFilter = FilterAdapterService.createFilter('inside_range', '0001', null, null, rangeArgs, null, null);
@@ -513,16 +513,16 @@ describe('Filter Adapter Service', () => {
                                                 start: 1000,
                                                 end: 2000,
                                                 type: 'integer',
-                                                label: '[1,000 .. 2,000['
-                                            }
+                                                label: '[1,000 .. 2,000[',
+                                            },
                                         },
                                         {
                                             contains: {
                                                 field: '0002',
-                                                value: 'Jimmy'
-                                            }
-                                        }
-                                    ]
+                                                value: 'Jimmy',
+                                            },
+                                        },
+                                    ],
                                 },
                                 {
                                     or: [
@@ -531,26 +531,26 @@ describe('Filter Adapter Service', () => {
                                                 {
                                                     eq: {
                                                         field: '0003',
-                                                        value: 'Jimmy'
-                                                    }
+                                                        value: 'Jimmy',
+                                                    },
                                                 },
                                                 {
                                                     eq: {
                                                         field: '0003',
-                                                        value: 'François'
-                                                    }
-                                                }
-                                            ]
+                                                        value: 'François',
+                                                    },
+                                                },
+                                            ],
                                         },
                                         {
                                             eq: {
                                                 field: '0003',
-                                                value: 'Vincent'
-                                            }
-                                        }
-                                    ]
-                                }
-                            ]
+                                                value: 'Vincent',
+                                            },
+                                        },
+                                    ],
+                                },
+                            ],
                         },
                         {
                             range: {
@@ -558,11 +558,11 @@ describe('Filter Adapter Service', () => {
                                 start: -631152000000, //timestamp without timezone offset to have UTC date
                                 end: -315619200000,  //timestamp without timezone offset to have UTC date
                                 type: 'date',
-                                label: '[1950, 1960['
-                            }
-                        }
-                    ]
-                }
+                                label: '[1950, 1960[',
+                            },
+                        },
+                    ],
+                },
             });
         }));
     });
@@ -581,8 +581,8 @@ describe('Filter Adapter Service', () => {
             var tree = {
                 contains: {
                     field: '0001',
-                    value: 'Jimmy'
-                }
+                    value: 'Jimmy',
+                },
             };
 
             //when
@@ -599,9 +599,9 @@ describe('Filter Adapter Service', () => {
             expect(singleFilter.args).toEqual({
                 phrase: [
                     {
-                        value: 'Jimmy'
-                    }
-                ]
+                        value: 'Jimmy',
+                    },
+                ],
             });
         }));
 
@@ -610,8 +610,8 @@ describe('Filter Adapter Service', () => {
             var tree = {
                 eq: {
                     field: '0001',
-                    value: 'Jimmy'
-                }
+                    value: 'Jimmy',
+                },
             };
 
             //when
@@ -628,9 +628,9 @@ describe('Filter Adapter Service', () => {
             expect(singleFilter.args).toEqual({
                 phrase: [
                     {
-                        value: 'Jimmy'
-                    }
-                ]
+                        value: 'Jimmy',
+                    },
+                ],
             });
         }));
 
@@ -642,8 +642,8 @@ describe('Filter Adapter Service', () => {
                     start: 1000,
                     end: 2000,
                     label: '[1,000 .. 2,000[',
-                    type: 'integer'
-                }
+                    type: 'integer',
+                },
             };
 
             //when
@@ -661,10 +661,10 @@ describe('Filter Adapter Service', () => {
                 intervals: [
                     {
                         label: '[1,000 .. 2,000[',
-                        value: [1000, 2000]
-                    }
+                        value: [1000, 2000],
+                    },
                 ],
-                type: 'integer'
+                type: 'integer',
             });
         }));
 
@@ -676,8 +676,8 @@ describe('Filter Adapter Service', () => {
                     start: -631152000000, // UTC 1950-01-01
                     end: -315619200000, // UTC 1960-01-01
                     type: 'date',
-                    label: '[1950, 1960['
-                }
+                    label: '[1950, 1960[',
+                },
             };
 
             //when
@@ -695,14 +695,14 @@ describe('Filter Adapter Service', () => {
                 intervals: [
                     {
                         label: '[1950, 1960[',
-                        value:[
+                        value: [
                             //timestamps are in the client timezone
                             new Date(1950, 0, 1).getTime(),
-                            new Date(1960, 0, 1).getTime()
-                        ]
-                    }
+                            new Date(1960, 0, 1).getTime(),
+                        ],
+                    },
                 ],
-                type: 'date'
+                type: 'date',
             });
         }));
 
@@ -710,8 +710,8 @@ describe('Filter Adapter Service', () => {
             //given
             var tree = {
                 invalid: {
-                    field: '0001'
-                }
+                    field: '0001',
+                },
             };
 
             //when
@@ -732,8 +732,8 @@ describe('Filter Adapter Service', () => {
             //given
             var tree = {
                 empty: {
-                    field: '0001'
-                }
+                    field: '0001',
+                },
             };
 
             //when
@@ -754,8 +754,8 @@ describe('Filter Adapter Service', () => {
             //given
             var tree = {
                 valid: {
-                    field: '0001'
-                }
+                    field: '0001',
+                },
             };
 
             //when
@@ -777,8 +777,8 @@ describe('Filter Adapter Service', () => {
             var tree = {
                 matches: {
                     field: '0001',
-                    value: 'Aa9'
-                }
+                    value: 'Aa9',
+                },
             };
 
             //when
@@ -795,9 +795,9 @@ describe('Filter Adapter Service', () => {
             expect(singleFilter.args).toEqual({
                 patterns: [
                     {
-                        value: 'Aa9'
-                    }
-                ]
+                        value: 'Aa9',
+                    },
+                ],
             });
         }));
 
@@ -815,32 +815,32 @@ describe('Filter Adapter Service', () => {
                                             start: 1000,
                                             end: 2000,
                                             label: '[1,000 .. 2,000[',
-                                            type: 'integer'
-                                        }
+                                            type: 'integer',
+                                        },
                                     },
                                     {
                                         contains: {
                                             field: '0002',
-                                            value: 'Jimmy'
-                                        }
-                                    }
-                                ]
+                                            value: 'Jimmy',
+                                        },
+                                    },
+                                ],
                             },
                             {
                                 eq: {
                                     field: '0003',
-                                    value: 'Toto'
-                                }
-                            }
-                        ]
+                                    value: 'Toto',
+                                },
+                            },
+                        ],
                     },
                     {
                         matches: {
                             field: '0004',
-                            value: 'Aa9'
-                        }
-                    }
-                ]
+                            value: 'Aa9',
+                        },
+                    },
+                ],
             };
 
             //when
@@ -855,13 +855,13 @@ describe('Filter Adapter Service', () => {
             expect(rangeFilter.colName).toBe('lastname');
             expect(rangeFilter.editable).toBe(false);
             expect(rangeFilter.args).toEqual({
-                intervals:[
+                intervals: [
                     {
                         label: '[1,000 .. 2,000[',
-                        value: [1000, 2000]
-                    }
+                        value: [1000, 2000],
+                    },
                 ],
-                type: 'integer'
+                type: 'integer',
             });
 
             var containsFilter = filters[1];
@@ -872,9 +872,9 @@ describe('Filter Adapter Service', () => {
             expect(containsFilter.args).toEqual({
                 phrase: [
                     {
-                        value: 'Jimmy'
-                    }
-                ]
+                        value: 'Jimmy',
+                    },
+                ],
             });
 
             var exactFilter = filters[2];
@@ -885,9 +885,9 @@ describe('Filter Adapter Service', () => {
             expect(exactFilter.args).toEqual({
                 phrase: [
                     {
-                        value: 'Toto'
-                    }
-                ]
+                        value: 'Toto',
+                    },
+                ],
             });
 
             var matchesFilter = filters[3];
@@ -898,9 +898,9 @@ describe('Filter Adapter Service', () => {
             expect(matchesFilter.args).toEqual({
                 patterns: [
                     {
-                        value: 'Aa9'
-                    }
-                ]
+                        value: 'Aa9',
+                    },
+                ],
             });
         }));
     });

@@ -26,10 +26,10 @@ export default function TransformRegexParam() {
         restrict: 'E',
         templateUrl: template,
         scope: {
-            parameter: '='
+            parameter: '=',
         },
         bindToController: true,
         controllerAs: 'regexParamCtrl',
-        controller: 'TransformRegexParamCtrl'
+        controller: 'TransformRegexParamCtrl',
     };
 }

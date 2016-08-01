@@ -27,14 +27,13 @@ describe('Lookup Datagrid grid service', function () {
         dataViewMock = new DataViewMock();
     });
 
-
     beforeEach(angular.mock.module('data-prep.datagrid', function ($provide) {
         stateMock = {
             playground: {
                 lookup: {
-                    dataView: dataViewMock
-                }
-            }
+                    dataView: dataViewMock,
+                },
+            },
         };
         $provide.constant('state', stateMock);
 
@@ -50,7 +49,7 @@ describe('Lookup Datagrid grid service', function () {
 
     beforeEach(inject(function ($window) {
         $window.Slick = {
-            Grid: SlickGridMock
+            Grid: SlickGridMock,
         };
     }));
 

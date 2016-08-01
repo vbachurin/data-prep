@@ -11,7 +11,7 @@
 
   ============================================================================*/
 
-describe('Actions suggestions-stats directive', function() {
+describe('Actions suggestions-stats directive', function () {
     'use strict';
 
     var scope;
@@ -19,26 +19,25 @@ describe('Actions suggestions-stats directive', function() {
     var createElement;
     var stateMock;
     var body = angular.element('body');
-    beforeEach(angular.mock.module('data-prep.actions-suggestions', function($provide) {
+    beforeEach(angular.mock.module('data-prep.actions-suggestions', function ($provide) {
         stateMock = { playground: {
                 grid: {},
-                suggestions: {}
-        } };
+                suggestions: {},
+            }, };
         $provide.constant('state', stateMock);
     }));
-    
 
     beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
-            'COLON': ': ',
-            'REFRESHING_WAIT': 'Fetching, please wait...'
+            COLON: ': ',
+            REFRESHING_WAIT: 'Fetching, please wait...',
         });
         $translateProvider.preferredLanguage('en');
     }));
 
-    beforeEach(inject(function($rootScope, $compile) {
+    beforeEach(inject(function ($rootScope, $compile) {
         scope = $rootScope.$new();
-        createElement = function() {
+        createElement = function () {
             element = angular.element('<actions-suggestions></actions-suggestions>');
             body.append(element);
             $compile(element)(scope);
@@ -46,12 +45,12 @@ describe('Actions suggestions-stats directive', function() {
         };
     }));
 
-    afterEach(function() {
+    afterEach(function () {
         scope.$destroy();
         element.remove();
     });
 
-    it('should set column name in title', function() {
+    it('should set column name in title', function () {
         //given
         stateMock.playground.grid.selectedColumn = { name: 'Col 1' };
 
@@ -62,7 +61,7 @@ describe('Actions suggestions-stats directive', function() {
         expect(element.find('.title').text().trim()).toBe('Col 1');
     });
 
-    it('should render ghost when actions are being fetched', inject(function() {
+    it('should render ghost when actions are being fetched', inject(function () {
         //given
         stateMock.playground.suggestions.isLoading = true;
 

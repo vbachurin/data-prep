@@ -11,7 +11,7 @@
 
   ============================================================================*/
 
-describe('Filter monitor directive', function() {
+describe('Filter monitor directive', function () {
     'use strict';
 
     var scope;
@@ -19,19 +19,20 @@ describe('Filter monitor directive', function() {
     var element;
 
     beforeEach(angular.mock.module('data-prep.filter-monitor'));
-    
+
     beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
-            'NB_LINES_MATCHING_FILTERS': '{{percentage}}% of lines are matching your filter(s)'
+            NB_LINES_MATCHING_FILTERS: '{{percentage}}% of lines are matching your filter(s)',
         });
         $translateProvider.preferredLanguage('en');
     }));
 
-    beforeEach(inject(function($rootScope, $compile) {
+    beforeEach(inject(function ($rootScope, $compile) {
         scope = $rootScope.$new();
         scope.toogle = () => {
         };
-        createElement = function() {
+
+        createElement = function () {
             element = angular.element('<filter-monitor ' +
                 'filters="filters" ' +
                 'on-toogle="toogle()" ' +
@@ -42,16 +43,16 @@ describe('Filter monitor directive', function() {
             scope.$digest();
         };
 
-        spyOn(scope,'toogle');
+        spyOn(scope, 'toogle');
     }));
 
-    afterEach(function() {
+    afterEach(function () {
         scope.$destroy();
         element.remove();
     });
 
-    describe('render', function() {
-        it('should NOT render "remove all" icon when filters are empty', function() {
+    describe('render', function () {
+        it('should NOT render "remove all" icon when filters are empty', function () {
             //given
             scope.filters = [];
 
@@ -62,7 +63,7 @@ describe('Filter monitor directive', function() {
             expect(element.find('#reset-filters').length).toBe(0);
         });
 
-        it('should render stats', function() {
+        it('should render stats', function () {
             //given
             scope.percentage = 25;
             scope.nbLines = 50;
@@ -78,8 +79,8 @@ describe('Filter monitor directive', function() {
         });
     });
 
-    describe('actions', function() {
-        it('should execute reset callback on "toogle" icon click', function() {
+    describe('actions', function () {
+        it('should execute reset callback on "toogle" icon click', function () {
             //given
             scope.filters = [{}];
             createElement();

@@ -57,7 +57,7 @@ export default function TalendSlidable($window) {
             side: '@',
             visible: '=',
             resizable: '@',
-            controlBar: '@'
+            controlBar: '@',
         },
         bindToController: true,
         controllerAs: 'slidableCtrl',
@@ -72,6 +72,7 @@ export default function TalendSlidable($window) {
                 vm.visible = !vm.visible;
             };
         },
+
         link: function (scope, iElement, iAttrs, ctrl) {
             iElement.addClass('slidable');
             iElement.addClass('slide-' + (ctrl.side ? ctrl.side : 'left'));
@@ -88,16 +89,18 @@ export default function TalendSlidable($window) {
                     start: function () {
                         iElement.addClass('no-transition');
                     },
+
                     stop: function (event, ui) {
                         iElement.removeClass('no-transition');
                         width = ui.size.width + 'px';
                         $window.localStorage.setItem(localStorageWidthKey, width);
                     },
+
                     resize: function (event, ui) {
                         iElement.css('left', 'auto');
                         iElement.css('right', 'auto');
                         iElement.css('flex', '0 0 ' + ui.size.width + 'px');
-                    }
+                    },
                 });
             }
 
@@ -112,6 +115,6 @@ export default function TalendSlidable($window) {
                     }
                 }
             );
-        }
+        },
     };
 }

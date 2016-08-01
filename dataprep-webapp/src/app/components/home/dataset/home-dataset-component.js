@@ -22,6 +22,6 @@ const HomeDatasetComponent = {
     controller: function (state) {
         'ngInject';
         this.state = state;
-    }
+    },
 };
 export default HomeDatasetComponent;

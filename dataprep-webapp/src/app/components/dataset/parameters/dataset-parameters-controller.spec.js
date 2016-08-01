@@ -19,31 +19,31 @@ describe('Dataset parameters controller', function () {
 
     beforeEach(angular.mock.module('data-prep.dataset-parameters'));
 
-    beforeEach(inject(function($rootScope, $controller) {
+    beforeEach(inject(function ($rootScope, $controller) {
         scope = $rootScope.$new(true);
 
         createController = function () {
             var ctrl = $controller('DatasetParametersCtrl', {
-                $scope: scope
+                $scope: scope,
             });
             ctrl.configuration = {
                 separators: [
                     { label: ';', value: ';' },
                     { label: ',', value: ',' },
                     { label: '<space>', value: ' ' },
-                    { label: '<tab>', value: '\t' }
-                ]
+                    { label: '<tab>', value: '\t' },
+                ],
             };
             return ctrl;
         };
     }));
 
-    describe('separator in list', function() {
-        it('should return true when current separator is an item of the separators list', function() {
+    describe('separator in list', function () {
+        it('should return true when current separator is an item of the separators list', function () {
             //given
             var ctrl = createController();
             ctrl.parameters = {
-                separator: ';'
+                separator: ';',
             };
 
             //when
@@ -53,11 +53,11 @@ describe('Dataset parameters controller', function () {
             expect(result).toBeTruthy();
         });
 
-        it('should return false when current separator is NOT an item of the separators list', function() {
+        it('should return false when current separator is NOT an item of the separators list', function () {
             //given
             var ctrl = createController();
             ctrl.parameters = {
-                separator: '|'
+                separator: '|',
             };
 
             //when
@@ -67,11 +67,11 @@ describe('Dataset parameters controller', function () {
             expect(result).toBeFalsy();
         });
 
-        it('should return false when current separator is falsy', function() {
+        it('should return false when current separator is falsy', function () {
             //given
             var ctrl = createController();
             ctrl.parameters = {
-                separator: ''
+                separator: '',
             };
 
             //when
@@ -82,15 +82,15 @@ describe('Dataset parameters controller', function () {
         });
     });
 
-    describe('validate', function() {
-        it('should return true when current separator is an item of the separators list', function() {
+    describe('validate', function () {
+        it('should return true when current separator is an item of the separators list', function () {
             //given
             var ctrl = createController();
             ctrl.dataset = { id: '1348b684f2e548' };
             ctrl.onParametersChange = jasmine.createSpy('on parameter change');
             ctrl.parameters = {
                 separator: ';',
-                encoding: 'UTF-8'
+                encoding: 'UTF-8',
             };
             expect(ctrl.onParametersChange).not.toHaveBeenCalledWith();
 
@@ -102,8 +102,8 @@ describe('Dataset parameters controller', function () {
                 dataset: { id: '1348b684f2e548' },
                 parameters: {
                     separator: ';',
-                    encoding: 'UTF-8'
-                }
+                    encoding: 'UTF-8',
+                },
             });
         });
     });

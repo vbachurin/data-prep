@@ -25,102 +25,102 @@ describe('Datagrid header controller', () => {
     const transformationsMock = () => {
         const transformations = [
             {
-                'name': 'uppercase',
-                'category': 'case',
-                'actionScope': [],
-                'items': null,
-                'parameters': null,
+                name: 'uppercase',
+                category: 'case',
+                actionScope: [],
+                items: null,
+                parameters: null,
             },
             {
-                'name': 'rename',
-                'category': 'column_metadata',
-                'actionScope': ['column_metadata'],
-                'items': null,
-                'parameters': null,
+                name: 'rename',
+                category: 'column_metadata',
+                actionScope: ['column_metadata'],
+                items: null,
+                parameters: null,
             },
             {
-                'name': 'lowercase',
-                'category': 'case',
-                'actionScope': [],
-                'items': null,
-                'parameters': null,
+                name: 'lowercase',
+                category: 'case',
+                actionScope: [],
+                items: null,
+                parameters: null,
             },
             {
-                'name': 'withParam',
-                'category': 'case',
-                'actionScope': [],
-                'items': null,
-                'parameters': [
+                name: 'withParam',
+                category: 'case',
+                actionScope: [],
+                items: null,
+                parameters: [
                     {
-                        'name': 'param',
-                        'type': 'string',
-                        'default': '.',
-                        'inputType': 'text',
-                    }
+                        name: 'param',
+                        type: 'string',
+                        default: '.',
+                        inputType: 'text',
+                    },
                 ],
             },
             {
-                'name': 'split',
-                'category': 'column_metadata',
-                'actionScope': ['column_metadata'],
-                'parameters': null,
-                'items': [
+                name: 'split',
+                category: 'column_metadata',
+                actionScope: ['column_metadata'],
+                parameters: null,
+                items: [
                     {
-                        'name': 'mode',
-                        'values': [
-                            { 'name': 'noparam' },
+                        name: 'mode',
+                        values: [
+                            { name: 'noparam' },
                             {
-                                'name': 'regex',
-                                'parameters': [
+                                name: 'regex',
+                                parameters: [
                                     {
-                                        'name': 'regexp',
-                                        'type': 'string',
-                                        'default': '.',
-                                        'inputType': 'text',
-                                    }
+                                        name: 'regexp',
+                                        type: 'string',
+                                        default: '.',
+                                        inputType: 'text',
+                                    },
                                 ],
                             },
                             {
-                                'name': 'index',
-                                'parameters': [
+                                name: 'index',
+                                parameters: [
                                     {
-                                        'name': 'index',
-                                        'type': 'integer',
-                                        'default': '5',
-                                        'inputType': 'number',
-                                    }
+                                        name: 'index',
+                                        type: 'integer',
+                                        default: '5',
+                                        inputType: 'number',
+                                    },
                                 ],
                             },
                             {
-                                'name': 'threeParams',
-                                'parameters': [
+                                name: 'threeParams',
+                                parameters: [
                                     {
-                                        'name': 'index',
-                                        'type': 'numeric',
-                                        'default': '5',
-                                        'inputType': 'number'
+                                        name: 'index',
+                                        type: 'numeric',
+                                        default: '5',
+                                        inputType: 'number',
                                     },
                                     {
-                                        'name': 'index2',
-                                        'type': 'float',
-                                        'default': '5',
-                                        'inputType': 'number'
+                                        name: 'index2',
+                                        type: 'float',
+                                        default: '5',
+                                        inputType: 'number',
                                     },
                                     {
-                                        'name': 'index3',
-                                        'type': 'double',
-                                        'default': '5',
-                                        'inputType': 'number'
+                                        name: 'index3',
+                                        type: 'double',
+                                        default: '5',
+                                        inputType: 'number',
                                     },
-                                ]
-                            }
-                        ]
-                    }
+                                ],
+                            },
+                        ],
+                    },
                 ],
             },
         ];
         return {
-            allTransformations: transformations
+            allTransformations: transformations,
         };
     };
 
@@ -131,7 +131,7 @@ describe('Datagrid header controller', () => {
 
         createController = () => {
             const ctrlFn = $controller('DatagridHeaderCtrl', {
-                $scope: scope
+                $scope: scope,
             }, true);
 
             ctrlFn.instance.column = column;
@@ -184,7 +184,7 @@ describe('Datagrid header controller', () => {
             ctrl.column = {
                 id: '0001',
                 name: 'New name',
-                type: 'string'
+                type: 'string',
             };
             scope.$digest();
 
@@ -239,7 +239,7 @@ describe('Datagrid header controller', () => {
                 new_column_name: 'new name',
                 scope: 'column',
                 column_id: '0001',
-                column_name: 'Original name'
+                column_name: 'Original name',
             });
         }));
 

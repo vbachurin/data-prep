@@ -233,7 +233,7 @@ export default class StorageService {
             if (key.indexOf(datasetAggregationPrefix) === 0) {
                 aggregationsToAdd.push({
                     columnId: key.substring(key.lastIndexOf('.') + 1),
-                    aggregation: this.getItem(key)
+                    aggregation: this.getItem(key),
                 });
             }
         }
@@ -270,7 +270,7 @@ export default class StorageService {
             if (key.indexOf(preparationAggregationPrefix) === 0) {
                 aggregationsToMove.push({
                     columnId: key.substring(key.lastIndexOf('.') + 1),
-                    aggregation: this.getItem(key)
+                    aggregation: this.getItem(key),
                 });
             }
         }

@@ -20,21 +20,21 @@ describe('Column profile options component', () => {
 
     beforeEach(angular.mock.module('pascalprecht.translate', ($translateProvider) => {
         $translateProvider.translations('en_US', {
-            'AVERAGE': 'Average',
-            'MAX': 'Max',
-            'MIN': 'Min',
-            'SUM': 'Sum',
-            'CURRENT_NO_AGGREGATION': 'No aggregation',
-            'REMOVE': 'Remove',
-            'CANCEL': 'Cancel',
-            'OK': 'Ok',
-            'AGGREGATION_DETAILS': '{{aggreg}} <span class=\"highlight\">{{col}}</span> group by <span class=\"highlight\">{{group}}</span>',
+            AVERAGE: 'Average',
+            MAX: 'Max',
+            MIN: 'Min',
+            SUM: 'Sum',
+            CURRENT_NO_AGGREGATION: 'No aggregation',
+            REMOVE: 'Remove',
+            CANCEL: 'Cancel',
+            OK: 'Ok',
+            AGGREGATION_DETAILS: '{{aggreg}} <span class=\"highlight\">{{col}}</span> group by <span class=\"highlight\">{{group}}</span>',
         });
         $translateProvider.preferredLanguage('en_US');
     }));
 
     beforeEach(angular.mock.module('data-prep.column-profile-options'));
-    
+
     beforeEach(angular.mock.module('ngSanitize'));
 
     beforeEach(inject(($rootScope, $compile) => {

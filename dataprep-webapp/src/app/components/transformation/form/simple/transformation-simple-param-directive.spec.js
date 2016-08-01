@@ -17,20 +17,18 @@ describe('Transformation simple params directive', function () {
     var createElement;
 
     beforeEach(angular.mock.module('data-prep.transformation-form'));
-    
 
     beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
-            'COLON': ': '
+            COLON: ': ',
         });
         $translateProvider.preferredLanguage('en');
     }));
 
-
-    beforeEach(inject(function($rootScope, $compile) {
+    beforeEach(inject(function ($rootScope, $compile) {
         scope = $rootScope.$new();
 
-        createElement = function() {
+        createElement = function () {
             var element = angular.element('<transform-simple-param parameter="parameter"></transform-simple-param>');
             $compile(element)(scope);
             scope.$digest();
@@ -38,14 +36,14 @@ describe('Transformation simple params directive', function () {
         };
     }));
 
-    it('should render an action with a parameter', function() {
+    it('should render an action with a parameter', function () {
         //given
         scope.parameter =   {
-            'name': 'param1',
-            'label': 'Param 1',
-            'type': 'string',
-            'inputType': 'text',
-            'default': '.'
+            name: 'param1',
+            label: 'Param 1',
+            type: 'string',
+            inputType: 'text',
+            default: '.',
         };
 
         //when

@@ -31,7 +31,7 @@ angular.module(MODULE_NAME,
     [
         TALEND_WIDGET_MODULE,
         SERVICES_DATASET_WORKFLOW_MODULE,
-        SERVICES_PREPARATION_MODULE
+        SERVICES_PREPARATION_MODULE,
     ])
     .component('searchBar', SearchBarComponent);
 

@@ -19,7 +19,6 @@ describe('Button Loader directive', function () {
     var createElement;
 
     beforeEach(angular.mock.module('talend.widget'));
-    
 
     afterEach(function () {
         scope.$destroy();

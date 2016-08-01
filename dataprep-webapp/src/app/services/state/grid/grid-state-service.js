@@ -30,7 +30,7 @@ export function GridStateService() {
         setColumnFocus: setColumnFocus,
         setData: setData,
         setFilter: setFilter,
-        setGridSelection: setGridSelection
+        setGridSelection: setGridSelection,
     };
 
     /**
@@ -57,6 +57,7 @@ export function GridStateService() {
         for (let i = 0; i < gridState.dataView.getLength(); i++) {
             gridState.filteredRecords.push(gridState.dataView.getItem(i));
         }
+
         updateFilteredOccurrencesOnSelectedColumn();
     }
 
@@ -107,6 +108,7 @@ export function GridStateService() {
                     return false;
                 }
             }
+
             return true;
         };
 
@@ -165,6 +167,7 @@ export function GridStateService() {
         if (!hasSelectedLine || gridState.selectedColumn) {
             updateSelectedColumn(data);
         }
+
         if (hasSelectedLine) {
             updateSelectedLine();
         }
@@ -186,6 +189,7 @@ export function GridStateService() {
         else {
             gridState.selectedColumn = data.metadata.columns[0];
         }
+
         updateFilteredOccurrencesOnSelectedColumn();
     }
 

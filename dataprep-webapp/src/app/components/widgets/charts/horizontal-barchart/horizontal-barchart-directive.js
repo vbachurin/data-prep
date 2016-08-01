@@ -71,7 +71,7 @@ export default function HorizontalBarchart($timeout) {
             secondaryData: '=',
             secondaryValueField: '@',
             secondaryBarClass: '@',
-            tooltipContent: '&'
+            tooltipContent: '&',
         },
         link: function (scope, element, attrs) {
             var BAR_MIN_WIDTH = 3;
@@ -101,7 +101,7 @@ export default function HorizontalBarchart($timeout) {
                         keyLabel: scope.keyLabel,
                         key: getKey(primaryDatum),
                         primaryValue: getPrimaryValue(primaryDatum),
-                        secondaryValue: secondaryDatum && getSecondaryValue(secondaryDatum)
+                        secondaryValue: secondaryDatum && getSecondaryValue(secondaryDatum),
                     });
                 });
 
@@ -163,6 +163,7 @@ export default function HorizontalBarchart($timeout) {
                 else {
                     ticksThreshold = 7;
                 }
+
                 var ticksNbre = xScale.domain()[1] > ticksThreshold ? ticksThreshold : xScale.domain()[1];
 
                 xAxis = d3.svg.axis()
@@ -388,6 +389,6 @@ export default function HorizontalBarchart($timeout) {
                 $timeout.cancel(renderPrimaryTimeout);
                 $timeout.cancel(renderSecondaryTimeout);
             });
-        }
+        },
     };
 }

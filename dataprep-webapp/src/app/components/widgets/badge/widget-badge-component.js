@@ -25,10 +25,10 @@ import template from './badge.html';
 const TalendBadge = {
     bindings: {
         removable: '<',
-        onRemove: '&'
+        onRemove: '&',
     },
     templateUrl: template,
-    transclude: true
+    transclude: true,
 };
 
 export default TalendBadge;

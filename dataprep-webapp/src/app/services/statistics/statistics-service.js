@@ -80,7 +80,7 @@ export default function StatisticsService($q, $log, $filter, state, StateService
             valueField: valueField,
             column: state.playground.grid.selectedColumn,
             vertical: false,
-            className: className
+            className: className,
         };
     }
 
@@ -101,7 +101,7 @@ export default function StatisticsService($q, $log, $filter, state, StateService
             valueField: valueField,
             label: label,
             column: state.playground.grid.selectedColumn,
-            vertical: true
+            vertical: true,
         };
     }
 
@@ -155,22 +155,22 @@ export default function StatisticsService($q, $log, $filter, state, StateService
             var range = {
                 type: 'number',
                 min: min,
-                max: max
+                max: max,
             };
 
             rangeData.push({
                 data: range,
-                occurrences: histDatum.occurrences
+                occurrences: histDatum.occurrences,
             });
             filteredRangeData.push({
                 data: range,
-                filteredOccurrences: state.playground.filter.gridFilters.length ? getRangeFilteredOccurrence(min, max) : histDatum.occurrences
+                filteredOccurrences: state.playground.filter.gridFilters.length ? getRangeFilteredOccurrence(min, max) : histDatum.occurrences,
             });
         });
 
         return {
             histogram: initVerticalHistogram('data', 'occurrences', 'Occurrences', rangeData),
-            filteredHistogram: initVerticalHistogram('data', 'filteredOccurrences', 'Filtered Occurrences', filteredRangeData)
+            filteredHistogram: initVerticalHistogram('data', 'filteredOccurrences', 'Filtered Occurrences', filteredRangeData),
         };
     }
 
@@ -202,9 +202,11 @@ export default function StatisticsService($q, $log, $filter, state, StateService
         if (value < min) {
             return min;
         }
+
         if (value > max) {
             return max;
         }
+
         return value;
     }
 
@@ -232,13 +234,13 @@ export default function StatisticsService($q, $log, $filter, state, StateService
             const lastHistogramItem = _.last(state.playground.grid.selectedColumn.statistics.histogram.items);
             rangeLimits = {
                 min: firstHistogramItem.range.min,
-                max: lastHistogramItem.range.max
+                max: lastHistogramItem.range.max,
             };
         }
         else {
             rangeLimits = {
                 min: statistics.min,
-                max: statistics.max
+                max: statistics.max,
             };
         }
 
@@ -254,6 +256,7 @@ export default function StatisticsService($q, $log, $filter, state, StateService
                         filterMax: Math.max(accu.filterMax, intervalMax),
                     };
                 },
+
                 { filterMin: Infinity, filterMax: -Infinity }
             );
 
@@ -296,9 +299,9 @@ export default function StatisticsService($q, $log, $filter, state, StateService
                     type: 'date',
                     label: getDateLabel(histoData.pace, minDate, maxDate),
                     min: minDate.getTime(),
-                    max: maxDate.getTime()
+                    max: maxDate.getTime(),
                 },
-                occurrences: histDatum.occurrences
+                occurrences: histDatum.occurrences,
             };
         });
 
@@ -336,7 +339,7 @@ export default function StatisticsService($q, $log, $filter, state, StateService
                 .pluck('pattern')
                 .map(TextFormatService.convertJavaDateFormatToMomentDateFormat)
                 .value(),
-            filteredOccurrences: state.playground.filter.gridFilters.length ? state.playground.grid.filteredOccurences : null
+            filteredOccurrences: state.playground.filter.gridFilters.length ? state.playground.grid.filteredOccurences : null,
         };
 
         const defer = $q.defer();
@@ -346,9 +349,11 @@ export default function StatisticsService($q, $log, $filter, state, StateService
             const histo = initVerticalHistogram('data', 'filteredOccurrences', 'Filtered Occurrences', filteredRangeData);
             defer.resolve(histo);
         };
+
         dateWorker.onerror = (error) => {
             defer.reject(error);
         };
+
         dateWorker.postMessage(parameters);
         service.dateWorker = dateWorker;
         return defer.promise;
@@ -471,7 +476,7 @@ export default function StatisticsService($q, $log, $filter, state, StateService
 
         return {
             histogram: initHorizontalHistogram(keyField, valueField, 'Occurrences', adaptedData, null),
-            filteredHistogram: initHorizontalHistogram(keyField, filteredValueField, null, adaptedFilteredData, 'blueBar')
+            filteredHistogram: initHorizontalHistogram(keyField, filteredValueField, null, adaptedFilteredData, 'blueBar'),
         };
     }
 
@@ -529,7 +534,7 @@ export default function StatisticsService($q, $log, $filter, state, StateService
 
             VALID: stats.valid,
             EMPTY: stats.empty,
-            INVALID: stats.invalid
+            INVALID: stats.invalid,
         };
 
         var specificStats = {};
@@ -556,7 +561,7 @@ export default function StatisticsService($q, $log, $filter, state, StateService
 
         StateService.setStatisticsDetails({
             common: commonStats,
-            specific: specificStats
+            specific: specificStats,
         });
     }
 
@@ -591,7 +596,7 @@ export default function StatisticsService($q, $log, $filter, state, StateService
         const parameters = {
             columnId: column.id,
             patternFrequencyTable: column.statistics.patternFrequencyTable,
-            filteredRecords: state.playground.filter.gridFilters.length ? state.playground.grid.filteredRecords : null
+            filteredRecords: state.playground.filter.gridFilters.length ? state.playground.grid.filteredRecords : null,
         };
 
         const defer = $q.defer();
@@ -599,9 +604,11 @@ export default function StatisticsService($q, $log, $filter, state, StateService
         service.patternWorker.onmessage = (event) => {
             defer.resolve(event.data);
         };
+
         service.patternWorker.onerror = (error) => {
             defer.reject(error);
         };
+
         service.patternWorker.postMessage(parameters);
         return defer.promise;
     }
@@ -626,7 +633,7 @@ export default function StatisticsService($q, $log, $filter, state, StateService
                 q2: specStats.UPPER_QUANTILE,
                 median: specStats.MEDIAN,
                 mean: specStats.MEAN,
-                variance: specStats.VARIANCE
+                variance: specStats.VARIANCE,
             }
         );
     }
@@ -684,6 +691,7 @@ export default function StatisticsService($q, $log, $filter, state, StateService
                 initRangeLimits();
                 return promise;
             }
+
             case 'text':
             case 'boolean':
                 initClassicHistogram('occurrences', 'Occurrences', column.statistics.frequencyTable);
@@ -719,9 +727,9 @@ export default function StatisticsService($q, $log, $filter, state, StateService
             stepId: stepId,
             operations: [{
                 operator: aggregationName,
-                columnId: column.id
-            }],
-            groupBy: [selectedColumn.id]
+                columnId: column.id,
+            },],
+            groupBy: [selectedColumn.id],
         };
 
         //add filter in parameters only if there are filters
@@ -778,7 +786,7 @@ export default function StatisticsService($q, $log, $filter, state, StateService
 
         var aggregation = {
             aggregation: aggregationName,
-            aggregationColumnId: colId
+            aggregationColumnId: colId,
         };
 
         return StorageService.setAggregation(datasetId, preparationId, columnId, aggregation);
@@ -819,6 +827,7 @@ export default function StatisticsService($q, $log, $filter, state, StateService
                     asyncProcess.push(dateRangeProcess);
                     break;
                 }
+
                 case 'text':
                 case 'boolean':
                     StateService.setStatisticsFilteredHistogram(createClassicHistograms().filteredHistogram);
@@ -915,6 +924,7 @@ export default function StatisticsService($q, $log, $filter, state, StateService
             service.dateWorker.terminate();
             service.dateWorker = null;
         }
+
         if (service.patternWorker) {
             service.patternWorker.terminate();
             service.patternWorker = null;

@@ -47,6 +47,7 @@ export default function inventoryTile() {
         controllerAs: 'inventoryTileCtrl',
         controller: () => {
         },
+
         scope: {
             dataset: '<',
             preparation: '<',
@@ -62,6 +63,6 @@ export default function inventoryTile() {
             ctrl.showFavoriteIcon = iAttrs.onFavorite;
             ctrl.showCloneIcon =  iAttrs.onClone;
             ctrl.showRemoveIcon =  iAttrs.onRemove;
-        }
+        },
     };
 }

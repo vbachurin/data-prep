@@ -25,7 +25,7 @@ export default function DatagridSizeService($window, state) {
 
     return {
         init: init,
-        autosizeColumns: autosizeColumns
+        autosizeColumns: autosizeColumns,
     };
 
     //--------------------------------------------------------------------------------------------------------------
@@ -56,6 +56,7 @@ export default function DatagridSizeService($window, state) {
             col.minWidth = MIN_COLUMN_WIDTH;
             col.width = sizes[col.id] || INITIAL_COLUMN_WIDTH;
         });
+
         grid.setColumns(gridColumns);
         saveColumnSizes();
     }

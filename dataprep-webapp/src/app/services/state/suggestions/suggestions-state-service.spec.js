@@ -16,7 +16,7 @@ describe('Suggestions state service', function () {
 
     beforeEach(angular.mock.module('data-prep.services.state'));
 
-    describe('loading flag', function() {
+    describe('loading flag', function () {
         it('should set loading flag', inject(function (suggestionsState, SuggestionsStateService) {
             //given
             suggestionsState.isLoading = false;
@@ -29,7 +29,7 @@ describe('Suggestions state service', function () {
         }));
     });
 
-    describe('transformations', function() {
+    describe('transformations', function () {
         it('should init line transformations', inject(function (suggestionsState) {
             //then
             expect(suggestionsState.line.allTransformations).toEqual([]);
@@ -43,9 +43,9 @@ describe('Suggestions state service', function () {
                 allTransformations: [{ name: 'delete' }, { name: 'uppercase' }],
                 filteredTransformations: [{ name: 'delete' }],
                 allCategories: {
-                    'clean': [{ name: 'delete' }],
-                    'case': [{ name: 'uppercase' }]
-                }
+                    clean: [{ name: 'delete' }],
+                    case: [{ name: 'uppercase' }],
+                },
             };
             expect(suggestionsState.line).not.toBe(transformations);
 
@@ -63,7 +63,7 @@ describe('Suggestions state service', function () {
                 allTransformations: [],
                 filteredTransformations: [],
                 allCategories: null,
-                searchActionString: ''
+                searchActionString: '',
             });
         }));
 
@@ -74,7 +74,7 @@ describe('Suggestions state service', function () {
                 filteredTransformations: [{ name: 'delete' }],
                 allSuggestions: [{ name: 'delete' }, { name: 'uppercase' }],
                 allCategories: [{}],
-                searchActionString: ''
+                searchActionString: '',
             };
             expect(suggestionsState.column).not.toBe(transformations);
 
@@ -92,7 +92,7 @@ describe('Suggestions state service', function () {
                 filteredTransformations: [{ name: 'delete' }],
                 allSuggestions: [{ name: 'delete' }, { name: 'uppercase' }],
                 allCategories: [{}],
-                searchActionString: ''
+                searchActionString: '',
             };
 
             //when
@@ -104,7 +104,7 @@ describe('Suggestions state service', function () {
                 allTransformations: [],
                 filteredTransformations: [],
                 allCategories: null,
-                searchActionString: ''
+                searchActionString: '',
             });
         }));
 
@@ -145,7 +145,7 @@ describe('Suggestions state service', function () {
         }));
     });
 
-    describe('reset', function() {
+    describe('reset', function () {
         it('should reset loading flag', inject(function (suggestionsState, SuggestionsStateService) {
             //given
             suggestionsState.isLoading = true;
@@ -163,9 +163,9 @@ describe('Suggestions state service', function () {
                 allTransformations: [{ name: 'delete' }, { name: 'uppercase' }],
                 filteredTransformations: [{ name: 'delete' }],
                 allCategories: {
-                    'clean': [{ name: 'delete' }],
-                    'case': [{ name: 'uppercase' }]
-                }
+                    clean: [{ name: 'delete' }],
+                    case: [{ name: 'uppercase' }],
+                },
             };
 
             //when
@@ -184,7 +184,7 @@ describe('Suggestions state service', function () {
                 allTransformations: [{}],
                 filteredTransformations: [{}],
                 allCategories: [{}],
-                searchActionString: 'ssdsdsd'
+                searchActionString: 'ssdsdsd',
             };
 
             //when
@@ -196,7 +196,7 @@ describe('Suggestions state service', function () {
                 allTransformations: [],
                 filteredTransformations: [],
                 allCategories: null,
-                searchActionString: ''
+                searchActionString: '',
             });
         }));
 

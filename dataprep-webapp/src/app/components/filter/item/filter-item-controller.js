@@ -79,7 +79,7 @@ export default class FilterItemCtrl {
     remove(indexToRemove) {
         this.onEdit({
             filter: this.filter,
-            value: this.filterValues.filter((value, index) => index !== indexToRemove)
+            value: this.filterValues.filter((value, index) => index !== indexToRemove),
         });
     }
 
@@ -92,7 +92,7 @@ export default class FilterItemCtrl {
     submit() {
         this.onEdit({
             filter: this.filter,
-            value: this.filterValues
+            value: this.filterValues,
         });
     }
 
@@ -104,7 +104,7 @@ export default class FilterItemCtrl {
      */
     close() {
         this.onRemove({
-            filter: this.filter
+            filter: this.filter,
         });
     }
 }

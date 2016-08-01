@@ -27,11 +27,11 @@ export default function DatasetUploadList() {
         templateUrl: template,
         restrict: 'E',
         scope: {
-            datasets: '='
+            datasets: '=',
         },
         bindToController: true,
         controllerAs: 'uploadListCtrl',
         controller: () => {
-        }
+        },
     };
 }

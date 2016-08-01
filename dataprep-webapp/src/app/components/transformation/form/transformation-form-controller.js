@@ -46,6 +46,7 @@ export default function TransformFormCtrl() {
                 }
             });
         }
+
         return paramsAccu;
     }
 

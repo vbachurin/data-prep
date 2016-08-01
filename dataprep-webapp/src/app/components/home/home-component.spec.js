@@ -19,7 +19,6 @@ describe('Home directive', () => {
     let element;
 
     beforeEach(angular.mock.module('data-prep.home'));
-    
 
     beforeEach(inject(($rootScope, $compile) => {
         scope = $rootScope.$new();

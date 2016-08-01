@@ -77,7 +77,7 @@ describe('Actions suggestions controller', () => {
                 stateMock.playground.filter.applyTransformationOnFilters = true;
                 var categoryTransformations = {
                     category: 'suggestion',
-                    transformations: [{ category: 'filtered' }]
+                    transformations: [{ category: 'filtered' }],
                 };
                 var ctrl = createController();
 
@@ -93,7 +93,7 @@ describe('Actions suggestions controller', () => {
                 stateMock.playground.filter.applyTransformationOnFilters = false;
                 var categoryTransformations = {
                     category: 'quickfix',
-                    transformations: [{ category: 'filtered' }]
+                    transformations: [{ category: 'filtered' }],
                 };
                 var ctrl = createController();
 
@@ -109,7 +109,7 @@ describe('Actions suggestions controller', () => {
                 stateMock.playground.filter.applyTransformationOnFilters = false;
                 var categoryTransformations = {
                     category: 'suggestion',
-                    transformations: [{ category: 'suggestion' }]
+                    transformations: [{ category: 'suggestion' }],
                 };
                 var ctrl = createController();
 
@@ -125,7 +125,7 @@ describe('Actions suggestions controller', () => {
                 stateMock.playground.filter.applyTransformationOnFilters = false;
                 var categoryTransformations = {
                     category: 'suggestion',
-                    transformations: [{ category: 'filtered' }]
+                    transformations: [{ category: 'filtered' }],
                 };
                 var ctrl = createController();
 

@@ -89,6 +89,7 @@ export default class ColumnProfileOptionsCtrl {
         if (config.column === this.column && config.aggregation === this.aggregation) {
             return;
         }
+
         this.onAggregationChange(config);
     }
 

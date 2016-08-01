@@ -60,6 +60,7 @@ export default class TalendEditableTextCtrl {
         if (angular.isUndefined(this.validateOnlyOnChange) || this.editionText !== this.text) {
             this.onValidate({ text: this.editionText });
         }
+
         this.editionMode = false;
     }
 

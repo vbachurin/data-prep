@@ -14,7 +14,7 @@
 export const filterState = {
     gridFilters: [],
     applyTransformationOnFilters: false,
-    enabled: true
+    enabled: true,
 };
 
 export function FilterStateService() {
@@ -28,7 +28,7 @@ export function FilterStateService() {
         removeGridFilter: removeGridFilter,
         removeAllGridFilters: removeAllGridFilters,
         enableFilters: enableFilters,
-        disableFilters: disableFilters
+        disableFilters: disableFilters,
     };
 
     //--------------------------------------------------------------------------------------------------------------

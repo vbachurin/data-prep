@@ -185,6 +185,7 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
         else {
             operation = PreparationService.setName(prepId, cleanName);
         }
+
         return operation
             .then(() => {
                 vm.close();
@@ -332,6 +333,7 @@ Object.defineProperty(PlaygroundCtrl.prototype,
             const firstStep = this.state.playground.recipe.current.steps[0];
             return firstStep && !firstStep.inactive;
         },
+
         set: () => {
-        }
+        },
     });

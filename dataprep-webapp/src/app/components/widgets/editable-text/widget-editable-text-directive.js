@@ -52,7 +52,7 @@ export default function TalendEditableText() {
             onTextClick: '&',
             onValidate: '&',
             onCancel: '&',
-            validateOnlyOnChange: '@'
+            validateOnlyOnChange: '@',
         },
         bindToController: true,
         controller: TalendEditableTextCtrl,
@@ -68,6 +68,6 @@ export default function TalendEditableText() {
 
             const editBtn = iElement.find('.edit-btn').eq(0);
             editBtn.click(() => inputElement.select());
-        }
+        },
     };
 }

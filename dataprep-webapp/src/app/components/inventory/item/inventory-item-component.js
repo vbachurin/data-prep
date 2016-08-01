@@ -86,8 +86,8 @@ const InventoryItemcomponent = {
         processCertificationEnabled: '<',
         removeEnabled: '<',
         toggleFavoriteEnabled: '<',
-        renameEnabled: '<'
-    }
+        renameEnabled: '<',
+    },
 };
 
 export default InventoryItemcomponent;

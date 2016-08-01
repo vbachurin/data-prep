@@ -37,6 +37,7 @@ export default function TalendSearchInput() {
                 function () {
                     return ngModel.$modelValue;
                 },
+
                 function (value) {
                     if (value) {
                         clearButton.css('display', 'block');
@@ -54,6 +55,6 @@ export default function TalendSearchInput() {
                     ngModel.$render();
                 });
             });
-        }
+        },
     };
 }

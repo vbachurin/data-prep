@@ -11,7 +11,7 @@
 
   ============================================================================*/
 
-describe('History control directive', function() {
+describe('History control directive', function () {
     'use strict';
 
     var createElement;
@@ -20,13 +20,12 @@ describe('History control directive', function() {
     var body;
 
     beforeEach(angular.mock.module('data-prep.history-control'));
-    
 
-    beforeEach(inject(function($rootScope, $compile, HistoryService) {
+    beforeEach(inject(function ($rootScope, $compile, HistoryService) {
         body = angular.element('body');
         scope = $rootScope.$new();
 
-        createElement = function() {
+        createElement = function () {
             element = angular.element('<history-control></history-control>');
             body.append(element);
             $compile(element)(scope);
@@ -37,12 +36,12 @@ describe('History control directive', function() {
         spyOn(HistoryService, 'redo').and.returnValue();
     }));
 
-    afterEach(function() {
+    afterEach(function () {
         scope.$destroy();
         element.remove();
     });
 
-    it('should attach undo to Ctrl+Z shortcut', inject(function($document, HistoryService) {
+    it('should attach undo to Ctrl+Z shortcut', inject(function ($document, HistoryService) {
         //given
         createElement();
 
@@ -57,7 +56,7 @@ describe('History control directive', function() {
         expect(HistoryService.undo).toHaveBeenCalled();
     }));
 
-    it('should attach redo to Ctrl+Y shortcut', inject(function($document, HistoryService) {
+    it('should attach redo to Ctrl+Y shortcut', inject(function ($document, HistoryService) {
         //given
         createElement();
 
@@ -72,7 +71,7 @@ describe('History control directive', function() {
         expect(HistoryService.redo).toHaveBeenCalled();
     }));
 
-    it('should unregister listener on destroy', inject(function($document) {
+    it('should unregister listener on destroy', inject(function ($document) {
         //given
         expect($._data(angular.element($document)[0], 'events').keydown).not.toBeDefined();
         createElement();

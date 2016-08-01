@@ -21,47 +21,45 @@ describe('Import directive', () => {
     var StateMock;
 
     beforeEach(angular.mock.module('data-prep.import'));
-    
 
     beforeEach(angular.mock.module('data-prep.import', ($provide) => {
         StateMock = {
             import: {
-                importTypes:[
+                importTypes: [
                     {
-                        'locationType':'hdfs',
-                        'contentType':'application/vnd.remote-ds.hdfs',
-                        'parameters':[
+                        locationType: 'hdfs',
+                        contentType: 'application/vnd.remote-ds.hdfs',
+                        parameters: [
                             {
-                                'name': 'name',
-                                'type': 'string',
-                                'implicit': false,
-                                'canBeBlank': false,
-                                'format': '',
-                                'default': '',
-                                'description': 'Name',
-                                'label': 'Enter the dataset name:'
+                                name: 'name',
+                                type: 'string',
+                                implicit: false,
+                                canBeBlank: false,
+                                format: '',
+                                default: '',
+                                description: 'Name',
+                                label: 'Enter the dataset name:',
                             },
                             {
-                                'name': 'url',
-                                'type': 'string',
-                                'implicit': false,
-                                'canBeBlank': false,
-                                'format': 'hdfs://host:port/file',
-                                'default': '',
-                                'description': 'URL',
-                                'label': 'Enter the dataset URL:'
-                            }
+                                name: 'url',
+                                type: 'string',
+                                implicit: false,
+                                canBeBlank: false,
+                                format: 'hdfs://host:port/file',
+                                default: '',
+                                description: 'URL',
+                                label: 'Enter the dataset URL:',
+                            },
                         ],
-                        'defaultImport': false,
-                        'label': 'From HDFS',
-                        'title': 'Add HDFS dataset'
-                    }
-                ]
-            }
+                        defaultImport: false,
+                        label: 'From HDFS',
+                        title: 'Add HDFS dataset',
+                    },
+                ],
+            },
         };
         $provide.constant('state', StateMock);
     }));
-
 
     beforeEach(inject(($rootScope, $compile, $componentController) => {
         scope = $rootScope.$new();
@@ -83,7 +81,7 @@ describe('Import directive', () => {
         element.remove();
     });
 
-    it('should render import', inject( () => {
+    it('should render import', inject(() => {
         //when
         createElement();
         ctrl.showModal = false;
@@ -99,7 +97,7 @@ describe('Import directive', () => {
         expect(angular.element('body').find('talend-modal').length).toBe(2);
     }));
 
-    it('should render import types list', inject( () => {
+    it('should render import types list', inject(() => {
         //when
         createElement();
         ctrl.showModal = false;

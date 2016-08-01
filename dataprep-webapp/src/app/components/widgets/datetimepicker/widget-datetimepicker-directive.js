@@ -39,16 +39,18 @@ export default function TalendDatetimePicker($timeout) {
         scope: {
             value: '=ngModel',
             onSelect: '&',
-            onBlur: '&'
+            onBlur: '&',
         },
         bindToController: true,
         controller: () => {
         },
+
         controllerAs: 'ctrl',
         link: function (scope, iElement, iAttrs, ctrl) {
             Date.parseDate = function (input, format) {
                 return moment(input, format).toDate();
             };
+
             Date.prototype.dateFormat = function (format) {
                 return moment(this).format(format);
             };
@@ -70,7 +72,7 @@ export default function TalendDatetimePicker($timeout) {
                 formatDate: formatDate,
                 formatTime: formatTime,
                 timepicker: _.has(iAttrs, 'isDateTime'),
-                onSelectDate: onSelectDate
+                onSelectDate: onSelectDate,
             });
 
             input.bind('keydown', (event) => {
@@ -84,6 +86,6 @@ export default function TalendDatetimePicker($timeout) {
             scope.$on('$destroy', () => {
                 input.datetimepicker('destroy');
             });
-        }
+        },
     };
 }

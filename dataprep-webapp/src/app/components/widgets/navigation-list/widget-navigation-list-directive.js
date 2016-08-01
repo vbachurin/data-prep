@@ -43,11 +43,12 @@ export default function NavigationList($timeout) {
             selectedItem: '=',
             onClick: '&',
             getLabel: '&',
-            onAddItem: '&'
+            onAddItem: '&',
         },
         bindToController: true,
         controllerAs: 'navigationListCtrl',
         controller: function () {},
+
         link: function (scope, iElement, iAttrs, ctrl) {
             var ITEM_WIDTH = 200;
             ctrl.showAddButton = !!iAttrs.onAddItem;
@@ -120,6 +121,6 @@ export default function NavigationList($timeout) {
                     }
                 );
             }, 500, false);
-        }
+        },
     };
 }

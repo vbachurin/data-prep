@@ -23,32 +23,7 @@ describe('Grid state service', () => {
                 { id: '0001', type: 'string' },
                 { id: '0002', type: 'decimal' },
                 { id: '0003', type: 'date' },
-            ]
-        },
-        records: [
-            { tdpId: 0, firstname: 'Tata' },
-            { tdpId: 1, firstname: 'Tetggggge' },
-            { tdpId: 2, firstname: 'Titi' },
-            { tdpId: 3, firstname: 'Toto' },
-            { tdpId: 4, name: 'AMC Gremlin' },
-            { tdpId: 5, firstname: 'Tyty' },
-            { tdpId: 6, firstname: 'Papa' },
-            { tdpId: 7, firstname: 'Pepe' },
-            { tdpId: 8, firstname: 'Pipi' },
-            { tdpId: 9, firstname: 'Popo' },
-            { tdpId: 10, firstname: 'Pupu' },
-            { tdpId: 11, firstname: 'Pypy' },
-        ]
-    };
-
-    const previewData = {
-        metadata: {
-            columns: [
-                { id: '0000' },
-                { id: '0001' },
-                { id: '0002' },
-                { id: '0003' },
-            ]
+            ],
         },
         records: [
             { tdpId: 0, firstname: 'Tata' },
@@ -64,7 +39,32 @@ describe('Grid state service', () => {
             { tdpId: 10, firstname: 'Pupu' },
             { tdpId: 11, firstname: 'Pypy' },
         ],
-        preview: true
+    };
+
+    const previewData = {
+        metadata: {
+            columns: [
+                { id: '0000' },
+                { id: '0001' },
+                { id: '0002' },
+                { id: '0003' },
+            ],
+        },
+        records: [
+            { tdpId: 0, firstname: 'Tata' },
+            { tdpId: 1, firstname: 'Tetggggge' },
+            { tdpId: 2, firstname: 'Titi' },
+            { tdpId: 3, firstname: 'Toto' },
+            { tdpId: 4, name: 'AMC Gremlin' },
+            { tdpId: 5, firstname: 'Tyty' },
+            { tdpId: 6, firstname: 'Papa' },
+            { tdpId: 7, firstname: 'Pepe' },
+            { tdpId: 8, firstname: 'Pipi' },
+            { tdpId: 9, firstname: 'Popo' },
+            { tdpId: 10, firstname: 'Pupu' },
+            { tdpId: 11, firstname: 'Pypy' },
+        ],
+        preview: true,
     };
 
     beforeEach(angular.mock.module('data-prep.services.state'));
@@ -352,7 +352,7 @@ describe('Grid state service', () => {
             GridStateService.setFilter([], { columns: [], records: filteredRecords });
 
             //then
-            expect(gridState.filteredOccurences).toEqual({ 'DEV': 2, 'CP': 1 });
+            expect(gridState.filteredOccurences).toEqual({ DEV: 2, CP: 1 });
         }));
 
         it('should update filtered records on data change', inject((gridState, GridStateService) => {
@@ -382,7 +382,7 @@ describe('Grid state service', () => {
             });
 
             //then
-            expect(gridState.filteredOccurences).toEqual({ 'DEV': 2, 'CP': 1 });
+            expect(gridState.filteredOccurences).toEqual({ DEV: 2, CP: 1 });
         }));
 
         it('should update filtered records occurrences on grid selection', inject((gridState, GridStateService) => {
@@ -395,7 +395,7 @@ describe('Grid state service', () => {
             GridStateService.setGridSelection(column, null);
 
             //then
-            expect(gridState.filteredOccurences).toEqual({ 'DEV': 2, 'CP': 1 });
+            expect(gridState.filteredOccurences).toEqual({ DEV: 2, CP: 1 });
         }));
     });
 });

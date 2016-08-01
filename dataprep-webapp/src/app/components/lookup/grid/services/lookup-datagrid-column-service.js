@@ -32,7 +32,7 @@ export default function LookupDatagridColumnService(state, $rootScope, $compile,
 
     return {
         init: init,
-        createColumns: createColumns
+        createColumns: createColumns,
     };
 
     //------------------------------------------------------------------------------------------------------
@@ -53,7 +53,7 @@ export default function LookupDatagridColumnService(state, $rootScope, $compile,
             name: '',
             formatter: LookupDatagridStyleService.columnFormatter(col),
             minWidth: 120,
-            tdpColMetadata: col
+            tdpColMetadata: col,
         };
     }
 
@@ -83,8 +83,9 @@ export default function LookupDatagridColumnService(state, $rootScope, $compile,
             formatter: function formatterIndex(row, cell, value) {
                 return '<div class="index-cell">' + value + '</div>';
             },
+
             resizable: false,
-            selectable: false
+            selectable: false,
         });
 
         return _.union(colIndexArray, _.map(columnsMetadata, function (col) {
@@ -116,7 +117,7 @@ export default function LookupDatagridColumnService(state, $rootScope, $compile,
         return {
             id: col.id,
             scope: headerScope,
-            header: headerElement
+            header: headerElement,
         };
     }
 

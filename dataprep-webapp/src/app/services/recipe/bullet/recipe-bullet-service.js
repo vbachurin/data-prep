@@ -25,7 +25,7 @@ export default function RecipeBulletService($timeout, state, StepUtilsService, P
 
     return {
         stepHoverStart: stepHoverStart,
-        stepHoverEnd: stepHoverEnd
+        stepHoverEnd: stepHoverEnd,
     };
 
     //---------------------------------------------------------------------------------------------

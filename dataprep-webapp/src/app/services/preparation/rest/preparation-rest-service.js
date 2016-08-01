@@ -44,7 +44,7 @@ export default function PreparationRestService($http, RestURLs) {
         //preview
         getPreviewDiff: getPreviewDiff,
         getPreviewUpdate: getPreviewUpdate,
-        getPreviewAdd: getPreviewAdd
+        getPreviewAdd: getPreviewAdd,
     };
 
     //---------------------------------------------------------------------------------

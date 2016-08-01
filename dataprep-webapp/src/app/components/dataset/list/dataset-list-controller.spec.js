@@ -19,12 +19,12 @@ describe('Dataset list controller', () => {
     const datasets = [
         { id: 'ec4834d9bc2af8', name: 'Customers (50 lines)' },
         { id: 'ab45f893d8e923', name: 'Us states' },
-        { id: 'cf98d83dcb9437', name: 'Customers (1K lines)' }
+        { id: 'cf98d83dcb9437', name: 'Customers (1K lines)' },
     ];
 
     beforeEach(angular.mock.module('data-prep.dataset-list', ($provide) => {
         stateMock = {
-            inventory: { datasets: datasets }
+            inventory: { datasets: datasets },
         };
         $provide.constant('state', stateMock);
     }));
@@ -115,7 +115,7 @@ describe('Dataset list controller', () => {
             //then
             expect(TalendConfirmService.confirm).toHaveBeenCalledWith({ disableEnter: true }, ['DELETE_PERMANENTLY', 'NO_UNDONE_CONFIRM'], {
                 type: 'dataset',
-                name: 'Customers (50 lines)'
+                name: 'Customers (50 lines)',
             });
         }));
 
@@ -144,7 +144,7 @@ describe('Dataset list controller', () => {
             //then
             expect(MessageService.success).toHaveBeenCalledWith('REMOVE_SUCCESS_TITLE', 'REMOVE_SUCCESS', {
                 type: 'dataset',
-                name: 'Customers (50 lines)'
+                name: 'Customers (50 lines)',
             });
         }));
     });

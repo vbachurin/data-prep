@@ -33,6 +33,6 @@ export default function DatasetXlsPreview($timeout) {
             $timeout(() => {
                 ctrl.initGrid();
             }, 100);
-        }
+        },
     };
 }

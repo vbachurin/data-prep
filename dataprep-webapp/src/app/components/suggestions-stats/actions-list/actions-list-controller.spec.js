@@ -21,8 +21,8 @@ describe('Actions list controller', function () {
     beforeEach(angular.mock.module('data-prep.actions-list', function ($provide) {
         stateMock = { playground: {
                 grid: {},
-                filter: {}
-        } };
+                filter: {},
+            }, };
         $provide.constant('state', stateMock);
     }));
 
@@ -31,7 +31,7 @@ describe('Actions list controller', function () {
 
         createController = function () {
             return $controller('ActionsListCtrl', {
-                $scope: scope
+                $scope: scope,
             });
         };
     }));
@@ -58,8 +58,8 @@ describe('Actions list controller', function () {
         }));
     });
 
-    describe('early preview', function() {
-        it('should trigger early preview with current scope', inject(function(EarlyPreviewService) {
+    describe('early preview', function () {
+        it('should trigger early preview with current scope', inject(function (EarlyPreviewService) {
             //given
             var transformation = { name: 'delete' };
             var ctrl = createController();
@@ -73,7 +73,7 @@ describe('Actions list controller', function () {
         }));
     });
 
-    describe('transform', function() {
+    describe('transform', function () {
         it('should call appendStep function on transform closure execution', inject((PlaygroundService) => {
             //given
             var transformation = { name: 'tolowercase' };
@@ -157,8 +157,8 @@ describe('Actions list controller', function () {
         }));
     });
 
-    describe('dynamic parameters', function() {
-        beforeEach(function() {
+    describe('dynamic parameters', function () {
+        beforeEach(function () {
             stateMock.playground.grid.selectedColumn = { id: '0001' };
         });
 
@@ -193,7 +193,7 @@ describe('Actions list controller', function () {
             expect(TransformationService.initDynamicParameters).toHaveBeenCalledWith(transformation, {
                 columnId: '0001',
                 datasetId: '41fa397a8239cd051b35',
-                preparationId: null
+                preparationId: null,
             });
         }));
 
@@ -212,7 +212,7 @@ describe('Actions list controller', function () {
             expect(TransformationService.initDynamicParameters).toHaveBeenCalledWith(transformation, {
                 columnId: '0001',
                 datasetId: '41fa397a8239cd051b35',
-                preparationId: '35da66fc454568f4a52'
+                preparationId: '35da66fc454568f4a52',
             });
         }));
 
@@ -269,7 +269,7 @@ describe('Actions list controller', function () {
             var dynamicTransformation = {
                 name: 'cluster',
                 dynamic: true,
-                cluster: { clusters: [{ parameters: [], replace: {} }] }
+                cluster: { clusters: [{ parameters: [], replace: {} }] },
             };
             var ctrl = createController();
 

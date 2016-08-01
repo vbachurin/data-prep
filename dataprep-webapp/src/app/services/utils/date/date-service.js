@@ -21,7 +21,7 @@ import moment from 'moment';
  */
 export default function DateService() {
     return {
-        isInDateLimits: isInDateLimits
+        isInDateLimits: isInDateLimits,
     };
 
     /**

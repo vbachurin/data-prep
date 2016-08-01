@@ -43,7 +43,7 @@ export default function DatasetXlsPreviewCtrl($timeout, $state, state,
             editable: false,
             enableAddRow: false,
             enableCellNavigation: true,
-            enableTextSelectionOnCells: false
+            enableTextSelectionOnCells: false,
         };
 
         DatasetSheetPreviewService.grid = new Slick.Grid(
@@ -128,9 +128,10 @@ Object.defineProperty(DatasetXlsPreviewCtrl.prototype,
         get: function () {
             return this.datasetSheetPreviewService.showModal;
         },
+
         set: function (value) {
             this.datasetSheetPreviewService.showModal = value;
-        }
+        },
     });
 
 /**
@@ -146,7 +147,7 @@ Object.defineProperty(DatasetXlsPreviewCtrl.prototype,
         configurable: false,
         get: function () {
             return this.datasetSheetPreviewService.currentMetadata;
-        }
+        },
     });
 
 /**
@@ -163,7 +164,8 @@ Object.defineProperty(DatasetXlsPreviewCtrl.prototype,
         get: function () {
             return this.datasetSheetPreviewService.selectedSheetName;
         },
+
         set: function (newValue) {
             this.datasetSheetPreviewService.selectedSheetName = newValue;
-        }
+        },
     });

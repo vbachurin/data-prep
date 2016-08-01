@@ -27,7 +27,7 @@ export default function RecipeBullet($timeout) {
     return {
         restrict: 'E',
         scope: {
-            step: '='
+            step: '=',
         },
         templateNamespace: 'svg',
         controller: 'RecipeBulletCtrl',
@@ -218,7 +218,6 @@ export default function RecipeBullet($timeout) {
                 }, 200, false);
             };
 
-
             if (!ctrl.isEndChain()) {
                 iElement.mouseenter(mouseEnterListener);
                 iElement.mouseleave(mouseLeaveListener);
@@ -229,7 +228,6 @@ export default function RecipeBullet($timeout) {
             }
 
             bulletCircleElement.addEventListener('click', circleClickListener);
-
 
             iElement.closest('.accordion').mouseover(function () {
                 $timeout(updateSVGSizes, 0, false);
@@ -244,6 +242,6 @@ export default function RecipeBullet($timeout) {
             });
 
             $timeout(updateSVGSizes, 0, false);
-        }
+        },
     };
 }

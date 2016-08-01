@@ -39,6 +39,6 @@ export default function FilterSearch() {
             inputElement[0].onblur = () => {
                 ctrl.filterSearch = '';
             };
-        }
+        },
     };
 }

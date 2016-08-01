@@ -26,7 +26,7 @@ describe('Filter item controller', () => {
     beforeEach(angular.mock.module('data-prep.filter-item'));
     beforeEach(angular.mock.module('pascalprecht.translate', $translateProvider => {
         $translateProvider.translations('en', {
-            'COLON': ': '
+            COLON: ': ',
         });
         $translateProvider.preferredLanguage('en');
     }));
@@ -38,9 +38,9 @@ describe('Filter item controller', () => {
             type: 'exact',
             value: [
                 {
-                    value: 'lorem ipsum'
-                }
-            ]
+                    value: 'lorem ipsum',
+                },
+            ],
         };
         editable = false;
         onEditFn = jasmine.createSpy('onEditFn');
@@ -49,13 +49,13 @@ describe('Filter item controller', () => {
 
         createController = () => {
             const ctrl = $componentController('filterItem', {
-                $scope: scope
+                $scope: scope,
             }, {
                 value: filter,
                 editable: editable,
                 onEdit: onEditFn,
                 removable: removable,
-                onRemove: onRemoveFn
+                onRemove: onRemoveFn,
             });
             ctrl.$onInit();
             return ctrl;
@@ -65,7 +65,7 @@ describe('Filter item controller', () => {
     it('should set the sign character to : in', () => {
         //given
         filter = {
-            type: 'inside_range'
+            type: 'inside_range',
         };
         const ctrl = createController();
 
@@ -75,8 +75,8 @@ describe('Filter item controller', () => {
 
     it('should set the sign character to : ":"', () => {
         //given
-        filter ={
-            type: 'valid_records'
+        filter = {
+            type: 'valid_records',
         };
         const ctrl = createController();
 
@@ -87,7 +87,7 @@ describe('Filter item controller', () => {
     it('should set the sign character to : "≅"', () => {
         //given
         filter = {
-            type: 'contains'
+            type: 'contains',
         };
         const ctrl = createController();
 
@@ -97,8 +97,8 @@ describe('Filter item controller', () => {
 
     it('should set the sign character to : "=" ', () => {
         //given
-        filter ={
-            type: 'exact'
+        filter = {
+            type: 'exact',
         };
         const ctrl = createController();
 
@@ -116,7 +116,7 @@ describe('Filter item controller', () => {
         //then
         expect(onEditFn).toHaveBeenCalledWith({
             filter: filter,
-            value: filter.value
+            value: filter.value,
         });
     });
 
@@ -130,7 +130,7 @@ describe('Filter item controller', () => {
         //then
         expect(onEditFn).toHaveBeenCalledWith({
             filter: filter,
-            value: []
+            value: [],
         });
     });
 
@@ -143,7 +143,7 @@ describe('Filter item controller', () => {
 
         //then
         expect(onRemoveFn).toHaveBeenCalledWith({
-            filter: filter
+            filter: filter,
         });
     });
 });

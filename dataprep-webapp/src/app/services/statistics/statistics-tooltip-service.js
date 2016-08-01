@@ -46,7 +46,7 @@ export default function StatisticsTooltipService($translate, state) {
     });
 
     return {
-        getTooltip: getTooltip
+        getTooltip: getTooltip,
     };
 
     /**
@@ -119,7 +119,7 @@ export default function StatisticsTooltipService($translate, state) {
                     label: keyLabel,
                     title: title,
                     key: keyString,
-                    primaryValue: primaryValue
+                    primaryValue: primaryValue,
                 });
             }
             else {
@@ -130,7 +130,7 @@ export default function StatisticsTooltipService($translate, state) {
                     percentage: percentage,
                     key: keyString,
                     primaryValue: primaryValue,
-                    secondaryValue: secondaryValue
+                    secondaryValue: secondaryValue,
                 });
             }
         }
@@ -139,7 +139,7 @@ export default function StatisticsTooltipService($translate, state) {
                 label: keyLabel,
                 title: title,
                 key: keyString,
-                primaryValue: primaryValue
+                primaryValue: primaryValue,
             });
         }
     }

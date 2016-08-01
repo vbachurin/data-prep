@@ -19,16 +19,15 @@ describe('Inventory Tile Component', () => {
 
     beforeEach(angular.mock.module('pascalprecht.translate', ($translateProvider) => {
         $translateProvider.translations('en_US', {
-            'COLON': ': ',
-            'LAST_MODIFICATION': 'last modified',
-            'OWNED_BY': 'Owned by',
-            'ROWS': 'rows',
+            COLON: ': ',
+            LAST_MODIFICATION: 'last modified',
+            OWNED_BY: 'Owned by',
+            ROWS: 'rows',
         });
         $translateProvider.preferredLanguage('en_US');
     }));
 
     beforeEach(angular.mock.module('data-prep.inventory-tile'));
-    
 
     beforeEach(inject(($rootScope, $compile) => {
         scope = $rootScope.$new();
@@ -57,9 +56,9 @@ describe('Inventory Tile Component', () => {
             favorite: false,
             actions: [
                 {
-                    'action': 'lowercase',
-                    'parameters': { 'column_name': 'birth' },
-                }
+                    action: 'lowercase',
+                    parameters: { column_name: 'birth' },
+                },
             ],
         };
         scope.onClick = jasmine.createSpy('onClick');
@@ -79,10 +78,10 @@ describe('Inventory Tile Component', () => {
                     on-click="onClick()"
                     on-title-click="onTitleClick()"
 
-                    ${htmlConfig.clone ? "on-clone=\"onClone(preparation)\"" : ""}
-                    ${htmlConfig.favorite ? "on-favorite=\"onFavorite(preparation)\"" : ""}
-                    ${htmlConfig.remove ? "on-remove=\"onRemove(preparation)\"" : ""}
-                    ${htmlConfig.rename ? "on-rename=\"onRename(preparation, text)\"" : ""}
+                    ${htmlConfig.clone ? 'on-clone="onClone(preparation)"' : ''}
+                    ${htmlConfig.favorite ? 'on-favorite="onFavorite(preparation)"' : ''}
+                    ${htmlConfig.remove ? 'on-remove="onRemove(preparation)"' : ''}
+                    ${htmlConfig.rename ? 'on-rename="onRename(preparation, text)"' : ''}
                 ></inventory-tile>`;
 
             element = angular.element(html);
@@ -116,7 +115,7 @@ describe('Inventory Tile Component', () => {
             createElement();
 
             // then
-            expect(element.find("span.title").eq(0).text().trim()).toBe('my preparation');
+            expect(element.find('span.title').eq(0).text().trim()).toBe('my preparation');
         });
 
         it('should render the details', inject(($filter) => {

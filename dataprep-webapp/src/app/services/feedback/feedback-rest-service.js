@@ -34,7 +34,7 @@ export default class FeedbackRestService {
         var request = {
             method: 'PUT',
             url: this.url,
-            data: feedback
+            data: feedback,
         };
 
         return this.$http(request);

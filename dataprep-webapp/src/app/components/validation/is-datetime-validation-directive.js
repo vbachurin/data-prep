@@ -29,10 +29,11 @@ export default function IsDateTimeValidation() {
                 if (ctrl.$isEmpty(modelValue)) {
                     return false;
                 }
+
                 var format = attributes.format ? attributes.format : 'DD/MM/YYYY HH:mm:ss';
                 var isValid = moment(modelValue, format, true).isValid();
                 return isValid;
             };
-        }
+        },
     };
 }

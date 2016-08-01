@@ -28,7 +28,7 @@ export default function TransformationCacheService($q, $cacheFactory, Transforma
         invalidateCache: invalidateCache,
         getColumnSuggestions: getColumnSuggestions,
         getColumnTransformations: getColumnTransformations,
-        getLineTransformations: getLineTransformations
+        getLineTransformations: getLineTransformations,
     };
 
     /**

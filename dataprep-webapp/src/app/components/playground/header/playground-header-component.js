@@ -56,8 +56,8 @@ const PlaygroundHeader = {
         onFeedback: '&',
         onClose: '&',
         onPreparationPicker: '&',
-        preparationPicker: '<'
-    }
+        preparationPicker: '<',
+    },
 };
 
 export default PlaygroundHeader;

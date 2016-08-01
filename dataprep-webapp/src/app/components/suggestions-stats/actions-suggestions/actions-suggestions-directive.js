@@ -52,7 +52,7 @@ export default function ActionsSuggestions($timeout) {
                         if (etdOffset.top > (splitHandler.offset().top - etdHeight)) {
                             scrollDistance = tabContainer[0].scrollTop + etdHeight;
                             tabContainer.animate({
-                                scrollTop: scrollDistance
+                                scrollTop: scrollDistance,
                             }, 500);
                         }
                     }
@@ -60,11 +60,11 @@ export default function ActionsSuggestions($timeout) {
                         const accordionTriggerHeight = elementToDisplay.find('>.trigger-container').height();
                         scrollDistance = tabContainer[0].scrollTop + availableTopSpace - accordionTriggerHeight;
                         tabContainer.animate({
-                            scrollTop: scrollDistance
+                            scrollTop: scrollDistance,
                         }, 500);
                     }
                 }, 300, false);
             };
-        }
+        },
     };
 }

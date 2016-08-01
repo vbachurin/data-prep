@@ -54,7 +54,7 @@ describe('Playground state service', () => {
         it('should set dataset metadata in state', inject((playgroundState, PlaygroundStateService) => {
             //given
             const dataset = {
-                id: '958cb63f235e4565'
+                id: '958cb63f235e4565',
             };
             expect(playgroundState.dataset).not.toBe(dataset);
 
@@ -71,7 +71,7 @@ describe('Playground state service', () => {
             //given
             expect(playgroundState.preparation).toBeFalsy();
             const preparation = {
-                id: '3d245846bc46f51'
+                id: '3d245846bc46f51',
             };
 
             //when
@@ -121,7 +121,7 @@ describe('Playground state service', () => {
             //given
             expect(playgroundState.data).toBeFalsy();
             const data = {
-                records: []
+                records: [],
             };
 
             //when
@@ -135,7 +135,7 @@ describe('Playground state service', () => {
             //given
             expect(GridStateService.setData).not.toHaveBeenCalled();
             const data = {
-                records: []
+                records: [],
             };
 
             //when
@@ -195,17 +195,17 @@ describe('Playground state service', () => {
                     columns: [
                         { id: '0000', statistics: {} },
                         { id: '0001', statistics: {} },
-                        { id: '0002', statistics: {} }
-                    ]
-                }
+                        { id: '0002', statistics: {} },
+                    ],
+                },
             };
             const newMetadata = {
                 columns: [
                     { id: '0000', statistics: { frequencyTable: [{ data: '5.0', occurrences: 98 }] } },
                     { id: '0001', statistics: { frequencyTable: [{ data: 'Toto', occurrences: 5 }] } },
-                    { id: '0002', statistics: { frequencyTable: [{ data: '', occurrences: 66 }] } }
+                    { id: '0002', statistics: { frequencyTable: [{ data: '', occurrences: 66 }] } },
                 ],
-                records: 256
+                records: 256,
             };
 
             //when
@@ -224,9 +224,9 @@ describe('Playground state service', () => {
                     columns: [
                         { id: '0000', statistics: {} },
                         { id: '0001', statistics: {} },
-                        { id: '0002', statistics: {} }
-                    ]
-                }
+                        { id: '0002', statistics: {} },
+                    ],
+                },
             };
             const newMetadata = {
                 columns: [
@@ -249,7 +249,7 @@ describe('Playground state service', () => {
             //given
             playgroundState.dataset = {
                 id: '958cb63f235e4565',
-                records: 10
+                records: 10,
             };
             expect(playgroundState.dataset.records).toBe(10);
 

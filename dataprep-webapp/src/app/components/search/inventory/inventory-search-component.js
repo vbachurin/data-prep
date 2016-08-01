@@ -26,7 +26,7 @@ import InventorySearchCtrl from './inventory-search-controller';
 
 const InventorySearch = {
     templateUrl: template,
-    controller: InventorySearchCtrl
+    controller: InventorySearchCtrl,
 };
 
 export default InventorySearch;

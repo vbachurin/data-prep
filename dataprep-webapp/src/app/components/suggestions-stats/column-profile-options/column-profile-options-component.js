@@ -40,7 +40,7 @@ const ColumnProfileOptionsComponent = {
         aggregation: '<',
         column: '<',
         group: '<',
-        onAggregationChange: '&'
+        onAggregationChange: '&',
     },
     controller: ColumnProfileOptionsCtrl,
 };

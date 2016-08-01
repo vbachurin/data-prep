@@ -37,7 +37,7 @@ export default function TalendTooltip($window, $document) {
         transclude: true,
         scope: {
             position: '=',
-            requestedState: '='
+            requestedState: '=',
         },
         bindToController: true,
         controller: 'TalendTooltipCtrl',
@@ -66,14 +66,17 @@ export default function TalendTooltip($window, $document) {
                     isOver = true;
                     processBlockUnblock();
                 },
+
                 function () {
                     isOver = false;
                     processBlockUnblock();
                 });
+
             iElement.focusin(function () {
                 hasFocus = true;
                 processBlockUnblock();
             });
+
             iElement.focusout(function () {
                 hasFocus = false;
                 processBlockUnblock();
@@ -95,13 +98,13 @@ export default function TalendTooltip($window, $document) {
                 if (position.x < windowWidth / 2) {
                     return {
                         left: position.x + 'px',
-                        right: 'auto'
+                        right: 'auto',
                     };
                 }
                 else {
                     return {
                         left: 'auto',
-                        right: (windowWidth - position.x) + 'px'
+                        right: (windowWidth - position.x) + 'px',
                     };
                 }
             };
@@ -129,13 +132,13 @@ export default function TalendTooltip($window, $document) {
                 if (position.y < windowHeight / 2) {
                     return {
                         top: position.y,
-                        bottom: 'auto'
+                        bottom: 'auto',
                     };
                 }
                 else {
                     return {
                         top: 'auto',
-                        bottom: (windowHeight - position.y) + 'px'
+                        bottom: (windowHeight - position.y) + 'px',
                     };
                 }
             };
@@ -147,6 +150,7 @@ export default function TalendTooltip($window, $document) {
                 function () {
                     return ctrl.position;
                 },
+
                 function (position) {
                     if (position) {
                         var horizontalPosition = calculateHorizontalPosition(position);
@@ -156,6 +160,6 @@ export default function TalendTooltip($window, $document) {
                     }
                 }
             );
-        }
+        },
     };
 }

@@ -29,6 +29,6 @@ export default function Export() {
         controller: 'ExportCtrl',
         link: (scope, iElement, iAttrs, ctrl) => {
             ctrl.form = iElement.find('#exportForm').eq(0)[0];
-        }
+        },
     };
 }

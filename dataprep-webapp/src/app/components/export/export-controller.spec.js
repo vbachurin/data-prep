@@ -25,47 +25,47 @@ describe('Export controller', () => {
     beforeEach(angular.mock.module('data-prep.export', ($provide) => {
         exportTypes = [
             {
-                'mimeType': 'text/csv',
-                'extension': '.csv',
-                'id': 'CSV',
-                'needParameters': 'true',
-                'defaultExport': 'false',
-                'enabled': true,
-                'parameters': [
+                mimeType: 'text/csv',
+                extension: '.csv',
+                id: 'CSV',
+                needParameters: 'true',
+                defaultExport: 'false',
+                enabled: true,
+                parameters: [
                     {
-                        'name': 'csvSeparator',
-                        'labelKey': 'CHOOSE_SEPARATOR',
-                        'type': 'select',
-                        'default': ';',
-                        'values': [
-                            { 'value': '&#09;', 'labelKey': 'SEPARATOR_TAB' },
-                            { 'value': ' ', 'labelKey': 'SEPARATOR_SPACE' },
-                            { 'value': ',', 'labelKey': 'SEPARATOR_COMMA' },
+                        name: 'csvSeparator',
+                        labelKey: 'CHOOSE_SEPARATOR',
+                        type: 'select',
+                        default: ';',
+                        values: [
+                            { value: '&#09;', labelKey: 'SEPARATOR_TAB' },
+                            { value: ' ', labelKey: 'SEPARATOR_SPACE' },
+                            { value: ',', labelKey: 'SEPARATOR_COMMA' },
                         ],
                     },
                     {
-                        'name': 'fileName',
-                        'labelKey': 'EXPORT_FILENAME"',
-                        'type': 'text',
-                        'default': ';',
+                        name: 'fileName',
+                        labelKey: 'EXPORT_FILENAME"',
+                        type: 'text',
+                        default: ';',
                     },
-                ]
+                ],
             },
             {
-                'mimeType': 'application/tde',
-                'extension': '.tde',
-                'id': 'TABLEAU',
-                'needParameters': 'false',
-                'defaultExport': 'false',
-                'enabled': true,
+                mimeType: 'application/tde',
+                extension: '.tde',
+                id: 'TABLEAU',
+                needParameters: 'false',
+                defaultExport: 'false',
+                enabled: true,
             },
             {
-                'mimeType': 'application/vnd.ms-excel',
-                'extension': '.xlsx',
-                'id': 'XLSX',
-                'needParameters': 'false',
-                'defaultExport': 'true',
-                'enabled': true,
+                mimeType: 'application/vnd.ms-excel',
+                extension: '.xlsx',
+                id: 'XLSX',
+                needParameters: 'false',
+                defaultExport: 'true',
+                enabled: true,
             },
         ];
 
@@ -79,9 +79,9 @@ describe('Export controller', () => {
                 },
                 recipe: {
                     current: {
-                        steps: []
-                    }
-                }
+                        steps: [],
+                    },
+                },
             },
         };
         $provide.constant('state', stateMock);
@@ -94,7 +94,7 @@ describe('Export controller', () => {
     beforeEach(inject(($rootScope, $controller, $q, ExportService, StorageService) => {
         form = {
             submit: () => {
-            }
+            },
         };
         scope = $rootScope.$new();
 
@@ -118,8 +118,8 @@ describe('Export controller', () => {
             //when
             stateMock.playground.recipe.current.steps.push({
                 transformation: {
-                    stepId: '48da64513c43a548e678bc99'
-                }
+                    stepId: '48da64513c43a548e678bc99',
+                },
             });
 
             //then
@@ -200,7 +200,7 @@ describe('Export controller', () => {
             expect(ctrl.exportParams).toEqual({
                 exportType: 'CSV',
                 'exportParameters.csvSeparator': ';',
-                'exportParameters.fileName': 'my prep'
+                'exportParameters.fileName': 'my prep',
             });
         });
 
@@ -217,7 +217,7 @@ describe('Export controller', () => {
             expect(StorageService.saveExportParams).toHaveBeenCalledWith({
                 exportType: 'CSV',
                 'exportParameters.csvSeparator': ';',
-                'exportParameters.fileName': 'my prep'
+                'exportParameters.fileName': 'my prep',
             });
         }));
     });
@@ -236,7 +236,7 @@ describe('Export controller', () => {
             expect(ctrl.exportParams).toEqual({
                 exportType: 'CSV',
                 'exportParameters.csvSeparator': ';',
-                'exportParameters.fileName': 'my prep'
+                'exportParameters.fileName': 'my prep',
             });
         });
 

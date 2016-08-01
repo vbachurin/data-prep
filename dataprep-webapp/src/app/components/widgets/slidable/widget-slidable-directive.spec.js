@@ -22,7 +22,6 @@ describe('Slidable directive', function () {
     var widthStorageKey = 'org.talend.dataprep.' + resizableId + '.width';
 
     beforeEach(angular.mock.module('talend.widget'));
-    
 
     afterEach(inject(function ($window) {
         scope.$destroy();
@@ -36,7 +35,7 @@ describe('Slidable directive', function () {
 
         createElement = function (side) {
             var template = '<talend-slidable visible="visible" side="' + side + '">' +
-                '   Content'+
+                '   Content' +
                 '</talend-slidable>';
             element = $compile(template)(scope);
             scope.$digest();
@@ -44,13 +43,12 @@ describe('Slidable directive', function () {
 
         createResizableElement = function (side) {
             var template = '<talend-slidable visible="visible" side="' + side + '" resizable="' + resizableId + '">' +
-                '   Content'+
+                '   Content' +
                 '</talend-slidable>';
             element = $compile(template)(scope);
             scope.$digest();
         };
     }));
-
 
     it('should hide slidable on creation', function () {
         //given
@@ -100,7 +98,7 @@ describe('Slidable directive', function () {
         expect(element.hasClass('slide-hide')).toBe(false);
     });
 
-    it('should show '>' when left slidable is hidden', function () {
+    it('should show ' > ' when left slidable is hidden', function () {
         //given
         scope.visible = false;
 
@@ -115,7 +113,7 @@ describe('Slidable directive', function () {
         expect(hiddenActionText).toBe('‹');
     });
 
-    it('should show '<' when left slidable is displayed', function () {
+    it('should show ' < ' when left slidable is displayed', function () {
         //given
         scope.visible = true;
 
@@ -130,7 +128,7 @@ describe('Slidable directive', function () {
         expect(hiddenActionText).toBe('›');
     });
 
-    it('should show '<' when right slidable is hidden', function () {
+    it('should show ' < ' when right slidable is hidden', function () {
         //given
         scope.visible = false;
 
@@ -145,7 +143,7 @@ describe('Slidable directive', function () {
         expect(hiddenActionText).toBe('›');
     });
 
-    it('should show '>' when right slidable is displayed', function () {
+    it('should show ' > ' when right slidable is displayed', function () {
         //given
         scope.visible = true;
 
@@ -160,7 +158,7 @@ describe('Slidable directive', function () {
         expect(hiddenActionText).toBe('‹');
     });
 
-    it('should set and configure resize feature on left slidable', function() {
+    it('should set and configure resize feature on left slidable', function () {
         //when
         createResizableElement('left');
 
@@ -169,7 +167,7 @@ describe('Slidable directive', function () {
         expect(element.find('.ui-resizable-handle').eq(0).hasClass('ui-resizable-e')).toBe(true);
     });
 
-    it('should set and configure resize feature on right slidable', function() {
+    it('should set and configure resize feature on right slidable', function () {
         //when
         createResizableElement('right');
 
@@ -178,7 +176,7 @@ describe('Slidable directive', function () {
         expect(element.find('.ui-resizable-handle').eq(0).hasClass('ui-resizable-w')).toBe(true);
     });
 
-    it('should set flex constant size on slidable creation if there is a size in localStorage', inject(function($window) {
+    it('should set flex constant size on slidable creation if there is a size in localStorage', inject(function ($window) {
         //given
         $window.localStorage.setItem(widthStorageKey, '500px');
         scope.visible = false;
@@ -192,7 +190,7 @@ describe('Slidable directive', function () {
         expect(flexStyle).toBe('0 0 500px');
     }));
 
-    it('should remove transition when resize start', function() {
+    it('should remove transition when resize start', function () {
         //given
         createResizableElement('right');
         var start = element.resizable('option', 'start');
@@ -205,7 +203,7 @@ describe('Slidable directive', function () {
         expect(element.hasClass('no-transition')).toBe(true);
     });
 
-    it('should set transition again and save width to localstorage, when resize stop', inject(function($window) {
+    it('should set transition again and save width to localstorage, when resize stop', inject(function ($window) {
         //given
         createResizableElement('right');
         var stop = element.resizable('option', 'stop');
@@ -222,7 +220,7 @@ describe('Slidable directive', function () {
         expect($window.localStorage.getItem(widthStorageKey)).toBe('250px');
     }));
 
-    it('should set element css to fit wanted size on resize action', function() {
+    it('should set element css to fit wanted size on resize action', function () {
         //given
         createResizableElement('right');
         var resize = element.resizable('option', 'resize');

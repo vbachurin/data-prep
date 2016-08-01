@@ -11,7 +11,7 @@
 
   ============================================================================*/
 
-describe('Confirm directive', function() {
+describe('Confirm directive', function () {
     'use strict';
 
     var ctrl;
@@ -20,12 +20,12 @@ describe('Confirm directive', function() {
 
     beforeEach(angular.mock.module('talend.widget'));
 
-    beforeEach(inject(function($rootScope, $controller, TalendConfirmService) {
+    beforeEach(inject(function ($rootScope, $controller, TalendConfirmService) {
         scope = $rootScope.$new();
 
-        createController = function() {
+        createController = function () {
             return $controller('TalendConfirmCtrl', {
-                $scope: scope
+                $scope: scope,
             });
         };
 
@@ -33,7 +33,7 @@ describe('Confirm directive', function() {
         spyOn(TalendConfirmService, 'reject').and.returnValue(null);
     }));
 
-    it('should init modal state and button clicked flag', function() {
+    it('should init modal state and button clicked flag', function () {
         //when
         ctrl = createController();
 
@@ -42,7 +42,7 @@ describe('Confirm directive', function() {
         expect(ctrl.buttonClicked).toBeFalsy();
     });
 
-    it('should set clicked flag and call service resolve', inject(function(TalendConfirmService) {
+    it('should set clicked flag and call service resolve', inject(function (TalendConfirmService) {
         //given
         ctrl = createController();
         expect(ctrl.buttonClicked).toBeFalsy();
@@ -55,7 +55,7 @@ describe('Confirm directive', function() {
         expect(ctrl.buttonClicked).toBeTruthy();
     }));
 
-    it('should set clicked flag and call service reject', inject(function(TalendConfirmService) {
+    it('should set clicked flag and call service reject', inject(function (TalendConfirmService) {
         //given
         ctrl = createController();
         expect(ctrl.buttonClicked).toBeFalsy();
@@ -68,7 +68,7 @@ describe('Confirm directive', function() {
         expect(ctrl.buttonClicked).toBeTruthy();
     }));
 
-    it('should set call service reject on modal dismiss', inject(function(TalendConfirmService) {
+    it('should set call service reject on modal dismiss', inject(function (TalendConfirmService) {
         //given
         ctrl = createController();
         expect(ctrl.buttonClicked).toBeFalsy();
@@ -82,7 +82,7 @@ describe('Confirm directive', function() {
         expect(ctrl.buttonClicked).toBeFalsy();
     }));
 
-    it('should do nothing on modal dismiss if one of the button has been clicked', inject(function(TalendConfirmService) {
+    it('should do nothing on modal dismiss if one of the button has been clicked', inject(function (TalendConfirmService) {
         //given
         ctrl = createController();
         ctrl.buttonClicked = true;

@@ -20,18 +20,18 @@ describe('Preparation Creator Controller', () => {
     const urlQueries = {
         RECENT_DATASETS: '/api/datasets?sort=MODIF&limit=true&name=',
         FAVORITE_DATASETS: '/api/datasets?favorite=true&name=',
-        ALL_DATASETS: '/api/datasets?name='
+        ALL_DATASETS: '/api/datasets?name=',
     };
 
     const FILTERS_TYPES = {
-        'RECENT': 'RECENT_DATASETS',
-        'FAVORITE': 'FAVORITE_DATASETS',
-        'ALL': 'ALL_DATASETS',
+        RECENT: 'RECENT_DATASETS',
+        FAVORITE: 'FAVORITE_DATASETS',
+        ALL: 'ALL_DATASETS',
     };
 
     beforeEach(angular.mock.module('pascalprecht.translate', ($translateProvider) => {
         $translateProvider.translations('en', {
-            "PREPARATION": "Preparation"
+            PREPARATION: 'Preparation',
         });
         $translateProvider.preferredLanguage('en');
     }));
@@ -44,10 +44,10 @@ describe('Preparation Creator Controller', () => {
                         preparations: [
                             { id: 'abc-def', name: 'my dataset Preparation' },
                             { id: 'a95-def', name: 'my dataset Preparation (1)' },
-                        ]
-                    }
-                }
-            }
+                        ],
+                    },
+                },
+            },
         };
         $provide.constant('state', stateMock);
     }));
@@ -83,7 +83,7 @@ describe('Preparation Creator Controller', () => {
     describe('load filtered datasets', () => {
         let filteredDs = [
             { id: 'def12535-212', name: 'datasetName1' },
-            { id: 'abc15455-212', name: 'datasetName1' }
+            { id: 'abc15455-212', name: 'datasetName1' },
         ];
 
         beforeEach(inject(($q, DatasetService) => {
@@ -247,7 +247,7 @@ describe('Preparation Creator Controller', () => {
                 file: {},
                 error: false,
                 id: 'abc-deff',
-                type: 'file'
+                type: 'file',
             };
             spyOn(DatasetService, 'createDatasetInfo').and.returnValue(dataset);
 
@@ -301,7 +301,7 @@ describe('Preparation Creator Controller', () => {
                 ctrl.datasetFile = [{ name: 'my dataset.csv' }];
                 ctrl.userHasTypedName = false;
                 ctrl.enteredName = '';
-                spyOn(DatasetService, 'getDatasetById').and.returnValue($q.when({ id:'123', name:'my dataset' }));
+                spyOn(DatasetService, 'getDatasetById').and.returnValue($q.when({ id: '123', name: 'my dataset' }));
 
                 //when
                 ctrl.import();
@@ -336,7 +336,7 @@ describe('Preparation Creator Controller', () => {
                 expect(dataset.progress).toBeFalsy();
                 const event = {
                     loaded: 100,
-                    total: 200
+                    total: 200,
                 };
 
                 //when
@@ -372,7 +372,7 @@ describe('Preparation Creator Controller', () => {
 
     describe('Preparation Creation', () => {
         let newPreparation = {
-            id: 'def-12558'
+            id: 'def-12558',
         };
         beforeEach(inject(($q, $state, PreparationService, UploadWorkflowService) => {
             spyOn(PreparationService, 'create').and.returnValue($q.when(newPreparation));
@@ -482,13 +482,13 @@ describe('Preparation Creator Controller', () => {
     describe('Base dataset selection', () => {
         let dataset = {
             id: 'abc-5424',
-            name: 'my dataset'
+            name: 'my dataset',
         };
 
         let lastSelectedDataset = {
             id: 'abc-5424',
             name: 'my dataset',
-            isSelected: true
+            isSelected: true,
         };
 
         it('should update selection flag for the 1st dataset select', () => {

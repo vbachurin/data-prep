@@ -45,9 +45,10 @@ export default class FilterValueCtrl {
         if (event && event.keyCode === 27) {
             this.valueToDisplay = this.filterValue;
         }
+
         if (event && (event.keyCode === 27 || event.keyCode === 13)) {
             this.onEdit({
-                value: this.valueToDisplay
+                value: this.valueToDisplay,
             });
             event.stopPropagation();
         }

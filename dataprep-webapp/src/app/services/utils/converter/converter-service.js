@@ -23,7 +23,7 @@ export default function ConverterService() {
         //types
         toInputType: toInputType,
         simplifyType: simplifyType,
-        adaptValue: adaptValue
+        adaptValue: adaptValue,
     };
 
     /**

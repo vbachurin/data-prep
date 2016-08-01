@@ -11,7 +11,7 @@
 
   ============================================================================*/
 
-describe('Filter search directive', function() {
+describe('Filter search directive', function () {
     'use strict';
 
     var scope;
@@ -19,23 +19,22 @@ describe('Filter search directive', function() {
     var element;
 
     beforeEach(angular.mock.module('data-prep.filter-search'));
-    
 
-    beforeEach(inject(function($rootScope, $compile) {
+    beforeEach(inject(function ($rootScope, $compile) {
         scope = $rootScope.$new();
-        createElement = function() {
+        createElement = function () {
             element = angular.element('<filter-search></filter-search>');
             $compile(element)(scope);
             scope.$digest();
         };
     }));
 
-    afterEach(function() {
+    afterEach(function () {
         scope.$destroy();
         element.remove();
     });
 
-    it('should render input with auto-complete', function() {
+    it('should render input with auto-complete', function () {
         //when
         createElement();
 
@@ -49,11 +48,12 @@ describe('Filter search directive', function() {
         createElement();
 
         var bodyEscEvent = false;
-        var escEventListener = function(event) {
+        var escEventListener = function (event) {
             if (event.keyCode === 27) {
                 bodyEscEvent = true;
             }
         };
+
         var body = angular.element('body');
         body.append(element);
         body.keydown(escEventListener);
@@ -77,11 +77,12 @@ describe('Filter search directive', function() {
         createElement();
 
         var bodyEnterEvent = false;
-        var escEventListener = function(event) {
+        var escEventListener = function (event) {
             if (event.keyCode === 13) {
                 bodyEnterEvent = true;
             }
         };
+
         var body = angular.element('body');
         body.append(element);
         body.keydown(escEventListener);
@@ -100,7 +101,7 @@ describe('Filter search directive', function() {
         body.off('keydown', escEventListener);
     });
 
-    it('should empty the input filter search', function() {
+    it('should empty the input filter search', function () {
         //given
         createElement();
         var ctrl = element.controller('filterSearch');

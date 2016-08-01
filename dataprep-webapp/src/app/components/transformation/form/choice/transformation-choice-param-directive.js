@@ -28,7 +28,7 @@ export default function TransformChoiceParam($rootScope, $compile) {
         restrict: 'E',
         templateUrl: template,
         scope: {
-            parameter: '='
+            parameter: '=',
         },
         bindToController: true,
         controllerAs: 'choiceParamCtrl',
@@ -56,6 +56,6 @@ export default function TransformChoiceParam($rootScope, $compile) {
                     });
                 })
                 .value();
-        }
+        },
     };
 }

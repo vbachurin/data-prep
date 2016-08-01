@@ -24,7 +24,7 @@ export function StatisticsStateService() {
         setPatterns: setPatterns,
         setFilteredPatterns: setFilteredPatterns,
 
-        reset: reset
+        reset: reset,
     };
 
     function setBoxPlot(boxPlot) {

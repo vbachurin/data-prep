@@ -45,6 +45,6 @@ export default function RestErrorMessageHandler($q, MessageService) {
             }
 
             return $q.reject(rejection);
-        }
+        },
     };
 }

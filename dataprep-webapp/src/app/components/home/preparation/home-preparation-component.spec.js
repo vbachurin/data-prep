@@ -18,11 +18,10 @@ describe('Home Preparation Component', () => {
     let createElement;
     let element;
     let StateMock;
-    
 
     beforeEach(angular.mock.module('data-prep.home', ($provide) => {
         StateMock = {
-            inventory: {}
+            inventory: {},
         };
         $provide.constant('state', StateMock);
     }));
@@ -44,7 +43,6 @@ describe('Home Preparation Component', () => {
         scope.$destroy();
         element.remove();
     });
-
 
     it('should render preparation-header', () => {
         //when

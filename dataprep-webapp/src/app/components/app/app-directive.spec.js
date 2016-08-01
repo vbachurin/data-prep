@@ -22,7 +22,7 @@ describe('App directive', () => {
 
     beforeEach(window.module(DataPrepAppModule));
 
-    beforeEach(inject(function($rootScope, $compile) {
+    beforeEach(inject(function ($rootScope, $compile) {
         scope = $rootScope.$new();
         createElement = function () {
             element = angular.element('<dataprep-app></dataprep-app>');
@@ -32,7 +32,7 @@ describe('App directive', () => {
         };
     }));
 
-    beforeEach(inject(function($injector, $q, RestURLs, UpgradeVersionService) {
+    beforeEach(inject(function ($injector, $q, RestURLs, UpgradeVersionService) {
         RestURLs.setServerUrl('');
 
         var $httpBackend = $injector.get('$httpBackend');
@@ -43,12 +43,12 @@ describe('App directive', () => {
         spyOn(UpgradeVersionService, 'retrieveNewVersions').and.returnValue($q.when([]));
     }));
 
-    afterEach(function() {
+    afterEach(function () {
         scope.$destroy();
         element.remove();
     });
 
-    it('should hold toaster container', function() {
+    it('should hold toaster container', function () {
         //when
         createElement();
 
@@ -56,7 +56,7 @@ describe('App directive', () => {
         expect(element.find('#toast-container').length).toBe(1);
     });
 
-    it('should hold loader element', function() {
+    it('should hold loader element', function () {
         //when
         createElement();
 
@@ -64,7 +64,7 @@ describe('App directive', () => {
         expect(element.find('talend-loading').length).toBe(1);
     });
 
-    it('should render router insertion point', function() {
+    it('should render router insertion point', function () {
         //when
         createElement();
 

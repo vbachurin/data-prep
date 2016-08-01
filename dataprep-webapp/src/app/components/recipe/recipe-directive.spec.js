@@ -26,16 +26,16 @@ describe('Recipe directive', function () {
                 label: 'Split',
                 category: 'split',
                 parameters: [{ name: 'pattern', type: 'string' }],
-                items: []
+                items: [],
             },
             actionParameters: {
                 action: 'split',
                 parameters: {
                     scope: 'column',
                     column_id: '0',
-                    pattern: '/'
-                }
-            }
+                    pattern: '/',
+                },
+            },
         },
         {
             column: { id: '1', name: 'col2' },
@@ -44,16 +44,16 @@ describe('Recipe directive', function () {
                 name: 'uppercase',
                 label: 'To uppercase',
                 category: 'case',
-                parameters: []
+                parameters: [],
             },
             actionParameters: {
                 action: 'uppercase',
                 parameters: {
                     scope: 'column',
-                    column_id: '1'
-                }
+                    column_id: '1',
+                },
             },
-            inactive: true
+            inactive: true,
         },
         {
             column: { id: '1', name: 'col2' },
@@ -64,18 +64,18 @@ describe('Recipe directive', function () {
                 category: 'quickfix',
                 parameters: [
                     { name: 'cell_value', type: 'string' },
-                    { name: 'replace_value', type: 'string' }
-                ]
+                    { name: 'replace_value', type: 'string' },
+                ],
             },
             actionParameters: {
                 action: 'quickfix',
                 parameters: {
                     scope: 'cell',
                     column_id: '1',
-                    row_id: 56
-                }
+                    row_id: 56,
+                },
             },
-            inactive: true
+            inactive: true,
         },
         {
             column: { id: '2', name: 'col3' },
@@ -95,33 +95,33 @@ describe('Recipe directive', function () {
                                     type: 'boolean',
                                     description: 'parameter.Texa.desc',
                                     label: 'parameter.Texa.label',
-                                    default: null
+                                    default: null,
                                 },
                                 {
                                     name: 'Tixass',
                                     type: 'boolean',
                                     description: 'parameter.Tixass.desc',
                                     label: 'parameter.Tixass.label',
-                                    default: null
+                                    default: null,
                                 },
                                 {
                                     name: 'Tex@s',
                                     type: 'boolean',
                                     description: 'parameter.Tex@s.desc',
                                     label: 'parameter.Tex@s.label',
-                                    default: null
-                                }
+                                    default: null,
+                                },
                             ],
-                            'replace': {
+                            replace: {
                                 name: 'replaceValue',
                                 type: 'string',
                                 description: 'parameter.replaceValue.desc',
                                 label: 'parameter.replaceValue.label',
-                                default: 'Texas'
-                            }
-                        }
-                    ]
-                }
+                                default: 'Texas',
+                            },
+                        },
+                    ],
+                },
             },
             actionParameters: {
                 action: 'textclustering',
@@ -129,10 +129,10 @@ describe('Recipe directive', function () {
                     scope: 'column',
                     column_id: '2',
                     Texa: 'Texas',
-                    Tixass: 'Texas'
-                }
+                    Tixass: 'Texas',
+                },
             },
-            inactive: true
+            inactive: true,
         },
         {
             column: { id: undefined, name: undefined },
@@ -142,17 +142,17 @@ describe('Recipe directive', function () {
                 name: 'delete',
                 label: 'Delete Line',
                 category: 'clean',
-                parameters: null
+                parameters: null,
             },
             actionParameters: {
                 action: 'delete',
                 parameters: {
                     scope: 'line',
                     column_id: undefined,
-                    row_id: 125
-                }
+                    row_id: 125,
+                },
             },
-            inactive: true
+            inactive: true,
         },
         {
             column: { id: '0', name: 'col1' },
@@ -162,563 +162,563 @@ describe('Recipe directive', function () {
                 label: 'Split',
                 category: 'split',
                 parameters: [{ name: 'pattern', type: 'string' }],
-                items: []
+                items: [],
             },
             actionParameters: {
                 action: 'split',
                 parameters: {
                     scope: 'column',
                     column_id: '0',
-                    pattern: '/'
-                }
+                    pattern: '/',
+                },
             },
-            preview: true
+            preview: true,
         },
         {
-            'column': {
-                'id': '0000',
-                'name': 'id',
+            column: {
+                id: '0000',
+                name: 'id',
             },
             transformation: {
                 parameters: [],
                 label: 'Lookup',
                 name: 'lookup',
             },
-            'actionParameters': {
-                'action': 'lookup',
-                'parameters': {
-                    'column_id': '0000',
-                    'filter': '',
-                    'lookup_ds_name': 'customers_100_with_pb',
-                    'lookup_ds_id': '14d116a0-b180-4c5f-ba25-46807fc61e42',
-                    'lookup_ds_url': 'http://172.17.0.30:8080/datasets/14d116a0-b180-4c5f-ba25-46807fc61e42/content?metadata=true',
-                    'lookup_join_on': '0000',
-                    'lookup_join_on_name': 'id',
-                    'lookup_selected_cols': [
+            actionParameters: {
+                action: 'lookup',
+                parameters: {
+                    column_id: '0000',
+                    filter: '',
+                    lookup_ds_name: 'customers_100_with_pb',
+                    lookup_ds_id: '14d116a0-b180-4c5f-ba25-46807fc61e42',
+                    lookup_ds_url: 'http://172.17.0.30:8080/datasets/14d116a0-b180-4c5f-ba25-46807fc61e42/content?metadata=true',
+                    lookup_join_on: '0000',
+                    lookup_join_on_name: 'id',
+                    lookup_selected_cols: [
                         {
-                            'name': 'firstname',
-                            'id': '0001'
-                        }
+                            name: 'firstname',
+                            id: '0001',
+                        },
                     ],
-                    'column_name': 'id',
-                    'scope': 'dataset',
+                    column_name: 'id',
+                    scope: 'dataset',
                 },
             },
-        }
+        },
     ];
     const stepsWithDiff = [
         {
-            'column': {
-                'id': '0002',
-                'name': 'country'
+            column: {
+                id: '0002',
+                name: 'country',
             },
-            'transformation': {
-                'stepId': 'c5da029b2aa0e673788363bb5359c65d1cb6094a',
-                'name': 'uppercase',
-                'label': 'Change case to UPPER',
-                'description': 'Converts all of the cell values in this column to upper case',
-                'parameters': [],
-                'items': [],
-                'dynamic': false
+            transformation: {
+                stepId: 'c5da029b2aa0e673788363bb5359c65d1cb6094a',
+                name: 'uppercase',
+                label: 'Change case to UPPER',
+                description: 'Converts all of the cell values in this column to upper case',
+                parameters: [],
+                items: [],
+                dynamic: false,
             },
-            'actionParameters': {
-                'action': 'uppercase',
-                'parameters': {
-                    'scope': 'column',
-                    'column_id': '0002',
-                    'column_name': 'country'
-                }
+            actionParameters: {
+                action: 'uppercase',
+                parameters: {
+                    scope: 'column',
+                    column_id: '0002',
+                    column_name: 'country',
+                },
             },
-            'diff': {
-                'createdColumns': []
-            }
+            diff: {
+                createdColumns: [],
+            },
         },
         {
-            'column': {
-                'id': '0003',
-                'name': 'page_visited'
+            column: {
+                id: '0003',
+                name: 'page_visited',
             },
-            'transformation': {
-                'stepId': 'd89b246cd8c7fb312f79096b4f04754a636f54fd',
-                'name': 'copy',
-                'label': 'Duplicate',
-                'description': 'Creates an exact copy of this column',
-                'parameters': [],
-                'items': [],
-                'dynamic': false
+            transformation: {
+                stepId: 'd89b246cd8c7fb312f79096b4f04754a636f54fd',
+                name: 'copy',
+                label: 'Duplicate',
+                description: 'Creates an exact copy of this column',
+                parameters: [],
+                items: [],
+                dynamic: false,
             },
-            'actionParameters': {
-                'action': 'copy',
-                'parameters': {
-                    'scope': 'column',
-                    'column_id': '0003',
-                    'column_name': 'page_visited'
-                }
+            actionParameters: {
+                action: 'copy',
+                parameters: {
+                    scope: 'column',
+                    column_id: '0003',
+                    column_name: 'page_visited',
+                },
             },
-            'diff': {
-                'createdColumns': [
-                    '0008'
-                ]
-            }
-        },
-        {
-            'column': {
-                'id': '0008',
-                'name': 'page_visited_copy'
-            },
-            'transformation': {
-                'stepId': '6c0ed3116fefc2ca5e596a20a7b86a2cfe34d86d',
-                'name': 'rename_column',
-                'label': 'Rename',
-                'description': 'Rename this column',
-                'parameters': [
-                    {
-                        'name': 'new_column_name',
-                        'type': 'string',
-                        'implicit': false,
-                        'canBeBlank': false,
-                        'description': 'The new column name',
-                        'label': 'New name',
-                        'default': '',
-                        'value': 'Visited',
-                        'initialValue': 'Visited',
-                        'inputType': 'text'
-                    }
+            diff: {
+                createdColumns: [
+                    '0008',
                 ],
-                'items': [],
-                'dynamic': false
             },
-            'actionParameters': {
-                'action': 'rename_column',
-                'parameters': {
-                    'new_column_name': 'Visited',
-                    'scope': 'column',
-                    'column_id': '0008',
-                    'column_name': 'page_visited_copy'
-                }
-            },
-            'diff': {
-                'createdColumns': []
-            }
         },
         {
-            'column': {
-                'id': '0001',
-                'name': 'birth'
+            column: {
+                id: '0008',
+                name: 'page_visited_copy',
             },
-            'transformation': {
-                'stepId': '260a4b7a3d1f2c03509d865a7961a481e594142e',
-                'name': 'copy',
-                'label': 'Duplicate',
-                'description': 'Creates an exact copy of this column',
-                'parameters': [],
-                'items': [],
-                'dynamic': false
-            },
-            'actionParameters': {
-                'action': 'copy',
-                'parameters': {
-                    'scope': 'column',
-                    'column_id': '0001',
-                    'column_name': 'birth'
-                }
-            },
-            'diff': {
-                'createdColumns': [
-                    '0009'
-                ]
-            }
-        },
-        {
-            'column': {
-                'id': '0009',
-                'name': 'birth_copy'
-            },
-            'transformation': {
-                'stepId': '8113ae52f8f34d0cbb595c30d07ba4db80a1aec7',
-                'name': 'rename_column',
-                'label': 'Rename',
-                'description': 'Rename this column',
-                'parameters': [
+            transformation: {
+                stepId: '6c0ed3116fefc2ca5e596a20a7b86a2cfe34d86d',
+                name: 'rename_column',
+                label: 'Rename',
+                description: 'Rename this column',
+                parameters: [
                     {
-                        'name': 'new_column_name',
-                        'type': 'string',
-                        'implicit': false,
-                        'canBeBlank': false,
-                        'description': 'The new column name',
-                        'label': 'New name',
-                        'default': '',
-                        'value': 'Second birth',
-                        'initialValue': 'Second birth',
-                        'inputType': 'text'
-                    }
+                        name: 'new_column_name',
+                        type: 'string',
+                        implicit: false,
+                        canBeBlank: false,
+                        description: 'The new column name',
+                        label: 'New name',
+                        default: '',
+                        value: 'Visited',
+                        initialValue: 'Visited',
+                        inputType: 'text',
+                    },
                 ],
-                'items': [],
-                'dynamic': false
+                items: [],
+                dynamic: false,
             },
-            'actionParameters': {
-                'action': 'rename_column',
-                'parameters': {
-                    'new_column_name': 'Second birth',
-                    'scope': 'column',
-                    'column_id': '0009',
-                    'column_name': 'birth_copy'
-                }
+            actionParameters: {
+                action: 'rename_column',
+                parameters: {
+                    new_column_name: 'Visited',
+                    scope: 'column',
+                    column_id: '0008',
+                    column_name: 'page_visited_copy',
+                },
             },
-            'diff': {
-                'createdColumns': []
-            }
+            diff: {
+                createdColumns: [],
+            },
         },
         {
-            'column': {
-                'id': '0009',
-                'name': 'Second birth'
+            column: {
+                id: '0001',
+                name: 'birth',
             },
-            'transformation': {
-                'stepId': '2f749665763cffe0382ab581ac1a7c4bffb5afbc',
-                'name': 'compute_time_since',
-                'label': 'Compute time since',
-                'description': 'Computes time elapsed since this date in the desired unit',
-                'parameters': [],
-                'items': [
+            transformation: {
+                stepId: '260a4b7a3d1f2c03509d865a7961a481e594142e',
+                name: 'copy',
+                label: 'Duplicate',
+                description: 'Creates an exact copy of this column',
+                parameters: [],
+                items: [],
+                dynamic: false,
+            },
+            actionParameters: {
+                action: 'copy',
+                parameters: {
+                    scope: 'column',
+                    column_id: '0001',
+                    column_name: 'birth',
+                },
+            },
+            diff: {
+                createdColumns: [
+                    '0009',
+                ],
+            },
+        },
+        {
+            column: {
+                id: '0009',
+                name: 'birth_copy',
+            },
+            transformation: {
+                stepId: '8113ae52f8f34d0cbb595c30d07ba4db80a1aec7',
+                name: 'rename_column',
+                label: 'Rename',
+                description: 'Rename this column',
+                parameters: [
                     {
-                        'name': 'time_unit',
-                        'category': 'categ',
-                        'values': [
+                        name: 'new_column_name',
+                        type: 'string',
+                        implicit: false,
+                        canBeBlank: false,
+                        description: 'The new column name',
+                        label: 'New name',
+                        default: '',
+                        value: 'Second birth',
+                        initialValue: 'Second birth',
+                        inputType: 'text',
+                    },
+                ],
+                items: [],
+                dynamic: false,
+            },
+            actionParameters: {
+                action: 'rename_column',
+                parameters: {
+                    new_column_name: 'Second birth',
+                    scope: 'column',
+                    column_id: '0009',
+                    column_name: 'birth_copy',
+                },
+            },
+            diff: {
+                createdColumns: [],
+            },
+        },
+        {
+            column: {
+                id: '0009',
+                name: 'Second birth',
+            },
+            transformation: {
+                stepId: '2f749665763cffe0382ab581ac1a7c4bffb5afbc',
+                name: 'compute_time_since',
+                label: 'Compute time since',
+                description: 'Computes time elapsed since this date in the desired unit',
+                parameters: [],
+                items: [
+                    {
+                        name: 'time_unit',
+                        category: 'categ',
+                        values: [
                             {
-                                'name': 'YEARS',
-                                'parameters': [],
-                                'default': true,
-                                '$$hashKey': 'object:370'
+                                name: 'YEARS',
+                                parameters: [],
+                                default: true,
+                                $$hashKey: 'object:370',
                             },
                             {
-                                'name': 'MONTHS',
-                                'parameters': [],
-                                'default': false,
-                                '$$hashKey': 'object:371'
+                                name: 'MONTHS',
+                                parameters: [],
+                                default: false,
+                                $$hashKey: 'object:371',
                             },
                             {
-                                'name': 'DAYS',
-                                'parameters': [],
-                                'default': false,
-                                '$$hashKey': 'object:372'
+                                name: 'DAYS',
+                                parameters: [],
+                                default: false,
+                                $$hashKey: 'object:372',
                             },
                             {
-                                'name': 'HOURS',
-                                'parameters': [],
-                                'default': false,
-                                '$$hashKey': 'object:373'
-                            }
+                                name: 'HOURS',
+                                parameters: [],
+                                default: false,
+                                $$hashKey: 'object:373',
+                            },
                         ],
-                        'description': 'The unit in which you want the result',
-                        'label': 'Time unit',
-                        'initialValue': {
-                            'name': 'YEARS',
-                            'parameters': [],
-                            'default': true,
-                            '$$hashKey': 'object:370'
+                        description: 'The unit in which you want the result',
+                        label: 'Time unit',
+                        initialValue: {
+                            name: 'YEARS',
+                            parameters: [],
+                            default: true,
+                            $$hashKey: 'object:370',
                         },
-                        'selectedValue': {
-                            'name': 'YEARS',
-                            'parameters': [],
-                            'default': true,
-                            '$$hashKey': 'object:370'
-                        }
-                    }
+                        selectedValue: {
+                            name: 'YEARS',
+                            parameters: [],
+                            default: true,
+                            $$hashKey: 'object:370',
+                        },
+                    },
                 ],
-                'dynamic': false
+                dynamic: false,
             },
-            'actionParameters': {
-                'action': 'compute_time_since',
-                'parameters': {
-                    'time_unit': 'YEARS',
-                    'scope': 'column',
-                    'column_id': '0009',
-                    'column_name': 'Second birth'
-                }
+            actionParameters: {
+                action: 'compute_time_since',
+                parameters: {
+                    time_unit: 'YEARS',
+                    scope: 'column',
+                    column_id: '0009',
+                    column_name: 'Second birth',
+                },
             },
-            'diff': {
-                'createdColumns': [
-                    '0010'
-                ]
-            }
+            diff: {
+                createdColumns: [
+                    '0010',
+                ],
+            },
         },
         {
-            'column': {
-                'id': '0010',
-                'name': 'since_Second birth_in_years'
+            column: {
+                id: '0010',
+                name: 'since_Second birth_in_years',
             },
-            'transformation': {
-                'stepId': 'c365392966bf1ff78f9e377b6d2b7a87c4d385f0',
-                'name': 'rename_column',
-                'label': 'Rename',
-                'description': 'Rename this column',
-                'parameters': [
+            transformation: {
+                stepId: 'c365392966bf1ff78f9e377b6d2b7a87c4d385f0',
+                name: 'rename_column',
+                label: 'Rename',
+                description: 'Rename this column',
+                parameters: [
                     {
-                        'name': 'new_column_name',
-                        'type': 'string',
-                        'implicit': false,
-                        'canBeBlank': false,
-                        'description': 'The new column name',
-                        'label': 'New name',
-                        'default': '',
-                        'value': 'Age',
-                        'initialValue': 'Age',
-                        'inputType': 'text'
-                    }
+                        name: 'new_column_name',
+                        type: 'string',
+                        implicit: false,
+                        canBeBlank: false,
+                        description: 'The new column name',
+                        label: 'New name',
+                        default: '',
+                        value: 'Age',
+                        initialValue: 'Age',
+                        inputType: 'text',
+                    },
                 ],
-                'items': [],
-                'dynamic': false
+                items: [],
+                dynamic: false,
             },
-            'actionParameters': {
-                'action': 'rename_column',
-                'parameters': {
-                    'new_column_name': 'Age',
-                    'scope': 'column',
-                    'column_id': '0010',
-                    'column_name': 'since_Second birth_in_years'
-                }
+            actionParameters: {
+                action: 'rename_column',
+                parameters: {
+                    new_column_name: 'Age',
+                    scope: 'column',
+                    column_id: '0010',
+                    column_name: 'since_Second birth_in_years',
+                },
             },
-            'diff': {
-                'createdColumns': []
-            }
+            diff: {
+                createdColumns: [],
+            },
         },
         {
-            'column': {
-                'id': '0002',
-                'name': 'country'
+            column: {
+                id: '0002',
+                name: 'country',
             },
-            'transformation': {
-                'stepId': '0a2287dc320286ca93b19ceee74af1175f7249e5',
-                'name': 'substring',
-                'label': 'Substring',
-                'description': 'Extracts substring in a new column',
-                'parameters': [],
-                'items': [
+            transformation: {
+                stepId: '0a2287dc320286ca93b19ceee74af1175f7249e5',
+                name: 'substring',
+                label: 'Substring',
+                description: 'Extracts substring in a new column',
+                parameters: [],
+                items: [
                     {
-                        'name': 'from_mode',
-                        'category': 'categ',
-                        'values': [
+                        name: 'from_mode',
+                        category: 'categ',
+                        values: [
                             {
-                                'name': 'From beginning',
-                                'parameters': [],
-                                'default': true,
-                                '$$hashKey': 'object:427'
+                                name: 'From beginning',
+                                parameters: [],
+                                default: true,
+                                $$hashKey: 'object:427',
                             },
                             {
-                                'name': 'From index',
-                                'parameters': [
+                                name: 'From index',
+                                parameters: [
                                     {
-                                        'name': 'from_index',
-                                        'type': 'integer',
-                                        'implicit': false,
-                                        'canBeBlank': true,
-                                        'description': 'Index of the original value that starts the new one',
-                                        'label': 'Begining index',
-                                        'default': '0',
-                                        'inputType': 'number'
-                                    }
+                                        name: 'from_index',
+                                        type: 'integer',
+                                        implicit: false,
+                                        canBeBlank: true,
+                                        description: 'Index of the original value that starts the new one',
+                                        label: 'Begining index',
+                                        default: '0',
+                                        inputType: 'number',
+                                    },
                                 ],
-                                'default': false,
-                                '$$hashKey': 'object:428'
-                            }
+                                default: false,
+                                $$hashKey: 'object:428',
+                            },
                         ],
-                        'description': 'Select begining mode of the substring',
-                        'label': 'From',
-                        'initialValue': {
-                            'name': 'From beginning',
-                            'parameters': [],
-                            'default': true,
-                            '$$hashKey': 'object:427'
+                        description: 'Select begining mode of the substring',
+                        label: 'From',
+                        initialValue: {
+                            name: 'From beginning',
+                            parameters: [],
+                            default: true,
+                            $$hashKey: 'object:427',
                         },
-                        'selectedValue': {
-                            'name': 'From beginning',
-                            'parameters': [],
-                            'default': true,
-                            '$$hashKey': 'object:427'
-                        }
+                        selectedValue: {
+                            name: 'From beginning',
+                            parameters: [],
+                            default: true,
+                            $$hashKey: 'object:427',
+                        },
                     },
                     {
-                        'name': 'to_mode',
-                        'category': 'categ',
-                        'values': [
+                        name: 'to_mode',
+                        category: 'categ',
+                        values: [
                             {
-                                'name': 'To end',
-                                'parameters': [],
-                                'default': false,
-                                '$$hashKey': 'object:431'
+                                name: 'To end',
+                                parameters: [],
+                                default: false,
+                                $$hashKey: 'object:431',
                             },
                             {
-                                'name': 'To index',
-                                'parameters': [
+                                name: 'To index',
+                                parameters: [
                                     {
-                                        'name': 'to_index',
-                                        'type': 'integer',
-                                        'implicit': false,
-                                        'canBeBlank': true,
-                                        'description': 'Index of the original value that ends the new one',
-                                        'label': 'End index',
-                                        'default': '5',
-                                        'value': 5,
-                                        'initialValue': 5,
-                                        'inputType': 'number'
-                                    }
+                                        name: 'to_index',
+                                        type: 'integer',
+                                        implicit: false,
+                                        canBeBlank: true,
+                                        description: 'Index of the original value that ends the new one',
+                                        label: 'End index',
+                                        default: '5',
+                                        value: 5,
+                                        initialValue: 5,
+                                        inputType: 'number',
+                                    },
                                 ],
-                                'default': true,
-                                '$$hashKey': 'object:432'
-                            }
+                                default: true,
+                                $$hashKey: 'object:432',
+                            },
                         ],
-                        'description': 'Select end mode of the substring',
-                        'label': 'To',
-                        'initialValue': {
-                            'name': 'To index',
-                            'parameters': [
+                        description: 'Select end mode of the substring',
+                        label: 'To',
+                        initialValue: {
+                            name: 'To index',
+                            parameters: [
                                 {
-                                    'name': 'to_index',
-                                    'type': 'integer',
-                                    'implicit': false,
-                                    'canBeBlank': true,
-                                    'description': 'Index of the original value that ends the new one',
-                                    'label': 'End index',
-                                    'default': '5',
-                                    'value': 5,
-                                    'initialValue': 5,
-                                    'inputType': 'number'
-                                }
+                                    name: 'to_index',
+                                    type: 'integer',
+                                    implicit: false,
+                                    canBeBlank: true,
+                                    description: 'Index of the original value that ends the new one',
+                                    label: 'End index',
+                                    default: '5',
+                                    value: 5,
+                                    initialValue: 5,
+                                    inputType: 'number',
+                                },
                             ],
-                            'default': true,
-                            '$$hashKey': 'object:432'
+                            default: true,
+                            $$hashKey: 'object:432',
                         },
-                        'selectedValue': {
-                            'name': 'To index',
-                            'parameters': [
+                        selectedValue: {
+                            name: 'To index',
+                            parameters: [
                                 {
-                                    'name': 'to_index',
-                                    'type': 'integer',
-                                    'implicit': false,
-                                    'canBeBlank': true,
-                                    'description': 'Index of the original value that ends the new one',
-                                    'label': 'End index',
-                                    'default': '5',
-                                    'value': 5,
-                                    'initialValue': 5,
-                                    'inputType': 'number'
-                                }
+                                    name: 'to_index',
+                                    type: 'integer',
+                                    implicit: false,
+                                    canBeBlank: true,
+                                    description: 'Index of the original value that ends the new one',
+                                    label: 'End index',
+                                    default: '5',
+                                    value: 5,
+                                    initialValue: 5,
+                                    inputType: 'number',
+                                },
                             ],
-                            'default': true,
-                            '$$hashKey': 'object:432'
-                        }
-                    }
+                            default: true,
+                            $$hashKey: 'object:432',
+                        },
+                    },
                 ],
-                'dynamic': false
+                dynamic: false,
             },
-            'actionParameters': {
-                'action': 'substring',
-                'parameters': {
-                    'from_mode': 'From beginning',
-                    'to_mode': 'To index',
-                    'to_index': '5',
-                    'scope': 'column',
-                    'column_id': '0002',
-                    'column_name': 'country'
-                }
+            actionParameters: {
+                action: 'substring',
+                parameters: {
+                    from_mode: 'From beginning',
+                    to_mode: 'To index',
+                    to_index: '5',
+                    scope: 'column',
+                    column_id: '0002',
+                    column_name: 'country',
+                },
             },
-            'diff': {
-                'createdColumns': [
-                    '0011'
-                ]
-            }
+            diff: {
+                createdColumns: [
+                    '0011',
+                ],
+            },
         },
         {
-            'column': {
-                'id': '0011',
-                'name': 'country_substring'
+            column: {
+                id: '0011',
+                name: 'country_substring',
             },
-            'transformation': {
-                'stepId': 'd1467ec46e99c508380d0a049314bad87e5622a0',
-                'name': 'rename_column',
-                'label': 'Rename',
-                'description': 'Rename this column',
-                'parameters': [
+            transformation: {
+                stepId: 'd1467ec46e99c508380d0a049314bad87e5622a0',
+                name: 'rename_column',
+                label: 'Rename',
+                description: 'Rename this column',
+                parameters: [
                     {
-                        'name': 'new_column_name',
-                        'type': 'string',
-                        'implicit': false,
-                        'canBeBlank': false,
-                        'description': 'The new column name',
-                        'label': 'New name',
-                        'default': '',
-                        'value': 'SUB',
-                        'initialValue': 'SUB',
-                        'inputType': 'text'
-                    }
+                        name: 'new_column_name',
+                        type: 'string',
+                        implicit: false,
+                        canBeBlank: false,
+                        description: 'The new column name',
+                        label: 'New name',
+                        default: '',
+                        value: 'SUB',
+                        initialValue: 'SUB',
+                        inputType: 'text',
+                    },
                 ],
-                'items': [],
-                'dynamic': false
+                items: [],
+                dynamic: false,
             },
-            'actionParameters': {
-                'action': 'rename_column',
-                'parameters': {
-                    'new_column_name': 'SUB',
-                    'scope': 'column',
-                    'column_id': '0011',
-                    'column_name': 'country_substring'
-                }
+            actionParameters: {
+                action: 'rename_column',
+                parameters: {
+                    new_column_name: 'SUB',
+                    scope: 'column',
+                    column_id: '0011',
+                    column_name: 'country_substring',
+                },
             },
-            'diff': {
-                'createdColumns': []
-            }
+            diff: {
+                createdColumns: [],
+            },
         },
         {
-            'column': {
-                'id': '0011',
-                'name': 'SUB'
+            column: {
+                id: '0011',
+                name: 'SUB',
             },
-            'transformation': {
-                'stepId': 'ba5456dd852e3aa71993068078a4a98acb4a9229',
-                'name': 'lowercase',
-                'label': 'Change case to lower',
-                'description': 'Converts all of the cell values in this column to lower case',
-                'parameters': [],
-                'items': [],
-                'dynamic': false
+            transformation: {
+                stepId: 'ba5456dd852e3aa71993068078a4a98acb4a9229',
+                name: 'lowercase',
+                label: 'Change case to lower',
+                description: 'Converts all of the cell values in this column to lower case',
+                parameters: [],
+                items: [],
+                dynamic: false,
             },
-            'actionParameters': {
-                'action': 'lowercase',
-                'parameters': {
-                    'scope': 'column',
-                    'column_id': '0011',
-                    'column_name': 'SUB'
-                }
+            actionParameters: {
+                action: 'lowercase',
+                parameters: {
+                    scope: 'column',
+                    column_id: '0011',
+                    column_name: 'SUB',
+                },
             },
-            'diff': {
-                'createdColumns': []
-            }
-        }
+            diff: {
+                createdColumns: [],
+            },
+        },
     ];
 
     beforeEach(angular.mock.module('data-prep.recipe', ($provide) => {
         stateMock = {
             playground: {
                 recipe: { current: { steps: [] } },
-            }
+            },
         };
         $provide.constant('state', stateMock);
     }));
 
     beforeEach(angular.mock.module('pascalprecht.translate', ($translateProvider) => {
         $translateProvider.translations('en', {
-            'RECIPE_ITEM_ON_COL': '{{index}}. {{label}} on column {{columnName}}',
-            'RECIPE_ITEM_ON_CELL': '{{index}}. {{label}} on cell',
-            'RECIPE_ITEM_ON_LINE': '{{index}}. {{label}} #{{rowId}}',
-            'RECIPE_LOOKUP_MADE_ON_COL':'made on the column',
-            'LOOKUP_STEP_DESCRIPTION': '{{index}}. {{label}} done with dataset <span class=\"recipe-column-name\">{{lookupDsName}}</span>. Join has been set between <span class=\"recipe-column-name\">{{mainColName}}</span> and <span class=\"recipe-column-name\">{{lookupColName}}. </span>',
-            'ONLY_1_ADDED_COL': 'The column <span class=\"recipe-column-name\">{{firstCol}}</span> has been added.',
-            'RECIPE_LOOKUP_JOIN_COLS': 'Join has been set between',
-            'AND': 'and',
-            'OTHER': 'other',
-            'RECIPE_LOOKUP_FOLLOWING_COLS_ADDED_PLURAL':'column(s) have been added.',
-            'RECIPE_LOOKUP_FOLLOWING_COLS_ADDED_SINGULAR':'column has been added.'
+            RECIPE_ITEM_ON_COL: '{{index}}. {{label}} on column {{columnName}}',
+            RECIPE_ITEM_ON_CELL: '{{index}}. {{label}} on cell',
+            RECIPE_ITEM_ON_LINE: '{{index}}. {{label}} #{{rowId}}',
+            RECIPE_LOOKUP_MADE_ON_COL: 'made on the column',
+            LOOKUP_STEP_DESCRIPTION: '{{index}}. {{label}} done with dataset <span class=\"recipe-column-name\">{{lookupDsName}}</span>. Join has been set between <span class=\"recipe-column-name\">{{mainColName}}</span> and <span class=\"recipe-column-name\">{{lookupColName}}. </span>',
+            ONLY_1_ADDED_COL: 'The column <span class=\"recipe-column-name\">{{firstCol}}</span> has been added.',
+            RECIPE_LOOKUP_JOIN_COLS: 'Join has been set between',
+            AND: 'and',
+            OTHER: 'other',
+            RECIPE_LOOKUP_FOLLOWING_COLS_ADDED_PLURAL: 'column(s) have been added.',
+            RECIPE_LOOKUP_FOLLOWING_COLS_ADDED_SINGULAR: 'column has been added.',
         });
         $translateProvider.preferredLanguage('en');
     }));

@@ -23,11 +23,12 @@ export default function FilterMonitor() {
             nbLines: '=',
             nbTotalLines: '=',
             percentage: '=',
-            state: '='
+            state: '=',
         },
         bindToController: true,
         controller: () => {
         },
-        controllerAs: 'filterMonitorCtrl'
+
+        controllerAs: 'filterMonitorCtrl',
     };
 }

@@ -43,10 +43,10 @@ describe('Breadcrumb component', () => {
         ];
 
         itemsChildren = {
-            '1': [
+            1: [
                 { id: '2', name: 'JSO' },
                 { id: '4', name: 'Others' },
-            ]
+            ],
         };
     });
 

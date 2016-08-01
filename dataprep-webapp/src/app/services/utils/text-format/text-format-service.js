@@ -27,7 +27,7 @@ export default function TextFormatService() {
         convertPatternToRegexp: convertPatternToRegexp,
         convertJavaDateFormatToMomentDateFormat: convertJavaDateFormatToMomentDateFormat,
         highlight: highlight,
-        valueMatchPatternFn: valueMatchPatternFn
+        valueMatchPatternFn: valueMatchPatternFn,
     };
 
     // --------------------------------------------------------------------------------------------
@@ -76,7 +76,7 @@ export default function TextFormatService() {
         const constraints = [
             escapeHtmlTags,
             addLineBreaks,
-            addTrailingAndLeadingSpacesDivs
+            addTrailingAndLeadingSpacesDivs,
         ];
 
         _.forEach(constraints, function (constraintFn) {
@@ -133,6 +133,7 @@ export default function TextFormatService() {
                 ) +
                 '</span>';
         }
+
         return returnStr;
     }
 
@@ -171,6 +172,7 @@ export default function TextFormatService() {
                     regexp += escapeRegex(pattern[i]);
             }
         }
+
         return '^' + regexp + '$';
     }
 

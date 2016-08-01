@@ -23,12 +23,12 @@ describe('Recipe Bullet controller', function () {
     beforeEach(inject(function ($rootScope, $controller) {
         scope = $rootScope.$new();
         step = {
-            transformation: { stepId: '138ea798bc56', column:{ id:'0002' } }
+            transformation: { stepId: '138ea798bc56', column: { id: '0002' } },
         };
 
         createController = function () {
             var ctrlFn = $controller('RecipeBulletCtrl', {
-                $scope: scope
+                $scope: scope,
             }, true);
             ctrlFn.instance.step = step;
             return ctrlFn();

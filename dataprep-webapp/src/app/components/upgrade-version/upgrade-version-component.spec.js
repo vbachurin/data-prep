@@ -4,9 +4,8 @@ describe('Upgrade version component', () => {
     let element;
 
     beforeEach(angular.mock.module('data-prep.upgrade-version'));
-    
 
-    beforeEach(inject(function($rootScope, $compile) {
+    beforeEach(inject(function ($rootScope, $compile) {
         scope = $rootScope.$new();
         createElement = function () {
             element = angular.element('<upgrade-version></upgrade-version>');
@@ -23,7 +22,7 @@ describe('Upgrade version component', () => {
 
     it('should not render when no new version available', inject(($q, UpgradeVersionService) => {
         //given
-        spyOn(UpgradeVersionService, "retrieveNewVersions").and.returnValue($q.when([]));
+        spyOn(UpgradeVersionService, 'retrieveNewVersions').and.returnValue($q.when([]));
         createElement();
 
         //then
@@ -32,7 +31,7 @@ describe('Upgrade version component', () => {
 
     it('should render when new version available', inject(($q, UpgradeVersionService) => {
         //given
-        spyOn(UpgradeVersionService, "retrieveNewVersions").and.returnValue($q.when([{ "version": "2.0.0" }]));
+        spyOn(UpgradeVersionService, 'retrieveNewVersions').and.returnValue($q.when([{ version: '2.0.0' }]));
         createElement();
 
         //then

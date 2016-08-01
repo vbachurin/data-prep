@@ -166,6 +166,7 @@ export default class LookupService {
         if (this.StorageService.getLookupDatasets().indexOf(this.state.playground.dataset.id) > -1) { //If the playground dataset have been saved in localStorage for the lookup
             datasetsIdsToSave.push(this.state.playground.dataset.id);
         }
+
         this.StorageService.setLookupDatasets(datasetsIdsToSave);
     }
 

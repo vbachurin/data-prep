@@ -28,6 +28,7 @@ export default function HistoryControl($document, HistoryService) {
         controller: function () {
             this.service = HistoryService;
         },
+
         controllerAs: 'historyCtrl',
         link: function (scope) {
             function historyListener(event) {
@@ -46,6 +47,6 @@ export default function HistoryControl($document, HistoryService) {
             scope.$on('$destroy', () => {
                 $document.off('keydown', historyListener);
             });
-        }
+        },
     };
 }

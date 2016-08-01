@@ -26,6 +26,6 @@ export default function Feedback() {
         restrict: 'E',
         bindToController: true,
         controllerAs: 'feedbackCtrl',
-        controller: 'FeedbackCtrl'
+        controller: 'FeedbackCtrl',
     };
 }

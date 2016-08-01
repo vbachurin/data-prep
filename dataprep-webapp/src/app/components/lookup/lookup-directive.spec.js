@@ -21,12 +21,12 @@ describe('Lookup directive', function () {
 
     var sortList = [
         { id: 'name', name: 'NAME_SORT', property: 'name' },
-        { id: 'date', name: 'DATE_SORT', property: 'created' }
+        { id: 'date', name: 'DATE_SORT', property: 'created' },
     ];
 
     var orderList = [
         { id: 'asc', name: 'ASC_ORDER' },
-        { id: 'desc', name: 'DESC_ORDER' }
+        { id: 'desc', name: 'DESC_ORDER' },
     ];
 
     beforeEach(angular.mock.module('data-prep.lookup', function ($provide) {
@@ -37,17 +37,15 @@ describe('Lookup directive', function () {
                     selectedColumn: {},
                     datasets: [],
                     sortList: sortList,
-                    orderList: orderList
+                    orderList: orderList,
                 },
                 grid: {
-                    selectedColumn: {}
-                }
-            }
+                    selectedColumn: {},
+                },
+            },
         };
         $provide.constant('state', StateMock);
     }));
-
-    
 
     beforeEach(inject(function ($rootScope, $compile) {
         scope = $rootScope.$new();

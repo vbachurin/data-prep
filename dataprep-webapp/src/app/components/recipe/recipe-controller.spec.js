@@ -23,24 +23,24 @@ describe('Recipe controller', function () {
         stateMock = {
             playground: {
                 preparation: {
-                    id: '132da49ef87694ab64e6'
+                    id: '132da49ef87694ab64e6',
                 },
                 lookupData: {
                     columns: [{
                         id: '0000',
-                        name: 'id'
+                        name: 'id',
                     }, {
                         id: '0001',
-                        name: 'firstName'
+                        name: 'firstName',
                     }, {
                         id: '0002',
-                        name: 'lastName'
-                    }]
+                        name: 'lastName',
+                    },],
                 },
                 lookup: { visibility: false },
                 data: { metadata: {} },
                 recipe: { current: { steps: [] } },
-            }
+            },
         };
         $provide.constant('state', stateMock);
     }));
@@ -50,7 +50,7 @@ describe('Recipe controller', function () {
 
         createController = function () {
             return $controller('RecipeCtrl', {
-                $scope: scope
+                $scope: scope,
             });
         };
 
@@ -76,12 +76,12 @@ describe('Recipe controller', function () {
                 column: { id: 'state' },
                 transformation: {
                     stepId: 'a598bc83fc894578a8b823',
-                    name: 'cut'
+                    name: 'cut',
                 },
                 actionParameters: {
                     action: 'cut',
-                    parameters: { pattern: '.', column_name: 'state' }
-                }
+                    parameters: { pattern: '.', column_name: 'state' },
+                },
             };
             var parameters = { pattern: '-' };
 
@@ -101,12 +101,12 @@ describe('Recipe controller', function () {
                 column: { id: 'state' },
                 transformation: {
                     stepId: 'a598bc83fc894578a8b823',
-                    name: 'cut'
+                    name: 'cut',
                 },
                 actionParameters: {
                     action: 'cut',
-                    parameters: { pattern: '.', column_name: 'state', column_id: '0001', scope: 'column' }
-                }
+                    parameters: { pattern: '.', column_name: 'state', column_id: '0001', scope: 'column' },
+                },
             };
             var parameters = { pattern: '-' };
 
@@ -125,13 +125,13 @@ describe('Recipe controller', function () {
                     column: { id: 'state' },
                     transformation: {
                         stepId: 'a598bc83fc894578a8b823',
-                        name: 'cut'
+                        name: 'cut',
                     },
                     actionParameters: {
                         action: 'cut',
-                        parameters: { pattern: '.', column_name: 'state' }
+                        parameters: { pattern: '.', column_name: 'state' },
                     },
-                    inactive: true
+                    inactive: true,
                 };
                 var parameters = { pattern: '--' };
                 var closure = ctrl.previewUpdateClosure(step);
@@ -151,12 +151,12 @@ describe('Recipe controller', function () {
                     column: { id: '0', name: 'state' },
                     transformation: {
                         stepId: 'a598bc83fc894578a8b823',
-                        name: 'cut'
+                        name: 'cut',
                     },
                     actionParameters: {
                         action: 'cut',
-                        parameters: { pattern: '.', column_id: '0', column_name: 'state' }
-                    }
+                        parameters: { pattern: '.', column_id: '0', column_name: 'state' },
+                    },
                 };
                 var parameters = { pattern: '.' };
                 var closure = ctrl.previewUpdateClosure(step);
@@ -179,12 +179,12 @@ describe('Recipe controller', function () {
                     column: { id: '0', name: 'state' },
                     transformation: {
                         stepId: 'a598bc83fc894578a8b823',
-                        name: 'cut'
+                        name: 'cut',
                     },
                     actionParameters: {
                         action: 'cut',
-                        parameters: { pattern: '.', column_id: '0', column_name: 'state', scope: 'column' }
-                    }
+                        parameters: { pattern: '.', column_id: '0', column_name: 'state', scope: 'column' },
+                    },
                 };
                 var parameters = { pattern: '--' };
                 var closure = ctrl.previewUpdateClosure(step);
@@ -209,8 +209,8 @@ describe('Recipe controller', function () {
             var ctrl = createController();
             var step = {
                 transformation: {
-                    cluster: {}
-                }
+                    cluster: {},
+                },
             };
 
             //when
@@ -224,7 +224,7 @@ describe('Recipe controller', function () {
             //given
             var ctrl = createController();
             var step = {
-                transformation: {}
+                transformation: {},
             };
 
             //when
@@ -239,8 +239,8 @@ describe('Recipe controller', function () {
             var ctrl = createController();
             var step = {
                 transformation: {
-                    parameters: [{}]
-                }
+                    parameters: [{}],
+                },
             };
 
             //when
@@ -255,8 +255,8 @@ describe('Recipe controller', function () {
             var ctrl = createController();
             var step = {
                 transformation: {
-                    items: [{}]
-                }
+                    items: [{}],
+                },
             };
 
             //when
@@ -270,7 +270,7 @@ describe('Recipe controller', function () {
             //given
             var ctrl = createController();
             var step = {
-                transformation: {}
+                transformation: {},
             };
 
             //when
@@ -285,8 +285,8 @@ describe('Recipe controller', function () {
             var ctrl = createController();
             var step = {
                 transformation: {
-                    parameters: [{}]
-                }
+                    parameters: [{}],
+                },
             };
 
             //when
@@ -301,8 +301,8 @@ describe('Recipe controller', function () {
             var ctrl = createController();
             var step = {
                 transformation: {
-                    cluster: []
-                }
+                    cluster: [],
+                },
             };
 
             //when
@@ -316,7 +316,7 @@ describe('Recipe controller', function () {
             //given
             var ctrl = createController();
             var step = {
-                transformation: {}
+                transformation: {},
             };
 
             //when
@@ -330,7 +330,7 @@ describe('Recipe controller', function () {
     describe('remove step', function () {
         var step = {
             transformation: { label: 'Replace empty value ...', name: 'lookup', stepId: '0001' },
-            actionParameters: { parameters: { column_name: 'firstname' } }
+            actionParameters: { parameters: { column_name: 'firstname' } },
         };
 
         beforeEach(inject(function ($q, PlaygroundService, StateService) {
@@ -419,15 +419,15 @@ describe('Recipe controller', function () {
     describe('select step', function () {
         var lookupStep = {
             transformation: { label: 'Replace empty value ...', name: 'lookup', stepId: '0001' },
-            actionParameters: { parameters: { column_name: 'firstname' } }
+            actionParameters: { parameters: { column_name: 'firstname' } },
         };
         var notLookupStep = {
             transformation: { label: 'Change case to UPPER ...', name: 'uppercase', stepId: '0002' },
-            actionParameters: { parameters: { column_name: 'firstname' } }
+            actionParameters: { parameters: { column_name: 'firstname' } },
         };
         var clusterStep = {
             transformation: { label: 'Cluster ...', name: 'cluster', stepId: '0003', cluster: {} },
-            actionParameters: { parameters: { column_name: 'firstname' } }
+            actionParameters: { parameters: { column_name: 'firstname' } },
         };
 
         beforeEach(inject(function ($q, StateService, LookupService) {
@@ -499,19 +499,19 @@ describe('Recipe controller', function () {
             args: {
                 phrase: [
                     { value: 'toto' },
-                    { value: 'tata' }
-                ]
+                    { value: 'tata' },
+                ],
             },
             filterFn: null,
             removeFilterFn: null,
             value: [
                 { value: 'toto' },
-                { value: 'tata' }
-            ]
+                { value: 'tata' },
+            ],
         };
         const stepWithMultipleFilters = {
             transformation: {
-                label: 'Replace empty value ...'
+                label: 'Replace empty value ...',
             },
             actionParameters: {
                 parameters: {
@@ -519,13 +519,13 @@ describe('Recipe controller', function () {
                     filter: {
                         or: [
                             { contains: { field: '0002', value: 'toto' } },
-                            { contains: { field: '0002', value: 'tata' } }
-                        ]
+                            { contains: { field: '0002', value: 'tata' } },
+                        ],
                     },
-                    scope: 'column'
-                }
+                    scope: 'column',
+                },
             },
-            filters: [multiValuedFilter]
+            filters: [multiValuedFilter],
         };
 
         it('should update step filters', inject(($q, PlaygroundService) => {
@@ -554,16 +554,16 @@ describe('Recipe controller', function () {
             colName: 'name',
             args: {
                 phrase: '        AMC  ',
-                caseSensitive: true
+                caseSensitive: true,
             },
-            value: '        AMC  '
+            value: '        AMC  ',
         };
         var filter2 = {
             type: 'contains',
             colId: '0002',
             args: {
-                phrase: ['toto']
-            }
+                phrase: ['toto'],
+            },
         };
         var stepDeleteLinesWithSingleFilter;
         var stepWithMultipleFilters;
@@ -573,22 +573,22 @@ describe('Recipe controller', function () {
                 filter: {
                     contains: {
                         field: '0002',
-                        value: ['toto']
-                    }
-                }
+                        value: ['toto'],
+                    },
+                },
             });
             stepDeleteLinesWithSingleFilter = {
                 transformation: { label: 'Delete lines' },
                 actionParameters: {
                     action: 'delete_lines',
-                    parameters: { column_name: 'firstname', scope: 'column' }
+                    parameters: { column_name: 'firstname', scope: 'column' },
                 },
-                filters: [filter1]
+                filters: [filter1],
             };
             stepWithMultipleFilters = {
                 transformation: { label: 'Replace empty value ...' },
                 actionParameters: { parameters: { column_name: 'firstname', scope: 'column' } },
-                filters: [filter1, filter2]
+                filters: [filter1, filter2],
             };
         }));
 
@@ -628,24 +628,24 @@ describe('Recipe controller', function () {
     describe('filters', function () {
         var filters = [
             {
-                'type': 'exact',
-                'colId': '0000',
-                'colName': 'name',
-                'args': {
-                    'phrase': '        AMC  ',
-                    'caseSensitive': true
+                type: 'exact',
+                colId: '0000',
+                colName: 'name',
+                args: {
+                    phrase: '        AMC  ',
+                    caseSensitive: true,
                 },
-                'value': '        AMC  '
+                value: '        AMC  ',
             }, {
-                'type': 'exact',
-                'colId': '0000',
-                'colName': 'id',
-                'args': {
-                    'phrase': '        AMC  ',
-                    'caseSensitive': true
+                type: 'exact',
+                colId: '0000',
+                colName: 'id',
+                args: {
+                    phrase: '        AMC  ',
+                    caseSensitive: true,
                 },
-                'value': '        AMC  '
-            }
+                value: '        AMC  ',
+            },
         ];
 
         it('should display all filter name on hover', inject(function () {

@@ -19,6 +19,6 @@ const HomePreparationComponent = {
     controller: function (state) {
         'ngInject';
         this.state = state;
-    }
+    },
 };
 export default HomePreparationComponent;

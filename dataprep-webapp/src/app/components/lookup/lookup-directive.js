@@ -26,10 +26,10 @@ export default function Lookup() {
         restrict: 'E',
         templateUrl: template,
         scope: {
-            visible: '='
+            visible: '=',
         },
         bindToController: true,
         controllerAs: 'lookupCtrl',
-        controller: 'LookupCtrl'
+        controller: 'LookupCtrl',
     };
 }

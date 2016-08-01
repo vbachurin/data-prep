@@ -17,11 +17,10 @@ describe('Transformation params directive', function () {
     var createElement;
 
     beforeEach(angular.mock.module('data-prep.transformation-form'));
-    
 
     beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
-            'COLON': ': '
+            COLON: ': ',
         });
         $translateProvider.preferredLanguage('en');
     }));
@@ -44,20 +43,20 @@ describe('Transformation params directive', function () {
             label: 'menu with param',
             parameters: [
                 {
-                    'name': 'param1',
-                    'label': 'Param 1',
-                    'type': 'string',
-                    'inputType': 'text',
-                    'default': '.'
+                    name: 'param1',
+                    label: 'Param 1',
+                    type: 'string',
+                    inputType: 'text',
+                    default: '.',
                 },
                 {
-                    'name': 'param2',
-                    'label': 'Param 2',
-                    'type': 'integer',
-                    'inputType': 'number',
-                    'default': '5'
-                }
-            ]
+                    name: 'param2',
+                    label: 'Param 2',
+                    type: 'integer',
+                    inputType: 'number',
+                    default: '5',
+                },
+            ],
         };
 
         //when
@@ -79,18 +78,18 @@ describe('Transformation params directive', function () {
             label: 'menu with param',
             parameters: [
                 {
-                    'name': 'myChoice',
-                    'label': 'my choice',
-                    'type': 'select',
-                    'configuration': {
-                        'values': [
+                    name: 'myChoice',
+                    label: 'my choice',
+                    type: 'select',
+                    configuration: {
+                        values: [
                             { label: 'noParamChoice1', value: 'noParamChoice1' },
-                            { label: 'noParamChoice2', value: 'noParamChoice2' }
-                        ]
+                            { label: 'noParamChoice2', value: 'noParamChoice2' },
+                        ],
                     },
-                    'default': ''
-                }
-            ]
+                    default: '',
+                },
+            ],
         };
 
         //when
@@ -110,11 +109,11 @@ describe('Transformation params directive', function () {
     it('should render an action with choice containing parameters', function () {
         //given
         var parameter = {
-            'name': 'my choice',
-            'label': 'my choice',
-            'type': 'select',
-            'configuration': {
-                'values': [
+            name: 'my choice',
+            label: 'my choice',
+            type: 'select',
+            configuration: {
+                values: [
                     { name: 'noParamChoice', value: 'noParamChoice' },
                     {
                         name: 'twoParams',
@@ -124,23 +123,23 @@ describe('Transformation params directive', function () {
                                 label: 'Param 1',
                                 name: 'param1',
                                 type: 'string',
-                                default: '.'
+                                default: '.',
                             },
                             {
                                 label: 'Param 2',
                                 name: 'param2',
                                 type: 'float',
-                                default: '5'
-                            }
-                        ]
-                    }
-                ]
+                                default: '5',
+                            },
+                        ],
+                    },
+                ],
             },
-            'default': ''
+            default: '',
         };
         scope.transformation = {
             name: 'menu with param',
-            parameters: [parameter]
+            parameters: [parameter],
         };
         var element = createElement();
         var renderedParams = element.find('transform-params').eq(0);
@@ -173,7 +172,7 @@ describe('Transformation params directive', function () {
             cluster: {
                 titles: [
                     'We found these values',
-                    'And we\'ll keep this value'
+                    'And we\'ll keep this value',
                 ],
                 clusters: [
                     {
@@ -183,30 +182,30 @@ describe('Transformation params directive', function () {
                                 type: 'boolean',
                                 description: 'parameter.Texa.desc',
                                 label: 'parameter.Texa.label',
-                                default: 'true'
+                                default: 'true',
                             },
                             {
                                 name: 'Tixass',
                                 type: 'boolean',
                                 description: 'parameter.Tixass.desc',
                                 label: 'parameter.Tixass.label',
-                                default: 'true'
+                                default: 'true',
                             },
                             {
                                 name: 'Tex@s',
                                 type: 'boolean',
                                 description: 'parameter.Tex@s.desc',
                                 label: 'parameter.Tex@s.label',
-                                default: 'true'
-                            }
+                                default: 'true',
+                            },
                         ],
-                        'replace': {
+                        replace: {
                             name: 'replaceValue',
                             type: 'string',
                             description: 'parameter.replaceValue.desc',
                             label: 'parameter.replaceValue.label',
-                            default: 'Texas'
-                        }
+                            default: 'Texas',
+                        },
                     },
                     {
                         parameters: [
@@ -215,47 +214,47 @@ describe('Transformation params directive', function () {
                                 type: 'boolean',
                                 description: 'parameter.Massachusetts.desc',
                                 label: 'parameter.Massachusetts.label',
-                                default: 'false'
+                                default: 'false',
                             },
                             {
                                 name: 'Masachusetts',
                                 type: 'boolean',
                                 description: 'parameter.Masachusetts.desc',
                                 label: 'parameter.Masachusetts.label',
-                                default: 'true'
+                                default: 'true',
                             },
                             {
                                 name: 'Massachussetts',
                                 type: 'boolean',
                                 description: 'parameter.Massachussetts.desc',
                                 label: 'parameter.Massachussetts.label',
-                                default: 'true'
+                                default: 'true',
                             },
                             {
                                 name: 'Massachusets',
                                 type: 'boolean',
                                 description: 'parameter.Massachusets.desc',
                                 label: 'parameter.Massachusets.label',
-                                default: 'true'
+                                default: 'true',
                             },
                             {
                                 name: 'Masachussets',
                                 type: 'boolean',
                                 description: 'parameter.Masachussets.desc',
                                 label: 'parameter.Masachussets.label',
-                                default: 'true'
-                            }
+                                default: 'true',
+                            },
                         ],
                         replace: {
                             name: 'replaceValue',
                             type: 'string',
                             description: 'parameter.replaceValue.desc',
                             label: 'parameter.replaceValue.label',
-                            default: 'Massachussets'
-                        }
-                    }
-                ]
-            }
+                            default: 'Massachussets',
+                        },
+                    },
+                ],
+            },
         };
 
         //when
@@ -272,21 +271,21 @@ describe('Transformation params directive', function () {
             label: 'menu with param',
             parameters: [
                 {
-                    'name': 'param1',
-                    'label': 'Param 1',
-                    'type': 'string',
-                    'inputType': 'text',
-                    'default': '.'
+                    name: 'param1',
+                    label: 'Param 1',
+                    type: 'string',
+                    inputType: 'text',
+                    default: '.',
                 },
                 {
-                    'name': 'param2',
-                    'label': 'Param 2',
-                    'type': 'integer',
-                    'inputType': 'number',
-                    'default': '5'
-                }
+                    name: 'param2',
+                    label: 'Param 2',
+                    type: 'integer',
+                    inputType: 'number',
+                    default: '5',
+                },
             ],
-            docUrl: 'http://www.google.com'
+            docUrl: 'http://www.google.com',
         };
 
         //when

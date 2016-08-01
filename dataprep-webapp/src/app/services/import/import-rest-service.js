@@ -20,7 +20,7 @@ export default function ImportRestService($http, RestURLs) {
 
     return {
         importTypes: importTypes,
-        importParameters: importParameters
+        importParameters: importParameters,
     };
     /**
      * @ngdoc method

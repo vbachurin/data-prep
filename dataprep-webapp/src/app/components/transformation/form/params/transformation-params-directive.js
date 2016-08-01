@@ -26,10 +26,10 @@ export default function TransformParams() {
         restrict: 'E',
         templateUrl: template,
         scope: {
-            parameters: '='
+            parameters: '=',
         },
         bindToController: true,
         controllerAs: 'paramsCtrl',
-        controller: 'TransformParamsCtrl'
+        controller: 'TransformParamsCtrl',
     };
 }

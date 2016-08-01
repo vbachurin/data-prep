@@ -27,7 +27,7 @@ export default function LookupDatagridStyleService($timeout, ConverterService, T
     return {
         init: init,
         updateColumnClass: updateColumnClass,
-        columnFormatter: columnFormatter
+        columnFormatter: columnFormatter,
     };
 
     //--------------------------------------------------------------------------------------------------------------
