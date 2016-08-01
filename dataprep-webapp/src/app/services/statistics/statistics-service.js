@@ -728,7 +728,7 @@ export default function StatisticsService($q, $log, $filter, state, StateService
             operations: [{
                 operator: aggregationName,
                 columnId: column.id,
-            },],
+            }],
             groupBy: [selectedColumn.id],
         };
 

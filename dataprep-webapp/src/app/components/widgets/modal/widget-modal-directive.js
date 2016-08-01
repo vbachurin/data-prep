@@ -1,15 +1,15 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
 
 import template from './modal.html';
 
@@ -82,28 +82,28 @@ function getLastRegisteredInnerElement() {
  * @restrict E
  * @usage
  <talend-modal   fullscreen="false"
-                 state="homeCtrl.dataModalSmall"
-                 disable-enter="true"
-                 on-close="homeCtrl.closeHandler()"
-                 close-button="true">
-                 Modal content
+ state="homeCtrl.dataModalSmall"
+ disable-enter="true"
+ on-close="homeCtrl.closeHandler()"
+ close-button="true">
+ Modal content
  </talend-modal>
 
  <talend-modal   fullscreen="true"
-                 state="homeCtrl.dataModal"
-                 disable-enter="false"
-                 on-close="homeCtrl.closeHandler()"
-                 close-button="true">
-     <div class="modal-header">
-         <ul>
-             <li>header 1</li>
-             <li>header 2</li>
-         </ul>
-     </div>
+ state="homeCtrl.dataModal"
+ disable-enter="false"
+ on-close="homeCtrl.closeHandler()"
+ close-button="true">
+ <div class="modal-header">
+ <ul>
+ <li>header 1</li>
+ <li>header 2</li>
+ </ul>
+ </div>
 
-     <div class="modal-body">
-        Body content
-     </div>
+ <div class="modal-body">
+ Body content
+ </div>
  </talend-modal>
 
  * @param {boolean} state Flag that represents the modal display state
@@ -137,7 +137,8 @@ export default function TalendModal($timeout) {
         },
         bindToController: true,
         controllerAs: 'talendModalCtrl',
-        controller: function () {},
+        controller: function () {
+        },
 
         link: {
             post: function (scope, iElement, iAttrs, ctrl) {
@@ -248,30 +249,28 @@ export default function TalendModal($timeout) {
                 //enable/disable scroll on main body depending on modal display
                 //on show : modal focus
                 //on close : close callback and focus on last opened modal
-                scope.$watch(function () {
-                    return ctrl.state;
-                }, function (newValue, oldValue) {
+                scope.$watch(() => ctrl.state,
+                    (newValue, oldValue) => {
+                        if (newValue) {
+                            //register modal in shown modal list and focus on inner element
+                            body.addClass('modal-open');
+                            registerShownElement(innerElement);
+                            innerElement.focus();
 
-                    if (newValue) {
-                        //register modal in shown modal list and focus on inner element
-                        body.addClass('modal-open');
-                        registerShownElement(innerElement);
-                        innerElement.focus();
-
-                        $timeout(function () {
-                            //focus on first input (ignore first because it's the state checkbox)
-                            var inputs = iElement.find('input:not(".no-focus")').eq(1);
-                            if (inputs.length) {
-                                inputs.focus();
-                                inputs.select();
-                            }
-                        }, 0, false);
-                    }
-                    else if (oldValue) {
-                        ctrl.onClose();
-                        deregisterAndFocusOnLastModal(innerElement);
-                    }
-                });
+                            $timeout(function () {
+                                //focus on first input (ignore first because it's the state checkbox)
+                                var inputs = iElement.find('input:not(".no-focus")').eq(1);
+                                if (inputs.length) {
+                                    inputs.focus();
+                                    inputs.select();
+                                }
+                            }, 0, false);
+                        }
+                        else if (oldValue) {
+                            ctrl.onClose();
+                            deregisterAndFocusOnLastModal(innerElement);
+                        }
+                    });
             },
         },
     };

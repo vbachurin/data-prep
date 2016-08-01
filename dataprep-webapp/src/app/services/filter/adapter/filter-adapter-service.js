@@ -27,16 +27,16 @@ const VALID_RECORDS_LABEL = 'valid records';
 
 const INVALID_RECORDS_VALUES = [{
     label: INVALID_RECORDS_LABEL,
-},];
+}];
 
 const EMPTY_RECORDS_VALUES = [{
     label: EMPTY_RECORDS_LABEL,
     isEmpty: true,
-},];
+}];
 
 const VALID_RECORDS_VALUES = [{
     label: VALID_RECORDS_LABEL,
-},];
+}];
 
 /**
  * @ngdoc service
@@ -399,7 +399,7 @@ export default function FilterAdapterService() {
                 intervals: [{
                     label: condition.label,
                     value: [condition.start + offset, condition.end + offset],
-                },],
+                }],
                 type: condition.type,
             };
         }
