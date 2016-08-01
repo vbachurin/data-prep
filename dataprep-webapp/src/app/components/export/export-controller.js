@@ -19,20 +19,19 @@
  * @requires data-prep.services.utils.service:RestURLs
  * @requires data-prep.services.recipe.service:RecipeService
  * @requires data-prep.services.export.service:ExportService
- * @requires data-prep.services.utils.service:StorageService
  */
 export default class ExportCtrl {
-    constructor($timeout, state, RestURLs, StepUtilsService, ExportService, StorageService) {
+    constructor($timeout, state, StateService, RestURLs, StepUtilsService, ExportService) {
         'ngInject';
 
         this.$timeout = $timeout;
         this.state = state;
+        this.StateService = StateService;
         this.RestURLs = RestURLs;
         this.ExportService = ExportService;
-        this.StorageService = StorageService;
         this.StepUtilsService = StepUtilsService;
 
-        this.exportParams = StorageService.getExportParams();
+        this.exportParams = this.state.export.defaultExportType;
         this.selectedType = ExportService.getType(this.exportParams.exportType);
     }
 
@@ -57,8 +56,18 @@ export default class ExportCtrl {
      */
     saveAndExport() {
         this.selectedType = this.nextSelectedType;
-        const params = this._extractParameters(this.selectedType);
-        this.StorageService.saveExportParams(params);
+        this.StateService.setDefaultExportType({ exportType: this.selectedType.id });
+        this.launchExport();
+    }
+
+    /**
+     * @ngdoc method
+     * @name launchDefaultExport
+     * @methodOf data-prep.export.controller:ExportCtrl
+     * @description launches default export without export type selection
+     */
+    launchDefaultExport() {
+        this._initExportParameters(this.selectedType);
         this.launchExport();
     }
 

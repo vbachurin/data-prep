@@ -201,7 +201,7 @@ export default class LookupService {
      * @description get datasets to be used for lookup
      */
     _getDatasets() {
-        if(this.state.inventory.datasets) {
+        if (this.state.inventory.datasets) {
             return this.$q.when(this.state.inventory.datasets);
         }
         return this.DatasetListService.refreshDatasets();

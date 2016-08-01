@@ -31,6 +31,7 @@ describe('Playground header component', () => {
                     feedback-visible="feedbackVisible"
                     preparation-picker="preparationPicker"
                     parameters-visible="parametersVisible"
+                    enable-export="enableExport"
                     on-parameters="onParameters()"
                     on-lookup="onLookup()"
                     on-onboarding="onOnboarding()"
@@ -40,10 +41,6 @@ describe('Playground header component', () => {
             $compile(element)(scope);
             scope.$digest();
         };
-    }));
-
-    beforeEach(inject((StorageService) => {
-        spyOn(StorageService, 'getExportParams').and.returnValue({});
     }));
 
     afterEach(() => {
@@ -237,11 +234,25 @@ describe('Playground header component', () => {
         });
 
         it('should render export', () => {
+            //given
+            scope.enableExport = true;
+
             //when
             createElement();
 
             //then
             expect(element.find('export').length).toBe(1);
+        });
+
+        it('should NOT render export', () => {
+            //given
+            scope.enableExport = false;
+
+            //when
+            createElement();
+
+            //then
+            expect(element.find('export').length).toBe(0);
         });
 
         it('should render history control', () => {

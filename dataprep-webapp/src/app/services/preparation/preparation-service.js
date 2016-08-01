@@ -104,7 +104,7 @@ export default function PreparationService($q, $state, $window, $stateParams, st
      * @returns {promise} The POST promise
      */
     function setName(preparationId, name) {
-        return PreparationRestService.update(preparationId, {name})
+        return PreparationRestService.update(preparationId, { name })
             .then((preparationId) => PreparationRestService.getDetails(preparationId))
             .then((preparation) => {
                 StorageService.moveAggregations(preparation.dataSetId, preparationId, preparation.id);

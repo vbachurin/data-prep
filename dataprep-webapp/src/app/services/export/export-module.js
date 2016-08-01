@@ -14,6 +14,7 @@
 import angular from 'angular';
 import SERVICES_PARAMETERS_MODULE from '../parameters/parameters-module';
 import SERVICES_UTILS_MODULE from '../utils/utils-module';
+import SERVICES_STATE_MODULE from '../../services/state/state-module';
 
 import ExportRestService from './export-rest-service';
 import ExportService from './export-service';
@@ -31,6 +32,7 @@ angular.module(MODULE_NAME,
     [
         SERVICES_PARAMETERS_MODULE,
         SERVICES_UTILS_MODULE,
+        SERVICES_STATE_MODULE,
     ])
     .service('ExportRestService', ExportRestService)
     .service('ExportService', ExportService);

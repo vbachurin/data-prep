@@ -19,6 +19,7 @@
                        parameters-visible="playgroundCtrl.state.playground.parameters.visible"
                        feedback-visible="!playgroundCtrl.state.ee"
                        preparation-picker="playgroundCtrl.$stateParams.datasetid"
+                       enable-export="playgroundCtrl.state.export.exportTypes.length"
                        on-parameters="playgroundCtrl.toggleParameters()"
                        on-lookup="playgroundCtrl.toggleLookup()"
                        on-onboarding="playgroundCtrl.startOnBoarding('playground')"

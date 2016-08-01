@@ -38,6 +38,85 @@ describe('Playground directive', () => {
         { id: 'desc', name: 'DESC_ORDER' },
     ];
 
+    const exportTypes = [
+        {
+            "mimeType": "text/csv",
+            "extension": ".csv",
+            "id": "CSV",
+            "needParameters": "true",
+            "defaultExport": "false",
+            "enabled": true,
+            "disableReason": "",
+            "title": "Export to CSV",
+            "parameters": [
+                {
+                    "name": "csvSeparator",
+                    "type": "select",
+                    "implicit": false,
+                    "canBeBlank": true,
+                    "placeHolder": "",
+                    "configuration": {
+                        "values": [
+                            {
+                                "value": ";",
+                                "label": "Semicolon"
+                            },
+                            {
+                                "value": "\t",
+                                "label": "Tabulation"
+                            },
+                            {
+                                "value": " ",
+                                "label": "Space"
+                            },
+                            {
+                                "value": ",",
+                                "label": "Comma"
+                            }
+                        ],
+                        "multiple": false
+                    },
+                    "radio": true,
+                    "description": "Select character to use as a delimiter",
+                    "label": "Delimiter",
+                    "default": ";"
+                },
+                {
+                    "name": "fileName",
+                    "type": "string",
+                    "implicit": false,
+                    "canBeBlank": false,
+                    "placeHolder": "",
+                    "description": "Name of the generated export file",
+                    "label": "Filename",
+                    "default": ""
+                }
+            ]
+        },
+        {
+            "mimeType": "application/vnd.ms-excel",
+            "extension": ".xlsx",
+            "id": "XLSX",
+            "needParameters": "true",
+            "defaultExport": "true",
+            "enabled": true,
+            "disableReason": "",
+            "title": "Export to XLSX",
+            "parameters": [
+                {
+                    "name": "fileName",
+                    "type": "string",
+                    "implicit": false,
+                    "canBeBlank": false,
+                    "placeHolder": "",
+                    "description": "Name of the generated export file",
+                    "label": "Filename",
+                    "default": ""
+                }
+            ]
+        }
+    ];
+
     beforeEach(angular.mock.module('data-prep.playground', ($provide) => {
         stateMock = {
             playground: {
@@ -60,9 +139,16 @@ describe('Playground directive', () => {
                 sortList: sortList,
                 orderList: orderList,
             },
+            export: {
+                exportTypes: exportTypes,
+                defaultExportType: {
+                    exportType: 'XLSX'
+                }
+            }
         };
         $provide.constant('state', stateMock);
     }));
+
 
     beforeEach(inject(($rootScope, $compile) => {
         scope = $rootScope.$new();
@@ -75,10 +161,6 @@ describe('Playground directive', () => {
             ctrl = element.controller('playground');
             spyOn(ctrl, 'beforeClose').and.returnValue();
         };
-    }));
-
-    beforeEach(inject((StorageService) => {
-        spyOn(StorageService, 'getExportParams').and.returnValue({});
     }));
 
     afterEach(() => {

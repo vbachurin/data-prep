@@ -20,69 +20,101 @@ describe('Export controller', () => {
     let stateMock;
     let exportTypes;
 
-    const currentParameters = { exportType: 'XLSX' };
-
     beforeEach(angular.mock.module('data-prep.export', ($provide) => {
         exportTypes = [
             {
-                mimeType: 'text/csv',
-                extension: '.csv',
-                id: 'CSV',
-                needParameters: 'true',
-                defaultExport: 'false',
-                enabled: true,
-                parameters: [
+                "mimeType": "text/csv",
+                "extension": ".csv",
+                "id": "CSV",
+                "needParameters": "true",
+                "defaultExport": "false",
+                "enabled": true,
+                "disableReason": "",
+                "title": "Export to CSV",
+                "parameters": [
                     {
-                        name: 'csvSeparator',
-                        labelKey: 'CHOOSE_SEPARATOR',
-                        type: 'select',
-                        default: ';',
-                        values: [
-                            { value: '&#09;', labelKey: 'SEPARATOR_TAB' },
-                            { value: ' ', labelKey: 'SEPARATOR_SPACE' },
-                            { value: ',', labelKey: 'SEPARATOR_COMMA' },
-                        ],
+                        "name": "csvSeparator",
+                        "type": "select",
+                        "implicit": false,
+                        "canBeBlank": true,
+                        "placeHolder": "",
+                        "configuration": {
+                            "values": [
+                                {
+                                    "value": ";",
+                                    "label": "Semicolon"
+                                },
+                                {
+                                    "value": "\t",
+                                    "label": "Tabulation"
+                                },
+                                {
+                                    "value": " ",
+                                    "label": "Space"
+                                },
+                                {
+                                    "value": ",",
+                                    "label": "Comma"
+                                }
+                            ],
+                            "multiple": false
+                        },
+                        "radio": true,
+                        "description": "Select character to use as a delimiter",
+                        "label": "Delimiter",
+                        "default": ";"
                     },
                     {
-                        name: 'fileName',
-                        labelKey: 'EXPORT_FILENAME"',
-                        type: 'text',
-                        default: ';',
-                    },
-                ],
+                        "name": "fileName",
+                        "type": "string",
+                        "implicit": false,
+                        "canBeBlank": false,
+                        "placeHolder": "",
+                        "description": "Name of the generated export file",
+                        "label": "Filename",
+                        "default": ""
+                    }
+                ]
             },
             {
-                mimeType: 'application/tde',
-                extension: '.tde',
-                id: 'TABLEAU',
-                needParameters: 'false',
-                defaultExport: 'false',
-                enabled: true,
-            },
-            {
-                mimeType: 'application/vnd.ms-excel',
-                extension: '.xlsx',
-                id: 'XLSX',
-                needParameters: 'false',
-                defaultExport: 'true',
-                enabled: true,
-            },
+                "mimeType": "application/vnd.ms-excel",
+                "extension": ".xlsx",
+                "id": "XLSX",
+                "needParameters": "true",
+                "defaultExport": "true",
+                "enabled": true,
+                "disableReason": "",
+                "title": "Export to XLSX",
+                "parameters": [
+                    {
+                        "name": "fileName",
+                        "type": "string",
+                        "implicit": false,
+                        "canBeBlank": false,
+                        "placeHolder": "",
+                        "description": "Name of the generated export file",
+                        "label": "Filename",
+                        "default": ""
+                    }
+                ]
+            }
         ];
 
         stateMock = {
             playground: {
-                preparation: { name: 'prepname' },
-                exportParameters: {
-                    exportType: 'CSV',
-                    'exportParameters.csvSeparator': ';',
-                    'exportParameters.fileName': 'prepname',
-                },
+                preparation: {name: 'prepname'},
                 recipe: {
                     current: {
                         steps: [],
                     },
                 },
             },
+            export: {
+                exportTypes: exportTypes,
+                defaultExportType: {
+                    exportType: 'XLSX'
+                }
+            }
         };
         $provide.constant('state', stateMock);
     }));
@@ -91,7 +123,7 @@ describe('Export controller', () => {
         RestURLs.setServerUrl('');
     }));
 
-    beforeEach(inject(($rootScope, $controller, $q, ExportService, StorageService) => {
+    beforeEach(inject(($rootScope, $controller, ExportService, StateService) => {
         form = {
             submit: () => {
             },
@@ -99,14 +131,14 @@ describe('Export controller', () => {
         scope = $rootScope.$new();
 
         createController = () => {
-            const ctrl = $controller('ExportCtrl', { $scope: scope });
+            const ctrl = $controller('ExportCtrl', {$scope: scope});
             ctrl.form = form; //simulate init by directive
             return ctrl;
         };
 
-        spyOn(StorageService, 'getExportParams').and.returnValue(currentParameters);
-        spyOn(StorageService, 'saveExportParams').and.returnValue();
         spyOn(form, 'submit').and.returnValue();
+        spyOn(StateService, 'setDefaultExportType').and.returnValue();
+        spyOn(ExportService, 'getType').and.returnValue();
     }));
 
     describe('property binding', () => {
@@ -204,21 +236,74 @@ describe('Export controller', () => {
             });
         });
 
-        it('should save selected parameters', inject((StorageService) => {
+        it('should save selected parameters', inject((StateService) => {
             //given
             const ctrl = createController();
             ctrl.nextSelectedType = exportTypes[0];
-            ctrl.nextSelectedType.parameters[1].value = 'my prep';
 
             //when
             ctrl.saveAndExport();
 
             //then
-            expect(StorageService.saveExportParams).toHaveBeenCalledWith({
+            expect(StateService.setDefaultExportType).toHaveBeenCalledWith({exportType: exportTypes[0].id});
+        }));
+    });
+
+    describe('launch default export', () => {
+        it('should set action in form', inject((RestURLs, $timeout) => {
+            //given
+            const ctrl = createController();
+            ctrl.selectedType = exportTypes[0];
+
+            expect(form.action).toBeFalsy();
+
+            //when
+            ctrl.launchDefaultExport();
+            $timeout.flush();
+
+            //then
+            expect(form.action).toBe(RestURLs.exportUrl);
+        }));
+
+        it('should submit form', inject(($timeout) => {
+            //given
+            const ctrl = createController();
+            ctrl.selectedType = exportTypes[0];
+
+            //when
+            ctrl.launchDefaultExport();
+            $timeout.flush();
+
+            //then
+            expect(form.submit).toHaveBeenCalled();
+        }));
+
+        it('should extract selected parameters', () => {
+            //given
+            const ctrl = createController();
+            ctrl.selectedType = exportTypes[0];
+
+            //when
+            ctrl.launchDefaultExport();
+
+            //then
+            expect(ctrl.exportParams).toEqual({
                 exportType: 'CSV',
                 'exportParameters.csvSeparator': ';',
-                'exportParameters.fileName': 'my prep',
+                'exportParameters.fileName': 'prepname'
             });
+        });
+
+        it('should not save selected parameters', inject((StateService) => {
+            //given
+            const ctrl = createController();
+            ctrl.selectedType = exportTypes[0];
+
+            //when
+            ctrl.launchDefaultExport();
+
+            //then
+            expect(StateService.setDefaultExportType).not.toHaveBeenCalled();
         }));
     });
 

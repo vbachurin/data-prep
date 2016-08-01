@@ -24,7 +24,8 @@ export function StateService(RouteStateService, routeState,
                              EasterEggsStateService, easterEggsState,
                              InventoryStateService, inventoryState,
                              FeedbackStateService, feedbackState,
-                             ImportStateService, importState) {
+                             ImportStateService, importState,
+                             ExportStateService, exportState) {
     'ngInject';
 
     state.route = routeState;
@@ -34,6 +35,7 @@ export function StateService(RouteStateService, routeState,
     state.inventory = inventoryState;
     state.feedback = feedbackState;
     state.import = importState;
+    state.export = exportState;
 
     return {
         // route
@@ -143,5 +145,9 @@ export function StateService(RouteStateService, routeState,
         // import
         setImportTypes: ImportStateService.setImportTypes,
         setCurrentImportType: ImportStateService.setCurrentImportType,
+
+        // export
+        setExportTypes: ExportStateService.setExportTypes,
+        setDefaultExportType: ExportStateService.setDefaultExportType,
     };
 }

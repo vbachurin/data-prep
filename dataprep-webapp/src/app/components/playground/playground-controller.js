@@ -97,7 +97,7 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
         const cleanName = name.trim();
         if (!vm.changeNameInProgress && cleanName) {
             changeName(cleanName)
-                .then((preparation) => $state.go('playground.preparation', {prepid: preparation.id}));
+                .then((preparation) => $state.go('playground.preparation', { prepid: preparation.id }));
         }
     };
 
@@ -280,7 +280,7 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
                     fetchStatistics();
                 }
             })
-            .catch(() => errorGoBack(true, {type: 'preparation'}));
+            .catch(() => errorGoBack(true, { type: 'preparation' }));
     }
 
     /**
@@ -295,7 +295,7 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
                     fetchStatistics();
                 }
             })
-            .catch(() => errorGoBack(true, {type: 'dataset'}));
+            .catch(() => errorGoBack(true, { type: 'dataset' }));
     }
 
     /**
@@ -321,7 +321,7 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
             .then((preparation) => {
                 StateService.setCurrentPreparation(preparation);
                 return preparation;
-            })
+            });
     }
 
     if ($stateParams.prepid) {
