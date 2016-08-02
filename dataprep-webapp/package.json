@@ -15,7 +15,7 @@
     "build": "webpack --config config/webpack.config.dev.js --progress --profile --color --display-error-details --display-cached",
     "prebuild": "npm run clean:build",
     "build:dist": "webpack --config config/webpack.config.prod.js --progress --profile --color --display-error-details --display-cached",
-    "prebuild:dist": "npm run clean:dist",
+    "prebuild:dist": "npm run clean:build",
 
     "start": "npm run serve",
     "serve": "webpack-dev-server --config config/webpack.config.dev.js --progress --colors --open",
