@@ -13,7 +13,6 @@
 
 describe('Filter Item Value Component', () => {
     beforeEach(angular.mock.module('data-prep.filter-item-value'));
-    beforeEach(angular.mock.module('htmlTemplates'));
 
     let createElement;
     let scope;

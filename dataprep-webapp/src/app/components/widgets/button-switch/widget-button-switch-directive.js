@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './button-switch.html';
+
 /**
  * @ngdoc directive
  * @name talend.widget.directive:TalendButtonSwitch
@@ -31,16 +33,17 @@
 export default function TalendButtonSwitch() {
     return {
         restrict: 'E',
-        templateUrl: 'app/components/widgets/button-switch/button-switch.html',
+        templateUrl: template,
         scope: {
             currentValue: '=',
             displayKey: '@',
             values: '=',
-            changeAction: '&'
+            changeAction: '&',
         },
         bindToController: true,
         controller: () => {
         },
+
         controllerAs: 'buttonSwitchCtrl',
         link: (scope, iElement, attrs, ctrl) => {
             function next() {
@@ -53,6 +56,6 @@ export default function TalendButtonSwitch() {
             iElement.on('click', () => {
                 ctrl.changeAction({ selected: next() });
             });
-        }
+        },
     };
 }

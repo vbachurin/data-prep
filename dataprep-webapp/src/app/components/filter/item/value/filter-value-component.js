@@ -11,6 +11,8 @@
 
  ============================================================================*/
 
+import template from './filter-value.html';
+
 /**
  * @ngdoc component
  * @name data-prep.filter-item-value.component:FilterValueComponent
@@ -28,15 +30,15 @@
  * @param {Function}   onRemove      Callback when value has been removed
  */
 const FilterValueComponent = {
-    templateUrl: 'app/components/filter/item/value/filter-value.html',
+    templateUrl: template,
     controller: 'FilterValueCtrl',
     bindings: {
         value: '<',
         editable: '<',
         onEdit: '&',
         removable: '<',
-        onRemove: '&'
-    }
+        onRemove: '&',
+    },
 };
 
 export default FilterValueComponent;

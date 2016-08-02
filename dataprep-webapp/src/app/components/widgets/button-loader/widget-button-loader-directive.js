@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './button-loader.html';
+
 /**
  * @ngdoc directive
  * @name talend.widget.directive:TalendButtonLoader
@@ -32,17 +34,18 @@
 export default function TalendButtonLoader() {
     return {
         restrict: 'E',
-        templateUrl: 'app/components/widgets/button-loader/button-loader.html',
+        templateUrl: template,
         transclude: true,
         scope: {
             buttonClass: '@',
             disableCondition: '=',
             loading: '=',
-            loadingClass: '@'
+            loadingClass: '@',
         },
         bindToController: true,
         controller: () => {
         },
-        controllerAs: 'buttonLoaderCtrl'
+
+        controllerAs: 'buttonLoaderCtrl',
     };
 }

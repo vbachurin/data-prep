@@ -11,7 +11,7 @@
 
   ============================================================================*/
 
-describe('unique folder validation directive', function() {
+describe('unique folder validation directive', function () {
     'use strict';
 
     var scope;
@@ -19,9 +19,9 @@ describe('unique folder validation directive', function() {
 
     beforeEach(angular.mock.module('data-prep.validation'));
 
-    beforeEach(inject(function($rootScope, $compile) {
+    beforeEach(inject(function ($rootScope, $compile) {
         scope = $rootScope.$new();
-        createElement = function(directiveScope) {
+        createElement = function (directiveScope) {
             var element = angular.element('<form name="myForm"><input id="myInput" ng-model="myInput" unique-folder="folders" /></form>');
             $compile(element)(directiveScope);
             directiveScope.$digest();
@@ -29,7 +29,7 @@ describe('unique folder validation directive', function() {
         };
     }));
 
-    it('should invalidate empty input', function() {
+    it('should invalidate empty input', function () {
         //given
         scope.folders = [];
         scope.myInput = '';
@@ -41,7 +41,7 @@ describe('unique folder validation directive', function() {
         expect(scope.myForm.$error.uniqueFolderValidation).toBeTruthy();
     });
 
-    it('should validate folder', function() {
+    it('should validate folder', function () {
         //given
         scope.folders = [];
         scope.myInput = '1';
@@ -53,9 +53,9 @@ describe('unique folder validation directive', function() {
         expect(scope.myForm.$error.uniqueFolderValidation).toBeFalsy();
     });
 
-    it('should invalidate existing folder', function() {
+    it('should invalidate existing folder', function () {
         //given
-        scope.folders = [{ name :'1' }];
+        scope.folders = [{ name: '1' }];
         scope.myInput = '1';
 
         //when

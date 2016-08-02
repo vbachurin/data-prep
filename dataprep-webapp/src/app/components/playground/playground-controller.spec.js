@@ -19,37 +19,37 @@ describe('Playground controller', () => {
     let stateMock;
     const datasets = [
         {
-            'id': 'de3cc32a-b624-484e-b8e7-dab9061a009c',
-            'name': 'customers_jso_light',
-            'author': 'anonymousUser',
-            'records': 15,
-            'nbLinesHeader': 1,
-            'nbLinesFooter': 0,
-            'created': '03-30-2015 08:06',
+            id: 'de3cc32a-b624-484e-b8e7-dab9061a009c',
+            name: 'customers_jso_light',
+            author: 'anonymousUser',
+            records: 15,
+            nbLinesHeader: 1,
+            nbLinesFooter: 0,
+            created: '03-30-2015 08:06',
         },
         {
-            'id': '3b21388c-f54a-4334-9bef-748912d0806f',
-            'name': 'customers_jso',
-            'author': 'anonymousUser',
-            'records': 1000,
-            'nbLinesHeader': 1,
-            'nbLinesFooter': 0,
-            'created': '03-30-2015 07:35',
+            id: '3b21388c-f54a-4334-9bef-748912d0806f',
+            name: 'customers_jso',
+            author: 'anonymousUser',
+            records: 1000,
+            nbLinesHeader: 1,
+            nbLinesFooter: 0,
+            created: '03-30-2015 07:35',
         },
     ];
 
     const preparations = [
         {
-            'id': 'ab136cbf0923a7f11bea713adb74ecf919e05cfa',
-            'dataSetId': 'de3cc32a-b624-484e-b8e7-dab9061a009c',
-            'author': 'anonymousUser',
-            'creationDate': 1427447300300,
+            id: 'ab136cbf0923a7f11bea713adb74ecf919e05cfa',
+            dataSetId: 'de3cc32a-b624-484e-b8e7-dab9061a009c',
+            author: 'anonymousUser',
+            creationDate: 1427447300300,
         },
         {
-            'id': 'fbaa18e82e913e97e5f0e9d40f04413412be1126',
-            'dataSetId': '3b21388c-f54a-4334-9bef-748912d0806f',
-            'author': 'anonymousUser',
-            'creationDate': 1427447330693,
+            id: 'fbaa18e82e913e97e5f0e9d40f04413412be1126',
+            dataSetId: '3b21388c-f54a-4334-9bef-748912d0806f',
+            author: 'anonymousUser',
+            creationDate: 1427447330693,
         },
     ];
 
@@ -64,6 +64,7 @@ describe('Playground controller', () => {
                 dataset: {},
                 lookup: { actions: [] },
                 preparationName: '',
+                recipe: { current: { steps: [] } },
             },
             inventory: {
                 homeFolderId: 'LW==',
@@ -92,17 +93,17 @@ describe('Playground controller', () => {
     }));
 
     describe('bindings', () => {
-        it('should bind hasActiveStep getter', inject((RecipeService) => {
+        it('should bind hasActiveStep getter', () => {
             //given
             const ctrl = createController();
             expect(ctrl.hasActiveStep).toBeFalsy();
 
             //when
-            RecipeService.getRecipe().push({ inactive: false });
+            stateMock.playground.recipe.current.steps.push({ inactive: false });
 
             //then
             expect(ctrl.hasActiveStep).toBe(true);
-        }));
+        });
     });
 
     describe('initialization', () => {
@@ -198,10 +199,10 @@ describe('Playground controller', () => {
                     metadata: {
                         columns: [{
                             statistics: {
-                                frequencyTable: []       // stats not computed
-                            }
-                        }]
-                    }
+                                frequencyTable: [],       // stats not computed
+                            },
+                        },],
+                    },
                 };
                 scope.$digest();
 
@@ -234,11 +235,11 @@ describe('Playground controller', () => {
                             statistics: {
                                 frequencyTable: [{ // stats already computed
                                     value: 'toto',
-                                    frequency: 10
-                                }]
-                            }
-                        }]
-                    }
+                                    frequency: 10,
+                                },],
+                            },
+                        },],
+                    },
                 };
                 scope.$digest();
 
@@ -308,10 +309,10 @@ describe('Playground controller', () => {
                     metadata: {
                         columns: [{
                             statistics: {
-                                frequencyTable: []       // stats not computed
-                            }
-                        }]
-                    }
+                                frequencyTable: [],       // stats not computed
+                            },
+                        },],
+                    },
                 };
                 scope.$digest();
 
@@ -344,11 +345,11 @@ describe('Playground controller', () => {
                             statistics: {
                                 frequencyTable: [{ // stats already computed
                                     value: 'toto',
-                                    frequency: 10
-                                }]
-                            }
-                        }]
-                    }
+                                    frequency: 10,
+                                },],
+                            },
+                        },],
+                    },
                 };
                 scope.$digest();
 
@@ -482,6 +483,19 @@ describe('Playground controller', () => {
             //then
             expect(ctrl.displayPreparationPicker).toBe(true);
         });
+
+        it('should fetch compatible preparations', inject((DatasetService) => {
+            //given
+            spyOn(DatasetService, 'getCompatiblePreparations').and.returnValue();
+            const ctrl = createController();
+            const datasetId = 'abcde-123';
+
+            //when
+            ctrl.fetchCompatiblePreparations(datasetId);
+
+            //then
+            expect(DatasetService.getCompatiblePreparations).toHaveBeenCalledWith(datasetId);
+        }));
 
         it('should copy reference steps', inject(($q, PlaygroundService) => {
             //given
@@ -666,6 +680,21 @@ describe('Playground controller', () => {
         }));
     });
 
+    describe('onboarding', () => {
+        it('should start onboarding tour', inject((OnboardingService) => {
+            //given
+            spyOn(OnboardingService, 'startTour').and.returnValue();
+            const ctrl = createController();
+            const tourId = 'tour-123';
+
+            //when
+            ctrl.startOnBoarding(tourId);
+
+            //then
+            expect(OnboardingService.startTour).toHaveBeenCalledWith(tourId);
+        }));
+    });
+
     describe('dataset parameters', () => {
         beforeEach(inject(($q, StateService, PlaygroundService) => {
             spyOn(StateService, 'hideDatasetParameters').and.returnValue();
@@ -729,6 +758,34 @@ describe('Playground controller', () => {
 
             //then
             expect(StateService.hideDatasetParameters).toHaveBeenCalled();
+        }));
+    });
+
+    describe('preview in progress', () => {
+        it('should check if preview is in progress', inject((PreviewService) => {
+            //given
+            spyOn(PreviewService, 'previewInProgress').and.returnValue();
+            const ctrl = createController();
+
+            //when
+            ctrl.previewInProgress();
+
+            //then
+            expect(PreviewService.previewInProgress).toHaveBeenCalled();
+        }));
+    });
+
+    describe('toggle recipe', () => {
+        it('should toggle recipe', inject((PlaygroundService) => {
+            //given
+            spyOn(PlaygroundService, 'toggleRecipe').and.returnValue();
+            const ctrl = createController();
+
+            //when
+            ctrl.toggleRecipe();
+
+            //then
+            expect(PlaygroundService.toggleRecipe).toHaveBeenCalled();
         }));
     });
 });

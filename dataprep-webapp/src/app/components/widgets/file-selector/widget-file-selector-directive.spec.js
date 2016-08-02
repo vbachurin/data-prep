@@ -11,7 +11,7 @@
 
   ============================================================================*/
 
-describe('Upload File directive', function() {
+describe('Upload File directive', function () {
     'use strict';
 
     var element;
@@ -19,15 +19,14 @@ describe('Upload File directive', function() {
     var body = angular.element('body');
     var scope;
     beforeEach(angular.mock.module('talend.widget'));
-    beforeEach(angular.mock.module('htmlTemplates'));
 
-    beforeEach(inject(function($rootScope, $compile) {
-        createElement = function() {
+    beforeEach(inject(function ($rootScope, $compile) {
+        createElement = function () {
             scope = $rootScope.$new();
             scope.updateDatasetFile = 'file';
-            scope.uploadUpdatedDatasetFile = function(){};
+            scope.uploadUpdatedDatasetFile = function () {};
 
-            element = angular.element('<talend-file-selector button-data-icon="E" button-title="REPLACE_FILE_CONTENT" file-model="updateDatasetFile" on-file-change="uploadUpdatedDatasetFile(dataset)">'+
+            element = angular.element('<talend-file-selector button-data-icon="E" button-title="REPLACE_FILE_CONTENT" file-model="updateDatasetFile" on-file-change="uploadUpdatedDatasetFile(dataset)">' +
                 '</talend-file-selector>');
             body.append(element);
             $compile(element)(scope);
@@ -40,13 +39,13 @@ describe('Upload File directive', function() {
         element.remove();
     });
 
-    it('should trigger click on input', function() {
+    it('should trigger click on input', function () {
         //given
         createElement();
         var event = angular.element.Event('click');
         var ctrl = element.controller('talendFileSelector');
         var clicked = false;
-        element.find('input').bind('click', function() {
+        element.find('input').bind('click', function () {
             clicked = true;
         });
 

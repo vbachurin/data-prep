@@ -19,7 +19,6 @@ describe('Talend Badge Component', () => {
     let element;
 
     beforeEach(angular.mock.module('talend.widget'));
-    beforeEach(angular.mock.module('htmlTemplates'));
 
     afterEach(() => {
         scope.$destroy();

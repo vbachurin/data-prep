@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './type-transformation-menu.html';
+
 /**
  * @ngdoc directive
  * @name data-prep.transformation-menu.directive:TypeTransformMenu
@@ -22,12 +24,12 @@
 export default function TypeTransformMenu() {
     return {
         restrict: 'E',
-        templateUrl: 'app/components/transformation/menu/type/type-transformation-menu.html',
+        templateUrl: template,
         scope: {
-            column: '='
+            column: '=',
         },
         bindToController: true,
         controllerAs: 'typeMenuCtrl',
-        controller: 'TypeTransformMenuCtrl'
+        controller: 'TypeTransformMenuCtrl',
     };
 }

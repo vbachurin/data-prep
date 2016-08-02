@@ -11,6 +11,9 @@
 
   ============================================================================*/
 
+import _ from 'lodash';
+import moment from 'moment';
+
 /**
  * @ngdoc service
  * @name data-prep.services.utils.service:DateService
@@ -18,7 +21,7 @@
  */
 export default function DateService() {
     return {
-        isInDateLimits: isInDateLimits
+        isInDateLimits,
     };
 
     /**
@@ -33,12 +36,8 @@ export default function DateService() {
     function isInDateLimits(minTimestamp, maxTimestamp, patterns) {
         return (value) => {
             const parsedMoment = _.chain(patterns)
-                .map((pattern) => {
-                    return moment(value, pattern, true);
-                })
-                .find((momentDate) => {
-                    return momentDate.isValid();
-                })
+                .map((pattern) => moment(value, pattern, true))
+                .find((momentDate) => momentDate.isValid())
                 .value();
 
             if (!parsedMoment) {

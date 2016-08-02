@@ -11,6 +11,8 @@
 
  ============================================================================*/
 
+import moment from 'moment';
+
 /**
  * @ngdoc directive
  * @name talend.widget.directive:TalendDatetimePicker
@@ -37,19 +39,18 @@ export default function TalendDatetimePicker($timeout) {
         scope: {
             value: '=ngModel',
             onSelect: '&',
-            onBlur: '&'
+            onBlur: '&',
         },
         bindToController: true,
-        controller: () => {
-        },
+        controller: () => {},
         controllerAs: 'ctrl',
-        link: function (scope, iElement, iAttrs, ctrl) {
+        link(scope, iElement, iAttrs, ctrl) {
             Date.parseDate = function (input, format) {
                 return moment(input, format).toDate();
             };
-            Date.prototype.dateFormat = function (format) {
-                return moment(this).format(format);
-            };
+
+            Date.prototype.dateFormat = // eslint-disable-line no-extend-native
+                (format) => moment(this).format(format);
 
             const format = iAttrs.format ? iAttrs.format : 'DD/MM/YYYY HH:mm:ss';
             const formatTime = iAttrs.formatTime ? iAttrs.formatTime : 'HH:mm:ss';
@@ -64,11 +65,11 @@ export default function TalendDatetimePicker($timeout) {
             const input = iElement.find('.datetimepicker');
             input.datetimepicker({
                 lang: 'en',
-                format: format,
-                formatDate: formatDate,
-                formatTime: formatTime,
+                format,
+                formatDate,
+                formatTime,
                 timepicker: _.has(iAttrs, 'isDateTime'),
-                onSelectDate: onSelectDate
+                onSelectDate,
             });
 
             input.bind('keydown', (event) => {
@@ -82,6 +83,6 @@ export default function TalendDatetimePicker($timeout) {
             scope.$on('$destroy', () => {
                 input.datetimepicker('destroy');
             });
-        }
+        },
     };
 }

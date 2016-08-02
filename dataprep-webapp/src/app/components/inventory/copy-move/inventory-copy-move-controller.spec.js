@@ -59,7 +59,7 @@ describe('InventoryCopyMove controller', () => {
             expect(ctrl.onCopy).toHaveBeenCalledWith({
                 item: ctrl.item,
                 destination: ctrl.destinationFolder,
-                name: ctrl.newName
+                name: ctrl.newName,
             });
         }));
 
@@ -115,7 +115,7 @@ describe('InventoryCopyMove controller', () => {
             expect(ctrl.onMove).toHaveBeenCalledWith({
                 item: ctrl.item,
                 destination: ctrl.destinationFolder,
-                name: ctrl.newName
+                name: ctrl.newName,
             });
         }));
 

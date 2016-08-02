@@ -18,103 +18,103 @@ describe('Lookup service', () => {
     //lookup dataset content
     const firstDsLookupId = '9e739b88-5ec9-4b58-84b5-2127a7e2eac7';
     const dsLookupContent = {
-        'metadata': {
-            'id': '9e739b88-5ec9-4b58-84b5-2127a7e2eac7',
-            'records': 3,
-            'certificationStep': 'NONE',
-            'location': {
-                'type': 'local'
+        metadata: {
+            id: '9e739b88-5ec9-4b58-84b5-2127a7e2eac7',
+            records: 3,
+            certificationStep: 'NONE',
+            location: {
+                type: 'local',
             },
-            'name': 'lookup_2',
-            'author': 'anonymous',
-            'created': 1447689742940,
-            'encoding': 'UTF-8',
-            columns: [{ id: '0000' }]
-        }
+            name: 'lookup_2',
+            author: 'anonymous',
+            created: 1447689742940,
+            encoding: 'UTF-8',
+            columns: [{ id: '0000' }],
+        },
     };
 
     const datasets = [
         {
-            'id': '9e739b88-5ec9-4b58-84b5-2127a7e2eac7',
-            'name': 'lookup_2',
-            'author': 'anonymous',
-            'records': 3,
-            'nbLinesHeader': 1,
-            'nbLinesFooter': 0,
-            'created': 1447689742940
+            id: '9e739b88-5ec9-4b58-84b5-2127a7e2eac7',
+            name: 'lookup_2',
+            author: 'anonymous',
+            records: 3,
+            nbLinesHeader: 1,
+            nbLinesFooter: 0,
+            created: 1447689742940,
         },
         {
-            'id': '3b21388c-f54a-4334-9bef-748912d0806f',
-            'name': 'customers_jso',
-            'author': 'anonymousUser',
-            'records': 1000,
-            'nbLinesHeader': 1,
-            'nbLinesFooter': 0,
-            'created': '03-30-2015 07:35'
+            id: '3b21388c-f54a-4334-9bef-748912d0806f',
+            name: 'customers_jso',
+            author: 'anonymousUser',
+            records: 1000,
+            nbLinesHeader: 1,
+            nbLinesFooter: 0,
+            created: '03-30-2015 07:35',
         },
         {
-            'id': '4d0a2718-bec6-4614-ad6c-8b3b326ff6c7',
-            'name': 'first_interactions',
-            'author': 'anonymousUser',
-            'records': 29379,
-            'nbLinesHeader': 1,
-            'nbLinesFooter': 0,
-            'created': '03-30-2015 08:05'
+            id: '4d0a2718-bec6-4614-ad6c-8b3b326ff6c7',
+            name: 'first_interactions',
+            author: 'anonymousUser',
+            records: 29379,
+            nbLinesHeader: 1,
+            nbLinesFooter: 0,
+            created: '03-30-2015 08:05',
         },
         {
-            'id': '5e95be9e-88cd-4765-9ecc-ee48cc28b6d5',
-            'name': 'first_interactions_400',
-            'author': 'anonymousUser',
-            'records': 400,
-            'nbLinesHeader': 1,
-            'nbLinesFooter': 0,
-            'created': '03-30-2015 08:06'
-        }
+            id: '5e95be9e-88cd-4765-9ecc-ee48cc28b6d5',
+            name: 'first_interactions_400',
+            author: 'anonymousUser',
+            records: 400,
+            nbLinesHeader: 1,
+            nbLinesFooter: 0,
+            created: '03-30-2015 08:06',
+        },
     ];
 
     //lookup actions
     const lookupActions = [
         {
-            'category': 'data_blending',
-            'name': 'lookup',
-            'parameters': [
+            category: 'data_blending',
+            name: 'lookup',
+            parameters: [
                 {
-                    'name': 'column_id',
-                    'type': 'string',
-                    'default': ''
+                    name: 'column_id',
+                    type: 'string',
+                    default: '',
                 },
                 {
-                    'name': 'filter',
-                    'type': 'filter',
-                    'default': ''
+                    name: 'filter',
+                    type: 'filter',
+                    default: '',
                 },
                 {
-                    'name': 'lookup_ds_name',
-                    'type': 'string',
-                    'default': 'lookup_2'
+                    name: 'lookup_ds_name',
+                    type: 'string',
+                    default: 'lookup_2',
                 },
                 {
-                    'name': 'lookup_ds_id',
-                    'type': 'string',
-                    'default': '9e739b88-5ec9-4b58-84b5-2127a7e2eac7'
+                    name: 'lookup_ds_id',
+                    type: 'string',
+                    default: '9e739b88-5ec9-4b58-84b5-2127a7e2eac7',
                 },
                 {
-                    'name': 'lookup_join_on',
-                    'type': 'string',
-                    'default': ''
+                    name: 'lookup_join_on',
+                    type: 'string',
+                    default: '',
                 },
                 {
-                    'name': 'lookup_join_on_name',
-                    'type': 'string',
-                    'default': ''
+                    name: 'lookup_join_on_name',
+                    type: 'string',
+                    default: '',
                 },
                 {
-                    'name': 'lookup_selected_cols',
-                    'type': 'list',
-                    'default': ''
-                }
-            ]
-        }
+                    name: 'lookup_selected_cols',
+                    type: 'list',
+                    default: '',
+                },
+            ],
+        },
     ];
     const firstLookupAction = lookupActions[0];
 
@@ -122,10 +122,10 @@ describe('Lookup service', () => {
     const lookupStep = {
         column: {
             id: '0000',
-            name: 'id'
+            name: 'id',
         },
         row: {
-            id: '11'
+            id: '11',
         },
         transformation: {
             stepId: '72fe267d489b06890da69368f4760530b076ec59',
@@ -133,7 +133,7 @@ describe('Lookup service', () => {
             label: 'Lookup',
             description: 'Blends columns from another dataset into this one',
             parameters: [],
-            dynamic: false
+            dynamic: false,
         },
         actionParameters: {
             action: 'lookup',
@@ -148,29 +148,29 @@ describe('Lookup service', () => {
                 lookup_selected_cols: [
                     {
                         id: '0001',
-                        name: 'uglystate'
-                    }
+                        name: 'uglystate',
+                    },
                 ],
                 row_id: '11',
-                scope: 'dataset'
-            }
+                scope: 'dataset',
+            },
         },
         diff: {
             createdColumns: [
-                '0009'
-            ]
+                '0009',
+            ],
         },
-        filters: null
+        filters: null,
     };
 
     const sortList = [
         { id: 'name', name: 'NAME_SORT', property: 'name' },
-        { id: 'date', name: 'DATE_SORT', property: 'created' }
+        { id: 'date', name: 'DATE_SORT', property: 'created' },
     ];
 
     const orderList = [
         { id: 'asc', name: 'ASC_ORDER' },
-        { id: 'desc', name: 'DESC_ORDER' }
+        { id: 'desc', name: 'DESC_ORDER' },
     ];
 
     beforeEach(angular.mock.module('data-prep.services.lookup', ($provide) => {
@@ -180,15 +180,16 @@ describe('Lookup service', () => {
                 dataset: { id: 'abcd' },
                 lookup: {
                     visibility: false,
-                    addedActions: []
+                    addedActions: [],
                 },
-                grid: {}
+                grid: {},
+                recipe: { current: { steps: [] } },
             },
             inventory: {
                 datasets: datasets,
                 sortList: sortList,
-                orderList: orderList
-            }
+                orderList: orderList,
+            },
         };
         $provide.constant('state', stateMock);
     }));
@@ -273,12 +274,12 @@ describe('Lookup service', () => {
         });
 
         describe('with lookup step on selected column', () => {
-            it('should load the step action as lookup update', inject(($rootScope, LookupService, DatasetRestService, RecipeService, StateService) => {
+            it('should load the step action as lookup update', inject(($rootScope, LookupService, DatasetRestService, StateService) => {
                 //given
-                spyOn(RecipeService, 'getRecipe').and.returnValue([lookupStep]);
+                stateMock.playground.recipe.current.steps = [lookupStep];
                 stateMock.playground.data = { metadata: { columns: [{ id: '0000' }] } };
                 stateMock.playground.lookup.addedActions = lookupActions;
-                stateMock.playground.grid.selectedColumn = { 'id': '0000' };
+                stateMock.playground.grid.selectedColumn = { id: '0000' };
 
                 //when
                 LookupService.initLookups();
@@ -304,12 +305,12 @@ describe('Lookup service', () => {
             expect(StateService.setLookupAddMode).toHaveBeenCalledWith(firstLookupAction, dsLookupContent);
         }));
 
-        it('should load action as lookup update when selected column has this lookup action as step', inject(($rootScope, LookupService, RecipeService, StateService) => {
+        it('should load action as lookup update when selected column has this lookup action as step', inject(($rootScope, LookupService, StateService) => {
             //given
             stateMock.playground.data = { metadata: { columns: [{ id: '0000' }] } };
             stateMock.playground.lookup.addedActions = lookupActions;
             stateMock.playground.grid.selectedColumn = { id: '0000' };
-            spyOn(RecipeService, 'getRecipe').and.returnValue([lookupStep]);
+            stateMock.playground.recipe.current.steps = [lookupStep];
 
             //when
             LookupService.loadFromAction(firstLookupAction);
@@ -398,14 +399,14 @@ describe('Lookup service', () => {
             expect(StateService.setLookupAddMode).toHaveBeenCalledWith(firstLookupAction, dsLookupContent);
         }));
 
-        it('should load action as lookup update when the new selected column has this lookup action as step', inject(($rootScope, LookupService, RecipeService, StateService) => {
+        it('should load action as lookup update when the new selected column has this lookup action as step', inject(($rootScope, LookupService, StateService) => {
             //given
             stateMock.playground.data = { metadata: { columns: [{ id: '0000' }] } };
             stateMock.playground.lookup.addedActions = lookupActions;
             stateMock.playground.lookup.dataset = firstLookupAction;
             stateMock.playground.lookup.visibility = true;
             stateMock.playground.grid.selectedColumn = { id: '0000' };
-            spyOn(RecipeService, 'getRecipe').and.returnValue([lookupStep]);
+            stateMock.playground.recipe.current.steps = [lookupStep];
 
             //when
             LookupService.updateTargetColumn();
@@ -447,14 +448,14 @@ describe('Lookup service', () => {
     });
 
     describe('add datasets to lookup', () => {
-        it('should disable datasets which are used in recipe steps', inject(($rootScope, LookupService, RecipeService) => {
+        it('should disable datasets which are used in recipe steps', inject(($rootScope, LookupService) => {
             //given
             stateMock.playground.lookup.datasets = [
                 { id: '9e739b88-5ec9-4b58-84b5-2127a7e2eac7' },
                 { id: '3' },
-                { id: '2' }
+                { id: '2' },
             ];
-            spyOn(RecipeService, 'getRecipe').and.returnValue([lookupStep]);
+            stateMock.playground.recipe.current.steps = [lookupStep];
 
             //when
             LookupService.disableDatasetsUsedInRecipe();
@@ -465,22 +466,21 @@ describe('Lookup service', () => {
             expect(stateMock.playground.lookup.datasets[2].enableToAddToLookup).toBe(true);
         }));
 
-        it('should initialize lookup datasets', inject(($q, $rootScope, LookupService, StorageService, RecipeService, StateService, TransformationRestService) => {
+        it('should initialize lookup datasets', inject(($q, $rootScope, LookupService, StorageService, StateService, TransformationRestService) => {
             //given
             stateMock.playground.lookup.datasets = [
                 { id: '9e739b88-5ec9-4b58-84b5-2127a7e2eac7', addedToLookup: false, created: 80 },
                 { id: '3', addedToLookup: false, created: 90 },
-                { id: '2', addedToLookup: false, created: 100 }
+                { id: '2', addedToLookup: false, created: 100 },
             ];
 
             stateMock.playground.lookup.actions = lookupActions;
             stateMock.playground.lookup.addedActions = [];
-
             stateMock.playground.lookup.sort = { id: 'date', name: 'DATE_SORT', property: 'created' };
             stateMock.playground.lookup.order = { id: 'desc', name: 'DESC_ORDER' };
+            stateMock.playground.recipe.current.steps = [lookupStep];
 
             spyOn(StorageService, 'getLookupDatasets').and.returnValue(['1']);
-            spyOn(RecipeService, 'getRecipe').and.returnValue([lookupStep]);
             spyOn(StorageService, 'setLookupDatasets').and.returnValue();
             spyOn(StateService, 'setLookupAddedActions').and.returnValue();
             spyOn(TransformationRestService, 'getDatasetTransformations').and.returnValue($q.when({ data: lookupActions }));
@@ -500,12 +500,12 @@ describe('Lookup service', () => {
             expect(StateService.setLookupAddedActions).toHaveBeenCalledWith(lookupActions);
         }));
 
-        it('should update lookup datasets', inject(($q, $rootScope, LookupService, StorageService, RecipeService, StateService) => {
+        it('should update lookup datasets', inject(($q, $rootScope, LookupService, StorageService, StateService) => {
             //given
             stateMock.playground.lookup.datasets = [
                 { id: '9e739b88-5ec9-4b58-84b5-2127a7e2eac7', addedToLookup: true, created: 100 },
                 { id: '3', addedToLookup: false, created: 90 },
-                { id: '2', addedToLookup: false, created: 80 }
+                { id: '2', addedToLookup: false, created: 80 },
             ];
 
             stateMock.playground.lookup.actions = lookupActions;

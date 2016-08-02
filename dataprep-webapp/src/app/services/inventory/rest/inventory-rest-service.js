@@ -20,7 +20,7 @@ export default function InventoryRestService($http, RestURLs) {
     'ngInject';
 
     return {
-        search: search
+        search,
     };
 
     /**
@@ -34,7 +34,7 @@ export default function InventoryRestService($http, RestURLs) {
         return $http({
             url: `${RestURLs.searchUrl}?path=/&name=${encodeURIComponent(searchString)}`,
             method: 'GET',
-            timeout: deferredAbort.promise
+            timeout: deferredAbort.promise,
         });
     }
 }

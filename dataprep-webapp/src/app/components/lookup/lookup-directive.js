@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './lookup.html';
+
 /**
  * @ngdoc directive
  * @name data-prep.lookup.directive:Lookup
@@ -22,12 +24,12 @@
 export default function Lookup() {
     return {
         restrict: 'E',
-        templateUrl: 'app/components/lookup/lookup.html',
+        templateUrl: template,
         scope: {
-            visible: '='
+            visible: '=',
         },
         bindToController: true,
         controllerAs: 'lookupCtrl',
-        controller: 'LookupCtrl'
+        controller: 'LookupCtrl',
     };
 }

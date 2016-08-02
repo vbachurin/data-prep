@@ -11,6 +11,8 @@
 
  ============================================================================*/
 
+import SlickGridMock from '../../../../mocks/SlickGrid.mock';
+
 describe('Dataset Sheet Preview Service', function () {
     'use strict';
 
@@ -22,10 +24,10 @@ describe('Dataset Sheet Preview Service', function () {
             columns: [
                 { id: '1', name: 'col1' },
                 { id: '2', name: 'col2' },
-                { id: '3', name: 'col3' }
-            ]
+                { id: '3', name: 'col3' },
+            ],
         },
-        records: [{ 1: 'value1', 2: 'value2', 3: 'value3' }]
+        records: [{ 1: 'value1', 2: 'value2', 3: 'value3' }],
     };
 
     beforeEach(angular.mock.module('data-prep.services.dataset'));
@@ -117,7 +119,6 @@ describe('Dataset Sheet Preview Service', function () {
             //then
             expect(DatasetSheetPreviewService.addPreparation).toBeTruthy();
         }));
-
 
         it('should call sheet preview service and set selected sheet name', inject(function ($rootScope, DatasetSheetPreviewService) {
             //given

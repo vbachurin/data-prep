@@ -31,7 +31,7 @@ export default function TalendEditor(validationFn, translatedMsg) {
             }
 
             $input.attr('rows', 1);
-            inputLineHeight = inputLineHeight || parseInt($input.css('lineHeight'),10);
+            inputLineHeight = inputLineHeight || parseInt($input.css('lineHeight'), 10);
             var lines = parseInt($input.prop('scrollHeight') / inputLineHeight, 10);
             $input.attr('rows', lines);
 
@@ -43,8 +43,8 @@ export default function TalendEditor(validationFn, translatedMsg) {
                 .appendTo(args.container);
             $input = $('<TEXTAREA hidefocus rows="1"></TEXTAREA>')
                 .appendTo($container)
-                .keydown(function(e) {
-                    switch(e.keyCode) {
+                .keydown(function (e) {
+                    switch (e.keyCode) {
                         case $.ui.keyCode.ESCAPE:
                             $input.val(defaultValue);
                             args.cancelChanges();
@@ -58,46 +58,47 @@ export default function TalendEditor(validationFn, translatedMsg) {
                             else {
                                 args.commitChanges();
                             }
+
                             break;
                     }
 
                     e.stopImmediatePropagation();
                     updateRowsNb();
                 })
-                .keyup(function(e) {
+                .keyup(function (e) {
                     if (e.keyCode === $.ui.keyCode.BACKSPACE || e.keyCode === $.ui.keyCode.DELETE) {
                         updateRowsNb();
                     }
                 })
-                .mouseenter(function(e) {
+                .mouseenter(function (e) {
                     e.stopImmediatePropagation();
                 })
                 .focus()
                 .select();
 
-            $checkboxContainer = $('<div class="checkboxContainer"><input type="checkbox">'+translatedMsg+'</div>')
+            $checkboxContainer = $('<div class="checkboxContainer"><input type="checkbox">' + translatedMsg + '</div>')
                 .appendTo($container);
             $checkbox = $checkboxContainer.find('input[type="checkbox"]');
         }
 
         /*********** REQUIRED METHODS ***********/
 
-        this.destroy = function() {
+        this.destroy = function () {
             // remove all data, events & dom elements created in the constructor
             $input.remove();
         };
 
-        this.focus = function() {
+        this.focus = function () {
             // set the focus on the main input control (if any)
             $input.focus();
         };
 
-        this.isValueChanged = function() {
+        this.isValueChanged = function () {
             // return true if the value(s) being edited by the user has/have been changed
             return (!($input.val() === '' && defaultValue === null)) && ($input.val() !== defaultValue);
         };
 
-        this.serializeValue = function() {
+        this.serializeValue = function () {
             // return the value(s) being edited by the user in a serialized form
             // can be an arbitrary object
             // the only restriction is that it must be a simple object that can be passed around even
@@ -105,7 +106,7 @@ export default function TalendEditor(validationFn, translatedMsg) {
             return $input.val();
         };
 
-        this.loadValue = function(item) {
+        this.loadValue = function (item) {
             // load the value(s) from the data item and update the UI
             // this method will be called immediately after the editor is initialized
             // it may also be called by the grid if if the row/cell being edited is updated via grid.updateRow/updateCell
@@ -114,14 +115,14 @@ export default function TalendEditor(validationFn, translatedMsg) {
             $input.select();
         };
 
-        this.applyValue = function(item,state) {
+        this.applyValue = function (item, state) {
             // deserialize the value(s) saved to 'state' and apply them to the data item
             // this method may get called after the editor itself has been destroyed
             // treat it as an equivalent of a Java/C# 'static' method - no instance variables should be accessed
             validationFn(item, args.column.tdpColMetadata, state, $checkbox[0].checked);
         };
 
-        this.validate = function() {
+        this.validate = function () {
             // validate user input and return the result along with the validation message, if any
             // if the input is valid, return {valid:true,msg:null}
             return { valid: true, msg: null };
@@ -129,17 +130,7 @@ export default function TalendEditor(validationFn, translatedMsg) {
 
         /*********** OPTIONAL METHODS ***********/
 
-        //this.hide = function() {
-        //    // if implemented, this will be called if the cell being edited is scrolled out of the view
-        //    // implement this is your UI is not appended to the cell itself or if you open any secondary
-        //    // selector controls (like a calendar for a datepicker input)
-        //};
-        //
-        //this.show = function() {
-        //    // pretty much the opposite of hide
-        //};
-        //
-        this.position = function(cellBox) {
+        this.position = function (cellBox) {
             // if implemented, this will be called by the grid if any of the cell containers are scrolled
             // and the absolute position of the edited cell is changed
             // if your UI is constructed as a child of document BODY, implement this to update the
@@ -164,4 +155,5 @@ export default function TalendEditor(validationFn, translatedMsg) {
         init();
     };
 }
+
 /*eslint-enable */

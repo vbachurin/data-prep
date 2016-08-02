@@ -11,7 +11,7 @@
 
   ============================================================================*/
 
-describe('StarWars directive', function() {
+describe('StarWars directive', function () {
     'use strict';
 
     var scope;
@@ -19,9 +19,8 @@ describe('StarWars directive', function() {
     var element;
 
     beforeEach(angular.mock.module('data-prep.easter-eggs'));
-    beforeEach(angular.mock.module('htmlTemplates'));
 
-    beforeEach(inject(function($rootScope, $compile) {
+    beforeEach(inject(function ($rootScope, $compile) {
         scope = $rootScope.$new();
         createElement = function () {
             element = angular.element('<star-wars></star-wars>');
@@ -31,7 +30,7 @@ describe('StarWars directive', function() {
         };
     }));
 
-    it('should render star wars div', function() {
+    it('should render star wars div', function () {
         //when
         createElement();
 

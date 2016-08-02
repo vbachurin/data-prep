@@ -11,7 +11,7 @@
 
   ============================================================================*/
 
-describe('Feedback directive', function() {
+describe('Feedback directive', function () {
     'use strict';
 
     var scope;
@@ -21,14 +21,12 @@ describe('Feedback directive', function() {
     var body = angular.element('body');
     beforeEach(angular.mock.module('data-prep.feedback', function ($provide) {
         stateMock = { feedback: {
-                visible: false
-        } };
+                visible: false,
+            }, };
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(angular.mock.module('htmlTemplates'));
-
-    beforeEach(inject(function($rootScope, $compile) {
+    beforeEach(inject(function ($rootScope, $compile) {
         scope = $rootScope.$new();
         createElement = function () {
             element = angular.element('<feedback></feedback>');
@@ -43,7 +41,7 @@ describe('Feedback directive', function() {
         element.remove();
     }));
 
-    it('should render a feedback form', function() {
+    it('should render a feedback form', function () {
         //when
         stateMock.feedback.visible = true;
         createElement();
@@ -53,7 +51,7 @@ describe('Feedback directive', function() {
         expect(body.find('form').length).toBe(1);
     });
 
-    it('should render form labels', function() {
+    it('should render form labels', function () {
         //when
         stateMock.feedback.visible = true;
         createElement();
@@ -63,7 +61,7 @@ describe('Feedback directive', function() {
         expect(body.find('.feedback-form-line').length).toBe(5);
     });
 
-    it('should render form buttons', function() {
+    it('should render form buttons', function () {
         //when
         stateMock.feedback.visible = true;
         createElement();
@@ -73,7 +71,7 @@ describe('Feedback directive', function() {
         expect(body.find('button').length).toBe(2);
     });
 
-    it('should render form title', function() {
+    it('should render form title', function () {
         //when
         stateMock.feedback.visible = true;
         createElement();

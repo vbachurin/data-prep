@@ -18,7 +18,6 @@ describe('InventoryCopyMove component', () => {
     let controller;
 
     beforeEach(angular.mock.module('data-prep.inventory-copy-move'));
-    beforeEach(angular.mock.module('htmlTemplates'));
 
     beforeEach(inject(($rootScope, $compile) => {
         scope = $rootScope.$new();

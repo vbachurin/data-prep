@@ -16,7 +16,7 @@ describe('Playground state service', function () {
 
     beforeEach(angular.mock.module('data-prep.services.state'));
 
-    describe('init', function() {
+    describe('init', function () {
         it('should init visible to false', inject(function (parametersState) {
             //then
             expect(parametersState.visible).toBe(false);
@@ -33,12 +33,12 @@ describe('Playground state service', function () {
                 { label: ';', value: ';' },
                 { label: ',', value: ',' },
                 { label: '<space>', value: ' ' },
-                { label: '<tab>', value: '\t' }
+                { label: '<tab>', value: '\t' },
             ]);
         }));
     });
 
-    describe('visibility', function() {
+    describe('visibility', function () {
         it('should hide', inject(function (parametersState, ParametersStateService) {
             //given
             parametersState.visible = true;
@@ -62,7 +62,7 @@ describe('Playground state service', function () {
         }));
     });
 
-    describe('sending flag', function() {
+    describe('sending flag', function () {
         it('should set sending flag', inject(function (parametersState, ParametersStateService) {
             //given
             parametersState.isSending = false;
@@ -75,7 +75,7 @@ describe('Playground state service', function () {
         }));
     });
 
-    describe('encoding', function() {
+    describe('encoding', function () {
         it('should set encodings list', inject(function (parametersState, ParametersStateService) {
             //given
             var encodings = ['UTF-8', 'UTF-16'];
@@ -89,7 +89,7 @@ describe('Playground state service', function () {
         }));
     });
 
-    describe('update', function() {
+    describe('update', function () {
         it('should update dataset separator', inject(function (parametersState, ParametersStateService) {
             //given
             var dataset = { parameters: { SEPARATOR: ',' } };
@@ -115,7 +115,7 @@ describe('Playground state service', function () {
         }));
     });
 
-    describe('reset', function() {
+    describe('reset', function () {
         it('should reset parameters', inject(function (parametersState, ParametersStateService) {
             //given
             parametersState.visible = true;

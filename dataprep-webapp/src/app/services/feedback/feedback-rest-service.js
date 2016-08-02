@@ -31,10 +31,10 @@ export default class FeedbackRestService {
      * @description Send a feedback
      */
     sendFeedback(feedback) {
-        var request = {
+        const request = {
             method: 'PUT',
             url: this.url,
-            data: feedback
+            data: feedback,
         };
 
         return this.$http(request);

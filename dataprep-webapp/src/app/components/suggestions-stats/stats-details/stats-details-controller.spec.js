@@ -18,11 +18,11 @@ describe('Stats-details controller', function () {
     var scope;
     var stateMock;
 
-    beforeEach(angular.mock.module('data-prep.stats-details', function($provide) {
+    beforeEach(angular.mock.module('data-prep.stats-details', function ($provide) {
         stateMock = {
             playground: {
-                grid: {}
-            }
+                grid: {},
+            },
         };
         $provide.constant('state', stateMock);
     }));
@@ -32,47 +32,48 @@ describe('Stats-details controller', function () {
 
         createController = function () {
             return $controller('StatsDetailsCtrl', {
-                $scope: scope
+                $scope: scope,
             });
         };
+
         spyOn(FilterService, 'addFilterAndDigest').and.returnValue();
     }));
 
     it('should add a new "pattern" filter', inject(function (FilterService) {
         //given
         var ctrl = createController();
-        var obj = { 'data': 'Ulysse', 'occurrences': 5, pattern:'Aa9' };
+        var obj = { data: 'Ulysse', occurrences: 5, pattern: 'Aa9' };
 
         stateMock.playground.grid.selectedColumn = {
             id: '0001',
-            name: 'firstname'
+            name: 'firstname',
         };
 
         //when
-        ctrl.addPatternFilter (obj);
+        ctrl.addPatternFilter(obj);
 
         //then
         expect(FilterService.addFilterAndDigest).toHaveBeenCalledWith('matches', '0001', 'firstname', {
             patterns: [
                 {
-                    value: 'Aa9'
-                }
-            ]
+                    value: 'Aa9',
+                },
+            ],
         }, null, null);
     }));
 
     it('should add a new "empty" filter if pattern is empty', inject(function (FilterService) {
         //given
         var ctrl = createController();
-        var obj = { 'data': 'Ulysse', 'occurrences': 5 };
+        var obj = { data: 'Ulysse', occurrences: 5 };
 
         stateMock.playground.grid.selectedColumn = {
             id: '0001',
-            name: 'firstname'
+            name: 'firstname',
         };
 
         //when
-        ctrl.addPatternFilter (obj);
+        ctrl.addPatternFilter(obj);
 
         //then
         expect(FilterService.addFilterAndDigest).toHaveBeenCalledWith('empty_records', '0001', 'firstname', null, null, null);

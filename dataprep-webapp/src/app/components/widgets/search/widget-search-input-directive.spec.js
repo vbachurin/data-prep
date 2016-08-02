@@ -11,7 +11,7 @@
 
   ============================================================================*/
 
-describe('Add reset button to input directive', function() {
+describe('Add reset button to input directive', function () {
     'use strict';
 
     var scope;
@@ -19,12 +19,11 @@ describe('Add reset button to input directive', function() {
     var element;
     var body = angular.element('body');
     beforeEach(angular.mock.module('talend.widget'));
-    beforeEach(angular.mock.module('htmlTemplates'));
 
-    beforeEach(inject(function($rootScope, $compile) {
+    beforeEach(inject(function ($rootScope, $compile) {
         scope = $rootScope.$new();
         scope.value = '';
-        createElement = function() {
+        createElement = function () {
             element = angular.element('<div><input ng-model="value" talend-search-input></div>');
             body.append(element);
             $compile(element)(scope);
@@ -32,12 +31,12 @@ describe('Add reset button to input directive', function() {
         };
     }));
 
-    afterEach(function() {
+    afterEach(function () {
         scope.$destroy();
         element.remove();
     });
 
-    it('should render icons', function() {
+    it('should render icons', function () {
         //when
         createElement();
 
@@ -51,7 +50,7 @@ describe('Add reset button to input directive', function() {
         expect(icons.eq(1).css('display')).toEqual('block');
     });
 
-    it('should switch icon when text field is not empty', function() {
+    it('should switch icon when text field is not empty', function () {
         //when
         createElement();
         scope.value = 'test';
@@ -63,7 +62,7 @@ describe('Add reset button to input directive', function() {
         expect(icons.eq(1).css('display')).toEqual('none');
     });
 
-    it('should empty text field when clicking on clear icon', function() {
+    it('should empty text field when clicking on clear icon', function () {
         //given
         createElement();
         scope.value = 'test';

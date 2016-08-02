@@ -11,15 +11,14 @@
 
   ============================================================================*/
 
-describe('Tooltip widget directive', function() {
+describe('Tooltip widget directive', function () {
     'use strict';
     var scope;
     var element;
 
     beforeEach(angular.mock.module('talend.widget'));
-    beforeEach(angular.mock.module('htmlTemplates'));
 
-    beforeEach(inject(function($rootScope, $compile, $window) {
+    beforeEach(inject(function ($rootScope, $compile, $window) {
         scope = $rootScope.$new();
         element = angular.element('<talend-tooltip position="position" requested-state="showTooltip">Toto aux toilettes <textarea></textarea></talend-tooltip>');
         $compile(element)(scope);
@@ -30,12 +29,12 @@ describe('Tooltip widget directive', function() {
         $window.innerHeight = 1080;
     }));
 
-    afterEach(function() {
+    afterEach(function () {
         scope.$destroy();
         element.remove();
     });
 
-    it('should display tooltip with the right content', function() {
+    it('should display tooltip with the right content', function () {
         //given
         scope.showTooltip = true;
 
@@ -49,7 +48,7 @@ describe('Tooltip widget directive', function() {
         expect(element.find('.talend-tooltip').text().trim()).toBe('Toto aux toilettes');
     });
 
-    it('should set the position when requested position is on the left', function() {
+    it('should set the position when requested position is on the left', function () {
         //given
         scope.position = { x: 120, y: 300 };
 
@@ -64,7 +63,7 @@ describe('Tooltip widget directive', function() {
         expect(element.find('.talend-tooltip')[0].style.right).toBe('auto');
     });
 
-    it('should set the position when requested position is on the right', function() {
+    it('should set the position when requested position is on the right', function () {
         //given
         scope.position = { x: 1900, y: 300 };
 
@@ -79,7 +78,7 @@ describe('Tooltip widget directive', function() {
         expect(element.find('.talend-tooltip')[0].style.right).toBe('20px');
     });
 
-    it('should set the position when requested position is on the top', function() {
+    it('should set the position when requested position is on the top', function () {
         //given
         scope.position = { x: 120, y: 300 };
 
@@ -94,7 +93,7 @@ describe('Tooltip widget directive', function() {
         expect(element.find('.talend-tooltip')[0].style.bottom).toBe('auto');
     });
 
-    it('should set the position when requested position is on the bottom', function() {
+    it('should set the position when requested position is on the bottom', function () {
         //given
         scope.position = { x: 120, y: 1000 };
 
@@ -109,7 +108,7 @@ describe('Tooltip widget directive', function() {
         expect(element.find('.talend-tooltip')[0].style.bottom).toBe('80px');
     });
 
-    it('should get documentElement client size if window inner size is not available', inject(function($window, $document) {
+    it('should get documentElement client size if window inner size is not available', inject(function ($window, $document) {
         //given
         $window.innerWidth = undefined;
         $window.innerHeight = undefined;
@@ -129,7 +128,7 @@ describe('Tooltip widget directive', function() {
         expect(element.find('.talend-tooltip')[0].style.right).toBe('auto');
     }));
 
-    it('should get body client size if window inner size and document body size are not available', inject(function($window, $document) {
+    it('should get body client size if window inner size and document body size are not available', inject(function ($window, $document) {
         //given
         $window.innerWidth = undefined;
         $window.innerHeight = undefined;
@@ -150,7 +149,7 @@ describe('Tooltip widget directive', function() {
         expect(element.find('.talend-tooltip')[0].style.right).toBe('auto');
     }));
 
-    it('should block visibility change when mouse is over tooltip', function() {
+    it('should block visibility change when mouse is over tooltip', function () {
         //given
         var event = angular.element.Event('mouseenter');
         element.trigger(event);
@@ -165,7 +164,7 @@ describe('Tooltip widget directive', function() {
         expect(element.find('.talend-tooltip').hasClass('ng-hide')).toBe(true);
     });
 
-    it('should unblock and update visibility change when mouse is not over anymore', inject(function($timeout) {
+    it('should unblock and update visibility change when mouse is not over anymore', inject(function ($timeout) {
         //given
         expect(element.find('.talend-tooltip').hasClass('ng-hide')).toBe(true);
 
@@ -185,7 +184,7 @@ describe('Tooltip widget directive', function() {
         expect(element.find('.talend-tooltip').hasClass('ng-hide')).toBe(false);
     }));
 
-    it('should block visibility change when content is focused', function() {
+    it('should block visibility change when content is focused', function () {
         //given
         scope.showTooltip = true;
         scope.$digest();
@@ -201,7 +200,7 @@ describe('Tooltip widget directive', function() {
         expect(element.find('.talend-tooltip').hasClass('ng-hide')).toBe(false);
     });
 
-    it('should unblock and update visibility change when content is unfocused', inject(function($timeout) {
+    it('should unblock and update visibility change when content is unfocused', inject(function ($timeout) {
         //given
         scope.showTooltip = true;
         scope.$digest();
@@ -220,7 +219,7 @@ describe('Tooltip widget directive', function() {
         expect(element.find('.talend-tooltip').hasClass('ng-hide')).toBe(true);
     }));
 
-    it('should unblock and update visibility change when mouse is not over anymore', inject(function($timeout) {
+    it('should unblock and update visibility change when mouse is not over anymore', inject(function ($timeout) {
         //given
         expect(element.find('.talend-tooltip').hasClass('ng-hide')).toBe(true);
 

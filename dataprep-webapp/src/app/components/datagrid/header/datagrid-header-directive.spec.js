@@ -18,18 +18,17 @@ describe('Datagrid header directive', () => {
     let ctrl;
     const body = angular.element('body');
     const column = {
-        'id': '0001',
-        'name': 'MostPopulousCity',
-        'quality': {
-            'empty': 5,
-            'invalid': 10,
-            'valid': 72
+        id: '0001',
+        name: 'MostPopulousCity',
+        quality: {
+            empty: 5,
+            invalid: 10,
+            valid: 72,
         },
-        'type': 'string'
+        type: 'string',
     };
 
     beforeEach(angular.mock.module('data-prep.datagrid-header'));
-    beforeEach(angular.mock.module('htmlTemplates'));
 
     beforeEach(inject(($rootScope, $compile, $timeout) => {
         scope = $rootScope.$new(true);
@@ -61,10 +60,10 @@ describe('Datagrid header directive', () => {
             quality: {
                 empty: 5,
                 invalid: 10,
-                valid: 72
+                valid: 72,
             },
             type: 'string',
-            domain: 'city'
+            domain: 'city',
         };
 
         //when

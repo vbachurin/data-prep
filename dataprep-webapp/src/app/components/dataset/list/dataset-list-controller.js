@@ -57,7 +57,7 @@ export default class DatasetListCtrl {
         this.StateService.setFetchingInventoryDatasets(true);
         this.$q.all([
             this.DatasetService.init(),
-            this.PreparationService.refreshPreparations()
+            this.PreparationService.refreshPreparations(),
         ]).then(() => {
             this.StateService.setFetchingInventoryDatasets(false);
         });

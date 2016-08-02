@@ -11,12 +11,12 @@
 
   ============================================================================*/
 
-describe('Version service', function() {
+describe('Version service', function () {
     'use strict';
 
     beforeEach(angular.mock.module('data-prep.services.utils'));
 
-    it('should set unknown version as value', inject(function(version) {
+    it('should set unknown version as value', inject(function (version) {
         //then
         expect(version).toBe('Unknown version');
     }));

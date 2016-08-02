@@ -35,7 +35,7 @@ describe('Feedback Rest Service', function () {
         FeedbackRestService.sendFeedback(feedback);
         $httpBackend.flush();
 
-    //then
-    //Expect http call to be performed. If not an error is thrown by $httpBackend
+        //then
+        //Expect http call to be performed. If not an error is thrown by $httpBackend
     }));
 });

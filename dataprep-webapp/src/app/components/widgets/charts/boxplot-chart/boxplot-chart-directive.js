@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import d3 from 'd3';
+
 /**
  * @ngdoc directive
  * @name talend.widget.directive:boxplotChart
@@ -34,37 +36,37 @@ export default function BoxplotChart($timeout) {
     return {
         restrict: 'E',
         scope: {
-            boxplotData: '='
+            boxplotData: '=',
         },
-        link: function (scope, element, attrs) {
-            var renderTimeout;
-            var container = attrs.id;
-            var w = +attrs.width;
-            var h = +attrs.height;
+        link(scope, element, attrs) {
+            let renderTimeout;
+            const container = attrs.id;
+            const w = +attrs.width;
+            const h = +attrs.height;
 
             function renderBoxplotchart(boxValues) {
-                var margin = { top: 30, right: 80, bottom: 70, left: 80 };
-                var width = w - margin.left - margin.right;
-                var height = h - margin.top - margin.bottom;
+                const margin = { top: 30, right: 80, bottom: 70, left: 80 };
+                const width = w - margin.left - margin.right;
+                const height = h - margin.top - margin.bottom;
 
-                var duration = 1000;
+                const duration = 1000;
 
-                var svg = d3.select('#' + container).append('svg')
+                const svg = d3.select('#' + container).append('svg')
                     .attr('width', width + margin.left + margin.right)
                     .attr('height', height + margin.top + margin.bottom)
                     .attr('class', 'box')
                     .append('g')
                     .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-                var quartileData = [boxValues.q1, boxValues.median, boxValues.q2];
+                const quartileData = [boxValues.q1, boxValues.median, boxValues.q2];
 
                 // Compute the new vertical-scale.
-                var vScale = d3.scale.linear()
+                const vScale = d3.scale.linear()
                     .domain([boxValues.min, boxValues.max])
                     .range([height, 0]);
 
-                //central vertical Axis
-                var center = svg.append('g');
+                // central vertical Axis
+                const center = svg.append('g');
                 center.append('line')
                     .attr('class', 'center')
                     .attr('x1', width / 2)
@@ -80,11 +82,11 @@ export default function BoxplotChart($timeout) {
                     .duration(duration)
                     .style('opacity', 1);
 
-                //box plot
-                var boxPlot = svg.append('g');
+                // box plot
+                const boxPlot = svg.append('g');
 
-                //top box
-                var boxTop = boxPlot.append('g').selectAll('rect')
+                // top box
+                const boxTop = boxPlot.append('g').selectAll('rect')
                     .data([quartileData]);
 
                 boxTop.enter().append('rect')
@@ -103,8 +105,8 @@ export default function BoxplotChart($timeout) {
                         return vScale(d[1]) - vScale(d[2]);
                     });
 
-                //bottom box.
-                var boxBottom = boxPlot.append('g').selectAll('rect')
+                // bottom box.
+                const boxBottom = boxPlot.append('g').selectAll('rect')
                     .data([quartileData]);
 
                 boxBottom.enter().append('rect')
@@ -127,24 +129,24 @@ export default function BoxplotChart($timeout) {
                         return vScale(d[0]) - vScale(d[1]);
                     });
 
-                //whiskers
-                var topWhiskerPolyg = function (max) {
+                // whiskers
+                const topWhiskerPolyg = function (max) {
                     return 0 + ',' + vScale(max) + ' ' +
                         width + ',' + vScale(max) + ' ' +
                         (width - 20) + ',' + (vScale(max) - 20) + ' ' +
                         (vScale(max) + 20) + ',' + (vScale(max) - 20);
                 };
 
-                var bottomWhiskerPolyg = function (min) {
+                const bottomWhiskerPolyg = function (min) {
                     return 0 + ',' + vScale(min) + ' ' +
                         width + ',' + vScale(min) + ' ' +
                         (width - 20) + ',' + (vScale(min) + 20) + ' ' +
                         20 + ',' + (vScale(min) + 20);
                 };
 
-                var gWhisker = svg.append('g');
+                const gWhisker = svg.append('g');
 
-                var gWhiskerTop = gWhisker.append('g');
+                const gWhiskerTop = gWhisker.append('g');
 
                 gWhiskerTop.append('polygon')
                     .attr('class', 'whiskerPolyg')
@@ -162,7 +164,7 @@ export default function BoxplotChart($timeout) {
                     .attr('y', -22)
                     .style('opacity', 1);
 
-                var gWhiskerBottom = gWhisker.append('g');
+                const gWhiskerBottom = gWhisker.append('g');
 
                 gWhiskerBottom.append('polygon')
                     .attr('class', 'whiskerPolyg')
@@ -179,8 +181,8 @@ export default function BoxplotChart($timeout) {
                     .duration(duration)
                     .attr('y', vScale(boxValues.min) + 30);
 
-                //mean circle
-                var gMean = svg.insert('g');
+                // mean circle
+                const gMean = svg.insert('g');
                 gMean.append('circle')
                     .attr('class', 'mean')
                     .attr('r', 17)
@@ -207,9 +209,9 @@ export default function BoxplotChart($timeout) {
                     .duration(duration * 2)
                     .style('opacity', 1);
 
-                //text values
-                var gTexts = svg.append('g');
-                //max
+                // text values
+                const gTexts = svg.append('g');
+                // max
                 gTexts.append('text')
                     .attr('class', 'max-min-labels')
                     .attr('x', width / 2)
@@ -221,7 +223,7 @@ export default function BoxplotChart($timeout) {
                     .duration(duration)
                     .attr('y', vScale(boxValues.max) - 10);
 
-                //min
+                // min
                 gTexts.append('text')
                     .attr('class', 'max-min-labels')
                     .attr('x', width / 2)
@@ -254,7 +256,7 @@ export default function BoxplotChart($timeout) {
                     .duration(duration * 2)
                     .style('opacity', 1);
 
-                //lower quantile value
+                // lower quantile value
                 gTexts.append('text')
                     .attr('class', 'low-quantile-labels')
                     .attr('x', width + 5)
@@ -266,7 +268,7 @@ export default function BoxplotChart($timeout) {
                     .duration(duration)
                     .attr('y', vScale(boxValues.q1) + 10);
 
-                //lower quantile text
+                // lower quantile text
                 gTexts.append('text')
                     .attr('class', 'low-quantile-labels')
                     .attr('x', -5)
@@ -278,7 +280,7 @@ export default function BoxplotChart($timeout) {
                     .duration(duration)
                     .attr('y', vScale(boxValues.q1) + 10);
 
-                //upper quantile value
+                // upper quantile value
                 gTexts.append('text')
                     .attr('class', 'up-quantile-labels')
                     .attr('x', -5)
@@ -290,7 +292,7 @@ export default function BoxplotChart($timeout) {
                     .duration(duration)
                     .attr('y', vScale(boxValues.q2));
 
-                //upper quantile text
+                // upper quantile text
                 gTexts.append('text')
                     .attr('class', 'up-quantile-labels')
                     .attr('x', width + 5)
@@ -302,7 +304,7 @@ export default function BoxplotChart($timeout) {
                     .duration(duration)
                     .attr('y', vScale(boxValues.q2));
 
-                //median value
+                // median value
                 gTexts.append('text')
                     .attr('x', width - 5)
                     .text(d3.format(',')(boxValues.median))
@@ -315,7 +317,7 @@ export default function BoxplotChart($timeout) {
                     .duration(duration * 3)
                     .style('opacity', 1);
 
-                //median text
+                // median text
                 gTexts.append('text')
                     .attr('x', 5)
                     .text('Median')
@@ -342,6 +344,6 @@ export default function BoxplotChart($timeout) {
             scope.$on('$destroy', function () {
                 $timeout.cancel(renderTimeout);
             });
-        }
+        },
     };
 }

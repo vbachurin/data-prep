@@ -19,42 +19,42 @@
 export default function TalendEditableRegexCtrl($translate) {
     'ngInject';
 
-    var vm = this;
+    const vm = this;
 
-    var equals = {
+    const equals = {
         key: '=',
         label: $translate.instant('EQUALS'),
-        operator: 'equals'
+        operator: 'equals',
     };
 
-    var contains = {
+    const contains = {
         key: '≅',
         label: $translate.instant('CONTAINS'),
-        operator: 'contains'
+        operator: 'contains',
     };
 
-    var startsWith = {
+    const startsWith = {
         key: '>',
         label: $translate.instant('STARTS_WITH'),
-        operator: 'starts_with'
+        operator: 'starts_with',
     };
 
-    var endsWith = {
+    const endsWith = {
         key: '<',
         label: $translate.instant('ENDS_WITH'),
-        operator: 'ends_with'
+        operator: 'ends_with',
     };
 
-    var regex = {
+    const regex = {
         key: '^\\',
         label: $translate.instant('REGEX'),
-        operator: 'regex'
+        operator: 'regex',
     };
 
-    //TODO should be removed as backend must initialize it
+    // TODO should be removed as backend must initialize it
     vm.value = vm.value ? vm.value : {
         token: '',
-        operator: 'contains'
+        operator: 'contains',
     };
 
     /**
@@ -83,7 +83,7 @@ export default function TalendEditableRegexCtrl($translate) {
      * @return {String} the type key
      */
     vm.getTypeKey = function getTypeKey() {
-        var currentType = _.find(vm.types, { operator: vm.value.operator });
+        const currentType = _.find(vm.types, { operator: vm.value.operator });
         return currentType.key;
     };
 }

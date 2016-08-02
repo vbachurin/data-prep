@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './transformation-column-param.html';
+
 /**
  * @ngdoc directive
  * @name data-prep.transformation-form.directive:TransformColumnParam
@@ -22,12 +24,12 @@
 export default function TransformColumnParam() {
     return {
         restrict: 'E',
-        templateUrl: 'app/components/transformation/form/column/transformation-column-param.html',
+        templateUrl: template,
         scope: {
-            parameter: '='
+            parameter: '=',
         },
         bindToController: true,
         controllerAs: 'columnParamCtrl',
-        controller: 'TransformColumnParamCtrl'
+        controller: 'TransformColumnParamCtrl',
     };
 }

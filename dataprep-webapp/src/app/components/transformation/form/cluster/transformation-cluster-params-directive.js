@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './transformation-cluster-params.html';
+
 /**
  * @ngdoc directive
  * @name data-prep.transformation-form.directive:TransformClusterParams
@@ -24,14 +26,14 @@ export default function TransformClusterParams($timeout) {
 
     return {
         restrict: 'E',
-        templateUrl: 'app/components/transformation/form/cluster/transformation-cluster-params.html',
+        templateUrl: template,
         scope: {
-            details: '='
+            details: '=',
         },
         bindToController: true,
         controllerAs: 'clusterParamsCtrl',
         controller: 'TransformClusterParamsCtrl',
-        link: function (scope, iElement, iAttrs, ctrl) {
+        link(scope, iElement, iAttrs, ctrl) {
             /**
              * @ngdoc property
              * @name allActivationCheckboxes
@@ -60,6 +62,7 @@ export default function TransformClusterParams($timeout) {
                             else {
                                 item.row.addClass('disabled');
                             }
+
                             item.inputs.prop('disabled', !checked);
                             item.selects.prop('disabled', !checked);
                             item.lastState = checked;
@@ -79,10 +82,10 @@ export default function TransformClusterParams($timeout) {
                     const checkbox = row.find('>div:first >input.cluster-activation');
 
                     allActivationCheckboxes[index] = {
-                        checkbox: checkbox,
-                        row: row,
+                        checkbox,
+                        row,
                         inputs: rowInputs,
-                        selects: rowSelects
+                        selects: rowSelects,
                     };
                 });
 
@@ -95,6 +98,6 @@ export default function TransformClusterParams($timeout) {
                     }
                 );
             }, 0, false);
-        }
+        },
     };
 }

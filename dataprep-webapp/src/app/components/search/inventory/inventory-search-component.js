@@ -11,6 +11,8 @@
 
  ============================================================================*/
 
+import template from './inventory-search.html';
+
 
 /**
  * @ngdoc directive
@@ -23,8 +25,8 @@
 import InventorySearchCtrl from './inventory-search-controller';
 
 const InventorySearch = {
-    templateUrl: 'app/components/search/inventory/inventory-search.html',
-    controller: InventorySearchCtrl
+    templateUrl: template,
+    controller: InventorySearchCtrl,
 };
 
 export default InventorySearch;

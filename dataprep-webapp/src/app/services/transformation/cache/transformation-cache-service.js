@@ -21,14 +21,14 @@
 export default function TransformationCacheService($q, $cacheFactory, TransformationService) {
     'ngInject';
 
-    var transformationsCache = $cacheFactory('transformationsCache', { capacity: 10 });
-    var suggestionsCache = $cacheFactory('suggestionsCache', { capacity: 10 });
+    const transformationsCache = $cacheFactory('transformationsCache', { capacity: 10 });
+    const suggestionsCache = $cacheFactory('suggestionsCache', { capacity: 10 });
 
     return {
-        invalidateCache: invalidateCache,
-        getColumnSuggestions: getColumnSuggestions,
-        getColumnTransformations: getColumnTransformations,
-        getLineTransformations: getLineTransformations
+        invalidateCache,
+        getColumnSuggestions,
+        getColumnTransformations,
+        getLineTransformations,
     };
 
     /**
@@ -43,14 +43,14 @@ export default function TransformationCacheService($q, $cacheFactory, Transforma
     }
 
     function getValue(key, cache, restCall) {
-        //if cache contains the key, the value is either the values or the fetch promise
-        var value = cache.get(key);
+        // if cache contains the key, the value is either the values or the fetch promise
+        const value = cache.get(key);
         if (value) {
             return $q.when(value);
         }
 
-        //fetch value from REST and adapt them. The Promise is put in cache, it is then replaced by the value.
-        var fetchPromise = restCall()
+        // fetch value from REST and adapt them. The Promise is put in cache, it is then replaced by the value.
+        const fetchPromise = restCall()
             .then(function (value) {
                 cache.put(key, value);
                 return value;

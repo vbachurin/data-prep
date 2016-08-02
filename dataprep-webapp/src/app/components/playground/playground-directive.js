@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './playground.html';
+
 /**
  * @ngdoc directive
  * @name data-prep.playground.directive:Playground
@@ -22,12 +24,12 @@ export default function Playground($timeout) {
 
     return {
         restrict: 'E',
-        templateUrl: 'app/components/playground/playground.html',
+        templateUrl: template,
         bindToController: true,
         controllerAs: 'playgroundCtrl',
         controller: 'PlaygroundCtrl',
         link: (scope, iElement, iAttrs, ctrl) => {
-            var container = iElement.find('.playground-container').eq(0);
+            const container = iElement.find('.playground-container').eq(0);
 
             container.bind('keydown', (e) => {
                 if (e.keyCode !== 27) {
@@ -43,6 +45,6 @@ export default function Playground($timeout) {
             });
 
             container.focus();
-        }
+        },
     };
 }

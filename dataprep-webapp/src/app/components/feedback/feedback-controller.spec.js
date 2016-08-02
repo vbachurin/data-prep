@@ -28,17 +28,17 @@ describe('Feedback controller', function () {
         createController = function () {
             return $controller('FeedbackCtrl', {
                 $scope: scope,
-                $state: $stateMock
+                $state: $stateMock,
             });
         };
     }));
 
-    afterEach(function() {
+    afterEach(function () {
         jasmine.clock().uninstall();
     });
 
-    describe('feedback ', function() {
-        beforeEach(inject(function($q, FeedbackRestService, MessageService, StorageService) {
+    describe('feedback ', function () {
+        beforeEach(inject(function ($q, FeedbackRestService, MessageService, StorageService) {
             spyOn(FeedbackRestService, 'sendFeedback').and.returnValue($q.when(true));
             spyOn(MessageService, 'success').and.returnValue(false);
             spyOn(StorageService, 'saveFeedbackUserMail');
@@ -55,11 +55,11 @@ describe('Feedback controller', function () {
         it('should send feedback', inject(function (FeedbackRestService) {
             //given
             var feedback = {
-                title : 'test',
-                mail : 'test',
-                severity : 'test',
-                type : 'test',
-                description: 'test'
+                title: 'test',
+                mail: 'test',
+                severity: 'test',
+                type: 'test',
+                description: 'test',
             };
             var ctrl = createController();
             ctrl.feedbackForm = { $commitViewValue: jasmine.createSpy('$commitViewValue').and.returnValue() };
@@ -75,11 +75,11 @@ describe('Feedback controller', function () {
         it('should manage sending flag', function () {
             //given
             var feedback = {
-                title : 'test',
-                mail : 'test',
-                severity : 'test',
-                type : 'test',
-                description: 'test'
+                title: 'test',
+                mail: 'test',
+                severity: 'test',
+                type: 'test',
+                description: 'test',
             };
             var ctrl = createController();
             ctrl.feedbackForm = { $commitViewValue: jasmine.createSpy('$commitViewValue').and.returnValue() };
@@ -98,11 +98,11 @@ describe('Feedback controller', function () {
         it('should close feedback modal on send success', function () {
             //given
             var feedback = {
-                title : 'test',
-                mail : 'test',
-                severity : 'test',
-                type : 'test',
-                description: 'test'
+                title: 'test',
+                mail: 'test',
+                severity: 'test',
+                type: 'test',
+                description: 'test',
             };
             var ctrl = createController();
             ctrl.feedbackForm = { $commitViewValue: jasmine.createSpy('$commitViewValue').and.returnValue() };
@@ -120,11 +120,11 @@ describe('Feedback controller', function () {
         it('should show message on send success', inject(function (MessageService) {
             //given
             var feedback = {
-                title : 'test',
-                mail : 'test',
-                severity : 'test',
-                type : 'test',
-                description: 'test'
+                title: 'test',
+                mail: 'test',
+                severity: 'test',
+                type: 'test',
+                description: 'test',
             };
             var ctrl = createController();
             ctrl.feedbackForm = { $commitViewValue: jasmine.createSpy('$commitViewValue').and.returnValue() };
@@ -142,11 +142,11 @@ describe('Feedback controller', function () {
         it('should save user mail', inject(function (StorageService) {
             //given
             var feedback = {
-                title : 'test',
-                mail : 'test mail',
-                severity : 'test',
-                type : 'test',
-                description: 'test'
+                title: 'test',
+                mail: 'test mail',
+                severity: 'test',
+                type: 'test',
+                description: 'test',
             };
             var ctrl = createController();
             ctrl.feedbackForm = { $commitViewValue: jasmine.createSpy('$commitViewValue').and.returnValue() };
@@ -163,11 +163,11 @@ describe('Feedback controller', function () {
         it('should reset form on send success', function () {
             //given
             var feedback = {
-                title : 'test',
-                mail : 'test',
-                severity : 'test',
-                type : 'test',
-                description: 'test'
+                title: 'test',
+                mail: 'test',
+                severity: 'test',
+                type: 'test',
+                description: 'test',
             };
             var ctrl = createController();
             ctrl.feedbackForm = { $commitViewValue: jasmine.createSpy('$commitViewValue').and.returnValue() };
@@ -184,7 +184,7 @@ describe('Feedback controller', function () {
                 mail: 'test mail',
                 severity: 'MINOR',
                 type: 'BUG',
-                description: ''
+                description: '',
             });
         });
     });

@@ -11,24 +11,30 @@
 
  ============================================================================*/
 
+import angular from 'angular';
+import uiRouter from 'angular-ui-router';
+import SERVICES_DATASET_MODULE from '../dataset/dataset-module';
+import SERVICES_STATE_MODULE from '../state/state-module';
+import SERVICES_UTILS_MODULE from '../utils/utils-module';
+
 import FolderService from './folder-service';
 import FolderRestService from './rest/folder-rest-service';
 
-(() => {
-    'use strict';
+const MODULE_NAME = 'data-prep.services.folder';
 
-    /**
-     * @ngdoc object
-     * @name data-prep.services.folder
-     * @description This module contains the services to manipulate folders
-     */
-    angular.module('data-prep.services.folder',
-        [
-            'ui.router',
-            'data-prep.services.dataset',
-            'data-prep.services.state',
-            'data-prep.services.utils',
-        ])
-        .service('FolderRestService', FolderRestService)
-        .service('FolderService', FolderService);
-})();
+/**
+ * @ngdoc object
+ * @name data-prep.services.folder
+ * @description This module contains the services to manipulate folders
+ */
+angular.module(MODULE_NAME,
+    [
+        uiRouter,
+        SERVICES_DATASET_MODULE,
+        SERVICES_STATE_MODULE,
+        SERVICES_UTILS_MODULE,
+    ])
+    .service('FolderRestService', FolderRestService)
+    .service('FolderService', FolderService);
+
+export default MODULE_NAME;

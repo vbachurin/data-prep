@@ -32,17 +32,17 @@ export default function UpdateWorkflowService(StateService, MessageService, Data
      * @description [PRIVATE] Update existing dataset
      */
     this.updateDataset = function updateDataset(file, existingDataset) {
-        var dataset = DatasetService.createDatasetInfo(file, existingDataset.name, existingDataset.id);
+        const dataset = DatasetService.createDatasetInfo(file, existingDataset.name, existingDataset.id);
         StateService.startUploadingDataset(dataset);
 
         return DatasetService.update(dataset)
             .progress(function (event) {
-                dataset.progress = parseInt(100.0 * event.loaded / event.total);
+                dataset.progress = parseInt(100.0 * event.loaded / event.total, 10);
             })
             .then(function () {
                 MessageService.success('DATASET_UPDATE_SUCCESS_TITLE', 'DATASET_UPDATE_SUCCESS', { dataset: dataset.name });
 
-                //Force the update currentMetadata of the dataset
+                // Force the update currentMetadata of the dataset
                 StateService.resetPlayground();
                 DatasetService.getDatasetById(dataset.id).then(UploadWorkflowService.openDataset);
             })

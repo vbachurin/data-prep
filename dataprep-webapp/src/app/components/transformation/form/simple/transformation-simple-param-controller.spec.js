@@ -25,7 +25,7 @@ describe('Transform simple param controller', function () {
 
         createController = function () {
             var ctrlFn = $controller('TransformSimpleParamCtrl', {
-                $scope: scope
+                $scope: scope,
             }, true);
             ctrlFn.instance.parameter = parameter;
             return ctrlFn();

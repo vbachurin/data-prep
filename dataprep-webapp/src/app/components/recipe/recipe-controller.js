@@ -11,38 +11,50 @@
 
  ============================================================================*/
 
+import _ from 'lodash';
+
+const CLUSTER_TYPE = 'CLUSTER';
+
 /**
  * @ngdoc controller
  * @name data-prep.recipe.controller:RecipeCtrl
  * @description Recipe controller.
- * @requires data-prep.services.recipe.service:RecipeService
+ * @requires data-prep.services.state.service:StateService
  * @requires data-prep.services.playground.service:PlaygroundService
  * @requires data-prep.services.playground.service:PreviewService
+ * @requires data-prep.services.utils.service:MessageService
  * @requires data-prep.services.filters.service:FilterAdapterService
- * @requires data-prep.services.state.service:StateService
  * @requires data-prep.services.lookup.service:LookupService
+ * @requires data-prep.services.parameters.service:ParametersService
  */
-export default function RecipeCtrl(state, RecipeService, PlaygroundService, PreviewService, MessageService, FilterAdapterService, StateService, LookupService) {
+export default function RecipeCtrl(state, StateService,
+                                   PlaygroundService, PreviewService,
+                                   MessageService, FilterAdapterService,
+                                   LookupService, ParametersService) {
     'ngInject';
 
-    var vm = this;
-    vm.recipeService = RecipeService;
+    const vm = this;
     vm.showModal = {};
     vm.state = state;
-
 
     /**
      * @ngdoc method
      * @name resetParams
      * @methodOf data-prep.recipe.controller:RecipeCtrl
-     * @param {object} recipeItem - the item to reset
-     * @description Reset the params of the recipe item by calling {@link data-prep.services.recipe.service:RecipeService RecipeService}
+     * @param {object} step The step to reset
+     * @description Reset the params of the step
      * Called on param accordion open.
      */
-    vm.resetParams = RecipeService.resetParams;
+    vm.resetParams = function resetParams(step) {
+        // simple parameters
+        ParametersService.resetParamValue(step.transformation.parameters, null);
+
+        // clusters
+        ParametersService.resetParamValue(step.transformation.cluster, CLUSTER_TYPE);
+    };
 
     //---------------------------------------------------------------------------------------------
-    //------------------------------------------UPDATE STEP----------------------------------------
+    // ------------------------------------------UPDATE STEP----------------------------------------
     //---------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
@@ -94,7 +106,7 @@ export default function RecipeCtrl(state, RecipeService, PlaygroundService, Prev
 
         const updatedParameters = {
             ...step.actionParameters.parameters,
-            filter: stepFiltersTree.filter
+            filter: stepFiltersTree.filter,
         };
         vm.updateStep(step, updatedParameters);
     };
@@ -115,10 +127,10 @@ export default function RecipeCtrl(state, RecipeService, PlaygroundService, Prev
             const updatedFilters = step.filters.filter((nextFilter) => nextFilter !== filter);
             const stepFiltersTree = FilterAdapterService.toTree(updatedFilters);
 
-            //get step parameters and replace filter field (it is removed when there is no filter anymore)
+            // get step parameters and replace filter field (it is removed when there is no filter anymore)
             const updatedParameters = {
                 ...step.actionParameters.parameters,
-                filter: stepFiltersTree.filter
+                filter: stepFiltersTree.filter,
             };
             vm.updateStep(step, updatedParameters);
         }
@@ -152,7 +164,7 @@ export default function RecipeCtrl(state, RecipeService, PlaygroundService, Prev
     }
 
     //---------------------------------------------------------------------------------------------
-    //------------------------------------------DELETE STEP----------------------------------------
+    // ------------------------------------------DELETE STEP----------------------------------------
     //---------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
@@ -173,7 +185,7 @@ export default function RecipeCtrl(state, RecipeService, PlaygroundService, Prev
     };
 
     //---------------------------------------------------------------------------------------------
-    //------------------------------------------PARAMETERS-----------------------------------------
+    // ------------------------------------------PARAMETERS-----------------------------------------
     //---------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
@@ -221,7 +233,7 @@ export default function RecipeCtrl(state, RecipeService, PlaygroundService, Prev
     }
 
     //---------------------------------------------------------------------------------------------
-    //---------------------------------------------Preview-----------------------------------------
+    // ---------------------------------------------Preview-----------------------------------------
     //---------------------------------------------------------------------------------------------
 
     /**
@@ -233,7 +245,7 @@ export default function RecipeCtrl(state, RecipeService, PlaygroundService, Prev
      */
     vm.previewUpdateClosure = function previewUpdateClosure(step) {
         return function (params) {
-            PlaygroundService.updatePreview(step, params);
+            PreviewService.updatePreview(step, params);
         };
     };
 
@@ -256,20 +268,3 @@ export default function RecipeCtrl(state, RecipeService, PlaygroundService, Prev
      */
     vm.cancelPreview = PreviewService.cancelPreview;
 }
-
-/**
- * @ngdoc property
- * @name recipe
- * @propertyOf data-prep.recipe.controller:RecipeCtrl
- * @description The recipe.
- * It is bound to {@link data-prep.services.recipe.service:RecipeService RecipeService} property
- * @type {object[]}
- */
-Object.defineProperty(RecipeCtrl.prototype,
-    'recipe', {
-        enumerable: true,
-        configurable: false,
-        get: function () {
-            return this.recipeService.getRecipe();
-        }
-    });

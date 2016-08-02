@@ -11,6 +11,8 @@
 
  ============================================================================*/
 
+import SlickGridMock from '../../../../mocks/SlickGrid.mock';
+
 describe('Datagrid external service', () => {
     'use strict';
 
@@ -23,14 +25,14 @@ describe('Datagrid external service', () => {
         { id: '0002', field: 'col2', tdpColMetadata: { id: '0002', name: 'col2' } },
         { id: '0003', field: 'col3', tdpColMetadata: { id: '0003', name: 'col3' } },
         { id: '0004', field: 'col4', tdpColMetadata: { id: '0004', name: 'col4' } },
-        { id: 'tdpId', field: 'tdpId', tdpColMetadata: { id: 'tdpId', name: 'tdpId' } }
+        { id: 'tdpId', field: 'tdpId', tdpColMetadata: { id: 'tdpId', name: 'tdpId' } },
     ];
 
     beforeEach(angular.mock.module('data-prep.datagrid', ($provide) => {
         stateMock = {
             playground: {
-                grid: {}
-            }
+                grid: {},
+            },
         };
         $provide.constant('state', stateMock);
     }));

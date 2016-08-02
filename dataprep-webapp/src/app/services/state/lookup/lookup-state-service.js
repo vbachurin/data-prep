@@ -11,18 +11,15 @@
 
  ============================================================================*/
 
-'use strict';
-
 const sortList = [
     { id: 'name', name: 'NAME_SORT', property: 'name' },
-    { id: 'date', name: 'DATE_SORT', property: 'created' }
+    { id: 'date', name: 'DATE_SORT', property: 'created' },
 ];
 
 const orderList = [
     { id: 'asc', name: 'ASC_ORDER' },
-    { id: 'desc', name: 'DESC_ORDER' }
+    { id: 'desc', name: 'DESC_ORDER' },
 ];
-
 
 export const lookupState = {
     actions: [],                                                // Actions list to add to the lookup  (1 action per dataset)
@@ -38,8 +35,8 @@ export const lookupState = {
     step: null,                                                  // lookup step
     sort: sortList[1],
     order: orderList[1],
-    sortList: sortList,
-    orderList: orderList
+    sortList,
+    orderList,
 };
 
 /**
@@ -49,21 +46,21 @@ export const lookupState = {
  */
 export function LookupStateService() {
     return {
-        reset: reset,
-        setVisibility: setVisibility,
+        reset,
+        setVisibility,
 
-        //lookup user selection update
-        setSelectedColumn: setSelectedColumn,
-        updateColumnsToAdd: updateColumnsToAdd,
+        // lookup user selection update
+        setSelectedColumn,
+        updateColumnsToAdd,
 
-        //init lookup
-        setActions: setActions,
-        setAddedActions: setAddedActions,
-        setDatasets: setDatasets,
-        setAddMode: setAddMode,
-        setUpdateMode: setUpdateMode,
-        setSort: setSort,
-        setOrder: setOrder
+        // init lookup
+        setActions,
+        setAddedActions,
+        setDatasets,
+        setAddMode,
+        setUpdateMode,
+        setSort,
+        setOrder,
     };
 
 
@@ -77,6 +74,7 @@ export function LookupStateService() {
             function (dataset) {
                 return _.isNumber(dataset[lookupState.sort.property]) ? dataset[lookupState.sort.property] : dataset[lookupState.sort.property].toLowerCase();
             });
+
         if (lookupState.order.id === 'desc') {
             lookupState.datasets = lookupState.datasets.reverse();
         }
@@ -187,14 +185,14 @@ export function LookupStateService() {
      * @description Create the checkboxes definition for each column
      */
     function createColumnsCheckboxes(data) {
-        var addedColIds = lookupState.step ?
+        const addedColIds = lookupState.step ?
             _.map(lookupState.step.actionParameters.parameters.lookup_selected_cols, 'id') :
             [];
         lookupState.columnCheckboxes = _.map(data.metadata.columns, function (col) {
             return {
                 id: col.id,
                 name: col.name,
-                isAdded: addedColIds.indexOf(col.id) > -1
+                isAdded: addedColIds.indexOf(col.id) > -1,
             };
         });
     }
@@ -239,8 +237,8 @@ export function LookupStateService() {
     function setAddMode(lookupAction, data) {
         lookupState.step = null;
         setDataset(lookupAction);
-        setData(data); //this updates the checkboxes
-        setSelectedColumn(data.metadata.columns[0]); //this update the columns to add
+        setData(data); // this updates the checkboxes
+        setSelectedColumn(data.metadata.columns[0]); // this update the columns to add
     }
 
     /**
@@ -253,11 +251,11 @@ export function LookupStateService() {
      * @description Set parameters for update mode
      */
     function setUpdateMode(lookupAction, data, step) {
-        var selectedColumn = _.find(data.metadata.columns, { id: step.actionParameters.parameters.lookup_join_on });
+        const selectedColumn = _.find(data.metadata.columns, { id: step.actionParameters.parameters.lookup_join_on });
         lookupState.step = step;
         setDataset(lookupAction);
-        setData(data); //this updates the checkboxes
-        setSelectedColumn(selectedColumn); //this update the columns to add
+        setData(data); // this updates the checkboxes
+        setSelectedColumn(selectedColumn); // this update the columns to add
     }
 
     /**

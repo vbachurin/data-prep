@@ -18,6 +18,6 @@ export default function DisableRightClick() {
             iElement.bind('contextmenu', (e) => {
                 e.preventDefault();
             });
-        }
+        },
     };
 }

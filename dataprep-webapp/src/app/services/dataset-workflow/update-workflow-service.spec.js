@@ -40,17 +40,17 @@ describe('UploadWorkflow Service', function () {
 
         spyOn(DatasetService, 'getDatasetById').and.returnValue($q.when(dataset));
         spyOn(DatasetService, 'update').and.returnValue(uploadDefer.promise);
-        spyOn(DatasetService, 'createDatasetInfo').and.callFake(function() {
+        spyOn(DatasetService, 'createDatasetInfo').and.callFake(function () {
             return dataset;
         });
     }));
 
-    afterEach(function() {
+    afterEach(function () {
         dataset.error = false;
         dataset.progress = false;
     });
 
-    it('should update the progress on update', inject(function($rootScope, UpdateWorkflowService, StateService, DatasetService){
+    it('should update the progress on update', inject(function ($rootScope, UpdateWorkflowService, StateService, DatasetService) {
         //given
         UpdateWorkflowService.updateDataset(file, existingDataset);
         expect(DatasetService.createDatasetInfo).toHaveBeenCalled();
@@ -59,7 +59,7 @@ describe('UploadWorkflow Service', function () {
 
         var event = {
             loaded: 140,
-            total: 200
+            total: 200,
         };
 
         //when
@@ -70,7 +70,7 @@ describe('UploadWorkflow Service', function () {
         expect(dataset.progress).toBe(70);
     }));
 
-    it('should update the file and reset the playground', inject(function($rootScope, UpdateWorkflowService, MessageService, UploadWorkflowService, StateService, DatasetService){
+    it('should update the file and reset the playground', inject(function ($rootScope, UpdateWorkflowService, MessageService, UploadWorkflowService, StateService, DatasetService) {
         //given
         UpdateWorkflowService.updateDataset(file, existingDataset);
 
@@ -86,8 +86,7 @@ describe('UploadWorkflow Service', function () {
         expect(StateService.finishUploadingDataset).toHaveBeenCalledWith(dataset);
     }));
 
-
-    it('should set error flag and show error toast when update fails', inject(function($rootScope, UpdateWorkflowService, StateService, DatasetService){
+    it('should set error flag and show error toast when update fails', inject(function ($rootScope, UpdateWorkflowService, StateService, DatasetService) {
         //given
         UpdateWorkflowService.updateDataset(file, existingDataset);
         expect(dataset.error).toBeFalsy();

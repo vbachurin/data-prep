@@ -20,7 +20,7 @@
 export default function TransformSimpleParamCtrl(ConverterService) {
     'ngInject';
 
-    var vm = this;
+    const vm = this;
 
     /**
      * @ngdoc method
@@ -28,7 +28,7 @@ export default function TransformSimpleParamCtrl(ConverterService) {
      * @methodOf data-prep.transformation-form.controller:TransformSimpleParamCtrl
      * @description [PRIVATE] Init simple param values to default
      */
-    var initParamValues = function () {
+    const initParamValues = function () {
         if (typeof vm.parameter.initialValue !== 'undefined' && vm.parameter.initialValue !== null) {
             vm.parameter.initialValue = ConverterService.adaptValue(vm.parameter.type, vm.parameter.initialValue);
         }
@@ -48,7 +48,7 @@ export default function TransformSimpleParamCtrl(ConverterService) {
      * @methodOf data-prep.transformation-form.controller:TransformSimpleParamsCtrl
      * @description [PRIVATE] Init params input type, depending on param type
      */
-    var initInputTypes = function () {
+    const initInputTypes = function () {
         vm.parameter.inputType = ConverterService.toInputType(vm.parameter.type);
     };
 

@@ -16,16 +16,16 @@
  * @name data-prep.services.export.service:ExportService
  * @description Export service. This service provide the entry point to the backend export REST api.
  * @requires data-prep.services.export.service:ExportRestService
- * @requires data-prep.services.transformations.service:TransformationService
+ * @requires data-prep.services.parameters.service:ParametersService
  * @requires data-prep.services.utils.service:StorageService
  */
 export default class ExportService {
-    constructor(StorageService, ExportRestService, TransformationService) {
+    constructor(StorageService, ExportRestService, ParametersService) {
         'ngInject';
 
         this.StorageService = StorageService;
         this.ExportRestService = ExportRestService;
-        this.TransformationService = TransformationService;
+        this.ParametersService = ParametersService;
 
         this.exportTypes = [];
     }
@@ -38,7 +38,7 @@ export default class ExportService {
      */
     reset() {
         _.forEach(this.exportTypes, (type) => {
-            this.TransformationService.resetParamValue(type.parameters);
+            this.ParametersService.resetParamValue(type.parameters);
         });
     }
 
@@ -50,7 +50,7 @@ export default class ExportService {
      * @description Get the type by id
      */
     getType(id) {
-        return _.find(this.exportTypes, { id: id });
+        return _.find(this.exportTypes, { id });
     }
 
     /**

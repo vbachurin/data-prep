@@ -64,6 +64,10 @@ export function StateService(RouteStateService, routeState,
         // playground - recipe
         hideRecipe: PlaygroundStateService.hideRecipe,
         showRecipe: PlaygroundStateService.showRecipe,
+        setRecipeSteps: PlaygroundStateService.setRecipeSteps,
+        setRecipePreviewSteps: PlaygroundStateService.setRecipePreviewSteps,
+        restoreRecipeBeforePreview: PlaygroundStateService.restoreRecipeBeforePreview,
+        disableRecipeStepsAfter: PlaygroundStateService.disableRecipeStepsAfter,
 
         // playground - grid
         setColumnFocus: PlaygroundStateService.setColumnFocus,
@@ -140,6 +144,6 @@ export function StateService(RouteStateService, routeState,
 
         // import
         setImportTypes: ImportStateService.setImportTypes,
-        setCurrentImportType: ImportStateService.setCurrentImportType
+        setCurrentImportType: ImportStateService.setCurrentImportType,
     };
 }

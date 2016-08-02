@@ -11,12 +11,14 @@
 
   ============================================================================*/
 
+import template from './stats-details.html';
+
 export default function StatsDetails() {
     return {
         restrict: 'E',
-        templateUrl: 'app/components/suggestions-stats/stats-details/stats-details.html',
+        templateUrl: template,
         bindToController: true,
         controllerAs: 'statsDetailsCtrl',
-        controller: 'StatsDetailsCtrl'
+        controller: 'StatsDetailsCtrl',
     };
 }

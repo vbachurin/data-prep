@@ -11,7 +11,7 @@
 
   ============================================================================*/
 
-describe('Filter list directive', function() {
+describe('Filter list directive', function () {
     'use strict';
 
     var scope;
@@ -20,100 +20,99 @@ describe('Filter list directive', function() {
 
     var filters = [
         {
-            'type': 'exact',
-            'colId': '0000',
-            'colName': 'name',
-            'editable': true,
-            'args': {
-                'phrase': [
+            type: 'exact',
+            colId: '0000',
+            colName: 'name',
+            editable: true,
+            args: {
+                phrase: [
                     {
-                        'value': 'AMC Gremlin'
-                    }
+                        value: 'AMC Gremlin',
+                    },
                 ],
-                'caseSensitive': true
+                caseSensitive: true,
             },
-            'value': [
+            value: [
                 {
-                    'value': 'AMC Gremlin'
-                }
-            ]
+                    value: 'AMC Gremlin',
+                },
+            ],
         },
         {
-            'type': 'exact',
-            'colId': '0000',
-            'colName': 'name',
-            'editable': true,
-            'args': {
-                'phrase': [
+            type: 'exact',
+            colId: '0000',
+            colName: 'name',
+            editable: true,
+            args: {
+                phrase: [
                     {
-                        'value': 'Chevrolet Caprice Classic'
-                    }
+                        value: 'Chevrolet Caprice Classic',
+                    },
                 ],
-                'caseSensitive': true
+                caseSensitive: true,
             },
-            'value': [
+            value: [
                 {
-                    'value': 'Chevrolet Caprice Classic'
-                }
-            ]
+                    value: 'Chevrolet Caprice Classic',
+                },
+            ],
         },
         {
-            'type': 'exact',
-            'colId': '0000',
-            'colName': 'lastname',
-            'editable': true,
-            'args': {
-                'phrase': [
+            type: 'exact',
+            colId: '0000',
+            colName: 'lastname',
+            editable: true,
+            args: {
+                phrase: [
                     {
-                        'value': 'Audi 100 LS'
-                    }
+                        value: 'Audi 100 LS',
+                    },
                 ],
-                'caseSensitive': true
+                caseSensitive: true,
             },
-            'value': [
+            value: [
                 {
-                    'value': 'Audi 100 LS'
-                }
-            ]
+                    value: 'Audi 100 LS',
+                },
+            ],
         },
         {
-            'type': 'inside_range',
-            'colId': '0003',
-            'colName': 'displacement (cc)',
-            'editable': false,
-            'args': {
-                'intervals': [
+            type: 'inside_range',
+            colId: '0003',
+            colName: 'displacement (cc)',
+            editable: false,
+            args: {
+                intervals: [
                     {
-                        'value': [214, 233]
-                    }
-                ]
+                        value: [214, 233],
+                    },
+                ],
             },
-            'value': [
+            value: [
                 {
-                    'value': '[214 .. 233]'
-                }
-            ]
-        }
+                    value: '[214 .. 233]',
+                },
+            ],
+        },
     ];
 
     beforeEach(angular.mock.module('data-prep.filter-list'));
-    beforeEach(angular.mock.module('htmlTemplates'));
 
-    beforeEach(inject(function($rootScope, $compile) {
+    beforeEach(inject(function ($rootScope, $compile) {
         scope = $rootScope.$new();
-        createElement = function() {
+        createElement = function () {
             element = angular.element('<filter-list filters="filters"></filter-list>');
             $compile(element)(scope);
             scope.$digest();
         };
     }));
 
-    afterEach(function() {
+    afterEach(function () {
         scope.$destroy();
         element.remove();
     });
 
-    it('should render filter list badges', function() {
+    it('should render filter list badges', function () {
         //given
         scope.filters = filters;
 

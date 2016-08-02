@@ -27,7 +27,7 @@ class DocumentationRestService {
     search(keyword) {
         return this.$http({
             method: 'GET',
-            url: this.documentationSearchURL + '&keywords=' + encodeURIComponent(keyword)
+            url: this.documentationSearchURL + '&keywords=' + encodeURIComponent(keyword),
         });
     }
 }

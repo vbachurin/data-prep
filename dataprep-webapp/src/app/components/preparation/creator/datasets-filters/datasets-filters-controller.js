@@ -21,23 +21,18 @@ class DatasetsFiltersCtrl {
                 value: 'RECENT_DATASETS',
                 imageUrl: '/assets/images/inventory/recent-datasets.png',
                 description: 'RECENT_DATASETS_DESCRIPTION',
-                isSelected: true
+                isSelected: true,
             },
             {
                 value: 'FAVORITE_DATASETS',
                 icon: 'f',
-                description: 'FAVORITE_DATASETS_DESCRIPTION'
-            },
-            {
-                value: 'CERTIFIED_DATASETS',
-                imageUrl: '/assets/images/inventory/certified_no_shadow.png',
-                description: 'CERTIFIED_DATASETS_DESCRIPTION'
+                description: 'FAVORITE_DATASETS_DESCRIPTION',
             },
             {
                 value: 'ALL_DATASETS',
                 imageUrl: '/assets/images/inventory/all-datasets.png',
-                description: 'ALL_DATASETS_DESCRIPTION'
-            }
+                description: 'ALL_DATASETS_DESCRIPTION',
+            },
         ];
 
         this.selectedFilter = this.datasetsFilters[0];
@@ -47,6 +42,7 @@ class DatasetsFiltersCtrl {
         if (this.importing) {
             return;
         }
+
         this.selectedFilter.isSelected = false;
         this.selectedFilter = filter;
         this.selectedFilter.isSelected = true;

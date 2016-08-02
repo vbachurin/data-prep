@@ -38,13 +38,13 @@ describe('Filter item value controller', () => {
 
         createController = () => {
             const ctrl = $componentController('filterValue', {
-                $scope: scope
+                $scope: scope,
             }, {
                 value: filterValue,
                 editable: editable,
                 onEdit: onEditFn,
                 removable: removable,
-                onRemove: onRemoveFn
+                onRemove: onRemoveFn,
             });
             ctrl.$onInit();
             return ctrl;
@@ -64,7 +64,7 @@ describe('Filter item value controller', () => {
 
         //then
         expect(onEditFn).toHaveBeenCalledWith({
-            value: originalFilterValue
+            value: originalFilterValue,
         });
     });
 
@@ -81,7 +81,7 @@ describe('Filter item value controller', () => {
 
         //then
         expect(onEditFn).toHaveBeenCalledWith({
-            value: newFilterValue
+            value: newFilterValue,
         });
     });
 

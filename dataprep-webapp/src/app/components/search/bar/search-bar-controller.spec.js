@@ -26,7 +26,7 @@ describe('Search bar controller', () => {
                 { $scope: scope },
                 { search: jasmine.createSpy('search') }
             );
-        }
+        };
     }));
 
     describe('trigger search', () => {

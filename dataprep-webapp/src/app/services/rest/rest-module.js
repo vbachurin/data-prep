@@ -11,21 +11,24 @@
 
  ============================================================================*/
 
+import angular from 'angular';
+import SERVICES_UTILS_MODULE from '../utils/utils-module';
+
 import RestErrorMessageHandler from './rest-error-message-interceptor-factory';
 
-(() => {
-    'use strict';
+const MODULE_NAME = 'data-prep.services.rest';
 
-    /**
-     * @ngdoc object
-     * @name data-prep.services.rest
-     * @description This module contains the REST interceptor
-     * @requires data-prep.services.utils
-     */
-    angular.module('data-prep.services.rest', ['data-prep.services.utils'])
-        .factory('RestErrorMessageHandler', RestErrorMessageHandler)
-        .config(($httpProvider) => {
-            'ngInject';
-            $httpProvider.interceptors.push('RestErrorMessageHandler');
-        });
-})();
+/**
+ * @ngdoc object
+ * @name data-prep.services.rest
+ * @description This module contains the REST interceptor
+ * @requires data-prep.services.utils
+ */
+angular.module(MODULE_NAME, [SERVICES_UTILS_MODULE])
+    .factory('RestErrorMessageHandler', RestErrorMessageHandler)
+    .config(($httpProvider) => {
+        'ngInject';
+        $httpProvider.interceptors.push('RestErrorMessageHandler');
+    });
+
+export default MODULE_NAME;

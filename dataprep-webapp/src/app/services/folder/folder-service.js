@@ -24,12 +24,12 @@ export default function FolderService($q, state, StateService, FolderRestService
     'ngInject';
 
     return {
-        init: init,
-        refresh: refresh,
-        refreshBreadcrumbChildren: refreshBreadcrumbChildren,
-        children: children,
-        create: create,
-        rename: rename,
+        init,
+        refresh,
+        refreshBreadcrumbChildren,
+        children,
+        create,
+        rename,
         remove: FolderRestService.remove,
         tree: FolderRestService.tree,
     };

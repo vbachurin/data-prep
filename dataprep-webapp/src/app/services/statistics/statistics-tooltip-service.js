@@ -46,7 +46,7 @@ export default function StatisticsTooltipService($translate, state) {
     });
 
     return {
-        getTooltip: getTooltip
+        getTooltip,
     };
 
     /**
@@ -58,8 +58,8 @@ export default function StatisticsTooltipService($translate, state) {
      */
     function getPercentage(numer, denum) {
         if (numer && denum) {
-            var quotient = (numer / denum) * 100;
-            //toFixed(1) and not toFixed(0) because (19354/19430 * 100).toFixed(0) === '100'
+            const quotient = (numer / denum) * 100;
+            // toFixed(1) and not toFixed(0) because (19354/19430 * 100).toFixed(0) === '100'
             return '(' + quotient.toFixed(1) + '%)';
         }
         else {
@@ -79,32 +79,32 @@ export default function StatisticsTooltipService($translate, state) {
      * @returns {String} Compiled tooltip
      */
     function getTooltip(keyLabel, key, primaryValue, secondaryValue) {
-        var title = 'Record';
-        var keyString = key;
-        var rangeLimits = state.playground.statistics.rangeLimits;
-        var minLabel = $translate.instant('MIN');
-        var maxLabel = $translate.instant('MAX');
+        let title = 'Record';
+        let keyString = key;
+        const rangeLimits = state.playground.statistics.rangeLimits;
+        const minLabel = $translate.instant('MIN');
+        const maxLabel = $translate.instant('MAX');
 
-        //range
+        // range
         if (key instanceof Array) {
-            var uniqueValue = key[0] === key[1];
+            const uniqueValue = key[0] === key[1];
             title = uniqueValue ? 'Value' : 'Range';
 
             if (uniqueValue) {
                 keyString = key[0];
             }
             else {
-                if (key[0] <=  rangeLimits.min) {
+                if (key[0] <= rangeLimits.min) {
                     if (key[1] >= rangeLimits.max) {
-                        keyString = '[' + minLabel + ',' +  maxLabel + ']';
+                        keyString = '[' + minLabel + ',' + maxLabel + ']';
                     }
                     else {
-                        keyString = '[' + minLabel + ',' +  key[1] + '[';
+                        keyString = '[' + minLabel + ',' + key[1] + '[';
                     }
                 }
                 else {
                     if (key[1] >= rangeLimits.max) {
-                        keyString = '[' + key[0] + ',' +  maxLabel + ']';
+                        keyString = '[' + key[0] + ',' + maxLabel + ']';
                     }
                     else {
                         keyString = '[' + key[0] + ',' + key[1] + '[';
@@ -117,29 +117,29 @@ export default function StatisticsTooltipService($translate, state) {
             if (state.playground.statistics.histogram.aggregation) {
                 return tooltipFilteredAggregTemplate({
                     label: keyLabel,
-                    title: title,
+                    title,
                     key: keyString,
-                    primaryValue: primaryValue
+                    primaryValue,
                 });
             }
             else {
-                var percentage = getPercentage(secondaryValue, primaryValue);
+                const percentage = getPercentage(secondaryValue, primaryValue);
                 return tooltipFilteredTemplate({
                     label: keyLabel,
-                    title: title,
-                    percentage: percentage,
+                    title,
+                    percentage,
                     key: keyString,
-                    primaryValue: primaryValue,
-                    secondaryValue: secondaryValue
+                    primaryValue,
+                    secondaryValue,
                 });
             }
         }
         else {
             return tooltipTemplate({
                 label: keyLabel,
-                title: title,
+                title,
                 key: keyString,
-                primaryValue: primaryValue
+                primaryValue,
             });
         }
     }

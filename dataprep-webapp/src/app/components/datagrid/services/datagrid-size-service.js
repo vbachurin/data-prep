@@ -19,13 +19,13 @@
 export default function DatagridSizeService($window, state) {
     'ngInject';
 
-    var grid;
-    var MIN_COLUMN_WIDTH = 40;
-    var INITIAL_COLUMN_WIDTH = 120;
+    let grid;
+    const MIN_COLUMN_WIDTH = 40;
+    const INITIAL_COLUMN_WIDTH = 120;
 
     return {
-        init: init,
-        autosizeColumns: autosizeColumns
+        init,
+        autosizeColumns,
     };
 
     //--------------------------------------------------------------------------------------------------------------
@@ -49,13 +49,14 @@ export default function DatagridSizeService($window, state) {
      * WARNING : this set columns in the grid, which trigger a repaint
      */
     function autosizeColumns(gridColumns) {
-        var localKey = getLocalStorageKey();
-        var sizesStr = $window.localStorage.getItem(localKey);
-        var sizes = (sizesStr && JSON.parse(sizesStr)) || {};
+        const localKey = getLocalStorageKey();
+        const sizesStr = $window.localStorage.getItem(localKey);
+        const sizes = (sizesStr && JSON.parse(sizesStr)) || {};
         _.forEach(gridColumns, function (col) {
             col.minWidth = MIN_COLUMN_WIDTH;
             col.width = sizes[col.id] || INITIAL_COLUMN_WIDTH;
         });
+
         grid.setColumns(gridColumns);
         saveColumnSizes();
     }
@@ -67,8 +68,8 @@ export default function DatagridSizeService($window, state) {
      * @description Save the columns sizes of the dataset in localstorage
      */
     function saveColumnSizes() {
-        var localKey = getLocalStorageKey();
-        var sizes = {};
+        const localKey = getLocalStorageKey();
+        const sizes = {};
 
         _.forEach(grid.getColumns(), function (col) {
             sizes[col.id] = col.width;

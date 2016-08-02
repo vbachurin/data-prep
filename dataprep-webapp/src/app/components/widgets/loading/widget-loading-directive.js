@@ -11,6 +11,8 @@
 
  ============================================================================*/
 
+import template from './loading.html';
+
 /**
  * @ngdoc directive
  * @name talend.widget.directive:TalendLoading
@@ -30,7 +32,7 @@ export default function TalendLoading($rootScope, $timeout) {
 
     return {
         restrict: 'E',
-        templateUrl: 'app/components/widgets/loading/loading.html',
+        templateUrl: template,
         link: (scope, iElement) => {
             let loadingTimeout;
 
@@ -51,6 +53,6 @@ export default function TalendLoading($rootScope, $timeout) {
                 unregisterStartFn();
                 unregisterStopFn();
             });
-        }
+        },
     };
 }

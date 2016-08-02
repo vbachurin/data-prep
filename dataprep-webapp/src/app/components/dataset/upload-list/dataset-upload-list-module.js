@@ -11,16 +11,18 @@
 
  ============================================================================*/
 
+import angular from 'angular';
+import ngTranslate from 'angular-translate';
 import DatasetUploadList from './dataset-upload-list-directive';
 
-(() => {
-    'use strict';
+const MODULE_NAME = 'data-prep.dataset-upload-list';
 
-    /**
-     * @ngdoc object
-     * @name data-prep.dataset-upload-list
-     * @description This module contains the entities to manage the dataset upload list
-     */
-    angular.module('data-prep.dataset-upload-list', ['pascalprecht.translate'])
-        .directive('datasetUploadList', DatasetUploadList);
-})();
+/**
+ * @ngdoc object
+ * @name data-prep.dataset-upload-list
+ * @description This module contains the entities to manage the dataset upload list
+ */
+angular.module(MODULE_NAME, [ngTranslate])
+    .directive('datasetUploadList', DatasetUploadList);
+
+export default MODULE_NAME;

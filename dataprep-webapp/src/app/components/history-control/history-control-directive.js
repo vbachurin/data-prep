@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './history-control.html';
+
 /**
  * @ngdoc directive
  * @name data-prep.history-control.directive:HistoryControl
@@ -22,18 +24,19 @@ export default function HistoryControl($document, HistoryService) {
 
     return {
         restrict: 'E',
-        templateUrl: 'app/components/history-control/history-control.html',
-        controller: function () {
+        templateUrl: template,
+        controller() {
             this.service = HistoryService;
         },
+
         controllerAs: 'historyCtrl',
-        link: function (scope) {
+        link(scope) {
             function historyListener(event) {
-                //CTRL+Z
+                // CTRL+Z
                 if (event.keyCode === 90 && event.ctrlKey) {
                     HistoryService.undo();
                 }
-                //Ctrl+Y
+                // Ctrl+Y
                 else if (event.keyCode === 89 && event.ctrlKey) {
                     HistoryService.redo();
                 }
@@ -44,6 +47,6 @@ export default function HistoryControl($document, HistoryService) {
             scope.$on('$destroy', () => {
                 $document.off('keydown', historyListener);
             });
-        }
+        },
     };
 }

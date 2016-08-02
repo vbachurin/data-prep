@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './editable-regex.html';
+
 /**
  * @ngdoc directive
  * @name talend.widget.directive:EditableRegex
@@ -22,12 +24,12 @@
 export default function TalendEditableRegex() {
     return {
         restrict: 'E',
-        templateUrl: 'app/components/widgets/editable-regex/editable-regex.html',
+        templateUrl: template,
         scope: {
-            value: '=ngModel'
+            value: '=ngModel',
         },
         bindToController: true,
         controller: 'TalendEditableRegexCtrl',
-        controllerAs: 'editableRegexCtrl'
+        controllerAs: 'editableRegexCtrl',
     };
 }

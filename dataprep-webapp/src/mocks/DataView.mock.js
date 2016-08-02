@@ -83,3 +83,5 @@ function DataViewMock() {
         subscribe: function () {}
     };
 }
+
+module.exports = DataViewMock;

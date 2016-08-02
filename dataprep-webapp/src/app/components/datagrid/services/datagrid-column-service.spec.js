@@ -11,6 +11,8 @@
 
  ============================================================================*/
 
+import SlickGridMock from '../../../../mocks/SlickGrid.mock';
+
 describe('Datagrid column service', () => {
     'use strict';
 
@@ -23,7 +25,7 @@ describe('Datagrid column service', () => {
         columnsMetadata = [
             { id: '0000', name: 'col0', type: 'string' },
             { id: '0001', name: 'col1', type: 'integer' },
-            { id: '0002', name: 'col2', type: 'string', domain: 'salary' }
+            { id: '0002', name: 'col2', type: 'string', domain: 'salary' },
         ];
 
         /*global SlickGridMock:false */
@@ -58,19 +60,19 @@ describe('Datagrid column service', () => {
         var headers = [
             {
                 element: {
-                    detach: function () {}
-                }
+                    detach: function () {},
+                },
             },
             {
                 element: {
-                    detach: function () {}
-                }
+                    detach: function () {},
+                },
             },
             {
                 element: {
-                    detach: function () {}
-                }
-            }];
+                    detach: function () {},
+                },
+            },];
         var formatter = function () {};
 
         beforeEach(inject(function (DatagridColumnService, DatagridStyleService) {
@@ -116,7 +118,7 @@ describe('Datagrid column service', () => {
                 id: '0002',
                 name: 'col2',
                 type: 'string',
-                domain: 'salary'
+                domain: 'salary',
             });
         }));
 
@@ -153,7 +155,7 @@ describe('Datagrid column service', () => {
                 id: '0002',
                 name: 'col2',
                 type: 'string',
-                domain: 'salary'
+                domain: 'salary',
             });
         }));
     });
@@ -166,11 +168,11 @@ describe('Datagrid column service', () => {
 
             columnDef = {
                 header: {
-                    remove: function () {}, detach: function () {}
+                    remove: function () {}, detach: function () {},
                 },
                 scope: {
-                    $destroy: function () {}
-                }
+                    $destroy: function () {},
+                },
             };
 
             spyOn(columnDef.header, 'detach').and.returnValue();
@@ -185,7 +187,7 @@ describe('Datagrid column service', () => {
             columnDef.preview = true;
             var columnsArgs = {
                 id: '0001',
-                column: columnDef
+                column: columnDef,
             };
             DatagridColumnService.renewAllColumns(true);
 
@@ -204,7 +206,7 @@ describe('Datagrid column service', () => {
             columnDef.preview = false;
             var columnsArgs = {
                 id: '0001',
-                column: columnDef
+                column: columnDef,
             };
             DatagridColumnService.renewAllColumns(true);
 
@@ -223,7 +225,7 @@ describe('Datagrid column service', () => {
             columnDef.preview = false;
             var columnsArgs = {
                 id: '0001',
-                column: columnDef
+                column: columnDef,
             };
             DatagridColumnService.renewAllColumns(false);
 
@@ -245,12 +247,12 @@ describe('Datagrid column service', () => {
                 column: {
                     id: 'tdpId',
                     header: {
-                        remove: function () {}, detach: function () {}
+                        remove: function () {}, detach: function () {},
                     },
                     scope: {
-                        $destroy: function () {}
-                    }
-                }
+                        $destroy: function () {},
+                    },
+                },
             };
             DatagridColumnService.renewAllColumns(false);
 
@@ -272,10 +274,10 @@ describe('Datagrid column service', () => {
                 id: id,
                 scope: scope,
                 header: header,
-                preview: false
+                preview: false,
             };
             var headerToDetach = {
-                column: columnsToDestroy
+                column: columnsToDestroy,
             };
 
             //destroy to save header in the available headers
@@ -291,7 +293,7 @@ describe('Datagrid column service', () => {
 
             //save header in available headers list
             availableScope = {
-                $destroy: function () {}, $digest: function () {}
+                $destroy: function () {}, $digest: function () {},
             };
             availableHeader = angular.element('<div id="availableHeader"></div>');
             saveHeader('0001', availableScope, availableHeader);
@@ -304,9 +306,9 @@ describe('Datagrid column service', () => {
             var columnsArgs = {
                 column: {
                     id: '0001',
-                    tdpColMetadata: {}
+                    tdpColMetadata: {},
                 },
-                node: angular.element('<div></div>')[0]
+                node: angular.element('<div></div>')[0],
             };
 
             //when
@@ -328,9 +330,9 @@ describe('Datagrid column service', () => {
             var columnsArgs = {
                 column: {
                     id: '0002',
-                    tdpColMetadata: {}
+                    tdpColMetadata: {},
                 },
-                node: angular.element('<div></div>')[0]
+                node: angular.element('<div></div>')[0],
             };
 
             //when
@@ -353,9 +355,9 @@ describe('Datagrid column service', () => {
                 column: {
                     id: '0002',
                     tdpColMetadata: {},
-                    preview: true
+                    preview: true,
                 },
-                node: angular.element('<div></div>')[0]
+                node: angular.element('<div></div>')[0],
             };
 
             //when
@@ -373,9 +375,9 @@ describe('Datagrid column service', () => {
             //given
             var columnsArgs = {
                 column: {
-                    id: 'tdpId'
+                    id: 'tdpId',
                 },
-                node: angular.element('<div></div>')[0]
+                node: angular.element('<div></div>')[0],
             };
 
             //when
@@ -395,20 +397,19 @@ describe('Datagrid column service', () => {
             spyOn(PlaygroundService, 'appendStep');
         }));
 
-
         it('should call PlaygroundService move columns 2 steps', inject(function (DatagridColumnService, PlaygroundService) {
             //given
             var original = [
-                { id: "0000", tdpColMetadata: { id: "0000", name: "beer" } },
-                { id: "0001", tdpColMetadata: { id: "0001" } },
-                { id: "0002", tdpColMetadata: { id: "0002" } },
-                { id: "0003", tdpColMetadata: { id: "0003" } }
+                { id: '0000', tdpColMetadata: { id: '0000', name: 'beer' } },
+                { id: '0001', tdpColMetadata: { id: '0001' } },
+                { id: '0002', tdpColMetadata: { id: '0002' } },
+                { id: '0003', tdpColMetadata: { id: '0003' } },
             ];
             var newCols = [
-                { id: "0001", tdpColMetadata: { id: "0001" } },
-                { id: "0002", tdpColMetadata: { id: "0002" } },
-                { id: "0000", tdpColMetadata: { id: "0000" } },
-                { id: "0003", tdpColMetadata: { id: "0003" } }
+                { id: '0001', tdpColMetadata: { id: '0001' } },
+                { id: '0002', tdpColMetadata: { id: '0002' } },
+                { id: '0000', tdpColMetadata: { id: '0000' } },
+                { id: '0003', tdpColMetadata: { id: '0003' } },
             ];
 
             //when
@@ -421,23 +422,23 @@ describe('Datagrid column service', () => {
                     scope: 'dataset',
                     column_id: '0000',
                     column_name: 'beer',
-                    dataset_action_display_type: 'column'
+                    dataset_action_display_type: 'column',
                 });
         }));
 
         it('should find move columns 2 steps', inject(function (DatagridColumnService, PlaygroundService) {
             //given
             var original = [
-                { id: "0000", tdpColMetadata: { id: "0000", name: "beer" } },
-                { id: "0001", tdpColMetadata: { id: "0001" } },
-                { id: "0002", tdpColMetadata: { id: "0002" } },
-                { id: "0003", tdpColMetadata: { id: "0003" } }
+                { id: '0000', tdpColMetadata: { id: '0000', name: 'beer' } },
+                { id: '0001', tdpColMetadata: { id: '0001' } },
+                { id: '0002', tdpColMetadata: { id: '0002' } },
+                { id: '0003', tdpColMetadata: { id: '0003' } },
             ];
             var newCols = [
-                { id: "0001", tdpColMetadata: { id: "0001" } },
-                { id: "0002", tdpColMetadata: { id: "0002" } },
-                { id: "0000", tdpColMetadata: { id: "0000" } },
-                { id: "0003", tdpColMetadata: { id: "0003" } }
+                { id: '0001', tdpColMetadata: { id: '0001' } },
+                { id: '0002', tdpColMetadata: { id: '0002' } },
+                { id: '0000', tdpColMetadata: { id: '0000' } },
+                { id: '0003', tdpColMetadata: { id: '0003' } },
             ];
 
             //when
@@ -450,7 +451,7 @@ describe('Datagrid column service', () => {
                     scope: 'dataset',
                     column_id: '0000',
                     column_name: 'beer',
-                    dataset_action_display_type: 'column'
+                    dataset_action_display_type: 'column',
                 }
             );
         }));
@@ -458,16 +459,16 @@ describe('Datagrid column service', () => {
         it('should find move columns simple swap', inject(function (DatagridColumnService, PlaygroundService) {
             //given
             var original = [
-                { id: "0000", tdpColMetadata: { id: "0000" } },
-                { id: "0001", tdpColMetadata: { id: "0001", name: "beer" } },
-                { id: "0002", tdpColMetadata: { id: "0002" } },
-                { id: "0003", tdpColMetadata: { id: "0003" } }
+                { id: '0000', tdpColMetadata: { id: '0000' } },
+                { id: '0001', tdpColMetadata: { id: '0001', name: 'beer' } },
+                { id: '0002', tdpColMetadata: { id: '0002' } },
+                { id: '0003', tdpColMetadata: { id: '0003' } },
             ];
             var newCols = [
-                { id: "0000", tdpColMetadata: { id: "0000" } },
-                { id: "0002", tdpColMetadata: { id: "0002" } },
-                { id: "0001", tdpColMetadata: { id: "0001" } },
-                { id: "0003", tdpColMetadata: { id: "0003" } }
+                { id: '0000', tdpColMetadata: { id: '0000' } },
+                { id: '0002', tdpColMetadata: { id: '0002' } },
+                { id: '0001', tdpColMetadata: { id: '0001' } },
+                { id: '0003', tdpColMetadata: { id: '0003' } },
             ];
 
             //when
@@ -480,7 +481,7 @@ describe('Datagrid column service', () => {
                     scope: 'dataset',
                     column_id: '0001',
                     column_name: 'beer',
-                    dataset_action_display_type: 'column'
+                    dataset_action_display_type: 'column',
                 }
             );
         }));
@@ -488,16 +489,16 @@ describe('Datagrid column service', () => {
         it('should find move columns 3 steps', inject(function (DatagridColumnService, PlaygroundService) {
             //given
             var original = [
-                { id: "0000", tdpColMetadata: { id: "0000", name: "beer" } },
-                { id: "0001", tdpColMetadata: { id: "0001" } },
-                { id: "0002", tdpColMetadata: { id: "0002" } },
-                { id: "0003", tdpColMetadata: { id: "0003" } }
+                { id: '0000', tdpColMetadata: { id: '0000', name: 'beer' } },
+                { id: '0001', tdpColMetadata: { id: '0001' } },
+                { id: '0002', tdpColMetadata: { id: '0002' } },
+                { id: '0003', tdpColMetadata: { id: '0003' } },
             ];
             var newCols = [
-                { id: "0001", tdpColMetadata: { id: "0001" } },
-                { id: "0002", tdpColMetadata: { id: "0002" } },
-                { id: "0003", tdpColMetadata: { id: "0003" } },
-                { id: "0000", tdpColMetadata: { id: "0000" } }
+                { id: '0001', tdpColMetadata: { id: '0001' } },
+                { id: '0002', tdpColMetadata: { id: '0002' } },
+                { id: '0003', tdpColMetadata: { id: '0003' } },
+                { id: '0000', tdpColMetadata: { id: '0000' } },
             ];
 
             //when
@@ -510,7 +511,7 @@ describe('Datagrid column service', () => {
                     scope: 'dataset',
                     column_id: '0000',
                     column_name: 'beer',
-                    dataset_action_display_type: 'column'
+                    dataset_action_display_type: 'column',
                 }
             );
         }));
@@ -518,16 +519,16 @@ describe('Datagrid column service', () => {
         it('should find not moved', inject(function (DatagridColumnService, PlaygroundService) {
             //given
             var original = [
-                { id: "0000", tdpColMetadata: { id: "0000", name: "beer" } },
-                { id: "0001", tdpColMetadata: { id: "0001" } },
-                { id: "0002", tdpColMetadata: { id: "0002" } },
-                { id: "0003", tdpColMetadata: { id: "0003" } }
+                { id: '0000', tdpColMetadata: { id: '0000', name: 'beer' } },
+                { id: '0001', tdpColMetadata: { id: '0001' } },
+                { id: '0002', tdpColMetadata: { id: '0002' } },
+                { id: '0003', tdpColMetadata: { id: '0003' } },
             ];
             var newCols = [
-                { id: "0000", tdpColMetadata: { id: "0000" } },
-                { id: "0001", tdpColMetadata: { id: "0001" } },
-                { id: "0002", tdpColMetadata: { id: "0002" } },
-                { id: "0003", tdpColMetadata: { id: "0003" } }
+                { id: '0000', tdpColMetadata: { id: '0000' } },
+                { id: '0001', tdpColMetadata: { id: '0001' } },
+                { id: '0002', tdpColMetadata: { id: '0002' } },
+                { id: '0003', tdpColMetadata: { id: '0003' } },
             ];
 
             //when
@@ -540,16 +541,16 @@ describe('Datagrid column service', () => {
         it('should find move columns 2 steps backward', inject(function (DatagridColumnService, PlaygroundService) {
             //given
             var original = [
-                { id: "0000", tdpColMetadata: { id: "0000" } },
-                { id: "0001", tdpColMetadata: { id: "0001" } },
-                { id: "0002", tdpColMetadata: { id: "0002", name: "beer" } },
-                { id: "0003", tdpColMetadata: { id: "0003" } }
+                { id: '0000', tdpColMetadata: { id: '0000' } },
+                { id: '0001', tdpColMetadata: { id: '0001' } },
+                { id: '0002', tdpColMetadata: { id: '0002', name: 'beer' } },
+                { id: '0003', tdpColMetadata: { id: '0003' } },
             ];
             var newCols = [
-                { id: "0002", tdpColMetadata: { id: "0002", name: "beer" } },
-                { id: "0000", tdpColMetadata: { id: "0000" } },
-                { id: "0001", tdpColMetadata: { id: "0001" } },
-                { id: "0003", tdpColMetadata: { id: "0003" } }
+                { id: '0002', tdpColMetadata: { id: '0002', name: 'beer' } },
+                { id: '0000', tdpColMetadata: { id: '0000' } },
+                { id: '0001', tdpColMetadata: { id: '0001' } },
+                { id: '0003', tdpColMetadata: { id: '0003' } },
             ];
 
             //when
@@ -562,7 +563,7 @@ describe('Datagrid column service', () => {
                     scope: 'dataset',
                     column_id: '0002',
                     column_name: 'beer',
-                    dataset_action_display_type: 'column'
+                    dataset_action_display_type: 'column',
                 }
             );
         }));
@@ -570,18 +571,18 @@ describe('Datagrid column service', () => {
         it('should find move columns 2 steps backward in the middle', inject(function (DatagridColumnService, PlaygroundService) {
             //given
             var original = [
-                { id: "0000", tdpColMetadata: { id: "0000" } },
-                { id: "0001", tdpColMetadata: { id: "0001" } },
-                { id: "0002", tdpColMetadata: { id: "0002" } },
-                { id: "0003", tdpColMetadata: { id: "0003", name: "beer" } },
-                { id: "0004", tdpColMetadata: { id: "0004" } }
+                { id: '0000', tdpColMetadata: { id: '0000' } },
+                { id: '0001', tdpColMetadata: { id: '0001' } },
+                { id: '0002', tdpColMetadata: { id: '0002' } },
+                { id: '0003', tdpColMetadata: { id: '0003', name: 'beer' } },
+                { id: '0004', tdpColMetadata: { id: '0004' } },
             ];
             var newCols = [
-                { id: "0000", tdpColMetadata: { id: "0000" } },
-                { id: "0003", tdpColMetadata: { id: "0003", name: "beer" } },
-                { id: "0001", tdpColMetadata: { id: "0001" } },
-                { id: "0002", tdpColMetadata: { id: "0002" } },
-                { id: "0004", tdpColMetadata: { id: "0004" } }
+                { id: '0000', tdpColMetadata: { id: '0000' } },
+                { id: '0003', tdpColMetadata: { id: '0003', name: 'beer' } },
+                { id: '0001', tdpColMetadata: { id: '0001' } },
+                { id: '0002', tdpColMetadata: { id: '0002' } },
+                { id: '0004', tdpColMetadata: { id: '0004' } },
             ];
 
             //when
@@ -594,7 +595,7 @@ describe('Datagrid column service', () => {
                     scope: 'dataset',
                     column_id: '0003',
                     column_name: 'beer',
-                    dataset_action_display_type: 'column'
+                    dataset_action_display_type: 'column',
                 }
             );
         }));

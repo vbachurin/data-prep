@@ -46,6 +46,7 @@ export default function TransformFormCtrl() {
                 }
             });
         }
+
         return paramsAccu;
     }
 
@@ -119,7 +120,7 @@ export default function TransformFormCtrl() {
     vm.submitHoverOn = function submitHoverOn() {
         vm.paramForm.$commitViewValue();
         const params = gatherParams();
-        vm.onSubmitHoverOn({ params: params });
+        vm.onSubmitHoverOn({ params });
     };
 
     /**
@@ -130,6 +131,6 @@ export default function TransformFormCtrl() {
      */
     vm.submitHoverOff = function submitHoverOff() {
         const params = gatherParams();
-        vm.onSubmitHoverOff({ params: params });
+        vm.onSubmitHoverOff({ params });
     };
 }

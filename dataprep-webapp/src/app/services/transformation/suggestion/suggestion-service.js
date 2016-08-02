@@ -20,7 +20,7 @@
 export default function SuggestionService(LineSuggestionService, ColumnSuggestionService) {
     'ngInject';
 
-    var tabIndex = {
+    const tabIndex = {
         TEXT: 0,
         CELL: 1,
         LINE: 2,
@@ -28,7 +28,7 @@ export default function SuggestionService(LineSuggestionService, ColumnSuggestio
         TABLE: 4,
     };
 
-    var service = {
+    const service = {
         /**
          * @ngdoc property
          * @name tab
@@ -38,9 +38,9 @@ export default function SuggestionService(LineSuggestionService, ColumnSuggestio
          */
         tab: null,
 
-        setColumn: setColumn,
-        setLine: setLine,
-        selectTab: selectTab
+        setColumn,
+        setLine,
+        selectTab,
     };
     return service;
 

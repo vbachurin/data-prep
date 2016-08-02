@@ -11,6 +11,8 @@
 
  ============================================================================*/
 
+import template from './datagrid.html';
+
 /**
  * @ngdoc directive
  * @name data-prep.datagrid.directive:Datagrid
@@ -38,23 +40,24 @@ export default function Datagrid($timeout, state, DatagridGridService, DatagridC
 
     return {
         restrict: 'E',
-        templateUrl: 'app/components/datagrid/datagrid.html',
+        templateUrl: template,
         bindToController: true,
         controllerAs: 'datagridCtrl',
-        controller: function () {
+        controller() {
             this.state = state;
             this.datagridTooltipService = DatagridTooltipService;
         },
-        link: function (scope, iElement) {
-            var grid;
-            var columnTimeout;
-            var columnStyleTimeout;
-            var cellHighlightTimeout;
-            var externalTimeout;
-            var focusTimeout;
+
+        link(scope, iElement) {
+            let grid;
+            let columnTimeout;
+            let columnStyleTimeout;
+            let cellHighlightTimeout;
+            let externalTimeout;
+            let focusTimeout;
 
             //------------------------------------------------------------------------------------------------------
-            //--------------------------------------------------GETTERS---------------------------------------------
+            // --------------------------------------------------GETTERS---------------------------------------------
             //------------------------------------------------------------------------------------------------------
             /**
              * @ngdoc method
@@ -127,7 +130,7 @@ export default function Datagrid($timeout, state, DatagridGridService, DatagridC
             }
 
             //------------------------------------------------------------------------------------------------------
-            //---------------------------------------------------UTILS----------------------------------------------
+            // ---------------------------------------------------UTILS----------------------------------------------
             //------------------------------------------------------------------------------------------------------
             /**
              * @ngdoc method
@@ -135,7 +138,7 @@ export default function Datagrid($timeout, state, DatagridGridService, DatagridC
              * @methodOf data-prep.datagrid.directive:Datagrid
              * @description Reset cell styles, scroll to top and expect to recreate all columns on next update
              */
-            var onMetadataChange = function onMetadataChange() {
+            const onMetadataChange = function onMetadataChange() {
                 if (grid) {
                     grid.scrollRowToTop(0);
                     DatagridColumnService.renewAllColumns(true);
@@ -148,23 +151,23 @@ export default function Datagrid($timeout, state, DatagridGridService, DatagridC
              * @methodOf data-prep.datagrid.directive:Datagrid
              * @description Update and resize the columns with its headers, set grid styles
              */
-            var onDataChange = function onDataChange(data) {
+            const onDataChange = function onDataChange(data) {
                 if (data) {
                     initGridIfNeeded();
 
-                    //create columns
+                    // create columns
                     $timeout.cancel(columnTimeout);
                     columnTimeout = $timeout(function () {
-                        var columns = DatagridColumnService.createColumns(data.metadata.columns, data.preview);
+                        const columns = DatagridColumnService.createColumns(data.metadata.columns, data.preview);
                         DatagridSizeService.autosizeColumns(columns); // IMPORTANT : this set columns in the grid
                         DatagridColumnService.renewAllColumns(false);
 
-                        var selectedColumnId = getSelectedColumn() && getSelectedColumn().id;
+                        const selectedColumnId = getSelectedColumn() && getSelectedColumn().id;
                         DatagridStyleService.updateColumnClass(selectedColumnId);
                         grid.invalidate();
                     }, 0, false);
 
-                    //focus specific column
+                    // focus specific column
                     $timeout.cancel(focusTimeout);
                     focusTimeout = $timeout(
                         () => DatagridGridService.navigateToFocusedColumn(),
@@ -180,7 +183,7 @@ export default function Datagrid($timeout, state, DatagridGridService, DatagridC
              * @methodOf data-prep.datagrid.directive:Datagrid
              * @description Refresh cell styles and scroll to top
              */
-            var onFiltersChange = function onFiltersChange() {
+            const onFiltersChange = function onFiltersChange() {
                 if (grid) {
                     DatagridStyleService.resetCellStyles();
                     grid.scrollRowToTop(0);
@@ -194,15 +197,15 @@ export default function Datagrid($timeout, state, DatagridGridService, DatagridC
              * @methodOf data-prep.datagrid.directive:Datagrid
              * @description Refresh selected column grid styles
              */
-            var onColumnSelectionChange = function onColumnSelectionChange() {
+            const onColumnSelectionChange = function onColumnSelectionChange() {
                 if (grid) {
-                    //Update cell highlights
+                    // Update cell highlights
                     DatagridStyleService.resetHighlightStyles();
 
-                    //Update column style
+                    // Update column style
                     $timeout.cancel(columnStyleTimeout);
                     columnStyleTimeout = $timeout(function () {
-                        var selectedColumnId = getSelectedColumn() && getSelectedColumn().id;
+                        const selectedColumnId = getSelectedColumn() && getSelectedColumn().id;
 
                         if (getSelectedLine()) {
                             DatagridStyleService.updateColumnClass(selectedColumnId);
@@ -210,10 +213,11 @@ export default function Datagrid($timeout, state, DatagridGridService, DatagridC
                         else {
                             DatagridStyleService.resetStyles(selectedColumnId);
                         }
+
                         grid.invalidate();
                     }, 0, false);
 
-                    //manage column selection (external)
+                    // manage column selection (external)
                     $timeout.cancel(externalTimeout);
                     if (getData() && !getData().preview) {
                         externalTimeout = $timeout(
@@ -230,7 +234,7 @@ export default function Datagrid($timeout, state, DatagridGridService, DatagridC
              * @methodOf data-prep.datagrid.directive:Datagrid
              * @description Refresh the cell highlight
              */
-            var onSelectionChange = function onSelectionChange() {
+            const onSelectionChange = function onSelectionChange() {
                 if (grid) {
                     const stateSelectedLine = getSelectedLine();
                     const stateSelectedColumn = getSelectedColumn();
@@ -249,6 +253,7 @@ export default function Datagrid($timeout, state, DatagridGridService, DatagridC
                             const content = stateSelectedLine[colId];
                             DatagridStyleService.highlightCellsContaining(colId, content);
                         },
+
                             500,
                             false
                         );
@@ -269,7 +274,7 @@ export default function Datagrid($timeout, state, DatagridGridService, DatagridC
             }
 
             //------------------------------------------------------------------------------------------------------
-            //---------------------------------------------------INIT-----------------------------------------------
+            // ---------------------------------------------------INIT-----------------------------------------------
             //------------------------------------------------------------------------------------------------------
             /**
              * @ngdoc method
@@ -288,7 +293,7 @@ export default function Datagrid($timeout, state, DatagridGridService, DatagridC
             }
 
             //------------------------------------------------------------------------------------------------------
-            //-------------------------------------------------WATCHERS---------------------------------------------
+            // -------------------------------------------------WATCHERS---------------------------------------------
             //------------------------------------------------------------------------------------------------------
 
             /**
@@ -320,6 +325,6 @@ export default function Datagrid($timeout, state, DatagridGridService, DatagridC
              * when the active cell change
              */
             scope.$watchGroup([getSelectedLine, getSelectedColumn], onSelectionChange);
-        }
+        },
     };
 }

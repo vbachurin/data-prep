@@ -5,15 +5,36 @@ import org.talend.dataprep.api.dataset.location.SemanticDomain;
 import org.talend.dataprep.api.dataset.statistics.Statistics;
 import org.talend.dataprep.api.type.Type;
 
+/**
+ * Exposure of column metadata for actions.
+ * Actions should be able to modify:
+ * <ul>
+ *     <li>column name</li>
+ *     <li>column type => that makes it forced</li>
+ *     <li>column semantic domain => that makes it forced</li>
+ * </ul>
+ * And should be able to read:
+ * <ul>
+ *     <li>column id</li>
+ *     <li>column name</li>
+ *     <li>column type</li>
+ *     <li>if the column type is forced</li>
+ *     <li>column semantic domain</li>
+ *     <li>if the column domain is forced</li>
+ *     <li>column quality data</li>
+ *     <li>column statistics</li>
+ * </ul>
+ *
+ */
 public class ColumnMetadata {
-
-    private final Quality quality = new Quality();
 
     private String id;
 
     private String name;
 
     private Type type;
+
+    private final Quality quality = new Quality();
 
     private final Statistics statistics = new Statistics();
 

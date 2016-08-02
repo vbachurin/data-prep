@@ -19,7 +19,6 @@ describe('Breadcrumb component', () => {
     let itemsChildren;
 
     beforeEach(angular.mock.module('data-prep.breadcrumb'));
-    beforeEach(angular.mock.module('htmlTemplates'));
 
     beforeEach(inject(($rootScope, $compile) => {
         scope = $rootScope.$new(true);
@@ -44,10 +43,10 @@ describe('Breadcrumb component', () => {
         ];
 
         itemsChildren = {
-            '1': [
+            1: [
                 { id: '2', name: 'JSO' },
                 { id: '4', name: 'Others' },
-            ]
+            ],
         };
     });
 

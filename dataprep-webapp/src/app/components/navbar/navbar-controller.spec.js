@@ -27,15 +27,15 @@ describe('Navbar controller', function () {
         createController = function () {
             return $controller('NavbarCtrl', {
                 $scope: scope,
-                $state: $stateMock
+                $state: $stateMock,
             });
         };
 
         spyOn(OnboardingService, 'startTour').and.returnValue();
     }));
 
-    describe('onboarding not completed yet', function() {
-        beforeEach(inject(function(OnboardingService) {
+    describe('onboarding not completed yet', function () {
+        beforeEach(inject(function (OnboardingService) {
             spyOn(OnboardingService, 'shouldStartTour').and.returnValue(true);
         }));
 
@@ -92,8 +92,8 @@ describe('Navbar controller', function () {
         }));
     });
 
-    describe('onboarding completed', function() {
-        beforeEach(inject(function(OnboardingService) {
+    describe('onboarding completed', function () {
+        beforeEach(inject(function (OnboardingService) {
             spyOn(OnboardingService, 'shouldStartTour').and.returnValue(false);
         }));
 
@@ -112,7 +112,7 @@ describe('Navbar controller', function () {
         }));
     });
 
-    describe('feedback ', function() {
+    describe('feedback ', function () {
         beforeEach(inject(function (StateService) {
             spyOn(StateService, 'showFeedback').and.returnValue();
         }));

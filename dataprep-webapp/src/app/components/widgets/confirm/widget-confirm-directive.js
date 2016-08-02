@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './confirm.html';
+
 /**
  * @ngdoc directive
  * @name talend.widget.directive:TalendConfirm
@@ -32,13 +34,13 @@
 export default function TalendConfirm() {
     return {
         restrict: 'E',
-        templateUrl: 'app/components/widgets/confirm/confirm.html',
+        templateUrl: template,
         scope: {
             disableEnter: '=',
-            texts: '='
+            texts: '=',
         },
         bindToController: true,
         controller: 'TalendConfirmCtrl',
-        controllerAs: 'confirmCtrl'
+        controllerAs: 'confirmCtrl',
     };
 }

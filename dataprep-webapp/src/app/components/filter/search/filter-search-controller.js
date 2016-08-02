@@ -16,7 +16,7 @@
  * @name data-prep.filter-search.controller:FilterSearchCtrl
  * @description Filter search controller.
  */
-export default function FilterSearchCtrl(FilterService) {
+export default function FilterSearchCtrl(FilterService, DatagridService) {
     'ngInject';
 
     const vm = this;
@@ -35,7 +35,7 @@ export default function FilterSearchCtrl(FilterService) {
                 label: term + ' in <b>' + col.name + '</b>',
                 value: term,
                 columnId: col.id,
-                columnName: col.name
+                columnName: col.name,
             };
         };
     }
@@ -50,7 +50,7 @@ export default function FilterSearchCtrl(FilterService) {
      */
     function filterSuggestion(term) {
         const cleanTerm = term.toLowerCase().trim();
-        const colContainingTerm = FilterService.getColumnsContaining(cleanTerm);
+        const colContainingTerm = DatagridService.getColumnsContaining(cleanTerm);
 
         return _.chain(colContainingTerm)
             .sortBy((col) => col.name.toLowerCase())
@@ -67,7 +67,7 @@ export default function FilterSearchCtrl(FilterService) {
      */
     function suggestionSelect(item) {
         FilterService.addFilter('contains', item.columnId, item.columnName, {
-            phrase: [{ value: item.value }]
+            phrase: [{ value: item.value }],
         });
         vm.filterSearch = '';
     }
@@ -80,6 +80,6 @@ export default function FilterSearchCtrl(FilterService) {
      */
     vm.filterSuggestOptions = {
         suggest: filterSuggestion,
-        on_select: suggestionSelect
+        on_select: suggestionSelect,
     };
 }

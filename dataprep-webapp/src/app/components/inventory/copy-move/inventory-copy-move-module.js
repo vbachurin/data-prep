@@ -11,21 +11,25 @@
 
  ============================================================================*/
 
+import angular from 'angular';
+import FOLDER_SELECTION from '../../folder-selection/folder-selection-module';
+import TALEND_WIDGET_MODULE from '../../widgets/widget-module';
+
 import InventoryCopyMoveComponent from './inventory-copy-move-component';
 
-(() => {
-    'use strict';
+const MODULE_NAME = 'data-prep.inventory-copy-move';
 
-    /**
-     * @ngdoc object
-     * @name data-prep.inventory-copy-move
-     * @description This module contains the entities to manage the inventory copy/move wiazerd
-     * @requires data-prep.folder-selection
-     */
-    angular.module('data-prep.inventory-copy-move',
-        [
-            'talend.widget',
-            'data-prep.folder-selection',
-        ])
-        .component('inventoryCopyMove', InventoryCopyMoveComponent);
-})();
+/**
+ * @ngdoc object
+ * @name data-prep.inventory-copy-move
+ * @description This module contains the entities to manage the inventory copy/move wiazerd
+ * @requires data-prep.folder-selection
+ */
+angular.module(MODULE_NAME,
+    [
+        FOLDER_SELECTION,
+        TALEND_WIDGET_MODULE,
+    ])
+    .component('inventoryCopyMove', InventoryCopyMoveComponent);
+
+export default MODULE_NAME;

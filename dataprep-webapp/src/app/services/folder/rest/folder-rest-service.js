@@ -22,13 +22,13 @@ export default function FolderRestService($http, RestURLs) {
     'ngInject';
 
     return {
-        children: children,
-        create: create,
-        getContent: getContent,
-        rename: rename,
-        remove: remove,
-        tree: tree,
-        getById: getById,
+        children,
+        create,
+        getContent,
+        rename,
+        remove,
+        tree,
+        getById,
     };
 
     /**
@@ -74,9 +74,11 @@ export default function FolderRestService($http, RestURLs) {
         if (sortType) {
             options.push(`sort=${sortType}`);
         }
+
         if (sortOrder) {
             options.push(`order=${sortOrder}`);
         }
+
         if (options.length) {
             url = `${url}?${options.join('&')}`;
         }

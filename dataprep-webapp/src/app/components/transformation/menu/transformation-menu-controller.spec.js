@@ -18,53 +18,53 @@ describe('Transform menu controller', function () {
     var scope;
 
     var metadata = {
-        'id': '44f5e4ef-96e9-4041-b86a-0bee3d50b18b',
-        'name': 'customers_jso_light',
-        'author': 'anonymousUser',
-        'records': 15,
-        'nbLinesHeader': 1,
-        'nbLinesFooter': 0,
-        'created': '02-16-2015 08:52'
+        id: '44f5e4ef-96e9-4041-b86a-0bee3d50b18b',
+        name: 'customers_jso_light',
+        author: 'anonymousUser',
+        records: 15,
+        nbLinesHeader: 1,
+        nbLinesFooter: 0,
+        created: '02-16-2015 08:52',
     };
     var column = {
-        'id': '0001',
-        'name': 'MostPopulousCity',
-        'quality': {
-            'empty': 5,
-            'invalid': 10,
-            'valid': 72
+        id: '0001',
+        name: 'MostPopulousCity',
+        quality: {
+            empty: 5,
+            invalid: 10,
+            valid: 72,
         },
-        'type': 'string',
-        'domain': 'FR_POSTAL_CODE',
-        'domainLabel': 'FR POSTAL CODE',
-        'domainCount': 7,
-        'semanticDomains': [
+        type: 'string',
+        domain: 'FR_POSTAL_CODE',
+        domainLabel: 'FR POSTAL CODE',
+        domainCount: 7,
+        semanticDomains: [
             {
-                'id': 'CH_POSTAL_CODE',
-                'label': 'CH  POSTAL CODE',
-                'count': 5
+                id: 'CH_POSTAL_CODE',
+                label: 'CH  POSTAL CODE',
+                count: 5,
             },
             {
-                'id': 'FR_POSTAL_CODE',
-                'label': 'FR POSTAL CODE',
-                'count': 7
+                id: 'FR_POSTAL_CODE',
+                label: 'FR POSTAL CODE',
+                count: 7,
             },
             {
-                'id': 'FR_CODE_COMMUNE_INSEE',
-                'label': 'FR INSEE CODE',
-                'count': 7
+                id: 'FR_CODE_COMMUNE_INSEE',
+                label: 'FR INSEE CODE',
+                count: 7,
             },
             {
-                'id': 'DE_POSTAL_CODE',
-                'label': 'DE POSTAL CODE',
-                'count': 7
+                id: 'DE_POSTAL_CODE',
+                label: 'DE POSTAL CODE',
+                count: 7,
             },
             {
-                'id': 'US_POSTAL_CODE',
-                'label': 'US POSTAL CODE',
-                'count': 7
-            }
-        ]
+                id: 'US_POSTAL_CODE',
+                label: 'US POSTAL CODE',
+                count: 7,
+            },
+        ],
     };
 
     var stateMock;
@@ -74,12 +74,12 @@ describe('Transform menu controller', function () {
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(inject(function ($rootScope, $controller, $q, PlaygroundService, TransformationService) {
+    beforeEach(inject(function ($rootScope, $controller, $q, PlaygroundService, TransformationService, ParametersService) {
         scope = $rootScope.$new();
 
         createController = function () {
             var ctrl = $controller('TransformMenuCtrl', {
-                $scope: scope
+                $scope: scope,
             });
             ctrl.metadata = metadata;
             ctrl.column = column;
@@ -87,27 +87,27 @@ describe('Transform menu controller', function () {
         };
 
         spyOn(PlaygroundService, 'appendStep').and.returnValue($q.when(true));
-        spyOn(TransformationService, 'resetParamValue').and.returnValue();
+        spyOn(ParametersService, 'resetParamValue').and.returnValue();
         spyOn(TransformationService, 'initDynamicParameters').and.returnValue($q.when(true));
     }));
 
-    it('should reset parameters/choices on select if items has parameters/choices', inject(function (TransformationService) {
+    it('should reset parameters/choices on select if items has parameters/choices', inject((ParametersService) => {
         //given
         var ctrl = createController();
         var menu = {
             parameters: [{ name: 'param1', type: 'text', default: '.' }],
-            items: []
+            items: [],
         };
         var scope = 'column';
 
-        expect(TransformationService.resetParamValue).not.toHaveBeenCalled();
+        expect(ParametersService.resetParamValue).not.toHaveBeenCalled();
 
         //when
         ctrl.select(menu, scope);
 
         //then
-        expect(TransformationService.resetParamValue).toHaveBeenCalledWith(menu.parameters);
-        expect(TransformationService.resetParamValue).toHaveBeenCalledWith(menu.items, 'CHOICE');
+        expect(ParametersService.resetParamValue).toHaveBeenCalledWith(menu.parameters);
+        expect(ParametersService.resetParamValue).toHaveBeenCalledWith(menu.items, 'CHOICE');
     }));
 
     it('should open modal on select if item has parameters', inject(function (PlaygroundService) {
@@ -156,11 +156,10 @@ describe('Transform menu controller', function () {
         var expectedParams = {
             scope: scope,
             column_id: column.id,
-            column_name: column.name
+            column_name: column.name,
         };
         expect(PlaygroundService.appendStep).toHaveBeenCalledWith('uppercase', expectedParams);
     }));
-
 
     it('should fetch dynamic parameters', inject(function (TransformationService) {
         //given
@@ -180,11 +179,10 @@ describe('Transform menu controller', function () {
             {
                 columnId: '0001',
                 datasetId: '78bae6345aef9965e22b54',
-                preparationId: '721cd4455fb69e89543d4'
+                preparationId: '721cd4455fb69e89543d4',
             }
         );
     }));
-
 
     it('should display modal and set flags on dynamic params fetch', function () {
         //given
@@ -206,7 +204,6 @@ describe('Transform menu controller', function () {
         expect(ctrl.dynamicFetchInProgress).toBeFalsy();
     });
 
-
     it('should call playground service to append step and hide modal', inject(function (PlaygroundService) {
         //given
         var ctrl = createController();
@@ -224,7 +221,7 @@ describe('Transform menu controller', function () {
             param1: 'value',
             scope: transfoScope,
             column_id: column.id,
-            column_name: column.name
+            column_name: column.name,
         };
         expect(PlaygroundService.appendStep).toHaveBeenCalledWith('transfo_name', expectedParams);
     }));

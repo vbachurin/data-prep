@@ -11,27 +11,33 @@
 
  ============================================================================*/
 
+import angular from 'angular';
+import uiRouter from 'angular-ui-router';
+import TALEND_WIDGET_MODULE from '../../widgets/widget-module';
+import SERVICES_STATE_MODULE from '../../../services/state/state-module';
+import SERVICES_TRANSFORMATION_MODULE from '../../../services/transformation/transformation-module';
+
 import ActionsSuggestionsCtrl from './actions-suggestions-controller';
 import ActionsSuggestions from './actions-suggestions-directive';
 
-(() => {
-    'use strict';
+const MODULE_NAME = 'data-prep.actions-suggestions';
 
-    /**
-     * @ngdoc object
-     * @name data-prep.actions-suggestions
-     * @description This module contains the entities to manage transformations list
-     * @requires talend.widget
-     * @requires data-prep.services.transformation
-     * @requires data-prep.services.state
-     */
-    angular.module('data-prep.actions-suggestions',
-        [
-            'ui.router',
-            'talend.widget',
-            'data-prep.services.transformation',
-            'data-prep.services.state',
-        ])
-        .controller('ActionsSuggestionsCtrl', ActionsSuggestionsCtrl)
-        .directive('actionsSuggestions', ActionsSuggestions);
-})();
+/**
+ * @ngdoc object
+ * @name data-prep.actions-suggestions
+ * @description This module contains the entities to manage transformations list
+ * @requires talend.widget
+ * @requires data-prep.services.transformation
+ * @requires data-prep.services.state
+ */
+angular.module(MODULE_NAME,
+    [
+        uiRouter,
+        TALEND_WIDGET_MODULE,
+        SERVICES_STATE_MODULE,
+        SERVICES_TRANSFORMATION_MODULE,
+    ])
+    .controller('ActionsSuggestionsCtrl', ActionsSuggestionsCtrl)
+    .directive('actionsSuggestions', ActionsSuggestions);
+
+export default MODULE_NAME;

@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './lookup-datagrid.html';
+
 /**
  * @ngdoc directive
  * @name data-prep.lookup.directive:LookupDatagrid
@@ -33,16 +35,16 @@ export default function LookupDatagrid($timeout, state, LookupDatagridGridServic
 
     return {
         restrict: 'E',
-        templateUrl: 'app/components/lookup/grid/lookup-datagrid.html',
+        templateUrl: template,
         bindToController: true,
         controllerAs: 'lookupDatagridCtrl',
         controller: 'LookupDatagridCtrl',
-        link: function (scope, iElement, iAttrs, ctrl) {
-            var grid;
-            var columnTimeout;
+        link(scope, iElement, iAttrs, ctrl) {
+            let grid;
+            let columnTimeout;
 
             //------------------------------------------------------------------------------------------------------
-            //--------------------------------------------------GETTERS---------------------------------------------
+            // --------------------------------------------------GETTERS---------------------------------------------
             //------------------------------------------------------------------------------------------------------
 
             /**
@@ -51,12 +53,12 @@ export default function LookupDatagrid($timeout, state, LookupDatagridGridServic
              * @methodOf data-prep.lookup.directive:LookupDatagrid
              * @description [PRIVATE] Get the lookup loaded data
              */
-            var getData = function getData() {
+            const getData = function getData() {
                 return state.playground.lookup.data;
             };
 
             //------------------------------------------------------------------------------------------------------
-            //---------------------------------------------------UTILS----------------------------------------------
+            // ---------------------------------------------------UTILS----------------------------------------------
             //------------------------------------------------------------------------------------------------------
 
             /**
@@ -65,18 +67,18 @@ export default function LookupDatagrid($timeout, state, LookupDatagridGridServic
              * @methodOf data-prep.lookup.directive:LookupDatagrid
              * @description [PRIVATE] Update and resize the columns with its headers, set grid styles
              */
-            var onDataChange = function onDataChange(data) {
+            const onDataChange = function onDataChange(data) {
                 if (data) {
                     if (grid) {
                         grid.scrollRowToTop(0);
                     }
 
                     initGridIfNeeded();
-                    var columns;
-                    var selectedColumn;
-                    var stateSelectedColumn = ctrl.state.playground.lookup.selectedColumn;
+                    let columns;
+                    let selectedColumn;
+                    const stateSelectedColumn = ctrl.state.playground.lookup.selectedColumn;
 
-                    //create columns, manage style and size, set columns in grid
+                    // create columns, manage style and size, set columns in grid
                     $timeout.cancel(columnTimeout);
                     columnTimeout = $timeout(function () {
                         columns = LookupDatagridColumnService.createColumns(data.metadata.columns);
@@ -90,7 +92,7 @@ export default function LookupDatagrid($timeout, state, LookupDatagridGridServic
             };
 
             //------------------------------------------------------------------------------------------------------
-            //---------------------------------------------------INIT-----------------------------------------------
+            // ---------------------------------------------------INIT-----------------------------------------------
             //------------------------------------------------------------------------------------------------------
             /**
              * @ngdoc method
@@ -98,7 +100,7 @@ export default function LookupDatagrid($timeout, state, LookupDatagridGridServic
              * @methodOf data-prep.lookup.directive:LookupDatagrid
              * @description [PRIVATE] Init Slick grid and init lookup-datagrid private services.
              */
-            var initGridIfNeeded = function () {
+            const initGridIfNeeded = function () {
                 if (!grid) {
                     grid = LookupDatagridGridService.initGrid('#lookup-datagrid');
 
@@ -109,12 +111,12 @@ export default function LookupDatagrid($timeout, state, LookupDatagridGridServic
             };
 
             //------------------------------------------------------------------------------------------------------
-            //-------------------------------------------------WATCHERS---------------------------------------------
+            // -------------------------------------------------WATCHERS---------------------------------------------
             //------------------------------------------------------------------------------------------------------
             /**
              * Update grid columns and invalidate grid on data change
              */
             scope.$watch(getData, onDataChange);
-        }
+        },
     };
 }

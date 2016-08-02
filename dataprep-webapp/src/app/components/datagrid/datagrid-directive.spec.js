@@ -11,6 +11,8 @@
 
  ============================================================================*/
 
+import DataViewMock from './../../../mocks/DataView.mock';
+
 describe('Datagrid directive', () => {
     'use strict';
 
@@ -22,8 +24,8 @@ describe('Datagrid directive', () => {
     let grid;
     const createdColumns = [{ id: 'tdpId' }, {
         id: '0000',
-        tdpColMetadata: { id: '0000' }
-    }, { id: '0001', tdpColMetadata: { id: '0001' } }, { id: '0002', tdpColMetadata: { id: '0002' } }];
+        tdpColMetadata: { id: '0000' },
+    }, { id: '0001', tdpColMetadata: { id: '0001' } }, { id: '0002', tdpColMetadata: { id: '0002' } },];
 
     beforeEach(() => {
         dataViewMock = new DataViewMock();
@@ -36,13 +38,11 @@ describe('Datagrid directive', () => {
             playground: {
                 filter: { gridFilters: [] },
                 grid: { dataView: dataViewMock, selectedColumn: { id: '0001' }, selectedLine: { '0001': '1' } },
-                lookup: { visibility: false }
-            }
+                lookup: { visibility: false },
+            },
         };
         $provide.constant('state', stateMock);
     }));
-
-    beforeEach(angular.mock.module('htmlTemplates'));
 
     beforeEach(inject(($rootScope, $compile, DatagridGridService, DatagridColumnService, DatagridSizeService, DatagridStyleService, DatagridExternalService, StateService) => {
         scope = $rootScope.$new();
@@ -106,7 +106,7 @@ describe('Datagrid directive', () => {
                 expect(DatagridGridService.initGrid).toHaveBeenCalledWith('#datagrid');
             }));
 
-            it('should init grid only once', inject((DatagridService, DatagridGridService) => {
+            it('should init grid only once', inject((DatagridGridService) => {
                 //given
                 expect(DatagridGridService.initGrid.calls.count()).toBe(1);
 

@@ -4,8 +4,8 @@ describe('Statistics Tooltip service', function () {
 
     beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
-            'TOOLTIP_MATCHING_FILTER': 'matching your filter',
-            'TOOLTIP_MATCHING_FULL': 'in entire dataset'
+            TOOLTIP_MATCHING_FILTER: 'matching your filter',
+            TOOLTIP_MATCHING_FULL: 'in entire dataset',
         });
         $translateProvider.preferredLanguage('en');
     }));
@@ -14,17 +14,17 @@ describe('Statistics Tooltip service', function () {
         stateMock = {
             playground: {
                 filter: { gridFilters: [] },
-                statistics:{
-                    histogram:{
-                        aggregation:null
+                statistics: {
+                    histogram: {
+                        aggregation: null,
                     },
-                    rangeLimits : {
+                    rangeLimits: {
                         min: -10,
-                        max: 5
+                        max: 5,
 
-                    }
-                }
-            }
+                    },
+                },
+            },
         };
         $provide.constant('state', stateMock);
     }));

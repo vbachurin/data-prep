@@ -21,7 +21,7 @@
 export default function ActionsSuggestionsCtrl(state, SuggestionService, ColumnSuggestionService) {
     'ngInject';
 
-    var vm = this;
+    const vm = this;
     vm.columnSuggestionService = ColumnSuggestionService;
     vm.suggestionService = SuggestionService;
     vm.state = state;

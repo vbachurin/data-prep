@@ -11,7 +11,7 @@
 
  ============================================================================*/
 
-function flushAllD3Transitions () {
+function flushAllD3Transitions() {
     const now = Date.now;
     Date.now = () => Infinity;
     d3.timer.flush();
@@ -24,7 +24,6 @@ describe('Range slider directive', () => {
     let scope;
     let ctrl;
 
-    beforeEach(angular.mock.module('htmlTemplates'));
     beforeEach(angular.mock.module('talend.widget'));
 
     beforeEach(inject(($rootScope, $compile) => {
@@ -72,7 +71,7 @@ describe('Range slider directive', () => {
             flushAllD3Transitions();
 
             // then
-            expect(d3.select('.extent').attr('width')).toBe('' + (fullWidth / 2));   // brush width 
+            expect(d3.select('.extent').attr('width')).toBe('' + (fullWidth / 2));   // brush width
             expect(d3.select('.extent').attr('x')).toBe('' + (fullWidth / 4));       // brush position = 5 on 20 -> 1/4th of the width
         }));
 
@@ -93,7 +92,7 @@ describe('Range slider directive', () => {
             flushAllD3Transitions();
 
             // then
-            expect(d3.select('.extent').attr('width')).toBe('' + (fullWidth / 2));   // brush width 
+            expect(d3.select('.extent').attr('width')).toBe('' + (fullWidth / 2));   // brush width
             expect(d3.select('.extent').attr('x')).toBe('' + (fullWidth / 4));       // brush position = 1250000 on 2000000 -> 1/4th of the width
         }));
 
@@ -130,7 +129,7 @@ describe('Range slider directive', () => {
             flushAllD3Transitions();
 
             // then
-            expect(d3.select('.extent').attr('width')).toBe('' + fullWidth);   // brush width 
+            expect(d3.select('.extent').attr('width')).toBe('' + fullWidth);   // brush width
             expect(d3.select('.extent').attr('x')).toBe('0');       // brush position = 5 on 20 -> 1/4th of the width
         }));
 
@@ -154,7 +153,7 @@ describe('Range slider directive', () => {
             scope.$digest();
             $timeout.flush();
 
-            // then : the previous brush should be removed in DOM 
+            // then : the previous brush should be removed in DOM
             expect(element.find('svg').length).toBe(0);
         }));
 
@@ -183,7 +182,7 @@ describe('Range slider directive', () => {
             scope.$digest();
             // we do not flush the $timeout to trigger rerender yet
 
-            // then : the previous brush should still be in DOM 
+            // then : the previous brush should still be in DOM
             expect(element.find('svg').length).toBe(1);
         }));
     });
@@ -259,9 +258,9 @@ describe('Range slider directive', () => {
             // given
             scope.rangeLimits = {
                 type: 'date',
-                min: + new Date('2016/06/27'),
-                max: + new Date('2018/06/27'),
-                minFilterVal: + new Date('2016/06/27'),
+                min: +new Date('2016/06/27'),
+                max: +new Date('2018/06/27'),
+                minFilterVal: +new Date('2016/06/27'),
             };
 
             // when
@@ -276,9 +275,9 @@ describe('Range slider directive', () => {
             // given
             scope.rangeLimits = {
                 type: 'date',
-                min: + new Date('2016/06/27'),
-                max: + new Date('2018/06/27'),
-                maxFilterVal: + new Date('2018/06/27'),
+                min: +new Date('2016/06/27'),
+                max: +new Date('2018/06/27'),
+                maxFilterVal: +new Date('2018/06/27'),
             };
 
             // when

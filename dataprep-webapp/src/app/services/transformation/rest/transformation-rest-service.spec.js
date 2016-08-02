@@ -22,32 +22,32 @@ describe('Transformation Rest Service', function () {
         $httpBackend = $injector.get('$httpBackend');
     }));
 
-    describe('transformations/suggestions', function() {
+    describe('transformations/suggestions', function () {
         var result = [
             {
-                'category': 'case',
-                'items': [],
-                'name': 'uppercase',
-                'value': '',
-                'type': 'OPERATION',
-                'parameters': [{ 'name': 'column_name', 'type': 'string', 'default': '' }]
+                category: 'case',
+                items: [],
+                name: 'uppercase',
+                value: '',
+                type: 'OPERATION',
+                parameters: [{ name: 'column_name', type: 'string', default: '' }],
             },
             {
-                'category': 'case',
-                'items': [],
-                'name': 'lowercase',
-                'value': '',
-                'type': 'OPERATION',
-                'parameters': [{ 'name': 'column_name', 'type': 'string', 'default': '' }]
-            }
+                category: 'case',
+                items: [],
+                name: 'lowercase',
+                value: '',
+                type: 'OPERATION',
+                parameters: [{ name: 'column_name', type: 'string', default: '' }],
+            },
         ];
 
-        describe('column', function() {
+        describe('column', function () {
             var column = {
-                'id': 'firstname',
-                'quality': { 'empty': 0, 'invalid': 0, 'valid': 2 },
-                'type': 'string',
-                'total': 2
+                id: 'firstname',
+                quality: { empty: 0, invalid: 0, valid: 2 },
+                type: 'string',
+                total: 2,
             };
 
             it('should call POST transform rest service to get transformations', inject(function ($rootScope, TransformationRestService, RestURLs) {
@@ -62,6 +62,7 @@ describe('Transformation Rest Service', function () {
                     .then(function (resp) {
                         response = resp.data;
                     });
+
                 $httpBackend.flush();
 
                 //then
@@ -80,6 +81,7 @@ describe('Transformation Rest Service', function () {
                     .then(function (resp) {
                         response = resp.data;
                     });
+
                 $httpBackend.flush();
 
                 //then
@@ -87,7 +89,7 @@ describe('Transformation Rest Service', function () {
             }));
         });
 
-        describe('line', function() {
+        describe('line', function () {
             it('should call GET transform rest service to get transformations', inject(function ($rootScope, TransformationRestService, RestURLs) {
                 //given
                 var response = null;
@@ -100,6 +102,7 @@ describe('Transformation Rest Service', function () {
                     .then(function (resp) {
                         response = resp.data;
                     });
+
                 $httpBackend.flush();
 
                 //then
@@ -108,7 +111,7 @@ describe('Transformation Rest Service', function () {
         });
     });
 
-    describe('dynamic parameters', function() {
+    describe('dynamic parameters', function () {
         it('should call GET transformation dynamic params rest service with preparationId', inject(function ($rootScope, TransformationRestService, RestURLs) {
             //given
             var response = null;
@@ -126,6 +129,7 @@ describe('Transformation Rest Service', function () {
                 .then(function (resp) {
                     response = resp.data;
                 });
+
             $httpBackend.flush();
 
             //then
@@ -150,6 +154,7 @@ describe('Transformation Rest Service', function () {
                 .then(function (resp) {
                     response = resp.data;
                 });
+
             $httpBackend.flush();
 
             //then
@@ -173,6 +178,7 @@ describe('Transformation Rest Service', function () {
                 .then(function (resp) {
                     response = resp.data;
                 });
+
             $httpBackend.flush();
 
             //then
@@ -180,7 +186,7 @@ describe('Transformation Rest Service', function () {
         }));
     });
 
-    describe('datasets transformations', function() {
+    describe('datasets transformations', function () {
         var result = [{}];
 
         it('should fetch the dataset transformations', inject(function ($rootScope, TransformationRestService, RestURLs) {
@@ -196,6 +202,7 @@ describe('Transformation Rest Service', function () {
                 .then(function (resp) {
                     response = resp.data;
                 });
+
             $httpBackend.flush();
 
             //then

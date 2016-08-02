@@ -1,0 +1,9 @@
+{
+  "preset": "airbnb",
+  "validateIndentation": 4,
+  "disallowKeywordsOnNewLine": null,
+  "requireTrailingComma": {
+    "ignoreSingleValue": true,
+    "ignoreSingleLine": true
+  }
+}

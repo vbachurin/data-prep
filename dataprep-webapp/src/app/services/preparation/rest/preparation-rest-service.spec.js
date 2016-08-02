@@ -34,7 +34,7 @@ describe('Preparation REST Service', () => {
                         column_name: 'first_item',
                     },
                 },
-            ]
+            ],
         },
         {
             id: 'fbaa18e82e913e97e5f0e9d40f04413412be1126',
@@ -53,23 +53,23 @@ describe('Preparation REST Service', () => {
                     parameters: {
                         pattern: '-',
                         column_name: 'birth',
-                    }
+                    },
                 },
                 {
                     action: 'fillemptywithdefault',
                     parameters: {
                         default_value: 'N/A',
                         column_name: 'state',
-                    }
+                    },
                 },
                 {
                     action: 'uppercase',
                     parameters: {
                         column_name: 'lastname',
-                    }
+                    },
                 },
-            ]
-        }
+            ],
+        },
     ];
 
     const records = {
@@ -95,7 +95,7 @@ describe('Preparation REST Service', () => {
                 state: 'WA',
                 nbCommands: '17',
                 lastname: 'Johnson',
-            }
+            },
         ],
     };
 
@@ -194,7 +194,7 @@ describe('Preparation REST Service', () => {
             //when
             PreparationRestService.getPreparations()
                 .then((response) => {
-                    preparations = response.data
+                    preparations = response.data;
                 });
             $httpBackend.flush();
             $rootScope.$digest();
@@ -214,7 +214,7 @@ describe('Preparation REST Service', () => {
             //when
             PreparationRestService.getDetails(preparationId)
                 .then((response) => {
-                    details = response.data
+                    details = response.data;
                 });
             $httpBackend.flush();
             $rootScope.$digest();
@@ -234,7 +234,7 @@ describe('Preparation REST Service', () => {
             //when
             PreparationRestService.getContent(preparationId, 'head')
                 .then((response) => {
-                    content = response
+                    content = response;
                 });
             $httpBackend.flush();
             $rootScope.$digest();
@@ -251,8 +251,8 @@ describe('Preparation REST Service', () => {
                 action: 'fillemptywithdefault',
                 parameters: {
                     action: 'fillemptywithdefault',
-                    parameters: { default_value: 'N/A', column_name: 'state', column_id: '0000' }
-                }
+                    parameters: { default_value: 'N/A', column_name: 'state', column_id: '0000' },
+                },
             };
 
             const preparationId = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
@@ -260,7 +260,7 @@ describe('Preparation REST Service', () => {
             //given : preparation step append request
             $httpBackend
                 .expectPOST(RestURLs.preparationUrl + '/' + preparationId + '/actions', {
-                    actions: [actionParams]
+                    actions: [actionParams],
                 })
                 .respond(200);
 
@@ -269,7 +269,7 @@ describe('Preparation REST Service', () => {
             $httpBackend.flush();
             $rootScope.$digest();
 
-        //then : append request to have been called
+            //then : append request to have been called
         }));
 
         it('should append a transformation step in the current preparation at a provided insertion point', inject(($rootScope, RestURLs, PreparationRestService) => {
@@ -278,8 +278,8 @@ describe('Preparation REST Service', () => {
                 action: 'fillemptywithdefault',
                 parameters: {
                     action: 'fillemptywithdefault',
-                    parameters: { default_value: 'N/A', column_name: 'state', column_id: '0000' }
-                }
+                    parameters: { default_value: 'N/A', column_name: 'state', column_id: '0000' },
+                },
             };
             const insertionPoint = '65ab26e169174ef68b434';
 
@@ -289,7 +289,7 @@ describe('Preparation REST Service', () => {
             $httpBackend
                 .expectPOST(RestURLs.preparationUrl + '/' + preparationId + '/actions', {
                     insertionStepId: insertionPoint,
-                    actions: [actionParams]
+                    actions: [actionParams],
                 })
                 .respond(200);
 
@@ -298,7 +298,7 @@ describe('Preparation REST Service', () => {
             $httpBackend.flush();
             $rootScope.$digest();
 
-        //then : append request to have been called
+            //then : append request to have been called
         }));
 
         it('should append a list of transformation step in the current preparation', inject(($rootScope, RestURLs, PreparationRestService) => {
@@ -306,9 +306,9 @@ describe('Preparation REST Service', () => {
             const actionParams = [
                 {
                     action: 'fillemptywithdefault',
-                    parameters: { default_value: 'N/A', column_name: 'state', column_id: '0000' }
+                    parameters: { default_value: 'N/A', column_name: 'state', column_id: '0000' },
                 },
-                { action: 'uppercase', parameters: { column_name: 'lastname', column_id: '0001' } }
+                { action: 'uppercase', parameters: { column_name: 'lastname', column_id: '0001' } },
             ];
 
             const preparationId = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
@@ -316,7 +316,7 @@ describe('Preparation REST Service', () => {
             //given : preparation step append request
             $httpBackend
                 .expectPOST(RestURLs.preparationUrl + '/' + preparationId + '/actions', {
-                    actions: actionParams
+                    actions: actionParams,
                 })
                 .respond(200);
 
@@ -325,7 +325,7 @@ describe('Preparation REST Service', () => {
             $httpBackend.flush();
             $rootScope.$digest();
 
-        //then : update request to have been called
+            //then : update request to have been called
         }));
 
         it('should update a transformation step in the current preparation', inject(($rootScope, RestURLs, PreparationRestService) => {
@@ -334,8 +334,8 @@ describe('Preparation REST Service', () => {
                 action: 'fillemptywithdefault',
                 parameters: {
                     action: 'fillemptywithdefault',
-                    parameters: { default_value: 'N/A', column_name: 'state', column_id: '0000' }
-                }
+                    parameters: { default_value: 'N/A', column_name: 'state', column_id: '0000' },
+                },
             };
             const stepId = '18046df82f0946af05ee766d0ac06f92f63e7047';
 
@@ -344,7 +344,7 @@ describe('Preparation REST Service', () => {
             //given : preparation step update request
             $httpBackend
                 .expectPUT(RestURLs.preparationUrl + '/' + preparationId + '/actions/' + stepId, {
-                    actions: [actionParams]
+                    actions: [actionParams],
                 })
                 .respond(200);
 
@@ -353,7 +353,7 @@ describe('Preparation REST Service', () => {
             $httpBackend.flush();
             $rootScope.$digest();
 
-        //then : update request to have been called
+            //then : update request to have been called
         }));
 
         it('should remove a transformation step in the preparation', inject(($rootScope, RestURLs, PreparationRestService) => {
@@ -370,7 +370,7 @@ describe('Preparation REST Service', () => {
             $httpBackend.flush();
             $rootScope.$digest();
 
-        //then : delete request to have been called
+            //then : delete request to have been called
         }));
 
         it('should move preparation head', inject(($rootScope, RestURLs, PreparationRestService) => {
@@ -387,7 +387,7 @@ describe('Preparation REST Service', () => {
             $httpBackend.flush();
             $rootScope.$digest();
 
-        //then : put request to have been called
+            //then : put request to have been called
         }));
 
         it('should copy preparation reference steps', inject(($rootScope, RestURLs, PreparationRestService) => {
@@ -404,7 +404,7 @@ describe('Preparation REST Service', () => {
             $httpBackend.flush();
             $rootScope.$digest();
 
-        //then : put request to have been called
+            //then : put request to have been called
         }));
     });
 
@@ -419,7 +419,7 @@ describe('Preparation REST Service', () => {
                 tdpIds: [1, 2, 3, 4, 5],
                 currentStepId: '18046df82f0946af05ee766d0ac06f92f63e7047',
                 previewStepId: '856980bacf0890c89bc318856980bacf0890c89b',
-                preparationId: 'fbaa18e82e913e97e5f0e9d40f04413412be1126'
+                preparationId: 'fbaa18e82e913e97e5f0e9d40f04413412be1126',
             };
 
             $httpBackend
@@ -453,7 +453,7 @@ describe('Preparation REST Service', () => {
                 tdpIds: [1, 2, 3, 4, 5],
                 currentStepId: '18046df82f0946af05ee766d0ac06f92f63e7047',
                 previewStepId: '856980bacf0890c89bc318856980bacf0890c89b',
-                preparationId: 'fbaa18e82e913e97e5f0e9d40f04413412be1126'
+                preparationId: 'fbaa18e82e913e97e5f0e9d40f04413412be1126',
             };
 
             $httpBackend
@@ -486,12 +486,12 @@ describe('Preparation REST Service', () => {
             const params = {
                 action: {
                     action: 'cut',
-                    parameters: newParams
+                    parameters: newParams,
                 },
                 tdpIds: [1, 2, 3, 4, 5],
                 currentStepId: '18046df82f0946af05ee766d0ac06f92f63e7047',
                 updateStepId: '856980bacf0890c89bc318856980bacf0890c89b',
-                preparationId: 'fbaa18e82e913e97e5f0e9d40f04413412be1126'
+                preparationId: 'fbaa18e82e913e97e5f0e9d40f04413412be1126',
             };
 
             $httpBackend
@@ -525,12 +525,12 @@ describe('Preparation REST Service', () => {
             const params = {
                 action: {
                     action: 'cut',
-                    parameters: newParams
+                    parameters: newParams,
                 },
                 tdpIds: [1, 2, 3, 4, 5],
                 currentStepId: '18046df82f0946af05ee766d0ac06f92f63e7047',
                 updateStepId: '856980bacf0890c89bc318856980bacf0890c89b',
-                preparationId: 'fbaa18e82e913e97e5f0e9d40f04413412be1126'
+                preparationId: 'fbaa18e82e913e97e5f0e9d40f04413412be1126',
             };
 
             $httpBackend
@@ -563,11 +563,11 @@ describe('Preparation REST Service', () => {
             const params = {
                 action: {
                     action: 'cut',
-                    parameters: { value: 'toto' }
+                    parameters: { value: 'toto' },
                 },
                 tdpIds: [1, 2, 3, 4, 5],
                 preparationId: 'fbaa18e82e913e97e5f0e9d40f04413412be1126',
-                datasetId: '856980bacf0890c89bc318856980bacf0890c89b'
+                datasetId: '856980bacf0890c89bc318856980bacf0890c89b',
             };
 
             $httpBackend
@@ -599,11 +599,11 @@ describe('Preparation REST Service', () => {
             const params = {
                 action: {
                     action: 'cut',
-                    parameters: { value: 'toto' }
+                    parameters: { value: 'toto' },
                 },
                 tdpIds: [1, 2, 3, 4, 5],
                 preparationId: 'fbaa18e82e913e97e5f0e9d40f04413412be1126',
-                datasetId: '856980bacf0890c89bc318856980bacf0890c89b'
+                datasetId: '856980bacf0890c89bc318856980bacf0890c89b',
             };
 
             $httpBackend

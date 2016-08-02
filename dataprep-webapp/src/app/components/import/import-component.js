@@ -11,6 +11,8 @@
 
  ============================================================================*/
 
+import template from './import.html';
+
 /**
  * @ngdoc directive
  * @name data-prep.data-prep.import.component:ImportComponent
@@ -22,8 +24,8 @@
 import ImportCtrl from './import-controller';
 
 const ImportComponent = {
-    templateUrl: 'app/components/import/import.html',
-    controller: ImportCtrl
+    templateUrl: template,
+    controller: ImportCtrl,
 };
 
 export default ImportComponent;

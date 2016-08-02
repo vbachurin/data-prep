@@ -23,7 +23,7 @@ describe('Transform cluster params controller', function () {
         return {
             titles: [
                 'We found these values',
-                'And we\'ll keep this value'
+                'And we\'ll keep this value',
             ],
             clusters: [
                 {
@@ -33,30 +33,30 @@ describe('Transform cluster params controller', function () {
                             type: 'boolean',
                             description: 'parameter.Texa.desc',
                             label: 'parameter.Texa.label',
-                            default: null
+                            default: null,
                         },
                         {
                             name: 'Tixass',
                             type: 'boolean',
                             description: 'parameter.Tixass.desc',
                             label: 'parameter.Tixass.label',
-                            default: null
+                            default: null,
                         },
                         {
                             name: 'Tex@s',
                             type: 'boolean',
                             description: 'parameter.Tex@s.desc',
                             label: 'parameter.Tex@s.label',
-                            default: null
-                        }
+                            default: null,
+                        },
                     ],
-                    'replace': {
+                    replace: {
                         name: 'replaceValue',
                         type: 'string',
                         description: 'parameter.replaceValue.desc',
                         label: 'parameter.replaceValue.label',
-                        default: 'Texas'
-                    }
+                        default: 'Texas',
+                    },
                 },
                 {
                     parameters: [
@@ -65,46 +65,46 @@ describe('Transform cluster params controller', function () {
                             type: 'boolean',
                             description: 'parameter.Massachusetts.desc',
                             label: 'parameter.Massachusetts.label',
-                            default: null
+                            default: null,
                         },
                         {
                             name: 'Masachusetts',
                             type: 'boolean',
                             description: 'parameter.Masachusetts.desc',
                             label: 'parameter.Masachusetts.label',
-                            default: null
+                            default: null,
                         },
                         {
                             name: 'Massachussetts',
                             type: 'boolean',
                             description: 'parameter.Massachussetts.desc',
                             label: 'parameter.Massachussetts.label',
-                            default: null
+                            default: null,
                         },
                         {
                             name: 'Massachusets',
                             type: 'boolean',
                             description: 'parameter.Massachusets.desc',
                             label: 'parameter.Massachusets.label',
-                            default: null
+                            default: null,
                         },
                         {
                             name: 'Masachussets',
                             type: 'boolean',
                             description: 'parameter.Masachussets.desc',
                             label: 'parameter.Masachussets.label',
-                            default: null
-                        }
+                            default: null,
+                        },
                     ],
                     replace: {
                         name: 'replaceValue',
                         type: 'string',
                         description: 'parameter.replaceValue.desc',
                         label: 'parameter.replaceValue.label',
-                        default: 'Massachussets'
-                    }
-                }
-            ]
+                        default: 'Massachussets',
+                    },
+                },
+            ],
         };
     }
 
@@ -112,7 +112,7 @@ describe('Transform cluster params controller', function () {
         return {
             titles: [
                 'We found these values',
-                'And we\'ll keep this value'
+                'And we\'ll keep this value',
             ],
             clusters: [
                 {
@@ -123,30 +123,30 @@ describe('Transform cluster params controller', function () {
                             type: 'boolean',
                             description: 'parameter.Texa.desc',
                             label: 'parameter.Texa.label',
-                            default: null
+                            default: null,
                         },
                         {
                             name: 'Tixass',
                             type: 'boolean',
                             description: 'parameter.Tixass.desc',
                             label: 'parameter.Tixass.label',
-                            default: null
+                            default: null,
                         },
                         {
                             name: 'Tex@s',
                             type: 'boolean',
                             description: 'parameter.Tex@s.desc',
                             label: 'parameter.Tex@s.label',
-                            default: null
-                        }
+                            default: null,
+                        },
                     ],
-                    'replace': {
+                    replace: {
                         name: 'replaceValue',
                         type: 'string',
                         description: 'parameter.replaceValue.desc',
                         label: 'parameter.replaceValue.label',
-                        default: 'Texas'
-                    }
+                        default: 'Texas',
+                    },
                 },
                 {
                     initialActive: false,
@@ -156,46 +156,46 @@ describe('Transform cluster params controller', function () {
                             type: 'boolean',
                             description: 'parameter.Massachusetts.desc',
                             label: 'parameter.Massachusetts.label',
-                            default: null
+                            default: null,
                         },
                         {
                             name: 'Masachusetts',
                             type: 'boolean',
                             description: 'parameter.Masachusetts.desc',
                             label: 'parameter.Masachusetts.label',
-                            default: null
+                            default: null,
                         },
                         {
                             name: 'Massachussetts',
                             type: 'boolean',
                             description: 'parameter.Massachussetts.desc',
                             label: 'parameter.Massachussetts.label',
-                            default: null
+                            default: null,
                         },
                         {
                             name: 'Massachusets',
                             type: 'boolean',
                             description: 'parameter.Massachusets.desc',
                             label: 'parameter.Massachusets.label',
-                            default: null
+                            default: null,
                         },
                         {
                             name: 'Masachussets',
                             type: 'boolean',
                             description: 'parameter.Masachussets.desc',
                             label: 'parameter.Masachussets.label',
-                            default: null
-                        }
+                            default: null,
+                        },
                     ],
                     replace: {
                         name: 'replaceValue',
                         type: 'string',
                         description: 'parameter.replaceValue.desc',
                         label: 'parameter.replaceValue.label',
-                        default: 'Massachussets'
-                    }
-                }
-            ]
+                        default: 'Massachussets',
+                    },
+                },
+            ],
         };
     }
 
@@ -209,7 +209,7 @@ describe('Transform cluster params controller', function () {
 
         createController = function (clusterDetails) {
             var ctrlFn = $controller('TransformClusterParamsCtrl', {
-                $scope: scope
+                $scope: scope,
             }, true);
             ctrlFn.instance.details = clusterDetails || details;
             return ctrlFn();
@@ -297,7 +297,6 @@ describe('Transform cluster params controller', function () {
         expect(ctrl.details.clusters[0].replace.list).toEqual(['Texa', 'Tixass', 'Tex@s']);
         expect(ctrl.details.clusters[1].replace.list).toEqual(['Massachusetts', 'Masachusetts', 'Massachussetts', 'Massachusets', 'Masachussets']);
     });
-
 
     it('should call refreshClusterState if cluster is not initialized', function () {
 

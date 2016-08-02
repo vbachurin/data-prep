@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './transformation-choice-param.html';
+
 /**
  * @ngdoc directive
  * @name data-prep.transformation-form.directive:TransformChoiceParam
@@ -24,9 +26,9 @@ export default function TransformChoiceParam($rootScope, $compile) {
 
     return {
         restrict: 'E',
-        templateUrl: 'app/components/transformation/form/choice/transformation-choice-param.html',
+        templateUrl: template,
         scope: {
-            parameter: '='
+            parameter: '=',
         },
         bindToController: true,
         controllerAs: 'choiceParamCtrl',
@@ -54,6 +56,6 @@ export default function TransformChoiceParam($rootScope, $compile) {
                     });
                 })
                 .value();
-        }
+        },
     };
 }

@@ -18,10 +18,10 @@ describe('folder selection component', () => {
     let tree;
 
     beforeEach(angular.mock.module('data-prep.folder-selection'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+
     beforeEach(angular.mock.module('pascalprecht.translate', ($translateProvider) => {
         $translateProvider.translations('en', {
-            "FOLDER_PATH": "(Path: {{path}})"
+            FOLDER_PATH: '(Path: {{path}})',
         });
         $translateProvider.preferredLanguage('en');
     }));
@@ -67,7 +67,7 @@ describe('folder selection component', () => {
                             },
                             children: [],
                         },
-                    ]
+                    ],
                 },
                 {
                     folder: { // /folder2
@@ -83,8 +83,8 @@ describe('folder selection component', () => {
                                 path: '/folder2/subfolder3',
                             },
                             children: [],
-                        }
-                    ]
+                        },
+                    ],
                 },
             ],
         };

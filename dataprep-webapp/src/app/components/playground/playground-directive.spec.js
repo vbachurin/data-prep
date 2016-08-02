@@ -21,11 +21,11 @@ describe('Playground directive', () => {
     let stateMock;
 
     const metadata = {
-        'id': '12ce6c32-bf80-41c8-92e5-66d70f22ec1f',
-        'name': 'US States',
-        'author': 'anonymousUser',
-        'created': '02-03-2015 14:52',
-        'records': '3',
+        id: '12ce6c32-bf80-41c8-92e5-66d70f22ec1f',
+        name: 'US States',
+        author: 'anonymousUser',
+        created: '02-03-2015 14:52',
+        records: '3',
     };
 
     const sortList = [
@@ -50,19 +50,19 @@ describe('Playground directive', () => {
                     orderList: orderList,
                 },
                 grid: {
-                    selectedColumn: { 'id': '0001' },
+                    selectedColumn: { id: '0001' },
                     selectedLine: { '0001': '1' },
                 },
+                recipe: { current: { steps: [] } },
             },
             inventory: {
                 datasets: [],
                 sortList: sortList,
                 orderList: orderList,
-            }
+            },
         };
         $provide.constant('state', stateMock);
     }));
-    beforeEach(angular.mock.module('htmlTemplates'));
 
     beforeEach(inject(($rootScope, $compile) => {
         scope = $rootScope.$new();
@@ -133,9 +133,8 @@ describe('Playground directive', () => {
             expect(title.length).toBe(1);
         });
 
-        it('should toggle recipe on click on the On/Off switch', inject((RecipeBulletService, RecipeService) => {
+        it('should toggle recipe on click on the On/Off switch', inject((PlaygroundService) => {
             //given
-            stateMock.playground.recipe = { visible: true };
             const step = {
                 inactive: false,
                 transformation: {
@@ -143,12 +142,13 @@ describe('Playground directive', () => {
                     name: 'propercase',
                     parameters: [],
                     items: [],
-                    dynamic: false
-                }
+                    dynamic: false,
+                },
             };
-            RecipeService.getRecipe().push(step);
+            stateMock.playground.recipe.visible = true;
+            stateMock.playground.recipe.current.steps.push(step);
 
-            spyOn(RecipeBulletService, 'toggleRecipe').and.returnValue();
+            spyOn(PlaygroundService, 'toggleRecipe').and.returnValue();
 
             createElement();
             const chkboxOnOff = element.find('.label-switch > input[type="checkbox"]');
@@ -157,10 +157,10 @@ describe('Playground directive', () => {
             chkboxOnOff.trigger('click');
 
             //then
-            expect(RecipeBulletService.toggleRecipe).toHaveBeenCalled();
+            expect(PlaygroundService.toggleRecipe).toHaveBeenCalled();
         }));
 
-        it('should switch OFF the On/Off switch when the 1st step is INACTIVE', inject((RecipeService) => {
+        it('should switch OFF the On/Off switch when the 1st step is INACTIVE', () => {
             //given
             stateMock.playground.dataset = metadata;
             const step = {
@@ -170,10 +170,10 @@ describe('Playground directive', () => {
                     name: 'propercase',
                     parameters: [],
                     items: [],
-                    dynamic: false
-                }
+                    dynamic: false,
+                },
             };
-            RecipeService.getRecipe().push(step);
+            stateMock.playground.recipe.current.steps.push(step);
             createElement();
 
             const chkboxOnOff = element.find('.label-switch > input[type="checkbox"]');
@@ -185,7 +185,7 @@ describe('Playground directive', () => {
 
             //then
             expect(chkboxOnOff.prop('checked')).toBe(false);
-        }));
+        });
 
         it('should switch ON the On/Off switch when the 1st step is ACTIVE', inject((RecipeService) => {
             //given
@@ -197,10 +197,10 @@ describe('Playground directive', () => {
                     name: 'propercase',
                     parameters: [],
                     items: [],
-                    dynamic: false
-                }
+                    dynamic: false,
+                },
             };
-            RecipeService.getRecipe().push(step);
+            stateMock.playground.recipe.current.steps.push(step);
             createElement();
 
             const chkboxOnOff = element.find('.label-switch > input[type="checkbox"]');

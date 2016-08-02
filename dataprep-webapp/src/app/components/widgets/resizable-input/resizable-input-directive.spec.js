@@ -19,15 +19,14 @@ describe('Resizable input directive', () => {
     let element;
 
     beforeEach(angular.mock.module('talend.widget'));
-    beforeEach(angular.mock.module('htmlTemplates'));
 
     const defaultInput = {
         content: 'Lorem ipsum',
-        width: '84px'
+        width: '84px',
     };
     const newInput = {
         content: 'Lorem ipsum dolor sit amet',
-        width: '189px'
+        width: '189px',
     };
 
     beforeEach(inject(($rootScope, $compile) => {

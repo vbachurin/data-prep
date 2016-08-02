@@ -22,11 +22,11 @@ export default function TransformationRestService($http, RestURLs) {
     'ngInject';
 
     return {
-        getDatasetTransformations: getDatasetTransformations,
-        getDynamicParameters: getDynamicParameters,
-        getColumnSuggestions: getColumnSuggestions,
-        getColumnTransformations: getColumnTransformations,
-        getLineTransformations: getLineTransformations
+        getDatasetTransformations,
+        getDynamicParameters,
+        getColumnSuggestions,
+        getColumnTransformations,
+        getLineTransformations,
     };
 
     /**
@@ -90,7 +90,7 @@ export default function TransformationRestService($http, RestURLs) {
      * @returns {Promise} The GET promise
      */
     function getDynamicParameters(action, columnId, datasetId, preparationId, stepId) {
-        var queryParams = preparationId ? '?preparationId=' + encodeURIComponent(preparationId) : '?datasetId=' + encodeURIComponent(datasetId);
+        let queryParams = preparationId ? '?preparationId=' + encodeURIComponent(preparationId) : '?datasetId=' + encodeURIComponent(datasetId);
         queryParams += stepId ? '&stepId=' + encodeURIComponent(stepId) : '';
         queryParams += '&columnId=' + encodeURIComponent(columnId);
 

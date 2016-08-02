@@ -116,6 +116,9 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction, Dat
     }
 
     private List<DatePattern> compileFromDatePattern(ActionContext actionContext) {
+        if (actionContext.getParameters() == null) {
+            return emptyList();
+        }
         switch (actionContext.getParameters().get(FROM_MODE)) {
         case FROM_MODE_BEST_GUESS:
             final RowMetadata rowMetadata = actionContext.getRowMetadata();

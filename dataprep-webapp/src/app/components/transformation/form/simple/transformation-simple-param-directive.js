@@ -11,6 +11,8 @@
 
  ============================================================================*/
 
+import template from './transformation-simple-param.html';
+
 /**
  * @ngdoc directive
  * @name data-prep.transformation-form.directive:TransformSimpleParam
@@ -36,14 +38,14 @@
 export default function TransformSimpleParam() {
     return {
         restrict: 'E',
-        templateUrl: 'app/components/transformation/form/simple/transformation-simple-param.html',
+        templateUrl: template,
         scope: {
             editableSelect: '=',
             parameter: '=',
-            label: '@'
+            label: '@',
         },
         bindToController: true,
         controllerAs: 'simpleParamCtrl',
-        controller: 'TransformSimpleParamCtrl'
+        controller: 'TransformSimpleParamCtrl',
     };
 }

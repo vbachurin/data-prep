@@ -11,6 +11,9 @@
 
  ============================================================================*/
 
+import d3 from 'd3';
+import template from './range-slider.html';
+
 /**
  * Return the timestamp at midnight
  */
@@ -47,29 +50,29 @@ export default function RangeSlider($timeout) {
         restrict: 'E',
         scope: {
             rangeLimits: '<',
-            onBrushEnd: '&'
+            onBrushEnd: '&',
         },
         controller: 'RangeSliderCtrl',
         controllerAs: 'rangeSliderCtrl',
         bindToController: true,
-        templateUrl: 'app/components/widgets/charts/range-slider/range-slider.html',
+        templateUrl: template,
 
-        link: function (scope, element, attrs, ctrl) {
+        link(scope, element, attrs, ctrl) {
             let renderTimeout;
 
-            //d3
+            // d3
             let scale;
             let svg;
             let brush;
             let brushg;
 
-            //the left and right margins MUST be the same as the vertical Barchart ones
+            // the left and right margins MUST be the same as the vertical Barchart ones
             const MARGIN = { top: 5, right: 20, bottom: 5, left: 15 };
             const WIDTH = attrs.width - MARGIN.left - MARGIN.right;
             const HEIGHT = attrs.height - MARGIN.top - MARGIN.bottom;
 
             //--------------------------------------------------------------------------------------------------
-            //----------------------------------------------CONTAINER-------------------------------------------
+            // ----------------------------------------------CONTAINER-------------------------------------------
             //--------------------------------------------------------------------------------------------------
             /**
              * @ngdoc method
@@ -101,7 +104,7 @@ export default function RangeSlider($timeout) {
             }
 
             //--------------------------------------------------------------------------------------------------
-            //------------------------------------------------BRUSH---------------------------------------------
+            // ------------------------------------------------BRUSH---------------------------------------------
             //--------------------------------------------------------------------------------------------------
             /**
              * @ngdoc method
@@ -197,7 +200,7 @@ export default function RangeSlider($timeout) {
                 const brushExtent = brush.extent();
                 return [
                     ctrl.isDateType() ? setDateTimeToMidnight(brushExtent[0]) : +brushExtent[0].toFixed(ctrl.nbDecimals),
-                    ctrl.isDateType() ? setDateTimeToMidnight(brushExtent[1]) : +brushExtent[1].toFixed(ctrl.nbDecimals)
+                    ctrl.isDateType() ? setDateTimeToMidnight(brushExtent[1]) : +brushExtent[1].toFixed(ctrl.nbDecimals),
                 ];
             }
 
@@ -224,7 +227,7 @@ export default function RangeSlider($timeout) {
                         $timeout(() => {
                             ctrl.setInputValue({
                                 min: brushValues[0],
-                                max: brushValues[1]
+                                max: brushValues[1],
                             });
                         });
                     })
@@ -241,7 +244,7 @@ export default function RangeSlider($timeout) {
 
                         ctrl.onBrushChange({
                             min: brushValues[0],
-                            max: brushValues[1]
+                            max: brushValues[1],
                         });
                     });
             }
@@ -311,12 +314,15 @@ export default function RangeSlider($timeout) {
                 if (typeof rangeLimits.minBrush !== 'undefined') {
                     rangeLimits.minBrush = setDateTimeToMidnight(rangeLimits.minBrush);
                 }
+
                 if (typeof rangeLimits.maxBrush !== 'undefined') {
                     rangeLimits.maxBrush = setDateTimeToMidnight(rangeLimits.maxBrush);
                 }
+
                 if (typeof rangeLimits.minFilterVal !== 'undefined') {
                     rangeLimits.minFilterVal = setDateTimeToMidnight(rangeLimits.minFilterVal);
                 }
+
                 if (typeof rangeLimits.maxFilterVal !== 'undefined') {
                     rangeLimits.maxFilterVal = setDateTimeToMidnight(rangeLimits.maxFilterVal);
                 }
@@ -359,6 +365,6 @@ export default function RangeSlider($timeout) {
             scope.$on('$destroy', function () {
                 $timeout.cancel(renderTimeout);
             });
-        }
+        },
     };
 }

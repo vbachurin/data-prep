@@ -13,6 +13,8 @@
 
 import TypeaheadCtrl from './typeahead-controller';
 
+import template from './typeahead.html';
+
 /**
  * @ngdoc directive
  * @name talend.widget.directive:Typeahead
@@ -28,12 +30,12 @@ export default function Typeahead($timeout, $window) {
     return {
         restrict: 'E',
         transclude: true,
-        templateUrl: 'app/components/widgets/typeahead/typeahead.html',
+        templateUrl: template,
         scope: {
             search: '&',
             placeholder: '@',
             searchingText: '@',
-            customRender: '@'
+            customRender: '@',
         },
         bindToController: true,
         controller: TypeaheadCtrl,
@@ -59,7 +61,7 @@ export default function Typeahead($timeout, $window) {
                     const containerTop = container.offset().top;
                     if (nextTop < containerTop) {
                         container.animate({
-                            scrollTop: container.scrollTop() - (containerTop - nextTop)
+                            scrollTop: container.scrollTop() - (containerTop - nextTop),
                         }, 'fast');
                     }
 
@@ -67,7 +69,7 @@ export default function Typeahead($timeout, $window) {
                     const containerBottom = containerTop + container.height();
                     if (nextBottom > containerBottom) {
                         container.animate({
-                            scrollTop: container.scrollTop() + (nextBottom - containerBottom)
+                            scrollTop: container.scrollTop() + (nextBottom - containerBottom),
                         }, 'fast');
                     }
                 }
@@ -88,43 +90,44 @@ export default function Typeahead($timeout, $window) {
                     let next;
 
                     switch (event.keyCode) {
-                        case 27: //ESC
-                            ctrl.hideResults();
-                            scope.$digest();
-                            break;
-                        case 38: //UP
-                            current = getCurrentItem();
-                            next = (!current.length || current.is(':first-child')) ?
+                    case 27: // ESC
+                        ctrl.hideResults();
+                        scope.$digest();
+                        break;
+                    case 38: // UP
+                        current = getCurrentItem();
+                        next = (!current.length || current.is(':first-child')) ?
                                 getItemList().last() :
                                 current.prev();
+                        break;
+                    case 40: // DOWN
+                        if (!ctrl.visible) {
+                            showResults();
                             break;
-                        case 40: //DOWN
-                            if (!ctrl.visible) {
-                                showResults();
-                                break;
-                            }
+                        }
 
-                            current = getCurrentItem();
-                            next = (!current.length || current.is(':last-child')) ?
+                        current = getCurrentItem();
+                        next = (!current.length || current.is(':last-child')) ?
                                 getItemList().eq(0) :
                                 current.next();
+                        break;
+                    case 13: // ENTER
+                        if (!ctrl.visible) {
+                            showResults();
                             break;
-                        case 13: //ENTER
-                            if (!ctrl.visible) {
-                                showResults();
-                                break;
-                            }
+                        }
 
-                            current = getCurrentItem();
-                            if (current.length) {
-                                if (current.children().eq(0).is('a')) {
-                                    $window.open(current.children().eq(0).attr('href'), current.children().eq(0).attr('target'));
-                                }
-                                else {
-                                    current.children().click();
-                                }
+                        current = getCurrentItem();
+                        if (current.length) {
+                            if (current.children().eq(0).is('a')) {
+                                $window.open(current.children().eq(0).attr('href'), current.children().eq(0).attr('target'));
                             }
-                            break;
+                            else {
+                                current.children().click();
+                            }
+                        }
+
+                        break;
                     }
 
                     if (next) {
@@ -141,7 +144,7 @@ export default function Typeahead($timeout, $window) {
 
                 iElement.on('$destroy', () => scope.$destroy());
                 scope.$on('$destroy', () => body.off('click', hideResults));
-            }
-        }
+            },
+        },
     };
 }

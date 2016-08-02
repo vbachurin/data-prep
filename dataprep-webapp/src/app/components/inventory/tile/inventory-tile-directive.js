@@ -10,6 +10,9 @@
  9 rue Pages 92150 Suresnes, France
 
  ============================================================================*/
+
+import template from './inventory-tile.html';
+
 /**
  * @ngdoc directive
  * @name data-prep.inventory-tile.directive:InventoryTile
@@ -39,11 +42,12 @@
 export default function inventoryTile() {
     return {
         restrict: 'E',
-        templateUrl: 'app/components/inventory/tile/inventory-tile.html',
+        templateUrl: template,
         bindToController: true,
         controllerAs: 'inventoryTileCtrl',
         controller: () => {
         },
+
         scope: {
             dataset: '<',
             preparation: '<',
@@ -55,10 +59,10 @@ export default function inventoryTile() {
             onTitleClick: '&',
         },
         link: (scope, iElement, iAttrs, ctrl) => {
-            ctrl.editableTitle =  iAttrs.onRename;
+            ctrl.editableTitle = iAttrs.onRename;
             ctrl.showFavoriteIcon = iAttrs.onFavorite;
-            ctrl.showCloneIcon =  iAttrs.onClone;
-            ctrl.showRemoveIcon =  iAttrs.onRemove;
-        }
+            ctrl.showCloneIcon = iAttrs.onClone;
+            ctrl.showRemoveIcon = iAttrs.onRemove;
+        },
     };
 }

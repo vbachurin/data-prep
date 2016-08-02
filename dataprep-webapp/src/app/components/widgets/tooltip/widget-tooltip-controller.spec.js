@@ -19,18 +19,18 @@ describe('Tooltip widget controller', function () {
 
     beforeEach(angular.mock.module('talend.widget'));
 
-    beforeEach(inject(function($rootScope, $controller) {
+    beforeEach(inject(function ($rootScope, $controller) {
         scope = $rootScope.$new();
 
         createController = function () {
             var ctrl = $controller('TalendTooltipCtrl', {
-                $scope: scope
+                $scope: scope,
             });
             return ctrl;
         };
     }));
 
-    it('should update position', function() {
+    it('should update position', function () {
         //given
         var ctrl = createController();
         var horizontalPosition = { left: 1, right: 2 };
@@ -46,7 +46,7 @@ describe('Tooltip widget controller', function () {
         expect(ctrl.style.bottom).toBe(4);
     });
 
-    it('should update visibility state when it is not blocked', function() {
+    it('should update visibility state when it is not blocked', function () {
         //given
         var ctrl = createController();
         expect(ctrl.requestedState).toBeFalsy();
@@ -60,7 +60,7 @@ describe('Tooltip widget controller', function () {
         expect(ctrl.innerState).toBe(true);
     });
 
-    it('should not update visibility state when it is blocked', function() {
+    it('should not update visibility state when it is blocked', function () {
         //given
         var ctrl = createController();
         ctrl.blockState();
@@ -75,7 +75,7 @@ describe('Tooltip widget controller', function () {
         expect(ctrl.innerState).toBeFalsy();
     });
 
-    it('should unblock and update visibility state', function() {
+    it('should unblock and update visibility state', function () {
         //given
         var ctrl = createController();
         ctrl.blockState();

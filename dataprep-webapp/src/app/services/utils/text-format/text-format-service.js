@@ -11,6 +11,9 @@
 
  ============================================================================*/
 
+import _ from 'lodash';
+import moment from 'moment-jdateformatparser';
+
 /**
  * @ngdoc service
  * @name data-prep.services.utils.service:TextFormatService
@@ -18,12 +21,13 @@
  */
 export default function TextFormatService() {
     return {
-        adaptToGridConstraints: adaptToGridConstraints,
-        escapeRegex: escapeRegex,
-        escapeRegexpExceptStar: escapeRegexpExceptStar,
-        convertPatternToRegexp: convertPatternToRegexp,
-        convertJavaDateFormatToMomentDateFormat: convertJavaDateFormatToMomentDateFormat,
-        highlight: highlight
+        adaptToGridConstraints,
+        escapeRegex,
+        escapeRegexpExceptStar,
+        convertPatternToRegexp,
+        convertJavaDateFormatToMomentDateFormat,
+        highlight,
+        valueMatchPatternFn,
     };
 
     // --------------------------------------------------------------------------------------------
@@ -72,7 +76,7 @@ export default function TextFormatService() {
         const constraints = [
             escapeHtmlTags,
             addLineBreaks,
-            addTrailingAndLeadingSpacesDivs
+            addTrailingAndLeadingSpacesDivs,
         ];
 
         _.forEach(constraints, function (constraintFn) {
@@ -107,7 +111,7 @@ export default function TextFormatService() {
         let returnStr = '';
         const hiddenCharsRegExpMatch = value.match(/(^\s*)?([\s\S]*?)(\s*$)/);
 
-        //leading hidden chars found
+        // leading hidden chars found
         if (hiddenCharsRegExpMatch[1]) {
             returnStr = '<span class="hiddenChars">' +
                 hiddenCharsRegExpMatch[1].replace(
@@ -117,10 +121,10 @@ export default function TextFormatService() {
                 '</span>';
         }
 
-        //trimmed value
+        // trimmed value
         returnStr += hiddenCharsRegExpMatch[2];
 
-        //trailing hidden chars
+        // trailing hidden chars
         if (hiddenCharsRegExpMatch[3]) {
             returnStr += '<span class="hiddenChars">' +
                 hiddenCharsRegExpMatch[3].replace(
@@ -129,6 +133,7 @@ export default function TextFormatService() {
                 ) +
                 '</span>';
         }
+
         return returnStr;
     }
 
@@ -154,19 +159,20 @@ export default function TextFormatService() {
         let regexp = '';
         for (let i = 0, len = pattern.length; i < len; i++) {
             switch (pattern[i]) {
-                case 'A':
-                    regexp += '[A-Z]';
-                    break;
-                case 'a':
-                    regexp += '[a-z]';
-                    break;
-                case '9':
-                    regexp += '[0-9]';
-                    break;
-                default:
-                    regexp += escapeRegex(pattern[i]);
+            case 'A':
+                regexp += '[A-Z]';
+                break;
+            case 'a':
+                regexp += '[a-z]';
+                break;
+            case '9':
+                regexp += '[0-9]';
+                break;
+            default:
+                regexp += escapeRegex(pattern[i]);
             }
         }
+
         return '^' + regexp + '$';
     }
 
@@ -207,7 +213,6 @@ export default function TextFormatService() {
         return pattern;
     }
 
-
     /**
      * @ngdoc method
      * @name highlight
@@ -219,11 +224,78 @@ export default function TextFormatService() {
      * @description highlight an item of the object
      */
     function highlight(object, key, highlightText, hightlightCssClass) {
-        let originalValue = object[key];
+        const originalValue = object[key];
         if (originalValue.toLowerCase().indexOf(highlightText.toLowerCase()) !== -1) {
             object[key] = originalValue.replace(
                 new RegExp('(' + escapeRegex(highlightText) + ')', 'gi'),
                 '<span class="' + hightlightCssClass + '">$1</span>');
+        }
+    }
+
+    // --------------------------------------------------------------------------------------------
+    // -------------------------------------------PATTERN------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    /**
+     * @ngdoc method
+     * @name isDatePattern
+     * @methodOf data-prep.services.utils:TextFormatService
+     * @description Check if the pattern is a date pattern
+     * @param {string} pattern The pattern to check
+     */
+    function isDatePattern(pattern) {
+        return (pattern.indexOf('d') > -1 ||
+            pattern.indexOf('M') > -1 ||
+            pattern.indexOf('y') > -1 ||
+            pattern.indexOf('H') > -1 ||
+            pattern.indexOf('h') > -1 ||
+            pattern.indexOf('m') > -1 ||
+            pattern.indexOf('s') > -1);
+    }
+
+    /**
+     * @ngdoc method
+     * @name valueMatchDatePatternFn
+     * @methodOf data-prep.services.utils:TextFormatService
+     * @description Create a predicate that check if a value match the date pattern
+     * @param {string} pattern The date pattern to match
+     */
+    function valueMatchDatePatternFn(pattern) {
+        const datePattern = convertJavaDateFormatToMomentDateFormat(pattern);
+        return value => value && moment(value, datePattern, true).isValid();
+    }
+
+    /**
+     * @ngdoc method
+     * @name valueMatchRegexFn
+     * @methodOf data-prep.services.utils:TextFormatService
+     * @description Create a predicate that check if a value match the regex pattern
+     * @param {string} pattern The pattern to match
+     */
+    function valueMatchRegexFn(pattern) {
+        const regex = convertPatternToRegexp(pattern);
+        return function (value) {
+            return value && value.match(regex);
+        };
+    }
+
+    /**
+     * @ngdoc method
+     * @name valueMatchPatternFn
+     * @methodOf data-prep.services.utils:TextFormatService
+     * @description Create the adequat predicate that match the pattern. It can be empty, a date pattern, or an alphanumeric pattern
+     * @param {string} pattern The pattern to match
+     */
+    function valueMatchPatternFn(pattern) {
+        if (pattern === '') {
+            return function (value) {
+                return value === '';
+            };
+        }
+        else if (isDatePattern(pattern)) {
+            return valueMatchDatePatternFn(pattern);
+        }
+        else {
+            return valueMatchRegexFn(pattern);
         }
     }
 }

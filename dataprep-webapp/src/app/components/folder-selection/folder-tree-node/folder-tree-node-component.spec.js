@@ -17,10 +17,10 @@ describe('Folder Tree Node Component', () => {
     let element;
 
     beforeEach(angular.mock.module('data-prep.folder-selection'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+
     beforeEach(angular.mock.module('pascalprecht.translate', ($translateProvider) => {
         $translateProvider.translations('en', {
-            "FOLDER_PATH": "(Path: {{path}})"
+            FOLDER_PATH: '(Path: {{path}})',
         });
         $translateProvider.preferredLanguage('en');
     }));
@@ -138,7 +138,7 @@ describe('Folder Tree Node Component', () => {
             //then
             expect(element.find('.caret-right').length).toBe(0);
             expect(element.find('.caret-down').length).toBe(1);
-            expect(element.find('.empty-caret').length).toBe(0)
+            expect(element.find('.empty-caret').length).toBe(0);
         });
     });
 

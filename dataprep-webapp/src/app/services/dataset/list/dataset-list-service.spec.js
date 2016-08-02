@@ -21,52 +21,52 @@ describe('Dataset List Service', () => {
     function initDatasets() {
         datasets = [
             {
-                'id': 'de3cc32a-b624-484e-b8e7-dab9061a009c',
-                'name': 'customers_jso_light',
-                'author': 'anonymousUser',
-                'records': 15,
-                'nbLinesHeader': 1,
-                'nbLinesFooter': 0,
-                'created': '03-30-2015 08:06',
+                id: 'de3cc32a-b624-484e-b8e7-dab9061a009c',
+                name: 'customers_jso_light',
+                author: 'anonymousUser',
+                records: 15,
+                nbLinesHeader: 1,
+                nbLinesFooter: 0,
+                created: '03-30-2015 08:06',
             },
             {
-                'id': '3b21388c-f54a-4334-9bef-748912d0806f',
-                'name': 'customers_jso',
-                'author': 'anonymousUser',
-                'records': 1000,
-                'nbLinesHeader': 1,
-                'nbLinesFooter': 0,
-                'created': '03-30-2015 07:35',
+                id: '3b21388c-f54a-4334-9bef-748912d0806f',
+                name: 'customers_jso',
+                author: 'anonymousUser',
+                records: 1000,
+                nbLinesHeader: 1,
+                nbLinesFooter: 0,
+                created: '03-30-2015 07:35',
             },
             {
-                'id': '4d0a2718-bec6-4614-ad6c-8b3b326ff6c7',
-                'name': 'first_interactions',
-                'author': 'anonymousUser',
-                'records': 29379,
-                'nbLinesHeader': 1,
-                'nbLinesFooter': 0,
-                'created': '03-30-2015 08:05',
+                id: '4d0a2718-bec6-4614-ad6c-8b3b326ff6c7',
+                name: 'first_interactions',
+                author: 'anonymousUser',
+                records: 29379,
+                nbLinesHeader: 1,
+                nbLinesFooter: 0,
+                created: '03-30-2015 08:05',
             },
             {
-                'id': '5e95be9e-88cd-4765-9ecc-ee48cc28b6d5',
-                'name': 'first_interactions_400',
-                'author': 'anonymousUser',
-                'records': 400,
-                'nbLinesHeader': 1,
-                'nbLinesFooter': 0,
-                'created': '03-30-2015 08:06',
+                id: '5e95be9e-88cd-4765-9ecc-ee48cc28b6d5',
+                name: 'first_interactions_400',
+                author: 'anonymousUser',
+                records: 400,
+                nbLinesHeader: 1,
+                nbLinesFooter: 0,
+                created: '03-30-2015 08:06',
             },
         ];
     }
 
     const sortList = [
         { id: 'name', name: 'NAME_SORT', property: 'name' },
-        { id: 'date', name: 'DATE_SORT', property: 'created' }
+        { id: 'date', name: 'DATE_SORT', property: 'created' },
     ];
 
     const orderList = [
         { id: 'asc', name: 'ASC_ORDER' },
-        { id: 'desc', name: 'DESC_ORDER' }
+        { id: 'desc', name: 'DESC_ORDER' },
     ];
 
     beforeEach(angular.mock.module('data-prep.services.dataset', ($provide) => {
@@ -74,7 +74,7 @@ describe('Dataset List Service', () => {
             inventory: {
                 datasetsSort: sortList[1],
                 datasetsOrder: orderList[1],
-            }
+            },
         };
         $provide.constant('state', stateMock);
     }));

@@ -24,8 +24,8 @@ describe('ColumnProfile controller', () => {
         stateMock = {
             playground: {
                 grid: {},
-                statistics: {}
-            }
+                statistics: {},
+            },
         };
         $provide.constant('state', stateMock);
     }));
@@ -35,7 +35,7 @@ describe('ColumnProfile controller', () => {
 
         createController = () => {
             return $controller('ColumnProfileCtrl', {
-                $scope: scope
+                $scope: scope,
             });
         };
     }));
@@ -49,11 +49,11 @@ describe('ColumnProfile controller', () => {
         it('should add a "exact" filter', inject((FilterService) => {
             //given
             const ctrl = createController();
-            const obj = { 'data': 'Ulysse', 'occurrences': 5 };
+            const obj = { data: 'Ulysse', occurrences: 5 };
 
             stateMock.playground.grid.selectedColumn = {
                 id: '0001',
-                name: 'firstname'
+                name: 'firstname',
             };
 
             //when
@@ -63,10 +63,10 @@ describe('ColumnProfile controller', () => {
             expect(FilterService.addFilterAndDigest).toHaveBeenCalledWith('exact', '0001', 'firstname', {
                 phrase: [
                     {
-                        value: 'Ulysse'
-                    }
+                        value: 'Ulysse',
+                    },
                 ],
-                caseSensitive: true
+                caseSensitive: true,
             }, null, null);
         }));
 
@@ -76,13 +76,13 @@ describe('ColumnProfile controller', () => {
             const interval = {
                 min: 5,
                 max: 15,
-                isMaxReached: true
+                isMaxReached: true,
             };
 
             stateMock.playground.grid.selectedColumn = {
                 id: '0001',
                 name: 'firstname',
-                type: 'integer'
+                type: 'integer',
             };
 
             //when
@@ -99,10 +99,10 @@ describe('ColumnProfile controller', () => {
                         {
                             label: '[5 .. 15]',
                             value: [5, 15],
-                            isMaxReached: true
-                        }
+                            isMaxReached: true,
+                        },
                     ],
-                    type: 'integer'
+                    type: 'integer',
                 },
                 removeFilterFn,
                 null);
@@ -114,13 +114,13 @@ describe('ColumnProfile controller', () => {
             const interval = {
                 min: 5,
                 max: 15,
-                isMaxReached: false
+                isMaxReached: false,
             };
 
             stateMock.playground.grid.selectedColumn = {
                 id: '0001',
                 name: 'firstname',
-                type: 'integer'
+                type: 'integer',
             };
 
             //when
@@ -137,10 +137,10 @@ describe('ColumnProfile controller', () => {
                         {
                             label: '[5 .. 15[',
                             value: [5, 15],
-                            isMaxReached: false
-                        }
+                            isMaxReached: false,
+                        },
                     ],
-                    type: 'integer'
+                    type: 'integer',
                 },
                 removeFilterFn,
                 null);
@@ -152,13 +152,13 @@ describe('ColumnProfile controller', () => {
             const interval = {
                 min: 15,
                 max: 15,
-                isMaxReached: true
+                isMaxReached: true,
             };
 
             stateMock.playground.grid.selectedColumn = {
                 id: '0001',
                 name: 'firstname',
-                type: 'integer'
+                type: 'integer',
             };
 
             //when
@@ -175,10 +175,10 @@ describe('ColumnProfile controller', () => {
                         {
                             label: '[15]',
                             value: [15, 15],
-                            isMaxReached: true
-                        }
+                            isMaxReached: true,
+                        },
                     ],
-                    type: 'integer'
+                    type: 'integer',
                 },
                 removeFilterFn,
                 null);
@@ -191,13 +191,13 @@ describe('ColumnProfile controller', () => {
                 min: '01-06-2015',
                 max: '30-06-2015',
                 label: 'Jun 2015',
-                isMaxReached: undefined
+                isMaxReached: undefined,
             };
 
             stateMock.playground.grid.selectedColumn = {
                 id: '0001',
                 name: 'firstname',
-                type: 'date'
+                type: 'date',
             };
 
             //when
@@ -214,9 +214,9 @@ describe('ColumnProfile controller', () => {
                         {
                             label: 'Jun 2015',
                             value: ['01-06-2015', '30-06-2015'],
-                            isMaxReached: undefined
-                        }],
-                    type: 'date'
+                            isMaxReached: undefined,
+                        },],
+                    type: 'date',
                 },
                 removeFilterFn,
                 null);
@@ -231,13 +231,13 @@ describe('ColumnProfile controller', () => {
                 min: minDateTime,
                 max: maxDateTime,
                 label: undefined,
-                isMaxReached: undefined
+                isMaxReached: undefined,
             };
 
             stateMock.playground.grid.selectedColumn = {
                 id: '0001',
                 name: 'CreationDate',
-                type: 'date'
+                type: 'date',
             };
 
             //when
@@ -254,10 +254,10 @@ describe('ColumnProfile controller', () => {
                         {
                             label: '[01-01-2016 .. 12-01-2016[',
                             value: [minDateTime, maxDateTime],
-                            isMaxReached: undefined
-                        }
+                            isMaxReached: undefined,
+                        },
                     ],
-                    type: 'date'
+                    type: 'date',
                 },
                 removeFilterFn,
                 null);
@@ -266,11 +266,11 @@ describe('ColumnProfile controller', () => {
         it('should add a "empty_records" filter from exact_filter on barchart click callback', inject((StatisticsService, FilterService) => {
             //given
             const ctrl = createController();
-            const obj = { 'data': '', 'occurrences': 5 };
+            const obj = { data: '', occurrences: 5 };
 
             stateMock.playground.grid.selectedColumn = {
                 id: '0001',
-                name: 'firstname'
+                name: 'firstname',
             };
 
             //when

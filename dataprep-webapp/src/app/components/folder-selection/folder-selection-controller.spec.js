@@ -59,7 +59,7 @@ describe('Folder selection controller', () => {
                             },
                             children: [],
                         },
-                    ]
+                    ],
                 },
                 {
                     folder: { // /folder2
@@ -75,8 +75,8 @@ describe('Folder selection controller', () => {
                                 path: '/folder2/subfolder3',
                             },
                             children: [],
-                        }
-                    ]
+                        },
+                    ],
                 },
             ],
         };

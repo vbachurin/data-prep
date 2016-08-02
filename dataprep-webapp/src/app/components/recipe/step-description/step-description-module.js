@@ -11,20 +11,24 @@
 
  ============================================================================*/
 
+import angular from 'angular';
+import ngSanitize from 'angular-sanitize';
+import ngTranslate from 'angular-translate';
+
 import StepDescription from './step-description-component';
 
-(() => {
-    'use strict';
+const MODULE_NAME = 'data-prep.step-description';
 
-    /**
-     * @ngdoc object
-     * @name data-prep.step-description
-     * @description This module creates the recipe step details
-     */
-    angular.module('data-prep.step-description',
-        [
-            'pascalprecht.translate',
-            'ngSanitize',
-        ])
-        .component('stepDescription', StepDescription);
-})();
+/**
+ * @ngdoc object
+ * @name data-prep.step-description
+ * @description This module creates the recipe step details
+ */
+angular.module(MODULE_NAME,
+    [
+        ngSanitize,
+        ngTranslate,
+    ])
+    .component('stepDescription', StepDescription);
+
+export default MODULE_NAME;

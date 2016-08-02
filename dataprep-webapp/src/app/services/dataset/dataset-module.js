@@ -11,33 +11,37 @@
 
  ============================================================================*/
 
+import angular from 'angular';
+import 'ng-file-upload/dist/angular-file-upload-all';
+import SERVICES_STATE_MODULE from '../state/state-module';
+import SERVICES_UTILS_MODULE from '../utils/utils-module';
+
 import ColumnTypesService from './column-types/column-types-service';
 import DatasetSheetPreviewService from './preview/dataset-sheet-preview-service';
 import DatasetListService from './list/dataset-list-service';
 import DatasetRestService from './rest/dataset-rest-service';
 import DatasetService from './dataset-service';
 
-(() => {
-    'use strict';
+const MODULE_NAME = 'data-prep.services.dataset';
 
-    /**
-     * @ngdoc object
-     * @name data-prep.services.dataset
-     * @description This module contains the services to manipulate datasets
-     * @requires data-prep.services.folder
-     * @requires data-prep.services.state
-     * @requires data-prep.services.utils
-     */
-    angular.module('data-prep.services.dataset',
-        [
-            'angularFileUpload', // file upload with progress support
-            'data-prep.services.folder',
-            'data-prep.services.state',
-            'data-prep.services.utils',
-        ])
-        .service('ColumnTypesService', ColumnTypesService)
-        .service('DatasetSheetPreviewService', DatasetSheetPreviewService)
-        .service('DatasetRestService', DatasetRestService)
-        .service('DatasetListService', DatasetListService)
-        .service('DatasetService', DatasetService);
-})();
+/**
+ * @ngdoc object
+ * @name data-prep.services.dataset
+ * @description This module contains the services to manipulate datasets
+ * @requires data-prep.services.folder
+ * @requires data-prep.services.state
+ * @requires data-prep.services.utils
+ */
+angular.module(MODULE_NAME,
+    [
+        'angularFileUpload', // file upload with progress support
+        SERVICES_STATE_MODULE,
+        SERVICES_UTILS_MODULE,
+    ])
+    .service('ColumnTypesService', ColumnTypesService)
+    .service('DatasetSheetPreviewService', DatasetSheetPreviewService)
+    .service('DatasetRestService', DatasetRestService)
+    .service('DatasetListService', DatasetListService)
+    .service('DatasetService', DatasetService);
+
+export default MODULE_NAME;

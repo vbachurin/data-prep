@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './actions-list.html';
+
 /**
  * @ngdoc directive
  * @name data-prep.actions-list.directive:actionsList
@@ -32,7 +34,7 @@
 export default function ActionsList() {
     return {
         restrict: 'E',
-        templateUrl: 'app/components/suggestions-stats/actions-list/actions-list.html',
+        templateUrl: template,
         bindToController: true,
         controllerAs: 'actionsListCtrl',
         controller: 'ActionsListCtrl',
@@ -41,7 +43,7 @@ export default function ActionsList() {
             shouldRenderCategory: '=',
             shouldRenderAction: '=',
             scrollToBottom: '=',
-            scope: '@'
-        }
+            scope: '@',
+        },
     };
 }

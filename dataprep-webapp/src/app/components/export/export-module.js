@@ -11,20 +11,25 @@
 
  ============================================================================*/
 
+import angular from 'angular';
+import TALEND_WIDGET_MODULE from '../widgets/widget-module';
+import SERVICES_EXPORT_MODULE from '../../services/export/export-module';
+import SERVICES_STATE_MODULE from '../../services/state/state-module';
+import SERVICES_UTILS_MODULE from '../../services/utils/utils-module';
+
 import ExportCtrl from './export-controller';
 import Export from './export-directive';
 
-(() => {
-    'use strict';
+const MODULE_NAME = 'data-prep.export';
 
-    angular.module('data-prep.export',
-        [
-            'talend.widget',
-            'data-prep.services.export',
-            'data-prep.services.recipe',
-            'data-prep.services.state',
-            'data-prep.services.utils',
-        ])
-        .controller('ExportCtrl', ExportCtrl)
-        .directive('export', Export);
-})();
+angular.module(MODULE_NAME,
+    [
+        TALEND_WIDGET_MODULE,
+        SERVICES_EXPORT_MODULE,
+        SERVICES_STATE_MODULE,
+        SERVICES_UTILS_MODULE,
+    ])
+    .controller('ExportCtrl', ExportCtrl)
+    .directive('export', Export);
+
+export default MODULE_NAME;

@@ -11,7 +11,7 @@
 
   ============================================================================*/
 
-describe('Navbar directive', function() {
+describe('Navbar directive', function () {
     'use strict';
 
     var scope;
@@ -19,16 +19,14 @@ describe('Navbar directive', function() {
     var element;
     var stateMock;
 
-    beforeEach(angular.mock.module('htmlTemplates'));
-
     beforeEach(angular.mock.module('data-prep.navbar', ($provide) => {
         stateMock = {
-            ee: false
+            ee: false,
         };
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(inject(function($rootScope, $compile) {
+    beforeEach(inject(function ($rootScope, $compile) {
         scope = $rootScope.$new();
         createElement = function () {
             element = angular.element('<navbar></navbar>');
@@ -39,7 +37,7 @@ describe('Navbar directive', function() {
     }));
 
     describe('rendering elements', () => {
-        it('should render navigation bar', function() {
+        it('should render navigation bar', function () {
             //when
             createElement();
 
@@ -47,7 +45,7 @@ describe('Navbar directive', function() {
             expect(element.find('talend-navbar').length).toBe(1);
         });
 
-        it('should render footer bar', function() {
+        it('should render footer bar', function () {
             //when
             createElement();
 
@@ -55,7 +53,7 @@ describe('Navbar directive', function() {
             expect(element.find('footer').length).toBe(1);
         });
 
-        it('should render content insertion point', function() {
+        it('should render content insertion point', function () {
             //when
             createElement();
 
@@ -63,7 +61,7 @@ describe('Navbar directive', function() {
             expect(element.find('ui-view.content').length).toBe(1);
         });
 
-        it('should render navigation items insertion point', function() {
+        it('should render navigation items insertion point', function () {
             //when
             createElement();
 
@@ -71,8 +69,7 @@ describe('Navbar directive', function() {
             expect(element.find('.navigation-items[insertion-home-right-header]').length).toBe(1);
         });
 
-
-        it('should render feedback form', function() {
+        it('should render feedback form', function () {
             //when
             stateMock.ee = undefined;
             createElement();
@@ -81,7 +78,7 @@ describe('Navbar directive', function() {
             expect(element.find('#message-icon').length).toBe(1);
         });
 
-        it('should render onboarding icon', function() {
+        it('should render onboarding icon', function () {
             //when
             createElement();
 
@@ -89,7 +86,7 @@ describe('Navbar directive', function() {
             expect(element.find('#onboarding-icon').length).toBe(1);
         });
 
-        it('should not render feedback form', function() {
+        it('should not render feedback form', function () {
             //when
             stateMock.ee = true;
             createElement();

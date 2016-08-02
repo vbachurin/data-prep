@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './filter-list.html';
+
 /**
  * @ngdoc directive
  * @name data-prep.filter-list.directive:FilterList
@@ -28,7 +30,7 @@
 export default function FilterList() {
     return {
         restrict: 'E',
-        templateUrl: 'app/components/filter/list/filter-list.html',
+        templateUrl: template,
         scope: {
             filters: '=',
             onFilterChange: '&',
@@ -37,6 +39,6 @@ export default function FilterList() {
         },
         bindToController: true,
         controllerAs: 'filterCtrl',
-        controller: 'FilterListCtrl'
+        controller: 'FilterListCtrl',
     };
 }

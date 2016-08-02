@@ -5,7 +5,7 @@ describe('Preparation Service', () => {
     const preparations = [
         { id: '4385fa764bce39593a405d91bc88', dataSetId: '3214a5454ef8642c13' },
         { id: '58444bce39593a405d9456' },
-        { id: '2545764bce39593a405d91bc8673' }
+        { id: '2545764bce39593a405d91bc8673' },
     ];
     const newPreparationId = '6cd546546548a745';
 
@@ -16,8 +16,8 @@ describe('Preparation Service', () => {
         stateMock = {
             inventory: {
                 homeFolderId: 'LW==',
-                preparations: null
-            }
+                preparations: null,
+            },
         };
         $provide.constant('state', stateMock);
     }));
@@ -27,7 +27,7 @@ describe('Preparation Service', () => {
         spyOn(PreparationListService, 'create').and.returnValue($q.when({ id: newPreparationId }));
         spyOn(PreparationListService, 'update').and.returnValue($q.when({
             id: updatedPreparationId,
-            dataSetId: updatedDatasetId
+            dataSetId: updatedDatasetId,
         }));
         spyOn(PreparationListService, 'delete').and.returnValue($q.when(true));
         spyOn(PreparationListService, 'copy').and.returnValue($q.when(true));
@@ -214,7 +214,7 @@ describe('Preparation Service', () => {
                 const preparation = {
                     id: 'de618c62ef97b3a95b5c171bc077ffe22e1d6f79',
                     dataSetId: 'dacd45cf-5bd0-4768-a9b7-f6c199581efc',
-                    author: 'anonymousUser'
+                    author: 'anonymousUser',
                 };
                 $stateParams.folderId = 'test/';
 
@@ -229,7 +229,7 @@ describe('Preparation Service', () => {
             it('should open a preparation in a new tab on scroll click', inject(($stateParams, $rootScope, $state, $window, StateService, PreparationService) => {
                 //given
                 const event = {
-                    which: 2
+                    which: 2,
                 };
                 spyOn($state, 'go').and.returnValue();
                 spyOn($window, 'open').and.returnValue();
@@ -237,7 +237,7 @@ describe('Preparation Service', () => {
                 const preparation = {
                     id: 'de618c62ef97b3a95b5c171bc077ffe22e1d6f79',
                     dataSetId: 'dacd45cf-5bd0-4768-a9b7-f6c199581efc',
-                    author: 'anonymousUser'
+                    author: 'anonymousUser',
                 };
 
                 //when
@@ -253,7 +253,7 @@ describe('Preparation Service', () => {
                 //given
                 const event = {
                     which: 1,
-                    ctrlKey: true
+                    ctrlKey: true,
                 };
                 spyOn($state, 'go').and.returnValue();
                 spyOn($window, 'open').and.returnValue();
@@ -261,7 +261,7 @@ describe('Preparation Service', () => {
                 const preparation = {
                     id: 'de618c62ef97b3a95b5c171bc077ffe22e1d6f79',
                     dataSetId: 'dacd45cf-5bd0-4768-a9b7-f6c199581efc',
-                    author: 'anonymousUser'
+                    author: 'anonymousUser',
                 };
 
                 //when
@@ -277,7 +277,7 @@ describe('Preparation Service', () => {
                 //given
                 const event = {
                     which: 1,
-                    metaKey: true
+                    metaKey: true,
                 };
                 spyOn($state, 'go').and.returnValue();
                 spyOn($window, 'open').and.returnValue();
@@ -285,7 +285,7 @@ describe('Preparation Service', () => {
                 const preparation = {
                     id: 'de618c62ef97b3a95b5c171bc077ffe22e1d6f79',
                     dataSetId: 'dacd45cf-5bd0-4768-a9b7-f6c199581efc',
-                    author: 'anonymousUser'
+                    author: 'anonymousUser',
                 };
 
                 //when
@@ -309,7 +309,7 @@ describe('Preparation Service', () => {
                     scope: 'cell',
                     column_id: '0001',
                     row_id: '256',
-                    column_name: 'state'
+                    column_name: 'state',
                 };
 
                 //when
@@ -321,7 +321,7 @@ describe('Preparation Service', () => {
                     scope: 'cell',
                     column_id: '0001',
                     row_id: '256',
-                    column_name: 'state'
+                    column_name: 'state',
                 });
             }));
 
@@ -344,11 +344,11 @@ describe('Preparation Service', () => {
                 const step = {
                     column: {
                         id: '1',
-                        name: 'firstname'
+                        name: 'firstname',
                     },
                     actionParameters: {
-                        parameters: { value: '--', column_name: 'firstname', column_id: '1' }
-                    }
+                        parameters: { value: '--', column_name: 'firstname', column_id: '1' },
+                    },
                 };
                 const newParams = { value: '.' };
 
@@ -364,11 +364,11 @@ describe('Preparation Service', () => {
                 const step = {
                     column: {
                         id: '1',
-                        name: 'firstname'
+                        name: 'firstname',
                     },
                     actionParameters: {
-                        parameters: { value: '--', column_id: '1', column_name: 'firstname' }
-                    }
+                        parameters: { value: '--', column_id: '1', column_name: 'firstname' },
+                    },
                 };
                 const newParams = { value: '--', column_id: '1', column_name: 'firstname' };
 
@@ -387,9 +387,9 @@ describe('Preparation Service', () => {
                 const step = {
                     transformation: {
                         stepId: '867654ab15edf576844c4',
-                        name: 'deletematch'
+                        name: 'deletematch',
                     },
-                    column: { id: '1', name: 'firstname' }
+                    column: { id: '1', name: 'firstname' },
                 };
                 const parameters = { value: 'Toto', column_name: 'firstname', column_id: '1', scope: 'column' };
 
@@ -403,7 +403,7 @@ describe('Preparation Service', () => {
                     '867654ab15edf576844c4',  //step id
                     {
                         action: 'deletematch', //step name
-                        parameters: { value: 'Toto', column_name: 'firstname', column_id: '1', scope: 'column' } //params
+                        parameters: { value: 'Toto', column_name: 'firstname', column_id: '1', scope: 'column' }, //params
                     }
                 );
             }));

@@ -24,7 +24,7 @@
 export default function TalendConfirmCtrl($scope, TalendConfirmService) {
     'ngInject';
 
-    var vm = this;
+    const vm = this;
 
     /**
      * @ngdoc property
@@ -49,6 +49,7 @@ export default function TalendConfirmCtrl($scope, TalendConfirmService) {
         function () {
             return vm.modalState;
         },
+
         function (newValue) {
             if (!newValue && !vm.buttonClicked) {
                 TalendConfirmService.reject('dismiss');

@@ -22,7 +22,7 @@ const SuggestionsStats = {
                 <stats-details class="stats-part"></stats-details>
             </sc-split-second-pane>
         </sc-splitter>
-    </div>`
+    </div>`,
 };
 
 export default SuggestionsStats;

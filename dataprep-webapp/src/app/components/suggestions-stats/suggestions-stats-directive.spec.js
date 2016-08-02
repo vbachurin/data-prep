@@ -11,7 +11,7 @@
 
   ============================================================================*/
 
-describe('Suggestions stats directive', function() {
+describe('Suggestions stats directive', function () {
     'use strict';
 
     var scope;
@@ -19,11 +19,10 @@ describe('Suggestions stats directive', function() {
     var element;
 
     beforeEach(angular.mock.module('data-prep.suggestions-stats'));
-    beforeEach(angular.mock.module('htmlTemplates'));
 
-    beforeEach(inject(function($rootScope, $compile, $timeout) {
+    beforeEach(inject(function ($rootScope, $compile, $timeout) {
         scope = $rootScope.$new();
-        createElement = function() {
+        createElement = function () {
             element = angular.element('<suggestions-stats></suggestions-stats>');
             $compile(element)(scope);
             scope.$digest();
@@ -31,12 +30,12 @@ describe('Suggestions stats directive', function() {
         };
     }));
 
-    afterEach(function() {
+    afterEach(function () {
         scope.$destroy();
         element.remove();
     });
 
-    it('should render suggestions/stats splitter', inject(function() {
+    it('should render suggestions/stats splitter', inject(function () {
         //when
         createElement();
 

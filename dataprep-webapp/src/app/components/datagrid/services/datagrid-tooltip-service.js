@@ -21,16 +21,16 @@
 export default function DatagridTooltipService($timeout, state, TextFormatService) {
     'ngInject';
 
-    var grid;
-    var tooltipTimeout;
-    var tooltipShowPromise;
-    var tooltipDelay = 300;
+    let grid;
+    let tooltipTimeout;
+    let tooltipShowPromise;
+    const tooltipDelay = 300;
 
-    var service = {
+    const service = {
         showTooltip: false,
         tooltip: {},
         tooltipRuler: null,
-        init: init
+        init,
     };
     return service;
 
@@ -47,6 +47,7 @@ export default function DatagridTooltipService($timeout, state, TextFormatServic
             $timeout.cancel(tooltipTimeout);
             tooltipTimeout = null;
         }
+
         if (tooltipShowPromise) {
             $timeout.cancel(tooltipShowPromise);
             tooltipShowPromise = null;
@@ -62,25 +63,25 @@ export default function DatagridTooltipService($timeout, state, TextFormatServic
      */
     function createTooltip(event) {
         tooltipTimeout = $timeout(function () {
-            var cell = grid.getCellFromEvent(event);
+            const cell = grid.getCellFromEvent(event);
             if (!cell) {
                 return;
             }
 
-            var row = cell.row;
-            var item = state.playground.grid.dataView.getItem(row);
+            const row = cell.row;
+            const item = state.playground.grid.dataView.getItem(row);
 
-            var column = grid.getColumns()[cell.cell];
-            var value = item[column.id] + '';
+            const column = grid.getColumns()[cell.cell];
+            const value = item[column.id] + '';
 
             if (shouldShowTooltip(value, cell)) {
                 tooltipShowPromise = $timeout(function () {
                     service.tooltip = {
                         position: {
                             x: event.clientX,
-                            y: event.clientY
+                            y: event.clientY,
                         },
-                        htmlStr: TextFormatService.adaptToGridConstraints(value)
+                        htmlStr: TextFormatService.adaptToGridConstraints(value),
                     };
                     service.showTooltip = true;
                 });
@@ -124,20 +125,20 @@ export default function DatagridTooltipService($timeout, state, TextFormatServic
      * @param {object} cell The cell containing the text
      */
     function shouldShowTooltip(text, cell) {
-        //do NOT show if content is empty
+        // do NOT show if content is empty
         if (text === '') {
             return false;
         }
 
-        //show if content is multiline (avoid too loud check with div size)
-        var textConverted = text + '';
+        // show if content is multiline (avoid too loud check with div size)
+        const textConverted = text + '';
         if (textConverted.indexOf('\n') > -1) {
             return true;
         }
 
-        //heavy check based on div size
-        var box = grid.getCellNodeBox(cell.row, cell.cell);
-        var ruler = service.tooltipRuler;
+        // heavy check based on div size
+        const box = grid.getCellNodeBox(cell.row, cell.cell);
+        const ruler = service.tooltipRuler;
         ruler.text(textConverted);
 
         // return if the content is bigger than the displayed box by computing the diff between the displayed box
@@ -152,10 +153,10 @@ export default function DatagridTooltipService($timeout, state, TextFormatServic
      * @description Attach cell hover for tooltips listeners
      */
     function attachTooltipListener() {
-        //show tooltip on hover
+        // show tooltip on hover
         grid.onMouseEnter.subscribe(updateTooltip);
 
-        //hide tooltip on leave
+        // hide tooltip on leave
         grid.onMouseLeave.subscribe(hideTooltip);
     }
 

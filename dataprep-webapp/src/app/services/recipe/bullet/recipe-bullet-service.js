@@ -15,65 +15,22 @@
  * @ngdoc service
  * @name data-prep.services.recipe.service:RecipeBulletService
  * @description Recipe Bullet service. This service provides the action services triggered by bullets
- * @requires data-prep.services.recipe.service:RecipeService
+ * @requires data-prep.services.utils.service:StepUtilsService
  * @requires data-prep.services.playground.service:PreviewService
- * @requires data-prep.services.playground.service:PlaygroundService
  */
-export default function RecipeBulletService($timeout, state, RecipeService, PreviewService, PlaygroundService) {
+export default function RecipeBulletService($timeout, state, StepUtilsService, PreviewService) {
     'ngInject';
 
-    var previewTimeout;
+    let previewTimeout;
 
-    var service = {
-        toggleStep: toggleStep,
-        toggleRecipe: toggleRecipe,
-
-        stepHoverStart: stepHoverStart,
-        stepHoverEnd: stepHoverEnd
+    return {
+        stepHoverStart,
+        stepHoverEnd,
     };
-    return service;
 
     //---------------------------------------------------------------------------------------------
-    //------------------------------------------Mouse Actions--------------------------------------
+    // ------------------------------------------Mouse Actions--------------------------------------
     //---------------------------------------------------------------------------------------------
-    /**
-     * @ngdoc method
-     * @name toggleStep
-     * @methodOf data-prep.services.recipe.service:RecipeBulletService
-     * @param {object} step The step to toggle
-     * @description Toggle selected step and load the last active step content
-     * <ul>
-     *     <li>step is inactive : activate it with all the previous steps</li>
-     *     <li>step is active : deactivate it with all the following steps</li>
-     * </ul>
-     */
-    function toggleStep(step) {
-        var stepToLoad = step.inactive ? step : RecipeService.getPreviousStep(step);
-        PlaygroundService.loadStep(stepToLoad);
-    }
-
-    /**
-     * @ngdoc method
-     * @name toggleRecipe
-     * @methodOf data-prep.services.recipe.service:RecipeBulletService
-     * @description Enable/disable the recipe.
-     * When it is enabled, the last active step before disabling action is loaded
-     */
-    function toggleRecipe() {
-        var recipe = RecipeService.getRecipe();
-        var firstStep = recipe[0];
-        var stepToLoad;
-
-        if (!firstStep.inactive) {
-            service.lastToggled = RecipeService.getLastActiveStep();
-            stepToLoad = firstStep;
-        }
-        else {
-            stepToLoad = service.lastToggled || recipe[recipe.length - 1];
-        }
-        toggleStep(stepToLoad);
-    }
-
     /**
      * @ngdoc method
      * @name cancelPendingPreview
@@ -95,7 +52,7 @@ export default function RecipeBulletService($timeout, state, RecipeService, Prev
     function stepHoverStart(step) {
         cancelPendingPreview();
         previewTimeout = $timeout(function () {
-            var previewFn = step.inactive ? previewAppend : previewDisable;
+            const previewFn = step.inactive ? previewAppend : previewDisable;
             previewFn(step);
         }, 300, false);
     }
@@ -113,7 +70,7 @@ export default function RecipeBulletService($timeout, state, RecipeService, Prev
     }
 
     //---------------------------------------------------------------------------------------------
-    //---------------------------------------------Preview-----------------------------------------
+    // ---------------------------------------------Preview-----------------------------------------
     //---------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
@@ -123,9 +80,9 @@ export default function RecipeBulletService($timeout, state, RecipeService, Prev
      * @description Call the preview service to display the diff between the current active step and the preview step to activate
      */
     function previewAppend(previewStep) {
-        var currentStep = RecipeService.getLastActiveStep();
-        var preparationId = state.playground.preparation.id;
-        var columnToFocusId = previewStep.column.id;
+        const currentStep = StepUtilsService.getLastActiveStep(state.playground.recipe);
+        const preparationId = state.playground.preparation.id;
+        const columnToFocusId = previewStep.column.id;
         PreviewService.getPreviewDiffRecords(preparationId, currentStep, previewStep, columnToFocusId);
     }
 
@@ -137,10 +94,10 @@ export default function RecipeBulletService($timeout, state, RecipeService, Prev
      * @description Call the preview service to display the diff between the current active step and the step before the one to deactivate
      */
     function previewDisable(disabledStep) {
-        var previewStep = RecipeService.getPreviousStep(disabledStep);
-        var currentStep = RecipeService.getLastActiveStep();
-        var preparationId = state.playground.preparation.id;
-        var columnToFocusId = disabledStep.column.id;
+        const previewStep = StepUtilsService.getPreviousStep(state.playground.recipe, disabledStep);
+        const currentStep = StepUtilsService.getLastActiveStep(state.playground.recipe);
+        const preparationId = state.playground.preparation.id;
+        const columnToFocusId = disabledStep.column.id;
         PreviewService.getPreviewDiffRecords(preparationId, currentStep, previewStep, columnToFocusId);
     }
 }

@@ -24,15 +24,15 @@ describe('Transformation column param directive', function () {
                     columns: [
                         { id: '0001', name: 'first name' },
                         { id: '0002', name: 'last name' },
-                        { id: '0003', name: 'birth date' }
-                    ]
-                }
+                        { id: '0003', name: 'birth date' },
+                    ],
+                },
             },
             grid: {
                 // selected column
-                selectedColumn: {}
-            }
-        }
+                selectedColumn: {},
+            },
+        },
     };
 
     beforeEach(angular.mock.module('data-prep.transformation-form', function ($provide) {
@@ -43,12 +43,10 @@ describe('Transformation column param directive', function () {
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(angular.mock.module('htmlTemplates'));
-
-    beforeEach(inject(function($rootScope, $compile) {
+    beforeEach(inject(function ($rootScope, $compile) {
         scope = $rootScope.$new();
 
-        createElement = function() {
+        createElement = function () {
             var element = angular.element('<transform-column-param parameter="parameter"></transform-column-param>');
             $compile(element)(scope);
             scope.$digest();
@@ -56,8 +54,7 @@ describe('Transformation column param directive', function () {
         };
     }));
 
-
-    it('should render an action with a column parameter', function() {
+    it('should render an action with a column parameter', function () {
         //given
         scope.parameter = {
             name: 'selected_column',
@@ -66,7 +63,7 @@ describe('Transformation column param directive', function () {
             canBeBlank: false,
             description: 'Combine the content of this column with the current one',
             label: 'The Column to concatenate',
-            default: ''
+            default: '',
         };
 
         //when

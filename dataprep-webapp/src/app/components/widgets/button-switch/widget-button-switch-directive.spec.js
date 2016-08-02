@@ -21,11 +21,10 @@ describe('Button Switch directive', function () {
     var values = [
         { id: 'name', name: 'NAME_SORT' },
         { id: 'date', name: 'DATE_SORT' },
-        { id: 'owner', name: 'OWNER_SORT' }
+        { id: 'owner', name: 'OWNER_SORT' },
     ];
 
     beforeEach(angular.mock.module('talend.widget'));
-    beforeEach(angular.mock.module('htmlTemplates'));
 
     afterEach(function () {
         scope.$destroy();

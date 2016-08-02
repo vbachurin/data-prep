@@ -21,39 +21,39 @@ describe('Export directive', () => {
 
     const exportTypes = [
         {
-            'mimeType': 'text/csv',
-            'extension': '.csv',
-            'id': 'CSV',
-            'needParameters': 'true',
-            'defaultExport': 'false',
-            'parameters': [{
-                'name': 'csvSeparator',
-                'labelKey': 'CHOOSE_SEPARATOR',
-                'type': 'radio',
-                'defaultValue': { 'value': ';', 'labelKey': 'SEPARATOR_SEMI_COLON' },
-                'values': [
-                    { 'value': '&#09;', 'labelKey': 'SEPARATOR_TAB' },
-                    { 'value': ' ', 'labelKey': 'SEPARATOR_SPACE' },
-                    { 'value': ',', 'labelKey': 'SEPARATOR_COMMA' }
-                ]
-            }]
+            mimeType: 'text/csv',
+            extension: '.csv',
+            id: 'CSV',
+            needParameters: 'true',
+            defaultExport: 'false',
+            parameters: [{
+                name: 'csvSeparator',
+                labelKey: 'CHOOSE_SEPARATOR',
+                type: 'radio',
+                defaultValue: { value: ';', labelKey: 'SEPARATOR_SEMI_COLON' },
+                values: [
+                    { value: '&#09;', labelKey: 'SEPARATOR_TAB' },
+                    { value: ' ', labelKey: 'SEPARATOR_SPACE' },
+                    { value: ',', labelKey: 'SEPARATOR_COMMA' },
+                ],
+            },],
         },
         {
-            'mimeType': 'application/tde',
-            'extension': '.tde',
-            'id': 'TABLEAU',
-            'needParameters': 'false',
-            'defaultExport': 'false',
-            'enabled': false,
-            'disableReason': 'Reason only valid in unit test'
+            mimeType: 'application/tde',
+            extension: '.tde',
+            id: 'TABLEAU',
+            needParameters: 'false',
+            defaultExport: 'false',
+            enabled: false,
+            disableReason: 'Reason only valid in unit test',
         },
         {
-            'mimeType': 'application/vnd.ms-excel',
-            'extension': '.xls',
-            'id': 'XLS',
-            'needParameters': 'false',
-            'defaultExport': 'true'
-        }
+            mimeType: 'application/vnd.ms-excel',
+            extension: '.xls',
+            id: 'XLS',
+            needParameters: 'false',
+            defaultExport: 'true',
+        },
     ];
     const csvParameters = { exportType: 'CSV', 'exportParameters.csvSeparator': ';' };
     const csvType = exportTypes[0];
@@ -64,13 +64,17 @@ describe('Export directive', () => {
                 exportParameters: {
                     exportType: 'CSV',
                     'exportParameters.csvSeparator': ';',
-                    'exportParameters.fileName': 'prepname'
-                }
-            }
+                    'exportParameters.fileName': 'prepname',
+                },
+                recipe: {
+                    current: {
+                        steps: [],
+                    },
+                },
+            },
         };
         $provide.constant('state', stateMock);
     }));
-    beforeEach(angular.mock.module('htmlTemplates'));
 
     beforeEach(inject(($rootScope, $compile, $q, ExportService, StorageService) => {
         spyOn(ExportService, 'refreshTypes').and.returnValue($q.when(exportTypes));
@@ -104,22 +108,22 @@ describe('Export directive', () => {
             expect(input.value).toBe('48da64513c43a548e678bc99');
         });
 
-        it('should inject step id input', inject((RecipeService) => {
+        it('should inject step id input', () => {
             //given
             const input = element.find('#exportForm').eq(0)[0].stepId;
             expect(input.value).toBeFalsy();
 
             //when
-            RecipeService.getRecipe().push({
+            stateMock.playground.recipe.current.steps.push({
                 transformation: {
-                    stepId: '48da64513c43a548e678bc99'
-                }
+                    stepId: '48da64513c43a548e678bc99',
+                },
             });
             scope.$digest();
 
             //then
             expect(input.value).toBe('48da64513c43a548e678bc99');
-        }));
+        });
 
         it('should inject dataset id input', inject((state) => {
             //given

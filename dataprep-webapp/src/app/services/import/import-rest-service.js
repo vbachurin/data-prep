@@ -19,8 +19,8 @@ export default function ImportRestService($http, RestURLs) {
     'ngInject';
 
     return {
-        importTypes: importTypes,
-        importParameters: importParameters
+        importTypes,
+        importParameters,
     };
     /**
      * @ngdoc method

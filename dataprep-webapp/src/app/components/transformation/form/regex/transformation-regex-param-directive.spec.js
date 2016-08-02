@@ -17,20 +17,18 @@ describe('Transformation regex params directive', function () {
     var createElement;
 
     beforeEach(angular.mock.module('data-prep.transformation-form'));
-    beforeEach(angular.mock.module('htmlTemplates'));
 
     beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
-            'COLON': ': '
+            COLON: ': ',
         });
         $translateProvider.preferredLanguage('en');
     }));
 
-
-    beforeEach(inject(function($rootScope, $compile) {
+    beforeEach(inject(function ($rootScope, $compile) {
         scope = $rootScope.$new();
 
-        createElement = function() {
+        createElement = function () {
             var element = angular.element('<transform-regex-param parameter="parameter"></transform-regex-param>');
             $compile(element)(scope);
             scope.$digest();
@@ -38,17 +36,17 @@ describe('Transformation regex params directive', function () {
         };
     }));
 
-    afterEach(function() {
+    afterEach(function () {
         scope.$destroy();
     });
 
-    it('should render an action with a parameter', function() {
+    it('should render an action with a parameter', function () {
         //given
         scope.parameter =   {
-            'name': 'param1',
-            'label': 'Param 1',
-            'type': 'regex',
-            'default': ''
+            name: 'param1',
+            label: 'Param 1',
+            type: 'regex',
+            default: '',
         };
 
         //when

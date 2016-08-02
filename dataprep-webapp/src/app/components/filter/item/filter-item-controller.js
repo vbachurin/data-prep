@@ -29,17 +29,17 @@ export default class FilterItemCtrl {
         if (this.filter) {
             this.filterValues = this.filter.value;
             switch (this.filter.type) {
-                case 'contains':
-                    this.sign = ' ≅ ';
-                    break;
-                case 'exact':
-                    this.sign = ' = ';
-                    break;
-                case 'inside_range':
-                    this.sign = ' in ';
-                    break;
-                default:
-                    this.sign = this.$translate.instant('COLON');
+            case 'contains':
+                this.sign = ' ≅ ';
+                break;
+            case 'exact':
+                this.sign = ' = ';
+                break;
+            case 'inside_range':
+                this.sign = ' in ';
+                break;
+            default:
+                this.sign = this.$translate.instant('COLON');
             }
         }
     }
@@ -79,7 +79,7 @@ export default class FilterItemCtrl {
     remove(indexToRemove) {
         this.onEdit({
             filter: this.filter,
-            value: this.filterValues.filter((value, index) => index !== indexToRemove)
+            value: this.filterValues.filter((value, index) => index !== indexToRemove),
         });
     }
 
@@ -92,7 +92,7 @@ export default class FilterItemCtrl {
     submit() {
         this.onEdit({
             filter: this.filter,
-            value: this.filterValues
+            value: this.filterValues,
         });
     }
 
@@ -104,7 +104,7 @@ export default class FilterItemCtrl {
      */
     close() {
         this.onRemove({
-            filter: this.filter
+            filter: this.filter,
         });
     }
 }

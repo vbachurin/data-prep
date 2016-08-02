@@ -1,15 +1,15 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
 
 /**
  * @ngdoc controller
@@ -18,16 +18,17 @@
  * @requires data-prep.services.state.constant:state
  * @requires data-prep.services.state.service:StateService
  * @requires data-prep.services.lookup.service:LookupService
- * @requires data-prep.services.playground.service:EarlyPreviewService
- * @requires data-prep.services.transformation.service:TransformationApplicationService
  * @requires data-prep.services.playground.service:PlaygroundService
+ * @requires data-prep.services.early-preview.service:EarlyPreviewService
+ * @requires data-prep.services.preview.service:PreviewService
  * @requires data-prep.services.utils.service:StorageService
  */
-export default function LookupCtrl($timeout, state, StateService, LookupService, EarlyPreviewService,
-    TransformationApplicationService, PlaygroundService, StorageService) {
+export default function LookupCtrl($timeout, state, StateService,
+                                   LookupService, PlaygroundService,
+                                   EarlyPreviewService, PreviewService, StorageService) {
     'ngInject';
 
-    var vm = this;
+    const vm = this;
     vm.state = state;
     vm.cancelEarlyPreview = EarlyPreviewService.cancelEarlyPreview;
     vm.loadFromAction = LookupService.loadFromAction;
@@ -40,7 +41,7 @@ export default function LookupCtrl($timeout, state, StateService, LookupService,
      * @description refresh the actual sort parameter
      * */
     function refreshLookupDatasetsSort() {
-        var savedSort = StorageService.getLookupDatasetsSort();
+        const savedSort = StorageService.getLookupDatasetsSort();
         if (savedSort) {
             StateService.setLookupDatasetsSort(_.find(state.playground.lookup.sortList, { id: savedSort }));
         }
@@ -53,7 +54,7 @@ export default function LookupCtrl($timeout, state, StateService, LookupService,
      * @description refresh the actual order parameter
      */
     function refreshLookupDatasetsOrder() {
-        var savedSortOrder = StorageService.getLookupDatasetsOrder();
+        const savedSortOrder = StorageService.getLookupDatasetsOrder();
         if (savedSortOrder) {
             StateService.setLookupDatasetsOrder(_.find(state.playground.lookup.orderList, { id: savedSortOrder }));
         }
@@ -67,10 +68,10 @@ export default function LookupCtrl($timeout, state, StateService, LookupService,
      */
     vm.hoverSubmitBtn = function hoverSubmitBtn() {
         if (state.playground.lookup.step) {
-            PlaygroundService.updatePreview(state.playground.lookup.step, getParams());
+            PreviewService.updatePreview(state.playground.lookup.step, getParams());
         }
         else {
-            var previewClosure = EarlyPreviewService.earlyPreview(state.playground.lookup.dataset, 'dataset');
+            const previewClosure = EarlyPreviewService.earlyPreview(state.playground.lookup.dataset, 'dataset');
             previewClosure(getParams());
         }
     };
@@ -109,7 +110,7 @@ export default function LookupCtrl($timeout, state, StateService, LookupService,
      * @description returns the params of the lookup action
      */
     function getParams() {
-        var params = extractLookupParams(state.playground.lookup.dataset);
+        const params = extractLookupParams(state.playground.lookup.dataset);
         params.column_id = state.playground.grid.selectedColumn.id;
         params.column_name = state.playground.grid.selectedColumn.name;
         params.lookup_join_on = state.playground.lookup.selectedColumn.id;
@@ -127,14 +128,14 @@ export default function LookupCtrl($timeout, state, StateService, LookupService,
     vm.submit = function submit() {
         EarlyPreviewService.deactivatePreview();
         EarlyPreviewService.cancelPendingPreview();
-        var promise;
-        var lookupStep = vm.state.playground.lookup.step;
+        let promise;
+        const lookupStep = vm.state.playground.lookup.step;
 
         if (lookupStep) {
             promise = PlaygroundService.updateStep(lookupStep, getParams());
         }
         else {
-            promise = TransformationApplicationService.append(state.playground.lookup.dataset, 'dataset', getParams());
+            promise = PlaygroundService.completeParamsAndAppend(state.playground.lookup.dataset, 'dataset', getParams());
         }
 
         promise.then(StateService.setLookupVisibility.bind(null, false))
@@ -164,7 +165,7 @@ export default function LookupCtrl($timeout, state, StateService, LookupService,
         LookupService.updateLookupDatasets();
         vm.addLookupDatasetModal = false;
 
-        //refresh lookup panel by selecting the first action
+        // refresh lookup panel by selecting the first action
         if (state.playground.lookup.addedActions.length > 0) {
             LookupService.loadFromAction(state.playground.lookup.addedActions[0]);
         }

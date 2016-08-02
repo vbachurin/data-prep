@@ -22,7 +22,7 @@
 export default function TypeTransformMenuCtrl($scope, PlaygroundService, ColumnTypesService, ConverterService) {
     'ngInject';
 
-    var vm = this;
+    const vm = this;
 
     /**
      * @ngdoc property
@@ -35,7 +35,7 @@ export default function TypeTransformMenuCtrl($scope, PlaygroundService, ColumnT
 
     ColumnTypesService.getTypes()
         .then(function (types) {
-            var ignoredTypes = ['double', 'numeric', 'any'];
+            const ignoredTypes = ['double', 'numeric', 'any'];
             vm.types = _.filter(types, function (type) {
                 return ignoredTypes.indexOf(type.id.toLowerCase()) === -1;
             });
@@ -60,16 +60,16 @@ export default function TypeTransformMenuCtrl($scope, PlaygroundService, ColumnT
      * @param {object} domain The new domain information
      */
     vm.changeDomain = function changeDomain(domain) {
-        var originalDomain = getOriginalDomain();
+        const originalDomain = getOriginalDomain();
         setColumnDomainAndType(domain, null);
 
-        var parameters = {
+        const parameters = {
             scope: 'column',
             column_id: vm.column.id,
             column_name: vm.column.name,
             new_domain_id: domain.id,
             new_domain_label: domain.label,
-            new_domain_frequency: domain.frequency
+            new_domain_frequency: domain.frequency,
         };
         PlaygroundService.appendStep('domain_change', parameters)
             .catch(setColumnDomainAndType.bind(vm, originalDomain));
@@ -83,15 +83,15 @@ export default function TypeTransformMenuCtrl($scope, PlaygroundService, ColumnT
      * @param {object} type The new type information
      */
     vm.changeType = function changeType(type) {
-        var originalType = vm.column.type;
-        var originalDomain = getOriginalDomain();
+        const originalType = vm.column.type;
+        const originalDomain = getOriginalDomain();
         setColumnDomainAndType({ id: '', label: '', frequency: 0 }, type.id);
 
-        var parameters = {
+        const parameters = {
             scope: 'column',
             column_id: vm.column.id,
             column_name: vm.column.name,
-            new_type: type.id
+            new_type: type.id,
         };
         PlaygroundService.appendStep('type_change', parameters)
             .catch(setColumnDomainAndType.bind(vm, originalDomain, originalType));
@@ -153,7 +153,7 @@ export default function TypeTransformMenuCtrl($scope, PlaygroundService, ColumnT
         return {
             id: vm.column.domain,
             label: vm.column.domainLabel,
-            frequency: vm.column.domainFrequency
+            frequency: vm.column.domainFrequency,
         };
     }
 

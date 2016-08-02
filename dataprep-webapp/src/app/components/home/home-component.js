@@ -13,8 +13,10 @@
 
 import HomeCtrl from './home-controller';
 
+import template from './home.html';
+
 const HomeComponent = {
-    templateUrl: 'app/components/home/home.html',
+    templateUrl: template,
     controller: HomeCtrl,
 };
 

@@ -114,7 +114,7 @@ describe('Folder services', () => {
         }));
 
         it('should call rest remove', inject((FolderService, FolderRestService) => {
-            $
+            $;
             //given
             const folderId = 'L215L3BlcnNvbmFsL2ZvbGRlcg==';
 
@@ -209,7 +209,7 @@ describe('Folder services', () => {
         };
         const content = {
             folders: [{ path: 'toto', name: 'toto' }],
-            preparations: [{ id: '5a8cf1763b58' }]
+            preparations: [{ id: '5a8cf1763b58' }],
         };
 
         beforeEach(inject(($q, StateService, FolderRestService) => {

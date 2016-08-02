@@ -11,17 +11,18 @@
 
   ============================================================================*/
 
-describe('App directive', function() {
+import DataPrepAppModule from './app-module';
+
+describe('App directive', () => {
     'use strict';
 
     var scope;
     var createElement;
     var element;
 
-    beforeEach(angular.mock.module('data-prep.app'));
-    beforeEach(angular.mock.module('htmlTemplates'));
+    beforeEach(window.module(DataPrepAppModule));
 
-    beforeEach(inject(function($rootScope, $compile) {
+    beforeEach(inject(function ($rootScope, $compile) {
         scope = $rootScope.$new();
         createElement = function () {
             element = angular.element('<dataprep-app></dataprep-app>');
@@ -31,7 +32,7 @@ describe('App directive', function() {
         };
     }));
 
-    beforeEach(inject(function($injector, $q, RestURLs, UpgradeVersionService) {
+    beforeEach(inject(function ($injector, $q, RestURLs, UpgradeVersionService) {
         RestURLs.setServerUrl('');
 
         var $httpBackend = $injector.get('$httpBackend');
@@ -39,15 +40,15 @@ describe('App directive', function() {
             .expectGET(RestURLs.exportUrl + '/formats')
             .respond(200, {});
 
-        spyOn(UpgradeVersionService, "retrieveNewVersions").and.returnValue($q.when([]));
+        spyOn(UpgradeVersionService, 'retrieveNewVersions').and.returnValue($q.when([]));
     }));
 
-    afterEach(function() {
+    afterEach(function () {
         scope.$destroy();
         element.remove();
     });
 
-    it('should hold toaster container', function() {
+    it('should hold toaster container', function () {
         //when
         createElement();
 
@@ -55,7 +56,7 @@ describe('App directive', function() {
         expect(element.find('#toast-container').length).toBe(1);
     });
 
-    it('should hold loader element', function() {
+    it('should hold loader element', function () {
         //when
         createElement();
 
@@ -63,7 +64,7 @@ describe('App directive', function() {
         expect(element.find('talend-loading').length).toBe(1);
     });
 
-    it('should render router insertion point', function() {
+    it('should render router insertion point', function () {
         //when
         createElement();
 

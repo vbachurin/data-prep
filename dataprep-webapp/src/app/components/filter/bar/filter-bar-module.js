@@ -11,22 +11,28 @@
 
  ============================================================================*/
 
+import angular from 'angular';
+import FILTER_ITEM from '../item/filter-item-module';
+import FILTER_LIST from '../list/filter-list-module';
+import FILTER_MONITOR from '../monitor/filter-monitor-module';
+import FILTER_SEARCH_MODULE from '../search/filter-search-module';
+
 import FilterBar from './filter-bar-directive';
 
-(() => {
-    'use strict';
+const MODULE_NAME = 'data-prep.filter-bar';
 
-    /**
-     * @ngdoc object
-     * @name data-prep.filter-bar
-     * @description This module aggregate the filters components into a bar
-     */
-    angular.module('data-prep.filter-bar',
-        [
-            'data-prep.filter-list',
-            'data-prep.filter-item',
-            'data-prep.filter-monitor',
-            'data-prep.filter-search',
-        ])
-        .directive('filterBar', FilterBar);
-})();
+/**
+ * @ngdoc object
+ * @name data-prep.filter-bar
+ * @description This module aggregate the filters components into a bar
+ */
+angular.module(MODULE_NAME,
+    [
+        FILTER_ITEM,
+        FILTER_LIST,
+        FILTER_MONITOR,
+        FILTER_SEARCH_MODULE,
+    ])
+    .directive('filterBar', FilterBar);
+
+export default MODULE_NAME;

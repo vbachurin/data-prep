@@ -22,7 +22,7 @@ export default function LineSuggestionService(TransformationCacheService, StateS
     'ngInject';
 
     return {
-        initTransformations: initTransformations
+        initTransformations,
     };
 
     function initTransformations() {
@@ -32,7 +32,7 @@ export default function LineSuggestionService(TransformationCacheService, StateS
                 StateService.setLineTransformations({
                     allTransformations: lineTransformations.allTransformations,
                     allCategories: lineTransformations.allCategories,
-                    filteredTransformations: lineTransformations.allCategories
+                    filteredTransformations: lineTransformations.allCategories,
                 });
             })
             .finally(function () {

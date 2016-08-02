@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import SlickGridMock from '../../../../mocks/SlickGrid.mock';
+
 describe('Datagrid size service', function () {
     'use strict';
 
@@ -26,7 +28,8 @@ describe('Datagrid size service', function () {
             windowMock = jasmine.createSpy('$window');
             /*global window:false */
             windowMock.localStorage = window.localStorage; //eslint-disable-line angular/window-service
-            windowMock.addEventListener = function() {};
+            windowMock.addEventListener = function () {};
+
             return windowMock;
         });
 
@@ -41,7 +44,7 @@ describe('Datagrid size service', function () {
             { id: '0001', name: 'col1', width: 20, minWidth: 80 },
             { id: '0002', name: 'col2', width: 30, minWidth: 80 },
             { id: '0003', name: 'col3', width: 40, minWidth: 80 },
-            { id: '0004', name: 'col4', width: 50, minWidth: 80 }
+            { id: '0004', name: 'col4', width: 50, minWidth: 80 },
         ];
         stateMock.playground.dataset = { id: '00000000' };
 
@@ -51,11 +54,11 @@ describe('Datagrid size service', function () {
         spyOn($window, 'addEventListener').and.returnValue();
     }));
 
-    afterEach(inject(function($window) {
+    afterEach(inject(function ($window) {
         $window.localStorage.removeItem(storageKey);
     }));
 
-    describe('on creation', function() {
+    describe('on creation', function () {
         it('should add grid column resize listener', inject(function (DatagridSizeService) {
             //when
             DatagridSizeService.init(gridMock);
@@ -76,7 +79,7 @@ describe('Datagrid size service', function () {
         }));
     });
 
-    describe('on event', function() {
+    describe('on event', function () {
         it('should resize grid canvas when window is resized', inject(function ($window, DatagridSizeService) {
             //given
             gridMock.initColumnsMock(gridColumns);
@@ -107,12 +110,12 @@ describe('Datagrid size service', function () {
                 '0001': 20,
                 '0002': 30,
                 '0003': 40,
-                '0004': 50
+                '0004': 50,
             }));
         }));
     });
 
-    describe('auto size columns', function() {
+    describe('auto size columns', function () {
         it('should set column sizes from localStorage', inject(function ($window, DatagridSizeService) {
             //given
             DatagridSizeService.init(gridMock);
@@ -122,7 +125,7 @@ describe('Datagrid size service', function () {
                 '0001': 70,
                 '0002': 80,
                 '0003': 90,
-                '0004': 100
+                '0004': 100,
             }));
 
             expect(gridColumns[0].width).toBe(10);
@@ -141,7 +144,7 @@ describe('Datagrid size service', function () {
                 '0001': 70,
                 '0002': 80,
                 '0003': 90,
-                '0004': 100
+                '0004': 100,
             }));
             expect(gridMock.getColumns()[0].width).toBe(60);
             expect(gridMock.getColumns()[1].width).toBe(70);
@@ -174,8 +177,8 @@ describe('Datagrid size service', function () {
                 '0000': 60,
                 '0001': 70,
                 '0002': 80,
-                '0003': 90
-            //missing 0004 entry
+                '0003': 90,
+                //missing 0004 entry
             }));
 
             expect(gridColumns[4].width).toBe(50);

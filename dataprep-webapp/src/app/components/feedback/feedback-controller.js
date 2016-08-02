@@ -25,17 +25,19 @@ export default function FeedbackCtrl(state, $translate, FeedbackRestService, Mes
             'FEEDBACK_SEVERITY_CRITICAL',
             'FEEDBACK_SEVERITY_MAJOR',
             'FEEDBACK_SEVERITY_MINOR',
-            'FEEDBACK_SEVERITY_TRIVIAL'
+            'FEEDBACK_SEVERITY_TRIVIAL',
         ])
         .then((translations) => {
             vm.feedbackTypes = [
                 { name: translations.FEEDBACK_TYPE_BUG, value: 'BUG' },
-                { name: translations.FEEDBACK_TYPE_IMPROVEMENT, value: 'IMPROVEMENT' }];
+                { name: translations.FEEDBACK_TYPE_IMPROVEMENT, value: 'IMPROVEMENT' },
+            ];
             vm.feedbackSeverities = [
                 { name: translations.FEEDBACK_SEVERITY_CRITICAL, value: 'CRITICAL' },
                 { name: translations.FEEDBACK_SEVERITY_MAJOR, value: 'MAJOR' },
                 { name: translations.FEEDBACK_SEVERITY_MINOR, value: 'MINOR' },
-                { name: translations.FEEDBACK_SEVERITY_TRIVIAL, value: 'TRIVIAL' }];
+                { name: translations.FEEDBACK_SEVERITY_TRIVIAL, value: 'TRIVIAL' },
+            ];
         });
 
     resetForm();
@@ -46,7 +48,7 @@ export default function FeedbackCtrl(state, $translate, FeedbackRestService, Mes
             mail: StorageService.getFeedbackUserMail(),
             severity: 'MINOR',
             type: 'BUG',
-            description: ''
+            description: '',
         };
     }
 

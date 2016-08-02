@@ -11,41 +11,28 @@
 
  ============================================================================*/
 
+import _ from 'lodash';
+
 /**
  * @ngdoc service
  * @name data-prep.services.transformation.service:TransformationService
  * @description Transformation service.
  * This service provide the entry point to get and manipulate transformations
+ * @requires data-prep.services.parameters.service:ParametersService
  * @requires data-prep.services.utils.service:ConverterService
  * @requires data-prep.services.transformation.service:TransformationRestService
  */
-export default function TransformationService(TransformationRestService, ConverterService) {
+export default function TransformationService(TransformationRestService, ParametersService, ConverterService) {
     'ngInject';
 
-    const choiceType = 'CHOICE';
-    const clusterType = 'CLUSTER';
     const COLUMN_CATEGORY = 'column_metadata';
 
     return {
-        getLineTransformations: getLineTransformations,
-        getColumnTransformations: getColumnTransformations,
-        getColumnSuggestions: getColumnSuggestions,
-        resetParamValue: resetParamValue,
-        initParamsValues: initParamsValues,
-        initDynamicParameters: initDynamicParameters
+        getLineTransformations,
+        getColumnTransformations,
+        getColumnSuggestions,
+        initDynamicParameters,
     };
-
-
-    /**
-     * @ngdoc method
-     * @name isExplicitParameter
-     * @methodOf data-prep.services.transformation.service:TransformationService
-     * @param {object} param the parameter to check
-     * @description Return true if the parameter is explicit based on the 'implicit' flag
-     */
-    function isExplicitParameter(param) {
-        return !param.implicit;
-    }
 
     // --------------------------------------------------------------------------------------------
     // ----------------------------------Transformations suggestions Utils-------------------------
@@ -60,7 +47,7 @@ export default function TransformationService(TransformationRestService, Convert
      */
     function cleanParams(menus) {
         return _.forEach(menus, (menu) => {
-            const filteredParameters = _.filter(menu.parameters, isExplicitParameter);
+            const filteredParameters = _.filter(menu.parameters, (param) => !param.implicit);
             menu.parameters = filteredParameters.length ? filteredParameters : null;
         });
     }
@@ -149,7 +136,7 @@ export default function TransformationService(TransformationRestService, Convert
                 return {
                     category: key,
                     categoryHtml: key.toUpperCase(),
-                    transformations: groupedTransformations[key]
+                    transformations: groupedTransformations[key],
                 };
             })
             .value();
@@ -175,8 +162,8 @@ export default function TransformationService(TransformationRestService, Convert
                 setHtmlDisplayLabels(allTransformations);
                 const allCategories = prepareTransformations(allTransformations);
                 return {
-                    allTransformations: allTransformations,
-                    allCategories: allCategories
+                    allTransformations,
+                    allCategories,
                 };
             });
     }
@@ -199,8 +186,8 @@ export default function TransformationService(TransformationRestService, Convert
                 setHtmlDisplayLabels(allTransformations);
                 const allCategories = prepareTransformations(allTransformations);
                 return {
-                    allTransformations: allTransformations,
-                    allCategories: allCategories
+                    allTransformations,
+                    allCategories,
                 };
             });
     }
@@ -224,148 +211,8 @@ export default function TransformationService(TransformationRestService, Convert
     }
 
     // --------------------------------------------------------------------------------------------
-    // -----------------------------------Transformation parameters--------------------------------
-    // --------------------------------------------------------------------------------------------
-
-    /**
-     * @ngdoc method
-     * @name resetParamValue
-     * @methodOf data-prep.services.transformation.service:TransformationService
-     * @param {object} params The params to reset
-     * @param {string} type The param type
-     * @description [PRIVATE] Reset params values with saved initial values
-     */
-    function resetParamValue(params, type) {
-        if (!params) {
-            return;
-        }
-
-        function executeOnSimpleParams(simpleParamsToInit) {
-            _.forEach(simpleParamsToInit, (param) => {
-                param.value = angular.isDefined(param.initialValue) ?
-                    param.initialValue :
-                    param.default;
-            });
-        }
-
-        switch (type) {
-            case choiceType:
-                _.forEach(params, (choice) => {
-                    choice.selectedValue = angular.isDefined(choice.initialValue) ?
-                        choice.initialValue :
-                        choice.default;
-
-                    _.forEach(choice.values, (choiceItem) => {
-                        executeOnSimpleParams(choiceItem.parameters);
-                    });
-                });
-                break;
-
-            case clusterType:
-                _.forEach(params.clusters, (cluster) => {
-                    cluster.active = cluster.initialActive;
-                    executeOnSimpleParams(cluster.parameters);
-                    executeOnSimpleParams([cluster.replace]);
-                });
-                break;
-
-            default:
-                executeOnSimpleParams(params);
-        }
-    }
-
-    /**
-     * @ngdoc method
-     * @name initParameters
-     * @methodOf data-prep.services.recipe.service:RecipeService
-     * @param {object} parameters The parameters
-     * @param {object} paramValues The parameters initial values
-     * @description Init parameters initial value and type
-     * @returns {object[]} The parameters with initialized values
-     */
-    function initParameters(parameters, paramValues) {
-        return _.chain(parameters)
-            .filter(isExplicitParameter)
-            .forEach((param) => {
-                param.initialValue = param.value = ConverterService.adaptValue(
-                    param.type,
-                    paramValues[param.name]
-                );
-                param.inputType = ConverterService.toInputType(param.type);
-
-                // also take care of select parameters
-                if (param.type === 'select' && param.configuration && param.configuration.values) {
-                    _.forEach(param.configuration.values, (selectItem) => {
-                        initParameters(selectItem.parameters, paramValues);
-                    });
-                }
-            })
-            .value();
-    }
-
-
-    /**
-     * @ngdoc method
-     * @name initCluster
-     * @methodOf data-prep.services.recipe.service:RecipeService
-     * @param {object} cluster The Cluster parameters
-     * @param {object} paramValues The clusters initial values
-     * @description Init Clusters initial value
-     * @returns {object} The Cluster with initialized values
-     */
-    function initCluster(cluster, paramValues) {
-        _.forEach(cluster.clusters, (clusterItem) => {
-            const firstActiveParam = _.chain(clusterItem.parameters)
-                .forEach((param) => {
-                    param.initialValue = param.value = param.name in paramValues;
-                })
-                .filter('value')
-                .first()
-                .value();
-            clusterItem.initialActive = !!firstActiveParam;
-
-            //get the replace value or the default if the cluster item is inactive
-            //and init the replace input value
-            const replaceValue = firstActiveParam ?
-                paramValues[firstActiveParam.name] :
-                clusterItem.replace.default;
-            const replaceParamValues = { replaceValue: replaceValue };
-            initParameters([clusterItem.replace], replaceParamValues);
-        });
-        return cluster;
-    }
-
-    /**
-     * @ngdoc method
-     * @name initParamsValues
-     * @methodOf data-prep.services.recipe.service:RecipeService
-     * @param {object} transformation The transformation infos
-     * @param {object} paramValues The transformation parameters initial values
-     * @description Init parameters values and save them as initial values
-     */
-    function initParamsValues(transformation, paramValues) {
-        if (transformation.parameters) {
-            transformation.parameters = initParameters(transformation.parameters, paramValues);
-        }
-        if (transformation.cluster) {
-            transformation.cluster = initCluster(transformation.cluster, paramValues);
-        }
-    }
-
-    // --------------------------------------------------------------------------------------------
     // ---------------------------Transformation Dynamic parameters--------------------------------
     // --------------------------------------------------------------------------------------------
-    /**
-     * @ngdoc method
-     * @name resetParameters
-     * @methodOf data-prep.services.transformation.service:TransformationService
-     * @description Reset all the transformation parameters
-     */
-    function resetParameters(transformation) {
-        transformation.parameters = null;
-        transformation.cluster = null;
-    }
-
     /**
      * @ngdoc method
      * @name initDynamicParameters
@@ -373,7 +220,7 @@ export default function TransformationService(TransformationRestService, Convert
      * @description Fetch the dynamic parameter and set them in transformation
      */
     function initDynamicParameters(transformation, infos) {
-        resetParameters(transformation);
+        ParametersService.resetParameters(transformation);
 
         const action = transformation.name;
         return TransformationRestService

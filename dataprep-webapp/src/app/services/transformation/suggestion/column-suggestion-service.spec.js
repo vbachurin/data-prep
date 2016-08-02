@@ -22,7 +22,7 @@ describe('Column suggestion service', function () {
 
     beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
-            'ACTION_SUGGESTION': 'Suggestion'
+            ACTION_SUGGESTION: 'Suggestion',
         });
         $translateProvider.preferredLanguage('en');
     }));
@@ -36,12 +36,12 @@ describe('Column suggestion service', function () {
                         allTransformations: [], // all selected column transformations
                         filteredTransformations: [], // categories with their transformations to display, result of filter
                         searchActionString: '',
-                        allCategories: null
+                        allCategories: null,
                     },
                     transformationsForEmptyCells: [], // all column transformations applied to empty cells
-                    transformationsForInvalidCells: []// all column transformations applied to invalid cells
-                }
-            }
+                    transformationsForInvalidCells: [],// all column transformations applied to invalid cells
+                },
+            },
         };
         $provide.constant('state', stateMock);
     }));
@@ -59,7 +59,7 @@ describe('Column suggestion service', function () {
                     label: 'u',
                     labelHtml: 'u',
                     description: 'test',
-                    actionScope: ['unknown']
+                    actionScope: ['unknown'],
                 },
                 {
                     name: 'removeempty',
@@ -67,7 +67,7 @@ describe('Column suggestion service', function () {
                     label: 'a',
                     labelHtml: 'a',
                     description: 'test',
-                    actionScope: ['empty', 'invalid']
+                    actionScope: ['empty', 'invalid'],
                 },
                 {
                     name: 'totitlecase',
@@ -75,7 +75,7 @@ describe('Column suggestion service', function () {
                     label: 't',
                     labelHtml: 't',
                     description: 'test',
-                    actionScope: ['invalid']
+                    actionScope: ['invalid'],
                 },
                 {
                     name: 'removetrailingspaces',
@@ -83,9 +83,9 @@ describe('Column suggestion service', function () {
                     label: 'm',
                     labelHtml: 'm',
                     description: 'test',
-                    actionScope: ['empty', 'unknown']
+                    actionScope: ['empty', 'unknown'],
                 },
-                { name: 'split', category: 'split', label: 'l', labelHtml: 'l...', dynamic: true, description: 'test' }
+                { name: 'split', category: 'split', label: 'l', labelHtml: 'l...', dynamic: true, description: 'test' },
             ],
             allCategories: [
                 {
@@ -97,7 +97,7 @@ describe('Column suggestion service', function () {
                             label: 't',
                             labelHtml: 't',
                             description: 'test',
-                            actionScope: ['invalid']
+                            actionScope: ['invalid'],
                         },
                         {
                             name: 'touppercase',
@@ -105,10 +105,10 @@ describe('Column suggestion service', function () {
                             label: 'u',
                             labelHtml: 'u',
                             description: 'test',
-                            actionScope: ['unknown']
+                            actionScope: ['unknown'],
                         },
-                        { name: 'tolowercase', category: 'case', label: 'v', labelHtml: 'v', description: 'test' }
-                    ]
+                        { name: 'tolowercase', category: 'case', label: 'v', labelHtml: 'v', description: 'test' },
+                    ],
                 },
                 {
                     category: 'clear',
@@ -118,8 +118,8 @@ describe('Column suggestion service', function () {
                         label: 'a',
                         labelHtml: 'a',
                         description: 'test',
-                        actionScope: ['empty', 'invalid']
-                    }]
+                        actionScope: ['empty', 'invalid'],
+                    },],
                 },
                 {
                     category: 'quickfix',
@@ -131,9 +131,9 @@ describe('Column suggestion service', function () {
                             label: 'm',
                             labelHtml: 'm',
                             description: 'test',
-                            actionScope: ['empty', 'unknown']
-                        }
-                    ]
+                            actionScope: ['empty', 'unknown'],
+                        },
+                    ],
                 },
                 {
                     category: 'split',
@@ -143,14 +143,14 @@ describe('Column suggestion service', function () {
                         label: 'l',
                         labelHtml: 'l...',
                         dynamic: true,
-                        description: 'test'
-                    }]
-                }
-            ]
+                        description: 'test',
+                    },],
+                },
+            ],
         };
         columnSuggestions = [
             { name: 'touppercase', category: 'case', label: 'u', labelHtml: 'u', description: 'test' },
-            { name: 'tolowercase', category: 'case', label: 'v', labelHtml: 'v', description: 'test' }
+            { name: 'tolowercase', category: 'case', label: 'v', labelHtml: 'v', description: 'test' },
         ];
         allCategories = [
             {
@@ -162,16 +162,16 @@ describe('Column suggestion service', function () {
                         category: 'case',
                         label: 'u',
                         labelHtml: 'u',
-                        description: 'test'
+                        description: 'test',
                     },
                     {
                         name: 'tolowercase',
                         category: 'case',
                         label: 'v',
                         labelHtml: 'v',
-                        description: 'test'
-                    }
-                ]
+                        description: 'test',
+                    },
+                ],
             },
             {
                 category: 'case',
@@ -183,8 +183,8 @@ describe('Column suggestion service', function () {
                         labelHtml: 't',
                         description: 'test',
                         actionScope: [
-                            'invalid'
-                        ]
+                            'invalid',
+                        ],
                     },
                     {
                         name: 'touppercase',
@@ -193,17 +193,17 @@ describe('Column suggestion service', function () {
                         labelHtml: 'u',
                         description: 'test',
                         actionScope: [
-                            'unknown'
-                        ]
+                            'unknown',
+                        ],
                     },
                     {
                         name: 'tolowercase',
                         category: 'case',
                         label: 'v',
                         labelHtml: 'v',
-                        description: 'test'
-                    }
-                ]
+                        description: 'test',
+                    },
+                ],
             },
             {
                 category: 'clear',
@@ -216,10 +216,10 @@ describe('Column suggestion service', function () {
                         description: 'test',
                         actionScope: [
                             'empty',
-                            'invalid'
-                        ]
-                    }
-                ]
+                            'invalid',
+                        ],
+                    },
+                ],
             },
             {
                 category: 'quickfix',
@@ -229,7 +229,7 @@ describe('Column suggestion service', function () {
                         category: 'quickfix',
                         label: 'f',
                         labelHtml: 'f',
-                        description: 'test'
+                        description: 'test',
                     },
                     {
                         name: 'removetrailingspaces',
@@ -239,10 +239,10 @@ describe('Column suggestion service', function () {
                         description: 'test',
                         actionScope: [
                             'empty',
-                            'unknown'
-                        ]
-                    }
-                ]
+                            'unknown',
+                        ],
+                    },
+                ],
             },
             {
                 category: 'split',
@@ -253,10 +253,10 @@ describe('Column suggestion service', function () {
                         label: 'l',
                         labelHtml: 'l...',
                         dynamic: true,
-                        description: 'test'
-                    }
-                ]
-            }
+                        description: 'test',
+                    },
+                ],
+            },
         ];
 
         spyOn(TransformationCacheService, 'getColumnTransformations').and.returnValue($q.when(columnTransformations));
@@ -416,7 +416,7 @@ describe('Column suggestion service', function () {
                 label: 'a',
                 labelHtml: 'a',
                 description: 'test',
-                actionScope: ['empty', 'invalid']
+                actionScope: ['empty', 'invalid'],
             },
             {
                 name: 'removetrailingspaces',
@@ -424,8 +424,8 @@ describe('Column suggestion service', function () {
                 label: 'm',
                 labelHtml: 'm',
                 description: 'test',
-                actionScope: ['empty', 'unknown']
-            }
+                actionScope: ['empty', 'unknown'],
+            },
         ]);
         expect(StateService.setTransformationsForInvalidCells).toHaveBeenCalledWith([
             {
@@ -434,7 +434,7 @@ describe('Column suggestion service', function () {
                 label: 'a',
                 labelHtml: 'a',
                 description: 'test',
-                actionScope: ['empty', 'invalid']
+                actionScope: ['empty', 'invalid'],
             },
             {
                 name: 'totitlecase',
@@ -442,15 +442,15 @@ describe('Column suggestion service', function () {
                 label: 't',
                 labelHtml: 't',
                 description: 'test',
-                actionScope: ['invalid']
-            }
+                actionScope: ['invalid'],
+            },
         ]);
         expect(StateService.setColumnTransformations).toHaveBeenCalledWith({
             allSuggestions: columnSuggestions,
             allTransformations: columnTransformations.allTransformations,
             filteredTransformations: allCategories,
             allCategories: allCategories,
-            searchActionString: ''
+            searchActionString: '',
         });
     }));
 

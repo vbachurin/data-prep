@@ -19,72 +19,72 @@ describe('Lookup controller', function () {
     var stateMock;
     var dsActions = [
         {
-            'category': 'data_blending',
-            'name': 'lookup',
-            'parameters': [
+            category: 'data_blending',
+            name: 'lookup',
+            parameters: [
                 {
-                    'name': 'column_id',
-                    'type': 'string',
-                    'default': ''
+                    name: 'column_id',
+                    type: 'string',
+                    default: '',
                 },
                 {
-                    'name': 'filter',
-                    'type': 'filter',
-                    'default': ''
+                    name: 'filter',
+                    type: 'filter',
+                    default: '',
                 },
                 {
-                    'name': 'lookup_ds_name',
-                    'type': 'string',
-                    'default': 'lookup_2'
+                    name: 'lookup_ds_name',
+                    type: 'string',
+                    default: 'lookup_2',
                 },
                 {
-                    'name': 'lookup_ds_id',
-                    'type': 'string',
-                    'default': '9e739b88-5ec9-4b58-84b5-2127a7e2eac7'
+                    name: 'lookup_ds_id',
+                    type: 'string',
+                    default: '9e739b88-5ec9-4b58-84b5-2127a7e2eac7',
                 },
                 {
-                    'name': 'lookup_ds_url',
-                    'type': 'string',
-                    'default': 'http://172.17.0.211:8080/datasets/9ee2eac7/content?metadata=true'
+                    name: 'lookup_ds_url',
+                    type: 'string',
+                    default: 'http://172.17.0.211:8080/datasets/9ee2eac7/content?metadata=true',
                 },
                 {
-                    'name': 'lookup_join_on',
-                    'type': 'string',
-                    'default': ''
+                    name: 'lookup_join_on',
+                    type: 'string',
+                    default: '',
                 },
                 {
-                    'name': 'lookup_join_on_name',
-                    'type': 'string',
-                    'default': ''
+                    name: 'lookup_join_on_name',
+                    type: 'string',
+                    default: '',
                 },
                 {
-                    'name': 'lookup_selected_cols',
-                    'type': 'list',
-                    'default': ''
-                }
-            ]
-        }
+                    name: 'lookup_selected_cols',
+                    type: 'list',
+                    default: '',
+                },
+            ],
+        },
     ];
 
     var params = {
-        'column_id': 'mainGridColId',
-        'column_name': 'mainGridColName',
-        'filter': '',
-        'lookup_ds_name': 'lookup_2',
-        'lookup_ds_id': '9e739b88-5ec9-4b58-84b5-2127a7e2eac7',
-        'lookup_ds_url': 'http://172.17.0.211:8080/datasets/9ee2eac7/content?metadata=true',
-        'lookup_join_on': 'lookupGridColId',
-        'lookup_join_on_name': 'lookupGridColName',
-        'lookup_selected_cols': ['0002', '0003']
+        column_id: 'mainGridColId',
+        column_name: 'mainGridColName',
+        filter: '',
+        lookup_ds_name: 'lookup_2',
+        lookup_ds_id: '9e739b88-5ec9-4b58-84b5-2127a7e2eac7',
+        lookup_ds_url: 'http://172.17.0.211:8080/datasets/9ee2eac7/content?metadata=true',
+        lookup_join_on: 'lookupGridColId',
+        lookup_join_on_name: 'lookupGridColName',
+        lookup_selected_cols: ['0002', '0003'],
     };
 
     var step = {
         column: {
             id: '0000',
-            name: 'id'
+            name: 'id',
         },
         row: {
-            id: '11'
+            id: '11',
         },
         transformation: {
             stepId: '72fe267d489b06890da69368f4760530b076ec59',
@@ -92,7 +92,7 @@ describe('Lookup controller', function () {
             label: 'Lookup',
             description: 'Blends columns from another dataset into this one',
             parameters: [],
-            dynamic: false
+            dynamic: false,
         },
         actionParameters: {
             action: 'lookup',
@@ -107,43 +107,43 @@ describe('Lookup controller', function () {
                 row_id: '11',
                 lookup_ds_url: 'dsLookupUrl',
                 lookup_join_on_name: 'id',
-                lookup_ds_name: 'cluster_dataset'
-            }
+                lookup_ds_name: 'cluster_dataset',
+            },
         },
         diff: {
             createdColumns: [
-                '0009'
-            ]
+                '0009',
+            ],
         },
-        filters: (void 0)
+        filters: (void 0),
     };
 
     var sortList = [
         { id: 'name', name: 'NAME_SORT', property: 'name' },
-        { id: 'date', name: 'DATE_SORT', property: 'created' }
+        { id: 'date', name: 'DATE_SORT', property: 'created' },
     ];
 
     var orderList = [
         { id: 'asc', name: 'ASC_ORDER' },
-        { id: 'desc', name: 'DESC_ORDER' }
+        { id: 'desc', name: 'DESC_ORDER' },
     ];
 
     beforeEach(angular.mock.module('data-prep.lookup', function ($provide) {
         stateMock = {
             playground: {
                 preparation: {
-                    id: '132da49ef87694ab64e6'
+                    id: '132da49ef87694ab64e6',
                 },
                 grid: {
                     selectedColumn: {
                         id: 'mainGridColId',
-                        name: 'mainGridColName'
-                    }
+                        name: 'mainGridColName',
+                    },
                 },
                 lookup: {
                     selectedColumn: {
                         id: 'lookupGridColId',
-                        name: 'lookupGridColName'
+                        name: 'lookupGridColName',
                     },
                     columnsToAdd: ['0002', '0003'],
                     datasets: dsActions,
@@ -152,9 +152,9 @@ describe('Lookup controller', function () {
                     sortList: sortList,
                     orderList: orderList,
                     sort: sortList[1],
-                    order: orderList[1]
-                }
-            }
+                    order: orderList[1],
+                },
+            },
         };
         $provide.constant('state', stateMock);
     }));
@@ -164,7 +164,7 @@ describe('Lookup controller', function () {
 
         createController = function () {
             return $controller('LookupCtrl', {
-                $scope: scope
+                $scope: scope,
             });
         };
     }));
@@ -184,22 +184,22 @@ describe('Lookup controller', function () {
             expect(previewClosure).toHaveBeenCalledWith(params);
         }));
 
-        it('should trigger lookup preview update', inject(function (PlaygroundService) {
+        it('should trigger lookup preview update', inject(function (PreviewService) {
             //given
             var ctrl = createController();
-            spyOn(PlaygroundService, 'updatePreview').and.returnValue();
+            spyOn(PreviewService, 'updatePreview').and.returnValue();
             stateMock.playground.lookup.step = step;
             //when
             ctrl.hoverSubmitBtn();
 
             //then
-            expect(PlaygroundService.updatePreview).toHaveBeenCalledWith(step, params);
+            expect(PreviewService.updatePreview).toHaveBeenCalledWith(step, params);
         }));
     });
 
     describe('validation', function () {
-        beforeEach(inject(function ($q, TransformationApplicationService, PlaygroundService, EarlyPreviewService) {
-            spyOn(TransformationApplicationService, 'append').and.returnValue($q.when(true));
+        beforeEach(inject(function ($q, PlaygroundService, EarlyPreviewService) {
+            spyOn(PlaygroundService, 'completeParamsAndAppend').and.returnValue($q.when(true));
             spyOn(PlaygroundService, 'updateStep').and.returnValue($q.when(true));
             spyOn(EarlyPreviewService, 'activatePreview').and.returnValue();
             spyOn(EarlyPreviewService, 'deactivatePreview').and.returnValue();
@@ -218,7 +218,7 @@ describe('Lookup controller', function () {
             expect(EarlyPreviewService.cancelPendingPreview).toHaveBeenCalled();
         }));
 
-        it('should reactivate preview after the operation with a delay of 500ms', inject(function ($q, $timeout, TransformationApplicationService, EarlyPreviewService) {
+        it('should reactivate preview after the operation with a delay of 500ms', inject(function ($q, $timeout, EarlyPreviewService) {
             //given
             var ctrl = createController();
 
@@ -232,7 +232,7 @@ describe('Lookup controller', function () {
             expect(EarlyPreviewService.activatePreview).toHaveBeenCalled();
         }));
 
-        it('should add new lookup action', inject(function ($q, TransformationApplicationService) {
+        it('should add new lookup action', inject(function ($q, PlaygroundService) {
             //given
             var ctrl = createController();
 
@@ -240,7 +240,7 @@ describe('Lookup controller', function () {
             ctrl.submit();
 
             //then
-            expect(TransformationApplicationService.append).toHaveBeenCalledWith(stateMock.playground.lookup.dataset, 'dataset', params);
+            expect(PlaygroundService.completeParamsAndAppend).toHaveBeenCalledWith(stateMock.playground.lookup.dataset, 'dataset', params);
         }));
 
         it('should update lookup action', inject(function (PlaygroundService) {
@@ -267,7 +267,6 @@ describe('Lookup controller', function () {
             expect(label).toBe('lookup_2');
         }));
     });
-
 
     describe('add datasets ', function () {
         it('show modal on click', inject(function (LookupService) {
@@ -298,7 +297,7 @@ describe('Lookup controller', function () {
 
         it('should refresh lookup panel after adding datasets', inject(function ($q, LookupService) {
             //given
-            stateMock.playground.lookup.addedActions[0] = { name : 'toto' };
+            stateMock.playground.lookup.addedActions[0] = { name: 'toto' };
             var ctrl = createController();
             spyOn(LookupService, 'loadFromAction').and.returnValue($q.when());
             spyOn(LookupService, 'updateLookupDatasets').and.returnValue();
@@ -307,12 +306,12 @@ describe('Lookup controller', function () {
             ctrl.addLookupDatasets();
 
             //then
-            expect(LookupService.loadFromAction).toHaveBeenCalledWith({ name : 'toto' });
+            expect(LookupService.loadFromAction).toHaveBeenCalledWith({ name: 'toto' });
         }));
 
         it('should toogle dataset selection', inject(function () {
             //given
-            var dataset= { enableToAddToLookup : true, addedToLookup: true };
+            var dataset = { enableToAddToLookup: true, addedToLookup: true };
             var ctrl = createController();
 
             //when
@@ -324,7 +323,7 @@ describe('Lookup controller', function () {
 
         it('should not toogle dataset selection if dataset is disabled', inject(function () {
             //given
-            var dataset= { enableToAddToLookup : false, addedToLookup: true };
+            var dataset = { enableToAddToLookup: false, addedToLookup: true };
             var ctrl = createController();
 
             //when
@@ -337,7 +336,7 @@ describe('Lookup controller', function () {
         it('should update sort by', inject(function ($timeout, StorageService, StateService) {
             //given
             var sortBy = { id: 'date', name: 'DATE_SORT', property: 'created' };
-            stateMock.playground.lookup.datasets = [{ created : 1 }, { created : 3 }, { created : 2 }];
+            stateMock.playground.lookup.datasets = [{ created: 1 }, { created: 3 }, { created: 2 }];
             spyOn(StorageService, 'setLookupDatasetsSort').and.returnValue();
             spyOn(StateService, 'setLookupDatasetsSort').and.returnValue();
             var ctrl = createController();
@@ -357,7 +356,7 @@ describe('Lookup controller', function () {
         it('should update sort order', inject(function ($timeout, StorageService, StateService) {
             //given
             var orderBy = { id: 'desc', name: 'DESC_ORDER' };
-            stateMock.playground.lookup.datasets = [{ created : 1 }, { created : 3 }, { created : 2 }];
+            stateMock.playground.lookup.datasets = [{ created: 1 }, { created: 3 }, { created: 2 }];
             spyOn(StorageService, 'setLookupDatasetsOrder').and.returnValue();
             spyOn(StateService, 'setLookupDatasetsOrder').and.returnValue();
             var ctrl = createController();

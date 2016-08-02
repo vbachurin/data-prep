@@ -17,11 +17,10 @@ describe('Transformation choice params directive', () => {
     let createElement;
 
     beforeEach(angular.mock.module('data-prep.transformation-form'));
-    beforeEach(angular.mock.module('htmlTemplates'));
 
     beforeEach(angular.mock.module('pascalprecht.translate', ($translateProvider) => {
         $translateProvider.translations('en', {
-            'COLON': ': '
+            COLON: ': ',
         });
         $translateProvider.preferredLanguage('en');
     }));
@@ -73,7 +72,7 @@ describe('Transformation choice params directive', () => {
             configuration: {
                 values: [
                     { value: 'noParamChoice1', label: 'noParamChoice1' },
-                    { value: 'noParamChoice2', label: 'noParamChoice2_label' }
+                    { value: 'noParamChoice2', label: 'noParamChoice2_label' },
                 ],
             },
         };
@@ -105,20 +104,20 @@ describe('Transformation choice params directive', () => {
                                 name: 'param1',
                                 label: 'Param 1',
                                 type: 'string',
-                                'inputType': 'text',
+                                inputType: 'text',
                                 default: '.',
                             },
                             {
                                 name: 'param2',
                                 label: 'Param 2',
                                 type: 'float',
-                                'inputType': 'number',
+                                inputType: 'number',
                                 default: '5',
-                            }
+                            },
                         ],
-                    }
-                ]
-            }
+                    },
+                ],
+            },
         };
         const element = createElement();
 

@@ -11,17 +11,19 @@
 
   ============================================================================*/
 
+import DataViewMock from '../../../../mocks/DataView.mock';
+
 describe('Lookup state service', function () {
     'use strict';
 
     var data = {
         metadata: {
             columns: [
-                { id: '0000', 'name': 'identif' },
-                { id: '0001', 'name': 'code' },
-                { id: '0002', 'name': 'firstname' },
-                { id: '0003', 'name': 'lastname' }
-            ]
+                { id: '0000', name: 'identif' },
+                { id: '0001', name: 'code' },
+                { id: '0002', name: 'firstname' },
+                { id: '0003', name: 'lastname' },
+            ],
         },
         records: [
             { tdpId: 0, firstname: 'Tata' },
@@ -35,70 +37,70 @@ describe('Lookup state service', function () {
             { tdpId: 8, firstname: 'Pipi' },
             { tdpId: 9, firstname: 'Popo' },
             { tdpId: 10, firstname: 'Pupu' },
-            { tdpId: 11, firstname: 'Pypy' }
-        ]
+            { tdpId: 11, firstname: 'Pypy' },
+        ],
     };
 
     var initialColumnCheckboxes = [
-        { 'id': '0000', 'name': 'identif', isAdded: false },
-        { 'id': '0001', 'name': 'code', isAdded: false },
-        { 'id': '0002', 'name': 'firstname', isAdded: false },
-        { 'id': '0003', 'name': 'lastname', isAdded: false }
+        { id: '0000', name: 'identif', isAdded: false },
+        { id: '0001', name: 'code', isAdded: false },
+        { id: '0002', name: 'firstname', isAdded: false },
+        { id: '0003', name: 'lastname', isAdded: false },
     ];
     var columnCheckboxesWithSelection = [
-        { 'id': '0000', 'name': 'identif', isAdded: false },
-        { 'id': '0001', 'name': 'code', isAdded: false },
-        { 'id': '0002', 'name': 'firstname', isAdded: true },
-        { 'id': '0003', 'name': 'lastname', isAdded: true }
+        { id: '0000', name: 'identif', isAdded: false },
+        { id: '0001', name: 'code', isAdded: false },
+        { id: '0002', name: 'firstname', isAdded: true },
+        { id: '0003', name: 'lastname', isAdded: true },
     ];
 
     var actions = [
         {
-            'category': 'data_blending',
-            'name': 'lookup',
-            'parameters': [
+            category: 'data_blending',
+            name: 'lookup',
+            parameters: [
                 {
-                    'name': 'column_id',
-                    'type': 'string',
-                    'default': ''
+                    name: 'column_id',
+                    type: 'string',
+                    default: '',
                 },
                 {
-                    'name': 'filter',
-                    'type': 'filter',
-                    'default': ''
+                    name: 'filter',
+                    type: 'filter',
+                    default: '',
                 },
                 {
-                    'name': 'lookup_ds_name',
-                    'type': 'string',
-                    'default': 'lookup_2'
+                    name: 'lookup_ds_name',
+                    type: 'string',
+                    default: 'lookup_2',
                 },
                 {
-                    'name': 'lookup_ds_id',
-                    'type': 'string',
-                    'default': '9e739b88-5ec9-4b58-84b5-2127a7e2eac7'
+                    name: 'lookup_ds_id',
+                    type: 'string',
+                    default: '9e739b88-5ec9-4b58-84b5-2127a7e2eac7',
                 },
                 {
-                    'name': 'lookup_ds_url',
-                    'type': 'string',
-                    'default': 'http://172.17.0.211:8080/datasets/9ee2eac7/content?metadata=true'
+                    name: 'lookup_ds_url',
+                    type: 'string',
+                    default: 'http://172.17.0.211:8080/datasets/9ee2eac7/content?metadata=true',
                 },
                 {
-                    'name': 'lookup_join_on',
-                    'type': 'string',
-                    'default': ''
+                    name: 'lookup_join_on',
+                    type: 'string',
+                    default: '',
                 },
                 {
-                    'name': 'lookup_join_on_name',
-                    'type': 'string',
-                    'default': ''
+                    name: 'lookup_join_on_name',
+                    type: 'string',
+                    default: '',
                 },
                 {
-                    'name': 'lookup_selected_cols',
-                    'type': 'list',
-                    'default': ''
-                }
-            ]
-        }
+                    name: 'lookup_selected_cols',
+                    type: 'list',
+                    default: '',
+                },
+            ],
+        },
     ];
     var lookupAction = actions[0];
 
@@ -161,8 +163,8 @@ describe('Lookup state service', function () {
         }));
     });
 
-    describe('init add mode', function() {
-        it('should reset the step to update', inject(function(lookupState, LookupStateService) {
+    describe('init add mode', function () {
+        it('should reset the step to update', inject(function (lookupState, LookupStateService) {
             //given
             lookupState.step = {};
 
@@ -173,7 +175,7 @@ describe('Lookup state service', function () {
             expect(lookupState.step).toBeFalsy();
         }));
 
-        it('should set the lookup action', inject(function(lookupState, LookupStateService) {
+        it('should set the lookup action', inject(function (lookupState, LookupStateService) {
             //given
             lookupState.dataset = {};
 
@@ -229,27 +231,27 @@ describe('Lookup state service', function () {
         }));
     });
 
-    describe('init update mode', function() {
+    describe('init update mode', function () {
         var stepToUpdate = {
             actionParameters: {
                 parameters: {
                     lookup_join_on: '0001',
-                    lookup_selected_cols: [{ id: '0002' }, { id: '0003' }]
-                }
-            }
+                    lookup_selected_cols: [{ id: '0002' }, { id: '0003' }],
+                },
+            },
         };
         var stepColumnCheckboxes = [
-            { 'id': '0000', 'name': 'identif', isAdded: false },
-            { 'id': '0001', 'name': 'code', isAdded: false },
-            { 'id': '0002', 'name': 'firstname', isAdded: true },
-            { 'id': '0003', 'name': 'lastname', isAdded: true }
+            { id: '0000', name: 'identif', isAdded: false },
+            { id: '0001', name: 'code', isAdded: false },
+            { id: '0002', name: 'firstname', isAdded: true },
+            { id: '0003', name: 'lastname', isAdded: true },
         ];
         var stepColumnsToAdd = [
-            { 'id': '0002', 'name': 'firstname' },
-            { 'id': '0003', 'name': 'lastname' }
+            { id: '0002', name: 'firstname' },
+            { id: '0003', name: 'lastname' },
         ];
 
-        it('should set the step to update', inject(function(lookupState, LookupStateService) {
+        it('should set the step to update', inject(function (lookupState, LookupStateService) {
             //given
             lookupState.step = null;
 
@@ -260,7 +262,7 @@ describe('Lookup state service', function () {
             expect(lookupState.step).toBe(stepToUpdate);
         }));
 
-        it('should set the lookup action', inject(function(lookupState, LookupStateService) {
+        it('should set the lookup action', inject(function (lookupState, LookupStateService) {
             //given
             lookupState.dataset = {};
 
@@ -316,7 +318,7 @@ describe('Lookup state service', function () {
         }));
     });
 
-    describe('parameters update', function() {
+    describe('parameters update', function () {
         it('should update the columns to add corresponding to the checkboxes model', inject(function (lookupState, LookupStateService) {
             //given
             lookupState.columnCheckboxes = columnCheckboxesWithSelection;
@@ -328,7 +330,7 @@ describe('Lookup state service', function () {
             //then
             expect(lookupState.columnsToAdd).toEqual([
                 { id: '0002', name: 'firstname' },
-                { id: '0003', name: 'lastname' }
+                { id: '0003', name: 'lastname' },
             ]);
         }));
 
@@ -355,7 +357,7 @@ describe('Lookup state service', function () {
             //then
             expect(lookupState.columnsToAdd).toEqual([
                 { id: '0002', name: 'firstname' },
-                { id: '0003', name: 'lastname' }]
+                { id: '0003', name: 'lastname' },]
             );
         }));
 
@@ -377,9 +379,9 @@ describe('Lookup state service', function () {
         it('should sort lookup step when updating the sort type', inject(function (lookupState, LookupStateService) {
             //given
             lookupState.datasets = [
-                { id : '9e739b88-5ec9-4b58-84b5-2127a7e2eac7', addedToLookup: true, created : 80 },
-                { id : '3', addedToLookup: false, created : 90 },
-                { id : '2', addedToLookup: false, created : 100 }
+                { id: '9e739b88-5ec9-4b58-84b5-2127a7e2eac7', addedToLookup: true, created: 80 },
+                { id: '3', addedToLookup: false, created: 90 },
+                { id: '2', addedToLookup: false, created: 100 },
             ];
 
             lookupState.sort = { id: 'name', name: 'NAME_SORT', property: 'name' };
@@ -398,9 +400,9 @@ describe('Lookup state service', function () {
         it('should sort lookup step when updating the order type', inject(function (lookupState, LookupStateService) {
             //given
             lookupState.datasets = [
-                { id : '9e739b88-5ec9-4b58-84b5-2127a7e2eac7', addedToLookup: true, created : 80 },
-                { id : '3', addedToLookup: false, created : 90 },
-                { id : '2', addedToLookup: false, created : 100 }
+                { id: '9e739b88-5ec9-4b58-84b5-2127a7e2eac7', addedToLookup: true, created: 80 },
+                { id: '3', addedToLookup: false, created: 90 },
+                { id: '2', addedToLookup: false, created: 100 },
             ];
 
             lookupState.sort = { id: 'date', name: 'DATE_SORT', property: 'created' };
@@ -419,9 +421,9 @@ describe('Lookup state service', function () {
         it('should sort lookup step when updating the sort type in case of String', inject(function (lookupState, LookupStateService) {
             //given
             lookupState.datasets = [
-                { id : '9e739b88-5ec9-4b58-84b5-2127a7e2eac7', addedToLookup: true, created : 'a' },
-                { id : '3', addedToLookup: false, created : 'b' },
-                { id : '2', addedToLookup: false, created : 'C' }
+                { id: '9e739b88-5ec9-4b58-84b5-2127a7e2eac7', addedToLookup: true, created: 'a' },
+                { id: '3', addedToLookup: false, created: 'b' },
+                { id: '2', addedToLookup: false, created: 'C' },
             ];
 
             lookupState.sort = { id: 'name', name: 'NAME_SORT', property: 'name' };
@@ -440,9 +442,9 @@ describe('Lookup state service', function () {
         it('should sort lookup step when updating the order type in case of String', inject(function (lookupState, LookupStateService) {
             //given
             lookupState.datasets = [
-                { id : '9e739b88-5ec9-4b58-84b5-2127a7e2eac7', addedToLookup: true, created : 'a' },
-                { id : '3', addedToLookup: false, created : 'b' },
-                { id : '2', addedToLookup: false, created : 'C' }
+                { id: '9e739b88-5ec9-4b58-84b5-2127a7e2eac7', addedToLookup: true, created: 'a' },
+                { id: '3', addedToLookup: false, created: 'b' },
+                { id: '2', addedToLookup: false, created: 'C' },
             ];
 
             lookupState.sort = { id: 'date', name: 'DATE_SORT', property: 'created' };

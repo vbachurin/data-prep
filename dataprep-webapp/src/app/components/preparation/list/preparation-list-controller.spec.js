@@ -21,8 +21,8 @@ describe('Preparation list controller', () => {
     beforeEach(angular.mock.module('data-prep.preparation-list', ($provide) => {
         stateMock = {
             inventory: {
-                folder: { metadata: { id: 'L215L2ZvbGRlcg==', path: '/my/folder' } }
-            }
+                folder: { metadata: { id: 'L215L2ZvbGRlcg==', path: '/my/folder' } },
+            },
         };
         $provide.constant('state', stateMock);
     }));
@@ -32,7 +32,7 @@ describe('Preparation list controller', () => {
 
         createController = () => {
             return $componentController('preparationList', {
-                $scope: scope
+                $scope: scope,
             });
         };
 

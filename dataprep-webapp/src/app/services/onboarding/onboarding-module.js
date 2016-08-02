@@ -11,26 +11,30 @@
 
  ============================================================================*/
 
+import angular from 'angular';
+import uiRouter from 'angular-ui-router';
+import SERVICES_STATE_MODULE from '../state/state-module';
+
 import playgroundTour from './onboarding-playground-constants';
 import recipeTour from './onboarding-recipe-constants';
 import preparationTour from './onboarding-preparations-constants';
 import OnboardingService from './onboarding-service';
 
-(() => {
-    'use strict';
+const MODULE_NAME = 'data-prep.services.onboarding';
 
-    /**
-     * @ngdoc object
-     * @name data-prep.services.onboarding
-     * @description This module contains the services to manage onboarding tours
-     */
-    angular.module('data-prep.services.onboarding',
-        [
-            'ui.router',
-            'data-prep.services.state'
-        ])
-        .constant('playgroundTour', playgroundTour)
-        .constant('recipeTour', recipeTour)
-        .constant('preparationTour', preparationTour)
-        .service('OnboardingService', OnboardingService);
-})();
+/**
+ * @ngdoc object
+ * @name data-prep.services.onboarding
+ * @description This module contains the services to manage onboarding tours
+ */
+angular.module(MODULE_NAME,
+    [
+        uiRouter,
+        SERVICES_STATE_MODULE,
+    ])
+    .constant('playgroundTour', playgroundTour)
+    .constant('recipeTour', recipeTour)
+    .constant('preparationTour', preparationTour)
+    .service('OnboardingService', OnboardingService);
+
+export default MODULE_NAME;

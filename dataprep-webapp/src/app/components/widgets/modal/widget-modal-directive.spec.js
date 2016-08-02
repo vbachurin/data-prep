@@ -24,7 +24,6 @@ describe('Modal directive', function () {
     var createBeforeCloseElement;
 
     beforeEach(angular.mock.module('talend.widget'));
-    beforeEach(angular.mock.module('htmlTemplates'));
 
     afterEach(function () {
         scope.$destroy();
@@ -36,9 +35,10 @@ describe('Modal directive', function () {
 
         createElement = function () {
             var html = '<talend-modal fullscreen="fullscreen" state="state" on-close="onClose()" close-button="closeButton"></talend-modal>';
-            scope.onClose = function() {
+            scope.onClose = function () {
                 scope.closeCallbackCalled = true;
             };
+
             element = $compile(html)(scope);
             scope.$digest();
             $timeout.flush();
@@ -74,9 +74,10 @@ describe('Modal directive', function () {
             var html = '<talend-modal fullscreen="fullscreen" state="state" close-button="closeButton" disable-enter="disableEnter">' +
                 '   <button class="modal-primary-button" ng-click="click()"/>' +
                 '</talend-modal>';
-            scope.click = function() {
+            scope.click = function () {
                 scope.primaryButtonClicked = true;
             };
+
             element = $compile(html)(scope);
             scope.$digest();
             $timeout.flush();
@@ -93,7 +94,7 @@ describe('Modal directive', function () {
         spyOn($rootScope, '$apply').and.callThrough();
     }));
 
-    describe('display', function() {
+    describe('display', function () {
         it('should show "normal" close button', function () {
             //given
             scope.fullscreen = false;
@@ -186,7 +187,7 @@ describe('Modal directive', function () {
         });
     });
 
-    describe('actions', function() {
+    describe('actions', function () {
         it('should hide modal on "modal-window" div click', inject(function ($timeout) {
             //given
             scope.fullscreen = false;
@@ -251,6 +252,7 @@ describe('Modal directive', function () {
                 expect(scope.state).toBe(true);
                 return;
             }
+
             throw new Error('Should have thrown error on timeout flush because hide should not be called on click in modal-inner div');
         }));
 
@@ -336,7 +338,7 @@ describe('Modal directive', function () {
             expect(scope.primaryButtonClicked).toBeFalsy();
         }));
 
-        it('should call close callback', inject(function($rootScope) {
+        it('should call close callback', inject(function ($rootScope) {
             //given
             scope.state = true;
             createElement();
@@ -350,10 +352,10 @@ describe('Modal directive', function () {
             expect(scope.closeCallbackCalled).toBe(true);
         }));
 
-        it('should NOT close modal when beforeClose returns false', inject(function($timeout) {
+        it('should NOT close modal when beforeClose returns false', inject(function ($timeout) {
             //given
             scope.state = true;
-            createBeforeCloseElement(function() {
+            createBeforeCloseElement(function () {
                 return false;
             });
 
@@ -365,10 +367,10 @@ describe('Modal directive', function () {
             expect(scope.state).toBe(true);
         }));
 
-        it('should close modal when beforeClose returns true', inject(function($timeout) {
+        it('should close modal when beforeClose returns true', inject(function ($timeout) {
             //given
             scope.state = true;
-            createBeforeCloseElement(function() {
+            createBeforeCloseElement(function () {
                 return true;
             });
 
@@ -381,7 +383,7 @@ describe('Modal directive', function () {
         }));
     });
 
-    describe('element', function() {
+    describe('element', function () {
         it('should attach popup to body', function () {
             //when
             createElement();
@@ -403,7 +405,7 @@ describe('Modal directive', function () {
         });
     });
 
-    describe('multi modal management', function() {
+    describe('multi modal management', function () {
         it('should focus on "modal-inner" on module open', function () {
             //given
             scope.fullscreen = false;
@@ -423,7 +425,7 @@ describe('Modal directive', function () {
             expect(document.activeElement.className).toBe('modal-inner'); //eslint-disable-line angular/document-service
         });
 
-        it('should focus on second input on show and select the text coz first has "no-focus" class', inject(function($timeout, $window) {
+        it('should focus on second input on show and select the text coz first has "no-focus" class', inject(function ($timeout, $window) {
             //given
             scope.fullscreen = false;
             scope.state = false;
@@ -483,8 +485,8 @@ describe('Modal directive', function () {
         });
     });
 
-    describe('forbid modal hide', function(){
-        it('should NOT hide the modal on background click', inject(function(){
+    describe('forbid modal hide', function () {
+        it('should NOT hide the modal on background click', inject(function () {
             //given
             scope.state = true;
             scope.disableCloseOnBackgroundClick = true;
@@ -497,7 +499,7 @@ describe('Modal directive', function () {
             expect(scope.state).toBe(true);
         }));
 
-        it('should NOT hide the modal on ESCAPE button hit', inject(function(){
+        it('should NOT hide the modal on ESCAPE button hit', inject(function () {
             //given
             scope.state = true;
             scope.disableCloseOnBackgroundClick = true;

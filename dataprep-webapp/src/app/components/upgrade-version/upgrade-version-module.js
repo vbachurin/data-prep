@@ -11,6 +11,15 @@
 
  ============================================================================*/
 
+import angular from 'angular';
+import ngSanitize from 'angular-sanitize';
+import SERVICES_UTILS_MODULE from '../../services/utils/utils-module';
+
+import UpgradeVersionComponent from './upgrade-version-component';
+import UpgradeVersionService from './upgrade-version-service';
+
+const MODULE_NAME = 'data-prep.upgrade-version';
+
 /**
  * @ngdoc object
  * @name data-prep.upgrade-version
@@ -18,12 +27,8 @@
  * @requires data-prep.services.state
  * @requires data-prep.services.folder
  */
+angular.module(MODULE_NAME, [ngSanitize, SERVICES_UTILS_MODULE])
+    .component('upgradeVersion', UpgradeVersionComponent)
+    .service('UpgradeVersionService', UpgradeVersionService);
 
-import UpgradeVersionComponent from './upgrade-version-component';
-import UpgradeVersionService from './upgrade-version-service';
-
-(() => {
-    angular.module('data-prep.upgrade-version', ['data-prep.services.utils', 'ngSanitize'])
-        .component('upgradeVersion', UpgradeVersionComponent)
-        .service('UpgradeVersionService', UpgradeVersionService);
-})();
+export default MODULE_NAME;

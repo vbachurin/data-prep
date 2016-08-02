@@ -17,13 +17,12 @@ describe('Inventory Search component', () => {
     let element;
 
     beforeEach(angular.mock.module('data-prep.inventory-search'));
-    beforeEach(angular.mock.module('htmlTemplates'));
 
     beforeEach(inject(($rootScope, $compile) => {
         scope = $rootScope.$new();
 
         createElement = () => {
-            const template =`<inventory-search></inventory-search>`;
+            const template = `<inventory-search></inventory-search>`;
             element = $compile(template)(scope);
             scope.$digest();
 

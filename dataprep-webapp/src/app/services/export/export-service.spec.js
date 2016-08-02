@@ -16,91 +16,91 @@ describe('Export service', () => {
 
     const exportTypes = [
         {
-            'mimeType': 'text/csv',
-            'extension': '.csv',
-            'id': 'CSV',
-            'needParameters': 'true',
-            'defaultExport': 'false',
-            'enabled': true,
-            'disableReason': '',
-            'title': 'Export to CSV',
-            'parameters': [
+            mimeType: 'text/csv',
+            extension: '.csv',
+            id: 'CSV',
+            needParameters: 'true',
+            defaultExport: 'false',
+            enabled: true,
+            disableReason: '',
+            title: 'Export to CSV',
+            parameters: [
                 {
-                    'name': 'csvSeparator',
-                    'type': 'select',
-                    'implicit': false,
-                    'canBeBlank': false,
-                    'placeHolder': '',
-                    'configuration': {
-                        'values': [{ 'value': ';', 'label': 'Semi colon' }, {
-                            'value': '\t',
-                            'label': 'Tabulation'
-                        }, { 'value': ' ', 'label': 'Space' }, { 'value': ',', 'label': 'Comma' }], 'multiple': false
+                    name: 'csvSeparator',
+                    type: 'select',
+                    implicit: false,
+                    canBeBlank: false,
+                    placeHolder: '',
+                    configuration: {
+                        values: [{ value: ';', label: 'Semi colon' }, {
+                            value: '\t',
+                            label: 'Tabulation',
+                        }, { value: ' ', label: 'Space' }, { value: ',', label: 'Comma' },], multiple: false,
                     },
-                    'description': 'Select character to use as a delimiter',
-                    'label': 'Select character to use as a delimiter',
-                    'default': ';',
+                    description: 'Select character to use as a delimiter',
+                    label: 'Select character to use as a delimiter',
+                    default: ';',
                 },
                 {
-                    'name': 'fileName',
-                    'type': 'string',
-                    'implicit': false,
-                    'canBeBlank': false,
-                    'placeHolder': '',
-                    'description': 'Name of the generated export file',
-                    'label': 'Name of the generated export file',
-                    'default': '',
+                    name: 'fileName',
+                    type: 'string',
+                    implicit: false,
+                    canBeBlank: false,
+                    placeHolder: '',
+                    description: 'Name of the generated export file',
+                    label: 'Name of the generated export file',
+                    default: '',
                 },
             ],
         },
         {
-            'mimeType': 'application/tde',
-            'extension': '.tde',
-            'id': 'TABLEAU',
-            'needParameters': 'false',
-            'defaultExport': 'false',
-            'parameters': [
+            mimeType: 'application/tde',
+            extension: '.tde',
+            id: 'TABLEAU',
+            needParameters: 'false',
+            defaultExport: 'false',
+            parameters: [
                 {
-                    'name': 'fileName',
-                    'type': 'string',
-                    'implicit': false,
-                    'canBeBlank': false,
-                    'placeHolder': '',
-                    'description': 'Name of the generated export file',
-                    'label': 'Name of the generated export file',
-                    'default': '',
-                }
+                    name: 'fileName',
+                    type: 'string',
+                    implicit: false,
+                    canBeBlank: false,
+                    placeHolder: '',
+                    description: 'Name of the generated export file',
+                    label: 'Name of the generated export file',
+                    default: '',
+                },
             ],
         },
         {
-            'mimeType': 'application/vnd.ms-excel',
-            'extension': '.xlsx',
-            'id': 'XLSX',
-            'needParameters': 'true',
-            'defaultExport': 'true',
-            'enabled': true,
-            'disableReason': '',
-            'title': 'Export to XLSX',
-            'parameters': [
+            mimeType: 'application/vnd.ms-excel',
+            extension: '.xlsx',
+            id: 'XLSX',
+            needParameters: 'true',
+            defaultExport: 'true',
+            enabled: true,
+            disableReason: '',
+            title: 'Export to XLSX',
+            parameters: [
                 {
-                    'name': 'fileName',
-                    'type': 'string',
-                    'implicit': false,
-                    'canBeBlank': false,
-                    'placeHolder': '',
-                    'description': 'Name of the generated export file',
-                    'label': 'Name of the generated export file',
-                    'default': '',
-                }
+                    name: 'fileName',
+                    type: 'string',
+                    implicit: false,
+                    canBeBlank: false,
+                    placeHolder: '',
+                    description: 'Name of the generated export file',
+                    label: 'Name of the generated export file',
+                    default: '',
+                },
             ],
         },
     ];
 
     beforeEach(angular.mock.module('data-prep.services.export'));
 
-    beforeEach(inject(($q, ExportRestService, TransformationService, StorageService) => {
+    beforeEach(inject(($q, ExportRestService, ParametersService, StorageService) => {
         spyOn(ExportRestService, 'exportTypes').and.returnValue($q.when(exportTypes));
-        spyOn(TransformationService, 'resetParamValue').and.returnValue();
+        spyOn(ParametersService, 'resetParamValue').and.returnValue();
         spyOn(StorageService, 'saveExportParams').and.returnValue();
     }));
 
@@ -154,17 +154,17 @@ describe('Export service', () => {
         expect(StorageService.saveExportParams).not.toHaveBeenCalled();
     }));
 
-    it('should reset parameters', inject((ExportService, TransformationService) => {
+    it('should reset parameters', inject((ExportService, ParametersService) => {
         // given
         ExportService.exportTypes = exportTypes;
-        expect(TransformationService.resetParamValue).not.toHaveBeenCalled();
+        expect(ParametersService.resetParamValue).not.toHaveBeenCalled();
 
         // when
         ExportService.reset();
 
         // then
-        expect(TransformationService.resetParamValue).toHaveBeenCalledWith(exportTypes[0].parameters);
-        expect(TransformationService.resetParamValue).toHaveBeenCalledWith(exportTypes[1].parameters);
-        expect(TransformationService.resetParamValue).toHaveBeenCalledWith(exportTypes[2].parameters);
+        expect(ParametersService.resetParamValue).toHaveBeenCalledWith(exportTypes[0].parameters);
+        expect(ParametersService.resetParamValue).toHaveBeenCalledWith(exportTypes[1].parameters);
+        expect(ParametersService.resetParamValue).toHaveBeenCalledWith(exportTypes[2].parameters);
     }));
 });

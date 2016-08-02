@@ -11,6 +11,8 @@
 
  ============================================================================*/
 
+import template from './filter-item.html';
+
 /**
  * @ngdoc component
  * @name data-prep.filter-item.component:FilterItemComponent
@@ -28,15 +30,15 @@
  * @param {function}  onRemove   The callback that is triggered on badge close
  */
 const FilterItemComponent = {
-    templateUrl: 'app/components/filter/item/filter-item.html',
+    templateUrl: template,
     controller: 'FilterItemCtrl',
     bindings: {
         value: '<',
         editable: '<',
         onEdit: '&',
         removable: '<',
-        onRemove: '&'
-    }
+        onRemove: '&',
+    },
 };
 
 export default FilterItemComponent;

@@ -16,15 +16,16 @@ describe('Filter state service', function () {
 
     beforeEach(angular.mock.module('data-prep.services.state'));
 
-    describe('toogle', function() {
-        it('should enable filter', inject(function(filterState, FilterStateService) {
+    describe('toogle', function () {
+        it('should enable filter', inject(function (filterState, FilterStateService) {
             //when
             FilterStateService.enableFilters();
 
             //then
             expect(filterState.enabled).toBe(true);
         }));
-        it('should disable filter', inject(function(filterState, FilterStateService) {
+
+        it('should disable filter', inject(function (filterState, FilterStateService) {
             //when
             FilterStateService.disableFilters();
 
@@ -33,8 +34,8 @@ describe('Filter state service', function () {
         }));
     });
 
-    describe('reset', function() {
-        it('should reset grid filter', inject(function(filterState, FilterStateService) {
+    describe('reset', function () {
+        it('should reset grid filter', inject(function (filterState, FilterStateService) {
             //given
             var originalFilters = [{}];
             filterState.gridFilters = originalFilters;
@@ -49,7 +50,7 @@ describe('Filter state service', function () {
         }));
     });
 
-    describe('grid filters', function() {
+    describe('grid filters', function () {
         it('should add a new filter', inject(function (filterState, FilterStateService) {
             //given
             var originalGridFilters = [];
@@ -98,7 +99,6 @@ describe('Filter state service', function () {
             var otherFilter = { colId: '0004', args: { value: 'toto' } };
             var originalGridFilters = [oldFilter, otherFilter];
             filterState.gridFilters = originalGridFilters;
-
 
             var newFilter = { colId: '0001', args: { value: 'tata' } };
 

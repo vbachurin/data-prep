@@ -29,12 +29,12 @@ describe('Statistics REST service', function () {
         var params = {};
         var response = {
             data: [
-                { 'data': 'Lansing', 'occurrences': 15 },
-                { 'data': 'Helena', 'occurrences': 5 },
-                { 'data': 'Baton Rouge', 'occurrences': 64 },
-                { 'data': 'Annapolis', 'occurrences': 4 },
-                { 'data': 'Pierre', 'occurrences': 104 }
-            ]
+                { data: 'Lansing', occurrences: 15 },
+                { data: 'Helena', occurrences: 5 },
+                { data: 'Baton Rouge', occurrences: 64 },
+                { data: 'Annapolis', occurrences: 4 },
+                { data: 'Pierre', occurrences: 104 },
+            ],
         };
 
         $httpBackend
@@ -43,9 +43,10 @@ describe('Statistics REST service', function () {
 
         //when
         StatisticsRestService.getAggregations(params)
-            .then(function(response) {
+            .then(function (response) {
                 data = response.data;
             });
+
         $httpBackend.flush();
 
         //then
@@ -58,12 +59,12 @@ describe('Statistics REST service', function () {
         var params = {};
         var response = {
             data: [
-                { 'data': 'Lansing', 'occurrences': 15 },
-                { 'data': 'Helena', 'occurrences': 5 },
-                { 'data': 'Baton Rouge', 'occurrences': 64 },
-                { 'data': 'Annapolis', 'occurrences': 4 },
-                { 'data': 'Pierre', 'occurrences': 104 }
-            ]
+                { data: 'Lansing', occurrences: 15 },
+                { data: 'Helena', occurrences: 5 },
+                { data: 'Baton Rouge', occurrences: 64 },
+                { data: 'Annapolis', occurrences: 4 },
+                { data: 'Pierre', occurrences: 104 },
+            ],
         };
 
         //given : mock rest service and call it to set result in cache
@@ -75,9 +76,10 @@ describe('Statistics REST service', function () {
 
         //when : no mock for rest call here
         StatisticsRestService.getAggregations(params)
-            .then(function(response) {
+            .then(function (response) {
                 data = response.data;
             });
+
         $rootScope.$digest();
 
         //then
@@ -89,12 +91,12 @@ describe('Statistics REST service', function () {
         var params = {};
         var response = {
             data: [
-                { 'data': 'Lansing', 'occurrences': 15 },
-                { 'data': 'Helena', 'occurrences': 5 },
-                { 'data': 'Baton Rouge', 'occurrences': 64 },
-                { 'data': 'Annapolis', 'occurrences': 4 },
-                { 'data': 'Pierre', 'occurrences': 104 }
-            ]
+                { data: 'Lansing', occurrences: 15 },
+                { data: 'Helena', occurrences: 5 },
+                { data: 'Baton Rouge', occurrences: 64 },
+                { data: 'Annapolis', occurrences: 4 },
+                { data: 'Pierre', occurrences: 104 },
+            ],
         };
 
         //given : mock rest service and call it to set result in cache

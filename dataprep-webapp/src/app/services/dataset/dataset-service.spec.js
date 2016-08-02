@@ -20,7 +20,7 @@ describe('Dataset Service', () => {
     const datasets = [{ id: '11', name: 'my dataset' },
         { id: '22', name: 'my second dataset' },
         { id: '33', name: 'my second dataset (1)' },
-        { id: '44', name: 'my second dataset (2)' }];
+        { id: '44', name: 'my second dataset (2)' },];
 
     const encodings = ['UTF-8', 'UTF-16'];
 
@@ -306,11 +306,11 @@ describe('Dataset Service', () => {
                 defaultPreparation: { id: '876a32bc545a846' },
                 preparations: [{ id: '876a32bc545a846' }, { id: '799dc6b2562a186' }],
                 encoding: 'UTF-8',
-                parameters: { SEPARATOR: '|' }
+                parameters: { SEPARATOR: '|' },
             };
             const parameters = {
                 separator: ';',
-                encoding: 'UTF-16'
+                encoding: 'UTF-16',
             };
             spyOn(DatasetRestService, 'updateMetadata').and.returnValue($q.when());
             expect(DatasetRestService.updateMetadata).not.toHaveBeenCalled();
@@ -331,11 +331,11 @@ describe('Dataset Service', () => {
                 defaultPreparation: { id: '876a32bc545a846', parameters: { SEPARATOR: '|' } },
                 preparations: [{ id: '876a32bc545a846' }, { id: '799dc6b2562a186' }],
                 encoding: 'UTF-8',
-                parameters: { SEPARATOR: '|' }
+                parameters: { SEPARATOR: '|' },
             };
             const parameters = {
                 separator: ';',
-                encoding: 'UTF-16'
+                encoding: 'UTF-16',
             };
             spyOn(DatasetRestService, 'updateMetadata').and.returnValue($q.when());
 
@@ -357,11 +357,11 @@ describe('Dataset Service', () => {
                 defaultPreparation: { id: '876a32bc545a846', parameters: { SEPARATOR: '|' } },
                 preparations: [{ id: '876a32bc545a846' }, { id: '799dc6b2562a186' }],
                 encoding: 'UTF-8',
-                parameters: { SEPARATOR: '|' }
+                parameters: { SEPARATOR: '|' },
             };
             const parameters = {
                 separator: ';',
-                encoding: 'UTF-16'
+                encoding: 'UTF-16',
             };
             spyOn(DatasetRestService, 'updateMetadata').and.returnValue($q.reject());
 
@@ -406,7 +406,7 @@ describe('Dataset Service', () => {
                 preparations: [
                     { id: '893ad6695fe42d515' },
                     { id: '987efd121fa56898a' },
-                ]
+                ],
             };
             const name = 'newName';
 
@@ -448,7 +448,7 @@ describe('Dataset Service', () => {
                 preparations: [
                     { id: '893ad6695fe42d515' },
                     { id: '987efd121fa56898a' },
-                ]
+                ],
             };
             spyOn(DatasetRestService, 'updateMetadata').and.returnValue($q.when());
             spyOn(StateService, 'setDatasetName').and.returnValue(); // this update the metadata name too
@@ -473,7 +473,7 @@ describe('Dataset Service', () => {
             it('should adapt info to dataset object for upload', inject((DatasetService) => {
                 // given
                 const file = {
-                    path: '/path/to/file'
+                    path: '/path/to/file',
                 };
                 const name = 'myDataset';
                 const id = 'e85afAa78556d5425bc2';
@@ -495,7 +495,7 @@ describe('Dataset Service', () => {
                 const importParameters = {
                     type: 'http',
                     name: 'remote dataset',
-                    url: 'http://www.lequipe.fr'
+                    url: 'http://www.lequipe.fr',
                 };
 
                 // when
@@ -516,9 +516,10 @@ describe('Dataset Service', () => {
                 let call = 0;
                 spyOn(DatasetRestService, 'getDatasetByName').and.callFake(() => {
                     if (call === 0) {
-                        call ++;
+                        call++;
                         return $q.reject({});
                     }
+
                     return $q.resolve();
                 });
             }));
@@ -638,7 +639,7 @@ describe('Dataset Service', () => {
             // when
             DatasetService.getCompatiblePreparations('11')
                 .then((preps) => {
-                    result = preps
+                    result = preps;
                 });
             $rootScope.$digest();
 
@@ -650,8 +651,6 @@ describe('Dataset Service', () => {
             expect(result[3]).toEqual({ preparation: preparations[3], dataset: datasets[0] });
         }));
 
-
-
         it('should exclude current preparation', inject(($rootScope, DatasetService) => {
             // given
             stateMock.playground.preparation = { id: '4' };
@@ -660,7 +659,7 @@ describe('Dataset Service', () => {
             // when
             DatasetService.getCompatiblePreparations('11')
                 .then((preps) => {
-                    result = preps
+                    result = preps;
                 });
             $rootScope.$digest();
 
@@ -671,7 +670,6 @@ describe('Dataset Service', () => {
             expect(result[2]).toEqual({ preparation: preparations[2], dataset: datasets[1] });
         }));
     });
-
 
     describe('actions enabled', () => {
         it('should disable ProcessCertification', inject((DatasetService) => {

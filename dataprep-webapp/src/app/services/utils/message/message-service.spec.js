@@ -18,9 +18,9 @@ describe('Message service', () => {
 
     beforeEach(angular.mock.module('pascalprecht.translate', ($translateProvider) => {
         $translateProvider.translations('en_US', {
-            'TITLE': 'TITLE_VALUE',
-            'CONTENT_WITHOUT_ARG': 'CONTENT_WITHOUT_ARG_VALUE',
-            'CONTENT_WITH_ARG': 'CONTENT_WITH_ARG_VALUE : {{argValue}}'
+            TITLE: 'TITLE_VALUE',
+            CONTENT_WITHOUT_ARG: 'CONTENT_WITHOUT_ARG_VALUE',
+            CONTENT_WITH_ARG: 'CONTENT_WITH_ARG_VALUE : {{argValue}}',
         });
         $translateProvider.preferredLanguage('en_US');
     }));

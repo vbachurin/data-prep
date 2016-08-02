@@ -20,7 +20,7 @@ describe('Transformation cluster params directive', function () {
         return {
             titles: [
                 'We found these values',
-                'And we\'ll keep this value'
+                'And we\'ll keep this value',
             ],
             clusters: [
                 {
@@ -30,30 +30,30 @@ describe('Transformation cluster params directive', function () {
                             type: 'boolean',
                             description: 'parameter.Texa.desc',
                             label: 'parameter.Texa.label',
-                            default: 'true'
+                            default: 'true',
                         },
                         {
                             name: 'Tixass',
                             type: 'boolean',
                             description: 'parameter.Tixass.desc',
                             label: 'parameter.Tixass.label',
-                            default: 'true'
+                            default: 'true',
                         },
                         {
                             name: 'Tex@s',
                             type: 'boolean',
                             description: 'parameter.Tex@s.desc',
                             label: 'parameter.Tex@s.label',
-                            default: 'true'
-                        }
+                            default: 'true',
+                        },
                     ],
-                    'replace': {
+                    replace: {
                         name: 'replaceValue',
                         type: 'string',
                         description: 'parameter.replaceValue.desc',
                         label: 'parameter.replaceValue.label',
-                        default: 'Texas'
-                    }
+                        default: 'Texas',
+                    },
                 },
                 {
                     parameters: [
@@ -62,57 +62,56 @@ describe('Transformation cluster params directive', function () {
                             type: 'boolean',
                             description: 'parameter.Massachusetts.desc',
                             label: 'parameter.Massachusetts.label',
-                            default: 'false'
+                            default: 'false',
                         },
                         {
                             name: 'Masachusetts',
                             type: 'boolean',
                             description: 'parameter.Masachusetts.desc',
                             label: 'parameter.Masachusetts.label',
-                            default: 'true'
+                            default: 'true',
                         },
                         {
                             name: 'Massachussetts',
                             type: 'boolean',
                             description: 'parameter.Massachussetts.desc',
                             label: 'parameter.Massachussetts.label',
-                            default: 'true'
+                            default: 'true',
                         },
                         {
                             name: 'Massachusets',
                             type: 'boolean',
                             description: 'parameter.Massachusets.desc',
                             label: 'parameter.Massachusets.label',
-                            default: 'true'
+                            default: 'true',
                         },
                         {
                             name: 'Masachussets',
                             type: 'boolean',
                             description: 'parameter.Masachussets.desc',
                             label: 'parameter.Masachussets.label',
-                            default: 'true'
-                        }
+                            default: 'true',
+                        },
                     ],
                     replace: {
                         name: 'replaceValue',
                         type: 'string',
                         description: 'parameter.replaceValue.desc',
                         label: 'parameter.replaceValue.label',
-                        default: 'Massachussets'
-                    }
-                }
-            ]
+                        default: 'Massachussets',
+                    },
+                },
+            ],
         };
     };
 
     beforeEach(angular.mock.module('data-prep.transformation-form'));
-    beforeEach(angular.mock.module('htmlTemplates'));
 
-    beforeEach(inject(function($rootScope, $compile, $timeout) {
+    beforeEach(inject(function ($rootScope, $compile, $timeout) {
         scope = $rootScope.$new();
         scope.details = clusterDetails();
 
-        createElement = function() {
+        createElement = function () {
             var element = angular.element('<transform-cluster-params details="details"></transform-cluster-params>');
             $compile(element)(scope);
             $timeout.flush();
@@ -121,7 +120,7 @@ describe('Transformation cluster params directive', function () {
         };
     }));
 
-    it('should render titles', function() {
+    it('should render titles', function () {
         //when
         var element = createElement();
 
@@ -131,7 +130,7 @@ describe('Transformation cluster params directive', function () {
         expect(element.find('thead th').eq(2).text().trim()).toBe('And we\'ll keep this value');
     });
 
-    it('should render clusters', function() {
+    it('should render clusters', function () {
         //when
         var element = createElement();
 
@@ -147,7 +146,7 @@ describe('Transformation cluster params directive', function () {
         expect(secondRow.find('>td').eq(2).find('input[type="text"]').length).toBe(1);
     });
 
-    it('should uncheck global activation checkbox', function() {
+    it('should uncheck global activation checkbox', function () {
         //given
         var element = createElement();
         var allCheck = element.find('thead th').eq(0).find('input[type="checkbox"]').eq(0);
@@ -171,7 +170,7 @@ describe('Transformation cluster params directive', function () {
         expect(secondRowCheckbox.is(':checked')).toBe(true);
     });
 
-    it('should uncheck all cluster activation checkbox', function() {
+    it('should uncheck all cluster activation checkbox', function () {
         //given
         var element = createElement();
         var allCheck = element.find('thead th').eq(0).find('input[type="checkbox"]').eq(0);
@@ -194,7 +193,7 @@ describe('Transformation cluster params directive', function () {
         expect(secondRowCheckbox.is(':checked')).toBe(false);
     });
 
-    it('should check all cluster activation checkbox', function() {
+    it('should check all cluster activation checkbox', function () {
         //given
         var element = createElement();
         var allCheck = element.find('thead th').eq(0).find('input[type="checkbox"]').eq(0);
@@ -221,7 +220,7 @@ describe('Transformation cluster params directive', function () {
         expect(secondRowCheckbox.is(':checked')).toBe(true);
     });
 
-    it('should update style on "active --> inactive" cluster row', function() {
+    it('should update style on "active --> inactive" cluster row', function () {
         //given
         var element = createElement();
         var firstRow = element.find('.cluster-body > .cluster-line').eq(0);
@@ -240,7 +239,7 @@ describe('Transformation cluster params directive', function () {
         expect(firstRow.find('select:not(.cluster-activation)').is(':disabled')).toBe(true); //editable select
     });
 
-    it('should update style on "inactive --> active" cluster row', function() {
+    it('should update style on "inactive --> active" cluster row', function () {
         //given
         var element = createElement();
         var firstRow = element.find('.cluster-body > .cluster-line').eq(0);

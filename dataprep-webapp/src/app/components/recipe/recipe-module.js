@@ -11,40 +11,56 @@
 
  ============================================================================*/
 
+import angular from 'angular';
+import ngTranslate from 'angular-translate';
+import sunchoke from 'sunchoke';
+import RECIPE_BULLET_MODULE from '../recipe/bullet/recipe-bullet-module';
+import RECIPE_STEP_DESCRIPTION from '../recipe/step-description/step-description-module';
+import TALEND_WIDGET_MODULE from '../widgets/widget-module';
+import TRANSFORMATION_FORM_MODULE from '../transformation/form/transformation-form-module';
+
+import SERVICES_FILTER_MODULE from '../../services/filter/filter-module';
+import SERVICES_PARAMETERS_MODULE from '../../services/parameters/parameters-module';
+import SERVICES_PLAYGROUND_MODULE from '../../services/playground/playground-module';
+import SERVICES_PREVIEW_MODULE from '../../services/preview/preview-module';
+import SERVICES_STATE_MODULE from '../../services/state/state-module';
+import SERVICES_UTILS_MODULE from '../../services/utils/utils-module';
+
 import RecipeCtrl from './recipe-controller';
 import Recipe from './recipe-directive';
 
-(() => {
-    'use strict';
+const MODULE_NAME = 'data-prep.recipe';
 
-    /**
-     * @ngdoc object
-     * @name data-prep.recipe
-     * @description This module contains the controller and directives to manage the recipe
-     * @requires talend.widget
-     * @requires data-prep.recipe-bullet
-     * @requires data-prep.services.playground
-     * @requires data-prep.services.recipe
-     * @requires data-prep.services.preparation
-     * @requires data-prep.services.state
-     * @requires data-prep.step-description
-     * @requires data-prep.transformation-form
-     */
-    angular.module('data-prep.recipe',
-        [
-            'pascalprecht.translate',
-            'talend.sunchoke',
-            'talend.widget',
-            'data-prep.recipe-bullet',
-            'data-prep.services.playground',
-            'data-prep.services.recipe',
-            'data-prep.services.preparation',
-            'data-prep.services.state',
-            'data-prep.step-description',
-            'data-prep.transformation-form',
-            'data-prep.services.filter',
-            'data-prep.services.utils',
-        ])
-        .controller('RecipeCtrl', RecipeCtrl)
-        .directive('recipe', Recipe);
-})();
+/**
+ * @ngdoc object
+ * @name data-prep.recipe
+ * @description This module contains the controller and directives to manage the recipe
+ * @requires talend.widget
+ * @requires data-prep.recipe-bullet
+ * @requires data-prep.services.parameters
+ * @requires data-prep.services.playground
+ * @requires data-prep.services.preview
+ * @requires data-prep.services.preparation
+ * @requires data-prep.services.state
+ * @requires data-prep.step-description
+ * @requires data-prep.transformation-form
+ */
+angular.module(MODULE_NAME,
+    [
+        ngTranslate,
+        sunchoke.all,
+        RECIPE_BULLET_MODULE,
+        RECIPE_STEP_DESCRIPTION,
+        TALEND_WIDGET_MODULE,
+        TRANSFORMATION_FORM_MODULE,
+        SERVICES_FILTER_MODULE,
+        SERVICES_PARAMETERS_MODULE,
+        SERVICES_PLAYGROUND_MODULE,
+        SERVICES_PREVIEW_MODULE,
+        SERVICES_STATE_MODULE,
+        SERVICES_UTILS_MODULE,
+    ])
+    .controller('RecipeCtrl', RecipeCtrl)
+    .directive('recipe', Recipe);
+
+export default MODULE_NAME;

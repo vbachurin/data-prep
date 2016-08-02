@@ -18,12 +18,12 @@
  */
 export default function ConverterService() {
     return {
-        isNumber: isNumber,
+        isNumber,
 
-        //types
-        toInputType: toInputType,
-        simplifyType: simplifyType,
-        adaptValue: adaptValue
+        // types
+        toInputType,
+        simplifyType,
+        adaptValue,
     };
 
     /**
@@ -51,17 +51,17 @@ export default function ConverterService() {
      */
     function toInputType(type) {
         switch (type) {
-            case 'numeric':
-            case 'integer':
-            case 'double':
-            case 'float':
-                return 'number';
-            case 'boolean':
-                return 'checkbox';
-            case 'password':
-                return 'password';
-            default:
-                return 'text';
+        case 'numeric':
+        case 'integer':
+        case 'double':
+        case 'float':
+            return 'number';
+        case 'boolean':
+            return 'checkbox';
+        case 'password':
+            return 'password';
+        default:
+            return 'text';
         }
     }
 
@@ -75,22 +75,22 @@ export default function ConverterService() {
      */
     function simplifyType(type) {
         switch (type.toLowerCase()) {
-            case 'numeric':
-            case 'integer':
-                return 'integer';
-            case 'double':
-            case 'float':
-            case 'decimal':
-                return 'decimal';
-            case 'boolean':
-                return 'boolean';
-            case 'string':
-            case 'char':
-                return 'text';
-            case 'date':
-                return 'date';
-            default:
-                return 'unknown';
+        case 'numeric':
+        case 'integer':
+            return 'integer';
+        case 'double':
+        case 'float':
+        case 'decimal':
+            return 'decimal';
+        case 'boolean':
+            return 'boolean';
+        case 'string':
+        case 'char':
+            return 'text';
+        case 'date':
+            return 'date';
+        default:
+            return 'unknown';
         }
     }
 
@@ -105,15 +105,15 @@ export default function ConverterService() {
      */
     function adaptValue(type, value) {
         switch (type) {
-            case 'numeric':
-            case 'integer':
-            case 'double':
-            case 'float':
-                return parseFloat(value) || 0;
-            case 'boolean':
-                return value === 'true' || value === true;
-            default:
-                return value;
+        case 'numeric':
+        case 'integer':
+        case 'double':
+        case 'float':
+            return parseFloat(value) || 0;
+        case 'boolean':
+            return value === 'true' || value === true;
+        default:
+            return value;
         }
     }
 }

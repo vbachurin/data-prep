@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './slidable.html';
+
 /**
  * @ngdoc directive
  * @name talend.widget.directive:TalendSlidable
@@ -50,17 +52,17 @@ export default function TalendSlidable($window) {
     return {
         restrict: 'E',
         transclude: true,
-        templateUrl: 'app/components/widgets/slidable/slidable.html',
+        templateUrl: template,
         scope: {
             side: '@',
             visible: '=',
             resizable: '@',
-            controlBar: '@'
+            controlBar: '@',
         },
         bindToController: true,
         controllerAs: 'slidableCtrl',
-        controller: function () {
-            var vm = this;
+        controller() {
+            const vm = this;
 
             vm.cssClass = 'slide-' + vm.side;
             vm.actionCssClass = vm.side;
@@ -70,32 +72,35 @@ export default function TalendSlidable($window) {
                 vm.visible = !vm.visible;
             };
         },
-        link: function (scope, iElement, iAttrs, ctrl) {
+
+        link(scope, iElement, iAttrs, ctrl) {
             iElement.addClass('slidable');
             iElement.addClass('slide-' + (ctrl.side ? ctrl.side : 'left'));
 
             if (ctrl.resizable) {
-                var localStorageWidthKey = 'org.talend.dataprep.' + ctrl.resizable + '.width';
-                var width = $window.localStorage.getItem(localStorageWidthKey);
+                const localStorageWidthKey = 'org.talend.dataprep.' + ctrl.resizable + '.width';
+                let width = $window.localStorage.getItem(localStorageWidthKey);
                 if (width) {
                     iElement.css('flex', '0 0 ' + width);
                 }
 
                 iElement.resizable({
                     handles: ctrl.side === 'right' ? 'w' : 'e',
-                    start: function () {
+                    start() {
                         iElement.addClass('no-transition');
                     },
-                    stop: function (event, ui) {
+
+                    stop(event, ui) {
                         iElement.removeClass('no-transition');
                         width = ui.size.width + 'px';
                         $window.localStorage.setItem(localStorageWidthKey, width);
                     },
-                    resize: function (event, ui) {
+
+                    resize(event, ui) {
                         iElement.css('left', 'auto');
                         iElement.css('right', 'auto');
                         iElement.css('flex', '0 0 ' + ui.size.width + 'px');
-                    }
+                    },
                 });
             }
 
@@ -110,6 +115,6 @@ export default function TalendSlidable($window) {
                     }
                 }
             );
-        }
+        },
     };
 }

@@ -18,7 +18,7 @@ describe('Documentation Rest Service', () => {
 
     beforeEach(angular.mock.module('data-prep.services.documentation'));
 
-    beforeEach(inject( ($rootScope, $injector) => {
+    beforeEach(inject(($rootScope, $injector) => {
         $httpBackend = $injector.get('$httpBackend');
     }));
 

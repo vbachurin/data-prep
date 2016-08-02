@@ -11,7 +11,7 @@
 
   ============================================================================*/
 
-describe('Not Blank Validation directive', function() {
+describe('Not Blank Validation directive', function () {
     'use strict';
 
     var scope;
@@ -19,9 +19,9 @@ describe('Not Blank Validation directive', function() {
 
     beforeEach(angular.mock.module('data-prep.validation'));
 
-    beforeEach(inject(function($rootScope, $compile) {
+    beforeEach(inject(function ($rootScope, $compile) {
         scope = $rootScope.$new();
-        createElement = function(directiveScope) {
+        createElement = function (directiveScope) {
             var element = angular.element('<form name="myForm"><input name="myInput" ng-model="myInput" can-be-blank="{{canBeBlank}}" /></form>');
             $compile(element)(directiveScope);
             directiveScope.$digest();
@@ -29,7 +29,7 @@ describe('Not Blank Validation directive', function() {
         };
     }));
 
-    it('should validate empty input when it can be blank', function() {
+    it('should validate empty input when it can be blank', function () {
         //given
         scope.canBeBlank = true;
         scope.myInput = '';
@@ -41,7 +41,7 @@ describe('Not Blank Validation directive', function() {
         expect(scope.myForm.$invalid).toBeFalsy();
     });
 
-    it('should invalidate input when it cannot be blank and input is empty', function() {
+    it('should invalidate input when it cannot be blank and input is empty', function () {
         //given
         scope.canBeBlank = false;
         scope.myInput = '';
@@ -53,7 +53,7 @@ describe('Not Blank Validation directive', function() {
         expect(scope.myForm.$invalid).toBeTruthy();
     });
 
-    it('should validate input when it cannot be blank and input is not empty', function() {
+    it('should validate input when it cannot be blank and input is not empty', function () {
         //given
         scope.canBeBlank = false;
         scope.myInput = 'city';

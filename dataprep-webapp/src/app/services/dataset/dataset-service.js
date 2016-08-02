@@ -26,55 +26,55 @@ export default function DatasetService($q, state, StateService, DatasetListServi
     'ngInject';
 
     return {
-        init: init,
+        init,
 
-        //lifecycle
+        // lifecycle
         create: DatasetListService.create,
         update: DatasetListService.update,
         delete: deleteDataset,
         clone: DatasetListService.clone,
 
-        //dataset actions
+        // dataset actions
         updateColumn: DatasetRestService.updateColumn,
         processCertification: DatasetListService.processCertification,
         toggleFavorite: DatasetListService.toggleFavorite,
-        isRemoveEnabled: isRemoveEnabled,
-        isProcessCertificationEnabled: isProcessCertificationEnabled,
-        isRenameEnabled: isRenameEnabled,
+        isRemoveEnabled,
+        isProcessCertificationEnabled,
+        isRenameEnabled,
 
-        //content
+        // content
         getMetadata: DatasetRestService.getMetadata,
         getContent: DatasetRestService.getContent,
 
-        //dataset getters, refresher
+        // dataset getters, refresher
         refreshDatasets: DatasetListService.refreshDatasets,
-        getDatasets: getDatasets,           //promise that resolves datasets list
-        getDatasetById: getDatasetById,     //retrieve dataset by id
-        getDatasetByName: getDatasetByName, //retrieve dataset by name
-        getSheetPreview: getSheetPreview,
-        loadFilteredDatasets: DatasetRestService.loadFilteredDatasets, //retrieve datasets given a set of filters
-        injectPreparations: injectPreparations,
-        removePreparations: removePreparations,
+        getDatasets,           // promise that resolves datasets list
+        getDatasetById,     // retrieve dataset by id
+        getDatasetByName, // retrieve dataset by name
+        getSheetPreview,
+        loadFilteredDatasets: DatasetRestService.loadFilteredDatasets, // retrieve datasets given a set of filters
+        injectPreparations,
+        removePreparations,
 
 
-        //dataset update
-        rename: rename,
-        setDatasetSheet: setDatasetSheet,
-        updateParameters: updateParameters,
-        refreshSupportedEncodings: refreshSupportedEncodings,
+        // dataset update
+        rename,
+        setDatasetSheet,
+        updateParameters,
+        refreshSupportedEncodings,
 
-        //compatible preparation list
-        getCompatiblePreparations: getCompatiblePreparations,
+        // compatible preparation list
+        getCompatiblePreparations,
 
-        //utils
-        getUniqueName: getUniqueName,
-        createDatasetInfo: createDatasetInfo,
-        checkNameAvailability: checkNameAvailability,
-        getLocationParamIteration: getParamIteration
+        // utils
+        getUniqueName,
+        createDatasetInfo,
+        checkNameAvailability,
+        getLocationParamIteration: getParamIteration,
     };
 
     //--------------------------------------------------------------------------------------------------------------
-    //---------------------------------------------------Lifecycle--------------------------------------------------
+    // ---------------------------------------------------Lifecycle--------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
@@ -115,7 +115,7 @@ export default function DatasetService($q, state, StateService, DatasetListServi
     }
 
     //--------------------------------------------------------------------------------------------------------------
-    //---------------------------------------------------Lifecycle--------------------------------------------------
+    // ---------------------------------------------------Lifecycle--------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
@@ -164,7 +164,7 @@ export default function DatasetService($q, state, StateService, DatasetListServi
     }
 
     //--------------------------------------------------------------------------------------------------------------
-    //---------------------------------------------------Metadata---------------------------------------------------
+    // ---------------------------------------------------Metadata---------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
@@ -216,7 +216,7 @@ export default function DatasetService($q, state, StateService, DatasetListServi
     }
 
     //--------------------------------------------------------------------------------------------------------------
-    //---------------------------------------------------Utils-----------------------------------------------------
+    // ---------------------------------------------------Utils-----------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
@@ -230,12 +230,12 @@ export default function DatasetService($q, state, StateService, DatasetListServi
      */
     function createDatasetInfo(file, name, id) {
         return {
-            name: name,
+            name,
             progress: 0,
-            file: file,
+            file,
             error: false,
-            id: id,
-            type: file === null ? 'remote' : 'file'
+            id,
+            type: file === null ? 'remote' : 'file',
         };
     }
 
@@ -279,7 +279,7 @@ export default function DatasetService($q, state, StateService, DatasetListServi
     }
 
     //--------------------------------------------------------------------------------------------------------------
-    //------------------------------------------------Sheet Preview-------------------------------------------------
+    // ------------------------------------------------Sheet Preview-------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
@@ -309,22 +309,22 @@ export default function DatasetService($q, state, StateService, DatasetListServi
     }
 
     //--------------------------------------------------------------------------------------------------------------
-    //---------------------------------------------Dataset Parameters-----------------------------------------------
+    // ---------------------------------------------Dataset Parameters-----------------------------------------------
     //--------------------------------------------------------------------------------------------------------------
     function extractOriginalParameters(metadata) {
         return {
-            //TODO remove this and review the datasets model to NOT change the original object. This is done here to
+            // TODO remove this and review the datasets model to NOT change the original object. This is done here to
             // avoid cyclic ref
             defaultPreparation: metadata.defaultPreparation,
             preparations: metadata.preparations,
 
             separator: metadata.parameters.SEPARATOR,
-            encoding: metadata.encoding
+            encoding: metadata.encoding,
         };
     }
 
     function setParameters(metadata, parameters) {
-        //TODO remove this and review the datasets model to NOT change the original object. This is done here to avoid
+        // TODO remove this and review the datasets model to NOT change the original object. This is done here to avoid
         // avoid cyclic ref
         metadata.defaultPreparation = parameters.defaultPreparation;
         metadata.preparations = parameters.preparations;
@@ -349,11 +349,12 @@ export default function DatasetService($q, state, StateService, DatasetListServi
 
                 // deal with select inline parameters
                 if (paramItem.type === 'select') {
-                    let selectedValue = _.find(paramItem.configuration.values, { value: paramItem.value });
+                    const selectedValue = _.find(paramItem.configuration.values, { value: paramItem.value });
                     getParamIteration(paramsAccu, selectedValue.parameters);
                 }
             });
         }
+
         return paramsAccu;
     }
 
@@ -417,9 +418,9 @@ export default function DatasetService($q, state, StateService, DatasetListServi
     }
 
     //--------------------------------------------------------------------------------------------------------------
-    //-----------------------------------------------------Rename---------------------------------------------------
+    // -----------------------------------------------------Rename---------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------
-    //TODO remove this and review the datasets model to NOT change the original object. This is done here to
+    // TODO remove this and review the datasets model to NOT change the original object. This is done here to
     // avoid cyclic ref
     function removePreparations(metadata) {
         const preparations = {
@@ -433,7 +434,7 @@ export default function DatasetService($q, state, StateService, DatasetListServi
         return preparations;
     }
 
-    //TODO remove this and review the datasets model to NOT change the original object. This is done here to
+    // TODO remove this and review the datasets model to NOT change the original object. This is done here to
     // avoid cyclic ref
     function injectPreparations(metadata, preparations) {
         metadata.defaultPreparation = preparations.defaultPreparation;

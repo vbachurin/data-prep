@@ -1,8 +1,6 @@
 package org.talend.dataprep.transformation.actions.common.new_actions_api;
 
 import org.talend.dataprep.api.dataset.DataSetMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.transformation.actions.category.ScopeCategory;
 import org.talend.dataprep.transformation.actions.common.ActionMetadata;
@@ -54,7 +52,7 @@ public interface ActionMetdatadaV2 {
      **/
     // We could supply utility class to provide basic filters as the one for cell/row actions in ActionFactory
     // Maybe a bi-filer on row metadata and context is be better
-    default Predicate<RowMetadata> getRowFilter(Predicate<RowMetadata> userFiltering) {
+    default Predicate<DatasetRow> getRowFilter(Predicate<DatasetRow> userFiltering) {
         return userFiltering;
     }
 
@@ -65,7 +63,7 @@ public interface ActionMetdatadaV2 {
      **/
     // First row to pass undeleted define the matadata?
     // Or should dataset metadata should be the first to pass and the rest does not hold metadata...
-    void applyOnRow(DataSetRow row, ActionContext context);
+    void applyOnRow(DatasetRow row, ActionContext context);
 
     // Behavior descriptive methods for optimizations
     default Set<ActionMetadata.Behavior> getBehavior() {

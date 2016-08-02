@@ -17,12 +17,11 @@ describe('Transformation date param directive', function () {
     var createElement;
 
     beforeEach(angular.mock.module('data-prep.transformation-form'));
-    beforeEach(angular.mock.module('htmlTemplates'));
 
-    beforeEach(inject(function($rootScope, $compile) {
+    beforeEach(inject(function ($rootScope, $compile) {
         scope = $rootScope.$new();
 
-        createElement = function() {
+        createElement = function () {
             var element = angular.element('<transform-date-param parameter="parameter"></transform-date-param>');
             $compile(element)(scope);
             scope.$digest();
@@ -30,13 +29,13 @@ describe('Transformation date param directive', function () {
         };
     }));
 
-    it('should render an action with parameter', function() {
+    it('should render an action with parameter', function () {
         //given
         scope.parameter = {
-            'name': 'param1',
-            'label': 'Param 1',
-            'type': 'date',
-            'default': '02/01/2012 10:00:12'
+            name: 'param1',
+            label: 'Param 1',
+            type: 'date',
+            default: '02/01/2012 10:00:12',
         };
 
         //when

@@ -26,126 +26,126 @@ describe('Import controller', () => {
                 currentFolder: { id: '', path: '', name: 'Home' },
                 currentFolderContent: {
                     folders: [],
-                    datasets: []
-                }
+                    datasets: [],
+                },
             }, import: {
                 importTypes: [
                     {
-                        'locationType': 'hdfs',
-                        'contentType': 'application/vnd.remote-ds.hdfs',
-                        'parameters': [
+                        locationType: 'hdfs',
+                        contentType: 'application/vnd.remote-ds.hdfs',
+                        parameters: [
                             {
-                                'name': 'name',
-                                'type': 'string',
-                                'implicit': false,
-                                'canBeBlank': false,
-                                'format': '',
-                                'default': '',
-                                'description': 'Name',
-                                'label': 'Enter the dataset name:'
+                                name: 'name',
+                                type: 'string',
+                                implicit: false,
+                                canBeBlank: false,
+                                format: '',
+                                default: '',
+                                description: 'Name',
+                                label: 'Enter the dataset name:',
                             },
                             {
-                                'name': 'url',
-                                'type': 'string',
-                                'implicit': false,
-                                'canBeBlank': false,
-                                'format': 'hdfs://host:port/file',
-                                'default': '',
-                                'description': 'URL',
-                                'label': 'Enter the dataset URL:'
-                            }
+                                name: 'url',
+                                type: 'string',
+                                implicit: false,
+                                canBeBlank: false,
+                                format: 'hdfs://host:port/file',
+                                default: '',
+                                description: 'URL',
+                                label: 'Enter the dataset URL:',
+                            },
                         ],
-                        'defaultImport': false,
-                        'label': 'From HDFS',
-                        'title': 'Add HDFS dataset'
+                        defaultImport: false,
+                        label: 'From HDFS',
+                        title: 'Add HDFS dataset',
                     },
                     {
-                        'locationType': 'http',
-                        'contentType': 'application/vnd.remote-ds.http',
-                        'parameters': [
+                        locationType: 'http',
+                        contentType: 'application/vnd.remote-ds.http',
+                        parameters: [
                             {
-                                'name': 'name',
-                                'type': 'string',
-                                'implicit': false,
-                                'canBeBlank': false,
-                                'format': '',
-                                'default': '',
-                                'description': 'Name',
-                                'label': 'Enter the dataset name:'
+                                name: 'name',
+                                type: 'string',
+                                implicit: false,
+                                canBeBlank: false,
+                                format: '',
+                                default: '',
+                                description: 'Name',
+                                label: 'Enter the dataset name:',
                             },
                             {
-                                'name': 'url',
-                                'type': 'string',
-                                'implicit': false,
-                                'canBeBlank': false,
-                                'format': 'http://',
-                                'default': '',
-                                'description': 'URL',
-                                'label': 'Enter the dataset URL:'
-                            }
+                                name: 'url',
+                                type: 'string',
+                                implicit: false,
+                                canBeBlank: false,
+                                format: 'http://',
+                                default: '',
+                                description: 'URL',
+                                label: 'Enter the dataset URL:',
+                            },
                         ],
-                        'defaultImport': false,
-                        'label': 'From HTTP',
-                        'title': 'Add HTTP dataset'
+                        defaultImport: false,
+                        label: 'From HTTP',
+                        title: 'Add HTTP dataset',
                     },
                     {
-                        'locationType': 'local',
-                        'contentType': 'text/plain',
-                        'parameters': [
+                        locationType: 'local',
+                        contentType: 'text/plain',
+                        parameters: [
                             {
-                                'name': 'datasetFile',
-                                'type': 'file',
-                                'implicit': false,
-                                'canBeBlank': false,
-                                'format': '*.csv',
-                                'default': '',
-                                'description': 'File',
-                                'label': 'File'
-                            }
+                                name: 'datasetFile',
+                                type: 'file',
+                                implicit: false,
+                                canBeBlank: false,
+                                format: '*.csv',
+                                default: '',
+                                description: 'File',
+                                label: 'File',
+                            },
                         ],
-                        'defaultImport': true,
-                        'label': 'Local File',
-                        'title': 'Add local file dataset'
+                        defaultImport: true,
+                        label: 'Local File',
+                        title: 'Add local file dataset',
                     }, {
-                        'locationType': 'job',
-                        'contentType': 'application/vnd.remote-ds.job',
-                        'parameters': [
+                        locationType: 'job',
+                        contentType: 'application/vnd.remote-ds.job',
+                        parameters: [
                             {
-                                'name': 'name',
-                                'type': 'string',
-                                'implicit': false,
-                                'canBeBlank': false,
-                                'format': '',
-                                'description': 'Name',
-                                'label': 'Enter the dataset name:',
-                                'default': ''
+                                name: 'name',
+                                type: 'string',
+                                implicit: false,
+                                canBeBlank: false,
+                                format: '',
+                                description: 'Name',
+                                label: 'Enter the dataset name:',
+                                default: '',
                             },
                             {
-                                'name': 'jobId',
-                                'type': 'select',
-                                'implicit': false,
-                                'canBeBlank': false,
-                                'format': '',
-                                'configuration': {
-                                    'values': [
+                                name: 'jobId',
+                                type: 'select',
+                                implicit: false,
+                                canBeBlank: false,
+                                format: '',
+                                configuration: {
+                                    values: [
                                         {
-                                            'value': '1',
-                                            'label': 'TestInput'
-                                        }
+                                            value: '1',
+                                            label: 'TestInput',
+                                        },
                                     ],
-                                    'multiple': false
+                                    multiple: false,
                                 },
-                                'description': 'Talend Job',
-                                'label': 'Select the Talend Job:',
-                                'default': ''
-                            }
+                                description: 'Talend Job',
+                                label: 'Select the Talend Job:',
+                                default: '',
+                            },
                         ],
-                        'defaultImport': false,
-                        'label': 'From Talend Job',
-                        'title': 'Add Talend Job dataset'
-                    }
-                ]
-            }
+                        defaultImport: false,
+                        label: 'From Talend Job',
+                        title: 'Add Talend Job dataset',
+                    },
+                ],
+            },
         };
         $provide.constant('state', StateMock);
     }));
@@ -269,7 +269,7 @@ describe('Import controller', () => {
         it('should show dataset name popup when name already exists', inject(($q, DatasetService) => {
             // given
             const dataset = {
-                name: 'my dataset'
+                name: 'my dataset',
             };
             spyOn(DatasetService, 'checkNameAvailability').and.returnValue($q.reject());
             expect(ctrl.datasetNameModal).toBeFalsy();
@@ -368,7 +368,7 @@ describe('Import controller', () => {
 
                 const event = {
                     loaded: 140,
-                    total: 200
+                    total: 200,
                 };
 
                 // when
@@ -398,7 +398,7 @@ describe('Import controller', () => {
 
         describe('with existing name', () => {
             const dataset = {
-                name: 'my cool dataset'
+                name: 'my cool dataset',
             };
             const existingDataset = { id: '2', name: 'my cool dataset' };
             let confirmDefer;

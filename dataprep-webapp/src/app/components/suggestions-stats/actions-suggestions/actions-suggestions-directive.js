@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './actions-suggestions.html';
+
 /**
  * @ngdoc directive
  * @name data-prep.actions-suggestions.directive:actionsSuggestions
@@ -23,12 +25,12 @@ export default function ActionsSuggestions($timeout) {
 
     return {
         restrict: 'E',
-        templateUrl: 'app/components/suggestions-stats/actions-suggestions/actions-suggestions.html',
+        templateUrl: template,
         bindToController: true,
         controllerAs: 'actionsSuggestionsCtrl',
         controller: 'ActionsSuggestionsCtrl',
         link: (scope, iElement, iAttrs, ctrl) => {
-            //Scroll the actual tab container to the bottom of the element to display
+            // Scroll the actual tab container to the bottom of the element to display
             ctrl.scrollToBottom = function scrollToBottom() {
                 $timeout(function () {
                     const splitHandler = angular.element('.split-handler').eq(0);
@@ -50,7 +52,7 @@ export default function ActionsSuggestions($timeout) {
                         if (etdOffset.top > (splitHandler.offset().top - etdHeight)) {
                             scrollDistance = tabContainer[0].scrollTop + etdHeight;
                             tabContainer.animate({
-                                scrollTop: scrollDistance
+                                scrollTop: scrollDistance,
                             }, 500);
                         }
                     }
@@ -58,11 +60,11 @@ export default function ActionsSuggestions($timeout) {
                         const accordionTriggerHeight = elementToDisplay.find('>.trigger-container').height();
                         scrollDistance = tabContainer[0].scrollTop + availableTopSpace - accordionTriggerHeight;
                         tabContainer.animate({
-                            scrollTop: scrollDistance
+                            scrollTop: scrollDistance,
                         }, 500);
                     }
                 }, 300, false);
             };
-        }
+        },
     };
 }

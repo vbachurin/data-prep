@@ -18,7 +18,7 @@ const InventoryCopyMoveComponent = {
         initialFolder: '<',
         item: '<',
         onCopy: '&',
-        onMove: '&'
+        onMove: '&',
     },
     controller: InventoryCopyMoveCtrl,
     template: `
@@ -66,7 +66,7 @@ const InventoryCopyMoveComponent = {
                 </talend-button-loader>
             </div>
         </form>
-    </div>`
+    </div>`,
 };
 
 export default InventoryCopyMoveComponent;

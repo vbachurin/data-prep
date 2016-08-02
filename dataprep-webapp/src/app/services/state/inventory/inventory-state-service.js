@@ -11,30 +11,28 @@
 
  ============================================================================*/
 
-'use strict';
-
 const sortList = [
     { id: 'name', name: 'NAME_SORT', property: 'name' },
-    { id: 'date', name: 'DATE_SORT', property: 'created' }
+    { id: 'date', name: 'DATE_SORT', property: 'created' },
 ];
 
 const orderList = [
     { id: 'asc', name: 'ASC_ORDER' },
-    { id: 'desc', name: 'DESC_ORDER' }
+    { id: 'desc', name: 'DESC_ORDER' },
 ];
 
 const HOME_FOLDER = {
     id: 'Lw==',
     path: '/',
-    name: 'Home'
+    name: 'Home',
 };
 
 export const inventoryState = {
     preparations: null,
     datasets: null,
 
-    sortList: sortList,
-    orderList: orderList,
+    sortList,
+    orderList,
     datasetsSort: sortList[1],
     datasetsOrder: orderList[1],
     preparationsSort: sortList[1],
@@ -57,26 +55,26 @@ export const inventoryState = {
 
 export function InventoryStateService() {
     return {
-        setPreparations: setPreparations,
-        removePreparation: removePreparation,
+        setPreparations,
+        removePreparation,
 
-        setDatasets: setDatasets,
-        removeDataset: removeDataset,
-        setDatasetName: setDatasetName,
+        setDatasets,
+        removeDataset,
+        setDatasetName,
 
-        setHomeFolderId: setHomeFolderId,
-        setFolder: setFolder,
-        setBreadcrumb: setBreadcrumb,
-        setBreadcrumbChildren: setBreadcrumbChildren,
+        setHomeFolderId,
+        setFolder,
+        setBreadcrumb,
+        setBreadcrumbChildren,
 
-        setDatasetsSort: setDatasetsSort,
-        setDatasetsOrder: setDatasetsOrder,
+        setDatasetsSort,
+        setDatasetsOrder,
 
-        setPreparationsSort: setPreparationsSort,
-        setPreparationsOrder: setPreparationsOrder,
+        setPreparationsSort,
+        setPreparationsOrder,
 
-        setFetchingDatasets: setFetchingDatasets,
-        setFetchingPreparations: setFetchingPreparations,
+        setFetchingDatasets,
+        setFetchingPreparations,
     };
 
     /**

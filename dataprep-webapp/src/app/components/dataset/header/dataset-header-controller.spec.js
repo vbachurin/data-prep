@@ -18,12 +18,12 @@ describe('Dataset Header controller', () => {
 
     const sortList = [
         { id: 'name', name: 'NAME_SORT', property: 'name' },
-        { id: 'date', name: 'DATE_SORT', property: 'created' }
+        { id: 'date', name: 'DATE_SORT', property: 'created' },
     ];
 
     const orderList = [
         { id: 'asc', name: 'ASC_ORDER' },
-        { id: 'desc', name: 'DESC_ORDER' }
+        { id: 'desc', name: 'DESC_ORDER' },
     ];
 
     beforeEach(angular.mock.module('data-prep.dataset-header', ($provide) => {
@@ -33,7 +33,7 @@ describe('Dataset Header controller', () => {
                 orderList: orderList,
                 datasetsSort: sortList[0],
                 datasetsOrder: orderList[0],
-            }
+            },
         };
         $provide.constant('state', stateMock);
     }));

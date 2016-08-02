@@ -83,21 +83,21 @@ export default function ImportCtrl($document,
     vm.startImport = (importType) => {
         vm.currentInputType = importType;
         switch (importType.locationType) {
-            case 'local':
-                $document.find('#datasetFile').eq(0).click();
-                break;
-            default:
-                vm.showModal = true;
-                if (vm.currentInputType.dynamic) {
-                    vm.isFetchingParameters = true;
-                    ImportRestService.importParameters(vm.currentInputType.locationType)
+        case 'local':
+            $document.find('#datasetFile').eq(0).click();
+            break;
+        default:
+            vm.showModal = true;
+            if (vm.currentInputType.dynamic) {
+                vm.isFetchingParameters = true;
+                ImportRestService.importParameters(vm.currentInputType.locationType)
                         .then((response) => {
                             vm.currentInputType.parameters = response.data;
                         })
                         .finally(() => {
                             vm.isFetchingParameters = false;
                         });
-                }
+            }
 
         }
     };
@@ -120,7 +120,7 @@ export default function ImportCtrl($document,
 
         return DatasetService.create(params, importType.contentType, file)
             .progress((event) => {
-                dataset.progress = parseInt(100.0 * event.loaded / event.total);
+                dataset.progress = parseInt(100.0 * event.loaded / event.total, 10);
             })
             .then((event) => {
                 DatasetService.getDatasetById(event.data).then(UploadWorkflowService.openDataset);
@@ -211,6 +211,7 @@ export default function ImportCtrl($document,
                 if (cause === 'dismiss') {
                     return;
                 }
+
                 return DatasetService.getUniqueName(name)
                     .then((name) => {
                         return createDataset(

@@ -11,32 +11,41 @@
 
  ============================================================================*/
 
+import angular from 'angular';
+import ngTranslate from 'angular-translate';
+import uiRouter from 'angular-ui-router';
+import TALEND_WIDGET_MODULE from '../../widgets/widget-module';
+import SERVICES_DATASET_MODULE from '../../../services/dataset/dataset-module';
+import SERVICES_PLAYGROUND_MODULE from '../../../services/playground/playground-module';
+import SERVICES_STATE_MODULE from '../../../services/state/state-module';
+import SERVICES_UTILS_MODULE from '../../../services/utils/utils-module';
+
 import DatasetXlsPreviewCtrl from './dataset-xls-preview-controller';
 import DatasetXlsPreview from './dataset-xls-preview-directive';
 
-(() => {
-    'use strict';
+const MODULE_NAME = 'data-prep.dataset-xls-preview';
 
-    /**
-     * @ngdoc object
-     * @name data-prep.dataset-xls-preview
-     * @description This module contains the entities to manage the dataset xls preview
-     * @requires talend.widget
-     * @requires data-prep.services.dataset
-     * @requires data-prep.services.playground
-     * @requires data-prep.services.utils
-     * @requires data-prep.services.state
-     */
-    angular.module('data-prep.dataset-xls-preview',
-        [
-            'pascalprecht.translate',
-            'talend.widget',
-            'ui.router',
-            'data-prep.services.dataset',
-            'data-prep.services.playground',
-            'data-prep.services.utils',
-            'data-prep.services.state',
-        ])
-        .controller('DatasetXlsPreviewCtrl', DatasetXlsPreviewCtrl)
-        .directive('datasetXlsPreview', DatasetXlsPreview);
-})();
+/**
+ * @ngdoc object
+ * @name data-prep.dataset-xls-preview
+ * @description This module contains the entities to manage the dataset xls preview
+ * @requires talend.widget
+ * @requires data-prep.services.dataset
+ * @requires data-prep.services.playground
+ * @requires data-prep.services.utils
+ * @requires data-prep.services.state
+ */
+angular.module(MODULE_NAME,
+    [
+        ngTranslate,
+        uiRouter,
+        TALEND_WIDGET_MODULE,
+        SERVICES_DATASET_MODULE,
+        SERVICES_PLAYGROUND_MODULE,
+        SERVICES_STATE_MODULE,
+        SERVICES_UTILS_MODULE,
+    ])
+    .controller('DatasetXlsPreviewCtrl', DatasetXlsPreviewCtrl)
+    .directive('datasetXlsPreview', DatasetXlsPreview);
+
+export default MODULE_NAME;

@@ -18,13 +18,12 @@ describe('Datasets filters component', () => {
     let controller;
 
     beforeEach(angular.mock.module('data-prep.preparation-creator'));
-    beforeEach(angular.mock.module('htmlTemplates'));
 
     beforeEach(angular.mock.module('pascalprecht.translate', ($translateProvider) => {
         $translateProvider.translations('en', {
-            "EXISTING_DATASETS": "Existing Datasets",
-            "NAME_ALREADY_EXISTS": "This Name already exists in the current folder",
-            "NEW_PREPARATION_NAME": "Preparation Name",
+            EXISTING_DATASETS: 'Existing Datasets',
+            NAME_ALREADY_EXISTS: 'This Name already exists in the current folder',
+            NEW_PREPARATION_NAME: 'Preparation Name',
         });
         $translateProvider.preferredLanguage('en');
     }));
@@ -44,15 +43,15 @@ describe('Datasets filters component', () => {
 
         spyOn(DatasetService, 'loadFilteredDatasets').and.returnValue($q.when([
             {
-                'id': '12c32-bf80-41c8-92e5-66d70f22ec1f',
-                'name': 'US States',
-                'type': 'text/csv'
+                id: '12c32-bf80-41c8-92e5-66d70f22ec1f',
+                name: 'US States',
+                type: 'text/csv',
             },
             {
-                'id': '02ce6c32-bf80-41c8-92e5-66d70f22ec1d',
-                'name': 'US States',
-                'type': 'application/vnd.ms-excel'
-            }
+                id: '02ce6c32-bf80-41c8-92e5-66d70f22ec1d',
+                name: 'US States',
+                type: 'application/vnd.ms-excel',
+            },
         ]));
     }));
 
@@ -71,7 +70,7 @@ describe('Datasets filters component', () => {
             expect(element.find('.preparation-creator-header').length).toBe(1);
             expect(element.find('.filters-left-panel').length).toBe(1);
             expect(element.find('.import-button-panel').length).toBe(1);
-            expect(element.find('.dataset-filter-title').length).toBe(4);
+            expect(element.find('.dataset-filter-title').length).toBe(3);
             expect(element.find('.inventory-list').length).toBe(2);
             expect(element.find('form').length).toBe(1);
             expect(element.find('.modal-buttons').length).toBe(1);

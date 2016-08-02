@@ -14,28 +14,28 @@
 export const filterState = {
     gridFilters: [],
     applyTransformationOnFilters: false,
-    enabled: true
+    enabled: true,
 };
 
 export function FilterStateService() {
     return {
-        //common
-        reset: reset,
+        // common
+        reset,
 
-        //grid
-        addGridFilter: addGridFilter,
-        updateGridFilter: updateGridFilter,
-        removeGridFilter: removeGridFilter,
-        removeAllGridFilters: removeAllGridFilters,
-        enableFilters: enableFilters,
-        disableFilters: disableFilters
+        // grid
+        addGridFilter,
+        updateGridFilter,
+        removeGridFilter,
+        removeAllGridFilters,
+        enableFilters,
+        disableFilters,
     };
 
     //--------------------------------------------------------------------------------------------------------------
-    //-----------------------------------------------------GRID-----------------------------------------------------
+    // -----------------------------------------------------GRID-----------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------
     function addGridFilter(filterInfo) {
-        var isFirstFilter = !filterState.gridFilters.length;
+        const isFirstFilter = !filterState.gridFilters.length;
         filterState.gridFilters = filterState.gridFilters.slice(0);
         filterState.gridFilters.push(filterInfo);
 
@@ -45,7 +45,7 @@ export function FilterStateService() {
     }
 
     function updateGridFilter(oldFilter, newFilter) {
-        var index = filterState.gridFilters.indexOf(oldFilter);
+        const index = filterState.gridFilters.indexOf(oldFilter);
         filterState.gridFilters = filterState.gridFilters.slice(0);
         filterState.gridFilters[index] = newFilter;
     }
@@ -76,7 +76,7 @@ export function FilterStateService() {
     }
 
     //--------------------------------------------------------------------------------------------------------------
-    //-----------------------------------------------------COMMON-----------------------------------------------------
+    // -----------------------------------------------------COMMON-----------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------
     function reset() {
         removeAllGridFilters();

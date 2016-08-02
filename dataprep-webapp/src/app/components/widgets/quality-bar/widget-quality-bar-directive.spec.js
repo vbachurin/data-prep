@@ -20,7 +20,6 @@ describe('Quality bar directive', () => {
     let controller;
 
     beforeEach(angular.mock.module('talend.widget'));
-    beforeEach(angular.mock.module('htmlTemplates'));
 
     beforeEach(inject(($rootScope, $compile) => {
         scope = $rootScope.$new();
@@ -45,7 +44,7 @@ describe('Quality bar directive', () => {
             scope.quality = {
                 valid: 10,
                 invalid: 20,
-                empty: 70
+                empty: 70,
             };
             scope.enterAnimation = true;
             createElement();
@@ -62,7 +61,7 @@ describe('Quality bar directive', () => {
             scope.quality = {
                 valid: 10,
                 invalid: 20,
-                empty: 70
+                empty: 70,
             };
             scope.enterAnimation = true;
             createElement();
@@ -74,17 +73,16 @@ describe('Quality bar directive', () => {
             expect(controller.width).toEqual({
                 invalid: 0,
                 empty: 0,
-                valid: 0
+                valid: 0,
             });
         });
-
 
         it(' compute percentage and width after a 300ms timeout', inject(($timeout) => {
             //given
             scope.quality = {
                 valid: 10,
                 invalid: 20,
-                empty: 70
+                empty: 70,
             };
             scope.enterAnimation = true;
             createElement();
@@ -115,7 +113,7 @@ describe('Quality bar directive', () => {
             scope.quality = {
                 valid: 10,
                 invalid: 20,
-                empty: 70
+                empty: 70,
             };
             createElement();
 
@@ -131,7 +129,7 @@ describe('Quality bar directive', () => {
             scope.quality = {
                 valid: 10,
                 invalid: 20,
-                empty: 70
+                empty: 70,
             };
             createElement();
 
@@ -160,7 +158,7 @@ describe('Quality bar directive', () => {
             scope.quality = {
                 valid: 10,
                 invalid: 20,
-                empty: 70
+                empty: 70,
             };
             scope.hasMenu = false;
             createElement();
@@ -193,7 +191,7 @@ describe('Quality bar directive', () => {
             scope.quality = {
                 valid: 10,
                 invalid: 20,
-                empty: 70
+                empty: 70,
             };
             scope.hasMenu = true;
             createElement();
@@ -219,7 +217,7 @@ describe('Quality bar directive', () => {
             scope.quality = {
                 valid: 10,
                 invalid: 20,
-                empty: 70
+                empty: 70,
             };
             scope.isTrusted = false;
             createElement();

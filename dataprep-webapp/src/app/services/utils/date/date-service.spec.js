@@ -18,7 +18,7 @@ describe('Date service', function () {
 
     it('should check if a timestamp is in the range limits or not: outside the range', inject(function (DateService) {
         // given
-        const patterns = ["DD-MM-YYYY", "M-D-YYYY", "M-D-YY", "YY-MM-DD", "D-M-YY", "YY-M-D", "DD-MM-YY"];
+        const patterns = ['DD-MM-YYYY', 'M-D-YYYY', 'M-D-YY', 'YY-MM-DD', 'D-M-YY', 'YY-M-D', 'DD-MM-YY'];
         const minTimestamp = 1167606000000;//Jan 01 2007
         const maxTimestamp = 1175378400000;//Apr 01 2007
 
@@ -31,7 +31,7 @@ describe('Date service', function () {
 
     it('should check if a timestamp is in the range limits or not: inside the range', inject(function (DateService) {
         // given
-        const patterns = ["DD-MM-YYYY", "M-D-YYYY", "M-D-YY", "YY-MM-DD", "D-M-YY", "YY-M-D", "DD-MM-YY"];
+        const patterns = ['DD-MM-YYYY', 'M-D-YYYY', 'M-D-YY', 'YY-MM-DD', 'D-M-YY', 'YY-M-D', 'DD-MM-YY'];
         const minTimestamp = 1167606000000;//Jan 01 2007
         const maxTimestamp = 1175378400000;//Apr 01 2007
 
@@ -44,7 +44,7 @@ describe('Date service', function () {
 
     it('should check if a timestamp is in the range limits or not: no match with the pattern', inject(function (DateService) {
         // given
-        const patterns = ["DD-MM-YY"];
+        const patterns = ['DD-MM-YY'];
         const minTimestamp = 1167606000000;//Jan 01 2007
         const maxTimestamp = 1175378400000;//Apr 01 2007
 

@@ -16,29 +16,29 @@ export const suggestionsState = {
     line: {
         allTransformations: [],
         filteredTransformations: [],
-        allCategories: null
+        allCategories: null,
     },
     column: {
         allSuggestions: [],             // all selected column suggestions
         allTransformations: [],         // all selected column transformations
         filteredTransformations: [],    // categories with their transformations to display, result of filter
         allCategories: null,
-        searchActionString: ''
+        searchActionString: '',
     },
     transformationsForEmptyCells: [],   // all column transformations applied to empty cells
-    transformationsForInvalidCells: []  // all column transformations applied to invalid cells,
+    transformationsForInvalidCells: [],  // all column transformations applied to invalid cells,
 };
 
 export function SuggestionsStateService() {
     return {
-        setColumnTransformations: setColumnTransformations,
-        setLineTransformations: setLineTransformations,
-        setTransformationsForEmptyCells: setTransformationsForEmptyCells,
-        setTransformationsForInvalidCells: setTransformationsForInvalidCells,
+        setColumnTransformations,
+        setLineTransformations,
+        setTransformationsForEmptyCells,
+        setTransformationsForInvalidCells,
 
-        setLoading: setLoading,
-        updateFilteredTransformations: updateFilteredTransformations,
-        reset: reset
+        setLoading,
+        updateFilteredTransformations,
+        reset,
     };
 
     function setLoading(isLoading) {
@@ -78,7 +78,7 @@ export function SuggestionsStateService() {
             allTransformations: [],
             filteredTransformations: [],
             allCategories: null,
-            searchActionString: ''
+            searchActionString: '',
         };
     }
 
@@ -86,7 +86,7 @@ export function SuggestionsStateService() {
         suggestionsState.line = {
             allTransformations: [],
             filteredTransformations: [],
-            allCategories: null
+            allCategories: null,
         };
     }
 

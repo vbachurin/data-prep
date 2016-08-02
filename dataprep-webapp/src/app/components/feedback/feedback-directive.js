@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './feedback.html';
+
 /**
  * @ngdoc directive
  * @name data-prep.datagrid.directive:Feedback
@@ -20,10 +22,10 @@
  */
 export default function Feedback() {
     return {
-        templateUrl: 'app/components/feedback/feedback.html',
+        templateUrl: template,
         restrict: 'E',
         bindToController: true,
         controllerAs: 'feedbackCtrl',
-        controller: 'FeedbackCtrl'
+        controller: 'FeedbackCtrl',
     };
 }

@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './transformation-date-param.html';
+
 /**
  * @ngdoc directive
  * @name data-prep.transformation-form.directive:TransformDateParam
@@ -23,13 +25,13 @@
 export default function TransformDateParam() {
     return {
         restrict: 'E',
-        templateUrl: 'app/components/transformation/form/date/transformation-date-param.html',
+        templateUrl: template,
         scope: {
             parameter: '=',
-            label: '@'
+            label: '@',
         },
         bindToController: true,
         controllerAs: 'dateParamCtrl',
-        controller: 'TransformDateParamCtrl'
+        controller: 'TransformDateParamCtrl',
     };
 }

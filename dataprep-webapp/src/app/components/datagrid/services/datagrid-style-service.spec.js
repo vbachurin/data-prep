@@ -11,6 +11,8 @@
 
  ============================================================================*/
 
+import SlickGridMock from '../../../../mocks/SlickGrid.mock';
+
 describe('Datagrid style service', () => {
     'use strict';
 
@@ -36,7 +38,7 @@ describe('Datagrid style service', () => {
             { id: '0002', field: 'col2', tdpColMetadata: { id: '0002', name: 'col2', type: 'string' } },
             { id: '0003', field: 'col3', tdpColMetadata: { id: '0003', name: 'col3', type: 'string' } },
             { id: '0004', field: 'col4', tdpColMetadata: { id: '0004', name: 'col4', type: 'string' } },
-            { id: 'tdpId', field: 'tdpId', tdpColMetadata: { id: 'tdpId', name: '#' } }
+            { id: 'tdpId', field: 'tdpId', tdpColMetadata: { id: 'tdpId', name: '#' } },
         ];
 
         gridMock = new SlickGridMock();

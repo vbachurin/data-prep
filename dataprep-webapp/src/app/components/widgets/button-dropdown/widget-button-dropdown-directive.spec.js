@@ -20,7 +20,6 @@ describe('Button Dropdown directive', function () {
     var createElementWithoutAction;
 
     beforeEach(angular.mock.module('talend.widget'));
-    beforeEach(angular.mock.module('htmlTemplates'));
 
     afterEach(function () {
         scope.$destroy();
@@ -32,7 +31,7 @@ describe('Button Dropdown directive', function () {
         jasmine.clock().install();
         scope = $rootScope.$new();
 
-        createElementWithAction = function() {
+        createElementWithAction = function () {
             scope.buttonAction = jasmine.createSpy('buttonAction');
 
             var html = '<talend-button-dropdown button-icon="m" button-text="Click Me" button-action="buttonAction()" button-title="test">' +
@@ -46,7 +45,7 @@ describe('Button Dropdown directive', function () {
             scope.$digest();
         };
 
-        createElementWithoutAction = function() {
+        createElementWithoutAction = function () {
             var html = '<talend-button-dropdown button-icon="m" button-text="Click Me" button-action="">' +
                 '   <ul>' +
                 '       <li>Menu 1</li>' +
@@ -59,7 +58,7 @@ describe('Button Dropdown directive', function () {
         };
     }));
 
-    it('should call action on main button click', function() {
+    it('should call action on main button click', function () {
         //given
         createElementWithAction();
 
@@ -70,7 +69,7 @@ describe('Button Dropdown directive', function () {
         expect(scope.buttonAction).toHaveBeenCalled();
     });
 
-    it('should show dropdown menu on side button click', function() {
+    it('should show dropdown menu on side button click', function () {
         //given
         createElementWithAction();
         var menu = element.find('.dropdown-menu').eq(0);
@@ -84,7 +83,7 @@ describe('Button Dropdown directive', function () {
         expect(menu.hasClass('show-menu')).toBe(true);
     });
 
-    it('should call action on main button click', function() {
+    it('should call action on main button click', function () {
         //given
         createElementWithoutAction();
         var menu = element.find('.dropdown-menu').eq(0);
@@ -98,7 +97,7 @@ describe('Button Dropdown directive', function () {
         expect(menu.hasClass('show-menu')).toBe(true);
     });
 
-    it('should show dropdown menu on side button click', function() {
+    it('should show dropdown menu on side button click', function () {
         //given
         createElementWithoutAction();
         var menu = element.find('.dropdown-menu').eq(0);
@@ -112,7 +111,7 @@ describe('Button Dropdown directive', function () {
         expect(menu.hasClass('show-menu')).toBe(true);
     });
 
-    it('should show dropdown menu on side button click', function() {
+    it('should show dropdown menu on side button click', function () {
         //given
         createElementWithoutAction();
         var menu = element.find('.dropdown-menu').eq(0);

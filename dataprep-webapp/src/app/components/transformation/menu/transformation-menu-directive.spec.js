@@ -19,11 +19,10 @@ describe('Transformation menu directive', function () {
 
     var column = {
         semanticDomains: [],
-        type: 'text'
+        type: 'text',
     };
 
     beforeEach(angular.mock.module('data-prep.transformation-menu'));
-    beforeEach(angular.mock.module('htmlTemplates'));
 
     beforeEach(inject(function ($q, $rootScope, $compile, ColumnTypesService) {
         spyOn(ColumnTypesService, 'getTypes').and.returnValue($q.when([]));
@@ -62,19 +61,19 @@ describe('Transformation menu directive', function () {
             label: 'menu with param',
             parameters: [
                 {
-                    'name': 'param1',
-                    'type': 'string',
-                    'inputType': 'text',
-                    'default': '.'
+                    name: 'param1',
+                    type: 'string',
+                    inputType: 'text',
+                    default: '.',
                 },
                 {
-                    'name': 'param2',
-                    'type': 'integer',
-                    'inputType': 'number',
-                    'default': '5'
-                }
-            ]
-        }];
+                    name: 'param2',
+                    type: 'integer',
+                    inputType: 'number',
+                    default: '5',
+                },
+            ],
+        },];
 
         //when
         var element = createElement();
@@ -102,14 +101,14 @@ describe('Transformation menu directive', function () {
                 name: 'my choice',
                 values: [
                     {
-                        name: 'noParamChoice1'
+                        name: 'noParamChoice1',
                     },
                     {
-                        name: 'noParamChoice2'
-                    }
-                ]
-            }]
-        }];
+                        name: 'noParamChoice2',
+                    },
+                ],
+            },],
+        },];
 
         //when
         var element = createElement();
@@ -139,32 +138,32 @@ describe('Transformation menu directive', function () {
                     name: 'my choice',
                     values: [
                         {
-                            name: 'noParamChoice1'
+                            name: 'noParamChoice1',
                         },
                         {
-                            name: 'noParamChoice2'
-                        }
-                    ]
-                }]
+                            name: 'noParamChoice2',
+                        },
+                    ],
+                },],
             },
             {
                 name: 'menuWithParam',
                 label: 'menu with param',
                 parameters: [
                     {
-                        'name': 'param1',
-                        'type': 'string',
-                        'inputType': 'text',
-                        'default': '.'
+                        name: 'param1',
+                        type: 'string',
+                        inputType: 'text',
+                        default: '.',
                     },
                     {
-                        'name': 'param2',
-                        'type': 'integer',
-                        'inputType': 'number',
-                        'default': '5'
-                    }
-                ]
-            }
+                        name: 'param2',
+                        type: 'integer',
+                        inputType: 'number',
+                        default: '5',
+                    },
+                ],
+            },
         ];
 
         //when
@@ -193,35 +192,35 @@ describe('Transformation menu directive', function () {
                             values: [
                                 {
                                     name: 'noParamChoice1',
-                                    value: 'noParamChoice1'
+                                    value: 'noParamChoice1',
                                 },
                                 {
                                     name: 'noParamChoice2',
-                                    value: 'noParamChoice2'
-                                }
-                            ]
-                        }
-                    }
-                ]
+                                    value: 'noParamChoice2',
+                                },
+                            ],
+                        },
+                    },
+                ],
             },
             {
                 name: 'menuWithParam',
                 label: 'menu with param',
                 parameters: [
                     {
-                        'name': 'param1',
-                        'type': 'string',
-                        'inputType': 'text',
-                        'default': '.'
+                        name: 'param1',
+                        type: 'string',
+                        inputType: 'text',
+                        default: '.',
                     },
                     {
-                        'name': 'param2',
-                        'type': 'integer',
-                        'inputType': 'number',
-                        'default': '5'
-                    }
-                ]
-            }
+                        name: 'param2',
+                        type: 'integer',
+                        inputType: 'number',
+                        default: '5',
+                    },
+                ],
+            },
         ];
 
         var element = createElement();

@@ -89,6 +89,7 @@ export default class ColumnProfileOptionsCtrl {
         if (config.column === this.column && config.aggregation === this.aggregation) {
             return;
         }
+
         this.onAggregationChange(config);
     }
 
@@ -158,11 +159,11 @@ export default class ColumnProfileOptionsCtrl {
         if (this.aggregation) {
             this.$translate(this.aggregation)
                 .then((aggreg) => {
-                    this.shortDescription =  `${aggreg} ${this.column.name}`;
+                    this.shortDescription = `${aggreg} ${this.column.name}`;
                 });
         }
         else {
-            this.shortDescription =  this.$translate.instant(LINE_COUNT);
+            this.shortDescription = this.$translate.instant(LINE_COUNT);
         }
     }
 

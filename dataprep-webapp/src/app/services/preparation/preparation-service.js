@@ -25,40 +25,40 @@ export default function PreparationService($q, $state, $window, $stateParams, st
     'ngInject';
 
     return {
-        //get, refresh preparations
-        getPreparations: getPreparations,
+        // get, refresh preparations
+        getPreparations,
         refreshPreparations: PreparationListService.refreshPreparations,
 
-        //details, content
+        // details, content
         getContent: PreparationRestService.getContent,
         getDetails: PreparationRestService.getDetails,
 
-        //preparation lifecycle
-        create: create,
+        // preparation lifecycle
+        create,
         copy: PreparationListService.copy,
         move: PreparationListService.move,
         update: PreparationRestService.update,
         delete: deletePreparation,
-        setName: setName,
-        open: open,
+        setName,
+        open,
 
-        //preparation steps lifecycle
-        copyImplicitParameters: copyImplicitParameters,
-        paramsHasChanged: paramsHasChanged,
+        // preparation steps lifecycle
+        copyImplicitParameters,
+        paramsHasChanged,
         appendStep: PreparationRestService.appendStep,
-        updateStep: updateStep,
+        updateStep,
         removeStep: PreparationRestService.removeStep,
         setHead: PreparationRestService.setHead,
         copySteps: PreparationRestService.copySteps,
 
-        //preview
+        // preview
         getPreviewDiff: PreparationRestService.getPreviewDiff,
         getPreviewUpdate: PreparationRestService.getPreviewUpdate,
-        getPreviewAdd: PreparationRestService.getPreviewAdd
+        getPreviewAdd: PreparationRestService.getPreviewAdd,
     };
 
     //---------------------------------------------------------------------------------
-    //------------------------------------GET/REFRESH----------------------------------
+    // ------------------------------------GET/REFRESH----------------------------------
     //---------------------------------------------------------------------------------
     /**
      * @ngdoc method
@@ -79,7 +79,7 @@ export default function PreparationService($q, $state, $window, $stateParams, st
     }
 
     //---------------------------------------------------------------------------------
-    //-----------------------------------------LIFE------------------------------------
+    // -----------------------------------------LIFE------------------------------------
     //---------------------------------------------------------------------------------
     /**
      * @ngdoc method
@@ -94,7 +94,7 @@ export default function PreparationService($q, $state, $window, $stateParams, st
         StateService.setPreviousRoute('nav.index.preparations', { folderId: $stateParams.folderId });
         return PreparationListService.create(datasetId, name, destinationFolder)
             .then((preparation) => {
-                //get all dataset aggregations per columns from localStorage and save them for the new preparation
+                // get all dataset aggregations per columns from localStorage and save them for the new preparation
                 StorageService.savePreparationAggregationsFromDataset(datasetId, preparation.id);
                 return preparation;
             });
@@ -111,14 +111,14 @@ export default function PreparationService($q, $state, $window, $stateParams, st
     function deletePreparation(preparation) {
         return PreparationListService.delete(preparation)
             .then((response) => {
-                //get remove all preparation aggregations per columns in localStorage
+                // get remove all preparation aggregations per columns in localStorage
                 StorageService.removeAllAggregations(preparation.dataSetId, preparation.id);
                 return response;
             });
     }
 
     //---------------------------------------------------------------------------------
-    //----------------------------------------UPDATE-----------------------------------
+    // ----------------------------------------UPDATE-----------------------------------
     //---------------------------------------------------------------------------------
 
     /**
@@ -176,7 +176,7 @@ export default function PreparationService($q, $state, $window, $stateParams, st
         return PreparationRestService.updateStep(
             preparationId,
             step.transformation.stepId,
-            { action: step.transformation.name, parameters: parameters }
+            { action: step.transformation.name, parameters }
         );
     }
 
@@ -207,6 +207,7 @@ export default function PreparationService($q, $state, $window, $stateParams, st
         if ($event && ($event.which === 2 || ($event.which === 1 && ($event.metaKey || $event.ctrlKey)))) {
             shouldBeBlankTab = true;
         }
+
         if (shouldBeBlankTab) {
             $window.open($state.href('playground.preparation', { prepid: preparation.id }, { absolute: true }), '_blank');
         }

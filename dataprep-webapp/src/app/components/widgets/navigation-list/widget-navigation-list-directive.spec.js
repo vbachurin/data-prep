@@ -11,7 +11,7 @@
 
   ============================================================================*/
 
-describe('navigationList directive', function() {
+describe('navigationList directive', function () {
     'use strict';
 
     var scope;
@@ -19,17 +19,16 @@ describe('navigationList directive', function() {
     var element;
 
     var list = [
-        { 'label': 'us-customers-500' },
-        { 'label': 'dates' },
-        { 'label': 'exponential' }
+        { label: 'us-customers-500' },
+        { label: 'dates' },
+        { label: 'exponential' },
     ];
 
     beforeEach(angular.mock.module('talend.widget'));
-    beforeEach(angular.mock.module('htmlTemplates'));
 
-    beforeEach(inject(function($rootScope, $compile, $timeout) {
+    beforeEach(inject(function ($rootScope, $compile, $timeout) {
         scope = $rootScope.$new();
-        createElement = function() {
+        createElement = function () {
             element = angular.element('<navigation-list ' +
                 'list="list"' +
                 'on-click="trigger(item)"' +
@@ -39,7 +38,7 @@ describe('navigationList directive', function() {
             );
             scope.list = list;
             scope.item = list[0];
-            scope.getLabelCb = function(item){
+            scope.getLabelCb = function (item) {
                 return item.label;
             };
 
@@ -49,12 +48,12 @@ describe('navigationList directive', function() {
         };
     }));
 
-    afterEach(function() {
+    afterEach(function () {
         scope.$destroy();
         element.remove();
     });
 
-    it('should render items list', function() {
+    it('should render items list', function () {
         //when
         createElement();
 
@@ -68,7 +67,7 @@ describe('navigationList directive', function() {
         expect(element.find('.selected-item-label').eq(0).text().trim()).toBe('us-customers-500');
     });
 
-    it('should trigger item selection callback', function() {
+    it('should trigger item selection callback', function () {
         //given
         scope.trigger = jasmine.createSpy('clickCb');
         createElement();

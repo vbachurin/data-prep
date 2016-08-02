@@ -11,7 +11,7 @@
 
   ============================================================================*/
 
-describe('Suggestions stats directive', function() {
+describe('Suggestions stats directive', function () {
     'use strict';
 
     var scope;
@@ -20,11 +20,10 @@ describe('Suggestions stats directive', function() {
 
     beforeEach(angular.mock.module('ngSanitize'));
     beforeEach(angular.mock.module('data-prep.actions-list'));
-    beforeEach(angular.mock.module('htmlTemplates'));
 
-    beforeEach(inject(function($rootScope, $compile) {
+    beforeEach(inject(function ($rootScope, $compile) {
         scope = $rootScope.$new();
-        createElement = function() {
+        createElement = function () {
             element = angular.element('<actions-list ' +
                 'actions="actions" ' +
                 'should-render-action="shouldRenderAction" ' +
@@ -35,18 +34,18 @@ describe('Suggestions stats directive', function() {
         };
     }));
 
-    afterEach(function() {
+    afterEach(function () {
         scope.$destroy();
         element.remove();
     });
 
-    describe('render', function() {
-        beforeEach(function() {
+    describe('render', function () {
+        beforeEach(function () {
             scope.shouldRenderAction = jasmine.createSpy('shouldRenderAction').and.returnValue(true);
             scope.shouldRenderCategory = jasmine.createSpy('shouldRenderCategory').and.returnValue(true);
         });
 
-        it('should render categories', inject(function() {
+        it('should render categories', inject(function () {
             //given
             scope.actions = [
                 {
@@ -54,8 +53,8 @@ describe('Suggestions stats directive', function() {
                     categoryHtml: 'Category 1',
                     transformations: [
                         { name: '1', labelHtml: 'action 1' },
-                        { name: '2', labelHtml: 'action 2' }
-                    ]
+                        { name: '2', labelHtml: 'action 2' },
+                    ],
                 },
                 {
                     category: 'cat2',
@@ -63,9 +62,9 @@ describe('Suggestions stats directive', function() {
                     transformations: [
                         { name: '3', labelHtml: 'action 3' },
                         { name: '4', labelHtml: 'action 4' },
-                        { name: '5', labelHtml: 'action 5' }
-                    ]
-                }
+                        { name: '5', labelHtml: 'action 5' },
+                    ],
+                },
             ];
 
             //when
@@ -78,7 +77,7 @@ describe('Suggestions stats directive', function() {
             expect(element.find('.actions-group').length).toBe(1);
         }));
 
-        it('should render actions', inject(function() {
+        it('should render actions', inject(function () {
             //given
             scope.actions = [
                 {
@@ -86,8 +85,8 @@ describe('Suggestions stats directive', function() {
                     categoryHtml: 'Category 1',
                     transformations: [
                         { name: '1', labelHtml: 'action 1' },
-                        { name: '2', labelHtml: 'action 2' }
-                    ]
+                        { name: '2', labelHtml: 'action 2' },
+                    ],
                 },
                 {
                     category: 'cat2',
@@ -95,9 +94,9 @@ describe('Suggestions stats directive', function() {
                     transformations: [
                         { name: '3', labelHtml: 'action 3' },
                         { name: '4', labelHtml: 'action 4' },
-                        { name: '5', labelHtml: 'action 5' }
-                    ]
-                }
+                        { name: '5', labelHtml: 'action 5' },
+                    ],
+                },
             ];
 
             //when
@@ -113,21 +112,22 @@ describe('Suggestions stats directive', function() {
         }));
     });
 
-    describe('filter', function() {
-        it('category', inject(function() {
+    describe('filter', function () {
+        it('category', inject(function () {
             //given
             scope.shouldRenderAction = jasmine.createSpy('shouldRenderAction').and.returnValue(true);
-            scope.shouldRenderCategory = function(cat) {
+            scope.shouldRenderCategory = function (cat) {
                 return cat.category !== 'cat1';
             };
+
             scope.actions = [
                 {
                     category: 'cat1',
                     categoryHtml: 'Category 1',
                     transformations: [
                         { name: '1', labelHtml: 'action 1' },
-                        { name: '2', labelHtml: 'action 2' }
-                    ]
+                        { name: '2', labelHtml: 'action 2' },
+                    ],
                 },
                 {
                     category: 'cat2',
@@ -135,9 +135,9 @@ describe('Suggestions stats directive', function() {
                     transformations: [
                         { name: '3', labelHtml: 'action 3' },
                         { name: '4', labelHtml: 'action 4' },
-                        { name: '5', labelHtml: 'action 5' }
-                    ]
-                }
+                        { name: '5', labelHtml: 'action 5' },
+                    ],
+                },
             ];
 
             //when
@@ -153,20 +153,21 @@ describe('Suggestions stats directive', function() {
             expect(element.find('.actions-group .trigger').eq(2).text().trim()).toBe('action 5');
         }));
 
-        it('actions', inject(function() {
+        it('actions', inject(function () {
             //given
             scope.shouldRenderCategory = jasmine.createSpy('shouldRenderCategory').and.returnValue(true);
-            scope.shouldRenderAction = function(action) {
+            scope.shouldRenderAction = function (action) {
                 return action.name !== '2';
             };
+
             scope.actions = [
                 {
                     category: 'cat1',
                     categoryHtml: 'Category 1',
                     transformations: [
                         { name: '1', labelHtml: 'action 1' },
-                        { name: '2', labelHtml: 'action 2' }
-                    ]
+                        { name: '2', labelHtml: 'action 2' },
+                    ],
                 },
                 {
                     category: 'cat2',
@@ -174,9 +175,9 @@ describe('Suggestions stats directive', function() {
                     transformations: [
                         { name: '3', labelHtml: 'action 3' },
                         { name: '4', labelHtml: 'action 4' },
-                        { name: '5', labelHtml: 'action 5' }
-                    ]
-                }
+                        { name: '5', labelHtml: 'action 5' },
+                    ],
+                },
             ];
 
             //when

@@ -61,7 +61,7 @@ describe('Inventory state service', () => {
                 dataSetId: '3b21388c-f54a-4334-9bef-748912d0806f',
                 author: 'anonymousUser',
                 creationDate: 1427447330693,
-            }
+            },
         ];
     });
 
@@ -174,7 +174,7 @@ describe('Inventory state service', () => {
             //given
             inventoryState.folder = {};
             const folderMetadata = {
-                id: 'L215L3BlcnNvbmFsL2ZvbGRlcg=='
+                id: 'L215L3BlcnNvbmFsL2ZvbGRlcg==',
             };
 
             //when

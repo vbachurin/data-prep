@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './badge.html';
+
 /**
  * @ngdoc component
  * @name talend.widget.component:TalendBadge
@@ -23,10 +25,10 @@
 const TalendBadge = {
     bindings: {
         removable: '<',
-        onRemove: '&'
+        onRemove: '&',
     },
-    templateUrl: 'app/components/widgets/badge/badge.html',
-    transclude: true
+    templateUrl: template,
+    transclude: true,
 };
 
 export default TalendBadge;

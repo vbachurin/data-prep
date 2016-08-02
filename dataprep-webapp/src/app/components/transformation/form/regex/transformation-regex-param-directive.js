@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './transformation-regex-param.html';
+
 /**
  * @ngdoc directive
  * @name data-prep.transformation-form.directive:TransformRegexParam
@@ -22,12 +24,12 @@
 export default function TransformRegexParam() {
     return {
         restrict: 'E',
-        templateUrl: 'app/components/transformation/form/regex/transformation-regex-param.html',
+        templateUrl: template,
         scope: {
-            parameter: '='
+            parameter: '=',
         },
         bindToController: true,
         controllerAs: 'regexParamCtrl',
-        controller: 'TransformRegexParamCtrl'
+        controller: 'TransformRegexParamCtrl',
     };
 }

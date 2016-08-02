@@ -84,8 +84,8 @@ describe('Text format service', function () {
         }));
     });
 
-    describe('regex', function() {
-        it('should escape regex special chars with brackets', inject(function(TextFormatService) {
+    describe('regex', function () {
+        it('should escape regex special chars with brackets', inject(function (TextFormatService) {
             //given
             var value = 'azerty - [] {} () *+?.,\\^$|# qwerty';
 
@@ -96,7 +96,7 @@ describe('Text format service', function () {
             expect(result).toBe('azerty[ ][-][ ][[][]][ ][{][}][ ][(][)][ ][*][+][?][.][,][\\][^][$][|][#][ ]qwerty');
         }));
 
-        it('should escape regex special chars except star (used as wildcard)', inject(function(TextFormatService) {
+        it('should escape regex special chars except star (used as wildcard)', inject(function (TextFormatService) {
             //given
             var value = 'azerty - [] {} () *+?.,\\^$|# qwerty';
 
@@ -108,8 +108,8 @@ describe('Text format service', function () {
         }));
     });
 
-    describe('date pattern', function() {
-        it('should convert pattern to regexp with escaped special chars', inject(function(TextFormatService) {
+    describe('date pattern', function () {
+        it('should convert pattern to regexp with escaped special chars', inject(function (TextFormatService) {
             //given
             var pattern = 'a A 9 5-8 *$';
             var expectedRegexp = '^[a-z][ ][A-Z][ ][0-9][ ]5[-]8[ ][*][$]$';
@@ -121,7 +121,7 @@ describe('Text format service', function () {
             expect(result).toBe(expectedRegexp);
         }));
 
-        it('should java date pattern to moment pattern', inject(function(TextFormatService) {
+        it('should java date pattern to moment pattern', inject(function (TextFormatService) {
             //given
             var pattern = 'd/M/yyyy \'o\'\'clock\' mcdo';
             var expectedPattern = 'D/M/YYYY [o\'clock] mcDo';
@@ -134,12 +134,12 @@ describe('Text format service', function () {
         }));
     });
 
-    describe('text', function() {
-        it('should highlight text with css class', inject(function(TextFormatService) {
+    describe('text', function () {
+        it('should highlight text with css class', inject(function (TextFormatService) {
             //given
             var object = {
                 name: 'test',
-                id: '000'
+                id: '000',
             };
 
             //when

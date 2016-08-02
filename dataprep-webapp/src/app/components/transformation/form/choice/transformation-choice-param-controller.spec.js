@@ -25,21 +25,21 @@ describe('Transform choice params controller', function () {
 
         createController = function () {
             var ctrlFn = $controller('TransformChoiceParamCtrl', {
-                $scope: scope
+                $scope: scope,
             }, true);
             ctrlFn.instance.parameter = parameter;
             return ctrlFn();
         };
     }));
 
-    it('should Not initialize parameter value', function() {
+    it('should Not initialize parameter value', function () {
         //given
         parameter = {
             name: 'mode',
             type: 'select',
             configuration: {
-                values: []
-            }
+                values: [],
+            },
         };
 
         //when
@@ -49,7 +49,7 @@ describe('Transform choice params controller', function () {
         expect(ctrl.parameter.value).toEqual(undefined);
     });
 
-    it('should init choice default value', function() {
+    it('should init choice default value', function () {
         //given
         parameter = {
             name: 'mode',
@@ -57,10 +57,10 @@ describe('Transform choice params controller', function () {
             configuration: {
                 values: [
                     { value: 'regex' },
-                    { value: 'index' }
-                ]
+                    { value: 'index' },
+                ],
             },
-            default: 'index'
+            default: 'index',
         };
 
         //when
@@ -70,7 +70,7 @@ describe('Transform choice params controller', function () {
         expect(ctrl.parameter.value).toEqual('index');
     });
 
-    it('should init choice to first value if there is no default', function() {
+    it('should init choice to first value if there is no default', function () {
         //given
         parameter = {
             name: 'mode',
@@ -78,9 +78,9 @@ describe('Transform choice params controller', function () {
             configuration: {
                 values: [
                     { value: 'regex' },
-                    { value: 'index' }
-                ]
-            }
+                    { value: 'index' },
+                ],
+            },
         };
 
         //when
@@ -90,7 +90,7 @@ describe('Transform choice params controller', function () {
         expect(ctrl.parameter.value).toEqual('regex');
     });
 
-    it('should not change current value if it is set', function() {
+    it('should not change current value if it is set', function () {
         //given
         parameter = {
             name: 'mode',
@@ -98,10 +98,10 @@ describe('Transform choice params controller', function () {
             configuration: {
                 values: [
                     { value: 'regex' },
-                    { value: 'index' }
-                ]
+                    { value: 'index' },
+                ],
             },
-            value: 'index'
+            value: 'index',
         };
 
         //when

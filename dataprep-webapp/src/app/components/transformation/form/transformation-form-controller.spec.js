@@ -27,26 +27,27 @@ describe('Transform params controller', function () {
 
         createController = function () {
             var ctrlFn = $controller('TransformFormCtrl', {
-                $scope: scope
+                $scope: scope,
             }, true);
             ctrlFn.instance.transformation = transformation;
-            ctrlFn.instance.onSubmit = function(args) {
+            ctrlFn.instance.onSubmit = function (args) {
                 extractedParams = args.params;
             };
+
             ctrlFn.instance.paramForm = { $commitViewValue: jasmine.createSpy('$commitViewValue') };
             return ctrlFn();
         };
     }));
 
-    it('should extract param', function() {
+    it('should extract param', function () {
         //given
         transformation = {
             name: 'uppercase',
             category: 'case',
             parameters: [
                 { name: 'param1', type: 'text', default: '' },
-                { name: 'param2', type: 'integer', default: '5' }
-            ]
+                { name: 'param2', type: 'integer', default: '5' },
+            ],
         };
         var ctrl = createController(transformation);
         ctrl.transformation.parameters[0].value = 'param1Value';
@@ -59,15 +60,15 @@ describe('Transform params controller', function () {
         expect(extractedParams).toEqual({ param1: 'param1Value', param2: 4 });
     });
 
-    it('should extract param with default value', function() {
+    it('should extract param with default value', function () {
         //given
         transformation = {
             name: 'uppercase',
             category: 'case',
             parameters: [
                 { name: 'param1', type: 'text', default: '' },
-                { name: 'param2', type: 'integer', default: '5' }
-            ]
+                { name: 'param2', type: 'integer', default: '5' },
+            ],
         };
         var ctrl = createController(transformation);
         //when
@@ -77,7 +78,7 @@ describe('Transform params controller', function () {
         expect(extractedParams).toEqual({ param1: '', param2: '5' });
     });
 
-    it('should extract simple choice param', function() {
+    it('should extract simple choice param', function () {
         //given
         transformation = {
             name: 'split',
@@ -89,11 +90,11 @@ describe('Transform params controller', function () {
                     configuration: {
                         values: [
                             { name: 'regex', value: 'regex' },
-                            { name: 'index', value: 'index' }
-                        ]
-                    }
-                }
-            ]
+                            { name: 'index', value: 'index' },
+                        ],
+                    },
+                },
+            ],
         };
         var ctrl = createController();
         ctrl.transformation.parameters[0].value = ctrl.transformation.parameters[0].configuration.values[1].value;
@@ -105,7 +106,7 @@ describe('Transform params controller', function () {
         expect(extractedParams).toEqual({ mode: 'index' });
     });
 
-    it('should extract parameterized choice params', function() {
+    it('should extract parameterized choice params', function () {
         //given
         transformation = {
             name: 'split',
@@ -119,16 +120,16 @@ describe('Transform params controller', function () {
                             {
                                 name: 'regex',
                                 value: 'regex',
-                                parameters : [
+                                parameters: [
                                     { name: 'regex', type: 'text', default: '', value: 'param1Value' },
-                                    { name: 'comment', type: 'text', default: '', value: 'my comment' }
-                                ]
+                                    { name: 'comment', type: 'text', default: '', value: 'my comment' },
+                                ],
                             },
-                            { name: 'index', value: 'index' }
-                        ]
-                    }
-                }
-            ]
+                            { name: 'index', value: 'index' },
+                        ],
+                    },
+                },
+            ],
         };
         var ctrl = createController();
         ctrl.transformation.parameters[0].value = ctrl.transformation.parameters[0].configuration.values[0].value;
@@ -140,7 +141,7 @@ describe('Transform params controller', function () {
         expect(extractedParams).toEqual({ mode: 'regex', regex: 'param1Value', comment: 'my comment' });
     });
 
-    it('should extract parameters and parameterized choice transformation select', function() {
+    it('should extract parameters and parameterized choice transformation select', function () {
 
         //given
         transformation = {
@@ -157,16 +158,16 @@ describe('Transform params controller', function () {
                             {
                                 name: 'regex',
                                 value: 'regex',
-                                parameters : [
+                                parameters: [
                                     { name: 'regex', type: 'text', default: '', value: 'param1Value' },
-                                    { name: 'comment', type: 'text', default: '', value: 'my comment' }
-                                ]
+                                    { name: 'comment', type: 'text', default: '', value: 'my comment' },
+                                ],
                             },
-                            { name: 'index', value: 'index' }
-                        ]
-                    }
-                }
-            ]
+                            { name: 'index', value: 'index' },
+                        ],
+                    },
+                },
+            ],
         };
         var ctrl = createController();
         ctrl.transformation.parameters[2].value = ctrl.transformation.parameters[2].configuration.values[0].value;
@@ -180,7 +181,7 @@ describe('Transform params controller', function () {
         expect(extractedParams).toEqual({ mode: 'regex', regex: 'param1Value', comment: 'my comment', param1: 'param1Value', param2: 4 });
     });
 
-    it('should extract cluster parameters', function() {
+    it('should extract cluster parameters', function () {
         //given
         transformation = {
             name: 'cluster',
@@ -188,7 +189,7 @@ describe('Transform params controller', function () {
             cluster: {
                 titles: [
                     'We found these values',
-                    'And we\'ll keep this value'
+                    'And we\'ll keep this value',
                 ],
                 clusters: [
                     {
@@ -198,30 +199,30 @@ describe('Transform params controller', function () {
                                 type: 'boolean',
                                 description: 'parameter.Texa.desc',
                                 label: 'parameter.Texa.label',
-                                default: 'true'
+                                default: 'true',
                             },
                             {
                                 name: 'Tixass',
                                 type: 'boolean',
                                 description: 'parameter.Tixass.desc',
                                 label: 'parameter.Tixass.label',
-                                default: 'true'
+                                default: 'true',
                             },
                             {
                                 name: 'Tex@s',
                                 type: 'boolean',
                                 description: 'parameter.Tex@s.desc',
                                 label: 'parameter.Tex@s.label',
-                                default: 'true'
-                            }
+                                default: 'true',
+                            },
                         ],
-                        'replace': {
+                        replace: {
                             name: 'replaceValue',
                             type: 'string',
                             description: 'parameter.replaceValue.desc',
                             label: 'parameter.replaceValue.label',
-                            default: 'Texas'
-                        }
+                            default: 'Texas',
+                        },
                     },
                     {
                         parameters: [
@@ -230,47 +231,47 @@ describe('Transform params controller', function () {
                                 type: 'boolean',
                                 description: 'parameter.Massachusetts.desc',
                                 label: 'parameter.Massachusetts.label',
-                                default: 'false'
+                                default: 'false',
                             },
                             {
                                 name: 'Masachusetts',
                                 type: 'boolean',
                                 description: 'parameter.Masachusetts.desc',
                                 label: 'parameter.Masachusetts.label',
-                                default: 'true'
+                                default: 'true',
                             },
                             {
                                 name: 'Massachussetts',
                                 type: 'boolean',
                                 description: 'parameter.Massachussetts.desc',
                                 label: 'parameter.Massachussetts.label',
-                                default: 'true'
+                                default: 'true',
                             },
                             {
                                 name: 'Massachusets',
                                 type: 'boolean',
                                 description: 'parameter.Massachusets.desc',
                                 label: 'parameter.Massachusets.label',
-                                default: 'true'
+                                default: 'true',
                             },
                             {
                                 name: 'Masachussets',
                                 type: 'boolean',
                                 description: 'parameter.Masachussets.desc',
                                 label: 'parameter.Masachussets.label',
-                                default: 'true'
-                            }
+                                default: 'true',
+                            },
                         ],
                         replace: {
                             name: 'replaceValue',
                             type: 'string',
                             description: 'parameter.replaceValue.desc',
                             label: 'parameter.replaceValue.label',
-                            default: 'Massachussets'
-                        }
-                    }
-                ]
-            }
+                            default: 'Massachussets',
+                        },
+                    },
+                ],
+            },
         };
         var ctrl = createController();
         ctrl.transformation.cluster.clusters[0].active = false;
@@ -287,29 +288,29 @@ describe('Transform params controller', function () {
 
         //then
         expect(extractedParams).toEqual({
-            'Masachusetts': 'Toto',
-            'Massachussetts': 'Toto',
-            'Massachusets': 'Toto',
-            'Masachussets': 'Toto'
+            Masachusetts: 'Toto',
+            Massachussetts: 'Toto',
+            Massachusets: 'Toto',
+            Masachussets: 'Toto',
         });
     });
 
-    it('should extract param and call ctrl onSubmitHoverOn function', function() {
+    it('should extract param and call ctrl onSubmitHoverOn function', function () {
         //given
         transformation = {
             name: 'uppercase',
             category: 'case',
             parameters: [
                 { name: 'param1', type: 'text', default: '' },
-                { name: 'param2', type: 'integer', default: '5' }
-            ]
+                { name: 'param2', type: 'integer', default: '5' },
+            ],
         };
         var ctrl = createController();
         ctrl.transformation.parameters[0].value = 'param1Value';
         ctrl.transformation.parameters[1].value = 4;
 
         var hoverArgs = {};
-        ctrl.onSubmitHoverOn = function(args) {
+        ctrl.onSubmitHoverOn = function (args) {
             hoverArgs = args;
         };
 
@@ -321,22 +322,22 @@ describe('Transform params controller', function () {
         expect(hoverArgs.params).toEqual({ param1: 'param1Value', param2: 4 });
     });
 
-    it('should extract param and call ctrl onSubmitHoverOff function', function() {
+    it('should extract param and call ctrl onSubmitHoverOff function', function () {
         //given
         transformation = {
             name: 'uppercase',
             category: 'case',
             parameters: [
                 { name: 'param1', type: 'text', default: '' },
-                { name: 'param2', type: 'integer', default: '5' }
-            ]
+                { name: 'param2', type: 'integer', default: '5' },
+            ],
         };
         var ctrl = createController();
         ctrl.transformation.parameters[0].value = 'param1Value';
         ctrl.transformation.parameters[1].value = 4;
 
         var hoverArgs = {};
-        ctrl.onSubmitHoverOff = function(args) {
+        ctrl.onSubmitHoverOff = function (args) {
             hoverArgs = args;
         };
 

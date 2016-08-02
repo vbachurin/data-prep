@@ -26,14 +26,13 @@ describe('Dataset xls preview controller', () => {
                 currentFolder: { path: 'HOME' },
                 folder: {
                     metadata: {
-                        id: 'HOME'
-                    }
-                }
-            }
+                        id: 'HOME',
+                    },
+                },
+            },
         };
         $provide.constant('state', stateMock);
     }));
-
 
     beforeEach(inject(($rootScope, $controller, $q, $timeout, $state,
         DatasetSheetPreviewService, DatasetService, PlaygroundService, StateService) => {
@@ -41,7 +40,7 @@ describe('Dataset xls preview controller', () => {
 
         createController = () => {
             const ctrl = $controller('DatasetXlsPreviewCtrl', {
-                $scope: scope
+                $scope: scope,
             });
             $timeout.flush();
             return ctrl;

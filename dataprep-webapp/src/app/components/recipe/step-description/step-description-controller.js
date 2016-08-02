@@ -22,41 +22,43 @@ class StepDescriptionCtrl {
 
     $onChanges() {
         switch (this.step.actionParameters.parameters.scope) {
-            case 'column':
+        case 'column':
+            this.stepDescription = this.$translate.instant('RECIPE_ITEM_ON_COL', {
+                index: (this.index + 1),
+                label: this.step.transformation.label,
+                columnName: this.step.column.name.toUpperCase(),
+            });
+            break;
+
+        case 'line':
+            this.stepDescription = this.$translate.instant('RECIPE_ITEM_ON_LINE', {
+                index: (this.index + 1),
+                label: this.step.transformation.label,
+                rowId: this.step.row.id,
+            });
+            break;
+
+        case 'cell':
+            this.stepDescription = this.$translate.instant('RECIPE_ITEM_ON_CELL', {
+                index: (this.index + 1),
+                label: this.step.transformation.label,
+            });
+            break;
+
+        case 'dataset':
+            if (this.step.transformation.name === 'lookup') {
+                this.stepDescription = this._getLookupDetails(this.step);
+            }
+
+            if (this.step.transformation.name === 'reorder') {
                 this.stepDescription = this.$translate.instant('RECIPE_ITEM_ON_COL', {
                     index: (this.index + 1),
                     label: this.step.transformation.label,
                     columnName: this.step.column.name.toUpperCase(),
                 });
-                break;
+            }
 
-            case 'line':
-                this.stepDescription = this.$translate.instant('RECIPE_ITEM_ON_LINE', {
-                    index: (this.index + 1),
-                    label: this.step.transformation.label,
-                    rowId: this.step.row.id,
-                });
-                break;
-
-            case 'cell':
-                this.stepDescription = this.$translate.instant('RECIPE_ITEM_ON_CELL', {
-                    index: (this.index + 1),
-                    label: this.step.transformation.label,
-                });
-                break;
-
-            case 'dataset':
-                if (this.step.transformation.name === 'lookup') {
-                    this.stepDescription = this._getLookupDetails(this.step);
-                }
-                if (this.step.transformation.name === 'reorder') {
-                    this.stepDescription = this.$translate.instant('RECIPE_ITEM_ON_COL', {
-                        index: (this.index + 1),
-                        label: this.step.transformation.label,
-                        columnName: this.step.column.name.toUpperCase(),
-                    });
-                }
-                break;
+            break;
         }
     }
 
@@ -78,16 +80,16 @@ class StepDescriptionCtrl {
 
         const lookupStepDetails = this._getAddedColumnsInLookup(step);
         switch (lookupStepDetails.initialColsNbr) {
-            case 1:
-                description += this.$translate.instant('ONLY_1_ADDED_COL', lookupStepDetails);
-                break;
+        case 1:
+            description += this.$translate.instant('ONLY_1_ADDED_COL', lookupStepDetails);
+            break;
 
-            case 2:
-                description += this.$translate.instant('ONLY_2_ADDED_COLS', lookupStepDetails);
-                break;
+        case 2:
+            description += this.$translate.instant('ONLY_2_ADDED_COLS', lookupStepDetails);
+            break;
 
-            default:
-                description += this.$translate.instant('MORE_THEN_2_ADDED_COLS', lookupStepDetails);
+        default:
+            description += this.$translate.instant('MORE_THEN_2_ADDED_COLS', lookupStepDetails);
         }
 
         return description;
@@ -105,7 +107,7 @@ class StepDescriptionCtrl {
         const allAddedCols = _.map(step.actionParameters.parameters.lookup_selected_cols, 'name');
         return {
             initialColsNbr: allAddedCols.length,
-            firstCol: allAddedCols.splice(0, 1).join(), //tab = []; tab[0]==>undefined, tab.join()==>''
+            firstCol: allAddedCols.splice(0, 1).join(), // tab = []; tab[0]==>undefined, tab.join()==>''
             secondCol: allAddedCols.splice(0, 1).join(),
             restOfColsNbr: allAddedCols.length,
             restOfCols: allAddedCols.join(', '),

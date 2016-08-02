@@ -16,9 +16,10 @@
  * @name data-prep.transformation-menu.controller:TransformMenuCtrl
  * @description Transformation menu item controller.
  * @requires data-prep.services.playground.service:PlaygroundService
+ * @requires data-prep.services.parameters.service:ParametersService
  * @requires data-prep.services.transformation.service:TransformationService
  */
-export default function TransformMenuCtrl(state, PlaygroundService, TransformationService) {
+export default function TransformMenuCtrl(state, PlaygroundService, ParametersService, TransformationService) {
     'ngInject';
 
     const vm = this;
@@ -38,7 +39,7 @@ export default function TransformMenuCtrl(state, PlaygroundService, Transformati
             datasetId: state.playground.dataset.id,
             preparationId: state.playground.preparation ?
                 state.playground.preparation.id :
-                null
+                null,
         };
         return TransformationService.initDynamicParameters(menu, infos);
     }
@@ -69,8 +70,8 @@ export default function TransformMenuCtrl(state, PlaygroundService, Transformati
             });
         }
         else if (menu.parameters || menu.items) {
-            TransformationService.resetParamValue(menu.parameters);
-            TransformationService.resetParamValue(menu.items, 'CHOICE');
+            ParametersService.resetParamValue(menu.parameters);
+            ParametersService.resetParamValue(menu.items, 'CHOICE');
             vm.showModal = true;
             vm.selectedMenu = menu;
             vm.selectedScope = scope;

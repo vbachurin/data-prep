@@ -10,6 +10,9 @@
  9 rue Pages 92150 Suresnes, France
 
  ============================================================================*/
+
+import template from './folder-tree-node.html';
+
 /**
  * @ngdoc component
  * @name data-prep.folder-selection.component:FolderTreeNodeComponent
@@ -48,7 +51,7 @@ const FolderTreeNodeComponent = {
         onSelect: '&',
         onToggle: '&',
     },
-    templateUrl: 'app/components/folder-selection/folder-tree-node/folder-tree-node.html'
+    templateUrl: template,
 };
 
 export default FolderTreeNodeComponent;

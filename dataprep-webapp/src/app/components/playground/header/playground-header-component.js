@@ -11,6 +11,8 @@
 
  ============================================================================*/
 
+import template from './playground-header.html';
+
 /**
  * @ngdoc directive
  * @name talend.sunchoke.accordion.directive:ScAccordionAnimation
@@ -42,7 +44,7 @@
  * @param {Boolean} preparationPicker display of the button
  */
 const PlaygroundHeader = {
-    templateUrl: 'app/components/playground/header/playground-header.html',
+    templateUrl: template,
     bindings: {
         preview: '<',
         lookupVisible: '<',
@@ -54,8 +56,8 @@ const PlaygroundHeader = {
         onFeedback: '&',
         onClose: '&',
         onPreparationPicker: '&',
-        preparationPicker: '<'
-    }
+        preparationPicker: '<',
+    },
 };
 
 export default PlaygroundHeader;

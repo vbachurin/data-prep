@@ -18,12 +18,12 @@ describe('Preparation Header controller', () => {
 
     const sortList = [
         { id: 'name', name: 'NAME_SORT', property: 'name' },
-        { id: 'date', name: 'DATE_SORT', property: 'created' }
+        { id: 'date', name: 'DATE_SORT', property: 'created' },
     ];
 
     const orderList = [
         { id: 'asc', name: 'ASC_ORDER' },
-        { id: 'desc', name: 'DESC_ORDER' }
+        { id: 'desc', name: 'DESC_ORDER' },
     ];
 
     beforeEach(angular.mock.module('data-prep.preparation-header', ($provide) => {
@@ -34,9 +34,9 @@ describe('Preparation Header controller', () => {
                 preparationsSort: sortList[0],
                 preparationsOrder: orderList[0],
                 folder: {
-                    metadata: { id: 'L215L2ZvbGRlcg==', path: '/my/folder' }
+                    metadata: { id: 'L215L2ZvbGRlcg==', path: '/my/folder' },
                 },
-            }
+            },
         };
         $provide.constant('state', stateMock);
     }));

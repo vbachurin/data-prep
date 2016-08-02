@@ -24,11 +24,11 @@ describe('Lookup datagrid header controller', function () {
                 lookup: {
                     selectedColumn: {
                         id: '0000',
-                        name: 'lookupGridColName'
+                        name: 'lookupGridColName',
                     },
-                    columnsToAdd: ['0002', '0003']
-                }
-            }
+                    columnsToAdd: ['0002', '0003'],
+                },
+            },
         };
         $provide.constant('state', stateMock);
     }));
@@ -38,7 +38,7 @@ describe('Lookup datagrid header controller', function () {
 
         createController = function () {
             return $controller('LookupDatagridHeaderCtrl', {
-                $scope: scope
+                $scope: scope,
             });
         };
     }));
@@ -47,7 +47,7 @@ describe('Lookup datagrid header controller', function () {
         //given
         var ctrl = createController();
         ctrl.column = {
-            id: '0001'
+            id: '0001',
         };
         //when
         var showCheckbox = ctrl.showCheckbox();
@@ -60,7 +60,7 @@ describe('Lookup datagrid header controller', function () {
         //given
         var ctrl = createController();
         ctrl.column = {
-            id: '0000'
+            id: '0000',
         };
         //when
         var showCheckbox = ctrl.showCheckbox();

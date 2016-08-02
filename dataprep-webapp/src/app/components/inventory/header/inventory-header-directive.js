@@ -11,9 +11,11 @@
 
  ============================================================================*/
 
+import template from './inventory-header.html';
+
 export default function InventoryHeaderDirective() {
     return {
-        templateUrl: 'app/components/inventory/header/inventory-header.html',
+        templateUrl: template,
         scope: true,
         bindToController: {
             sort: '<',
@@ -27,7 +29,7 @@ export default function InventoryHeaderDirective() {
         },
         controllerAs: '$ctrl',
         controller: 'InventoryHeaderCtrl',
-        link: function (scope, iElement, iAttrs, ctrl) {
+        link(scope, iElement, iAttrs, ctrl) {
             ctrl.canCreateFolder = iAttrs.onFolderCreation;
         },
     };

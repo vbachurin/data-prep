@@ -44,7 +44,7 @@ export default class DatagridGridService {
             DatagridStyleService,
             DatagridSizeService,
             DatagridExternalService,
-            DatagridTooltipService
+            DatagridTooltipService,
         ];
     }
 
@@ -80,6 +80,7 @@ export default class DatagridGridService {
                     const column = this.grid.getColumns()[args.cell];
                     columnMetadata = column && column.tdpColMetadata;
                 }
+
                 this.StateService.setGridSelection(columnMetadata, args.row);
             });
         });
@@ -133,7 +134,7 @@ export default class DatagridGridService {
      * @param {string} elementId The element where the grid will be inserted in the DOM. The element must exists
      */
     initGrid(elementId) {
-        //create grid
+        // create grid
         const options = {
             autoEdit: false,
             editable: true,
@@ -143,15 +144,15 @@ export default class DatagridGridService {
             syncColumnCellResize: false,
             frozenColumn: 0,
             asyncEditorLoading: true,
-            asyncEditorLoadDelay: 150
+            asyncEditorLoadDelay: 150,
         };
         this.grid = new Slick.Grid(elementId, this.state.playground.grid.dataView, [{ id: 'tdpId' }], options);
 
-        //listeners
+        // listeners
         this._attachLongTableListeners();
         this._attachGridStateListeners();
 
-        //init other services
+        // init other services
         this._initGridServices();
         return this.grid;
     }

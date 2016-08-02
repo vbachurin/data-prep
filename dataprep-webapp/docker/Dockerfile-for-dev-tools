@@ -27,6 +27,11 @@ RUN gem install sass
 #https://github.com/karma-runner/karma-phantomjs-launcher/issues/31#issuecomment-60698359
 RUN apt-get -y install libfontconfig
 
+#update node
+RUN npm install -g n
+RUN n v5.11.0
+RUN npm rebuild node-sass
+
 #update bower
 RUN npm update -g bower
 

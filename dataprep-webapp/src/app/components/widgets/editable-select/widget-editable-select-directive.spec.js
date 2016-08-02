@@ -11,7 +11,7 @@
 
   ============================================================================*/
 
-describe('Editable select directive', function() {
+describe('Editable select directive', function () {
     'use strict';
 
     var scope;
@@ -19,12 +19,11 @@ describe('Editable select directive', function() {
     var element;
 
     beforeEach(angular.mock.module('talend.widget'));
-    beforeEach(angular.mock.module('htmlTemplates'));
 
-    beforeEach(inject(function($rootScope, $compile) {
+    beforeEach(inject(function ($rootScope, $compile) {
         scope = $rootScope.$new();
 
-        createElement = function() {
+        createElement = function () {
             element = angular.element('<editable-select list="selectValues" ng-model="value"></editable-select>');
             $compile(element)(scope);
             scope.$digest();
@@ -36,7 +35,7 @@ describe('Editable select directive', function() {
         element.remove();
     });
 
-    it('should render input and combobox', function() {
+    it('should render input and combobox', function () {
         //given
         scope.selectValues = ['val1', 'val2', 'val3'];
         scope.value = 'val2';

@@ -19,7 +19,6 @@ describe('Typeahead directive', () => {
     let ctrl;
 
     beforeEach(angular.mock.module('talend.widget'));
-    beforeEach(angular.mock.module('htmlTemplates'));
 
     beforeEach(inject(($rootScope, $compile) => {
         scope = $rootScope.$new();

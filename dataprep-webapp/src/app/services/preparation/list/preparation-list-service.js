@@ -26,15 +26,15 @@ export default function PreparationListService(PreparationRestService, StateServ
     let preparationsPromise;
 
     return {
-        refreshPreparations: refreshPreparations,
-        getPreparationsPromise: getPreparationsPromise,
-        hasPreparationsPromise: hasPreparationsPromise,
+        refreshPreparations,
+        getPreparationsPromise,
+        hasPreparationsPromise,
 
-        create: create,
-        copy: copy,
-        move: move,
-        update: update,
-        delete: deletePreparation
+        create,
+        copy,
+        move,
+        update,
+        delete: deletePreparation,
     };
 
     /**
@@ -143,7 +143,7 @@ export default function PreparationListService(PreparationRestService, StateServ
      */
     function update(preparationId, name) {
         let updatedPreparationId;
-        return PreparationRestService.update(preparationId, { name: name })
+        return PreparationRestService.update(preparationId, { name })
             .then((result) => updatedPreparationId = result)
             .then(refreshPreparations)
             .then((preparations) => _.find(preparations, { id: updatedPreparationId }));

@@ -1,21 +1,22 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.dataset.service.analysis.synchronous;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 import java.io.InputStream;
@@ -52,8 +53,7 @@ public class SchemaAnalysisTest extends DataSetBaseTest {
 
     @Test
     public void testAnalysis() throws Exception {
-        final DataSetMetadata actual = initializeDataSetMetadata(
-                DataSetServiceTest.class.getResourceAsStream("../avengers.csv"));
+        final DataSetMetadata actual = initializeDataSetMetadata(DataSetServiceTest.class.getResourceAsStream("../avengers.csv"));
         assertThat(actual.getLifecycle().schemaAnalyzed(), is(true));
         String[] expectedNames = { "nickname", "secret firstname", "secret lastname", "date of birth", "city" };
         Type[] expectedTypes = { Type.STRING, Type.STRING, Type.STRING, Type.DATE, Type.STRING };
@@ -72,8 +72,7 @@ public class SchemaAnalysisTest extends DataSetBaseTest {
      */
     @Test
     public void testTDP_224() throws Exception {
-        final DataSetMetadata actual = initializeDataSetMetadata(
-                DataSetServiceTest.class.getResourceAsStream("../whatever.xls"));
+        final DataSetMetadata actual = initializeDataSetMetadata(DataSetServiceTest.class.getResourceAsStream("../whatever.xls"));
         assertThat(actual.getLifecycle().schemaAnalyzed(), is(true));
         String[] expectedNames = { "whaterver" }; // Not a typo: this is what QA provided as column name.
         Type[] expectedTypes = { Type.STRING };
@@ -191,7 +190,49 @@ public class SchemaAnalysisTest extends DataSetBaseTest {
         schemaAnalysis.analyze(id);
 
         final DataSetMetadata analyzed = dataSetMetadataRepository.get(id);
+        assertNotNull(analyzed);
+        assertNotNull(analyzed.getLifecycle());
         assertThat(analyzed.getLifecycle().schemaAnalyzed(), is(true));
         return analyzed;
+    }
+
+    /**
+     * See <a href="https://jira.talendforge.org/browse/TDP-1674">TDP-1674_error_with_ipv6_addresses</a>.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testTDP_1674() throws Exception {
+        final DataSetMetadata actual = initializeDataSetMetadata(DataSetServiceTest.class.getResourceAsStream("../ipv6.csv"));
+        assertThat(actual.getLifecycle().schemaAnalyzed(), is(true));
+        String[] expectedNames = { "number", "description", "address" };
+        Type[] expectedTypes = { Type.INTEGER, Type.STRING, Type.STRING };
+        int i = 0;
+        for (ColumnMetadata column : actual.getRowMetadata().getColumns()) {
+            assertThat(column.getName(), is(expectedNames[i]));
+            assertThat(column.getType(), is(expectedTypes[i].getName()));
+            i++;
+        }
+
+        assertThat("IPv6 Address", is(actual.getRowMetadata().getColumns().get(2).getDomainLabel()));
+    }
+
+    /**
+     * See <a href="https://jira.talendforge.org/browse/TDP-855">TDP-855_movie_title_detected_as_city</a>.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testTDP_855() throws Exception {
+        final DataSetMetadata actual = initializeDataSetMetadata(
+                DataSetServiceTest.class.getResourceAsStream("../TDP-855_movie_title_detected_as_city.csv"));
+        assertThat(actual.getLifecycle().schemaAnalyzed(), is(true));
+        ColumnMetadata column = actual.getRowMetadata().getColumns().get(0);
+        String expectedName = "Genre: (Movie, Program, show)";
+        Type expectedType = Type.STRING;
+
+        assertThat(expectedName, is(column.getName()));
+        assertThat(expectedType.getName(), is(column.getType()));
+        assertThat("", is(column.getDomainLabel()));
     }
 }

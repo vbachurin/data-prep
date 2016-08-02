@@ -16,10 +16,10 @@ describe('Inventory Service', () => {
 
     let results = {
         data: {
-            folders: [{ name : 'folder test', lastModificationDate: 1 }],
-            preparations: [{ name : 'prep test', lastModificationDate: 2 }],
+            folders: [{ name: 'folder test', lastModificationDate: 1 }],
+            preparations: [{ name: 'prep test', lastModificationDate: 2 }],
             datasets: [{
-                name : 'dataset test',
+                name: 'dataset test',
                 lastModificationDate: 3,
                 author: 'toto',
                 created: 1,
@@ -27,11 +27,11 @@ describe('Inventory Service', () => {
                 path: 'home',
                 type: 'csv',
                 owner: {
-                    id: 'charles'
-                }
-            }]
+                    id: 'charles',
+                },
+            },],
 
-        }
+        },
     };
 
     beforeEach(angular.mock.module('data-prep.services.inventory'));
@@ -42,7 +42,7 @@ describe('Inventory Service', () => {
 
     it('should call inventory search rest service and process data', inject(($rootScope, InventoryService) => {
         //given
-        let result= null;
+        let result = null;
         let expectedResult = [
             { inventoryType: 'dataset',
                 author: 'toto',
@@ -55,10 +55,10 @@ describe('Inventory Service', () => {
                 lastModificationDate: 3,
                 tooltipName: 'dataset test',
                 owner: {
-                    id: 'charles'
-            } },
-            { name : 'prep <span class="highlighted">test</span>', lastModificationDate: 2, inventoryType: 'preparation', tooltipName: 'prep test' },
-            { name : 'folder <span class="highlighted">test</span>', lastModificationDate: 1, inventoryType: 'folder', tooltipName: 'folder test' }
+                    id: 'charles',
+                }, },
+            { name: 'prep <span class="highlighted">test</span>', lastModificationDate: 2, inventoryType: 'preparation', tooltipName: 'prep test' },
+            { name: 'folder <span class="highlighted">test</span>', lastModificationDate: 1, inventoryType: 'folder', tooltipName: 'folder test' },
         ];
 
         //when

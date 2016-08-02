@@ -50,16 +50,18 @@ export default class MessageService {
      */
     _bufferPop(message) {
         message.key = message.title + message.content;
-        const messageAlreadyPending =  _.find(this.pendingMessages, { key: message.key });
+        const messageAlreadyPending = _.find(this.pendingMessages, { key: message.key });
 
         if (messageAlreadyPending) {
             return;
         }
+
         this.pendingMessages.push(message);
 
         if (this.messagePromise) {
             return;
         }
+
         this.messagePromise = this.$timeout(() => {
             const messages = this.pendingMessages;
             this.pendingMessages = [];
@@ -82,8 +84,8 @@ export default class MessageService {
             type: 'error',
             title: titleKey,
             content: contentKey,
-            args: args,
-            timeout: 0
+            args,
+            timeout: 0,
         };
         this._bufferPop(message);
     }
@@ -102,8 +104,8 @@ export default class MessageService {
             type: 'success',
             title: titleKey,
             content: contentKey,
-            args: args,
-            timeout: 5000
+            args,
+            timeout: 5000,
         };
         this._bufferPop(message);
     }
@@ -122,8 +124,8 @@ export default class MessageService {
             type: 'warning',
             title: titleKey,
             content: contentKey,
-            args: args,
-            timeout: 0
+            args,
+            timeout: 0,
         };
         this._bufferPop(message);
     }

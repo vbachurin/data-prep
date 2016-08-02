@@ -16,14 +16,14 @@ describe('Column types Service', function () {
 
     var $httpBackend;
     var types = [
-        { 'id': 'ANY', 'name': 'any', 'labelKey': 'ANY' },
-        { 'id': 'STRING', 'name': 'string', 'labelKey': 'STRING' },
-        { 'id': 'NUMERIC', 'name': 'numeric', 'labelKey': 'NUMERIC' },
-        { 'id': 'INTEGER', 'name': 'integer', 'labelKey': 'INTEGER' },
-        { 'id': 'DOUBLE', 'name': 'double', 'labelKey': 'DOUBLE' },
-        { 'id': 'FLOAT', 'name': 'float', 'labelKey': 'FLOAT' },
-        { 'id': 'BOOLEAN', 'name': 'boolean', 'labelKey': 'BOOLEAN' },
-        { 'id': 'DATE', 'name': 'date', 'labelKey': 'DATE' }
+        { id: 'ANY', name: 'any', labelKey: 'ANY' },
+        { id: 'STRING', name: 'string', labelKey: 'STRING' },
+        { id: 'NUMERIC', name: 'numeric', labelKey: 'NUMERIC' },
+        { id: 'INTEGER', name: 'integer', labelKey: 'INTEGER' },
+        { id: 'DOUBLE', name: 'double', labelKey: 'DOUBLE' },
+        { id: 'FLOAT', name: 'float', labelKey: 'FLOAT' },
+        { id: 'BOOLEAN', name: 'boolean', labelKey: 'BOOLEAN' },
+        { id: 'DATE', name: 'date', labelKey: 'DATE' },
     ];
 
     beforeEach(angular.mock.module('data-prep.services.dataset'));
@@ -44,6 +44,7 @@ describe('Column types Service', function () {
         ColumnTypesService.getTypes().then(function (response) {
             result = response.data;
         });
+
         $httpBackend.flush();
         $rootScope.$digest();
 
@@ -66,6 +67,7 @@ describe('Column types Service', function () {
         ColumnTypesService.getTypes().then(function (response) {
             result = response.data;
         });
+
         $rootScope.$digest();
 
         //then

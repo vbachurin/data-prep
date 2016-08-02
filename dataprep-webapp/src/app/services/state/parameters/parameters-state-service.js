@@ -20,13 +20,13 @@ export const parametersState = {
             { label: ';', value: ';' },
             { label: ',', value: ',' },
             { label: '<space>', value: ' ' },
-            { label: '<tab>', value: '\t' }
-        ]
+            { label: '<tab>', value: '\t' },
+        ],
     },
     values: {
         separator: null,
-        encoding: null
-    }
+        encoding: null,
+    },
 };
 
 /**
@@ -36,12 +36,12 @@ export const parametersState = {
  */
 export function ParametersStateService() {
     return {
-        show: show,
-        hide: hide,
-        setIsSending: setIsSending,
-        setEncodings: setEncodings,
-        update: update,
-        reset: reset
+        show,
+        hide,
+        setIsSending,
+        setEncodings,
+        update,
+        reset,
     };
 
     /**
@@ -109,7 +109,7 @@ export function ParametersStateService() {
         parametersState.isSending = false;
         parametersState.values = {
             separator: null,
-            encoding: null
+            encoding: null,
         };
     }
 }

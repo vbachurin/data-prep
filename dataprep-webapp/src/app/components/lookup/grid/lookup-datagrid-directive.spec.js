@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import DataViewMock from './../../../../mocks/DataView.mock';
+
 describe('Lookup datagrid directive', function () {
     'use strict';
 
@@ -25,7 +27,7 @@ describe('Lookup datagrid directive', function () {
         { id: 'tdpId' },
         { id: '0000', tdpColMetadata: { id: '0000' } },
         { id: '0001', tdpColMetadata: { id: '0001' } },
-        { id: '0002', tdpColMetadata: { id: '0002' } }
+        { id: '0002', tdpColMetadata: { id: '0002' } },
     ];
 
     beforeEach(function () {
@@ -34,20 +36,17 @@ describe('Lookup datagrid directive', function () {
         spyOn(dataViewMock.onRowsChanged, 'subscribe').and.returnValue();
     });
 
-
     beforeEach(angular.mock.module('data-prep.lookup', function ($provide) {
         stateMock = {
             playground: {
                 metadata: {
-                    columns: []
+                    columns: [],
                 },
-                lookup: { dataView: dataViewMock }
-            }
+                lookup: { dataView: dataViewMock },
+            },
         };
         $provide.constant('state', stateMock);
     }));
-
-    beforeEach(angular.mock.module('htmlTemplates'));
 
     beforeEach(inject(function ($rootScope, $compile, LookupDatagridGridService, LookupDatagridColumnService, LookupDatagridStyleService) {
         scope = $rootScope.$new();
@@ -90,9 +89,9 @@ describe('Lookup datagrid directive', function () {
                 metadata: {
                     columns: [
                         { id: '0000' },
-                        { id: '0001', tdpColMetadata: { id: '0001' } }
-                    ]
-                }
+                        { id: '0001', tdpColMetadata: { id: '0001' } },
+                    ],
+                },
             };
 
             //when

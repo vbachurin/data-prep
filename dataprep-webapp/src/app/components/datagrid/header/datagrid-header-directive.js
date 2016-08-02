@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './datagrid-header.html';
+
 /**
  * @ngdoc directive
  * @name data-prep.datagrid-header.directive:DatagridHeader
@@ -32,18 +34,18 @@ export default function DatagridHeader($timeout) {
 
     return {
         restrict: 'E',
-        templateUrl: 'app/components/datagrid/header/datagrid-header.html',
+        templateUrl: template,
         scope: {
-            column: '='
+            column: '=',
         },
         bindToController: true,
         controllerAs: 'datagridHeaderCtrl',
         controller: 'DatagridHeaderCtrl',
         link: {
-            post: function (scope, iElement, iAttrs, ctrl) {
-                var gridHeader;
-                var gridHeaderTitle;
-                var gridHeaderTitleInput;
+            post(scope, iElement, iAttrs, ctrl) {
+                let gridHeader;
+                let gridHeaderTitle;
+                let gridHeaderTitleInput;
 
                 /**
                  * @ngdoc method
@@ -95,13 +97,13 @@ export default function DatagridHeader($timeout) {
                         .keydown(function (event) {
                             event.stopPropagation();
                             switch (event.keyCode) {
-                                case 13: //ENTER
-                                    gridHeaderTitleInput.blur();
-                                    break;
-                                case 27: //ESC
-                                    ctrl.resetColumnName();
-                                    gridHeaderTitleInput.blur();
-                                    break;
+                            case 13: // ENTER
+                                gridHeaderTitleInput.blur();
+                                break;
+                            case 27: // ESC
+                                ctrl.resetColumnName();
+                                gridHeaderTitleInput.blur();
+                                break;
                             }
                         });
                 }
@@ -145,7 +147,7 @@ export default function DatagridHeader($timeout) {
                  */
                 function attachClickListener() {
                     gridHeader.mouseup(function (event) {
-                        if (event.which === 3) { //Right click
+                        if (event.which === 3) { // Right click
                             gridHeader.find('.grid-header-caret').click();
                         }
                     });
@@ -173,10 +175,11 @@ export default function DatagridHeader($timeout) {
                     function () {
                         return ctrl.transformationsRetrieveError;
                     },
+
                     function (newValue) {
                         if (newValue) {
                             $timeout(() => {
-                                var headerDropdownAction = iElement.find('.grid-header-caret').eq(0);
+                                const headerDropdownAction = iElement.find('.grid-header-caret').eq(0);
                                 headerDropdownAction.click();
                             });
                         }
@@ -185,7 +188,7 @@ export default function DatagridHeader($timeout) {
                 iElement.on('$destroy', function () {
                     scope.$destroy();
                 });
-            }
-        }
+            },
+        },
     };
 }

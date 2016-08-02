@@ -24,6 +24,7 @@ describe('Horizontal Barchart directive', function () {
         Date.now = function () {
             return Infinity;
         };
+
         d3.timer.flush();
         Date.now = now;
     };
@@ -32,24 +33,24 @@ describe('Horizontal Barchart directive', function () {
 
     beforeEach(inject(function ($rootScope, $compile) {
         statsData = [
-            { 'data': 'Johnson', 'occurrences': 9 },
-            { 'data': 'Roosevelt', 'occurrences': 8 },
-            { 'data': 'Pierce', 'occurrences': 6 },
-            { 'data': 'Wilson', 'occurrences': 5 },
-            { 'data': 'Adams', 'occurrences': 4 },
-            { 'data': 'Quincy', 'occurrences': 4 },
-            { 'data': 'Clinton', 'occurrences': 4 },
-            { 'data': 'Harrison', 'occurrences': 4 }
+            { data: 'Johnson', occurrences: 9 },
+            { data: 'Roosevelt', occurrences: 8 },
+            { data: 'Pierce', occurrences: 6 },
+            { data: 'Wilson', occurrences: 5 },
+            { data: 'Adams', occurrences: 4 },
+            { data: 'Quincy', occurrences: 4 },
+            { data: 'Clinton', occurrences: 4 },
+            { data: 'Harrison', occurrences: 4 },
         ];
         filteredStatsData = [
-            { 'data': 'Johnson', 'filteredOccurrences': 4 },
-            { 'data': 'Roosevelt', filteredOccurrences: 4 },
-            { 'data': 'Pierce', 'filteredOccurrences': 4 },
-            { 'data': 'Wilson', 'filteredOccurrences': 4 },
-            { 'data': 'Adams', 'filteredOccurrences': 4 },
-            { 'data': 'Quincy', 'filteredOccurrences': 4 },
-            { 'data': 'Clinton', 'filteredOccurrences': 4 },
-            { 'data': 'Harrison', 'filteredOccurrences': 4 }
+            { data: 'Johnson', filteredOccurrences: 4 },
+            { data: 'Roosevelt', filteredOccurrences: 4 },
+            { data: 'Pierce', filteredOccurrences: 4 },
+            { data: 'Wilson', filteredOccurrences: 4 },
+            { data: 'Adams', filteredOccurrences: 4 },
+            { data: 'Quincy', filteredOccurrences: 4 },
+            { data: 'Clinton', filteredOccurrences: 4 },
+            { data: 'Harrison', filteredOccurrences: 4 },
         ];
 
         scope = $rootScope.$new();
@@ -123,8 +124,8 @@ describe('Horizontal Barchart directive', function () {
 
             //when
             scope.primaryData = [
-                { 'data': 'Johnson', 'occurrences': 9e9 },
-                { 'data': 'Roosevelt', 'occurrences': 8 }
+                { data: 'Johnson', occurrences: 9e9 },
+                { data: 'Roosevelt', occurrences: 8 },
             ];
             scope.$digest();
             $timeout.flush(100);
@@ -141,8 +142,8 @@ describe('Horizontal Barchart directive', function () {
 
             //when
             scope.primaryData = [
-                { 'data': 'Johnson', 'occurrences': 1e8 },
-                { 'data': 'Roosevelt', 'occurrences': 8 }
+                { data: 'Johnson', occurrences: 1e8 },
+                { data: 'Roosevelt', occurrences: 8 },
             ];
             scope.$digest();
             $timeout.flush(100);
@@ -160,8 +161,8 @@ describe('Horizontal Barchart directive', function () {
 
             //when
             scope.primaryData = [
-                { 'data': 'Johnson', 'occurrences': 1e5 },
-                { 'data': 'Roosevelt', 'occurrences': 8 }
+                { data: 'Johnson', occurrences: 1e5 },
+                { data: 'Roosevelt', occurrences: 8 },
             ];
             scope.$digest();
             $timeout.flush(100);
@@ -252,9 +253,9 @@ describe('Horizontal Barchart directive', function () {
 
             //when
             scope.primaryData = [
-                { 'data': 'Johnson', 'occurrences': 90000000 },
-                { 'data': 'Hoover', 'occurrences': 0 },
-                { 'data': 'Roosevelt', 'occurrences': 1 }
+                { data: 'Johnson', occurrences: 90000000 },
+                { data: 'Hoover', occurrences: 0 },
+                { data: 'Roosevelt', occurrences: 1 },
             ];
             scope.$digest();
             $timeout.flush(100);

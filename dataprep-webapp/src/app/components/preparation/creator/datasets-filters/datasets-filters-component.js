@@ -30,7 +30,7 @@ export default {
     controller: DatasetsFiltersCtrl,
     bindings: {
         onFilterSelect: '&',
-        importing: '<'
+        importing: '<',
     },
     template: `
         <div class="dataset-filter" ng-class="{'selected-filter': filter.isSelected}"
@@ -49,5 +49,5 @@ export default {
                 <div class="dataset-filter-description" translate-once="{{filter.description}}"></div>
             </div>
         </div>
-    `
+    `,
 };

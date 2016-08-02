@@ -22,13 +22,13 @@ describe('Boxplot chart directive', function () {
     beforeEach(angular.mock.module('talend.widget'));
     beforeEach(inject(function ($rootScope, $compile) {
         boxValues = {
-            min:0,
-            max:100,
-            q1:8,
-            q2:90,
-            median:58,
-            mean:59.79,
-            variance:2051033.15
+            min: 0,
+            max: 100,
+            q1: 8,
+            q2: 90,
+            median: 58,
+            mean: 59.79,
+            variance: 2051033.15,
         };
 
         createElement = function () {

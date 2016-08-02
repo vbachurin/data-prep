@@ -11,16 +11,19 @@
 
  ============================================================================*/
 
+import angular from 'angular';
+import SERVICES_UTILS_MODULE from '../utils/utils-module';
+
 import FeedbackRestService from './feedback-rest-service';
 
-(() => {
-    'use strict';
+const MODULE_NAME = 'data-prep.services.feedback';
 
-    /**
-     * @ngdoc object
-     * @name data-prep.services.feedback
-     * @description This module contains the services to manage user feedbacks
-     */
-    angular.module('data-prep.services.feedback', ['data-prep.services.utils'])
-        .service('FeedbackRestService', FeedbackRestService);
-})();
+/**
+ * @ngdoc object
+ * @name data-prep.services.feedback
+ * @description This module contains the services to manage user feedbacks
+ */
+angular.module(MODULE_NAME, [SERVICES_UTILS_MODULE])
+    .service('FeedbackRestService', FeedbackRestService);
+
+export default MODULE_NAME;

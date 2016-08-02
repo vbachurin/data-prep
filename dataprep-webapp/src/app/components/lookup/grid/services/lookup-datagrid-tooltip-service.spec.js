@@ -11,7 +11,10 @@
 
   ============================================================================*/
 
-describe('Lookup Datagrid tooltip service', function() {
+import DataViewMock from '../../../../../mocks/DataView.mock';
+import SlickGridMock from '../../../../../mocks/SlickGrid.mock';
+
+describe('Lookup Datagrid tooltip service', function () {
     'use strict';
 
     var gridMock;
@@ -20,15 +23,17 @@ describe('Lookup Datagrid tooltip service', function() {
 
     //invisible ruler mock
     var RulerMock = {
-        text: function(savedText) {
+        text: function (savedText) {
             this.savedText = savedText;
         },
-        width: function() {
+
+        width: function () {
             return this.savedText.length * 4;
         },
-        height: function() {
+
+        height: function () {
             return ((this.savedText.match(new RegExp('\n', 'g')) || []).length + 1) * 20; //eslint-disable-line no-control-regex
-        }
+        },
     };
 
     //record on the line
@@ -38,7 +43,7 @@ describe('Lookup Datagrid tooltip service', function() {
         '0002': 'titititititititititititititititititi',         // should show tooltip because of length
         '0003': 'toto\ntoto',                                   // should show tooltip because of height
         '0004': '',                                             // should not show tooltip
-        'tdpId': 16678678678686786788888888888888888886872      // should show tooltip because of length
+        tdpId: 16678678678686786788888888888888888886872,      // should show tooltip because of length
     };
 
     //columns metadata
@@ -48,19 +53,19 @@ describe('Lookup Datagrid tooltip service', function() {
         { id: '0002', name: 'col2' },
         { id: '0003', name: 'col3' },
         { id: '0004', name: 'col4' },
-        { id: 'tdpId', name: '#' }
+        { id: 'tdpId', name: '#' },
     ];
 
     beforeEach(angular.mock.module('data-prep.lookup', function ($provide) {
         dataViewMock = new DataViewMock();
         stateMock = { playground: { lookup: {
-                    dataView: dataViewMock
-        } } };
+                    dataView: dataViewMock,
+                }, }, };
 
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(inject(function(LookupDatagridTooltipService) {
+    beforeEach(inject(function (LookupDatagridTooltipService) {
         gridMock = new SlickGridMock();
 
         gridMock.initColumnsMock(columns);
@@ -79,20 +84,20 @@ describe('Lookup Datagrid tooltip service', function() {
         jasmine.clock().uninstall();
     });
 
-    describe('on creation', function() {
-        it('should hide tooltip', inject(function(LookupDatagridTooltipService) {
+    describe('on creation', function () {
+        it('should hide tooltip', inject(function (LookupDatagridTooltipService) {
             //then
             expect(LookupDatagridTooltipService.showTooltip).toBe(false);
         }));
 
-        it('should create empty tooltip infos', inject(function(LookupDatagridTooltipService) {
+        it('should create empty tooltip infos', inject(function (LookupDatagridTooltipService) {
             //then
             expect(LookupDatagridTooltipService.tooltip).toEqual({});
         }));
     });
 
-    describe('on initialization', function() {
-        it('should attach listeners to the grid', inject(function(LookupDatagridTooltipService) {
+    describe('on initialization', function () {
+        it('should attach listeners to the grid', inject(function (LookupDatagridTooltipService) {
             //when
             LookupDatagridTooltipService.init(gridMock);
 
@@ -102,8 +107,8 @@ describe('Lookup Datagrid tooltip service', function() {
         }));
     });
 
-    describe('on mouse enter', function() {
-        it('should NOT show tooltip when no cell correspond to the event', inject(function($timeout, LookupDatagridTooltipService) {
+    describe('on mouse enter', function () {
+        it('should NOT show tooltip when no cell correspond to the event', inject(function ($timeout, LookupDatagridTooltipService) {
             //given
             LookupDatagridTooltipService.init(gridMock);
             gridMock.initCellMock(null); //grid.getCellFromEvent returns falsy param
@@ -124,13 +129,13 @@ describe('Lookup Datagrid tooltip service', function() {
                 throw Error('Should have thrown exception, because no timeout is waiting');
             }
             //then
-            catch(error) {
+            catch (error) {
                 expect(LookupDatagridTooltipService.tooltip).toEqual({});
                 expect(LookupDatagridTooltipService.showTooltip).toBeFalsy();
             }
         }));
 
-        it('should NOT show tooltip with content that fit in the box (column 0)', inject(function($timeout, LookupDatagridTooltipService) {
+        it('should NOT show tooltip with content that fit in the box (column 0)', inject(function ($timeout, LookupDatagridTooltipService) {
             //given
             LookupDatagridTooltipService.init(gridMock);
 
@@ -155,13 +160,13 @@ describe('Lookup Datagrid tooltip service', function() {
                 throw Error('Should have thrown exception, because no timeout is waiting');
             }
             //then
-            catch(error) {
+            catch (error) {
                 expect(LookupDatagridTooltipService.tooltip).toEqual({});
                 expect(LookupDatagridTooltipService.showTooltip).toBeFalsy();
             }
         }));
 
-        it('should show trailing spaces in the tooltip (column 1)', inject(function($timeout, LookupDatagridTooltipService) {
+        it('should show trailing spaces in the tooltip (column 1)', inject(function ($timeout, LookupDatagridTooltipService) {
             //given
             LookupDatagridTooltipService.init(gridMock);
 
@@ -179,12 +184,12 @@ describe('Lookup Datagrid tooltip service', function() {
             //then
             expect(LookupDatagridTooltipService.tooltip).toEqual({
                 position: { x: 500, y: 300 },
-                htmlStr: '<span class="hiddenChars">  </span>tetetetetetetetetetetetetetetetetetetete<span class="hiddenChars"> </span>'
+                htmlStr: '<span class="hiddenChars">  </span>tetetetetetetetetetetetetetetetetetetete<span class="hiddenChars"> </span>',
             });
             expect(LookupDatagridTooltipService.showTooltip).toBeTruthy();
         }));
 
-        it('should show tooltip after a 300ms delay with long line content (column 2)', inject(function($timeout, LookupDatagridTooltipService) {
+        it('should show tooltip after a 300ms delay with long line content (column 2)', inject(function ($timeout, LookupDatagridTooltipService) {
             //given
             LookupDatagridTooltipService.init(gridMock);
 
@@ -208,12 +213,12 @@ describe('Lookup Datagrid tooltip service', function() {
             //then
             expect(LookupDatagridTooltipService.tooltip).toEqual({
                 position: { x: 500, y: 300 },
-                htmlStr: 'titititititititititititititititititi'
+                htmlStr: 'titititititititititititititititititi',
             });
             expect(LookupDatagridTooltipService.showTooltip).toBeTruthy();
         }));
 
-        it('should show tooltip after a 300ms delay with multiple line content (column 3)', inject(function($timeout, LookupDatagridTooltipService) {
+        it('should show tooltip after a 300ms delay with multiple line content (column 3)', inject(function ($timeout, LookupDatagridTooltipService) {
             //given
             LookupDatagridTooltipService.init(gridMock);
 
@@ -236,12 +241,12 @@ describe('Lookup Datagrid tooltip service', function() {
             //then
             expect(LookupDatagridTooltipService.tooltip).toEqual({
                 position: { x: 500, y: 300 },
-                htmlStr: 'toto↵\ntoto'
+                htmlStr: 'toto↵\ntoto',
             });
             expect(LookupDatagridTooltipService.showTooltip).toBeTruthy();
         }));
 
-        it('should NOT show tooltip with empty content (column 4)', inject(function($timeout, LookupDatagridTooltipService) {
+        it('should NOT show tooltip with empty content (column 4)', inject(function ($timeout, LookupDatagridTooltipService) {
             //given
             LookupDatagridTooltipService.init(gridMock);
 
@@ -266,13 +271,13 @@ describe('Lookup Datagrid tooltip service', function() {
                 throw Error('Should have thrown exception, because no timeout is waiting');
             }
             //then
-            catch(error) {
+            catch (error) {
                 expect(LookupDatagridTooltipService.tooltip).toEqual({});
                 expect(LookupDatagridTooltipService.showTooltip).toBeFalsy();
             }
         }));
 
-        it('should show tooltip after a 300ms delay with column tdpId', inject(function($timeout, LookupDatagridTooltipService) {
+        it('should show tooltip after a 300ms delay with column tdpId', inject(function ($timeout, LookupDatagridTooltipService) {
             //given
             LookupDatagridTooltipService.init(gridMock);
             var box = { left: 400, right: 500, top: 10, bottom: 40 }; //width: 100
@@ -295,14 +300,14 @@ describe('Lookup Datagrid tooltip service', function() {
             //then
             expect(LookupDatagridTooltipService.tooltip).toEqual({
                 position: { x: 500, y: 300 },
-                htmlStr: '1.6678678678686786e+40'
+                htmlStr: '1.6678678678686786e+40',
             });
             expect(LookupDatagridTooltipService.showTooltip).toBeTruthy();
         }));
     });
 
-    describe('on mouse leave', function() {
-        it('should hide tooltip after a 300ms delay', inject(function(LookupDatagridTooltipService, $timeout) {
+    describe('on mouse leave', function () {
+        it('should hide tooltip after a 300ms delay', inject(function (LookupDatagridTooltipService, $timeout) {
             //given
             LookupDatagridTooltipService.init(gridMock);
             LookupDatagridTooltipService.showTooltip = true;
@@ -321,7 +326,7 @@ describe('Lookup Datagrid tooltip service', function() {
             expect(LookupDatagridTooltipService.showTooltip).toBe(false);
         }));
 
-        it('should cancel existing update promise', inject(function(LookupDatagridTooltipService, $timeout) {
+        it('should cancel existing update promise', inject(function (LookupDatagridTooltipService, $timeout) {
             //given
             LookupDatagridTooltipService.init(gridMock);
 
@@ -341,13 +346,13 @@ describe('Lookup Datagrid tooltip service', function() {
             //when : tooltip hide
             var mouseLeaveHandler = gridMock.onMouseLeave.subscribe.calls.argsFor(0)[0];
             mouseLeaveHandler();
-            try{
+            try {
                 $timeout.flush();
                 throw Error('Should have thrown exception, because no timeout is waiting');
             }
 
             //then
-            catch(error) {
+            catch (error) {
                 expect(LookupDatagridTooltipService.tooltip).toEqual({});
                 expect(LookupDatagridTooltipService.showTooltip).toBeFalsy();
             }

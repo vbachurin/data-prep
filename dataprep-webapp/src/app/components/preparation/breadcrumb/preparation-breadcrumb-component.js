@@ -20,7 +20,7 @@ const PreparationBreadcrumbComponent = {
                     on-select="$ctrl.go(item)"
                     on-list-open="$ctrl.fetchChildren(item)"></breadcrumb>
     `,
-    controller: PreparationBreadcrumbController
+    controller: PreparationBreadcrumbController,
 };
 
 export default PreparationBreadcrumbComponent;

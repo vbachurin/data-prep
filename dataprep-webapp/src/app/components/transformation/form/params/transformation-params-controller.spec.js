@@ -24,12 +24,12 @@ describe('Transform params controller', function () {
 
         createController = function () {
             return $controller('TransformParamsCtrl', {
-                $scope: scope
+                $scope: scope,
             });
         };
     }));
 
-    it('should get the correct parameter type', function() {
+    it('should get the correct parameter type', function () {
         // given / when
         var ctrl = createController();
 

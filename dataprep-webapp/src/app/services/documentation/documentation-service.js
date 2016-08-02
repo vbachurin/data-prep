@@ -77,6 +77,7 @@ class DocumentationService {
             const value = parts[i];
             doc[name] = value;
         }
+
         doc.tooltipName = doc.name;
         return doc;
     }

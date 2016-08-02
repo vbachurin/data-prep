@@ -25,7 +25,7 @@ describe('Transform Regex param controller', function () {
 
         createController = function () {
             var ctrlFn = $controller('TransformRegexParamCtrl', {
-                $scope: scope
+                $scope: scope,
             }, true);
             ctrlFn.instance.parameter = parameter;
             return ctrlFn();

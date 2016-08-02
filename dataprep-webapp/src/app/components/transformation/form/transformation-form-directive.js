@@ -11,6 +11,8 @@
 
   ============================================================================*/
 
+import template from './transformation-form.html';
+
 /**
  * @ngdoc directive
  * @name data-prep.transformation-form.directive:TransformForm
@@ -31,15 +33,15 @@
 export default function TransformForm() {
     return {
         restrict: 'E',
-        templateUrl: 'app/components/transformation/form/transformation-form.html',
+        templateUrl: template,
         scope: {
             transformation: '=',
             onSubmit: '&',
             onSubmitHoverOn: '&',
-            onSubmitHoverOff: '&'
+            onSubmitHoverOff: '&',
         },
         bindToController: true,
         controllerAs: 'formCtrl',
-        controller: 'TransformFormCtrl'
+        controller: 'TransformFormCtrl',
     };
 }

@@ -41,9 +41,9 @@ export default function StatsDetailsCtrl(state, FilterService, StatisticsService
         const args = {
             patterns: [
                 {
-                    value: item.pattern
-                }
-            ]
+                    value: item.pattern,
+                },
+            ],
         };
         return item.pattern || keyName === FilterService.CTRL_KEY_NAME ?
             FilterService.addFilterAndDigest('matches', column.id, column.name, args, null, keyName) :
