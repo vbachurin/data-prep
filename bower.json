@@ -5,7 +5,7 @@
     "dataprep-webapp/build/vendor-*.js",
     "dataprep-webapp/build/app-*.js",
     "dataprep-webapp/build/styles/vendor-*.css",
-    "dataprep-webapp/build/styles/app-*.css"
+    "dataprep-webapp/build/styles/style-*.css"
   ],
   "dependencies": {
     "jquery": "2.1.4",
