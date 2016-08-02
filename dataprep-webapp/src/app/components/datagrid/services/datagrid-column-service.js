@@ -209,7 +209,7 @@ export default function DatagridColumnService($rootScope, $compile, $log, $trans
                     result.name = _.get(movedCol, 'tdpColMetadata.name');
                     index = 0;
                     _.forEach(newCols, (col) => {
-                        if (col.id && col.id == movedCol.id) {
+                        if (col.id && col.id === movedCol.id) {
                             result.target = originalCols[index].id;
                         }
 

@@ -11,6 +11,8 @@
 
  ============================================================================*/
 
+import _ from 'lodash';
+
 /**
  * @ngdoc service
  * @name data-prep.services.playground.service:DatagridService
@@ -105,8 +107,8 @@ export default function DatagridService(state, StateService, ConverterService, T
                     row: step.row,
                 });
                 break;
-            case DELETE:
-                var index = state.playground.grid.dataView.getIdxById(step.row.tdpId);
+            case DELETE: {
+                const index = state.playground.grid.dataView.getIdxById(step.row.tdpId);
                 state.playground.grid.dataView.deleteItem(step.row.tdpId);
                 revertInstructions.push({
                     type: INSERT,
@@ -114,14 +116,16 @@ export default function DatagridService(state, StateService, ConverterService, T
                     index,
                 });
                 break;
-            case REPLACE:
-                var originalRow = state.playground.grid.dataView.getItemById(step.row.tdpId);
+            }
+            case REPLACE: {
+                const originalRow = state.playground.grid.dataView.getItemById(step.row.tdpId);
                 state.playground.grid.dataView.updateItem(step.row.tdpId, step.row);
                 revertInstructions.push({
                     type: REPLACE,
                     row: originalRow,
                 });
                 break;
+            }
             }
         });
 
@@ -243,10 +247,10 @@ export default function DatagridService(state, StateService, ConverterService, T
         let dataIndex = 0;
         while (dataIndex < data.length && potentialColumns.length) {
             const record = data[dataIndex];
-            for (const colIndex in potentialColumns) {
-                const col = potentialColumns[colIndex];
+
+            for (const col of potentialColumns) {
                 if (record[col.id].toLowerCase().match(regexp)) {
-                    potentialColumns.splice(colIndex, 1);
+                    potentialColumns = potentialColumns.filter(nextCol => nextCol !== col);
                     results.push(col);
                 }
             }

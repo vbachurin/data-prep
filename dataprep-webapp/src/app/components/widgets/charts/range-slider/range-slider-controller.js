@@ -223,7 +223,8 @@ export default class RangeSliderCtrl {
      * @params {Object} values The new brush values
      **/
     updateBrush(values) {
-        let { min, max } = values;
+        const min = values.min;
+        let max = values.max;
         if (min === max) {
             const exp = '1e-' + (this.nbDecimals + 2);
             max = max + Number(exp);

@@ -10,7 +10,6 @@
  9 rue Pages 92150 Suresnes, France
 
  ============================================================================*/
-'use strict';
 
 const playgroundTour = [
     {

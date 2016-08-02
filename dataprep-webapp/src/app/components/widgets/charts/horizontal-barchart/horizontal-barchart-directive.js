@@ -1,18 +1,19 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
 
 import d3 from 'd3';
 import d3Tip from 'd3-tip';
+import _ from 'lodash';
 
 /**
  * @ngdoc directive
@@ -288,7 +289,12 @@ export default function HorizontalBarchart($timeout) {
                         const item = _.extend({}, d);
                         const index = _.findIndex(statData, d);
                         if (d3.event.ctrlKey || d3.event.metaKey) {
-                            _.find(selectedValues, item) ? _.remove(selectedValues, item) : selectedValues.push(item);
+                            if (_.find(selectedValues, item)) {
+                                _.remove(selectedValues, item);
+                            }
+                            else {
+                                selectedValues.push(item);
+                            }
                             scope.onCtrlClick({ item });
                         }
                         else if (d3.event.shiftKey) {
@@ -302,8 +308,14 @@ export default function HorizontalBarchart($timeout) {
                                 }
                             }
                             else {
-                                min < 0 ? (min = index) : (min = index < min ? index : min);
-                                max < 0 ? (max = index) : (max = index > max ? index : max);
+                                if (min < 0 || min > index) {
+                                    min = index;
+                                }
+
+                                if (max < 0 || max < index) {
+                                    max = index;
+                                }
+
                                 for (let i = min; i <= max; i++) {
                                     const currentItem = _.extend({}, statData[i]);
                                     if (!_.find(selectedValues, currentItem)) {

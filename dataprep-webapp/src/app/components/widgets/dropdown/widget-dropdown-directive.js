@@ -1,15 +1,15 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
 
 import template from './dropdown.html';
 
@@ -24,18 +24,18 @@ import template from './dropdown.html';
  * @restrict EA
  * @usage
  <talend-dropdown close-on-select="false" on-open="onOpen()">
-     <div class="dropdown-container">
-         <div class="dropdown-action">
-            <div class="dropdown-button">{{ column.id }}</div>
-            <div>{{ column.type }}</div>
-         </div>
-     </div>
-     <ul class="dropdown-menu">
-         <li><a href="#">Hide Column {{ column.id | uppercase }}</a></li>
-         <li class="divider"></li>
-         <li><a href="#">Split first Space</a></li>
-         <li><a href="#">Uppercase</a></li>
-     </ul>
+ <div class="dropdown-container">
+ <div class="dropdown-action">
+ <div class="dropdown-button">{{ column.id }}</div>
+ <div>{{ column.type }}</div>
+ </div>
+ </div>
+ <ul class="dropdown-menu">
+ <li><a href="#">Hide Column {{ column.id | uppercase }}</a></li>
+ <li class="divider"></li>
+ <li><a href="#">Split first Space</a></li>
+ <li><a href="#">Uppercase</a></li>
+ </ul>
  </talend-dropdown>
  * @param {boolean} closeOnSelect Default `true`. If set to false, dropdown will not close on inner item click
  * @param {function} onOpen The callback to execute on dropdown open
@@ -142,10 +142,12 @@ export default function TalendDropdown($window, $timeout) {
                         alignMenuRight(position);
                         break;
                     default:
-                        alignMenuRight(position);
-                        var menuPosition = menu[0].getBoundingClientRect();
-                        if (menuPosition.left < 0) {
-                            alignMenuLeft(position);
+                        {
+                            alignMenuRight(position);
+                            const menuPosition = menu[0].getBoundingClientRect();
+                            if (menuPosition.left < 0) {
+                                alignMenuLeft(position);
+                            }
                         }
                     }
                 }

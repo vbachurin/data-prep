@@ -120,7 +120,7 @@ export default function ImportCtrl($document,
 
         return DatasetService.create(params, importType.contentType, file)
             .progress((event) => {
-                dataset.progress = parseInt(100.0 * event.loaded / event.total);
+                dataset.progress = parseInt(100.0 * event.loaded / event.total, 10);
             })
             .then((event) => {
                 DatasetService.getDatasetById(event.data).then(UploadWorkflowService.openDataset);

@@ -11,8 +11,6 @@
 
  ============================================================================*/
 
-'use strict';
-
 const sortList = [
     { id: 'name', name: 'NAME_SORT', property: 'name' },
     { id: 'date', name: 'DATE_SORT', property: 'created' },

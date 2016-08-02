@@ -42,18 +42,15 @@ export default function TalendDatetimePicker($timeout) {
             onBlur: '&',
         },
         bindToController: true,
-        controller: () => {
-        },
-
+        controller: () => {},
         controllerAs: 'ctrl',
         link(scope, iElement, iAttrs, ctrl) {
             Date.parseDate = function (input, format) {
                 return moment(input, format).toDate();
             };
 
-            Date.prototype.dateFormat = function (format) {
-                return moment(this).format(format);
-            };
+            Date.prototype.dateFormat = // eslint-disable-line no-extend-native
+                (format) => moment(this).format(format);
 
             const format = iAttrs.format ? iAttrs.format : 'DD/MM/YYYY HH:mm:ss';
             const formatTime = iAttrs.formatTime ? iAttrs.formatTime : 'HH:mm:ss';

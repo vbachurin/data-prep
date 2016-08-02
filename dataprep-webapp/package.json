@@ -25,7 +25,7 @@
     "test:ci": "karma start karma.conf.ci.js",
     "test:auto": "karma start --auto",
 
-    "lint:es": "eslint --config .eslintrc src/app/**/*.js",
+    "lint:es": "eslint --config .eslintrc --fix src/app/**/*.js",
     "lint:sass": "sass-lint -c .sass-lint.yml 'src/app/**/*.scss' -v -q"
   },
   "dependencies": {

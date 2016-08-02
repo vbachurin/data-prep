@@ -280,8 +280,8 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
                         const pairMin = values[0];
                         const pairMax = values[1];
                         return interval.isMaxReached ?
-                            (numberValue === pairMin) || (numberValue > pairMin && numberValue <= pairMax) :
-                            (numberValue === pairMin) || (numberValue > pairMin && numberValue < pairMax);
+                        (numberValue === pairMin) || (numberValue > pairMin && numberValue <= pairMax) :
+                        (numberValue === pairMin) || (numberValue > pairMin && numberValue < pairMax);
                     })
                     .reduce((oldResult, newResult) => oldResult || newResult);
             };
@@ -506,42 +506,43 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
             };
 
             break;
-        case 'empty_records': {
+        case 'empty_records':
+            {
                 // If we want to select empty records and another filter is already applied to that column
                 // Then we need remove it before
-            const sameColExactFilter = _.find(state.playground.filter.gridFilters, { colId, type: 'exact' });
-            const sameColMatchFilter = _.find(state.playground.filter.gridFilters, {
-                colId,
-                type: 'matches',
-            });
-            if (sameColExactFilter) {
-                hasEmptyRecordsExactFilter = (
+                const sameColExactFilter = _.find(state.playground.filter.gridFilters, { colId, type: 'exact' });
+                const sameColMatchFilter = _.find(state.playground.filter.gridFilters, {
+                    colId,
+                    type: 'matches',
+                });
+                if (sameColExactFilter) {
+                    hasEmptyRecordsExactFilter = (
                         sameColExactFilter.args
                         && sameColExactFilter.args.phrase.length === 1
                         && sameColExactFilter.args.phrase[0].value === ''
                     );
-                removeFilter(sameColExactFilter);
-            }
-            else if (sameColMatchFilter) {
-                hasEmptyRecordsMatchFilter = (
+                    removeFilter(sameColExactFilter);
+                }
+                else if (sameColMatchFilter) {
+                    hasEmptyRecordsMatchFilter = (
                         sameColMatchFilter.args &&
                         sameColMatchFilter.args.patterns.length === 1 &&
                         sameColMatchFilter.args.patterns[0].value === ''
                     );
-                removeFilter(sameColMatchFilter);
+                    removeFilter(sameColMatchFilter);
+                }
+
+                createFilter = function createFilter() {
+                    filterFn = createEmptyFilterFn(colId);
+                    return FilterAdapterService.createFilter(type, colId, colName, false, args, filterFn, removeFilterFn);
+                };
+
+                filterExists = function filterExists() {
+                    return sameColAndTypeFilter || hasEmptyRecordsExactFilter || hasEmptyRecordsMatchFilter;
+                };
+
+                break;
             }
-
-            createFilter = function createFilter() {
-                filterFn = createEmptyFilterFn(colId);
-                return FilterAdapterService.createFilter(type, colId, colName, false, args, filterFn, removeFilterFn);
-            };
-
-            filterExists = function filterExists() {
-                return sameColAndTypeFilter || hasEmptyRecordsExactFilter || hasEmptyRecordsMatchFilter;
-            };
-
-            break;
-        }
 
         case 'valid_records':
             createFilter = function createFilter() {
@@ -667,7 +668,6 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
      */
     function updateFilter(oldFilter, newValue, keyName) {
         let newFilterFn;
-        let newFilter;
         let newArgs;
         let editableFilter;
 
@@ -705,56 +705,58 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
             newFilterFn = createExactFilterFn(oldFilter.colId, newComputedValue, oldFilter.args.caseSensitive);
             editableFilter = true;
             break;
-        case 'inside_range': {
-            let newComputedArgs;
-            let newComputedRange;
-            if (addFromToCriteria) {
+        case 'inside_range':
+            {
+                let newComputedArgs;
+                let newComputedRange;
+                if (addFromToCriteria) {
                     // Need to pass complete old filter there in order to stock its direction
-                newComputedArgs = computeFromToRange(oldFilter, newValue);
-                newComputedRange = newComputedArgs.intervals;
-            }
-            else if (addOrCriteria) {
-                newComputedRange = computeOr(oldFilter.args.intervals, newValue);
-            }
+                    newComputedArgs = computeFromToRange(oldFilter, newValue);
+                    newComputedRange = newComputedArgs.intervals;
+                }
+                else if (addOrCriteria) {
+                    newComputedRange = computeOr(oldFilter.args.intervals, newValue);
+                }
                 else {
-                newComputedRange = newValue;
-            }
+                    newComputedRange = newValue;
+                }
 
-            if (newComputedArgs) {
-                newArgs = newComputedArgs;
-            }
-            else {
-                newArgs = {
-                    intervals: newComputedRange,
-                    type: oldFilter.args.type,
-                };
-            }
+                if (newComputedArgs) {
+                    newArgs = newComputedArgs;
+                }
+                else {
+                    newArgs = {
+                        intervals: newComputedRange,
+                        type: oldFilter.args.type,
+                    };
+                }
 
-            editableFilter = false;
-            newFilterFn = newArgs.type === 'date' ?
+                editableFilter = false;
+                newFilterFn = newArgs.type === 'date' ?
                     createDateRangeFilterFn(oldFilter.colId, newComputedRange) :
                     createRangeFilterFn(oldFilter.colId, newComputedRange);
-            break;
-        }
-
-        case 'matches': {
-            let newComputedPattern;
-            if (addOrCriteria) {
-                newComputedPattern = computeOr(oldFilter.args.patterns, newValue);
-            }
-            else {
-                newComputedPattern = newValue;
+                break;
             }
 
-            newArgs = {
-                patterns: newComputedPattern,
-            };
-            newFilterFn = createMatchFilterFn(oldFilter.colId, newComputedPattern);
-            editableFilter = false;
-            break;
+        case 'matches':
+            {
+                let newComputedPattern;
+                if (addOrCriteria) {
+                    newComputedPattern = computeOr(oldFilter.args.patterns, newValue);
+                }
+                else {
+                    newComputedPattern = newValue;
+                }
+
+                newArgs = {
+                    patterns: newComputedPattern,
+                };
+                newFilterFn = createMatchFilterFn(oldFilter.colId, newComputedPattern);
+                editableFilter = false;
+                break;
+            }
         }
-        }
-        newFilter = FilterAdapterService.createFilter(oldFilter.type, oldFilter.colId, oldFilter.colName, editableFilter, newArgs, newFilterFn, oldFilter.removeFilterFn);
+        const newFilter = FilterAdapterService.createFilter(oldFilter.type, oldFilter.colId, oldFilter.colName, editableFilter, newArgs, newFilterFn, oldFilter.removeFilterFn);
 
         StateService.updateGridFilter(oldFilter, newFilter);
         StatisticsService.updateFilteredStatistics();
@@ -792,7 +794,14 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
     function findMinInterval(intervals) {
         return intervals
             .map(interval => interval)
-            .reduce((oldV, newV) => (oldV.value[0] > newV.value[0]) ? newV : oldV);
+            .reduce((oldV, newV) => {
+                if (oldV.value[0] > newV.value[0]) {
+                    return newV;
+                }
+                else {
+                    return oldV;
+                }
+            });
     }
 
     /**
@@ -804,7 +813,14 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
     function findMaxInterval(intervals) {
         return intervals
             .map(interval => interval)
-            .reduce((oldInterval, newInterval) => (oldInterval.value[1] < newInterval.value[1]) ? newInterval : oldInterval);
+            .reduce((oldInterval, newInterval) => {
+                if (oldInterval.value[1] < newInterval.value[1]) {
+                    return newInterval;
+                }
+                else {
+                    return oldInterval;
+                }
+            });
     }
 
     /**
@@ -819,7 +835,7 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
         const oldFilterArgs = oldFilter.args;
         const oldIntervals = oldFilterArgs.intervals;
         const oldDirection = oldFilterArgs.direction || 1;
-        newValue.map(newInterval => {
+        newValue.forEach(newInterval => {
             // Identify min and max old interval
             const oldMinInterval = findMinInterval(oldIntervals);
             const oldMaxInterval = findMaxInterval(oldIntervals);

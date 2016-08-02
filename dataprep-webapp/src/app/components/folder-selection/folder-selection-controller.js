@@ -72,8 +72,7 @@ class FolderSelectionCtrl {
         }
 
         if (node.children.length) {
-            for (const childKey in node.children) {
-                const child = node.children[childKey];
+            for (const child of node.children) {
                 const pathToFolder = this._locate(accu, child, predicate);
                 if (pathToFolder) {
                     return nextAccu.concat(pathToFolder);
@@ -89,8 +88,7 @@ class FolderSelectionCtrl {
         }
 
         if (node.children.length) {
-            for (const childKey in node.children) {
-                const child = node.children[childKey];
+            for (const child of node.children) {
                 nextAccu = this._search(nextAccu, child, name);
             }
         }

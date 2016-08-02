@@ -13,7 +13,7 @@
 
 class PreparationCreatorCtrl {
     constructor(state, $document, $state, $translate, RestURLs,
-        PreparationService, DatasetService, UploadWorkflowService) {
+                PreparationService, DatasetService, UploadWorkflowService) {
         'ngInject';
 
         this.$translate = $translate;
@@ -117,7 +117,7 @@ class PreparationCreatorCtrl {
         this.uploadingDatasets.push(dataset);
         this.datasetService.create(params, 'text/plain', file)
             .progress((event) => {
-                dataset.progress = parseInt(100.0 * event.loaded / event.total);
+                dataset.progress = parseInt(100.0 * event.loaded / event.total, 10);
             })
             .then((event) => {
                 this.whileImport = false;
@@ -147,8 +147,8 @@ class PreparationCreatorCtrl {
      */
     _getUniquePrepName(index = 0) {
         const suffix = index === 0 ?
-            ' ' + this.preparationSuffix :
-            ' ' + this.preparationSuffix + ' (' + index + ')';
+        ' ' + this.preparationSuffix :
+        ' ' + this.preparationSuffix + ' (' + index + ')';
         this.enteredName = this.baseDataset.name + suffix;
         const existingName = _.some(
             this.state.inventory.folder.content.preparations,
@@ -187,7 +187,7 @@ class PreparationCreatorCtrl {
                     this.baseDataset.id,
                     this.enteredName,
                     this.state.inventory.folder.metadata.id
-            )
+                )
                 .then((newPreparation) => {
                     this.showAddPrepModal = false;
                     this.$state.go('playground.preparation', { prepid: newPreparation.id });
@@ -220,7 +220,9 @@ class PreparationCreatorCtrl {
      * @description generates a unique preparation name
      */
     applyNameFilter() {
-        this.lastFilterValue && this.loadDatasets(this.lastFilterValue);
+        if (this.lastFilterValue) {
+            this.loadDatasets(this.lastFilterValue);
+        }
     }
 
     /**

@@ -11,8 +11,6 @@
 
  ============================================================================*/
 
-'use strict';
-
 const preparationTour = [
     {
         element: '#nav_home_preparations',

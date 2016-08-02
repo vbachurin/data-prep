@@ -13,8 +13,6 @@
 
 import template from './modal.html';
 
-'use strict';
-
 /**
  * @ngdoc property
  * @name shownModalsInnerElements
