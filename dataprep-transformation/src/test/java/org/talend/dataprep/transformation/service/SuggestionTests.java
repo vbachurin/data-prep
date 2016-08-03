@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.talend.dataprep.transformation.Application;
 
 import com.jayway.restassured.path.json.JsonPath;
+import org.talend.dataprep.transformation.actions.category.ActionScope;
 
 /**
  * Integration tests on suggestions.

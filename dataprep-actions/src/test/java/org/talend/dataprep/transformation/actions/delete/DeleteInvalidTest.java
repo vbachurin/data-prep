@@ -13,7 +13,6 @@
 
 package org.talend.dataprep.transformation.actions.delete;
 
-import static com.google.common.collect.Sets.newHashSet;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.junit.Assert.*;
 import static org.talend.dataprep.transformation.actions.ActionMetadataTestUtils.getColumn;

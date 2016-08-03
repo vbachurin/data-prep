@@ -64,7 +64,7 @@ public class ChangeDatePatternTest extends BaseDateTests {
         List<Parameter> parameters = action.getParameters();
         assertThat(parameters.size(), is(6));
         Parameter parameter = parameters.get(5);
-        assertEquals("", parameter.getLabel());
+        assertEquals("New Format", parameter.getLabel());
     }
 
     @Test

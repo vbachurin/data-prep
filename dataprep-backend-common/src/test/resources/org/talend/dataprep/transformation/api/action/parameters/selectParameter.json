@@ -12,10 +12,10 @@
       },
       {
         "value": "2",
-        "label": "2"
+        "label": "two"
       },
       {
-        "value": "your choice",
+        "value": "your_choice",
         "label": "your choice",
         "parameters": [
           {
