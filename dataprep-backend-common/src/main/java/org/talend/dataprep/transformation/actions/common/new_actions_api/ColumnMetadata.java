@@ -49,11 +49,6 @@ public class ColumnMetadata {
 
     public ColumnMetadata() {}
 
-    private ColumnMetadata(String name, Type type) {
-        this.name = name;
-        this.type = type;
-    }
-
     public Quality getQuality() {
         return quality;
     }
@@ -108,5 +103,11 @@ public class ColumnMetadata {
 
     public void setTypeForced(boolean typeForced) {
         this.typeForced = typeForced;
+    }
+
+    ColumnMetadata fromInternal(org.talend.dataprep.api.dataset.ColumnMetadata internal) {
+        ColumnMetadata columnMetadata = new ColumnMetadata();
+        // TODO
+        return columnMetadata;
     }
 }

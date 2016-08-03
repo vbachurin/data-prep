@@ -7,9 +7,6 @@ package org.talend.dataprep.transformation.actions.common;
  */
 public final class SuggestionLevel {
 
-    private SuggestionLevel() {
-    }
-
     public static final int LOW = 10;
 
     public static final int MEDIUM = 20;
@@ -23,5 +20,8 @@ public final class SuggestionLevel {
     public static final int NEGATIVE = -1;
 
     public static final int NON_APPLICABLE = 0;
+
+    private SuggestionLevel() {
+    }
 
 }

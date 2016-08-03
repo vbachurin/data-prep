@@ -1,10 +1,9 @@
 package org.talend.dataprep.transformation.actions.common.new_actions_api;
 
-import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.parameters.Parameter;
+import org.talend.dataprep.transformation.actions.category.ActionScope;
 import org.talend.dataprep.transformation.actions.category.ScopeCategory;
 import org.talend.dataprep.transformation.actions.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -28,16 +27,18 @@ public interface ActionMetdatadaV2 {
     // The dataset metadata and context holding focus information. Should be enough
     // This one is used in JSon serialization... Not really changeable...
 
+    /** ActionScope serve to place the action in contextual menu. **/
+    List<ActionScope> getScopes();
+
+    /** Get the scope of this action => does it needs selection parameters to work (present in context). **/
+    ScopeCategory getCategoryScope();
+
     /**
      * We may have to use more specific objects to pass here and at least immutable data types.
      *
-     * @param dataSetMetadata needed to use dataset information as column names or data type as default values
-     * @param context         needed to have user selection-related information as selected cell, row or column data.
+     * @param context needed to have user selection-related information as selected cell, row or column data.
      */
-    List<Parameter> getParameters(DataSetMetadata dataSetMetadata, ActionContext context);
-
-    /** We may remove this method as it can be deduced from the parameters. **/
-    Collection<ScopeCategory> getScopes();
+    List<Parameter> getParameters(ActionContext context);
 
     // LIFECYCLE METHODS
 
@@ -45,7 +46,7 @@ public interface ActionMetdatadaV2 {
      * Called just before the first line is coming. To prepare the Action.
      * It can be used to modify the dataset metadata.
      **/
-    void compile(DataSetMetadata metadata, ActionContext context);
+    void compile(ActionContext context);
 
     /**
      * This should allow iteration only on row that pass this filter.

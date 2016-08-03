@@ -67,4 +67,8 @@ public class ActionContext {
     public Predicate<DataSetRow> getFilter() {
         return filter;
     }
+
+    static ActionContext fromInternal(org.talend.dataprep.transformation.api.action.context.ActionContext internal) {
+        // TODO
+    }
 }
