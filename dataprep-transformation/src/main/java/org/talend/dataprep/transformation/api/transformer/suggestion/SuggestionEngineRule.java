@@ -19,6 +19,6 @@ import org.talend.dataprep.transformation.actions.common.SuggestionLevel;
 
 import java.util.function.BiFunction;
 
-public interface SuggestionEngineRule extends BiFunction<ActionMetadata, ColumnMetadata, SuggestionLevel> {
+public interface SuggestionEngineRule extends BiFunction<ActionMetadata, ColumnMetadata, Integer> {
 
 }

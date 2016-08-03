@@ -18,7 +18,6 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.transformation.actions.common.ActionMetadata;
-import org.talend.dataprep.transformation.actions.common.SuggestionLevel;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -44,15 +43,14 @@ public class SimpleSuggestionEngine implements SuggestionEngine {
                 .map(actionMetadata -> {
                     int score = 0;
                     for (SuggestionEngineRule rule : rules) {
-                        score += getSuggestionLevelScore(rule.apply(actionMetadata, column));
+                        Integer level = rule.apply(actionMetadata, column);
+                        if (level != null) {
+                            score += level;
+                        }
                     }
                     return new Suggestion(actionMetadata, score);
                 }) //
                 .sorted((s1, s2) -> Integer.compare(s2.getScore(), s1.getScore())).collect(Collectors.toList());
-    }
-
-    private static int getSuggestionLevelScore(SuggestionLevel level) {
-        return level == null ? 0 : level.getScore();
     }
 
     @Override

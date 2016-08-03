@@ -114,7 +114,7 @@ public class StringRules {
      * @param columnMetadata the column metadata to analyze.
      * @return the score for case actions.
      */
-    private static SuggestionLevel computeScoreForProperCaseAction(ColumnMetadata columnMetadata) {
+    private static Integer computeScoreForProperCaseAction(ColumnMetadata columnMetadata) {
         final List<PatternFrequency> patterns = columnMetadata.getStatistics().getPatternFrequencies();
         for (PatternFrequency pattern : patterns) {
             final String patternAsString = pattern.getPattern();
