@@ -21,7 +21,6 @@ import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.i18n.AbstractBundle;
 import org.talend.dataprep.i18n.DataprepBundle;
 import org.talend.dataprep.parameters.Parameter;
-import org.talend.dataprep.transformation.actions.category.ActionScope;
 import org.talend.dataprep.transformation.actions.category.ScopeCategory;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
@@ -105,7 +104,7 @@ public abstract class AbstractActionMetadata implements ActionMetadata {
      * Default implementation that returns the {@link Collections#emptyList() emptyList()}.
      */
     @Override
-    public List<ActionScope> getActionScope() {
+    public List<String> getActionScope() {
         return Collections.emptyList();
     }
 

@@ -56,7 +56,6 @@ public class FillInvalid extends AbstractFillWith implements ColumnAction {
         return FILL_INVALID_ACTION_NAME;
     }
 
-    // TODO all four messages are the same
     @Override
     public String getDescription() {
         if (Type.BOOLEAN.isAssignableFrom(type)) {
@@ -70,7 +69,6 @@ public class FillInvalid extends AbstractFillWith implements ColumnAction {
         }
     }
 
-    // TODO all four messages are the same
     @Override
     public String getLabel() {
         if (Type.BOOLEAN.isAssignableFrom(type)) {

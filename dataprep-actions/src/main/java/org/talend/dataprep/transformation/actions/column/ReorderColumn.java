@@ -32,10 +32,7 @@ import org.talend.dataprep.transformation.actions.common.*;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.talend.dataprep.transformation.actions.common.ActionMetadata.Behavior.VALUES_COLUMN;
 
@@ -79,6 +76,14 @@ public class ReorderColumn extends AbstractActionMetadata implements DataSetActi
         return parameters;
     }
 
+    @Override
+    public List<String> getActionScope() {
+        return Collections.emptyList();
+    }
+
+    /**
+     * @see ActionMetadata#acceptColumn(ColumnMetadata)
+     */
     @Override
     public boolean acceptColumn(ColumnMetadata column) {
         // accept all types of columns

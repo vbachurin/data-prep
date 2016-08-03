@@ -25,7 +25,6 @@ import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataprep.parameters.SelectParameter;
 import org.talend.dataprep.transformation.actions.category.ActionCategory;
-import org.talend.dataprep.transformation.actions.category.ActionScope;
 import org.talend.dataprep.transformation.actions.common.*;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
@@ -96,8 +95,8 @@ public class CreateNewColumn extends AbstractActionMetadata implements ColumnAct
      * @see ActionMetadata#getActionScope()
      */
     @Override
-    public List<ActionScope> getActionScope() {
-        return Collections.singletonList(COLUMN_METADATA);
+    public List<String> getActionScope() {
+        return Collections.singletonList(COLUMN_METADATA.getDisplayName());
     }
 
     /**

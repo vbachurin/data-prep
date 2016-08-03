@@ -23,7 +23,6 @@ import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataprep.transformation.actions.category.ActionCategory;
-import org.talend.dataprep.transformation.actions.category.ActionScope;
 import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ColumnAction;
@@ -98,8 +97,8 @@ public class Rename extends AbstractActionMetadata implements ColumnAction {
      * @see ActionMetadata#getActionScope()
      */
     @Override
-    public List<ActionScope> getActionScope() {
-        return Collections.singletonList(COLUMN_METADATA);
+    public List<String> getActionScope() {
+        return Collections.singletonList(COLUMN_METADATA.getDisplayName());
     }
 
     /**

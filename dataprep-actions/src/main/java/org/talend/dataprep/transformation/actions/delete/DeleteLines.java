@@ -52,8 +52,15 @@ public class DeleteLines extends AbstractActionMetadata implements ColumnAction 
     }
 
     @Override
+    public boolean implicitFilter() {
+        return false;
+    }
+
+    @Override
     public void applyOnColumn(DataSetRow row, ActionContext context) {
-        row.setDeleted(true);
+        if (context.getFilter().test(row)) {
+            row.setDeleted(true);
+        }
     }
 
     @Override

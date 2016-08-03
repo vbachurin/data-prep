@@ -145,7 +145,7 @@ public interface ActionMetadata {
      * @return list of scopes of this action
      * @see ActionScope
      */
-    List<ActionScope> getActionScope();
+    List<String> getActionScope();
 
     /**
      * TODO: a correct description.
