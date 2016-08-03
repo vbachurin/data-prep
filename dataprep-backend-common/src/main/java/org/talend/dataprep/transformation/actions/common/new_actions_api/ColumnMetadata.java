@@ -47,20 +47,9 @@ public class ColumnMetadata {
     /** if the type has been changed/forced manually by the user */
     private boolean typeForced;
 
-    /**
-     * Default empty constructor.
-     */
-    public ColumnMetadata() {
-        // no op
-    }
+    public ColumnMetadata() {}
 
-    /**
-     * Create a column metadata from the given parameters.
-     *
-     * @param name the column name.
-     * @param typeName the column type.
-     */
-    private ColumnMetadata(String name, Type typeName) {
+    private ColumnMetadata(String name, Type type) {
         this.name = name;
         this.type = type;
     }
