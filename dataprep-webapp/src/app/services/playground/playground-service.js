@@ -31,9 +31,9 @@
  * @requires data-prep.services.export.service:ExportService
  */
 export default function PlaygroundService($state, $rootScope, $q, $translate, $timeout,
-                                          state, StateService,
+                                          state, StateService, StepUtilsService,
                                           DatasetService, DatagridService,
-                                          PreparationService, PreviewService,
+                                          FilterAdapterService, PreparationService, PreviewService,
                                           RecipeService, TransformationCacheService,
                                           StatisticsService, HistoryService,
                                           OnboardingService, MessageService, ExportService) {
