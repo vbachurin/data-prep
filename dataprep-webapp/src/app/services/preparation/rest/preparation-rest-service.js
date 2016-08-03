@@ -98,7 +98,7 @@ export default function PreparationRestService($http, RestURLs) {
             },
         };
 
-        return $http(request);
+        return $http(request).then((resp) => resp.data);
     }
 
     /**
