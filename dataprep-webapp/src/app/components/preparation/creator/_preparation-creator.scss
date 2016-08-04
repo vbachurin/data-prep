@@ -11,6 +11,11 @@
 
   ============================================================================*/
 
+.dataset-upload-list {
+    max-height: 90px;
+    overflow-y: auto;
+}
+
 .preparation-creator-header {
     @include display(flex);
     @include flex-direction(row);
@@ -50,7 +55,7 @@
     }
 
     .inventory-list {
-        height: 45vh;
+        height: 40vh;
         overflow-y: auto;
 
         .inventory-item-row {
