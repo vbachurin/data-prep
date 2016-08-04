@@ -1,4 +1,4 @@
-FROM google/nodejs
+FROM node:5.12.0
 
 #update the apt-get packages
 RUN apt-get update
@@ -7,10 +7,6 @@ RUN apt-get update
 RUN apt-get -y install locales
 RUN locale-gen en_US.UTF-8
 ENV LANG en_US.UTF-8
-
-#update node
-RUN npm install -g n
-RUN n v5.11.0
 
 #config npm
 COPY ./.npmrc /root/.npmrc
