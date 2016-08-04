@@ -245,6 +245,7 @@
 
   "_comment": "Recipe",
   "FILTERS_APPLIED": "Filters applied",
+  "ENABLE_DISABLE_STEPS": "Enable or Disable all steps",
 
   "_comment": "Search",
   "SEARCH": "Search Talend Data Preparation and Documentation",

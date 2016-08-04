@@ -33,7 +33,9 @@
                          side="left">
             <!-- Recipe Header -->
             <div class="steps-header">
-                <label class="label-switch" ng-if="playgroundCtrl.state.playground.recipe.current.steps.length">
+                <label class="label-switch"
+                       ng-if="playgroundCtrl.state.playground.recipe.current.steps.length"
+                       title="{{::'ENABLE_DISABLE_STEPS' | translate}}">
                     <input type="checkbox"
                            ng-model='playgroundCtrl.hasActiveStep'
                            ng-change='playgroundCtrl.toggleRecipe()'/>
