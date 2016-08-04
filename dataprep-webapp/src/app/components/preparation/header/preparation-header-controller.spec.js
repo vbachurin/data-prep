@@ -229,20 +229,18 @@ describe('Preparation Header controller', () => {
             expect(FolderService.create).toHaveBeenCalledWith('L215L2ZvbGRlcg==', 'toto');
         }));
 
-        it('should go to new folder', inject(($q, $state, FolderService, StateService) => {
+        it('should refresh folder content', inject(($q, FolderService) => {
             //given
             const ctrl = createController();
-            spyOn(FolderService, 'create').and.returnValue($q.when({ data: { id: '123456' } }));
-            spyOn(StateService, 'setPreviousRoute').and.returnValue($q.when());
-            spyOn($state, 'go');
+            spyOn(FolderService, 'create').and.returnValue($q.when());
+            spyOn(FolderService, 'refresh').and.returnValue($q.when());
 
             //when
             ctrl.createFolder('toto');
             scope.$digest();
 
             //then
-            expect(StateService.setPreviousRoute).toHaveBeenCalledWith('nav.index.preparations', { folderId: 'L215L2ZvbGRlcg==' });
-            expect($state.go).toHaveBeenCalledWith('nav.index.preparations', { folderId: '123456' });
+            expect(FolderService.refresh).toHaveBeenCalledWith('L215L2ZvbGRlcg==');
         }));
     });
 });
