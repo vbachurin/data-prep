@@ -1,39 +1,19 @@
-FROM neo9polska/nodejs-bower-gulp
+FROM google/nodejs
 
 #update the apt-get packages
 RUN apt-get update
-
 
 #fix locales to be UTF-8
 RUN apt-get -y install locales
 RUN locale-gen en_US.UTF-8
 ENV LANG en_US.UTF-8
 
-#install ruby
-RUN apt-get -y install ruby1.9.1
-
-# install unzip
-RUN apt-get install unzip
-
-#install gem
-RUN wget http://production.cf.rubygems.org/rubygems/rubygems-2.4.6.zip
-RUN unzip rubygems-2.4.6.zip -d gem
-RUN cd gem/rubygems-2.4.6 && ruby setup.rb
-
-#install saas
-RUN gem install sass
-
-#install fontconfig to fix some phantom test engine issue
-#https://github.com/karma-runner/karma-phantomjs-launcher/issues/31#issuecomment-60698359
-RUN apt-get -y install libfontconfig
-
 #update node
 RUN npm install -g n
 RUN n v5.11.0
-RUN npm rebuild node-sass
 
-#update bower
-RUN npm update -g bower
+#config npm
+COPY ./.npmrc /root/.npmrc
 
 # add jenkins user (needs to match the <docker.user> value passed to the jenkins job)
 RUN adduser --disabled-password --uid=498 --gecos '' jenkins
@@ -41,7 +21,6 @@ RUN adduser --disabled-password --uid=498 --gecos '' jenkins
 # add dev user for tests default value in pom.xml
 RUN adduser --disabled-password --uid=1000 --gecos '' dp_dev
 
-
-WORKDIR /dataprep-webapp
+WORKDIR /data-prep
 
 CMD ["bash"]
