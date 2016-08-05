@@ -82,7 +82,7 @@ export default class PreparationHeaderCtrl {
         const currentFolderId = this.state.inventory.folder.metadata.id;
         return this.FolderService.create(currentFolderId, folderName)
             .then(() => {
-                this.FolderService.refresh(this.state.inventory.folder.metadata.id)
+                this.FolderService.refresh(this.state.inventory.folder.metadata.id);
             });
     }
 }
