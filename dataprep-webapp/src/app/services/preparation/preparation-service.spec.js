@@ -46,6 +46,10 @@ describe('Preparation Service', () => {
         spyOn(StorageService, 'moveAggregations').and.returnValue();
     }));
 
+    afterEach(inject((StateService) => {
+        StateService.resetRoute();
+    }));
+
     describe('lifecycle', () => {
         describe('create', () => {
             beforeEach(inject((StateService) => {
@@ -158,7 +162,6 @@ describe('Preparation Service', () => {
             it('should open a preparation in the current tab', inject(($stateParams, $rootScope, $state, StateService, PreparationService) => {
                 //given
                 spyOn($state, 'go').and.returnValue();
-                spyOn(StateService, 'setPreviousRoute').and.returnValue();
 
                 const preparation = {
                     id: 'de618c62ef97b3a95b5c171bc077ffe22e1d6f79',
@@ -171,79 +174,7 @@ describe('Preparation Service', () => {
                 PreparationService.open(preparation);
 
                 //then
-                expect($state.go).toHaveBeenCalledWith('playground.preparation', { prepid: preparation.id });
-                expect(StateService.setPreviousRoute).toHaveBeenCalledWith('nav.index.preparations', { folderId: 'test/' });
-            }));
-
-            it('should open a preparation in a new tab on scroll click', inject(($stateParams, $rootScope, $state, $window, StateService, PreparationService) => {
-                //given
-                const event = {
-                    which: 2,
-                };
-                spyOn($state, 'go').and.returnValue();
-                spyOn($window, 'open').and.returnValue();
-                spyOn(StateService, 'setPreviousRoute').and.returnValue();
-                const preparation = {
-                    id: 'de618c62ef97b3a95b5c171bc077ffe22e1d6f79',
-                    dataSetId: 'dacd45cf-5bd0-4768-a9b7-f6c199581efc',
-                    author: 'anonymousUser',
-                };
-
-                //when
-                PreparationService.open(preparation, event);
-
-                //then
-                expect($state.go).not.toHaveBeenCalled();
-                expect($state.href).toHaveBeenCalledWith('playground.preparation', { prepid: preparation.id }, { absolute: true });
-                expect($window.open).toHaveBeenCalledWith('absoluetUrl', '_blank');
-            }));
-
-            it('should open a preparation in a new tab on ctrl + click combination', inject(($stateParams, $rootScope, $state, $window, StateService, PreparationService) => {
-                //given
-                const event = {
-                    which: 1,
-                    ctrlKey: true,
-                };
-                spyOn($state, 'go').and.returnValue();
-                spyOn($window, 'open').and.returnValue();
-                spyOn(StateService, 'setPreviousRoute').and.returnValue();
-                const preparation = {
-                    id: 'de618c62ef97b3a95b5c171bc077ffe22e1d6f79',
-                    dataSetId: 'dacd45cf-5bd0-4768-a9b7-f6c199581efc',
-                    author: 'anonymousUser',
-                };
-
-                //when
-                PreparationService.open(preparation, event);
-
-                //then
-                expect($state.go).not.toHaveBeenCalled();
-                expect($state.href).toHaveBeenCalledWith('playground.preparation', { prepid: preparation.id }, { absolute: true });
-                expect($window.open).toHaveBeenCalledWith('absoluetUrl', '_blank');
-            }));
-
-            it('should open a preparation in a new tab on metakey + click combination', inject(($stateParams, $rootScope, $state, $window, StateService, PreparationService) => {
-                //given
-                const event = {
-                    which: 1,
-                    metaKey: true,
-                };
-                spyOn($state, 'go').and.returnValue();
-                spyOn($window, 'open').and.returnValue();
-                spyOn(StateService, 'setPreviousRoute').and.returnValue();
-                const preparation = {
-                    id: 'de618c62ef97b3a95b5c171bc077ffe22e1d6f79',
-                    dataSetId: 'dacd45cf-5bd0-4768-a9b7-f6c199581efc',
-                    author: 'anonymousUser',
-                };
-
-                //when
-                PreparationService.open(preparation, event);
-
-                //then
-                expect($state.go).not.toHaveBeenCalled();
-                expect($state.href).toHaveBeenCalledWith('playground.preparation', { prepid: preparation.id }, { absolute: true });
-                expect($window.open).toHaveBeenCalledWith('absoluetUrl', '_blank');
+                expect($state.go).toHaveBeenCalledWith('playground.preparation', {prepid: preparation.id});
             }));
         });
     });
