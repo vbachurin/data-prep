@@ -11,7 +11,9 @@
 
  ============================================================================*/
 
-describe('Datasets filters component', () => {
+import angular from 'angular';
+
+describe('Preparation creator component', () => {
     let scope;
     let createElement;
     let element;
@@ -30,10 +32,10 @@ describe('Datasets filters component', () => {
 
     beforeEach(inject(($rootScope, $compile, $q, DatasetService) => {
         scope = $rootScope.$new();
-        scope.showAddPrepModal = true;
+        scope.onCreation = jasmine.createSpy('onCreation');
 
         createElement = () => {
-            element = angular.element(`<preparation-creator show-add-prep-modal="showAddPrepModal"></preparation-creator>`);
+            element = angular.element(`<preparation-creator on-creation="onCreation()"></preparation-creator>`);
 
             $compile(element)(scope);
             scope.$digest();
@@ -41,7 +43,7 @@ describe('Datasets filters component', () => {
             controller = element.controller('preparationCreator');
         };
 
-        spyOn(DatasetService, 'loadFilteredDatasets').and.returnValue($q.when([
+        spyOn(DatasetService, 'getFilteredDatasets').and.returnValue($q.when([
             {
                 id: '12c32-bf80-41c8-92e5-66d70f22ec1f',
                 name: 'US States',
@@ -70,7 +72,7 @@ describe('Datasets filters component', () => {
             expect(element.find('.preparation-creator-header').length).toBe(1);
             expect(element.find('.filters-left-panel').length).toBe(1);
             expect(element.find('.import-button-panel').length).toBe(1);
-            expect(element.find('.dataset-filter-title').length).toBe(3);
+            expect(element.find('.theme-filter-title').length).toBe(3);
             expect(element.find('.inventory-list').length).toBe(2);
             expect(element.find('form').length).toBe(1);
             expect(element.find('.modal-buttons').length).toBe(1);
@@ -89,7 +91,7 @@ describe('Datasets filters component', () => {
             it('should disable header input while import', () => {
                 //when
                 createElement();
-                controller.whileImport = true;
+                controller.importDisabled = true;
                 scope.$digest();
 
                 //then
@@ -103,7 +105,7 @@ describe('Datasets filters component', () => {
                 createElement();
 
                 //then
-                expect(element.find('datasets-filters').length).toBe(1);
+                expect(element.find('theme-filters').length).toBe(1);
                 expect(element.find('#localFileImport').length).toBe(1);
                 expect(element.find('.import-button-panel').length).toBe(1);
             });
@@ -122,7 +124,7 @@ describe('Datasets filters component', () => {
             it('should disable all left panel while import', () => {
                 //when
                 createElement();
-                controller.whileImport = true;
+                controller.importDisabled = true;
                 expect(element.find('.filters-left-panel').hasClass('disabled-import')).toBe(false);
                 scope.$digest();
 
@@ -176,7 +178,7 @@ describe('Datasets filters component', () => {
             it('should disable right panel while import', () => {
                 //when
                 createElement();
-                controller.whileImport = true;
+                controller.importDisabled = true;
                 expect(element.find('.inventory-list').hasClass('disabled-import')).toBe(false);
                 scope.$digest();
 
@@ -232,7 +234,7 @@ describe('Datasets filters component', () => {
             it('should disable form input while import', () => {
                 //when
                 createElement();
-                controller.whileImport = true;
+                controller.importDisabled = true;
                 scope.$digest();
 
                 //then
@@ -262,7 +264,7 @@ describe('Datasets filters component', () => {
             it('should disable cancel while import', () => {
                 //when
                 createElement();
-                controller.whileImport = true;
+                controller.importDisabled = true;
                 scope.$digest();
 
                 //then
