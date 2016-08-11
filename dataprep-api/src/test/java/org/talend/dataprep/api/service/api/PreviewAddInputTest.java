@@ -14,6 +14,7 @@
 package org.talend.dataprep.api.service.api;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
@@ -86,7 +87,7 @@ public class PreviewAddInputTest {
         // given parameters without preparation not dataset id
         PreviewAddParameters input = new PreviewAddParameters();
         input.setDatasetId("dataset#19843");
-        input.setAction(new Action());
+        input.setActions(Collections.singletonList(new Action()));
         input.setTdpIds(Arrays.asList(1, 3));
 
         // when

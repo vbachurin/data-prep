@@ -3,9 +3,7 @@
     {
       "action": "uppercase",
       "parameters": {
-        "column_id": "0002",
-        "column_name": "avgAmount",
-        "scope": "column"
+        "column_id": "0001"
       }
     }
   ]

@@ -1,19 +1,26 @@
 {
-  "insertionStepId": "a41184275b046d86c8d98d413ed019bc0a7f3c49",
   "actions": [
     {
       "action": "uppercase",
       "parameters": {
+        "column_id": "0002",
         "column_name": "lastname",
-        "column_id": "0001",
         "scope": "column"
       }
     },
     {
-      "action": "lowercase",
+      "action": "copy",
       "parameters": {
+        "column_id": "0002",
+        "column_name": "lastname",
+        "scope": "column"
+      }
+    },
+    {
+      "action": "copy",
+      "parameters": {
+        "column_id": "0001",
         "column_name": "firstname",
-        "column_id": "0000",
         "scope": "column"
       }
     }

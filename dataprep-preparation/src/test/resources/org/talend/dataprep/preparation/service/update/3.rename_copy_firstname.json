@@ -1,4 +1,4 @@
-{
+[{
   "actions": [
     {
       "action": "rename_column",
@@ -13,4 +13,4 @@
   "diff": {
     "createdColumns": []
   }
-}
+}]

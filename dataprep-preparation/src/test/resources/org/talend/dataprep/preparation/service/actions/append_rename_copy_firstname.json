@@ -1,15 +1,16 @@
-{
+[{
   "actions": [
     {
-      "action": "copy",
+      "action": "rename_column",
       "parameters": {
         "column_name": "firstname",
-        "column_id": "0000",
+        "column_id": "0007",
+        "value": "toto_firstname",
         "scope": "column"
       }
     }
   ],
   "diff": {
-    "createdColumns": ["0007"]
+    "createdColumns": []
   }
-}
+}]

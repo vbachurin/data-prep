@@ -84,8 +84,8 @@ public class OptimizedExportStrategyTest extends TransformationServiceBaseTests 
     public void testAcceptKO_noMetadataCache() throws Exception {
         // Given
         final String preparation = createEmptyPreparationFromDataset("1234", "test");
-        applyAction(preparation, "{}");
-        applyAction(preparation, "{}");
+        applyAction(preparation, "[{}]");
+        applyAction(preparation, "[{}]");
 
         ExportParameters exportParameters = new ExportParameters();
         exportParameters.setPreparationId(preparation);
@@ -98,8 +98,8 @@ public class OptimizedExportStrategyTest extends TransformationServiceBaseTests 
     public void testAcceptKO_withMetadataCacheNoContentCache() throws Exception {
         // Given
         final String preparation = createEmptyPreparationFromDataset("1234", "test");
-        applyAction(preparation, "{}");
-        applyAction(preparation, "{}");
+        applyAction(preparation, "[{}]");
+        applyAction(preparation, "[{}]");
 
         final Preparation preparationDetails = getPreparation(preparation);
         for (String step : preparationDetails.getSteps()) {
@@ -122,8 +122,8 @@ public class OptimizedExportStrategyTest extends TransformationServiceBaseTests 
         final String datasetId = "1234";
         final String format = "";
         final String preparation = createEmptyPreparationFromDataset(datasetId, "test");
-        applyAction(preparation, "{}");
-        applyAction(preparation, "{}");
+        applyAction(preparation, "[{}]");
+        applyAction(preparation, "[{}]");
 
         final Preparation preparationDetails = getPreparation(preparation);
         for (String step : preparationDetails.getSteps()) {
@@ -152,8 +152,8 @@ public class OptimizedExportStrategyTest extends TransformationServiceBaseTests 
         final String datasetId = "1234";
         final String format = "JSON";
         final String preparation = createEmptyPreparationFromDataset(datasetId, "test");
-        applyAction(preparation, "{}");
-        applyAction(preparation, "{}");
+        applyAction(preparation, "[{}]");
+        applyAction(preparation, "[{}]");
 
         final Preparation preparationDetails = getPreparation(preparation);
         for (String step : preparationDetails.getSteps()) {

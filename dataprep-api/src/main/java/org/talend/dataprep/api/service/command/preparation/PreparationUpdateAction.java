@@ -20,7 +20,9 @@ import static org.talend.dataprep.command.Defaults.asNull;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.InputStreamEntity;
@@ -58,11 +60,13 @@ public class PreparationUpdateAction extends ChainedCommand<Void, InputStream> {
 
     private HttpRequestBase onExecute(String preparationId, String stepId, AppendStep updatedStep) {
         try {
-            final StepDiff diff = objectMapper.readValue(getInput(), StepDiff.class);
-            updatedStep.setDiff(diff);
             final String url = preparationServiceUrl + "/preparations/" + preparationId + "/actions/" + stepId;
-            final HttpPut actionAppend = new HttpPut(url);
+
+            final List<StepDiff> diff = objectMapper.readValue(getInput(), new TypeReference<List<StepDiff>>(){});
+            updatedStep.setDiff(diff.get(0));
             final String stepAsString = objectMapper.writeValueAsString(updatedStep);
+
+            final HttpPut actionAppend = new HttpPut(url);
             final InputStream stepInputStream = new ByteArrayInputStream(stepAsString.getBytes());
 
             actionAppend.setHeader(new BasicHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE));
