@@ -11,23 +11,18 @@
     "clean": "npm run clean:build && npm run clean:coverage",
     "clean:build": "rimraf ./build",
     "clean:coverage": "rimraf ./coverage",
-
     "build": "webpack --config config/webpack.config.dev.js --progress --profile --color --display-error-details --display-cached",
     "prebuild": "npm run clean:build",
     "build:dist": "webpack --config config/webpack.config.prod.js --progress --profile --color --display-error-details --display-cached",
     "prebuild:dist": "npm run clean:build",
-
     "start": "npm run serve",
     "serve": "webpack-dev-server --config config/webpack.config.dev.js --progress --colors --open",
     "serve:dist": "webpack-dev-server --config config/webpack.config.prod.js --progress --colors --open --compress",
-
     "test": "karma start",
     "test:ci": "karma start karma.conf.ci.js",
     "test:auto": "karma start --auto",
-
     "lint:es": "eslint --config .eslintrc --fix src/app",
     "lint:sass": "sass-lint -c .sass-lint.yml 'src/app/**/*.scss' -v -q",
-
     "stats": "webpack --config config/webpack.config.dev.js --profile -j > stats.json"
   },
   "dependencies": {
@@ -49,6 +44,7 @@
     "intro.js": "^1.1.1",
     "jquery": "2.1.4",
     "jquery-datetimepicker": "github:xdan/datetimepicker",
+    "jquery-ui": "1.10.x",
     "lodash": "^3.9.3",
     "modernizr": "^3.3.1",
     "moment": "^2.13.0",
