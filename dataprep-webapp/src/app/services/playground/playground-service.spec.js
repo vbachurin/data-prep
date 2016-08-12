@@ -53,7 +53,7 @@ describe('Playground Service', () => {
 
     beforeEach(inject(($q, $state, StateService, DatasetService, RecipeService, DatagridService,
                        PreparationService, TransformationCacheService,
-                       HistoryService, PreviewService, ExportService) => {
+                       HistoryService, PreviewService) => {
         stateMock.playground.preparationName = '';
         createdPreparation = {
             id: '32cd7869f8426465e164ab85',
@@ -84,7 +84,6 @@ describe('Playground Service', () => {
         spyOn(StateService, 'showRecipe').and.returnValue();
         spyOn(StateService, 'hideRecipe').and.returnValue();
         spyOn(TransformationCacheService, 'invalidateCache').and.returnValue();
-        spyOn(ExportService, 'reset').and.returnValue();
     }));
 
     describe('update preparation', () => {
@@ -168,7 +167,7 @@ describe('Playground Service', () => {
 
         beforeEach(inject(($rootScope, TransformationCacheService,
                            HistoryService,
-                           PreviewService, StateService, ExportService) => {
+                           PreviewService, StateService) => {
             spyOn($rootScope, '$emit').and.returnValue();
             assertNewPreparationInitialization = () => {
                 expect(StateService.resetPlayground).toHaveBeenCalled();
@@ -177,7 +176,6 @@ describe('Playground Service', () => {
                 expect(TransformationCacheService.invalidateCache).toHaveBeenCalled();
                 expect(HistoryService.clear).toHaveBeenCalled();
                 expect(PreviewService.reset).toHaveBeenCalledWith(false);
-                expect(ExportService.reset).toHaveBeenCalled();
             };
         }));
 
@@ -1416,7 +1414,7 @@ describe('Playground Service', () => {
         let assertNewPlaygroundIsInitWith;
         let assertPreparationStepIsLoadedWith;
 
-        beforeEach(inject((StateService, TransformationCacheService, HistoryService, PreviewService, ExportService, DatagridService) => {
+        beforeEach(inject((StateService, TransformationCacheService, HistoryService, PreviewService, DatagridService) => {
             assertNewPlaygroundIsInitWith = (dataset) => {
                 expect(StateService.resetPlayground).toHaveBeenCalled();
                 expect(StateService.setCurrentDataset).toHaveBeenCalledWith(dataset);
@@ -1424,7 +1422,6 @@ describe('Playground Service', () => {
                 expect(TransformationCacheService.invalidateCache).toHaveBeenCalled();
                 expect(HistoryService.clear).toHaveBeenCalled();
                 expect(PreviewService.reset).toHaveBeenCalledWith(false);
-                expect(ExportService.reset).toHaveBeenCalled();
             };
 
             assertPreparationStepIsLoadedWith = (dataset, data, step) => {

@@ -11,33 +11,25 @@
 
  ============================================================================*/
 
+import { find } from 'lodash';
+
 /**
  * @ngdoc service
  * @name data-prep.services.export.service:ExportService
  * @description Export service. This service provide the entry point to the backend export REST api.
  * @requires data-prep.services.export.service:ExportRestService
  * @requires data-prep.services.parameters.service:ParametersService
+ * @requires data-prep.services.utils.service:StorageService
  */
 export default class ExportService {
-    constructor(state, StateService, ExportRestService, ParametersService) {
+    constructor(state, StateService, ExportRestService, ParametersService, StorageService) {
         'ngInject';
 
+        this.StorageService = StorageService;
         this.StateService = StateService;
         this.ExportRestService = ExportRestService;
         this.ParametersService = ParametersService;
         this.state = state;
-    }
-
-    /**
-     * @ngdoc method
-     * @name reset
-     * @methodOf data-prep.services.export.service:ExportService
-     * @description Reset the export types parameters
-     */
-    reset() {
-        _.forEach(this.state.export.exportTypes, (type) => {
-            this.ParametersService.resetParamValue(type.parameters);
-        });
     }
 
     /**
@@ -53,13 +45,14 @@ export default class ExportService {
 
     /**
      * @ngdoc method
-     * @name saveDefaultExport
+     * @name setExportParams
      * @methodOf data-prep.services.export.service:ExportService
-     * @description Save the default export in state
+     * @param {Object} params The export params
+     * @description Set the export parameters in app state and storage
      */
-    _saveDefaultExport() {
-        const exportType = _.find(this.state.export.exportTypes, { defaultExport: 'true' }) || this.state.export.exportTypes[0];
-        this.StateService.setDefaultExportType({ exportType: exportType.id });
+    setExportParams(params) {
+        this.StorageService.saveExportParams(params);
+        this.StateService.setDefaultExportType(params);
     }
 
     /**
@@ -71,8 +64,16 @@ export default class ExportService {
     refreshTypes() {
         return this.ExportRestService.exportTypes()
             .then((exportTypes) => {
+                let defaultExportParams = this.StorageService.getExportParams();
+
+                if (!defaultExportParams) {
+                    const exportType = find(exportTypes, { defaultExport: 'true' });
+                    defaultExportParams = { exportType: exportType.id };
+                    this.StorageService.saveExportParams(defaultExportParams);
+                }
+
                 this.StateService.setExportTypes(exportTypes);
-                this._saveDefaultExport();
+                this.StateService.setDefaultExportType(defaultExportParams);
             });
     }
 }

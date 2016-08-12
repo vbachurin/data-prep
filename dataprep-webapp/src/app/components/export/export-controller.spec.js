@@ -102,7 +102,7 @@ describe('Export controller', () => {
 
         stateMock = {
             playground: {
-                preparation: {name: 'prepname'},
+                preparation: { name: 'prepname' },
                 recipe: {
                     current: {
                         steps: [],
@@ -123,7 +123,7 @@ describe('Export controller', () => {
         RestURLs.setServerUrl('');
     }));
 
-    beforeEach(inject(($rootScope, $controller, ExportService, StateService) => {
+    beforeEach(inject(($rootScope, $controller, ExportService) => {
         form = {
             submit: () => {
             },
@@ -131,13 +131,12 @@ describe('Export controller', () => {
         scope = $rootScope.$new();
 
         createController = () => {
-            const ctrl = $controller('ExportCtrl', {$scope: scope});
+            const ctrl = $controller('ExportCtrl', { $scope: scope });
             ctrl.form = form; //simulate init by directive
             return ctrl;
         };
 
         spyOn(form, 'submit').and.returnValue();
-        spyOn(StateService, 'setDefaultExportType').and.returnValue();
         spyOn(ExportService, 'getType').and.returnValue();
     }));
 
@@ -165,14 +164,14 @@ describe('Export controller', () => {
             const ctrl = createController();
             const csvType = exportTypes[0];
 
-            expect(ctrl.nextSelectedType).not.toBe(csvType);
+            expect(ctrl.selectedType).not.toBe(csvType);
 
             //when
             ctrl.selectType(csvType);
 
             //then
-            expect(ctrl.nextSelectedType).toBe(csvType);
-            expect(ctrl.nextSelectedType.parameters[1].value).toBe('prepname');
+            expect(ctrl.selectedType).toBe(csvType);
+            expect(ctrl.selectedType.parameters[1].value).toBe('prepname');
         });
 
         it('should show modal', () => {
@@ -194,7 +193,7 @@ describe('Export controller', () => {
         it('should set action in form', inject((RestURLs, $timeout) => {
             //given
             const ctrl = createController();
-            ctrl.nextSelectedType = exportTypes[0];
+            ctrl.selectedType = exportTypes[0];
 
             expect(form.action).toBeFalsy();
 
@@ -209,7 +208,7 @@ describe('Export controller', () => {
         it('should submit form', inject(($timeout) => {
             //given
             const ctrl = createController();
-            ctrl.nextSelectedType = exportTypes[0];
+            ctrl.selectedType = exportTypes[0];
 
             //when
             ctrl.saveAndExport();
@@ -222,8 +221,8 @@ describe('Export controller', () => {
         it('should extract selected parameters', () => {
             //given
             const ctrl = createController();
-            ctrl.nextSelectedType = exportTypes[0];
-            ctrl.nextSelectedType.parameters[1].value = 'my prep';
+            ctrl.selectedType = exportTypes[0];
+            ctrl.selectedType.parameters[1].value = 'my prep';
 
             //when
             ctrl.saveAndExport();
@@ -236,16 +235,21 @@ describe('Export controller', () => {
             });
         });
 
-        it('should save selected parameters', inject((StateService) => {
+        it('should save selected parameters', inject((ExportService) => {
             //given
             const ctrl = createController();
-            ctrl.nextSelectedType = exportTypes[0];
+            ctrl.selectedType = exportTypes[0];
+            spyOn(ExportService, 'setExportParams').and.returnValue();
 
             //when
             ctrl.saveAndExport();
 
             //then
-            expect(StateService.setDefaultExportType).toHaveBeenCalledWith({exportType: exportTypes[0].id});
+            expect(ExportService.setExportParams).toHaveBeenCalledWith({
+                exportType: exportTypes[0].id,
+                'exportParameters.csvSeparator': ';',
+                'exportParameters.fileName': ''
+            });
         }));
     });
 
@@ -293,18 +297,6 @@ describe('Export controller', () => {
                 'exportParameters.fileName': 'prepname'
             });
         });
-
-        it('should not save selected parameters', inject((StateService) => {
-            //given
-            const ctrl = createController();
-            ctrl.selectedType = exportTypes[0];
-
-            //when
-            ctrl.launchDefaultExport();
-
-            //then
-            expect(StateService.setDefaultExportType).not.toHaveBeenCalled();
-        }));
     });
 
     describe('launchExport', () => {

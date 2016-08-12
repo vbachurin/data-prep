@@ -28,7 +28,6 @@
  * @requires data-prep.services.onboarding.service:OnboardingService
  * @requires data-prep.services.utils.service:MessageService
  * @requires data-prep.services.utils.service:StepUtilsService
- * @requires data-prep.services.export.service:ExportService
  */
 export default function PlaygroundService($state, $rootScope, $q, $translate, $timeout,
                                           state, StateService, StepUtilsService,
@@ -36,7 +35,7 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
                                           FilterAdapterService, PreparationService, PreviewService,
                                           RecipeService, TransformationCacheService,
                                           StatisticsService, HistoryService,
-                                          OnboardingService, MessageService, ExportService) {
+                                          OnboardingService, MessageService) {
     'ngInject';
 
     const INVENTORY_SUFFIX = ' ' + $translate.instant('PREPARATION');
@@ -84,7 +83,6 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
         TransformationCacheService.invalidateCache();
         HistoryService.clear();
         PreviewService.reset(false);
-        ExportService.reset();
     }
 
     /**

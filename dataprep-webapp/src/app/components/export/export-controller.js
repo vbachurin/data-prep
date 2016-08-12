@@ -11,6 +11,8 @@
 
  ============================================================================*/
 
+import { chain } from 'lodash';
+
 /**
  * @ngdoc controller
  * @name data-prep.export.controller:ExportCtrl
@@ -19,16 +21,17 @@
  * @requires data-prep.services.utils.service:RestURLs
  * @requires data-prep.services.recipe.service:RecipeService
  * @requires data-prep.services.export.service:ExportService
+ * @requires data-prep.services.utils.service:StorageService
  */
 export default class ExportCtrl {
-    constructor($timeout, state, StateService, RestURLs, StepUtilsService, ExportService) {
+    constructor($timeout, state, RestURLs, StepUtilsService, ExportService, StorageService) {
         'ngInject';
 
         this.$timeout = $timeout;
         this.state = state;
-        this.StateService = StateService;
         this.RestURLs = RestURLs;
         this.ExportService = ExportService;
+        this.StorageService = StorageService;
         this.StepUtilsService = StepUtilsService;
 
         this.exportParams = this.state.export.defaultExportType;
@@ -44,7 +47,7 @@ export default class ExportCtrl {
      */
     selectType(type) {
         this._initExportParameters(type);
-        this.nextSelectedType = type;
+        this.selectedType = type;
         this.showModal = true;
     }
 
@@ -55,8 +58,8 @@ export default class ExportCtrl {
      * @description Init parameters and display the params modal
      */
     saveAndExport() {
-        this.selectedType = this.nextSelectedType;
-        this.StateService.setDefaultExportType({ exportType: this.selectedType.id });
+        const params = this._extractParameters(this.selectedType);
+        this.ExportService.setExportParams(params);
         this.launchExport();
     }
 
@@ -94,7 +97,7 @@ export default class ExportCtrl {
      * @description Change the fileName of the type parameters to fit the current prep/dataset
      */
     _initExportParameters(exportType) {
-        _.chain(exportType.parameters)
+        chain(exportType.parameters)
             .filter({ name: 'fileName' })
             .forEach((param) => {
                 param.value = this.state.playground.preparation ?
@@ -113,7 +116,7 @@ export default class ExportCtrl {
      */
     _extractParameters(exportType) {
         const parameters = { exportType: exportType.id };
-        _.forEach(exportType.parameters, (param) => {
+        exportType.parameters.forEach((param) => {
             parameters['exportParameters.' + param.name] = param.value ? param.value : param.default;
         });
 

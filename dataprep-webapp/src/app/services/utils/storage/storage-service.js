@@ -20,6 +20,7 @@ const DATASETS_ORDER_KEY = 'org.talend.dataprep.datasets.order';
 const PREPARATIONS_SORT_KEY = 'org.talend.dataprep.preparations.sort';
 const PREPARATIONS_ORDER_KEY = 'org.talend.dataprep.preparations.order';
 const FEEDBACK_USER_MAIL_KEY = 'org.talend.dataprep.feedback_user_mail';
+const EXPORT_PARAMS_KEY = 'org.talend.dataprep.export.params';
 
 /**
  * @ngdoc service
@@ -99,6 +100,31 @@ export default class StorageService {
      */
     getFeedbackUserMail() {
         return this.getItem(FEEDBACK_USER_MAIL_KEY, '');
+    }
+
+    // --------------------------------------------------------------------------------------------
+    // ------------------------------------------Export--------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    /**
+     * @ngdoc method
+     * @name saveExportParams
+     * @methodOf data-prep.services.utils.service:StorageService
+     * @param {any} value The value to save
+     * @description Save the value with the provided key in localStorage. The value us stringified to get back the same type.
+     */
+    saveExportParams(value) {
+        this.setItem(EXPORT_PARAMS_KEY, value);
+    }
+
+    /**
+     * @ngdoc method
+     * @name getExportParams
+     * @methodOf data-prep.services.utils.service:StorageService
+     * @description Get the value associated to the provided key. The result have the same type as the saved value.
+     * @returns {object} The value associated to the provided key.
+     */
+    getExportParams() {
+        return this.getItem(EXPORT_PARAMS_KEY);
     }
 
     // --------------------------------------------------------------------------------------------

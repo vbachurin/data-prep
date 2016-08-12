@@ -208,7 +208,7 @@ describe('Export directive', () => {
 
             //then
             expect(stateMock.export.exportTypes[0].parameters[1].value).toBe('cars_prep');
-            expect(ctrl.nextSelectedType).toBe(exportTypes[0]);
+            expect(ctrl.selectedType).toBe(exportTypes[0]);
             expect(ctrl.showModal).toBe(true);
         });
     });
