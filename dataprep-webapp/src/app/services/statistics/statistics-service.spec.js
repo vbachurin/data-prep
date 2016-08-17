@@ -672,6 +672,7 @@ describe('Statistics service', () => {
     };
 
     let stateMock;
+    let originalJasmineTimeout;
 
     beforeEach(angular.mock.module('data-prep.services.statistics', ($provide) => {
         stateMock = {
@@ -686,6 +687,9 @@ describe('Statistics service', () => {
     }));
 
     beforeEach(inject(($q, StateService) => {
+        originalJasmineTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
+
         spyOn(StateService, 'setStatisticsHistogramActiveLimits').and.returnValue();
         spyOn(StateService, 'setStatisticsPatterns').and.returnValue();
         spyOn(StateService, 'setStatisticsFilteredPatterns').and.returnValue();
@@ -697,6 +701,10 @@ describe('Statistics service', () => {
             stateMock.playground.statistics.details = details;
         });
     }));
+
+    afterEach(() => {
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = originalJasmineTimeout;
+    });
 
     describe('filters', () => {
 
