@@ -21,7 +21,7 @@
  * @requires data-prep.services.export.service:ExportService
  */
 export default class ExportCtrl {
-    constructor($timeout, state, StateService, RestURLs, StepUtilsService, ExportService) {
+    constructor($timeout, state, StateService, RestURLs, StepUtilsService, ExportService, MessageService) {
         'ngInject';
 
         this.$timeout = $timeout;
@@ -30,6 +30,7 @@ export default class ExportCtrl {
         this.RestURLs = RestURLs;
         this.ExportService = ExportService;
         this.StepUtilsService = StepUtilsService;
+        this.MessageService = MessageService;
 
         this.exportParams = this.state.export.defaultExportType;
         this.selectedType = ExportService.getType(this.exportParams.exportType);

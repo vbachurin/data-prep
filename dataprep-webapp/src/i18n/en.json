@@ -202,6 +202,8 @@
   "DATASET_CURRENTLY_RENAMING": "You just tried to rename this dataset, wait a few seconds for the confirmation message to perform this new rename operation.",
 
   "_comment": "Errors",
+  "EXPORT_FAILURE_Title": "Export failure",
+  "EXPORT_FAILURE": "Sorry an unexpected error occurred while export, but you can keep using Data Preparation.",
   "INVALID_DATASET_TITLE": "Invalid dataset",
   "INVALID_DATASET": "This dataset is not valid. Please import a correct CSV file to overwrite the data.",
   "PLAYGROUND_FILE_NOT_FOUND_TITLE": "{{type}} load error",
