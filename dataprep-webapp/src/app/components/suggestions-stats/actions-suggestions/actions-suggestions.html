@@ -39,7 +39,7 @@
 
     <sc-tabs ng-if="!actionsSuggestionsCtrl.state.playground.suggestions.isLoading"
              class="actions-scope"
-             selected-tab="actionsSuggestionsCtrl.suggestionService.tab">
+             selected-tab="actionsSuggestionsCtrl.state.playground.suggestions.tab">
         <sc-tabs-item tab-title="Text">
             <div class="action-suggestion-tab-items watermark" translate-once="NO_FUNCTION"></div>
         </sc-tabs-item>
@@ -69,7 +69,7 @@
                        translate-once-placeholder="FIND_FUNCTION"
                        ng-model="actionsSuggestionsCtrl.state.playground.suggestions.column.searchActionString"
                        ng-model-options="{debounce: { default: 300, blur: 0 }}"
-                       ng-change="actionsSuggestionsCtrl.columnSuggestionService.filterTransformations()"
+                       ng-change="actionsSuggestionsCtrl.TransformationService.filter('column', actionsSuggestionsCtrl.state.playground.suggestions.column.searchActionString)"
                        talend-search-input>
 
                 <actions-list class="action-suggestion-tab-items"

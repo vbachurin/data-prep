@@ -88,10 +88,10 @@ export function PlaygroundStateService(RecipeStateService, recipeState,
         enableFilters,
         disableFilters,
 
-        // suggestion
-        setColumnTransformations: SuggestionsStateService.setColumnTransformations,
-        setLineTransformations: SuggestionsStateService.setLineTransformations,
-        setSuggestionsLoading: SuggestionsStateService.setLoading,
+        // actions
+        selectTransformationsTab: SuggestionsStateService.selectTab,
+        setTransformations: SuggestionsStateService.setTransformations,
+        setTransformationsLoading: SuggestionsStateService.setLoading,
         setTransformationsForEmptyCells: SuggestionsStateService.setTransformationsForEmptyCells,
         setTransformationsForInvalidCells: SuggestionsStateService.setTransformationsForInvalidCells,
         updateFilteredTransformations: SuggestionsStateService.updateFilteredTransformations,

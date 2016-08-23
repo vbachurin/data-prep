@@ -11,19 +11,17 @@
 
   ============================================================================*/
 
-describe('Suggestions stats directive', function () {
-    'use strict';
-
-    var scope;
-    var createElement;
-    var element;
+describe('Action list directive', () => {
+    let scope;
+    let createElement;
+    let element;
 
     beforeEach(angular.mock.module('ngSanitize'));
     beforeEach(angular.mock.module('data-prep.actions-list'));
 
-    beforeEach(inject(function ($rootScope, $compile) {
+    beforeEach(inject(($rootScope, $compile) => {
         scope = $rootScope.$new();
-        createElement = function () {
+        createElement = () => {
             element = angular.element('<actions-list ' +
                 'actions="actions" ' +
                 'should-render-action="shouldRenderAction" ' +
@@ -34,18 +32,18 @@ describe('Suggestions stats directive', function () {
         };
     }));
 
-    afterEach(function () {
+    afterEach(() => {
         scope.$destroy();
         element.remove();
     });
 
-    describe('render', function () {
-        beforeEach(function () {
+    describe('render', () => {
+        beforeEach(() => {
             scope.shouldRenderAction = jasmine.createSpy('shouldRenderAction').and.returnValue(true);
             scope.shouldRenderCategory = jasmine.createSpy('shouldRenderCategory').and.returnValue(true);
         });
 
-        it('should render categories', inject(function () {
+        it('should render categories', inject(() => {
             //given
             scope.actions = [
                 {
@@ -77,7 +75,7 @@ describe('Suggestions stats directive', function () {
             expect(element.find('.actions-group').length).toBe(1);
         }));
 
-        it('should render actions', inject(function () {
+        it('should render actions', inject(() => {
             //given
             scope.actions = [
                 {
@@ -112,13 +110,11 @@ describe('Suggestions stats directive', function () {
         }));
     });
 
-    describe('filter', function () {
-        it('category', inject(function () {
+    describe('filter', () => {
+        it('category', inject(() => {
             //given
             scope.shouldRenderAction = jasmine.createSpy('shouldRenderAction').and.returnValue(true);
-            scope.shouldRenderCategory = function (cat) {
-                return cat.category !== 'cat1';
-            };
+            scope.shouldRenderCategory = (cat) => cat.category !== 'cat1';
 
             scope.actions = [
                 {
@@ -153,12 +149,10 @@ describe('Suggestions stats directive', function () {
             expect(element.find('.actions-group .trigger').eq(2).text().trim()).toBe('action 5');
         }));
 
-        it('actions', inject(function () {
+        it('actions', inject(() => {
             //given
             scope.shouldRenderCategory = jasmine.createSpy('shouldRenderCategory').and.returnValue(true);
-            scope.shouldRenderAction = function (action) {
-                return action.name !== '2';
-            };
+            scope.shouldRenderAction = (category, action) => action.name !== '2';
 
             scope.actions = [
                 {

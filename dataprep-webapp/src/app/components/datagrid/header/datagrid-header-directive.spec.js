@@ -83,10 +83,10 @@ describe('Datagrid header directive', () => {
         expect(element.find('.grid-header-type').text()).toBe('text');
     });
 
-    it('should close dropdown on get transform list error', inject(($timeout, $q, TransformationCacheService) => {
+    it('should close dropdown on get transform list error', inject(($timeout, $q, TransformationService) => {
         //given
         createElement();
-        spyOn(TransformationCacheService, 'getColumnTransformations').and.returnValue($q.when({}));
+        spyOn(TransformationService, 'getTransformations').and.returnValue($q.when({}));
         element.find('.grid-header-caret').click();
         const dropdown = element.find('sc-dropdown').eq(0);
         expect(dropdown.hasClass('show')).toBe(true);
@@ -254,10 +254,10 @@ describe('Datagrid header directive', () => {
         expect(element.find('.dropdown-menu').hasClass('show-menu')).toBeFalsy();
     });
 
-    it('should show menu on right click on grid-header if menu is hidden', inject(($q, TransformationCacheService) => {
+    it('should show menu on right click on grid-header if menu is hidden', inject(($q, TransformationService) => {
         //given
         createElement();
-        spyOn(TransformationCacheService, 'getColumnTransformations').and.returnValue($q.when({}));
+        spyOn(TransformationService, 'getTransformations').and.returnValue($q.when({}));
         expect(element.find('sc-dropdown').hasClass('show')).toBeFalsy();
 
         //when

@@ -97,10 +97,10 @@ export function StateService(RouteStateService, routeState,
         enableFilters: PlaygroundStateService.enableFilters,
         disableFilters: PlaygroundStateService.disableFilters,
 
-        // playground - Suggestions
-        setColumnTransformations: PlaygroundStateService.setColumnTransformations,
-        setLineTransformations: PlaygroundStateService.setLineTransformations,
-        setSuggestionsLoading: PlaygroundStateService.setSuggestionsLoading,
+        // playground - Actions
+        selectTransformationsTab: PlaygroundStateService.selectTransformationsTab,
+        setTransformations: PlaygroundStateService.setTransformations,
+        setTransformationsLoading: PlaygroundStateService.setTransformationsLoading,
         setTransformationsForEmptyCells: PlaygroundStateService.setTransformationsForEmptyCells,
         setTransformationsForInvalidCells: PlaygroundStateService.setTransformationsForInvalidCells,
         updateFilteredTransformations: PlaygroundStateService.updateFilteredTransformations,

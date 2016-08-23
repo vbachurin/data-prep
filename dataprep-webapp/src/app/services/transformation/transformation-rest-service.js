@@ -11,6 +11,10 @@
 
   ============================================================================*/
 
+const LINE = 'line';
+const COLUMN = 'column';
+const DATASET = 'dataset';
+
 /**
  * @ngdoc service
  * @name data-prep.services.transformation.service:TransformationRestService
@@ -18,16 +22,12 @@
  * <b style="color: red;">WARNING : do NOT use this service directly.
  * {@link data-prep.services.transformation.service:TransformationService TransformationService} must be the only entry point for transformation</b>
  */
-export default function TransformationRestService($http, RestURLs) {
-    'ngInject';
-
-    return {
-        getDatasetTransformations,
-        getDynamicParameters,
-        getColumnSuggestions,
-        getColumnTransformations,
-        getLineTransformations,
-    };
+export default class TransformationRestService {
+    constructor($http, RestURLs) {
+        'ngInject';
+        this.$http = $http;
+        this.RestURLs = RestURLs;
+    }
 
     /**
      * @ngdoc method
@@ -37,45 +37,44 @@ export default function TransformationRestService($http, RestURLs) {
      * @param {string} datasetId The dataset id
      * @returns {Promise} The GET promise
      */
-    function getDatasetTransformations(datasetId) {
-        return $http.get(RestURLs.datasetUrl + '/' + datasetId + '/actions');
+    getDatasetTransformations(datasetId) {
+        return this.$http.get(`${this.RestURLs.datasetUrl}/${datasetId}/actions`);
     }
 
     /**
      * @ngdoc method
-     * @name getColumnTransformations
+     * @name getTransformations
      * @methodOf data-prep.services.transformation.service:TransformationRestService
-     * @param {object} column The column metadata
-     * @description Fetch the transformations on a column
-     * @returns {Promise} The POST promise
+     * @param {string} scope The transformations scope
+     * @param {object} entity The transformations target entity
+     * @description Fetch the transformations
+     * @returns {Promise} The promise
      */
-    function getColumnTransformations(column) {
-        return $http.post(RestURLs.transformUrl + '/actions/column', column);
-    }
-
-    /**
-     * @ngdoc method
-     * @name getLineTransformations
-     * @methodOf data-prep.services.transformation.service:TransformationRestService
-     * @description Fetch the transformations on a line
-     * @returns {Promise} The GET promise
-     */
-    function getLineTransformations() {
-        return $http.get(RestURLs.transformUrl + '/actions/line');
+    getTransformations(scope, entity) {
+        switch (scope) {
+        case LINE:
+        case DATASET:
+            return this.$http.get(`${this.RestURLs.transformUrl}/actions/${scope}`)
+                .then((response) => response.data);
+        case COLUMN:
+            return this.$http.post(`${this.RestURLs.transformUrl}/actions/${scope}`, entity)
+                .then((response) => response.data);
+        }
     }
 
     /**
      * @ngdoc method
      * @name getSuggestions
      * @methodOf data-prep.services.transformation.service:TransformationRestService
-     * @param {string} column The column metadata
+     * @param {string} scope The suggestions scope
+     * @param {object} entity The suggestions target entity
      * @description Fetch the suggestions on a column
-     * @returns {Promise} The POST promise
+     * @returns {Promise} The promise
      */
-    function getColumnSuggestions(column) {
-        return $http.post(RestURLs.transformUrl + '/suggest/column', column);
+    getSuggestions(scope, entity) {
+        return this.$http.post(`${this.RestURLs.transformUrl}/suggest/${scope}`, entity)
+            .then((response) => response.data);
     }
-
 
     /**
      * @ngdoc method
@@ -89,11 +88,13 @@ export default function TransformationRestService($http, RestURLs) {
      * @description Fetch the transformations dynamic params
      * @returns {Promise} The GET promise
      */
-    function getDynamicParameters(action, columnId, datasetId, preparationId, stepId) {
-        let queryParams = preparationId ? '?preparationId=' + encodeURIComponent(preparationId) : '?datasetId=' + encodeURIComponent(datasetId);
+    getDynamicParameters(action, columnId, datasetId, preparationId, stepId) {
+        let queryParams = preparationId ? 'preparationId=' + encodeURIComponent(preparationId) : 'datasetId=' + encodeURIComponent(datasetId);
         queryParams += stepId ? '&stepId=' + encodeURIComponent(stepId) : '';
         queryParams += '&columnId=' + encodeURIComponent(columnId);
 
-        return $http.get(RestURLs.transformUrl + '/suggest/' + action + '/params' + queryParams);
+        return this.$http
+            .get(`${this.RestURLs.transformUrl}/suggest/${action}/params?${queryParams}`)
+            .then((response) => response.data);
     }
 }
