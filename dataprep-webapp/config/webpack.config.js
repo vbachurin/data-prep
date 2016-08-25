@@ -54,7 +54,7 @@ function getDefaultConfig(options) {
 function addDevServerConfig(config) {
     config.devServer = {
         port: appConf.port,
-        host: '0.0.0.0',
+        host: appConf.host,
         watchOptions: {
             aggregateTimeout: 300,
             poll: 1000
