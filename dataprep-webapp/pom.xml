@@ -326,8 +326,8 @@
                             <dockerDirectory>${basedir}/docker</dockerDirectory>
                             <resources>
                                 <resource>
-                                    <targetPath>/dist</targetPath>
-                                    <directory>${basedir}/dist</directory>
+                                    <targetPath>/build</targetPath>
+                                    <directory>${basedir}/build</directory>
                                     <include>**/*</include>
                                 </resource>
                             </resources>
@@ -346,3 +346,4 @@
         </profile>
     </profiles>
 </project>
+
