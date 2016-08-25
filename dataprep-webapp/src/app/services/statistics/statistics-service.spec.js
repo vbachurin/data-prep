@@ -12,8 +12,6 @@
  ============================================================================*/
 
 describe('Statistics service', () => {
-    'use strict';
-
     const barChartNumCol = {
         domain: 'barchartAndNumeric',
         type: 'numeric',
@@ -2078,7 +2076,7 @@ describe('Statistics service', () => {
                             });
                             done();
                         });
-                    setTimeout(() => _$rootScope.$digest(), 500);
+                    setTimeout(() => _$rootScope.$digest(), 2000);
                 });
 
                 it('should set the range data frequency with no filters', () => {
