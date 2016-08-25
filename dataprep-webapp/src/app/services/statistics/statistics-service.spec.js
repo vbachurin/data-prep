@@ -2760,7 +2760,7 @@ describe('Statistics service', () => {
                     });
                     done();
                 });
-            setTimeout(() => _$rootScope.$apply(), 500);
+            setTimeout(() => _$rootScope.$apply(), 2000);
         });
 
         it('should update filtered Text column', () => {
