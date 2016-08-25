@@ -1,15 +1,15 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.api.preparation;
 
@@ -26,20 +26,12 @@ import javax.annotation.Resource;
 
 import org.apache.commons.io.output.NullOutputStream;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.talend.dataprep.ServiceBaseTests;
 import org.talend.dataprep.api.service.info.VersionService;
 import org.talend.dataprep.preparation.store.PreparationRepository;
 
-
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = PreparationUtilsTest.class)
-
-@ComponentScan(basePackages = "org.talend.dataprep")
-public class PreparationUtilsTest {
+public class PreparationUtilsTest extends ServiceBaseTests {
 
     @Autowired
     private PreparationRepository repository;
@@ -60,7 +52,7 @@ public class PreparationUtilsTest {
 
     @Test
     public void should_list_steps_ids_history_from_root() {
-        //given
+        // given
         final List<Action> actions = getSimpleAction("uppercase", "column_name", "lastname");
         final PreparationActions newContent1 = rootContent.append(actions);
         final PreparationActions newContent2 = newContent1.append(actions);
@@ -74,18 +66,18 @@ public class PreparationUtilsTest {
         repository.add(step1);
         repository.add(step2);
 
-        //when
+        // when
         List<String> ids = preparationUtils.listStepsIds(step1.id(), repository);
 
-        //then
+        // then
         assertThat(ids, hasItem(rootStep.id()));
         assertThat(ids, hasItem(step1.id()));
         assertThat(ids, not(hasItem(step2.id())));
 
-        //when
+        // when
         ids = preparationUtils.listStepsIds(step2.id(), repository);
 
-        //then
+        // then
         assertThat(ids, hasItem(rootStep.id()));
         assertThat(ids, hasItem(step1.id()));
         assertThat(ids, hasItem(step2.id()));
@@ -93,7 +85,7 @@ public class PreparationUtilsTest {
 
     @Test
     public void should_list_steps_ids_history_from_limit() {
-        //given
+        // given
         final List<Action> actions = getSimpleAction("uppercase", "column_name", "lastname");
         final PreparationActions newContent1 = rootContent.append(actions);
         final PreparationActions newContent2 = newContent1.append(actions);
@@ -107,18 +99,18 @@ public class PreparationUtilsTest {
         repository.add(step1);
         repository.add(step2);
 
-        //when
+        // when
         List<String> ids = preparationUtils.listStepsIds(step2.id(), step1.getId(), repository);
 
-        //then
+        // then
         assertThat(ids, not(hasItem(rootStep.id())));
         assertThat(ids, hasItem(step1.id()));
         assertThat(ids, hasItem(step2.id()));
 
-        //when
+        // when
         ids = preparationUtils.listStepsIds(step2.id(), step2.getId(), repository);
 
-        //then
+        // then
         assertThat(ids, not(hasItem(rootStep.id())));
         assertThat(ids, not(hasItem(step1.id())));
         assertThat(ids, hasItem(step2.id()));
@@ -126,7 +118,7 @@ public class PreparationUtilsTest {
 
     @Test
     public void should_list_steps_history_from_root() {
-        //given
+        // given
         final List<Action> actions = getSimpleAction("uppercase", "column_name", "lastname");
         final PreparationActions newContent1 = rootContent.append(actions);
         final PreparationActions newContent2 = newContent1.append(actions);
@@ -140,18 +132,18 @@ public class PreparationUtilsTest {
         repository.add(step1);
         repository.add(step2);
 
-        //when
+        // when
         List<Step> steps = preparationUtils.listSteps(step1.id(), repository);
 
-        //then
+        // then
         assertThat(steps, hasItem(rootStep));
         assertThat(steps, hasItem(step1));
         assertThat(steps, not(hasItem(step2)));
 
-        //when
+        // when
         steps = preparationUtils.listSteps(step2.id(), repository);
 
-        //then
+        // then
         assertThat(steps, hasItem(rootStep));
         assertThat(steps, hasItem(step1));
         assertThat(steps, hasItem(step2));
@@ -159,7 +151,7 @@ public class PreparationUtilsTest {
 
     @Test
     public void should_list_steps_history_from_limit() {
-        //given
+        // given
         final List<Action> actions = getSimpleAction("uppercase", "column_name", "lastname");
         final PreparationActions newContent1 = rootContent.append(actions);
         final PreparationActions newContent2 = newContent1.append(actions);
@@ -173,18 +165,18 @@ public class PreparationUtilsTest {
         repository.add(step1);
         repository.add(step2);
 
-        //when
+        // when
         List<Step> steps = preparationUtils.listSteps(step2, step1.getId(), repository);
 
-        //then
+        // then
         assertThat(steps, not(hasItem(rootStep)));
         assertThat(steps, hasItem(step1));
         assertThat(steps, hasItem(step2));
 
-        //when
+        // when
         steps = preparationUtils.listSteps(step2, step2.getId(), repository);
 
-        //then
+        // then
         assertThat(steps, not(hasItem(rootStep)));
         assertThat(steps, not(hasItem(step1)));
         assertThat(steps, hasItem(step2));
@@ -192,25 +184,25 @@ public class PreparationUtilsTest {
 
     @Test
     public void should_return_empty_list_with_null_last_step() throws Exception {
-        //when
+        // when
         final List<Step> steps = preparationUtils.listSteps(null, "limit", repository);
 
-        //then
+        // then
         assertThat(steps, hasSize(0));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void should_throw_exception_with_null_limit() throws Exception {
-        //when
+        // when
         preparationUtils.listSteps(rootStep, null, repository);
 
-        //then
+        // then
         fail("Should have thrown IllegalArgumentException because limit step is null");
     }
 
     @Test
     public void prettyPrint() throws Exception {
-        //given
+        // given
         final String version = versionService.version().getVersionId();
         final List<Action> actions = getSimpleAction("uppercase", "column_name", "lastname");
         final PreparationActions newContent = new PreparationActions(actions, version);
@@ -221,7 +213,7 @@ public class PreparationUtilsTest {
         repository.add(step);
         repository.add(preparation);
 
-        //when
+        // when
         PreparationUtils.prettyPrint(repository, preparation, new NullOutputStream());
 
         // Basic walk through code, no assert.

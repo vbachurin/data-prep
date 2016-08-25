@@ -1,15 +1,15 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.api.dataset.json;
 
@@ -23,14 +23,10 @@ import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.talend.dataprep.ServiceBaseTests;
 import org.talend.dataprep.api.dataset.*;
 import org.talend.dataprep.api.dataset.location.HttpLocation;
 import org.talend.dataprep.api.dataset.row.DataSetRow;
@@ -42,10 +38,7 @@ import org.talend.dataprep.schema.csv.CSVFormatFamily;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = DataSetJSONTest.class)
-@ComponentScan(basePackages = "org.talend.dataprep")
-public class DataSetJSONTest {
+public class DataSetJSONTest extends ServiceBaseTests {
 
     @Autowired
     private ObjectMapper mapper;
@@ -150,8 +143,7 @@ public class DataSetJSONTest {
                 .valid(50);
 
         DataSetMetadata metadata = metadataBuilder.metadata().id("1234").name("name").author("author").created(0)
-                .row(columnBuilder)
-                .build();
+                .row(columnBuilder).build();
 
         final DataSetContent content = metadata.getContent();
         content.addParameter(CSVFormatFamily.SEPARATOR_PARAMETER, ",");

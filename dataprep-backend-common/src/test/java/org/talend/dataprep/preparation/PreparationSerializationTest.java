@@ -1,15 +1,15 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.preparation;
 
@@ -24,22 +24,15 @@ import javax.annotation.Resource;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.talend.dataprep.ServiceBaseTests;
 import org.talend.dataprep.api.preparation.*;
 import org.talend.dataprep.api.service.info.VersionService;
 import org.talend.dataprep.preparation.store.PreparationRepository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = PreparationTest.class)
-@ComponentScan(basePackages = "org.talend.dataprep")
-
-public class PreparationSerializationTest {
+public class PreparationSerializationTest extends ServiceBaseTests {
 
     @Autowired
     private ObjectMapper mapper;
@@ -60,7 +53,8 @@ public class PreparationSerializationTest {
 
     @Test
     public void emptyPreparation() throws Exception {
-        Preparation preparation = new Preparation("534fceed35b633160f2e2469f7ac7c14d75177b7", versionService.version().getVersionId());
+        Preparation preparation = new Preparation("534fceed35b633160f2e2469f7ac7c14d75177b7",
+                versionService.version().getVersionId());
         preparation.setCreationDate(0L);
         final StringWriter output = new StringWriter();
         mapper.writeValue(output, preparation);
@@ -70,7 +64,8 @@ public class PreparationSerializationTest {
 
     @Test
     public void namePreparation() throws Exception {
-        Preparation preparation = new Preparation("534fceed35b633160f2e2469f7ac7c14d75177b7", versionService.version().getVersionId());
+        Preparation preparation = new Preparation("534fceed35b633160f2e2469f7ac7c14d75177b7",
+                versionService.version().getVersionId());
         preparation.setName("MyName");
         preparation.setCreationDate(0L);
         final StringWriter output = new StringWriter();
@@ -81,7 +76,8 @@ public class PreparationSerializationTest {
 
     @Test
     public void preparationDataSet() throws Exception {
-        Preparation preparation = new Preparation("b7368bd7e4de38ff954636d0ac0438c7fb56a208", versionService.version().getVersionId());
+        Preparation preparation = new Preparation("b7368bd7e4de38ff954636d0ac0438c7fb56a208",
+                versionService.version().getVersionId());
         preparation.setDataSetId("12345");
         preparation.setCreationDate(0L);
         final StringWriter output = new StringWriter();
@@ -92,7 +88,8 @@ public class PreparationSerializationTest {
 
     @Test
     public void preparationAuthor() throws Exception {
-        Preparation preparation = new Preparation("0c02c9f868217ecc9d619931e127268c68809e9e", versionService.version().getVersionId());
+        Preparation preparation = new Preparation("0c02c9f868217ecc9d619931e127268c68809e9e",
+                versionService.version().getVersionId());
         preparation.setDataSetId("12345");
         preparation.setAuthor("myAuthor");
         preparation.setCreationDate(0L);
@@ -104,7 +101,8 @@ public class PreparationSerializationTest {
 
     @Test
     public void preparationDetailsSteps() throws Exception {
-        Preparation preparation = new Preparation("0c02c9f868217ecc9d619931e127268c68809e9e", "12345", rootStep.id(), versionService.version().getVersionId());
+        Preparation preparation = new Preparation("0c02c9f868217ecc9d619931e127268c68809e9e", "12345", rootStep.id(),
+                versionService.version().getVersionId());
         preparation.setAuthor("myAuthor");
         preparation.setCreationDate(0L);
         final StringWriter output = new StringWriter();
@@ -128,7 +126,8 @@ public class PreparationSerializationTest {
         preparation.setCreationDate(0L);
         final StringWriter output = new StringWriter();
         mapper.writer().writeValue(output, new PreparationDetails(preparation));
-        final InputStream expected = PreparationSerializationTest.class.getResourceAsStream("preparationDetailsWithStepsAndActions.json");
+        final InputStream expected = PreparationSerializationTest.class
+                .getResourceAsStream("preparationDetailsWithStepsAndActions.json");
         assertThat(output.toString(), sameJSONAsFile(expected));
     }
 }

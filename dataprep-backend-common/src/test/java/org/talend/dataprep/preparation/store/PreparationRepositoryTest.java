@@ -13,7 +13,7 @@
 
 package org.talend.dataprep.preparation.store;
 
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
 import java.util.*;

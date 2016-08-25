@@ -1,15 +1,15 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.api.dataset;
 
@@ -26,19 +26,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.talend.dataprep.ServiceBaseTests;
 import org.talend.dataprep.api.dataset.location.HttpLocation;
 import org.talend.dataprep.api.dataset.location.LocalStoreLocation;
 import org.talend.dataprep.schema.Schema;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = DataSetMetadataBuilderTest.class)
-@ComponentScan(basePackages = "org.talend.dataprep")
-public class DataSetMetadataBuilderTest {
+public class DataSetMetadataBuilderTest extends ServiceBaseTests {
 
     @Autowired
     private DataSetMetadataBuilder builder;
@@ -160,44 +154,43 @@ public class DataSetMetadataBuilderTest {
 
     @Test
     public void testCertificationStep() throws Exception {
-        final DataSetMetadata metadata = builder.metadata().id("1234")
-                .certificationStep(CERTIFIED).build();
+        final DataSetMetadata metadata = builder.metadata().id("1234").certificationStep(CERTIFIED).build();
         assertEquals(CERTIFIED, metadata.getGovernance().getCertificationStep());
     }
 
     @Test
     public void copyNonContentRelated_should_copy_non_content_related_metadata() throws Exception {
-        //given
+        // given
         final DataSetMetadata original = createCompleteMetadata();
 
-        //when
+        // when
         final DataSetMetadata copy = builder.metadata().copyNonContentRelated(original).build();
 
-        //then
+        // then
         assertNonContentRelatedMetadata(original, copy);
     }
 
     @Test
     public void copyContentRelated_should_copy_content_related_metadata() throws Exception {
-        //given
+        // given
         final DataSetMetadata original = createCompleteMetadata();
 
-        //when
+        // when
         final DataSetMetadata copy = builder.metadata().id("2f57de4641a66").copyContentRelated(original).build();
 
-        //then
+        // then
         assertContentRelatedMetadata(original, copy);
     }
 
     @Test
     public void copy_should_copy_all_metadata() throws Exception {
-        //given
+        // given
         final DataSetMetadata original = createCompleteMetadata();
 
-        //when
+        // when
         final DataSetMetadata copy = builder.metadata().copy(original).build();
 
-        //then
+        // then
         assertNonContentRelatedMetadata(original, copy);
         assertContentRelatedMetadata(original, copy);
     }
@@ -241,11 +234,10 @@ public class DataSetMetadataBuilderTest {
         content.setMediaType("text/csv");
         content.setParameters(parameters);
 
-        final Schema schemaParserResult = new Schema.Builder()
-                .draft(true)
-                .build();
+        final Schema schemaParserResult = new Schema.Builder().draft(true).build();
 
-        final DataSetMetadata metadata = new DataSetMetadata("18ba64c154d5", "Avengers stats", "Stan Lee", System.currentTimeMillis(), System.currentTimeMillis(), rowMetadata, "1.0");
+        final DataSetMetadata metadata = new DataSetMetadata("18ba64c154d5", "Avengers stats", "Stan Lee",
+                System.currentTimeMillis(), System.currentTimeMillis(), rowMetadata, "1.0");
         metadata.setFavorite(true);
         metadata.setLocation(new LocalStoreLocation());
         metadata.getGovernance().setCertificationStep(CERTIFIED);
@@ -292,15 +284,9 @@ public class DataSetMetadataBuilderTest {
         assertThat(copy.getLifecycle().inProgress(), equalTo(original.getLifecycle().inProgress()));
         assertThat(copy.getLifecycle().importing(), equalTo(original.getLifecycle().importing()));
         assertThat(copy.getSchemaParserResult(), equalTo(original.getSchemaParserResult()));
-        final List<String> originalColumnsIds = original.getRowMetadata()
-                .getColumns()
-                .stream()
-                .map(ColumnMetadata::getId)
+        final List<String> originalColumnsIds = original.getRowMetadata().getColumns().stream().map(ColumnMetadata::getId)
                 .collect(toList());
-        final List<String> actualColumnsIds = copy.getRowMetadata()
-                .getColumns()
-                .stream()
-                .map(ColumnMetadata::getId)
+        final List<String> actualColumnsIds = copy.getRowMetadata().getColumns().stream().map(ColumnMetadata::getId)
                 .collect(toList());
         assertThat(actualColumnsIds, equalTo(originalColumnsIds));
     }

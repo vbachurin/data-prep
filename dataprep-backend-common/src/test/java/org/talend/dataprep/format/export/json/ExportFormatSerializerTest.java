@@ -21,11 +21,8 @@ import java.io.StringWriter;
 import java.util.Collections;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.talend.dataprep.ServiceBaseTests;
 import org.talend.dataprep.format.export.ExportFormat;
 import org.talend.dataprep.parameters.SelectParameter;
 
@@ -34,10 +31,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * Unit test for json serialization of ExportFormat.
  */
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = ExportFormatSerializerTest.class)
-@ComponentScan(basePackages = "org.talend.dataprep")
-public class ExportFormatSerializerTest {
+public class ExportFormatSerializerTest extends ServiceBaseTests {
 
     /** Dataprep ready json builder. */
     @Autowired

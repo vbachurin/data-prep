@@ -1,15 +1,15 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.api.exception.error;
 
@@ -24,20 +24,14 @@ import java.util.Collection;
 import java.util.Collections;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.talend.daikon.exception.error.ErrorCode;
+import org.talend.dataprep.ServiceBaseTests;
 import org.talend.dataprep.exception.TDPException;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = ErrorMessageTest.class)
-@ComponentScan(basePackages = "org.talend.dataprep")
 /**
  * @TODO Add a support for internationalized messages
  */
-public class ErrorMessageTest {
+public class ErrorMessageTest extends ServiceBaseTests {
 
     @Test
     public void shouldReturnRightErrorMessageWhenHttpStatusIsZero() {
@@ -115,7 +109,9 @@ public class ErrorMessageTest {
 
         // then
         String errorExpected = "{\"code\":\"" + errorCode.getProduct() + '_' + errorCode.getGroup() + '_' + errorCode.getCode()
-                + "\",\"message\":\"" + "Sorry an unexpected error occurred and we could not complete your last operation, but you can keep using Data Preparation" + "\",\"message_title\":An error has occurred,\"context\":{}}";
+                + "\",\"message\":\""
+                + "Sorry an unexpected error occurred and we could not complete your last operation, but you can keep using Data Preparation"
+                + "\",\"message_title\":An error has occurred,\"context\":{}}";
         StringWriter stringWriter = new StringWriter();
         exception.writeTo(stringWriter);
 
@@ -240,7 +236,9 @@ public class ErrorMessageTest {
 
         // then
         String errorExpected = "{\"code\":\"" + errorCode.getProduct() + '_' + errorCode.getGroup() + '_' + errorCode.getCode()
-                + "\",\"message\":\"" + "Sorry an unexpected error occurred and we could not complete your last operation, but you can keep using Data Preparation" + "\",\"message_title\":An error has occurred,\"context\":{}}";
+                + "\",\"message\":\""
+                + "Sorry an unexpected error occurred and we could not complete your last operation, but you can keep using Data Preparation"
+                + "\",\"message_title\":An error has occurred,\"context\":{}}";
         StringWriter stringWriter = new StringWriter();
         exception.writeTo(stringWriter);
 

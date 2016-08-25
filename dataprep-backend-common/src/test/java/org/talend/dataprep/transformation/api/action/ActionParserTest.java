@@ -1,15 +1,15 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.transformation.api.action;
 
@@ -24,11 +24,8 @@ import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.talend.dataprep.ServiceBaseTests;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.dataset.row.DataSetRow;
@@ -39,12 +36,10 @@ import org.talend.dataprep.transformation.pipeline.ActionRegistry;
 
 /**
  * Unit test for the ActionParser class.
+ *
  * @see ActionParser
  */
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = ActionParserTest.class)
-@ComponentScan(basePackages = "org.talend.dataprep")
-public class ActionParserTest {
+public class ActionParserTest extends ServiceBaseTests {
 
     @Autowired
     ActionRegistry actionRegistry;
@@ -100,7 +95,6 @@ public class ActionParserTest {
         Action actionParsed = actualActions.get(0);
         assertEquals("lookup", actionParsed.getName());
     }
-
 
     /**
      * @return a default dataset row.
