@@ -2807,7 +2807,7 @@ describe('Statistics service', () => {
                     },]);
                     done();
                 });
-            setTimeout(() => _$rootScope.$digest(), 500);
+            setTimeout(() => _$rootScope.$digest(), 2000);
         });
 
         it('should NOT update filtered data when there is an aggregation', () => {
