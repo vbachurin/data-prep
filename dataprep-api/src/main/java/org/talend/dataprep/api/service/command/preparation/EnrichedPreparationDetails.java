@@ -13,127 +13,92 @@
 
 package org.talend.dataprep.api.service.command.preparation;
 
-import static org.talend.dataprep.exception.error.CommonErrorCodes.UNEXPECTED_EXCEPTION;
-
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpRequestBase;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
-import org.talend.dataprep.api.service.command.common.ChainedCommand;
+import org.talend.dataprep.command.dataset.DataSetGetMetadata;
 import org.talend.dataprep.command.GenericCommand;
 import org.talend.dataprep.command.preparation.PreparationDetailsGet;
-import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.security.SecurityProxy;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.netflix.hystrix.HystrixCommand;
 
 /**
  * Command used to add information from the dataset into the preparation details.
  */
 @Component
 @Scope("prototype")
-public class EnrichedPreparationDetails extends ChainedCommand<InputStream, InputStream> {
+public class EnrichedPreparationDetails extends GenericCommand<InputStream> {
 
     private static final String JOB_TYPE = "job";
+    private final String preparationId;
 
-    /** Used to retrieve the dataset metadata. */
+    @Autowired
+    private ApplicationContext context;
+
     @Autowired
     private SecurityProxy securityProxy;
-
-    /** The preparation detail json root node. */
-    private ObjectNode preparationJsonRootNode;
 
     /**
      * Default constructor.
      *
-     * @param preparationDetailsInput the preparation details input.
+     * @param preparationId the preparation id.
      */
     // private constructor to ensure the use of IoC
-    private EnrichedPreparationDetails(PreparationDetailsGet preparationDetailsInput) { // NOSONAR used by IoC
-        super(PREPARATION_GROUP, preparationDetailsInput);
-        execute(this::onExecute);
-        on(HttpStatus.OK).then(this::processPreparation);
-    }
-
-    /**
-     * Get the preparation details and read the content as a json tree.
-     * 
-     * @throws IOException if an error occurs.
-     */
-    @PostConstruct
-    private void getPreparationDetails() throws IOException { // NOSONAR see the @PostConstruct
-        // this need to be performed outside the run method as it is overriden in this class and
-        // executed as the technical user.
-        preparationJsonRootNode = (ObjectNode) objectMapper.readTree(getInput());
-    }
-
-    /**
-     * @return the http request to use to retrieve the dataset metadata out of the preparation details.
-     */
-    private HttpRequestBase onExecute() { // NOSONAR method reference from
-        // because a preparation repository is needed to parse a PreparationDetails, let's use the json tree model
-        final String dataSetId = preparationJsonRootNode.get("dataSetId").asText();
-        return new HttpGet(datasetServiceUrl + "/datasets/" + dataSetId + "/metadata");
+    private EnrichedPreparationDetails(final String preparationId) { // NOSONAR used by IoC
+        super(PREPARATION_GROUP);
+        this.preparationId = preparationId;
     }
 
     /**
      * Wraps the call to get the dataset as the technical user as the dataset may not be shared for instance.
-     * 
+     *
      * @see GenericCommand#run()
      */
     @Override
     protected InputStream run() throws Exception {
+        final ObjectNode preparationJsonRootNode = getPreparationDetails();
+
+        final String dataSetId = preparationJsonRootNode.get("dataSetId").asText();
+        final DataSetMetadata dataset = getDatasetMetadata(dataSetId);
+
+        this.enrichPreparation(preparationJsonRootNode, dataset);
+
+        return IOUtils.toInputStream(preparationJsonRootNode.toString());
+    }
+
+    /**
+     * Get preparation details from the right command
+     */
+    private ObjectNode getPreparationDetails() throws IOException {
+        final PreparationDetailsGet preparationDetails = context.getBean(PreparationDetailsGet.class, this.preparationId);
+        return (ObjectNode) objectMapper.readTree(preparationDetails.execute());
+    }
+
+    /**
+     * Get dataset metadata from the right command
+     */
+    private DataSetMetadata getDatasetMetadata(final String dataSetId) {
         try {
             securityProxy.asTechnicalUser();
-            return super.run();
+            return context.getBean(DataSetGetMetadata.class, dataSetId).execute();
         } finally {
             securityProxy.releaseIdentity();
         }
     }
 
     /**
-     * Update the preparation details with additional information from the dataset metadata.
-     * 
-     * @param request the request used to retrieve the dataset metadata.
-     * @param response the response that holds the dataset metadata.
-     * @return the input stream to sent to the client.
+     * Enrich preparation details
      */
-    private InputStream processPreparation(HttpRequestBase request, HttpResponse response) { // NOSONAR method reference
-        try {
-            final DataSet dataSet = objectMapper.readerFor(DataSet.class).readValue(response.getEntity().getContent());
-            final DataSetMetadata metadata = dataSet.getMetadata();
-
-            // update the full run flag
-            boolean allowFullRun = JOB_TYPE.equals(metadata.getLocation().getLocationType()) || metadata.getContent().getLimit().isPresent();
-            preparationJsonRootNode.put("allowFullRun", allowFullRun);
-
-            return IOUtils.toInputStream(preparationJsonRootNode.toString());
-
-        } catch (IOException e) {
-            throw new TDPException(UNEXPECTED_EXCEPTION, e);
-        } finally {
-            request.releaseConnection();
-        }
+    private void enrichPreparation(final ObjectNode preparationJsonRootNode, final DataSetMetadata dataset) {
+        // update the full run flag
+        boolean allowFullRun = JOB_TYPE.equals(dataset.getLocation().getLocationType()) || dataset.getContent().getLimit().isPresent();
+        preparationJsonRootNode.put("allowFullRun", allowFullRun);
     }
-
-    /**
-     * @see HystrixCommand#getFallback()
-     */
-    @Override
-    protected InputStream getFallback() {
-        return IOUtils.toInputStream(preparationJsonRootNode.asText());
-    }
-
 }

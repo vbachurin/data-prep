@@ -23,11 +23,16 @@ import static org.talend.dataprep.exception.error.DataSetErrorCodes.DATASET_DOES
 import java.io.InputStream;
 
 import org.apache.http.client.methods.HttpGet;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.command.GenericCommand;
+import org.talend.dataprep.dataset.store.content.DataSetContentLimit;
 import org.talend.dataprep.exception.TDPException;
+
+import javax.annotation.PostConstruct;
 
 /**
  * Command to get a dataset.
@@ -36,21 +41,46 @@ import org.talend.dataprep.exception.TDPException;
 @Scope(SCOPE_PROTOTYPE)
 public class DataSetGet extends GenericCommand<InputStream> {
 
+    private final boolean fullContent;
+    private final String dataSetId;
+    @Autowired
+    private DataSetContentLimit limit;
+
     /**
      * Constructor.
      *
      * @param dataSetId the requested dataset id.
      */
-    public DataSetGet(String dataSetId) {
+    public DataSetGet(final String dataSetId, final boolean fullContent) {
         super(DATASET_GROUP);
-        execute(() -> {
-            String url = datasetServiceUrl + "/datasets/" + dataSetId + "/content?metadata=true";
-            return new HttpGet(url);
+        this.fullContent = fullContent;
+        this.dataSetId = dataSetId;
+
+        on(HttpStatus.NOT_FOUND).then((req, res) -> {
+            throw new TDPException(DATASET_DOES_NOT_EXIST, build().put("id", dataSetId));
         });
-        onError(e -> new TDPException(UNABLE_TO_RETRIEVE_DATASET_CONTENT, e, build().put("id", dataSetId)));
-        on(HttpStatus.NOT_FOUND).then((req, res) -> {throw new TDPException(DATASET_DOES_NOT_EXIST, build().put("id", dataSetId));});
         on(HttpStatus.NO_CONTENT).then(emptyStream());
         on(HttpStatus.OK).then(pipeStream());
+        onError(e -> new TDPException(UNABLE_TO_RETRIEVE_DATASET_CONTENT, e, build().put("id", dataSetId)));
     }
 
+    @PostConstruct
+    private void initConfiguration() {
+        if (limit.limitContentSize() || fullContent) {
+            this.configureLimitedDataset(dataSetId);
+        } else {
+            this.configureSampleDataset(dataSetId);
+        }
+    }
+
+    private void configureLimitedDataset(final String dataSetId) {
+        execute(() -> {
+            final String url = datasetServiceUrl + "/datasets/" + dataSetId + "/content?metadata=true";
+            return new HttpGet(url);
+        });
+    }
+
+    private void configureSampleDataset(final String dataSetId) {
+        execute(() -> new HttpGet(datasetServiceUrl + "/datasets/" + dataSetId + "/sample"));
+    }
 }

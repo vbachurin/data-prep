@@ -1,8 +1,6 @@
 package org.talend.dataprep.transformation.service;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-
+import com.fasterxml.jackson.core.JsonParser;
 import org.apache.commons.io.output.TeeOutputStream;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -13,14 +11,15 @@ import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.org.talend.dataprep.api.export.ExportParameters;
 import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.cache.ContentCache;
-import org.talend.dataprep.command.dataset.DataSetSampleGet;
+import org.talend.dataprep.command.dataset.DataSetGet;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.TransformationErrorCodes;
 import org.talend.dataprep.format.export.ExportFormat;
 import org.talend.dataprep.transformation.api.transformer.configuration.Configuration;
 import org.talend.dataprep.transformation.cache.TransformationCacheKey;
 
-import com.fasterxml.jackson.core.JsonParser;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * A {@link ExportStrategy strategy} to export a preparation (using its default data set).
@@ -63,7 +62,7 @@ public class PreparationExportStrategy extends StandardExportStrategy {
         final ExportFormat format = getFormat(parameters.getExportType());
 
         // get the dataset content (in an auto-closable block to make sure it is properly closed)
-        final DataSetSampleGet dataSetGet = applicationContext.getBean(DataSetSampleGet.class, dataSetId);
+        final DataSetGet dataSetGet = applicationContext.getBean(DataSetGet.class, dataSetId, false);
         try (InputStream datasetContent = dataSetGet.execute()) {
             try (JsonParser parser = mapper.getFactory().createParser(datasetContent)) {
                 // head is not allowed as step id

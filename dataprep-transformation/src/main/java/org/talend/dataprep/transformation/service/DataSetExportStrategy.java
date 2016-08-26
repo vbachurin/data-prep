@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.org.talend.dataprep.api.export.ExportParameters;
-import org.talend.dataprep.command.dataset.DataSetSampleGet;
+import org.talend.dataprep.command.dataset.DataSetGet;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.TransformationErrorCodes;
 import org.talend.dataprep.format.export.ExportFormat;
@@ -43,7 +43,7 @@ public class DataSetExportStrategy extends StandardExportStrategy {
         ExportUtils.setExportHeaders(parameters.getExportName(), format);
         return outputStream -> {
             // get the dataset content (in an auto-closable block to make sure it is properly closed)
-            final DataSetSampleGet dataSetGet = applicationContext.getBean(DataSetSampleGet.class, parameters.getDatasetId());
+            final DataSetGet dataSetGet = applicationContext.getBean(DataSetGet.class, parameters.getDatasetId(), false);
             try (InputStream datasetContent = dataSetGet.execute()) {
                 try (JsonParser parser = mapper.getFactory().createParser(datasetContent)) {
                     // Create dataset

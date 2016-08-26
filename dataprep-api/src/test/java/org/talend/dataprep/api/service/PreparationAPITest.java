@@ -137,7 +137,6 @@ public class PreparationAPITest extends ApiServiceTestBase {
         assertFalse(compatibleDatasetList.contains(dataSetId));
     }
 
-
     @Test
     public void shouldCopyPreparation() throws Exception {
         // given

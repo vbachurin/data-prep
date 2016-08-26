@@ -45,7 +45,7 @@ import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.org.talend.dataprep.api.export.ExportParameters;
 import org.talend.dataprep.api.preparation.StepDiff;
-import org.talend.dataprep.command.dataset.DataSetSampleGet;
+import org.talend.dataprep.command.dataset.DataSetGet;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.exception.error.TransformationErrorCodes;
@@ -224,7 +224,7 @@ public class TransformationService extends BaseTransformationService {
                 throw new TDPException(CommonErrorCodes.UNABLE_TO_AGGREGATE, e);
             }
         } else {
-            final DataSetSampleGet dataSetGet = context.getBean(DataSetSampleGet.class, parameters.getDatasetId());
+            final DataSetGet dataSetGet = context.getBean(DataSetGet.class, parameters.getDatasetId(), false);
             contentToAggregate = dataSetGet.execute();
         }
 
@@ -257,7 +257,7 @@ public class TransformationService extends BaseTransformationService {
      * <p>
      * To prevent the actions to exceed URL length limit, everything is shipped within via the multipart request body.
      *
-     * @param rawParameters The preview parameters, encoded in json within the request body.
+     * @param previewParameters The preview parameters, encoded in json within the request body.
      * @param output Where to write the response.
      */
     //@formatter:off
@@ -269,7 +269,7 @@ public class TransformationService extends BaseTransformationService {
         //@formatter:on
 
         // because of dataset records streaming, the dataset content must be within an auto closeable block
-        final DataSetSampleGet dataSetGet = context.getBean(DataSetSampleGet.class, previewParameters.getDataSetId());
+        final DataSetGet dataSetGet = context.getBean(DataSetGet.class, previewParameters.getDataSetId(), false);
 
         boolean identityReleased = false;
         securityProxy.asTechnicalUser();
@@ -313,7 +313,7 @@ public class TransformationService extends BaseTransformationService {
     private StepDiff getCreatedColumns(final PreviewParameters previewParameters) {
         boolean identityReleased = false;
         securityProxy.asTechnicalUser();
-        final DataSetSampleGet dataSetGet = context.getBean(DataSetSampleGet.class, previewParameters.getDataSetId());
+        final DataSetGet dataSetGet = context.getBean(DataSetGet.class, previewParameters.getDataSetId(), false);
         try (InputStream content = dataSetGet.execute(); //
              JsonParser parser = mapper.getFactory().createParser(content)) {
 

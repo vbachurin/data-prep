@@ -34,7 +34,7 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.org.talend.dataprep.api.export.ExportParameters;
 import org.talend.dataprep.api.preparation.Preparation;
-import org.talend.dataprep.api.service.command.dataset.DataSetGetMetadata;
+import org.talend.dataprep.command.dataset.DataSetGetMetadata;
 import org.talend.dataprep.api.service.command.export.Export;
 import org.talend.dataprep.api.service.command.export.ExportTypes;
 import org.talend.dataprep.command.CommandHelper;

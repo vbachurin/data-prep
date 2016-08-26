@@ -107,7 +107,7 @@ public class TransformAPI extends APIService {
         if (isNotBlank(preparationId)) {
             inputData = getCommand(PreparationGetContent.class, preparationId, dynamicParamsInput.getStepId());
         } else {
-            inputData = getCommand(DataSetGet.class, dynamicParamsInput.getDatasetId());
+            inputData = getCommand(DataSetGet.class, dynamicParamsInput.getDatasetId(), false);
         }
 
         // get params, passing content in the body

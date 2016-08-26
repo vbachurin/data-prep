@@ -34,7 +34,7 @@ import org.talend.dataprep.api.dataset.DataSetMetadataBuilder;
 import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.service.api.EnrichedPreparation;
 import org.talend.dataprep.api.service.command.common.HttpResponse;
-import org.talend.dataprep.api.service.command.dataset.DataSetGetMetadata;
+import org.talend.dataprep.command.dataset.DataSetGetMetadata;
 import org.talend.dataprep.api.service.command.folder.*;
 import org.talend.dataprep.api.service.command.preparation.PreparationListByFolder;
 import org.talend.dataprep.command.CommandHelper;

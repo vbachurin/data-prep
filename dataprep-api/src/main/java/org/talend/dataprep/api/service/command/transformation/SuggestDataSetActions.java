@@ -30,7 +30,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.service.command.common.ChainedCommand;
-import org.talend.dataprep.api.service.command.dataset.DataSetGetMetadata;
+import org.talend.dataprep.command.dataset.DataSetGetMetadata;
 import org.talend.dataprep.command.GenericCommand;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.APIErrorCodes;
