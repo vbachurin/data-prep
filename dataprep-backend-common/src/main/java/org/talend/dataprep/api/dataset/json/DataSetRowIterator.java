@@ -42,27 +42,19 @@ public class DataSetRowIterator implements Iterator<DataSetRow> {
     /** The json parser. */
     private final JsonParser parser;
 
-    /** True if the tdpId is added to the row values. */
-    private final boolean addTdpId;
-
     /** DataSetRow object used to read rows (cleaned and reused at each iteration). */
     private DataSetRow row;
 
     /** RowMetadata to link to the row. */
     private final RowMetadata rowMetadata;
 
-    /** Counter for the tdp id. */
-    private long nextRowId = 1;
-
     /**
      * Constructor.
      *
      * @param parser the json parser to use.
      * @param rowMetadata the row metadata to add to each row.
-     * @param addTdpId true if tdpid is added for each row.
      */
-    public DataSetRowIterator(JsonParser parser, RowMetadata rowMetadata, boolean addTdpId) {
-        this.addTdpId = addTdpId;
+    public DataSetRowIterator(JsonParser parser, RowMetadata rowMetadata) {
         this.parser = parser;
         this.rowMetadata = rowMetadata;
         this.row = new DataSetRow(rowMetadata);
@@ -72,11 +64,9 @@ public class DataSetRowIterator implements Iterator<DataSetRow> {
      * Constructor.
      *
      * @param inputStream stream to read json from.
-     * @param addTdpId true if tdpid is added for each row.
      */
-    public DataSetRowIterator(InputStream inputStream, boolean addTdpId) {
+    public DataSetRowIterator(InputStream inputStream) {
         try {
-            this.addTdpId = addTdpId;
             this.parser = new JsonFactory().createParser(inputStream);
             this.rowMetadata = new RowMetadata();
             this.row = new DataSetRow(rowMetadata);
@@ -102,9 +92,6 @@ public class DataSetRowIterator implements Iterator<DataSetRow> {
             String currentFieldName = StringUtils.EMPTY;
             JsonToken nextToken;
             row.clear();
-            if (addTdpId) {
-                row.setTdpId(nextRowId++);
-            }
             while ((nextToken = parser.nextToken()) != JsonToken.END_OBJECT) {
                 if (nextToken == null) {
                     // End of input, return the current row.
@@ -126,6 +113,12 @@ public class DataSetRowIterator implements Iterator<DataSetRow> {
                 case VALUE_FALSE:
                     if ("_deleted".equals(currentFieldName)) {
                         row.setDeleted(Boolean.parseBoolean(parser.getText()));
+                    }
+                    break;
+                case VALUE_NUMBER_INT:
+                case VALUE_NUMBER_FLOAT:
+                    if (DataSetRow.TDP_ID.equals(currentFieldName)) {
+                        row.setTdpId(Long.parseLong(parser.getText()));
                     }
                     break;
                 default:

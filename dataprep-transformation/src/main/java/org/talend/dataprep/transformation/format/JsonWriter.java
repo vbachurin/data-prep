@@ -79,7 +79,7 @@ public class JsonWriter implements TransformerWriter {
     @Override
     public void write(final RowMetadata rowMetadata) throws IOException {
         startArray();
-        rowMetadata.getColumns().stream().forEach(col -> {
+        rowMetadata.getColumns().forEach(col -> {
             try {
                 generator.writeObject(col);
             } catch (IOException e) {

@@ -217,6 +217,7 @@ public class DataSetRow implements Cloneable {
     public void clear() {
         deleted = false;
         oldValue = null;
+        tdpId = null;
         values.clear();
     }
 
@@ -252,7 +253,7 @@ public class DataSetRow implements Cloneable {
         if (o == null || getClass() != o.getClass())
             return false;
         DataSetRow that = (DataSetRow) o;
-        return Objects.equals(deleted, that.deleted) && Objects.equals(values, that.values);
+        return Objects.equals(deleted, that.deleted) && Objects.equals(values, that.values) && Objects.equals(tdpId, that.tdpId);
     }
 
     /**
@@ -265,7 +266,12 @@ public class DataSetRow implements Cloneable {
 
     @Override
     public String toString() {
-        return "DataSetRow{" + "deleted=" + deleted + ", oldValue=" + oldValue + ", values=" + values + '}';
+        return "DataSetRow{" +
+                ", values=" + values +
+                ", deleted=" + deleted +
+                ", oldValue=" + oldValue +
+                ", tdpId=" + tdpId +
+                '}';
     }
 
     /**

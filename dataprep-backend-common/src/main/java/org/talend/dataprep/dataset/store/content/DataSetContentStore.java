@@ -14,6 +14,7 @@
 package org.talend.dataprep.dataset.store.content;
 
 import java.io.InputStream;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -120,11 +121,15 @@ public abstract class DataSetContentStore {
      */
     public Stream<DataSetRow> stream(DataSetMetadata dataSetMetadata, long limit) {
         final InputStream inputStream = get(dataSetMetadata, limit);
-        final DataSetRowIterator iterator = new DataSetRowIterator(inputStream, true);
+        final DataSetRowIterator iterator = new DataSetRowIterator(inputStream);
         final Iterable<DataSetRow> rowIterable = () -> iterator;
         Stream<DataSetRow> dataSetRowStream = StreamSupport.stream(rowIterable.spliterator(), false);
         // make sure to close the original input stream when closing this one
-        dataSetRowStream = dataSetRowStream.onClose(() -> {
+        AtomicLong tdpId = new AtomicLong(1);
+        dataSetRowStream = dataSetRowStream.map(r -> {
+            r.setTdpId(tdpId.getAndIncrement());
+            return r;
+        }).onClose(() -> {
             try {
                 inputStream.close();
             } catch (Exception e) {
@@ -137,7 +142,7 @@ public abstract class DataSetContentStore {
 
     /**
      * Returns the {@link DataSetMetadata data set} content as "raw" (i.e. the content supplied by user upon data set
-     * creation). Same as calling {@link #getAsRaw(DataSetMetadata)} (DataSetMetadata, long)} with limit = -1.
+     * creation). Same as calling {@link #getAsRaw(DataSetMetadata, long)}} (DataSetMetadata, long)} with limit = -1.
      *
      * @param dataSetMetadata The {@link DataSetMetadata data set} to read content from.
      * @return The content associated with <code>dataSetMetadata</code>.
