@@ -327,7 +327,7 @@
                             <resources>
                                 <resource>
                                     <targetPath>/dist</targetPath>
-                                    <directory>${basedir}/dist</directory>
+                                    <directory>${basedir}/build</directory>
                                     <include>**/*</include>
                                 </resource>
                             </resources>
