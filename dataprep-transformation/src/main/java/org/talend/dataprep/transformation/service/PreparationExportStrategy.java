@@ -83,18 +83,22 @@ public class PreparationExportStrategy extends StandardExportStrategy {
                     TeeOutputStream tee = new TeeOutputStream(outputStream,
                             contentCache.put(key, ContentCache.TimeToLive.DEFAULT));
 
-                    Configuration configuration = Configuration.builder() //
-                            .args(parameters.getArguments()) //
-                            .outFilter(rm -> filterService.build(parameters.getFilter(), rm)) //
-                            .format(format.getName()) //
-                            .actions(actions) //
-                            .preparationId(preparationId) //
-                            .stepId(version) //
-                            .volume(Configuration.Volume.SMALL) //
-                            .output(tee) //
-                            .build();
-                    factory.get(configuration).transform(dataSet, configuration);
-                    tee.flush();
+                    try {
+                        Configuration configuration = Configuration.builder() //
+                                .args(parameters.getArguments()) //
+                                .outFilter(rm -> filterService.build(parameters.getFilter(), rm)) //
+                                .format(format.getName()) //
+                                .actions(actions) //
+                                .preparationId(preparationId) //
+                                .stepId(version) //
+                                .volume(Configuration.Volume.SMALL) //
+                                .output(tee) //
+                                .build();
+                        factory.get(configuration).transform(dataSet, configuration);
+                        tee.flush();
+                    } finally {
+                        tee.close();
+                    }
                 } catch (Throwable e) { // NOSONAR
                     contentCache.evict(key);
                     throw e;

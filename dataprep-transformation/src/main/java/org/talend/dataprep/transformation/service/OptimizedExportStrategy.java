@@ -111,6 +111,8 @@ public class OptimizedExportStrategy extends StandardExportStrategy {
             } catch (Throwable e) { // NOSONAR
                 contentCache.evict(key);
                 throw e;
+            } finally {
+                tee.close();
             }
         } catch (TDPException e) {
             throw e;
@@ -208,7 +210,7 @@ public class OptimizedExportStrategy extends StandardExportStrategy {
             }
             // Get metadata of previous step
             TransformationMetadataCacheKey transformationMetadataCacheKey = new TransformationMetadataCacheKey(preparationId, previousVersion);
-            if (contentCache.get(transformationMetadataCacheKey) == null) {
+            if (!contentCache.has(transformationMetadataCacheKey)) {
                 LOGGER.debug("No metadata cached for previous version '{}' (key for lookup: '{}')", previousVersion,
                         transformationMetadataCacheKey.getKey());
                 return null;
@@ -219,9 +221,16 @@ public class OptimizedExportStrategy extends StandardExportStrategy {
             transformationCacheKey = new TransformationCacheKey(preparationId, dataSetId, formatName, previousVersion);
             LOGGER.debug("Previous content cache key: " + transformationCacheKey.getKey());
             LOGGER.debug("Previous content cache key details: " + transformationCacheKey.toString());
-            if (contentCache.get(transformationCacheKey) == null) {
-                LOGGER.debug("No content cached for previous version '{}'", previousVersion);
-                return null;
+            final InputStream inputStream = contentCache.get(transformationCacheKey);
+            try {
+                if (inputStream == null) {
+                    LOGGER.debug("No content cached for previous version '{}'", previousVersion);
+                    return null;
+                }
+            } finally {
+                if (inputStream != null) {
+                    inputStream.close();
+                }
             }
             return this;
         }

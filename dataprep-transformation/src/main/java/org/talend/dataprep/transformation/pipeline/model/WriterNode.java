@@ -98,11 +98,11 @@ public class WriterNode extends BasicNode implements Monitored {
             ObjectMapper mapper = new ObjectMapper();
             final ObjectWriter objectWriter = mapper.writerFor(RowMetadata.class);
             final TransformationMetadataCacheKey key = new TransformationMetadataCacheKey(preparationId, stepId);
-            final OutputStream stream = contentCache.put(key, ContentCache.TimeToLive.DEFAULT);
-            objectWriter.writeValue(stream, lastRowMetadata);
+            try (OutputStream stream = contentCache.put(key, ContentCache.TimeToLive.DEFAULT)) {
+                objectWriter.writeValue(stream, lastRowMetadata);
+                LOGGER.debug("New metadata cache entry -> {}.", key.getKey());
+            }
             writer.flush();
-            LOGGER.debug("New metadata cache entry -> {}.", key.getKey());
-            stream.close();
         } catch (IOException e) {
             LOGGER.error("Unable to cache metadata for preparation #{} @ step #{}", preparationId, stepId);
             LOGGER.debug("Unable to cache metadata due to exception.", e);
