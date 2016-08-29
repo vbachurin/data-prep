@@ -69,7 +69,7 @@ export default function ActionsSuggestionsCtrl(state, TransformationService) {
     vm.shouldRenderCategory = function shouldRenderCategory(categoryItem) {
         // render all non Suggestions category
         // render Suggestions if one of the transformations should be rendered
-        return categoryItem.category !== 'suggestion' ||
+        return categoryItem.category !== SUGGESTION ||
             find(categoryItem.transformations, (action) => shouldRenderSuggestion(action));
     };
 }
