@@ -1,4 +1,4 @@
-package org.talend.dataprep.cache;
+package org.talend.dataprep.io;
 
 import java.io.*;
 import java.util.Collections;
@@ -10,16 +10,24 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.context.annotation.*;
+import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.scheduling.annotation.Scheduled;
 
+/**
+ * This class configures an aspect around methods that <b>return</b> a {@link Closeable closeable} implementation.
+ * It currently supports:
+ * <ul>
+ *     <li>{@link InputStream}</li>
+ *     <li>{@link OutputStream}</li>
+ * </ul>
+ * To activate this watcher, logging framework must enable "org.talend.dataprep.io" in debug level.
+ */
 @Configuration
 @Aspect
 @EnableAspectJAutoProxy(proxyTargetClass = true)
-@ConditionalOnProperty(value="closeable.resource.watch", havingValue = "true")
-public class CloseableResourceWatch {
+@Conditional(CloseableResourceWatch.class)
+public class CloseableResourceWatch implements Condition {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CloseableResourceWatch.class);
 
@@ -67,6 +75,11 @@ public class CloseableResourceWatch {
             }
             LOGGER.info("Done logging closeable resources.");
         }
+    }
+
+    @Override
+    public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+        return LOGGER.isDebugEnabled();
     }
 
     interface CloseableHandler {
