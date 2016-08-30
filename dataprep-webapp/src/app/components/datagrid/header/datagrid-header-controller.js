@@ -11,19 +11,20 @@
 
  ============================================================================*/
 
+import { filter } from 'lodash';
+
 /**
  * @ngdoc controller
  * @name data-prep.datagrid-header.controller:DatagridHeaderCtrl
  * @description Dataset Column Header controller.
  * @requires data-prep.services.state.constant:state
- * @requires data-prep.services.transformation.service:TransformationCacheService
+ * @requires data-prep.services.transformation.service:TransformationService
  * @requires data-prep.services.utils.service:ConverterService
  * @requires data-prep.services.playground.service:PlaygroundService
  * @requires data-prep.services.filter.service:FilterService
- * @requires data-prep.services.transformation.service:ColumnSuggestionService
  */
-export default function DatagridHeaderCtrl($scope, state, TransformationCacheService, ConverterService, PlaygroundService,
-    FilterService, ColumnSuggestionService) {
+export default function DatagridHeaderCtrl($scope, state, TransformationService, ConverterService, PlaygroundService,
+                                           FilterService) {
     'ngInject';
 
     const ACTION_SCOPE = 'column_metadata';
@@ -34,7 +35,6 @@ export default function DatagridHeaderCtrl($scope, state, TransformationCacheSer
     vm.converterService = ConverterService;
     vm.filterService = FilterService;
     vm.PlaygroundService = PlaygroundService;
-    vm.columnSuggestionService = ColumnSuggestionService;
     vm.state = state;
 
     /**
@@ -73,9 +73,9 @@ export default function DatagridHeaderCtrl($scope, state, TransformationCacheSer
             vm.transformationsRetrieveError = false;
             vm.initTransformationsInProgress = true;
 
-            TransformationCacheService.getColumnTransformations(vm.column, true)
+            TransformationService.getTransformations('column', vm.column)
                 .then((columnTransformations) => {
-                    vm.transformations = _.filter(
+                    vm.transformations = filter(
                         columnTransformations.allTransformations,
                         (menu) => (menu.actionScope.indexOf(ACTION_SCOPE) !== -1)
                     );
@@ -104,7 +104,7 @@ export default function DatagridHeaderCtrl($scope, state, TransformationCacheSer
             column_name: vm.column.name,
         };
 
-        PlaygroundService.appendStep(RENAME_ACTION, params)
+        PlaygroundService.appendStep([{ action: RENAME_ACTION, parameters: params }])
             .then(() => {
                 vm.setEditMode(false);
                 originalName = vm.newName;

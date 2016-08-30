@@ -19,6 +19,7 @@
                        parameters-visible="playgroundCtrl.state.playground.parameters.visible"
                        feedback-visible="!playgroundCtrl.state.ee"
                        preparation-picker="playgroundCtrl.$stateParams.datasetid"
+                       enable-export="playgroundCtrl.state.export.exportTypes.length"
                        on-parameters="playgroundCtrl.toggleParameters()"
                        on-lookup="playgroundCtrl.toggleLookup()"
                        on-onboarding="playgroundCtrl.startOnBoarding('playground')"
@@ -33,7 +34,9 @@
                          side="left">
             <!-- Recipe Header -->
             <div class="steps-header">
-                <label class="label-switch" ng-if="playgroundCtrl.state.playground.recipe.current.steps.length">
+                <label class="label-switch"
+                       ng-if="playgroundCtrl.state.playground.recipe.current.steps.length"
+                       title="{{::'ENABLE_DISABLE_STEPS' | translate}}">
                     <input type="checkbox"
                            ng-model='playgroundCtrl.hasActiveStep'
                            ng-change='playgroundCtrl.toggleRecipe()'/>

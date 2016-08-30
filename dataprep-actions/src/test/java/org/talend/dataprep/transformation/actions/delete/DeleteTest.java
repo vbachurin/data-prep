@@ -16,11 +16,15 @@ package org.talend.dataprep.transformation.actions.delete;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.talend.dataprep.transformation.actions.category.ActionCategory.DATA_CLEANSING;
 import static org.talend.dataprep.transformation.actions.category.ScopeCategory.COLUMN;
 import static org.talend.dataprep.transformation.actions.category.ScopeCategory.LINE;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
@@ -131,4 +135,34 @@ public class DeleteTest extends AbstractMetadataBaseTest {
         //then
         assertThat(row.isDeleted(), is(false));
     }
+
+    @Test
+    public void multipleLineDelete() {
+        // given
+        final Map<String, String> parameters = new HashMap<>();
+        parameters.put(ImplicitParameters.SCOPE.getKey().toLowerCase(), "line");
+
+        final Map<String, String> values = new HashMap<>();
+        values.put("0000", "David Bowie");
+        values.put("0001", "Paris");
+        final DataSetRow original = new DataSetRow(values);
+        final List<DataSetRow> rows = Arrays.asList(original.clone(), original.clone(), original.clone(), original.clone());
+        for (long i = 0; i < rows.size(); i++) {
+            final DataSetRow dataSetRow = rows.get((int) i);
+            dataSetRow.setTdpId(i);
+        }
+
+        //when
+        parameters.put("row_id", "1");
+        ActionTestWorkbench.test(rows, actionRegistry, factory.create(action, parameters));
+        parameters.put("row_id", "2");
+        ActionTestWorkbench.test(rows, actionRegistry, factory.create(action, parameters));
+
+        // then
+        assertFalse(rows.get(0).isDeleted());
+        assertTrue(rows.get(1).isDeleted());
+        assertTrue(rows.get(2).isDeleted());
+        assertFalse(rows.get(3).isDeleted());
+    }
+
 }

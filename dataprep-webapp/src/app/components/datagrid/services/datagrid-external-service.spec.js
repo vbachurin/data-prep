@@ -14,12 +14,10 @@
 import SlickGridMock from '../../../../mocks/SlickGrid.mock';
 
 describe('Datagrid external service', () => {
-    'use strict';
+    let gridMock;
+    let stateMock;
 
-    var gridMock;
-    var stateMock;
-
-    var gridColumns = [
+    const gridColumns = [
         { id: '0000', field: 'col0', tdpColMetadata: { id: '0000', name: 'col0' } },
         { id: '0001', field: 'col1', tdpColMetadata: { id: '0001', name: 'col1' } },
         { id: '0002', field: 'col2', tdpColMetadata: { id: '0002', name: 'col2' } },
@@ -37,8 +35,7 @@ describe('Datagrid external service', () => {
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(inject((StatisticsService, SuggestionService, LookupService) => {
-        /*global SlickGridMock:false */
+    beforeEach(inject((StatisticsService, StateService, TransformationService, LookupService) => {
         gridMock = new SlickGridMock();
         gridMock.initColumnsMock(gridColumns);
 
@@ -47,11 +44,10 @@ describe('Datagrid external service', () => {
         spyOn(gridMock.onHeaderContextMenu, 'subscribe').and.returnValue();
         spyOn(gridMock.onScroll, 'subscribe').and.returnValue();
 
+        spyOn(StateService, 'selectTransformationsTab').and.returnValue();
         spyOn(StatisticsService, 'updateStatistics').and.returnValue();
         spyOn(StatisticsService, 'reset').and.returnValue();
-        spyOn(SuggestionService, 'setColumn').and.returnValue();
-        spyOn(SuggestionService, 'setLine').and.returnValue();
-        spyOn(SuggestionService, 'selectTab').and.returnValue();
+        spyOn(TransformationService, 'initTransformations').and.returnValue();
 
         spyOn(LookupService, 'updateTargetColumn').and.returnValue();
     }));
@@ -66,63 +62,100 @@ describe('Datagrid external service', () => {
 
     describe('on creation', () => {
         it('should add scroll listener', inject((DatagridExternalService) => {
-            //when
+            // when
             DatagridExternalService.init(gridMock);
 
-            //then
+            // then
             expect(gridMock.onScroll.subscribe).toHaveBeenCalled();
         }));
     });
 
     describe('update grid range index', () => {
         it('should add scroll listener', inject((PreviewService, DatagridExternalService) => {
-            //given
+            // given
             const range = [5, 15];
             gridMock.initRenderedRangeMock(range);
             DatagridExternalService.init(gridMock);
 
-            //when
+            // when
             DatagridExternalService.updateGridRangeIndex();
 
-            //then
+            // then
             expect(PreviewService.gridRangeIndex).toBe(range);
         }));
     });
 
     describe('update right panel', () => {
         describe('tab selection', () => {
-            it('should select "COLUMN" tab if no tab is provided', inject((DatagridExternalService, SuggestionService) => {
-                //given
-                stateMock.playground.grid.selectedColumn = { id: '0001' };
-                expect(SuggestionService.selectTab).not.toHaveBeenCalled();
+            it('should select "COLUMN" tab if no tab is provided', inject((DatagridExternalService, StateService) => {
+                // given
+                stateMock.playground.grid.selectedColumns = [{ id: '0001' }];
+                expect(StateService.selectTransformationsTab).not.toHaveBeenCalled();
 
-                //when
+                // when
                 DatagridExternalService.updateSuggestionPanel();
 
-                //then
-                expect(SuggestionService.selectTab).toHaveBeenCalledWith('COLUMN');
+                // then
+                expect(StateService.selectTransformationsTab).toHaveBeenCalledWith('COLUMN');
             }));
 
-            it('should select "LINE" tab when there is no selected column', inject((DatagridExternalService, SuggestionService) => {
-                //given
+            it('should select "LINE" tab when there is no selected column', inject((DatagridExternalService, StateService) => {
+                // given
                 stateMock.playground.grid.selectedLine = { tdpId: 125 };
-                stateMock.playground.grid.selectedColumn = null;
-                expect(SuggestionService.selectTab).not.toHaveBeenCalled();
+                stateMock.playground.grid.selectedColumns = [];
+                expect(StateService.selectTransformationsTab).not.toHaveBeenCalled();
 
-                //when
+                // when
                 DatagridExternalService.updateSuggestionPanel();
 
-                //then
-                expect(SuggestionService.selectTab).toHaveBeenCalledWith('LINE');
+                // then
+                expect(StateService.selectTransformationsTab).toHaveBeenCalledWith('LINE');
             }));
         });
 
         describe('charts', () => {
             it('should reset charts when there is no selected column', inject((DatagridExternalService, StatisticsService) => {
-                //given
+                // given
                 stateMock.playground.grid.selectedLine = { tdpId: 125 };
-                stateMock.playground.grid.selectedColumn = null;
+                stateMock.playground.grid.selectedColumns = [];
                 expect(StatisticsService.reset).not.toHaveBeenCalled();
+
+                // when
+                DatagridExternalService.updateSuggestionPanel();
+
+                // then
+                expect(StatisticsService.reset).toHaveBeenCalled();
+            }));
+
+            it('should update charts when there is a selected column', inject((DatagridExternalService, StatisticsService) => {
+                // given
+                stateMock.playground.grid.selectedColumns = [{ id: '0001' }];
+                expect(StatisticsService.updateStatistics).not.toHaveBeenCalled();
+
+                // when
+                DatagridExternalService.updateSuggestionPanel();
+
+                // then
+                expect(StatisticsService.updateStatistics).toHaveBeenCalled();
+            }));
+
+            it('should load Lookup Panel when a new column is selected', inject((DatagridExternalService, LookupService) => {
+                // given
+                stateMock.playground.grid.selectedColumns = [{ id: '0001' }];
+                expect(LookupService.updateTargetColumn).not.toHaveBeenCalled();
+
+                // when
+                DatagridExternalService.updateSuggestionPanel(null, null);
+
+                // then
+                expect(LookupService.updateTargetColumn).toHaveBeenCalled();
+            }));
+
+            it('should reset statistics when multiple columns are selected', inject((DatagridExternalService, StatisticsService) => {
+                //given
+                stateMock.playground.grid.selectedColumns = [{ id: '0001' }, { id: '0002' }];
+                DatagridExternalService.lastSelectedColumn = stateMock.playground.grid.selectedColumns[0];
+                DatagridExternalService.lastSelectedColumnsNumber = 1;
 
                 //when
                 DatagridExternalService.updateSuggestionPanel();
@@ -130,123 +163,105 @@ describe('Datagrid external service', () => {
                 //then
                 expect(StatisticsService.reset).toHaveBeenCalled();
             }));
-
-            it('should update charts when there is a selected column', inject((DatagridExternalService, StatisticsService) => {
-                //given
-                stateMock.playground.grid.selectedColumn = { id: '0001' };
-                expect(StatisticsService.updateStatistics).not.toHaveBeenCalled();
-
-                //when
-                DatagridExternalService.updateSuggestionPanel();
-
-                //then
-                expect(StatisticsService.updateStatistics).toHaveBeenCalled();
-            }));
-
-            it('should load Lookup Panel when a new column is selected', inject((DatagridExternalService, LookupService) => {
-                //given
-                stateMock.playground.grid.selectedColumn = { id: '0001' };
-                expect(LookupService.updateTargetColumn).not.toHaveBeenCalled();
-
-                //when
-                DatagridExternalService.updateSuggestionPanel(null, null);
-
-                //then
-                expect(LookupService.updateTargetColumn).toHaveBeenCalled();
-            }));
         });
 
         describe('transformations', () => {
-            it('should do nothing if selected column/line have not changed', inject((DatagridExternalService, SuggestionService) => {
-                //when
+            it('should do nothing if selected column/line have not changed', inject((DatagridExternalService, TransformationService) => {
+                // given
+                expect(TransformationService.initTransformations).not.toHaveBeenCalled();
+                stateMock.playground.grid.selectedColumns = [];
+                
+                // when
                 DatagridExternalService.updateSuggestionPanel();
 
-                //then
-                expect(SuggestionService.setLine).not.toHaveBeenCalled();
-                expect(SuggestionService.setColumn).not.toHaveBeenCalled();
+                // then
+                expect(TransformationService.initTransformations).not.toHaveBeenCalled();
             }));
 
             describe('line scope', () => {
-                it('should update when there is a selected line', inject((DatagridExternalService, SuggestionService) => {
-                    //given
+                it('should update when there is a selected line', inject((DatagridExternalService, TransformationService) => {
+                    // given
                     stateMock.playground.grid.selectedLine = { tdpId: 125 };
-                    expect(SuggestionService.setLine).not.toHaveBeenCalled();
+                    stateMock.playground.grid.selectedColumns = [];
+                    expect(TransformationService.initTransformations).not.toHaveBeenCalled();
 
-                    //when
+                    // when
                     DatagridExternalService.updateSuggestionPanel();
 
-                    //then
-                    expect(SuggestionService.setLine).toHaveBeenCalledWith(stateMock.playground.grid.selectedLine);
+                    // then
+                    expect(TransformationService.initTransformations).toHaveBeenCalledWith('line');
                 }));
 
-                it('should NOT update when there is no selected line', inject((DatagridExternalService, SuggestionService) => {
-                    //given
+                it('should NOT update when there is no selected line', inject((DatagridExternalService, TransformationService) => {
+                    // given
                     stateMock.playground.grid.selectedLine = null;
-                    stateMock.playground.grid.selectedColumn = { id: '0001' };
-                    expect(SuggestionService.setLine).not.toHaveBeenCalled();
+                    stateMock.playground.grid.selectedColumns = [{ id: '0001' }];
+                    expect(TransformationService.initTransformations).not.toHaveBeenCalled();
 
-                    //when
+                    // when
                     DatagridExternalService.updateSuggestionPanel();
 
-                    //then
-                    expect(SuggestionService.setLine).not.toHaveBeenCalled();
+                    // then
+                    expect(TransformationService.initTransformations).not.toHaveBeenCalledWith('line');
                 }));
 
-                it('should NOT update when selected line has not changed', inject((DatagridExternalService, SuggestionService) => {
-                    //given
+                it('should NOT update when selected line has not changed', inject((DatagridExternalService, TransformationService) => {
+                    // given
                     const selectedLine = { tdpId: 125 };
                     stateMock.playground.grid.selectedLine = selectedLine;
                     DatagridExternalService.lastSelectedLine = selectedLine;
-                    expect(SuggestionService.setLine).not.toHaveBeenCalled();
+                    expect(TransformationService.initTransformations).not.toHaveBeenCalled();
 
-                    stateMock.playground.grid.selectedColumn = { id: '0001' };
+                    stateMock.playground.grid.selectedColumns = [{ id: '0001' }];
 
-                    //when
+                    // when
                     DatagridExternalService.updateSuggestionPanel();
 
-                    //then
-                    expect(SuggestionService.setLine).not.toHaveBeenCalled();
+                    // then
+                    expect(TransformationService.initTransformations).not.toHaveBeenCalledWith('line');
                 }));
             });
 
             describe('column scope', () => {
-                it('should update when there is a selected column', inject((DatagridExternalService, SuggestionService) => {
-                    //given
-                    stateMock.playground.grid.selectedColumn = { id: '0001' };
-                    expect(SuggestionService.setColumn).not.toHaveBeenCalled();
+                it('should update when there is a selected column', inject((DatagridExternalService, TransformationService) => {
+                    // given
+                    stateMock.playground.grid.selectedColumns = [{ id: '0001' }];
+                    expect(TransformationService.initTransformations).not.toHaveBeenCalled();
 
-                    //when
+                    // when
                     DatagridExternalService.updateSuggestionPanel();
 
-                    //then
-                    expect(SuggestionService.setColumn).toHaveBeenCalled();
+                    // then
+                    expect(TransformationService.initTransformations).toHaveBeenCalled();
                 }));
 
-                it('should NOT update when there is no selected column', inject((DatagridExternalService, SuggestionService) => {
-                    //given
+                it('should NOT update when there is no selected column', inject((DatagridExternalService, TransformationService) => {
+                    // given
                     stateMock.playground.grid.selectedLine = { tdpId: 125 };
-                    stateMock.playground.grid.selectedColumn = null;
-                    expect(SuggestionService.setColumn).not.toHaveBeenCalled();
+                    stateMock.playground.grid.selectedColumns = [];
+                    expect(TransformationService.initTransformations).not.toHaveBeenCalled();
 
-                    //when
+                    // when
                     DatagridExternalService.updateSuggestionPanel();
 
-                    //then
-                    expect(SuggestionService.setColumn).not.toHaveBeenCalled();
+                    // then : it should init only line transfo, not column
+                    expect(TransformationService.initTransformations.calls.count()).toBe(1);
+                    expect(TransformationService.initTransformations).toHaveBeenCalledWith('line');
                 }));
 
-                it('should NOT update when selected column has not changed', inject((DatagridExternalService, SuggestionService) => {
-                    //given
+                it('should NOT update when selected column has not changed', inject((DatagridExternalService, TransformationService) => {
+                    // given
                     const selectedColumn = { id: '0001' };
-                    stateMock.playground.grid.selectedColumn = selectedColumn;
+                    stateMock.playground.grid.selectedColumns = [selectedColumn];
                     DatagridExternalService.lastSelectedColumn = selectedColumn;
-                    expect(SuggestionService.setColumn).not.toHaveBeenCalled();
+                    DatagridExternalService.lastSelectedColumnsNumber = 1;
+                    expect(TransformationService.initTransformations).not.toHaveBeenCalled();
 
-                    //when
+                    // when
                     DatagridExternalService.updateSuggestionPanel();
 
-                    //then
-                    expect(SuggestionService.setColumn).not.toHaveBeenCalled();
+                    // then
+                    expect(TransformationService.initTransformations).not.toHaveBeenCalled();
                 }));
             });
         });

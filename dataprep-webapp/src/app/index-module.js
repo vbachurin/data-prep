@@ -100,15 +100,6 @@ const app = angular.module(MODULE_NAME,
                 url: '/playground',
                 template: '<playground></playground>',
                 abstract: true,
-                resolve: {
-                    inventory: ($q, DatasetService, PreparationService) => {
-                        'ngInject';
-                        return $q.all([
-                            DatasetService.getDatasets(),
-                            PreparationService.getPreparations(),
-                        ]);
-                    },
-                },
             })
             .state('playground.preparation', { url: '/preparation?prepid' })
             .state('playground.dataset', { url: '/dataset?datasetid' });

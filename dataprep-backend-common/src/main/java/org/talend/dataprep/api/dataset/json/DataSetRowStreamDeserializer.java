@@ -37,7 +37,7 @@ public class DataSetRowStreamDeserializer extends JsonDeserializer<Stream<DataSe
         } else {
             rowMetadata = new RowMetadata(columns);
         }
-        final Iterable<DataSetRow> rowIterable = () -> new DataSetRowIterator(jp, rowMetadata, true);
+        final Iterable<DataSetRow> rowIterable = () -> new DataSetRowIterator(jp, rowMetadata);
         return StreamSupport.stream(rowIterable.spliterator(), false);
     }
 }

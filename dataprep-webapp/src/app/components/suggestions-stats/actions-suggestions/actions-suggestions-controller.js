@@ -1,58 +1,75 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
+
+import { find } from 'lodash';
+
+const SUGGESTION = 'suggestion';
 
 /**
  * @ngdoc controller
  * @name data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
  * @description Actions suggestion controller
- * @requires data-prep.services.transformation.service:SuggestionService
- * @requires data-prep.services.transformation.service:ColumnSuggestionService
+ * @requires data-prep.services.transformation.service:TransformationService
  */
-export default function ActionsSuggestionsCtrl(state, SuggestionService, ColumnSuggestionService) {
+export default function ActionsSuggestionsCtrl(state, TransformationService) {
     'ngInject';
 
     const vm = this;
-    vm.columnSuggestionService = ColumnSuggestionService;
-    vm.suggestionService = SuggestionService;
+    vm.TransformationService = TransformationService;
     vm.state = state;
+
+    /**
+     * Predicate to define if a suggestion should be rendered
+     *  - filtered actions only when we will apply on filtered data
+     *  - other suggestions only when we have only 1 selected column
+     * @param action
+     * @returns {*|boolean}
+     */
+    function shouldRenderSuggestion(action) {
+        return state.playground.filter.applyTransformationOnFilters && (action.category === 'filtered') ||
+            state.playground.grid.selectedColumns.length === 1 && (action.category !== 'filtered');
+    }
 
     /**
      * @ngdoc method
      * @name shouldRenderAction
      * @methodOf data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
+     * @param {object} categoryItem The category
      * @param {object} action The transformation to test
      * @description Determine if the transformation should be rendered.
      * The 'filtered' category transformations are not rendered if the applyTransformationOnFilters flag is false
      * @returns {boolean} True if the transformation should be rendered, False otherwise
      */
-    vm.shouldRenderAction = function shouldRenderAction(action) {
-        return state.playground.filter.applyTransformationOnFilters || (action.category !== 'filtered');
+    vm.shouldRenderAction = function shouldRenderAction(categoryItem, action) {
+        if (categoryItem.category !== SUGGESTION) {
+            return true;
+        }
+        return shouldRenderSuggestion(action);
     };
 
     /**
      * @ngdoc method
      * @name shouldRenderCategory
      * @methodOf data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
-     * @param {object} categoryAction The categories with their transformations
+     * @param {object} categoryItem The categories with their transformations
      * @description Determine if the category should be rendered.
      * The 'suggestion' category is rendered if it has transformations to render
      * @returns {boolean} True if the category should be rendered, False otherwise
      */
-    vm.shouldRenderCategory = function shouldRenderCategory(categoryAction) {
-        return state.playground.filter.applyTransformationOnFilters ||            // display 'filtered' transformations (contained into 'suggestion' category)
-            categoryAction.category !== 'suggestion' ||                           // not 'suggestion' category
-            _.find(categoryAction.transformations, function (action) {            // 'suggestion' category: has transformations that is not a 'filtered' transformation
-                return action.category !== 'filtered';
-            });
+    vm.shouldRenderCategory = function shouldRenderCategory(categoryItem) {
+        // render all non Suggestions category
+        // render Suggestions if one of the transformations should be rendered
+        return categoryItem.category !== SUGGESTION ||
+            find(categoryItem.transformations, (action) => shouldRenderSuggestion(action));
     };
 }

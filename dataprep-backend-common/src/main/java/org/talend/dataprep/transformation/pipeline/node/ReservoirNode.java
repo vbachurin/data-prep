@@ -4,10 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -115,7 +112,7 @@ public class ReservoirNode extends AnalysisNode implements Monitored {
     private void store(DataSetRow row, List<ColumnMetadata> columns) {
         try {
             generator.writeStartObject();
-            columns.stream().forEach(column -> {
+            columns.forEach(column -> {
                 try {
                     generator.writeStringField(column.getId(), row.get(column.getId()));
                 } catch (IOException e) {
@@ -124,6 +121,10 @@ public class ReservoirNode extends AnalysisNode implements Monitored {
             });
             if (row.isDeleted()) {
                 generator.writeBooleanField("_deleted", true);
+            }
+            final Optional<Long> tdpId = Optional.ofNullable(row.getTdpId());
+            if (tdpId.isPresent()) {
+                generator.writeNumberField(DataSetRow.TDP_ID, tdpId.get());
             }
             generator.writeEndObject();
         } catch (IOException e) {

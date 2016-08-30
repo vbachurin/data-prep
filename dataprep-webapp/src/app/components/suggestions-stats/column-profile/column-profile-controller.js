@@ -36,7 +36,7 @@ export default function ColumnProfileCtrl($translate, $timeout, state, Statistic
     // ------------------------------------------------FILTER------------------------------------------------
     //------------------------------------------------------------------------------------------------------
     function addExactFilter(value, keyName = null) {
-        const column = state.playground.grid.selectedColumn;
+        const column = state.playground.grid.selectedColumns[0];
         const args = {
             phrase: [
                 {
@@ -69,7 +69,7 @@ export default function ColumnProfileCtrl($translate, $timeout, state, Statistic
      * @param {object} interval The interval [min, max] to filter
      */
     function addRangeFilter(interval, keyName = null) {
-        const selectedColumn = state.playground.grid.selectedColumn;
+        const selectedColumn = state.playground.grid.selectedColumns[0];
         const min = interval.min;
         const max = interval.max;
         const isDateRange = selectedColumn.type === 'date';

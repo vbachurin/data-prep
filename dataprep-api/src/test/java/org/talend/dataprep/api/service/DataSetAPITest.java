@@ -13,24 +13,12 @@
 
 package org.talend.dataprep.api.service;
 
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.RestAssured.when;
-import static com.jayway.restassured.path.json.JsonPath.from;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.Matchers.*;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.*;
-import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
-import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
-
-import java.io.InputStream;
-import java.time.Instant;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.jayway.restassured.path.json.JsonPath;
+import com.jayway.restassured.response.Response;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.assertj.core.api.Assertions;
@@ -44,12 +32,21 @@ import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.exception.error.DataSetErrorCodes;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.jayway.restassured.path.json.JsonPath;
-import com.jayway.restassured.response.Response;
+import java.io.InputStream;
+import java.time.Instant;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.RestAssured.when;
+import static com.jayway.restassured.path.json.JsonPath.from;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
+import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
+import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
 /**
  * Unit test for Data Set API.
@@ -129,6 +126,53 @@ public class DataSetAPITest extends ApiServiceTestBase {
 
         // then
         assertTrue(list.contains(dataSetId));
+    }
+
+    @Test
+    public void shouldListPreparationSummary() throws Exception {
+
+        // given
+        for (int i = 0; i < 6; i++) {
+            final String dataSetId = createDataset("dataset/dataset.csv", "testDataset-" + i, "text/csv");
+            for (int j = 0; j < 6; j++) {
+                createPreparationFromDataset(dataSetId, "preparation-" + i + "-" + j);
+            }
+        }
+
+        // when
+        final Response response = when().get("/api/datasets/summary");
+
+        // then
+        assertEquals(200, response.getStatusCode());
+        // because an empty constructor cannot be added to the the EnrichedDataSetMetadata, tree parsing is mandatory
+        final JsonNode rootNode = mapper.readTree(response.asInputStream());
+        assertTrue(rootNode.isArray());
+        assertEquals(6, rootNode.size());
+        for (JsonNode dataset : rootNode) {
+            checkNotNull(dataset, "id");
+            checkNotNull(dataset, "name");
+            checkNotNull(dataset, "preparations");
+            final JsonNode preparations = dataset.get("preparations");
+            assertTrue(preparations.isArray());
+            for (JsonNode preparation : preparations) {
+                checkNotNull(preparation, "id");
+                checkNotNull(preparation, "name");
+                checkNotNull(preparation, "nbSteps");
+                checkNotNull(preparation, "lastModificationDate");
+            }
+        }
+    }
+
+    /**
+     * Check that a field is there and not null in the given json node.
+     * 
+     * @param node the parent json node.
+     * @param fieldName the field name to check.
+     */
+    private void checkNotNull(JsonNode node, String fieldName) {
+        assertTrue(node.has(fieldName));
+        final JsonNode field = node.get(fieldName);
+        assertFalse(field.isNull());
     }
 
     @Test

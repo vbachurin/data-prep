@@ -18,7 +18,6 @@ import SERVICES_STATE_MODULE from '../state/state-module';
 import SERVICES_UTILS_MODULE from '../utils/utils-module';
 
 import PreparationRestService from './rest/preparation-rest-service';
-import PreparationListService from './list/preparation-list-service';
 import PreparationService from './preparation-service';
 
 const MODULE_NAME = 'data-prep.services.preparation';
@@ -38,7 +37,6 @@ angular.module(MODULE_NAME,
         SERVICES_UTILS_MODULE,
     ])
     .service('PreparationRestService', PreparationRestService)
-    .service('PreparationListService', PreparationListService)
     .service('PreparationService', PreparationService);
 
 export default MODULE_NAME;

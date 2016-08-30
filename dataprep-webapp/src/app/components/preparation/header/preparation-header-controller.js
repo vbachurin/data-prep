@@ -21,10 +21,9 @@
  * @requires data-prep.services.folder.service:DatasetService
  */
 export default class PreparationHeaderCtrl {
-    constructor($state, state, StateService, StorageService, FolderService) {
+    constructor(state, StateService, StorageService, FolderService) {
         'ngInject';
 
-        this.$state = $state;
         this.state = state;
         this.StateService = StateService;
         this.StorageService = StorageService;
@@ -82,12 +81,8 @@ export default class PreparationHeaderCtrl {
     createFolder(folderName) {
         const currentFolderId = this.state.inventory.folder.metadata.id;
         return this.FolderService.create(currentFolderId, folderName)
-            .then((response) => {
-                this.StateService.setPreviousRoute(
-                    'nav.index.preparations',
-                    { folderId: currentFolderId }
-                );
-                this.$state.go('nav.index.preparations', { folderId: response.data.id });
+            .then(() => {
+                this.FolderService.refresh(this.state.inventory.folder.metadata.id);
             });
     }
 }

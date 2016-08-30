@@ -12,17 +12,14 @@
  ============================================================================*/
 
 import angular from 'angular';
-import SERVICES_FILTER_MODULE from '../filter/filter-module';
 import SERVICES_PARAMETERS_SERVICE from '../parameters/parameters-module';
 import SERVICES_STATE_MODULE from '../state/state-module';
 import SERVICES_UTILS_MODULE from '../utils/utils-module';
 
 import TransformationService from './transformation-service';
-import ColumnSuggestionService from './suggestion/column-suggestion-service';
-import LineSuggestionService from './suggestion/line-suggestion-service';
-import SuggestionService from './suggestion/suggestion-service';
-import TransformationRestService from './rest/transformation-rest-service';
-import TransformationCacheService from './cache/transformation-cache-service';
+import TransformationUtilsService from './transformation-utils-service';
+import TransformationCacheService from './transformation-cache-service';
+import TransformationRestService from './transformation-rest-service';
 
 const MODULE_NAME = 'data-prep.services.transformation';
 
@@ -37,15 +34,12 @@ const MODULE_NAME = 'data-prep.services.transformation';
  */
 angular.module(MODULE_NAME,
     [
-        SERVICES_FILTER_MODULE,
         SERVICES_PARAMETERS_SERVICE,
         SERVICES_STATE_MODULE,
         SERVICES_UTILS_MODULE,
     ])
     .service('TransformationService', TransformationService)
-    .service('ColumnSuggestionService', ColumnSuggestionService)
-    .service('LineSuggestionService', LineSuggestionService)
-    .service('SuggestionService', SuggestionService)
+    .service('TransformationUtilsService', TransformationUtilsService)
     .service('TransformationRestService', TransformationRestService)
     .service('TransformationCacheService', TransformationCacheService);
 

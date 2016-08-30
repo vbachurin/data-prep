@@ -51,10 +51,10 @@ describe('ColumnProfile controller', () => {
             const ctrl = createController();
             const obj = { data: 'Ulysse', occurrences: 5 };
 
-            stateMock.playground.grid.selectedColumn = {
+            stateMock.playground.grid.selectedColumns = [{
                 id: '0001',
                 name: 'firstname',
-            };
+            }];
 
             //when
             ctrl.addBarchartFilter(obj);
@@ -79,11 +79,11 @@ describe('ColumnProfile controller', () => {
                 isMaxReached: true,
             };
 
-            stateMock.playground.grid.selectedColumn = {
+            stateMock.playground.grid.selectedColumns = [{
                 id: '0001',
                 name: 'firstname',
                 type: 'integer',
-            };
+            }];
 
             //when
             ctrl.addRangeFilter(interval);
@@ -117,11 +117,11 @@ describe('ColumnProfile controller', () => {
                 isMaxReached: false,
             };
 
-            stateMock.playground.grid.selectedColumn = {
+            stateMock.playground.grid.selectedColumns = [{
                 id: '0001',
                 name: 'firstname',
                 type: 'integer',
-            };
+            }];
 
             //when
             ctrl.addRangeFilter(interval);
@@ -155,11 +155,11 @@ describe('ColumnProfile controller', () => {
                 isMaxReached: true,
             };
 
-            stateMock.playground.grid.selectedColumn = {
+            stateMock.playground.grid.selectedColumns = [{
                 id: '0001',
                 name: 'firstname',
                 type: 'integer',
-            };
+            }];
 
             //when
             ctrl.addRangeFilter(interval);
@@ -194,11 +194,11 @@ describe('ColumnProfile controller', () => {
                 isMaxReached: undefined,
             };
 
-            stateMock.playground.grid.selectedColumn = {
+            stateMock.playground.grid.selectedColumns = [{
                 id: '0001',
                 name: 'firstname',
                 type: 'date',
-            };
+            }];
 
             //when
             ctrl.addRangeFilter(interval);
@@ -234,11 +234,11 @@ describe('ColumnProfile controller', () => {
                 isMaxReached: undefined,
             };
 
-            stateMock.playground.grid.selectedColumn = {
+            stateMock.playground.grid.selectedColumns = [{
                 id: '0001',
                 name: 'CreationDate',
                 type: 'date',
-            };
+            }];
 
             //when
             ctrl.addRangeFilter(interval);
@@ -268,10 +268,10 @@ describe('ColumnProfile controller', () => {
             const ctrl = createController();
             const obj = { data: '', occurrences: 5 };
 
-            stateMock.playground.grid.selectedColumn = {
+            stateMock.playground.grid.selectedColumns = [{
                 id: '0001',
                 name: 'firstname',
-            };
+            }];
 
             //when
             ctrl.addBarchartFilter(obj);

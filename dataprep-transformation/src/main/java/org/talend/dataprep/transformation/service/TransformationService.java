@@ -296,21 +296,26 @@ public class TransformationService extends BaseTransformationService {
     }
 
     /**
-     * Compare the results of 2 sets of actions, and return the diff metadata Ex : the created columns ids
+     * Given a list of requested preview, it applies the diff to each one.
+     * A diff is between 2 sets of actions and return the info like created columns ids
      */
     //@formatter:off
     @RequestMapping(value = "/transform/diff/metadata", method = POST, produces = APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Apply a diff between 2 sets of actions and return the diff (containing created columns ids for example)", notes = "This operation returns the diff metadata", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Given a list of requested preview, it applies the diff to each one. A diff is between 2 sets of actions and return the info like created columns ids", notes = "This operation returns the diff metadata", consumes = MediaType.APPLICATION_JSON_VALUE)
     @VolumeMetered
-    public StepDiff getCreatedColumns(@ApiParam(name = "body", value = "Preview parameters in json.") @RequestBody final PreviewParameters previewParameters) {
-        //@formatter:on
+    public List<StepDiff> getCreatedColumns(@ApiParam(name = "body", value = "Preview parameters list in json.") @RequestBody final List<PreviewParameters> previewParameters) {
+        return previewParameters.stream().map(this::getCreatedColumns).collect(toList());
+    }
 
-        // get the dataset content as the technical user because the dataset may not be shared
+    /**
+     * Compare the results of 2 sets of actions, and return the diff metadata Ex : the created columns ids
+     */
+    private StepDiff getCreatedColumns(final PreviewParameters previewParameters) {
         boolean identityReleased = false;
         securityProxy.asTechnicalUser();
         final DataSetSampleGet dataSetGet = context.getBean(DataSetSampleGet.class, previewParameters.getDataSetId());
         try (InputStream content = dataSetGet.execute(); //
-                JsonParser parser = mapper.getFactory().createParser(content)) {
+             JsonParser parser = mapper.getFactory().createParser(content)) {
 
             securityProxy.releaseIdentity();
             identityReleased = true;
@@ -445,7 +450,7 @@ public class TransformationService extends BaseTransformationService {
                 .limit(limit) //
                 .map(Suggestion::getAction) // Get the action for positive suggestions
                 .map(am -> am.adapt(column)) // Adapt default values (e.g. column name)
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
     /**
@@ -504,7 +509,7 @@ public class TransformationService extends BaseTransformationService {
     public List<ExportFormat> exportTypes() {
         return formatRegistrationService.getExternalFormats().stream() //
                 .sorted((f1, f2) -> f1.getOrder() - f2.getOrder()) // Enforce strict order.
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
 }

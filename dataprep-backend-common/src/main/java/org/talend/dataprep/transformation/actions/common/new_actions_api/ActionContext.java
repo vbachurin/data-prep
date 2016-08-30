@@ -70,5 +70,6 @@ public class ActionContext {
 
     static ActionContext fromInternal(org.talend.dataprep.transformation.api.action.context.ActionContext internal) {
         // TODO
+        throw new UnsupportedOperationException("Not yet implemented.");
     }
 }

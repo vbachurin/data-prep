@@ -83,8 +83,6 @@ public class UserActionAdapter implements ActionMetadata {
     @Override
     @Deprecated
     public boolean isDynamic() {
-        delegate.getRowFilter(java.util.function.Predicate.);
-
         return false;
     }
 

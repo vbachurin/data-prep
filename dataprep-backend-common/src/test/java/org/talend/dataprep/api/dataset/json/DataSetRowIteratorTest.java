@@ -43,7 +43,7 @@ public class DataSetRowIteratorTest {
 
         // when
         final InputStream json = DataSetRowIteratorTest.class.getResourceAsStream("datasetrow.json");
-        DataSetRowIterator iterator = new DataSetRowIterator(json, true);
+        DataSetRowIterator iterator = new DataSetRowIterator(json);
 
         List<DataSetRow> actual = new ArrayList<>();
         while (iterator.hasNext()) {
@@ -65,7 +65,7 @@ public class DataSetRowIteratorTest {
 
         // when
         final InputStream json = DataSetRowIteratorTest.class.getResourceAsStream("datasetrow.json");
-        DataSetRowIterator iterator = new DataSetRowIterator(json, false);
+        DataSetRowIterator iterator = new DataSetRowIterator(json);
 
         List<DataSetRow> actual = new ArrayList<>();
         while (iterator.hasNext()) {
@@ -73,7 +73,7 @@ public class DataSetRowIteratorTest {
         }
 
         // then
-        Assert.assertEquals(expectedRows, actual);
+        Assert.assertNotEquals(expectedRows, actual); // TDP id are read as-is
     }
 
     private DataSetRow getDataSetRow(final long tdpId, String... data) {

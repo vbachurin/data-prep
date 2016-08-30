@@ -110,7 +110,7 @@ export default function TransformMenuCtrl(state, PlaygroundService, ParametersSe
      * @description Perform a transformation on the column
      */
     function transform(menu, params) {
-        PlaygroundService.appendStep(menu.name, params)
+        PlaygroundService.appendStep([{ action: menu.name, parameters: params }])
             .then(function () {
                 vm.showModal = false;
             });

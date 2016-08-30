@@ -27,6 +27,7 @@ import { statisticsState, StatisticsStateService } from './statistics/statistics
 import { suggestionsState, SuggestionsStateService } from './suggestions/suggestions-state-service';
 import { routeState, RouteStateService } from './route/route-state-service';
 import { importState, ImportStateService } from './import/import-state-service';
+import { exportState, ExportStateService } from './export/export-state-service';
 import { state, StateService } from './state-service';
 
 const MODULE_NAME = 'data-prep.services.state';
@@ -78,6 +79,9 @@ angular.module(MODULE_NAME, [])
 
     .service('ImportStateService', ImportStateService)
     .constant('importState', importState)
+
+    .service('ExportStateService', ExportStateService)
+    .constant('exportState', exportState)
 
     .service('StateService', StateService)
     .constant('state', state);

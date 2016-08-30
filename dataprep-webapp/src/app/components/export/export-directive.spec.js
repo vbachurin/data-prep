@@ -21,65 +21,107 @@ describe('Export directive', () => {
 
     const exportTypes = [
         {
-            mimeType: 'text/csv',
-            extension: '.csv',
-            id: 'CSV',
-            needParameters: 'true',
-            defaultExport: 'false',
-            parameters: [{
-                name: 'csvSeparator',
-                labelKey: 'CHOOSE_SEPARATOR',
-                type: 'radio',
-                defaultValue: { value: ';', labelKey: 'SEPARATOR_SEMI_COLON' },
-                values: [
-                    { value: '&#09;', labelKey: 'SEPARATOR_TAB' },
-                    { value: ' ', labelKey: 'SEPARATOR_SPACE' },
-                    { value: ',', labelKey: 'SEPARATOR_COMMA' },
-                ],
-            },],
+            "mimeType": "text/csv",
+            "extension": ".csv",
+            "id": "CSV",
+            "needParameters": "true",
+            "defaultExport": "false",
+            "enabled": true,
+            "disableReason": "",
+            "title": "Export to CSV",
+            "parameters": [
+                {
+                    "name": "csvSeparator",
+                    "type": "select",
+                    "implicit": false,
+                    "canBeBlank": true,
+                    "placeHolder": "",
+                    "configuration": {
+                        "values": [
+                            {
+                                "value": ";",
+                                "label": "Semicolon"
+                            },
+                            {
+                                "value": "\t",
+                                "label": "Tabulation"
+                            },
+                            {
+                                "value": " ",
+                                "label": "Space"
+                            },
+                            {
+                                "value": ",",
+                                "label": "Comma"
+                            }
+                        ],
+                        "multiple": false
+                    },
+                    "radio": true,
+                    "description": "Select character to use as a delimiter",
+                    "label": "Delimiter",
+                    "default": ";"
+                },
+                {
+                    "name": "fileName",
+                    "type": "string",
+                    "implicit": false,
+                    "canBeBlank": false,
+                    "placeHolder": "",
+                    "description": "Name of the generated export file",
+                    "label": "Filename",
+                    "default": ""
+                }
+            ]
         },
         {
-            mimeType: 'application/tde',
-            extension: '.tde',
-            id: 'TABLEAU',
-            needParameters: 'false',
-            defaultExport: 'false',
-            enabled: false,
-            disableReason: 'Reason only valid in unit test',
-        },
-        {
-            mimeType: 'application/vnd.ms-excel',
-            extension: '.xls',
-            id: 'XLS',
-            needParameters: 'false',
-            defaultExport: 'true',
-        },
+            "mimeType": "application/vnd.ms-excel",
+            "extension": ".xlsx",
+            "id": "XLSX",
+            "needParameters": "true",
+            "defaultExport": "true",
+            "enabled": true,
+            "disableReason": "",
+            "title": "Export to XLSX",
+            "parameters": [
+                {
+                    "name": "fileName",
+                    "type": "string",
+                    "implicit": false,
+                    "canBeBlank": false,
+                    "placeHolder": "",
+                    "description": "Name of the generated export file",
+                    "label": "Filename",
+                    "default": ""
+                }
+            ]
+        }
     ];
-    const csvParameters = { exportType: 'CSV', 'exportParameters.csvSeparator': ';' };
-    const csvType = exportTypes[0];
+    const xlsxType = exportTypes[1];
 
     beforeEach(angular.mock.module('data-prep.export', ($provide) => {
         stateMock = {
             playground: {
-                exportParameters: {
-                    exportType: 'CSV',
-                    'exportParameters.csvSeparator': ';',
-                    'exportParameters.fileName': 'prepname',
-                },
                 recipe: {
                     current: {
-                        steps: [],
-                    },
-                },
+                        steps: []
+                    }
+                }
             },
+            export: {
+                exportTypes: exportTypes,
+                defaultExportType: {
+                    exportType: 'XLSX'
+                }
+            }
         };
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(inject(($rootScope, $compile, $q, ExportService, StorageService) => {
-        spyOn(ExportService, 'refreshTypes').and.returnValue($q.when(exportTypes));
-        spyOn(ExportService, 'getType').and.returnValue(csvType);
-        spyOn(StorageService, 'getExportParams').and.returnValue(csvParameters);
+
+    beforeEach(inject(($rootScope, $compile, $q, ExportService, StateService) => {
+        spyOn(ExportService, 'getType').and.returnValue(xlsxType);
+        spyOn(StateService, 'setDefaultExportType').and.returnValue();
 
         scope = $rootScope.$new();
         element = angular.element('<export></export>');
@@ -101,7 +143,7 @@ describe('Export directive', () => {
             expect(input.value).toBeFalsy();
 
             //when
-            stateMock.playground.preparation = { id: '48da64513c43a548e678bc99' };
+            stateMock.playground.preparation = {id: '48da64513c43a548e678bc99'};
             scope.$digest();
 
             //then
@@ -131,7 +173,7 @@ describe('Export directive', () => {
             expect(input.value).toBeFalsy();
 
             //when
-            state.playground.dataset = { id: '48da64513c43a548e678bc99' };
+            state.playground.dataset = {id: '48da64513c43a548e678bc99'};
             scope.$digest();
 
             //then
@@ -143,15 +185,7 @@ describe('Export directive', () => {
             const input = element.find('#exportForm').eq(0)[0].exportType;
 
             //then
-            expect(input.value).toBe('CSV');
-        });
-
-        it('should inject export type parameters in form', () => {
-            //given
-            const input = element.find('#exportForm').eq(0)[0]['exportParameters.csvSeparator'];
-
-            //then
-            expect(input.value).toBe(';');
+            expect(input.value).toBe('XLSX');
         });
 
         it('should set form in controller', inject(() => {
@@ -160,27 +194,46 @@ describe('Export directive', () => {
         }));
     });
 
-    describe('disabled export', () => {
-        it('should have disabled style', inject((ExportService) => {
+    describe('launch export', () => {
+        it('should launch a csv export', () => {
             //given
-            ExportService.exportTypes = exportTypes;
+            stateMock.playground.preparation = {
+                id: '48da64513c43a548e678bc99',
+                name: 'cars_prep'
+            };
+
+            //when
+            element.find('.dropdown-menu').find('li').eq(0).click();
+            scope.$digest();
+
+            //then
+            expect(stateMock.export.exportTypes[0].parameters[1].value).toBe('cars_prep');
+            expect(ctrl.selectedType).toBe(exportTypes[0]);
+            expect(ctrl.showModal).toBe(true);
+        });
+    });
+
+    describe('disabled export', () => {
+        it('should have disabled style', () => {
+            //given
+            stateMock.export.exportTypes[1].enabled = false;
 
             //when
             scope.$digest();
 
             //then
             expect(element.find('.dropdown-menu').find('li').eq(1).hasClass('disabled')).toBe(true);
-        }));
+        });
 
-        it('should have disabled message', inject((ExportService) => {
+        it('should have disabled message', () => {
             //given
-            ExportService.exportTypes = exportTypes;
+            stateMock.export.exportTypes[1].enabled = false;
 
             //when
             scope.$digest();
 
             //then
-            expect(element.find('.dropdown-menu').find('li').eq(1).text().trim()).toBe('TABLEAU - Reason only valid in unit test');
-        }));
+            expect(element.find('.dropdown-menu').find('li').eq(1).text().trim()).toBe('XLSX -');//disabledReason is empty
+        });
     });
 });

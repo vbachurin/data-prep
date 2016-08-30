@@ -239,7 +239,7 @@ public class PipelineTest {
 
         // Then
         assertEquals(1, output.getCount());
-        assertEquals(row1, output.getRow());
+        assertEquals(row2, output.getRow());
         assertEquals(rowMetadata, output.getMetadata());
     }
 

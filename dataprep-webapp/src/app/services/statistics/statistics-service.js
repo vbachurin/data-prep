@@ -78,7 +78,7 @@ export default function StatisticsService($q, $log, $filter, state, StateService
             label,
             keyField,
             valueField,
-            column: state.playground.grid.selectedColumn,
+            column: state.playground.grid.selectedColumns[0],
             vertical: false,
             className,
         };
@@ -100,7 +100,7 @@ export default function StatisticsService($q, $log, $filter, state, StateService
             keyField,
             valueField,
             label,
-            column: state.playground.grid.selectedColumn,
+            column: state.playground.grid.selectedColumns[0],
             vertical: true,
         };
     }
@@ -142,7 +142,7 @@ export default function StatisticsService($q, $log, $filter, state, StateService
      * @description prepares the numeric data details
      */
     function createNumberRangeHistograms() {
-        const histoData = state.playground.grid.selectedColumn.statistics.histogram;
+        const histoData = state.playground.grid.selectedColumns[0].statistics.histogram;
         if (!histoData) {
             return;
         }
@@ -222,16 +222,16 @@ export default function StatisticsService($q, $log, $filter, state, StateService
             return;
         }
 
-        const column = state.playground.grid.selectedColumn;
+        const column = state.playground.grid.selectedColumns[0];
         const statistics = column.statistics;
         const currentRangeFilter = _.find(state.playground.filter.gridFilters, function (filter) {
             return filter.colId === column.id && filter.type === 'inside_range';
         });
 
         let rangeLimits;
-        if (state.playground.grid.selectedColumn.type === 'date') {
-            const firstHistogramItem = _.first(state.playground.grid.selectedColumn.statistics.histogram.items);
-            const lastHistogramItem = _.last(state.playground.grid.selectedColumn.statistics.histogram.items);
+        if (state.playground.grid.selectedColumns[0].type === 'date') {
+            const firstHistogramItem = _.first(state.playground.grid.selectedColumns[0].statistics.histogram.items);
+            const lastHistogramItem = _.last(state.playground.grid.selectedColumns[0].statistics.histogram.items);
             rangeLimits = {
                 min: firstHistogramItem.range.min,
                 max: lastHistogramItem.range.max,
@@ -244,7 +244,7 @@ export default function StatisticsService($q, $log, $filter, state, StateService
             };
         }
 
-        rangeLimits.type = state.playground.grid.selectedColumn.type;
+        rangeLimits.type = state.playground.grid.selectedColumns[0].type;
 
         if (currentRangeFilter) {
             const currentRangeFilterIntervals = currentRangeFilter.args.intervals;
@@ -282,7 +282,7 @@ export default function StatisticsService($q, $log, $filter, state, StateService
      * @description prepares the date data to be visualized
      */
     function createDateRangeHistogram() {
-        const histoData = state.playground.grid.selectedColumn.statistics.histogram;
+        const histoData = state.playground.grid.selectedColumns[0].statistics.histogram;
         if (!histoData) {
             return;
         }
@@ -335,7 +335,7 @@ export default function StatisticsService($q, $log, $filter, state, StateService
     function createFilteredDateRangeHistogram() {
         const parameters = {
             rangeData: state.playground.statistics.histogram.data,
-            patterns: _.chain(state.playground.grid.selectedColumn.statistics.patternFrequencyTable)
+            patterns: _.chain(state.playground.grid.selectedColumns[0].statistics.patternFrequencyTable)
                 .pluck('pattern')
                 .map(TextFormatService.convertJavaDateFormatToMomentDateFormat)
                 .value(),
@@ -449,7 +449,7 @@ export default function StatisticsService($q, $log, $filter, state, StateService
      * @return {Object} The classical and filtered histograms
      */
     function createClassicHistograms() {
-        const dataTable = state.playground.grid.selectedColumn.statistics.frequencyTable;
+        const dataTable = state.playground.grid.selectedColumns[0].statistics.frequencyTable;
         if (!dataTable || !dataTable.length) {
             return;
         }
@@ -524,7 +524,7 @@ export default function StatisticsService($q, $log, $filter, state, StateService
      * @description Initialize the statistics to display in the values TAB of the stats part
      */
     function initStatisticsValues() {
-        const column = state.playground.grid.selectedColumn;
+        const column = state.playground.grid.selectedColumns[0];
         const stats = column.statistics;
         const colType = ConverterService.simplifyType(column.type);
         const commonStats = {
@@ -575,7 +575,7 @@ export default function StatisticsService($q, $log, $filter, state, StateService
      * @description update patterns statistics
      */
     function initPatternsFrequency() {
-        const patternFrequency = state.playground.grid.selectedColumn.statistics.patternFrequencyTable;
+        const patternFrequency = state.playground.grid.selectedColumns[0].statistics.patternFrequencyTable;
         if (patternFrequency) {
             StateService.setStatisticsPatterns(patternFrequency);
             createFilteredPatternsFrequency()
@@ -592,7 +592,7 @@ export default function StatisticsService($q, $log, $filter, state, StateService
      * @description Create the filtered patterns statistics
      */
     function createFilteredPatternsFrequency() {
-        const column = state.playground.grid.selectedColumn;
+        const column = state.playground.grid.selectedColumns[0];
         const parameters = {
             columnId: column.id,
             patternFrequencyTable: column.statistics.patternFrequencyTable,
@@ -649,12 +649,12 @@ export default function StatisticsService($q, $log, $filter, state, StateService
      * @description Create a remove callback to reinit the current active limits on the current column range chart
      */
     function getRangeFilterRemoveFn() {
-        const selectedColumn = state.playground.grid.selectedColumn;
+        const selectedColumn = state.playground.grid.selectedColumns[0];
         const columnMin = selectedColumn.statistics.min;
         const columnMax = selectedColumn.statistics.max;
 
         return function removeFilterFn(filter) {
-            const actualSelectedColumn = state.playground.grid.selectedColumn;
+            const actualSelectedColumn = state.playground.grid.selectedColumns[0];
             if (filter.colId === actualSelectedColumn.id) {
                 initRangeLimits();
                 // to reset the vertical bars colors
@@ -677,7 +677,7 @@ export default function StatisticsService($q, $log, $filter, state, StateService
         resetCharts();
         removeSavedColumnAggregation();
 
-        const column = state.playground.grid.selectedColumn;
+        const column = state.playground.grid.selectedColumns[0];
         const simplifiedType = ConverterService.simplifyType(column.type);
         switch (simplifiedType) {
         case 'integer':
@@ -719,7 +719,7 @@ export default function StatisticsService($q, $log, $filter, state, StateService
         const preparationId = state.playground.preparation && state.playground.preparation.id;
         const lastActiveStep = preparationId && StepUtilsService.getLastActiveStep(state.playground.recipe);
         const stepId = lastActiveStep && lastActiveStep.transformation.stepId;
-        const selectedColumn = state.playground.grid.selectedColumn;
+        const selectedColumn = state.playground.grid.selectedColumns[0];
 
         let aggregationParameters = {
             datasetId: preparationId ? null : datasetId,
@@ -756,7 +756,7 @@ export default function StatisticsService($q, $log, $filter, state, StateService
     function getSavedColumnAggregation() {
         const datasetId = state.playground.dataset && state.playground.dataset.id;
         const preparationId = state.playground.preparation && state.playground.preparation.id;
-        const columnId = state.playground.grid.selectedColumn && state.playground.grid.selectedColumn.id;
+        const columnId = state.playground.grid.selectedColumns[0] && state.playground.grid.selectedColumns[0].id;
         return StorageService.getAggregation(datasetId, preparationId, columnId);
     }
 
@@ -769,7 +769,7 @@ export default function StatisticsService($q, $log, $filter, state, StateService
     function removeSavedColumnAggregation() {
         const datasetId = state.playground.dataset && state.playground.dataset.id;
         const preparationId = state.playground.preparation && state.playground.preparation.id;
-        const columnId = state.playground.grid.selectedColumn && state.playground.grid.selectedColumn.id;
+        const columnId = state.playground.grid.selectedColumns[0] && state.playground.grid.selectedColumns[0].id;
         return StorageService.removeAggregation(datasetId, preparationId, columnId);
     }
 
@@ -782,7 +782,7 @@ export default function StatisticsService($q, $log, $filter, state, StateService
     function saveColumnAggregation(aggregationName, colId) {
         const datasetId = state.playground.dataset && state.playground.dataset.id;
         const preparationId = state.playground.preparation && state.playground.preparation.id;
-        const columnId = state.playground.grid.selectedColumn && state.playground.grid.selectedColumn.id;
+        const columnId = state.playground.grid.selectedColumns[0] && state.playground.grid.selectedColumns[0].id;
 
         const aggregation = {
             aggregation: aggregationName,
@@ -809,7 +809,7 @@ export default function StatisticsService($q, $log, $filter, state, StateService
         const aggregationName = columnAggregation && columnAggregation.aggregation;
 
         if (!aggregationName) {
-            const column = state.playground.grid.selectedColumn;
+            const column = state.playground.grid.selectedColumns[0];
 
             const simplifiedType = ConverterService.simplifyType(column.type);
             switch (simplifiedType) {

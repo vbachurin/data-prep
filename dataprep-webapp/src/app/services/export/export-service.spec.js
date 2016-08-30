@@ -14,6 +14,8 @@
 describe('Export service', () => {
     'use strict';
 
+    let stateMock;
+
     const exportTypes = [
         {
             mimeType: 'text/csv',
@@ -26,16 +28,17 @@ describe('Export service', () => {
             title: 'Export to CSV',
             parameters: [
                 {
-                    name: 'csvSeparator',
-                    type: 'select',
-                    implicit: false,
-                    canBeBlank: false,
-                    placeHolder: '',
-                    configuration: {
-                        values: [{ value: ';', label: 'Semi colon' }, {
-                            value: '\t',
-                            label: 'Tabulation',
-                        }, { value: ' ', label: 'Space' }, { value: ',', label: 'Comma' },], multiple: false,
+                    'name': 'csvSeparator',
+                    'type': 'select',
+                    'implicit': false,
+                    'canBeBlank': false,
+                    'placeHolder': '',
+                    'configuration': {
+                        'values': [{ 'value': ';', 'label': 'Semi colon' }, {
+                            'value': '\t',
+                            'label': 'Tabulation'
+                        }, { 'value': ' ', 'label': 'Space' }, { 'value': ',', 'label': 'Comma' }],
+                        'multiple': false
                     },
                     description: 'Select character to use as a delimiter',
                     label: 'Select character to use as a delimiter',
@@ -96,17 +99,23 @@ describe('Export service', () => {
         },
     ];
 
-    beforeEach(angular.mock.module('data-prep.services.export'));
+    beforeEach(angular.mock.module('data-prep.services.export', ($provide) => {
+        stateMock = {
+            export: { exportTypes: exportTypes }
+        };
+        $provide.constant('state', stateMock);
+    }));
 
-    beforeEach(inject(($q, ExportRestService, ParametersService, StorageService) => {
+    beforeEach(inject(($q, ExportRestService, ParametersService, StateService, StorageService) => {
         spyOn(ExportRestService, 'exportTypes').and.returnValue($q.when(exportTypes));
         spyOn(ParametersService, 'resetParamValue').and.returnValue();
+        spyOn(StateService, 'setDefaultExportType').and.returnValue();
+        spyOn(StateService, 'setExportTypes').and.returnValue();
         spyOn(StorageService, 'saveExportParams').and.returnValue();
     }));
 
     it('should return type with provided id', inject((ExportService) => {
         // given
-        ExportService.exportTypes = exportTypes;
         const xlsType = exportTypes[2];
 
         // when
@@ -116,55 +125,56 @@ describe('Export service', () => {
         expect(type).toBe(xlsType);
     }));
 
-    it('should refresh export types list from REST call', inject(($rootScope, ExportService) => {
+    it('should set params in app state and storage', inject((ExportService, StateService, StorageService) => {
         // given
-        ExportService.exportTypes = [];
+        const exportParams = { exportType: 'whatever' };
 
         // when
-        ExportService.refreshTypes();
-        $rootScope.$digest();
+        ExportService.setExportParams(exportParams);
 
         // then
-        expect(ExportService.exportTypes).toBe(exportTypes);
+        expect(StateService.setDefaultExportType).toHaveBeenCalledWith(exportParams);
+        expect(StorageService.saveExportParams).toHaveBeenCalledWith(exportParams);
     }));
 
-    it('should save default type parameters in localStorage when there are no saved params yet', inject(($rootScope, StorageService, ExportService) => {
-        // given
-        spyOn(StorageService, 'getExportParams').and.returnValue();
-        expect(StorageService.saveExportParams).not.toHaveBeenCalled();
+    it('should get export types and set them in app state',
+        inject(($rootScope, ExportService, StateService, ExportRestService) => {
+            // when
+            ExportService.refreshTypes();
+            $rootScope.$digest();
 
-        // when
-        ExportService.refreshTypes();
-        $rootScope.$digest();
+            // then
+            expect(ExportRestService.exportTypes).toHaveBeenCalled();
+            expect(StateService.setExportTypes).toHaveBeenCalledWith(exportTypes);
+        }));
 
-        // then
-        expect(StorageService.saveExportParams).toHaveBeenCalledWith({ exportType: 'XLSX' });
-    }));
+    it('should set default export type in app state and storage',
+        inject(($rootScope, ExportService, StorageService, StateService) => {
+            // given
+            spyOn(StorageService, 'getExportParams').and.returnValue();
 
-    it('should NOT save default type parameters in localStorage when there are already saved params', inject(($rootScope, StorageService, ExportService) => {
-        // given
-        spyOn(StorageService, 'getExportParams').and.returnValue({});
-        expect(StorageService.saveExportParams).not.toHaveBeenCalled();
+            // when
+            ExportService.refreshTypes();
+            $rootScope.$digest();
 
-        // when
-        ExportService.refreshTypes();
-        $rootScope.$digest();
+            // then
+            const defaultParams = { exportType: 'XLSX' };
+            expect(StateService.setDefaultExportType).toHaveBeenCalledWith(defaultParams);
+            expect(StorageService.saveExportParams).toHaveBeenCalledWith(defaultParams);
+        }));
 
-        // then
-        expect(StorageService.saveExportParams).not.toHaveBeenCalled();
-    }));
+    it('should set storage saved default export type in app state',
+        inject(($rootScope, ExportService, StorageService, StateService) => {
+            // given
+            const savedExportParams = { exportType: 'whatever' };
+            spyOn(StorageService, 'getExportParams').and.returnValue(savedExportParams);
 
-    it('should reset parameters', inject((ExportService, ParametersService) => {
-        // given
-        ExportService.exportTypes = exportTypes;
-        expect(ParametersService.resetParamValue).not.toHaveBeenCalled();
+            // when
+            ExportService.refreshTypes();
+            $rootScope.$digest();
 
-        // when
-        ExportService.reset();
-
-        // then
-        expect(ParametersService.resetParamValue).toHaveBeenCalledWith(exportTypes[0].parameters);
-        expect(ParametersService.resetParamValue).toHaveBeenCalledWith(exportTypes[1].parameters);
-        expect(ParametersService.resetParamValue).toHaveBeenCalledWith(exportTypes[2].parameters);
-    }));
+            // then
+            expect(StateService.setDefaultExportType).toHaveBeenCalledWith(savedExportParams);
+            expect(StorageService.saveExportParams).not.toHaveBeenCalled();
+        }));
 });

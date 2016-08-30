@@ -11,6 +11,34 @@
 
  ============================================================================*/
 
+
+const filters = [
+    {
+        id: 'RECENT',
+        order: 1,
+        imageUrl: '/assets/images/inventory/recent-datasets.png',
+        title: 'RECENT_DATASETS',
+        description: 'RECENT_DATASETS_DESCRIPTION',
+        getParameters: (name) => `sort=MODIF&limit=true&name=${name}`,
+    },
+    {
+        id: 'FAVORITE',
+        order: 2,
+        icon: 'f',
+        title: 'FAVORITE_DATASETS',
+        description: 'FAVORITE_DATASETS_DESCRIPTION',
+        getParameters: (name) => `favorite=true&name=${name}`,
+    },
+    {
+        id: 'ALL',
+        order: 3,
+        imageUrl: '/assets/images/inventory/all-datasets.png',
+        title: 'ALL_DATASETS',
+        description: 'ALL_DATASETS_DESCRIPTION',
+        getParameters: (name) => `name=${name}`,
+    },
+];
+
 /**
  * @ngdoc service
  * @name data-prep.services.dataset.service:DatasetService
@@ -18,7 +46,6 @@
  * @requires data-prep.services.state.service:StateService
  * @requires data-prep.services.dataset.service:DatasetListService
  * @requires data-prep.services.dataset.service:DatasetRestService
- * @requires data-prep.services.preparation.service:PreparationListService
  * @requires data-prep.services.utils.service:StorageService
  *
  */
@@ -26,6 +53,7 @@ export default function DatasetService($q, state, StateService, DatasetListServi
     'ngInject';
 
     return {
+        filters,
         init,
 
         // lifecycle
@@ -49,13 +77,11 @@ export default function DatasetService($q, state, StateService, DatasetListServi
         // dataset getters, refresher
         refreshDatasets: DatasetListService.refreshDatasets,
         getDatasets,           // promise that resolves datasets list
+        getFilteredDatasets, // retrieve datasets given a set of filters
         getDatasetById,     // retrieve dataset by id
         getDatasetByName, // retrieve dataset by name
         getSheetPreview,
         loadFilteredDatasets: DatasetRestService.loadFilteredDatasets, // retrieve datasets given a set of filters
-        injectPreparations,
-        removePreparations,
-
 
         // dataset update
         rename,
@@ -186,6 +212,19 @@ export default function DatasetService($q, state, StateService, DatasetListServi
 
     /**
      * @ngdoc method
+     * @name getFilteredDatasets
+     * @methodOf data-prep.services.dataset.service:DatasetService
+     * @param {object} filter The filter definition
+     * @param {string} name The dataset name (or part of it)
+     * @description Return a promise that resolves the datasets list.
+     * @returns {promise} The GET promise
+     */
+    function getFilteredDatasets(filter, name) {
+        return DatasetRestService.getFilteredDatasets(filter.getParameters(name));
+    }
+
+    /**
+     * @ngdoc method
      * @name getDatasetByName
      * @methodOf data-prep.services.dataset.service:DatasetService
      * @param {string} name The dataset name
@@ -285,13 +324,13 @@ export default function DatasetService($q, state, StateService, DatasetListServi
      * @ngdoc method
      * @name getSheetPreview
      * @methodOf data-prep.services.dataset.service:DatasetService
-     * @param {object} metadata The dataset metadata
+     * @param {object} dataset The dataset
      * @param {string} sheetName The sheet name
      * @description Get a dataset sheet preview
      * @returns {object} The preview data
      */
-    function getSheetPreview(metadata, sheetName) {
-        return DatasetRestService.getSheetPreview(metadata.id, sheetName);
+    function getSheetPreview(dataset, sheetName) {
+        return DatasetRestService.getSheetPreview(dataset.id, sheetName);
     }
 
     /**
@@ -313,22 +352,12 @@ export default function DatasetService($q, state, StateService, DatasetListServi
     //--------------------------------------------------------------------------------------------------------------
     function extractOriginalParameters(metadata) {
         return {
-            // TODO remove this and review the datasets model to NOT change the original object. This is done here to
-            // avoid cyclic ref
-            defaultPreparation: metadata.defaultPreparation,
-            preparations: metadata.preparations,
-
             separator: metadata.parameters.SEPARATOR,
             encoding: metadata.encoding,
         };
     }
 
     function setParameters(metadata, parameters) {
-        // TODO remove this and review the datasets model to NOT change the original object. This is done here to avoid
-        // avoid cyclic ref
-        metadata.defaultPreparation = parameters.defaultPreparation;
-        metadata.preparations = parameters.preparations;
-
         metadata.parameters.SEPARATOR = parameters.separator;
         metadata.encoding = parameters.encoding;
     }
@@ -373,7 +402,6 @@ export default function DatasetService($q, state, StateService, DatasetListServi
 
         return DatasetRestService.updateMetadata(metadata)
             .then(() => {
-                metadata.defaultPreparation = originalParameters.defaultPreparation;
                 metadata.preparations = originalParameters.preparations;
             })
             .catch((error) => {
@@ -420,27 +448,6 @@ export default function DatasetService($q, state, StateService, DatasetListServi
     //--------------------------------------------------------------------------------------------------------------
     // -----------------------------------------------------Rename---------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------
-    // TODO remove this and review the datasets model to NOT change the original object. This is done here to
-    // avoid cyclic ref
-    function removePreparations(metadata) {
-        const preparations = {
-            defaultPreparation: metadata.defaultPreparation,
-            preparations: metadata.preparations,
-        };
-
-        metadata.defaultPreparation = null;
-        metadata.preparations = null;
-
-        return preparations;
-    }
-
-    // TODO remove this and review the datasets model to NOT change the original object. This is done here to
-    // avoid cyclic ref
-    function injectPreparations(metadata, preparations) {
-        metadata.defaultPreparation = preparations.defaultPreparation;
-        metadata.preparations = preparations.preparations;
-    }
-
     /**
      * @ngdoc method
      * @name rename
@@ -453,15 +460,11 @@ export default function DatasetService($q, state, StateService, DatasetListServi
     function rename(metadata, name) {
         const oldName = metadata.name;
         StateService.setDatasetName(metadata.id, name);
-        const preparations = removePreparations(metadata);
 
         return DatasetRestService.updateMetadata(metadata)
             .catch((error) => {
                 StateService.setDatasetName(metadata.id, oldName);
                 return $q.reject(error);
-            })
-            .finally(() => {
-                injectPreparations(metadata, preparations);
             });
     }
 }

@@ -52,7 +52,7 @@ describe('Actions suggestions-stats directive', function () {
 
     it('should set column name in title', function () {
         //given
-        stateMock.playground.grid.selectedColumn = { name: 'Col 1' };
+        stateMock.playground.grid.selectedColumns = [{ name: 'Col 1' }];
 
         //when
         createElement();

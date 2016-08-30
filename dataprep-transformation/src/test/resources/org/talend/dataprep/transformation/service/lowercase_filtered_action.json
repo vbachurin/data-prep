@@ -1,4 +1,4 @@
-{
+[{
   "actions": [
     {
       "action": "lowercase",
@@ -16,4 +16,4 @@
       }
     }
   ]
-}
+}]

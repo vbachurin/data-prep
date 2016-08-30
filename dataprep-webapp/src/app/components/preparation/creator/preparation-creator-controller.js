@@ -11,34 +11,32 @@
 
  ============================================================================*/
 
-class PreparationCreatorCtrl {
-    constructor(state, $document, $state, $translate, RestURLs,
+export default class PreparationCreatorCtrl {
+    constructor($document, $state, $translate, state, RestURLs,
                 PreparationService, DatasetService, UploadWorkflowService) {
         'ngInject';
 
-        this.$translate = $translate;
         this.$document = $document;
         this.$state = $state;
+        this.state = state;
         this.preparationService = PreparationService;
         this.datasetService = DatasetService;
-        this.UploadWorkflowService = UploadWorkflowService;
+        this.uploadWorkflowService = UploadWorkflowService;
         this.restURLs = RestURLs;
+
         this.enteredFilterText = '';
         this.filteredDatasets = [];
-        this.lastFilterValue = '';
-        this.state = state;
         this.baseDataset = null;
-        this.lastSelectedDataset = null;
         this.userHasTypedName = false;
         this.uploadingDatasets = [];
-        this.whileImport = false;
+        this.importDisabled = false;
         this.isFetchingDatasets = false;
-
-        this.preparationSuffix = this.$translate.instant('PREPARATION');
+        this.preparationSuffix = $translate.instant('PREPARATION');
     }
 
     $onInit() {
-        this.loadDatasets('RECENT_DATASETS');
+        this.selectedFilter = this.datasetService.filters[0];
+        this.loadDatasets(this.selectedFilter);
     }
 
     /**
@@ -46,25 +44,13 @@ class PreparationCreatorCtrl {
      * @name loadDatasets
      * @methodOf data-prep.preparation-creator.controller:PreparationCreatorCtrl
      * @description loads the filtered datasets
-     * @params {String} filterValue the chosen filter value
+     * @params {Object} filter the chosen filter
      */
-    loadDatasets(filterValue) {
-        this.lastFilterValue = filterValue;
-        let url = this.restURLs.datasetUrl;
-        switch (filterValue) {
-        case 'RECENT_DATASETS':
-            url += '?sort=MODIF&limit=true&name=';
-            break;
-        case 'FAVORITE_DATASETS':
-            url += '?favorite=true&name=';
-            break;
-        case 'ALL_DATASETS':
-            url += '?name=';
-            break;
-        }
-        url += this.enteredFilterText;
+    loadDatasets(filter) {
+        this.selectedFilter = filter;
+
         this.isFetchingDatasets = true;
-        this.datasetService.loadFilteredDatasets(url)
+        this.datasetService.getFilteredDatasets(filter, this.enteredFilterText)
             .then((filteredDatasets) => {
                 this.filteredDatasets = filteredDatasets;
             })
@@ -81,20 +67,20 @@ class PreparationCreatorCtrl {
      */
     import() {
         const file = this.datasetFile[0];
-        const datasetName = file.name;
 
         // remove file extension and ask final name
-        this.datasetName = datasetName.replace(/\.[^/.]+$/, '');
-        this.whileImport = true;
-        this.datasetService.checkNameAvailability(this.datasetName)
+        let datasetName = file.name.replace(/\.[^/.]+$/, '');
+        this.importDisabled = true;
+        this.datasetService.checkNameAvailability(datasetName)
             .catch(() => {
-                return this.datasetService.getUniqueName(this.datasetName)
+                return this.datasetService.getUniqueName(datasetName)
                     .then((uniqueName) => {
-                        this.datasetName = uniqueName;
+                        datasetName = uniqueName;
                     });
             })
+            .then(() => this._createDataset(file, datasetName))
             .finally(() => {
-                this._createDataset(file, this.datasetName);
+                this.importDisabled = false;
             });
     }
 
@@ -115,12 +101,12 @@ class PreparationCreatorCtrl {
 
         const dataset = this.datasetService.createDatasetInfo(file, name);
         this.uploadingDatasets.push(dataset);
-        this.datasetService.create(params, 'text/plain', file)
+
+        return this.datasetService.create(params, 'text/plain', file)
             .progress((event) => {
                 dataset.progress = parseInt(100.0 * event.loaded / event.total, 10);
             })
             .then((event) => {
-                this.whileImport = false;
                 return this.datasetService.getDatasetById(event.data)
                     .then((dataset) => {
                         this.uploadingDatasets = [];
@@ -134,7 +120,6 @@ class PreparationCreatorCtrl {
             })
             .catch(() => {
                 dataset.error = true;
-                this.whileImport = false;
             });
     }
 
@@ -161,35 +146,40 @@ class PreparationCreatorCtrl {
 
     /**
      * @ngdoc method
-     * @name createPreparationFromMultiSheetDataset
-     * @methodOf data-prep.preparation-creator.controller:PreparationCreatorCtrl
-     * @description created the preparation from a multi sheet dataset
-     */
-    createPreparationFromMultiSheetDataset() {
-        this.showAddPrepModal = false;
-        this.UploadWorkflowService.openDraft(this.baseDataset, true, this.enteredName);
-    }
-
-    /**
-     * @ngdoc method
      * @name createPreparation
      * @methodOf data-prep.preparation-creator.controller:PreparationCreatorCtrl
      * @description created the preparation
      */
     createPreparation() {
-        if (this.baseDataset.draft) {
-            this.createPreparationFromMultiSheetDataset();
+        const configuration = {
+            dataset: {
+                metadata: this.baseDataset,
+                draft: this.baseDataset.draft,
+            },
+            preparation: {
+                name: this.enteredName,
+                folder: this.state.inventory.folder.metadata.id,
+            },
+        };
+
+        if (configuration.dataset.draft) {
+            this.onCreation();
+            this.uploadWorkflowService.openDraft(
+                configuration.dataset.metadata,
+                true,
+                configuration.preparation.name
+            );
         }
         else {
             this.addPreparationForm.$commitViewValue();
             this.preparationService
                 .create(
-                    this.baseDataset.id,
-                    this.enteredName,
-                    this.state.inventory.folder.metadata.id
+                    configuration.dataset.metadata.id,
+                    configuration.preparation.name,
+                    configuration.preparation.folder
                 )
                 .then((newPreparation) => {
-                    this.showAddPrepModal = false;
+                    this.onCreation();
                     this.$state.go('playground.preparation', { prepid: newPreparation.id });
                 });
         }
@@ -220,9 +210,7 @@ class PreparationCreatorCtrl {
      * @description generates a unique preparation name
      */
     applyNameFilter() {
-        if (this.lastFilterValue) {
-            this.loadDatasets(this.lastFilterValue);
-        }
+        this.loadDatasets(this.selectedFilter);
     }
 
     /**
@@ -254,7 +242,7 @@ class PreparationCreatorCtrl {
      * @returns boolean
      */
     anyMissingEntries() {
-        return this.enteredName && this.lastSelectedDataset && !this.alreadyExistingName;
+        return !this.enteredName || !this.baseDataset || this.alreadyExistingName;
     }
 
     /**
@@ -264,7 +252,7 @@ class PreparationCreatorCtrl {
      * @description triggers the click on the upload input
      */
     importFile() {
-        if (!this.whileImport && !this.alreadyExistingName) {
+        if (!this.importDisabled && !this.alreadyExistingName) {
             this.$document.find('#localFileImport').eq(0).click();
         }
     }
@@ -277,7 +265,7 @@ class PreparationCreatorCtrl {
      * @returns {String} the tooltip content
      */
     getImportTitle() {
-        if (this.whileImport) {
+        if (this.importDisabled) {
             return 'IMPORT_IN_PROGRESS';
         }
 
@@ -288,4 +276,3 @@ class PreparationCreatorCtrl {
         return 'IMPORT_FILE_DESCRIPTION';
     }
 }
-export default PreparationCreatorCtrl;

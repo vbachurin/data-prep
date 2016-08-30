@@ -17,7 +17,11 @@ import 'animate.css';
 // Intro.js https://github.com/usablica/intro.js
 import 'intro.js';
 
+// Jquery + plugins
 import 'jquery';
+import 'jquery-ui';
+
+// Angular
 import 'angular';
 import 'angular-sanitize';
 import 'angular-animate';
@@ -32,8 +36,6 @@ import 'jquery-datetimepicker/build/jquery.datetimepicker.min.css';
 
 // X-SlickGrid https://github.com/ddomingues/X-SlickGrid
 import 'X-SlickGrid/lib/jquery.event.drag-2.2.js';
-import 'X-SlickGrid/lib/jquery-ui-1.8.24.custom.min.js';
-import 'X-SlickGrid/css/smoothness/jquery-ui-1.8.24.custom.css';
 import 'X-SlickGrid/slick.core.js';
 import 'X-SlickGrid/slick.dataview.js';
 import 'X-SlickGrid/slick.editors.js';

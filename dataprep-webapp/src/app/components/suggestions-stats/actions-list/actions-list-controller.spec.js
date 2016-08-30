@@ -159,7 +159,7 @@ describe('Actions list controller', function () {
 
     describe('dynamic parameters', function () {
         beforeEach(function () {
-            stateMock.playground.grid.selectedColumn = { id: '0001' };
+            stateMock.playground.grid.selectedColumns = [{ id: '0001' }];
         });
 
         it('should set current dynamic transformation on dynamic transformation selection', function () {

@@ -44,10 +44,10 @@ describe('Stats-details controller', function () {
         var ctrl = createController();
         var obj = { data: 'Ulysse', occurrences: 5, pattern: 'Aa9' };
 
-        stateMock.playground.grid.selectedColumn = {
+        stateMock.playground.grid.selectedColumns = [{
             id: '0001',
             name: 'firstname',
-        };
+        }];
 
         //when
         ctrl.addPatternFilter(obj);
@@ -67,10 +67,10 @@ describe('Stats-details controller', function () {
         var ctrl = createController();
         var obj = { data: 'Ulysse', occurrences: 5 };
 
-        stateMock.playground.grid.selectedColumn = {
+        stateMock.playground.grid.selectedColumns = [{
             id: '0001',
             name: 'firstname',
-        };
+        }];
 
         //when
         ctrl.addPatternFilter(obj);

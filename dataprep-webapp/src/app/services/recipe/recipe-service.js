@@ -172,45 +172,46 @@ export default function RecipeService(state, StateService, StepUtilsService, Pre
      * @name earlyPreview
      * @methodOf data-prep.services.recipe.service:RecipeService
      * @param {object} transformation The transformation
-     * @param {object} params The transformation params
+     * @param {array} params The transformation params
      * @description Add a preview step in the recipe. The state before preview is saved to be able to revert.
      */
     function earlyPreview(transformation, params) {
-        const stepFilters = state.playground.filter.applyTransformationOnFilters ?
-            state.playground.filter.gridFilters.slice(0) :
-            [];
-
-        // create the preview step
-        const previewStep = {
-            column: {
-                id: params.column_id,
-                name: params.column_name,
-            },
-            row: {
-                id: params.row_id,
-            },
-            transformation: {
-                stepId: 'early preview',
-                name: transformation.name,
-                label: transformation.label,
-                description: transformation.description,
-                parameters: _.cloneDeep(transformation.parameters),
-                dynamic: transformation.dynamic,
-            },
-            actionParameters: {
-                action: transformation.name,
-                parameters: params,
-            },
-            preview: true,
-            filters: stepFilters,
-        };
-        ParametersService.initParamsValues(previewStep.transformation, params);
-
-        // set the new state : add the step and enable all steps
         const previewSteps = state.playground.recipe.beforePreview ?
             state.playground.recipe.beforePreview.steps.slice(0) :
             state.playground.recipe.current.steps.slice(0);
-        previewSteps.push(previewStep);
+
+        params.forEach((param, index) => {
+            const stepFilters = state.playground.filter.applyTransformationOnFilters ?
+                state.playground.filter.gridFilters.slice(0) :
+                [];
+
+            // create the preview step
+            const previewStep = {
+                column: {
+                    id: param.column_id,
+                    name: param.column_name,
+                },
+                row: {
+                    id: param.row_id,
+                },
+                transformation: {
+                    stepId: 'early_preview_' + index,
+                    name: transformation.name,
+                    label: transformation.label,
+                    description: transformation.description,
+                    parameters: _.cloneDeep(transformation.parameters),
+                    dynamic: transformation.dynamic,
+                },
+                actionParameters: {
+                    action: transformation.name,
+                    parameters: param,
+                },
+                preview: true,
+                filters: stepFilters,
+            };
+            ParametersService.initParamsValues(previewStep.transformation, param);
+            previewSteps.push(previewStep);
+        });
         StateService.setRecipePreviewSteps(previewSteps);
     }
 

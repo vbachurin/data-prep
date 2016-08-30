@@ -142,11 +142,11 @@ describe('Datagrid header controller', () => {
     }));
 
     describe('with transformation list success', () => {
-        beforeEach(inject(($q, TransformationCacheService) => {
-            spyOn(TransformationCacheService, 'getColumnTransformations').and.returnValue($q.when(transformationsMock()));
+        beforeEach(inject(($q, TransformationService) => {
+            spyOn(TransformationService, 'getTransformations').and.returnValue($q.when(transformationsMock()));
         }));
 
-        it('should filter and init only "column_metadata" category', inject((TransformationCacheService) => {
+        it('should filter and init only "column_metadata" category', inject((TransformationService) => {
             //given
             const ctrl = createController();
 
@@ -155,13 +155,13 @@ describe('Datagrid header controller', () => {
             scope.$digest();
 
             //then
-            expect(TransformationCacheService.getColumnTransformations).toHaveBeenCalledWith(column, true);
+            expect(TransformationService.getTransformations).toHaveBeenCalledWith('column', column);
             expect(ctrl.transformations.length).toBe(2);
             expect(ctrl.transformations[0].name).toBe('rename');
             expect(ctrl.transformations[1].name).toBe('split');
         }));
 
-        it('should not get transformations if transformations are already initiated', inject((TransformationCacheService) => {
+        it('should not get transformations if transformations are already initiated', inject((TransformationService) => {
             //given
             let ctrl = createController();
             ctrl.initTransformations();
@@ -172,10 +172,10 @@ describe('Datagrid header controller', () => {
             scope.$digest();
 
             //then
-            expect(TransformationCacheService.getColumnTransformations.calls.count()).toBe(1);
+            expect(TransformationService.getTransformations.calls.count()).toBe(1);
         }));
 
-        it('should retrieve transformation list when a column changes', inject((TransformationCacheService) => {
+        it('should retrieve transformation list when a column changes', inject((TransformationService) => {
             //given
             let ctrl = createController();
             ctrl.initTransformations();
@@ -192,13 +192,13 @@ describe('Datagrid header controller', () => {
             ctrl.initTransformations();
 
             //then
-            expect(TransformationCacheService.getColumnTransformations.calls.count()).toBe(2);
+            expect(TransformationService.getTransformations.calls.count()).toBe(2);
         }));
     });
 
     describe('with transformation list error', () => {
-        beforeEach(inject(($q, TransformationCacheService) => {
-            spyOn(TransformationCacheService, 'getColumnTransformations').and.returnValue($q.reject('server error'));
+        beforeEach(inject(($q, TransformationService) => {
+            spyOn(TransformationService, 'getTransformations').and.returnValue($q.reject('server error'));
         }));
 
         it('should change inProgress and error flags', () => {
@@ -235,12 +235,17 @@ describe('Datagrid header controller', () => {
             ctrl.updateColumnName();
 
             //then
-            expect(PlaygroundService.appendStep).toHaveBeenCalledWith('rename_column', {
-                new_column_name: 'new name',
-                scope: 'column',
-                column_id: '0001',
-                column_name: 'Original name',
-            });
+            const expectedParams = [{
+                action: 'rename_column',
+                parameters: {
+                    new_column_name: 'new name',
+                    scope: 'column',
+                    column_id: '0001',
+                    column_name: 'Original name',
+                }
+            }];
+
+            expect(PlaygroundService.appendStep).toHaveBeenCalledWith(expectedParams);
         }));
 
         it('should turn off edition mode after name update', () => {

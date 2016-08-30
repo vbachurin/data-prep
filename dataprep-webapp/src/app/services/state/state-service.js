@@ -24,7 +24,8 @@ export function StateService(RouteStateService, routeState,
                              EasterEggsStateService, easterEggsState,
                              InventoryStateService, inventoryState,
                              FeedbackStateService, feedbackState,
-                             ImportStateService, importState) {
+                             ImportStateService, importState,
+                             ExportStateService, exportState) {
     'ngInject';
 
     state.route = routeState;
@@ -34,6 +35,7 @@ export function StateService(RouteStateService, routeState,
     state.inventory = inventoryState;
     state.feedback = feedbackState;
     state.import = importState;
+    state.export = exportState;
 
     return {
         // route
@@ -72,6 +74,8 @@ export function StateService(RouteStateService, routeState,
         // playground - grid
         setColumnFocus: PlaygroundStateService.setColumnFocus,
         setGridSelection: PlaygroundStateService.setGridSelection,
+        toggleColumnSelection: PlaygroundStateService.toggleColumnSelection,
+        changeRangeSelection: PlaygroundStateService.changeRangeSelection,
 
         // playground - lookup
         setLookupActions: PlaygroundStateService.setLookupActions,
@@ -93,10 +97,10 @@ export function StateService(RouteStateService, routeState,
         enableFilters: PlaygroundStateService.enableFilters,
         disableFilters: PlaygroundStateService.disableFilters,
 
-        // playground - Suggestions
-        setColumnTransformations: PlaygroundStateService.setColumnTransformations,
-        setLineTransformations: PlaygroundStateService.setLineTransformations,
-        setSuggestionsLoading: PlaygroundStateService.setSuggestionsLoading,
+        // playground - Actions
+        selectTransformationsTab: PlaygroundStateService.selectTransformationsTab,
+        setTransformations: PlaygroundStateService.setTransformations,
+        setTransformationsLoading: PlaygroundStateService.setTransformationsLoading,
         setTransformationsForEmptyCells: PlaygroundStateService.setTransformationsForEmptyCells,
         setTransformationsForInvalidCells: PlaygroundStateService.setTransformationsForInvalidCells,
         updateFilteredTransformations: PlaygroundStateService.updateFilteredTransformations,
@@ -121,8 +125,6 @@ export function StateService(RouteStateService, routeState,
 
         // inventory
         setDatasetName: InventoryStateService.setDatasetName,
-        setPreparations: InventoryStateService.setPreparations,
-        removePreparation: InventoryStateService.removePreparation,
         setDatasets: InventoryStateService.setDatasets,
         removeDataset: InventoryStateService.removeDataset,
         setDatasetsSort: InventoryStateService.setDatasetsSort,
@@ -145,5 +147,9 @@ export function StateService(RouteStateService, routeState,
         // import
         setImportTypes: ImportStateService.setImportTypes,
         setCurrentImportType: ImportStateService.setCurrentImportType,
+
+        // export
+        setExportTypes: ExportStateService.setExportTypes,
+        setDefaultExportType: ExportStateService.setDefaultExportType,
     };
 }

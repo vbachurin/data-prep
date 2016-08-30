@@ -13,27 +13,24 @@
 
 package org.talend.dataprep.api.service;
 
-import static org.springframework.http.MediaType.*;
-import static org.springframework.web.bind.annotation.RequestMethod.*;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.netflix.hystrix.HystrixCommand;
+import com.netflix.hystrix.exception.HystrixRuntimeException;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.preparation.Preparation;
+import org.talend.dataprep.api.service.api.EnrichedDataSetMetadata;
 import org.talend.dataprep.api.service.command.dataset.*;
 import org.talend.dataprep.api.service.command.preparation.PreparationList;
+import org.talend.dataprep.api.service.command.preparation.PreparationSearchByDataSetId;
 import org.talend.dataprep.api.service.command.transformation.SuggestDataSetActions;
 import org.talend.dataprep.api.service.command.transformation.SuggestLookupActions;
 import org.talend.dataprep.command.CommandHelper;
@@ -47,19 +44,37 @@ import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.http.HttpResponseContext;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.security.PublicAPI;
+import org.talend.dataprep.util.SortAndOrderHelper;
+import org.talend.dataprep.util.SortAndOrderHelper.Order;
+import org.talend.dataprep.util.SortAndOrderHelper.Sort;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.netflix.hystrix.HystrixCommand;
-import com.netflix.hystrix.exception.HystrixRuntimeException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import static org.springframework.http.MediaType.*;
+import static org.springframework.web.bind.annotation.RequestMethod.*;
+import static org.talend.dataprep.exception.error.APIErrorCodes.UNABLE_TO_SEARCH_DATAPREP;
 
 @RestController
 public class DataSetAPI extends APIService {
 
     @Autowired
     DataSetContentLimit limit;
+
+    @InitBinder
+    private void initBinder(WebDataBinder binder) {
+        // This allow to bind Sort and Order parameters in lower-case even if the key is uppercase.
+        // URLs are cleaner in lowercase.
+        binder.registerCustomEditor(Sort.class, SortAndOrderHelper.getSortPropertyEditor());
+        binder.registerCustomEditor(Order.class, SortAndOrderHelper.getOrderPropertyEditor());
+    }
 
     /**
      * Create a dataset from request body content.
@@ -234,12 +249,13 @@ public class DataSetAPI extends APIService {
 
     @RequestMapping(value = "/api/datasets", method = GET, consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List data sets.", produces = APPLICATION_JSON_VALUE, notes = "Returns a list of data sets the user can use.")
-    public StreamingResponseBody list(@ApiParam(value = "Sort key (by name or date), defaults to 'date'.") @RequestParam(defaultValue = "DATE", required = false) String sort,
-                     @ApiParam(value = "Order for sort key (desc or asc), defaults to 'desc'.") @RequestParam(defaultValue = "DESC", required = false) String order,
-                     @ApiParam(value = "Filter on name containing the specified name") @RequestParam(defaultValue = "", required = false) String name,
-                     @ApiParam(value = "Filter on certified data sets") @RequestParam(defaultValue = "false", required = false) boolean certified,
-                     @ApiParam(value = "Filter on favorite data sets") @RequestParam(defaultValue = "false", required = false) boolean favorite,
-                     @ApiParam(value = "Filter on recent data sets") @RequestParam(defaultValue = "false", required = false) boolean limit) {
+    public StreamingResponseBody list(
+            @ApiParam(value = "Sort key (by name or date), defaults to 'date'.") @RequestParam(defaultValue = "DATE") Sort sort,
+            @ApiParam(value = "Order for sort key (desc or asc), defaults to 'desc'.") @RequestParam(defaultValue = "DESC") Order order,
+            @ApiParam(value = "Filter on name containing the specified name") @RequestParam(defaultValue = "") String name,
+            @ApiParam(value = "Filter on certified data sets") @RequestParam(defaultValue = "false") boolean certified,
+            @ApiParam(value = "Filter on favorite data sets") @RequestParam(defaultValue = "false") boolean favorite,
+            @ApiParam(value = "Filter on recent data sets") @RequestParam(defaultValue = "false") boolean limit) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Listing datasets (pool: {})...", getConnectionStats());
         }
@@ -257,6 +273,59 @@ public class DataSetAPI extends APIService {
         }
     }
 
+    @RequestMapping(value = "/api/datasets/summary", method = GET, consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "List data sets summary.", produces = APPLICATION_JSON_VALUE, notes = "Returns a list of data sets summary the user can use.")
+    public void listSummary(
+            @ApiParam(value = "Sort key (by name or date), defaults to 'date'.") @RequestParam(defaultValue = "DATE", required = false) Sort sort,
+            @ApiParam(value = "Order for sort key (desc or asc), defaults to 'desc'.") @RequestParam(defaultValue = "DESC", required = false) Order order,
+            @ApiParam(value = "Filter on name containing the specified name") @RequestParam(defaultValue = "") String name,
+            @ApiParam(value = "Filter on certified data sets") @RequestParam(defaultValue = "false") boolean certified,
+            @ApiParam(value = "Filter on favorite data sets") @RequestParam(defaultValue = "false") boolean favorite,
+            @ApiParam(value = "Filter on recent data sets") @RequestParam(defaultValue = "false") boolean limit,
+            final OutputStream output) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Listing datasets summary (pool: {})...", getConnectionStats());
+        }
+
+        int numberOfDataSets;
+        GenericCommand<InputStream> listDataSets = getCommand(DataSetList.class, sort, order, name, certified, favorite, limit);
+        try (InputStream input = listDataSets.execute();
+                final JsonGenerator generator = mapper.getFactory().createGenerator(output)) {
+            List<DataSetMetadata> datasets = mapper.readValue(input, new TypeReference<List<DataSetMetadata>>() {
+            });
+            numberOfDataSets = datasets.size();
+            generator.writeStartArray();
+            for (DataSetMetadata dataSetMetadata : datasets) {
+                EnrichedDataSetMetadata enrichedDataSet = enrichDataSetMetadata(dataSetMetadata);
+                generator.writeObject(enrichedDataSet);
+            }
+            generator.writeEndArray();
+        } catch (IOException e) {
+            throw new TDPException(UNABLE_TO_SEARCH_DATAPREP, e);
+        }
+
+        LOG.info("found {} datasets summary", numberOfDataSets);
+    }
+
+    /**
+     * Add the related preparations list to the given dataset metadata.
+     * 
+     * @param dataSetMetadata the dataset metadata to enrich.
+     * @return the enriched dataset metadata.
+     */
+    private EnrichedDataSetMetadata enrichDataSetMetadata(DataSetMetadata dataSetMetadata) {
+        final PreparationSearchByDataSetId getPreparations = getCommand(PreparationSearchByDataSetId.class,
+                dataSetMetadata.getId());
+        try (InputStream input = getPreparations.execute()) {
+            List<Preparation> preparations = mapper.readValue(input, new TypeReference<List<Preparation>>() {
+            });
+            return new EnrichedDataSetMetadata(dataSetMetadata, preparations);
+        } catch (IOException e) {
+            LOG.warn("error reading related preparations for {}, let's skip this one", dataSetMetadata.getId(), e);
+            return new EnrichedDataSetMetadata(dataSetMetadata, Collections.emptyList());
+        }
+    }
+
     /**
      * Returns a list containing all data sets metadata that are compatible with the data set with id <tt>id</tt>. If no
      * compatible data set is found an empty list is returned. The data set with id <tt>dataSetId</tt> is never returned
@@ -271,8 +340,8 @@ public class DataSetAPI extends APIService {
     @RequestMapping(value = "/api/datasets/{id}/compatibledatasets", method = GET, consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List compatible data sets.", produces = APPLICATION_JSON_VALUE, notes = "Returns a list of data sets that are compatible with the specified one.")
     public StreamingResponseBody listCompatibleDatasets(@ApiParam(value = "Id of the data set to get") @PathVariable(value = "id") String id,
-            @ApiParam(value = "Sort key (by name or date), defaults to 'date'.") @RequestParam(defaultValue = "DATE", required = false) String sort,
-            @ApiParam(value = "Order for sort key (desc or asc), defaults to 'desc'.") @RequestParam(defaultValue = "DESC", required = false) String order) {
+            @ApiParam(value = "Sort key (by name or date), defaults to 'date'.") @RequestParam(defaultValue = "DATE", required = false) Sort sort,
+            @ApiParam(value = "Order for sort key (desc or asc), defaults to 'desc'.") @RequestParam(defaultValue = "DESC", required = false) Order order) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Listing compatible datasets (pool: {})...", getConnectionStats());
         }
@@ -300,8 +369,8 @@ public class DataSetAPI extends APIService {
     @ApiOperation(value = "List compatible preparations.", produces = APPLICATION_JSON_VALUE, notes = "Returns a list of data sets that are compatible with the specified one.")
     public void listCompatiblePreparations(
             @ApiParam(value = "Id of the data set to get") @PathVariable(value = "id") String dataSetId,
-            @ApiParam(value = "Sort key (by name or date), defaults to 'date'.") @RequestParam(defaultValue = "MODIF", required = false) String sort,
-            @ApiParam(value = "Order for sort key (desc or asc), defaults to 'desc'.") @RequestParam(defaultValue = "DESC", required = false) String order,
+            @ApiParam(value = "Sort key (by name or date), defaults to 'date'.") @RequestParam(defaultValue = "MODIF", required = false) Sort sort,
+            @ApiParam(value = "Order for sort key (desc or asc), defaults to 'desc'.") @RequestParam(defaultValue = "DESC", required = false) Order order,
             final OutputStream output) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Listing compatible preparations (pool: {})...", getConnectionStats());

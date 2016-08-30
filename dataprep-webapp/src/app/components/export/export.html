@@ -13,9 +13,9 @@
   ~ ============================================================================
   -->
 
-<talend-button-dropdown button-text="{{'EXPORT' | translate }}" button-action="exportCtrl.launchExport()">
+<talend-button-dropdown button-text="{{'EXPORT' | translate }}" id="export-types-dropdown" button-action="exportCtrl.launchDefaultExport()">
     <ul>
-        <li ng-repeat="exportType in exportCtrl.ExportService.exportTypes track by exportType.id"
+        <li ng-repeat="exportType in exportCtrl.state.export.exportTypes track by exportType.id"
             ng-class="{'disabled' : !exportType.enabled}"
             ng-click="exportCtrl.selectType(exportType)">
             {{exportType.id}}<span ng-if="!exportType.enabled"> - {{exportType.disableReason}}</span>
@@ -30,7 +30,7 @@
     <br/>
     <form name="exportCtrl.exportForm" ng-submit="exportCtrl.exportForm.$valid && exportCtrl.saveAndExport()">
 
-        <transform-params parameters="exportCtrl.nextSelectedType.parameters"></transform-params>
+        <transform-params parameters="exportCtrl.selectedType.parameters"></transform-params>
 
         <div class="modal-buttons">
             <button class="talend-modal-close btn-secondary modal-secondary-button"

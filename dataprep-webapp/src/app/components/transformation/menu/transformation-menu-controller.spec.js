@@ -153,12 +153,17 @@ describe('Transform menu controller', function () {
 
         //then
         expect(ctrl.showModal).toBeFalsy();
-        var expectedParams = {
-            scope: scope,
-            column_id: column.id,
-            column_name: column.name,
-        };
-        expect(PlaygroundService.appendStep).toHaveBeenCalledWith('uppercase', expectedParams);
+
+        const expectedParams = [{
+            action: 'uppercase',
+            parameters: {
+                scope: scope,
+                column_id: column.id,
+                column_name: column.name,
+            }
+        }];
+
+        expect(PlaygroundService.appendStep).toHaveBeenCalledWith(expectedParams);
     }));
 
     it('should fetch dynamic parameters', inject(function (TransformationService) {
@@ -217,13 +222,17 @@ describe('Transform menu controller', function () {
         closure(params);
 
         //then
-        var expectedParams = {
-            param1: 'value',
-            scope: transfoScope,
-            column_id: column.id,
-            column_name: column.name,
-        };
-        expect(PlaygroundService.appendStep).toHaveBeenCalledWith('transfo_name', expectedParams);
+        const expectedParams = [{
+            action: 'transfo_name',
+            parameters: {
+                param1: 'value',
+                scope: transfoScope,
+                column_id: column.id,
+                column_name: column.name,
+            }
+        }];
+
+        expect(PlaygroundService.appendStep).toHaveBeenCalledWith(expectedParams);
     }));
 
     it('should hide modal after step append', function () {

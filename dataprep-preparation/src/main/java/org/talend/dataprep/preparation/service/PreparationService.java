@@ -645,8 +645,8 @@ public class PreparationService {
     @RequestMapping(value = "/preparations/{id}/actions", method = POST, consumes = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Adds an action to a preparation", notes = "Append an action at end of the preparation with given id.")
     @Timed
-    public void appendSteps(@PathVariable("id") final String id, @RequestBody final AppendStep stepsToAppend) {
-        checkActionStepConsistency(stepsToAppend);
+    public void appendSteps(@PathVariable("id") final String id, @RequestBody final List<AppendStep> stepsToAppend) {
+        stepsToAppend.forEach(this::checkActionStepConsistency);
 
         LOGGER.debug("Adding actions to preparation #{}", id);
 
@@ -660,11 +660,8 @@ public class PreparationService {
 
         LOGGER.debug("Current head for preparation #{}: {}", id, preparation.getHeadId());
 
-        final List<AppendStep> actionsSteps = new ArrayList<>(1);
-        actionsSteps.add(stepsToAppend);
-
         // rebuild history from head
-        replaceHistory(preparation, preparation.getHeadId(), actionsSteps);
+        replaceHistory(preparation, preparation.getHeadId(), stepsToAppend);
         LOGGER.debug("Added head to preparation #{}: head is now {}", id, preparation.getHeadId());
     }
 

@@ -45,12 +45,12 @@ describe('Storage service', () => {
     });
 
     describe('export', () => {
-        const FEEDBACK_USER_MAIL_KEY = 'org.talend.dataprep.export.params';
+        const EXPORT_KEY = 'org.talend.dataprep.export.params';
 
         it('should return the export params in local storage', inject(($window, StorageService) => {
             // given
             expect(StorageService.getFeedbackUserMail()).toEqual('');
-            $window.localStorage.setItem(FEEDBACK_USER_MAIL_KEY, '{"exportType":"XLSX"}');
+            $window.localStorage.setItem(EXPORT_KEY, '{"exportType":"XLSX"}');
 
             // when
             const email = StorageService.getExportParams();
@@ -67,7 +67,7 @@ describe('Storage service', () => {
             StorageService.saveExportParams(params);
 
             // then
-            expect($window.localStorage.getItem(FEEDBACK_USER_MAIL_KEY)).toEqual('{"exportType":"XLSX"}');
+            expect($window.localStorage.getItem(EXPORT_KEY)).toEqual('{"exportType":"XLSX"}');
         }));
     });
 

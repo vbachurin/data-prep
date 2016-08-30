@@ -18,26 +18,20 @@
  * @requires data-prep.services.state.constant:state
  * @requires data-prep.services.state.service:StateService
  * @requires data-prep.services.utils.service:StorageService
- * @requires data-prep.services.preparation.service:PreparationListService
  * @requires data-prep.services.preparation.service:PreparationRestService
  */
-export default function PreparationService($q, $state, $window, $stateParams, state, StateService, StorageService, PreparationListService, PreparationRestService) {
+export default function PreparationService($q, $state, $window, $stateParams, state, StateService, StorageService, PreparationRestService) {
     'ngInject';
 
     return {
-        // get, refresh preparations
-        getPreparations,
-        refreshPreparations: PreparationListService.refreshPreparations,
-
         // details, content
         getContent: PreparationRestService.getContent,
         getDetails: PreparationRestService.getDetails,
 
         // preparation lifecycle
         create,
-        copy: PreparationListService.copy,
-        move: PreparationListService.move,
-        update: PreparationRestService.update,
+        copy: PreparationRestService.copy,
+        move: PreparationRestService.move,
         delete: deletePreparation,
         setName,
         open,
@@ -56,28 +50,6 @@ export default function PreparationService($q, $state, $window, $stateParams, st
         getPreviewUpdate: PreparationRestService.getPreviewUpdate,
         getPreviewAdd: PreparationRestService.getPreviewAdd,
     };
-
-    //---------------------------------------------------------------------------------
-    // ------------------------------------GET/REFRESH----------------------------------
-    //---------------------------------------------------------------------------------
-    /**
-     * @ngdoc method
-     * @name getPreparations
-     * @methodOf data-prep.services.preparation.service:PreparationService
-     * @description Return preparation promise that resolve current preparation list if not empty, or call GET service
-     * @returns {promise} The process promise
-     */
-    function getPreparations() {
-        if (PreparationListService.hasPreparationsPromise()) {
-            return PreparationListService.getPreparationsPromise();
-        }
-        else {
-            return state.inventory.preparations !== null ?
-                $q.when(state.inventory.preparations) :
-                PreparationListService.refreshPreparations();
-        }
-    }
-
     //---------------------------------------------------------------------------------
     // -----------------------------------------LIFE------------------------------------
     //---------------------------------------------------------------------------------
@@ -92,7 +64,8 @@ export default function PreparationService($q, $state, $window, $stateParams, st
      */
     function create(datasetId, name, destinationFolder) {
         StateService.setPreviousRoute('nav.index.preparations', { folderId: $stateParams.folderId });
-        return PreparationListService.create(datasetId, name, destinationFolder)
+        return PreparationRestService.create(datasetId, name, destinationFolder)
+            .then((preparationId) => PreparationRestService.getDetails(preparationId))
             .then((preparation) => {
                 // get all dataset aggregations per columns from localStorage and save them for the new preparation
                 StorageService.savePreparationAggregationsFromDataset(datasetId, preparation.id);
@@ -104,12 +77,12 @@ export default function PreparationService($q, $state, $window, $stateParams, st
      * @ngdoc method
      * @name delete
      * @methodOf data-prep.services.preparation.service:PreparationService
-     * @param {object} preparation The preparation to delete
+     * @param integer preparation The preparation id to delete
      * @description Delete a preparation
      * @returns {promise} The DELETE promise
      */
     function deletePreparation(preparation) {
-        return PreparationListService.delete(preparation)
+        return PreparationRestService.delete(preparation.id)
             .then((response) => {
                 // get remove all preparation aggregations per columns in localStorage
                 StorageService.removeAllAggregations(preparation.dataSetId, preparation.id);
@@ -131,7 +104,8 @@ export default function PreparationService($q, $state, $window, $stateParams, st
      * @returns {promise} The POST promise
      */
     function setName(preparationId, name) {
-        return PreparationListService.update(preparationId, name)
+        return PreparationRestService.update(preparationId, { name })
+            .then((preparationId) => PreparationRestService.getDetails(preparationId))
             .then((preparation) => {
                 StorageService.moveAggregations(preparation.dataSetId, preparationId, preparation.id);
                 return preparation;
@@ -199,21 +173,9 @@ export default function PreparationService($q, $state, $window, $stateParams, st
      * @name open
      * @methodOf data-prep.services.preparation.service:PreparationService
      * @param {object} preparation
-     * @param {object} $event click, middle click, or ctrl + click
      * @description open a preparation
      */
-    function open(preparation, $event) {
-        let shouldBeBlankTab;
-        if ($event && ($event.which === 2 || ($event.which === 1 && ($event.metaKey || $event.ctrlKey)))) {
-            shouldBeBlankTab = true;
-        }
-
-        if (shouldBeBlankTab) {
-            $window.open($state.href('playground.preparation', { prepid: preparation.id }, { absolute: true }), '_blank');
-        }
-        else {
-            StateService.setPreviousRoute('nav.index.preparations', { folderId: $stateParams.folderId });
-            $state.go('playground.preparation', { prepid: preparation.id });
-        }
+    function open(preparation) {
+        $state.go('playground.preparation', { prepid: preparation.id });
     }
 }

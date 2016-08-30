@@ -14,10 +14,7 @@
 package org.talend.dataprep.api.service.command.preparation;
 
 import java.io.InputStream;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.annotation.Scope;
@@ -53,7 +50,7 @@ public class PreviewAdd extends PreviewAbstract {
      */
     @Override
     protected InputStream run() throws Exception {
-        final Map<String, Action> originalActions = new LinkedHashMap<>();
+        final Map<String, Action> originalActionsByStep = new LinkedHashMap<>();
         String dataSetId = addParameters.getDatasetId();
 
         // get preparation details to initialize actions list
@@ -66,15 +63,16 @@ public class PreviewAdd extends PreviewAbstract {
 
             // extract actions by steps in chronological order, until defined last active step (from input)
             final Iterator<Action> iterator = actions.iterator();
-            steps.stream().filter(step -> iterator.hasNext()).forEach(step -> originalActions.put(step, iterator.next()));
+            steps.stream().filter(step -> iterator.hasNext()).forEach(step -> originalActionsByStep.put(step, iterator.next()));
         }
+        final Collection<Action> originalActions = originalActionsByStep.values();
 
         // modify actions to include the update
-        final Map<String, Action> modifiedActions = new LinkedHashMap<>(originalActions);
-        modifiedActions.put("preview", addParameters.getAction());
+        final List<Action> modifiedActions = new ArrayList<>(originalActions);
+        modifiedActions.addAll(addParameters.getActions());
 
         // execute transformation preview with content and the 2 transformations
-        setContext(originalActions.values(), modifiedActions.values(), dataSetId, addParameters.getTdpIds());
+        setContext(originalActions, modifiedActions, dataSetId, addParameters.getTdpIds());
         return super.run();
     }
 

@@ -63,6 +63,7 @@ import template from './inventory-item.html';
  * @param {boolean}     processCertificationEnabled true if certify is enabled
  * @param {boolean}     removeEnabled true if remove is enabled
  * @param {boolean}     toggleFavoriteEnabled true if toogle is enabled
+ * @param {boolean}     openEnabled true if open is enabled
  *
  */
 const InventoryItemcomponent = {
@@ -87,6 +88,7 @@ const InventoryItemcomponent = {
         removeEnabled: '<',
         toggleFavoriteEnabled: '<',
         renameEnabled: '<',
+        openEnabled: '<',
     },
 };
 

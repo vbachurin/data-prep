@@ -22,11 +22,12 @@
  * @requires data-prep.services.utils.service:StorageService
  */
 export default class LookupService {
-    constructor($q, state, StateService, TransformationRestService, DatasetRestService, StorageService) {
+    constructor($q, state, DatasetListService, StateService, TransformationRestService, DatasetRestService, StorageService) {
         'ngInject';
 
         this.$q = $q;
         this.state = state;
+        this.DatasetListService = DatasetListService;
         this.StateService = StateService;
         this.TransformationRestService = TransformationRestService;
         this.DatasetRestService = DatasetRestService;
@@ -44,19 +45,22 @@ export default class LookupService {
      * Otherwise, we init the the first lookup action as new lookup.
      */
     initLookups() {
-        return this._getActions(this.state.playground.dataset.id)
-            .then((lookupActions) => {
-                if (!lookupActions.length) {
-                    return;
-                }
+        return this._getDatasets()
+            .then(() => {
+                return this._getActions(this.state.playground.dataset.id)
+                    .then((lookupActions) => {
+                        if (!lookupActions.length) {
+                            return;
+                        }
 
-                const step = this._getSelectedColumnLastLookup();
-                if (step) {
-                    return this.loadFromStep(step);
-                }
-                else {
-                    return this.loadFromAction(lookupActions[0]);
-                }
+                        const step = this._getSelectedColumnLastLookup();
+                        if (step) {
+                            return this.loadFromStep(step);
+                        }
+                        else {
+                            return this.loadFromAction(lookupActions[0]);
+                        }
+                    });
             });
     }
 
@@ -107,7 +111,7 @@ export default class LookupService {
 
                 // change column selection to focus on step target
                 const selectedColumn = _.find(this.state.playground.data.metadata.columns, { id: step.actionParameters.parameters.column_id });
-                this.StateService.setGridSelection(selectedColumn);
+                this.StateService.setGridSelection([selectedColumn]);
 
                 // lookup already loaded
                 if (this.state.playground.lookup.dataset === lookupAction &&
@@ -192,6 +196,19 @@ export default class LookupService {
     //------------------------------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
+     * @name _getDatasets
+     * @methodOf data-prep.services.lookup.service:LookupService
+     * @description get datasets to be used for lookup
+     */
+    _getDatasets() {
+        if (this.state.inventory.datasets) {
+            return this.$q.when(this.state.inventory.datasets);
+        }
+        return this.DatasetListService.refreshDatasets();
+    }
+
+    /**
+     * @ngdoc method
      * @name _getActions
      * @methodOf data-prep.services.lookup.service:LookupService
      * @param {string} datasetId The dataset id
@@ -266,7 +283,7 @@ export default class LookupService {
      * @description Fetch the last step in recipe that is a lookup action for the selected column
      */
     _getSelectedColumnLastLookup() {
-        const selectedColumn = this.state.playground.grid.selectedColumn;
+        const selectedColumn = this.state.playground.grid.selectedColumns.length ? this.state.playground.grid.selectedColumns[0] : null;
         return selectedColumn &&
             _.findLast(this.state.playground.recipe.current.steps, (nextStep) => {
                 return nextStep.column.id === selectedColumn.id && nextStep.transformation.name === 'lookup';
@@ -282,7 +299,7 @@ export default class LookupService {
      */
     _getSelectedColumnLookup(lookupAction) {
         const datasetId = this._getDsId(lookupAction);
-        const selectedColumn = this.state.playground.grid.selectedColumn;
+        const selectedColumn = this.state.playground.grid.selectedColumns.length ? this.state.playground.grid.selectedColumns[0] : null;
         return selectedColumn &&
             _.findLast(this.state.playground.recipe.current.steps, (nextStep) => {
                 return nextStep.column.id === selectedColumn.id &&

@@ -569,8 +569,8 @@ public class PreparationServiceTest extends BasePreparationTest {
     public void shouldCopySteps() throws Exception {
         // given
         final String referenceId = createPreparation("1234", "reference");
-        applyTransformation(referenceId, "upper_case.json");
-        applyTransformation(referenceId, "lower_case.json");
+        applyTransformation(referenceId, "actions/append_upper_case.json");
+        applyTransformation(referenceId, "actions/append_lower_case.json");
         final Preparation reference = repository.get(referenceId, Preparation.class);
 
         final String preparationId = createPreparation("42321", "preparation");
@@ -605,11 +605,11 @@ public class PreparationServiceTest extends BasePreparationTest {
     public void shouldNotCopyStepsBecausePreparationIsNotEmpty() throws Exception {
         // given
         final String referenceId = createPreparation("8436587", "reference");
-        applyTransformation(referenceId, "upper_case.json");
-        applyTransformation(referenceId, "lower_case.json");
+        applyTransformation(referenceId, "actions/append_upper_case.json");
+        applyTransformation(referenceId, "actions/append_lower_case.json");
 
         final String preparationId = createPreparation("42321", "preparation");
-        applyTransformation(preparationId, "upper_case.json");
+        applyTransformation(preparationId, "actions/append_upper_case.json");
 
         // when
         final Response response = given() //
@@ -813,7 +813,7 @@ public class PreparationServiceTest extends BasePreparationTest {
         // given
         assertThat(repository.listAll(Preparation.class).size(), is(0));
         final String preparationId = createPreparationWithAPI("{\"name\": \"test_name\", \"dataSetId\": \"1234\"}");
-        applyTransformation(preparationId, "copy_lastname.json");
+        applyTransformation(preparationId, "actions/append_copy_lastname.json");
 
         assertThat(repository.listAll(Preparation.class).size(), is(1));
         assertThat(repository.listAll(Step.class).size(), is(2));
@@ -833,9 +833,9 @@ public class PreparationServiceTest extends BasePreparationTest {
         // given
         assertThat(repository.listAll(Preparation.class).size(), is(0));
         final String preparationId1 = createPreparationWithAPI("{\"name\": \"test_name\", \"dataSetId\": \"1234\"}");
-        applyTransformation(preparationId1, "copy_lastname.json");
+        applyTransformation(preparationId1, "actions/append_copy_lastname.json");
         final String preparationId2 = createPreparationWithAPI("{\"name\": \"test_name\", \"dataSetId\": \"1234\"}");
-        applyTransformation(preparationId2, "copy_lastname.json");
+        applyTransformation(preparationId2, "actions/append_copy_lastname.json");
 
         assertThat(repository.listAll(Preparation.class).size(), is(2));
         assertThat(repository.listAll(Step.class).size(), is(2));
@@ -904,8 +904,8 @@ public class PreparationServiceTest extends BasePreparationTest {
     public void shouldChangePreparationHead() throws Exception {
         // given
         final String preparationId = createPreparation("1234", "my preparation");
-        final String firstStepId = applyTransformation(preparationId, "upper_case.json");
-        final String secondStepId = applyTransformation(preparationId, "lower_case.json");
+        final String firstStepId = applyTransformation(preparationId, "actions/append_upper_case.json");
+        final String secondStepId = applyTransformation(preparationId, "actions/append_lower_case.json");
 
         Preparation preparation = repository.get(preparationId, Preparation.class);
         assertThat(preparation.getHeadId(), is(secondStepId));
@@ -925,7 +925,7 @@ public class PreparationServiceTest extends BasePreparationTest {
     public void shouldThrowExceptionOnPreparationHeadChangeWithUnknownStep() throws Exception {
         // given
         final String preparationId = createPreparation("1234", "my preparation");
-        final String firstStepId = applyTransformation(preparationId, "upper_case.json");
+        final String firstStepId = applyTransformation(preparationId, "actions/append_upper_case.json");
 
         Preparation preparation = repository.get(preparationId, Preparation.class);
         assertThat(preparation.getHeadId(), is(firstStepId));
@@ -954,7 +954,7 @@ public class PreparationServiceTest extends BasePreparationTest {
         assertThat(preparation.getHeadId(), is(rootStep.getId()));
 
         // when
-        applyTransformation(preparationId, "copy_lastname.json");
+        applyTransformation(preparationId, "actions/append_copy_lastname.json");
 
         // then
         final String expectedStepId = "907741a33bba6e7b3c6c2e4e7d1305c6bd0644b8";
@@ -970,6 +970,43 @@ public class PreparationServiceTest extends BasePreparationTest {
     }
 
     @Test
+    public void shouldAddMultipleActionStepAfterHead() throws Exception {
+        // given
+        final String preparationId = createPreparation("1234", "my preparation");
+        Preparation preparation = repository.get(preparationId, Preparation.class);
+        final long oldModificationDate = preparation.getLastModificationDate();
+
+        assertThat(preparation.getHeadId(), is(rootStep.getId()));
+
+        // when
+        applyTransformation(preparationId, "actions/append_multi_upper_case.json");
+
+        // then
+        final String expectedStepId = "3086490ebc8ac72475d249010b0ff67c38ae3454";
+
+        preparation = repository.get(preparation.id(), Preparation.class);
+        assertThat(preparation.getHeadId(), is(expectedStepId));
+        assertThat(preparation.getLastModificationDate(), is(greaterThan(oldModificationDate)));
+
+        final Step head = repository.get(expectedStepId, Step.class);
+        final Step lastBeforeHead = repository.get(head.getParent(), Step.class);
+        final PreparationActions headAction = repository.get(head.getContent(), PreparationActions.class);
+        final PreparationActions lastBeforeHeadAction = repository.get(lastBeforeHead.getContent(), PreparationActions.class);
+
+        // first step : contains only uppercase on lastname
+        assertThat(lastBeforeHeadAction.getActions(), hasSize(1));
+        assertThat(lastBeforeHeadAction.getActions().get(0).getName(), is("uppercase"));
+        assertThat(lastBeforeHeadAction.getActions().get(0).getParameters().get("column_name"), is("lastname"));
+
+        // second step : contains first step actions + uppercase on firstname
+        assertThat(headAction.getActions(), hasSize(2));
+        assertThat(headAction.getActions().get(0).getName(), is("uppercase"));
+        assertThat(headAction.getActions().get(0).getParameters().get("column_name"), is("lastname"));
+        assertThat(headAction.getActions().get(1).getName(), is("uppercase"));
+        assertThat(headAction.getActions().get(1).getParameters().get("column_name"), is("firstname"));
+    }
+
+    @Test
     public void shouldAddActionWithFilterStepAfterHead() throws Exception {
         // given
         final String preparationId = createPreparation("1234", "my preparation");
@@ -979,7 +1016,7 @@ public class PreparationServiceTest extends BasePreparationTest {
         assertThat(preparation.getHeadId(), is(rootStep.getId()));
 
         // when
-        applyTransformation(preparationId, "copy_lastname_filter.json");
+        applyTransformation(preparationId, "actions/append_copy_lastname_filter.json");
 
         // then
         final String expectedStepId = "1306e2ac2526530ec8cd75206eeaa4191eafe4fa";
@@ -1006,7 +1043,7 @@ public class PreparationServiceTest extends BasePreparationTest {
         assertThat(preparation.getHeadId(), is(rootStep.getId()));
 
         // when
-        applyTransformation(preparationId, "copy_lastname.json");
+        applyTransformation(preparationId, "actions/append_copy_lastname.json");
 
         // then
         final String expectedStepId = "907741a33bba6e7b3c6c2e4e7d1305c6bd0644b8";
@@ -1023,7 +1060,7 @@ public class PreparationServiceTest extends BasePreparationTest {
 
         // when
         final Response request = given()
-                .body(IOUtils.toString(PreparationServiceTest.class.getResourceAsStream("incomplete_transformation_params.json")))//
+                .body(IOUtils.toString(PreparationServiceTest.class.getResourceAsStream("error/incomplete_transformation_list_params.json")))//
                 .contentType(ContentType.JSON)//
                 .when()//
                 .post("/preparations/{id}/actions", preparationId);
@@ -1042,14 +1079,14 @@ public class PreparationServiceTest extends BasePreparationTest {
     public void shouldModifySingleAction() throws Exception {
         // given
         final String preparationId = createPreparation("1234", "my preparation");
-        final String firstStepId = applyTransformation(preparationId, "upper_case.json");
+        final String firstStepId = applyTransformation(preparationId, "actions/append_upper_case.json");
         assertThat(firstStepId, is("22b9436476d28dcf800dddd11aa7441f20c0c1e9"));
 
         Preparation preparation = repository.get(preparationId, Preparation.class);
         final long oldModificationDate = preparation.getLastModificationDate();
 
         // when
-        given().body(IOUtils.toString(PreparationServiceTest.class.getResourceAsStream("upper_case_modified.json")))//
+        given().body(IOUtils.toString(PreparationServiceTest.class.getResourceAsStream("actions/append_update_upper_case.json")))//
                 .contentType(ContentType.JSON)//
                 .when()//
                 .put("/preparations/{id}/actions/{action}", preparationId, firstStepId);
@@ -1068,15 +1105,15 @@ public class PreparationServiceTest extends BasePreparationTest {
     public void shouldModifyLastAction() throws Exception {
         // Initial preparation
         final String preparationId = createPreparation("1234", "my preparation");
-        final String firstStepId = applyTransformation(preparationId, "upper_case.json");
-        final String secondStepId = applyTransformation(preparationId, "lower_case.json");
+        final String firstStepId = applyTransformation(preparationId, "actions/append_upper_case.json");
+        final String secondStepId = applyTransformation(preparationId, "actions/append_lower_case.json");
         assertThat(secondStepId, is("3fdaae0ccfd3bfd869790999670106535cdbccf1"));
 
         Preparation preparation = repository.get(preparationId, Preparation.class);
         final long oldModificationDate = preparation.getLastModificationDate();
 
         // when : update second (last) step
-        given().body(IOUtils.toString(PreparationServiceTest.class.getResourceAsStream("upper_case_modified.json")))
+        given().body(IOUtils.toString(PreparationServiceTest.class.getResourceAsStream("actions/append_update_upper_case.json")))
                 .contentType(ContentType.JSON).when().put("/preparations/{id}/actions/{action}", preparationId, secondStepId);
 
         // then
@@ -1093,16 +1130,16 @@ public class PreparationServiceTest extends BasePreparationTest {
     public void shouldModifyFirstAction() throws Exception {
         // given
         final String preparationId = createPreparation("1234", "my preparation");
-        final String firstStepId = applyTransformation(preparationId, "upper_case.json");
+        final String firstStepId = applyTransformation(preparationId, "actions/append_upper_case.json");
         assertThat(firstStepId, is("22b9436476d28dcf800dddd11aa7441f20c0c1e9"));
-        final String secondStepId = applyTransformation(preparationId, "lower_case.json");
+        final String secondStepId = applyTransformation(preparationId, "actions/append_lower_case.json");
         assertThat(secondStepId, is("3fdaae0ccfd3bfd869790999670106535cdbccf1"));
 
         Preparation preparation = repository.get(preparationId, Preparation.class);
         final long oldModificationDate = preparation.getLastModificationDate();
 
         // when
-        given().body(IOUtils.toString(PreparationServiceTest.class.getResourceAsStream("upper_case_modified.json")))
+        given().body(IOUtils.toString(PreparationServiceTest.class.getResourceAsStream("actions/append_update_upper_case.json")))
                 .contentType(ContentType.JSON).when()
                 .put("/preparations/{id}/actions/{action}", preparation.id(), "a41184275b046d86c8d98d413ed019bc0a7f3c49");
 
@@ -1138,7 +1175,7 @@ public class PreparationServiceTest extends BasePreparationTest {
         assertThatStepHasCreatedColumns(step4, "0011");
 
         // when : +1 column
-        given().body(IOUtils.toString(PreparationServiceTest.class.getResourceAsStream("update/1bis.split_3_columns.json")))
+        given().body(IOUtils.toString(PreparationServiceTest.class.getResourceAsStream("update/1bis.update_split_3_columns.json")))
                 .contentType(ContentType.JSON).when().put("/preparations/{id}/actions/{action}", preparationId, step1);
 
         // then
@@ -1155,11 +1192,11 @@ public class PreparationServiceTest extends BasePreparationTest {
     public void shouldReturnErrorWhenScopeIsNotConsistentOnTransformationUpdate() throws Exception {
         // given
         final String preparationId = createPreparation("1234", "my preparation");
-        final String stepId = applyTransformation(preparationId, "upper_case.json");
+        final String stepId = applyTransformation(preparationId, "actions/append_upper_case.json");
 
         // when
         final Response request = given()
-                .body(IOUtils.toString(PreparationServiceTest.class.getResourceAsStream("incomplete_transformation_params.json")))//
+                .body(IOUtils.toString(PreparationServiceTest.class.getResourceAsStream("error/incomplete_transformation_params.json")))//
                 .contentType(ContentType.JSON)//
                 .when()//
                 .put("/preparations/{id}/actions/{action}", preparationId, stepId);
@@ -1178,8 +1215,8 @@ public class PreparationServiceTest extends BasePreparationTest {
     public void shouldDeleteSingleStep() throws Exception {
         // given
         final String preparationId = createPreparation("1234", "My preparation");
-        final String firstStepId = applyTransformation(preparationId, "upper_case.json");
-        final String secondStepId = applyTransformation(preparationId, "lower_case.json");
+        final String firstStepId = applyTransformation(preparationId, "actions/append_upper_case.json");
+        final String secondStepId = applyTransformation(preparationId, "actions/append_lower_case.json");
 
         Step head = repository.get(secondStepId, Step.class);
         PreparationActions headActions = repository.get(head.getContent(), PreparationActions.class);
@@ -1206,10 +1243,10 @@ public class PreparationServiceTest extends BasePreparationTest {
     public void shouldDeleteStepsThatApplyToCreatedColumn() throws Exception {
         // given
         final String preparationId = createPreparation("1234", "My preparation");
-        applyTransformation(preparationId, "upper_case.json");
-        final String copyStepId = applyTransformation(preparationId, "copy_lastname.json");
-        applyTransformation(preparationId, "rename_copy_lastname.json");
-        final String headStepId = applyTransformation(preparationId, "lower_case.json");
+        applyTransformation(preparationId, "actions/append_upper_case.json");
+        final String copyStepId = applyTransformation(preparationId, "actions/append_copy_lastname.json");
+        applyTransformation(preparationId, "actions/append_rename_copy_lastname.json");
+        final String headStepId = applyTransformation(preparationId, "actions/append_lower_case.json");
 
         Step head = repository.get(headStepId, Step.class);
         PreparationActions headActions = repository.get(head.getContent(), PreparationActions.class);
@@ -1239,12 +1276,12 @@ public class PreparationServiceTest extends BasePreparationTest {
     public void shouldShiftColumnCreatedAfterStepWithAllActionsParametersOnThoseSteps() throws Exception {
         // given
         final String preparationId = createPreparation("1234", "My preparation");
-        applyTransformation(preparationId, "upper_case.json");
-        final String copyStepId = applyTransformation(preparationId, "copy_lastname.json");
-        applyTransformation(preparationId, "rename_copy_lastname.json");
-        applyTransformation(preparationId, "copy_firstname.json");
-        applyTransformation(preparationId, "rename_copy_firstname.json");
-        final String headStepId = applyTransformation(preparationId, "lower_case.json");
+        applyTransformation(preparationId, "actions/append_upper_case.json");
+        final String copyStepId = applyTransformation(preparationId, "actions/append_copy_lastname.json");
+        applyTransformation(preparationId, "actions/append_rename_copy_lastname.json");
+        applyTransformation(preparationId, "actions/append_copy_firstname.json");
+        applyTransformation(preparationId, "actions/append_rename_copy_firstname.json");
+        final String headStepId = applyTransformation(preparationId, "actions/append_lower_case.json");
 
         Step head = repository.get(headStepId, Step.class);
         PreparationActions headActions = repository.get(head.getContent(), PreparationActions.class);
@@ -1292,8 +1329,8 @@ public class PreparationServiceTest extends BasePreparationTest {
     public void shouldThrowExceptionWhenStepToDeleteIsRoot() throws Exception {
         // given
         final String preparationId = createPreparation("1234", "My preparation");
-        applyTransformation(preparationId, "upper_case.json");
-        applyTransformation(preparationId, "lower_case.json");
+        applyTransformation(preparationId, "actions/append_upper_case.json");
+        applyTransformation(preparationId, "actions/append_lower_case.json");
 
         // when: delete ROOT
         final Response response = when().delete("/preparations/{id}/actions/{action}", preparationId, rootStep.getId());
@@ -1306,8 +1343,8 @@ public class PreparationServiceTest extends BasePreparationTest {
     public void shouldThrowExceptionWhenStepDoesntExist() throws Exception {
         // given
         final String preparationId = createPreparation("1234", "My preparation");
-        applyTransformation(preparationId, "upper_case.json");
-        applyTransformation(preparationId, "lower_case.json");
+        applyTransformation(preparationId, "actions/append_upper_case.json");
+        applyTransformation(preparationId, "actions/append_lower_case.json");
 
         // when : delete unknown step
         final Response response = when().delete("/preparations/{id}/actions/{action}", preparationId, "azerty");
@@ -1320,8 +1357,8 @@ public class PreparationServiceTest extends BasePreparationTest {
     public void shouldUpdateModificationDateOnDeleteStep() throws Exception {
         // given
         final String preparationId = createPreparation("1234", "My preparation");
-        applyTransformation(preparationId, "upper_case.json");
-        final String secondStepId = applyTransformation(preparationId, "lower_case.json");
+        applyTransformation(preparationId, "actions/append_upper_case.json");
+        final String secondStepId = applyTransformation(preparationId, "actions/append_lower_case.json");
 
         Preparation preparation = repository.get(preparationId, Preparation.class);
         final long oldModificationDate = preparation.getLastModificationDate();
@@ -1342,7 +1379,7 @@ public class PreparationServiceTest extends BasePreparationTest {
         // given
         final String datasetId = "3214a6748bc4f9674c85";
         final String preparationId = createPreparation("other_dataset", "My preparation");
-        applyTransformation(preparationId, "upper_case.json");
+        applyTransformation(preparationId, "actions/append_upper_case.json");
 
         repository.get(preparationId, Preparation.class);
 
@@ -1358,7 +1395,7 @@ public class PreparationServiceTest extends BasePreparationTest {
         // given
         final String datasetId = "3214a6748bc4f9674c85";
         final String preparationId = createPreparation(datasetId, "My preparation");
-        applyTransformation(preparationId, "upper_case.json");
+        applyTransformation(preparationId, "actions/append_upper_case.json");
 
         repository.get(preparationId, Preparation.class);
 
@@ -1374,7 +1411,7 @@ public class PreparationServiceTest extends BasePreparationTest {
         // given
         final String datasetId = "3214a6748bc4f9674c85";
         final String preparationId = createPreparation(datasetId, "My preparation");
-        applyTransformation(preparationId, "upper_case.json");
+        applyTransformation(preparationId, "actions/append_upper_case.json");
 
         final Map<String, String> parametersOnDataset = new HashMap<>();
         parametersOnDataset.put("lookup_ds_id", datasetId);

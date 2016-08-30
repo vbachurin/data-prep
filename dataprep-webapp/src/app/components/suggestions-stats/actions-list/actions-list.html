@@ -15,12 +15,12 @@
 
 <div class="actions-list">
     <sc-accordion class="actions-group">
-        <div ng-repeat="categoryTransformations in actionsListCtrl.actions track by $index"
-             ng-if="actionsListCtrl.shouldRenderCategory(categoryTransformations)">
-            <div class="actions-category" ng-bind-html="categoryTransformations.categoryHtml"></div>
+        <div ng-repeat="category in actionsListCtrl.actions track by $index"
+             ng-if="actionsListCtrl.shouldRenderCategory(category)">
+            <div class="actions-category" ng-bind-html="category.categoryHtml"></div>
             <sc-accordion-item
-                    ng-repeat="transfo in categoryTransformations.transformations track by transfo.name"
-                    ng-if="actionsListCtrl.shouldRenderAction(transfo)"
+                    ng-repeat="transfo in category.transformations track by transfo.name"
+                    ng-if="actionsListCtrl.shouldRenderAction(category, transfo)"
                     on-open="actionsListCtrl.scrollToBottom()"
                     ng-switch="!!transfo.parameters">
                 <trigger class="trigger">

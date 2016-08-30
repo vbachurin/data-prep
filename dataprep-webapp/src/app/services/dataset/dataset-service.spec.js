@@ -125,54 +125,92 @@ describe('Dataset Service', () => {
         }));
     });
 
-    describe('get all datasets', () => {
-        it('should get a promise that resolve the existing datasets if already fetched', inject(($q, $rootScope, DatasetService, DatasetListService) => {
-            // given
-            spyOn(DatasetListService, 'hasDatasetsPromise').and.returnValue(true);
-            spyOn(DatasetListService, 'getDatasetsPromise').and.returnValue($q.when(true));
-            // when
-            DatasetService.getDatasets();
-
-            // then
-            expect(DatasetListService.getDatasetsPromise).toHaveBeenCalled();
-        }));
-
-        it('should refresh datasets if datasets are not fetched', inject(($q, $rootScope, DatasetService, DatasetListService) => {
-            // given
-            spyOn(DatasetListService, 'hasDatasetsPromise').and.returnValue(false);
-            let results = null;
-
-            // when
-            DatasetService.getDatasets()
-                .then((response) => {
-                    results = response;
-                });
-
-            $rootScope.$digest();
-
-            // then
-            expect(results).toBe(datasets);
-        }));
-
-        it('should get a promise that fetch datasets', inject(($rootScope, DatasetService, DatasetListService) => {
-            // given
-            let results = null;
-            stateMock.inventory.datasets = null;
-
-            // when
-            DatasetService.getDatasets()
-                .then((response) => {
-                    results = response;
-                });
-            $rootScope.$digest();
-
-            // then
-            expect(results).toBe(datasets);
-            expect(DatasetListService.refreshDatasets).toHaveBeenCalled();
-        }));
-    });
-
     describe('get', () => {
+        describe('all', () => {
+            it('should get a promise that resolve the existing datasets if already fetched', inject(($q, $rootScope, DatasetService, DatasetListService) => {
+                // given
+                spyOn(DatasetListService, 'hasDatasetsPromise').and.returnValue(true);
+                spyOn(DatasetListService, 'getDatasetsPromise').and.returnValue($q.when(true));
+                // when
+                DatasetService.getDatasets();
+
+                // then
+                expect(DatasetListService.getDatasetsPromise).toHaveBeenCalled();
+            }));
+
+            it('should refresh datasets if datasets are not fetched', inject(($q, $rootScope, DatasetService, DatasetListService) => {
+                // given
+                spyOn(DatasetListService, 'hasDatasetsPromise').and.returnValue(false);
+                let results = null;
+
+                // when
+                DatasetService.getDatasets()
+                    .then((response) => {
+                        results = response;
+                    });
+
+                $rootScope.$digest();
+
+                // then
+                expect(results).toBe(datasets);
+            }));
+
+            it('should get a promise that fetch datasets', inject(($rootScope, DatasetService, DatasetListService) => {
+                // given
+                let results = null;
+                stateMock.inventory.datasets = null;
+
+                // when
+                DatasetService.getDatasets()
+                    .then((response) => {
+                        results = response;
+                    });
+                $rootScope.$digest();
+
+                // then
+                expect(results).toBe(datasets);
+                expect(DatasetListService.refreshDatasets).toHaveBeenCalled();
+            }));
+        });
+
+        describe('filtered', () => {
+            it('should fetch most recent datasets', inject((DatasetService, DatasetRestService) => {
+                // given
+                spyOn(DatasetRestService, 'getFilteredDatasets').and.returnValue();
+                const filter = DatasetService.filters[0];
+
+                // when
+                DatasetService.getFilteredDatasets(filter, 'toto');
+
+                // then
+                expect(DatasetRestService.getFilteredDatasets).toHaveBeenCalledWith('sort=MODIF&limit=true&name=toto' );
+            }));
+
+            it('should fetch favorite datasets', inject((DatasetService, DatasetRestService) => {
+                // given
+                spyOn(DatasetRestService, 'getFilteredDatasets').and.returnValue();
+                const filter = DatasetService.filters[1];
+
+                // when
+                DatasetService.getFilteredDatasets(filter, 'toto');
+
+                // then
+                expect(DatasetRestService.getFilteredDatasets).toHaveBeenCalledWith('favorite=true&name=toto');
+            }));
+
+            it('should fetch all datasets', inject((DatasetService, DatasetRestService) => {
+                // given
+                spyOn(DatasetRestService, 'getFilteredDatasets').and.returnValue();
+                const filter = DatasetService.filters[2];
+
+                // when
+                DatasetService.getFilteredDatasets(filter, 'toto');
+
+                // then
+                expect(DatasetRestService.getFilteredDatasets).toHaveBeenCalledWith('name=toto');
+            }));
+        });
+
         describe('by name', () => {
             it('should find dataset', inject((DatasetService) => {
                 // when
@@ -299,86 +337,6 @@ describe('Dataset Service', () => {
             expect(StateService.setDatasetEncodings).toHaveBeenCalledWith(encodings);
         }));
 
-        it('should update parameters (without its preparation to avoid cyclic ref: waiting for TDP-1348)', inject(($q, DatasetService, DatasetRestService) => {
-            // given
-            const metadata = {
-                id: '543a216fc796e354',
-                defaultPreparation: { id: '876a32bc545a846' },
-                preparations: [{ id: '876a32bc545a846' }, { id: '799dc6b2562a186' }],
-                encoding: 'UTF-8',
-                parameters: { SEPARATOR: '|' },
-            };
-            const parameters = {
-                separator: ';',
-                encoding: 'UTF-16',
-            };
-            spyOn(DatasetRestService, 'updateMetadata').and.returnValue($q.when());
-            expect(DatasetRestService.updateMetadata).not.toHaveBeenCalled();
-
-            // when
-            DatasetService.updateParameters(metadata, parameters);
-
-            //then
-            expect(DatasetRestService.updateMetadata).toHaveBeenCalled();
-            expect(metadata.defaultPreparation).toBeFalsy();
-            expect(metadata.preparations).toBeFalsy();
-        }));
-
-        it('should set back preparations after parameters update (waiting for TDP-1348)', inject(($rootScope, $q, DatasetService, DatasetRestService) => {
-            // given
-            const metadata = {
-                id: '543a216fc796e354',
-                defaultPreparation: { id: '876a32bc545a846', parameters: { SEPARATOR: '|' } },
-                preparations: [{ id: '876a32bc545a846' }, { id: '799dc6b2562a186' }],
-                encoding: 'UTF-8',
-                parameters: { SEPARATOR: '|' },
-            };
-            const parameters = {
-                separator: ';',
-                encoding: 'UTF-16',
-            };
-            spyOn(DatasetRestService, 'updateMetadata').and.returnValue($q.when());
-
-            // when
-            DatasetService.updateParameters(metadata, parameters);
-            expect(metadata.defaultPreparation).toBeFalsy();
-            expect(metadata.preparations).toBeFalsy();
-            $rootScope.$digest();
-
-            // then
-            expect(metadata.defaultPreparation).toEqual({ id: '876a32bc545a846', parameters: { SEPARATOR: '|' } });
-            expect(metadata.preparations).toEqual([{ id: '876a32bc545a846' }, { id: '799dc6b2562a186' }]);
-        }));
-
-        it('should set back old parameters and preparations (waiting for TDP-1348) when update fails', inject(($rootScope, $q, DatasetService, DatasetRestService) => {
-            // given
-            const metadata = {
-                id: '543a216fc796e354',
-                defaultPreparation: { id: '876a32bc545a846', parameters: { SEPARATOR: '|' } },
-                preparations: [{ id: '876a32bc545a846' }, { id: '799dc6b2562a186' }],
-                encoding: 'UTF-8',
-                parameters: { SEPARATOR: '|' },
-            };
-            const parameters = {
-                separator: ';',
-                encoding: 'UTF-16',
-            };
-            spyOn(DatasetRestService, 'updateMetadata').and.returnValue($q.reject());
-
-            // when
-            DatasetService.updateParameters(metadata, parameters);
-            expect(metadata.parameters.SEPARATOR).toBe(';');
-            expect(metadata.encoding).toBe('UTF-16');
-            expect(metadata.defaultPreparation).toBeFalsy();
-            expect(metadata.preparations).toBeFalsy();
-            $rootScope.$digest();
-
-            // then
-            expect(metadata.parameters.SEPARATOR).toBe('|');
-            expect(metadata.encoding).toBe('UTF-8');
-            expect(metadata.defaultPreparation).toEqual({ id: '876a32bc545a846', parameters: { SEPARATOR: '|' } });
-            expect(metadata.preparations).toEqual([{ id: '876a32bc545a846' }, { id: '799dc6b2562a186' }]);
-        }));
     });
 
     describe('rename', () => {
@@ -397,31 +355,6 @@ describe('Dataset Service', () => {
             expect(StateService.setDatasetName).toHaveBeenCalledWith(metadata.id, name);
         }));
 
-        it('should call update metadata service (without its preparation to avoid cyclic ref: waiting for TDP-1348)', inject(($q, DatasetService, DatasetRestService, StateService) => {
-            //given
-            const metadata = {
-                id: '7a82d3002fc543e54',
-                name: 'oldName',
-                defaultPreparation: { id: '893ad6695fe42d515' },
-                preparations: [
-                    { id: '893ad6695fe42d515' },
-                    { id: '987efd121fa56898a' },
-                ],
-            };
-            const name = 'newName';
-
-            spyOn(DatasetRestService, 'updateMetadata').and.returnValue($q.when());
-            spyOn(StateService, 'setDatasetName').and.returnValue(); // this update the metadata name too
-
-            //when
-            DatasetService.rename(metadata, name);
-
-            //then
-            expect(DatasetRestService.updateMetadata).toHaveBeenCalledWith(metadata);
-            expect(metadata.defaultPreparation).toBeFalsy();
-            expect(metadata.preparations).toBeFalsy();
-        }));
-
         it('should set back old name via app state on rename failure', inject(($rootScope, $q, DatasetService, DatasetRestService, StateService) => {
             //given
             const metadata = { id: '7a82d3002fc543e54', name: 'oldName' };
@@ -437,34 +370,6 @@ describe('Dataset Service', () => {
 
             //then
             expect(StateService.setDatasetName).toHaveBeenCalledWith(metadata.id, 'oldName');
-        }));
-
-        it('should set back preparations after rename (waiting for TDP-1348)', inject(($rootScope, $q, DatasetService, DatasetRestService, StateService) => {
-            //given
-            const metadata = {
-                id: '7a82d3002fc543e54',
-                name: 'oldName',
-                defaultPreparation: { id: '893ad6695fe42d515' },
-                preparations: [
-                    { id: '893ad6695fe42d515' },
-                    { id: '987efd121fa56898a' },
-                ],
-            };
-            spyOn(DatasetRestService, 'updateMetadata').and.returnValue($q.when());
-            spyOn(StateService, 'setDatasetName').and.returnValue(); // this update the metadata name too
-
-            //when
-            DatasetService.rename(metadata, 'newName');
-            expect(metadata.defaultPreparation).toBeFalsy();
-            expect(metadata.preparations).toBeFalsy();
-            $rootScope.$digest();
-
-            //then
-            expect(metadata.defaultPreparation).toEqual({ id: '893ad6695fe42d515' });
-            expect(metadata.preparations).toEqual([
-                { id: '893ad6695fe42d515' },
-                { id: '987efd121fa56898a' },
-            ]);
         }));
     });
 

@@ -755,10 +755,6 @@ describe('Recipe service', function () {
             originalRecipe = steps;
 
             //params
-            column = {
-                id: '0001',
-                name: 'firstname',
-            };
             transformation = {
                 name: 'replace_on_value',
                 label: 'Replace value that match...',
@@ -770,13 +766,19 @@ describe('Recipe service', function () {
                 ],
                 dynamic: false,
             };
-            params = {
+            params = [{
                 scope: 'column',
                 column_id: '0001',
                 column_name: 'firstname',
                 value: 'James',
                 replace: 'Jimmy',
-            };
+            }, {
+                scope: 'column',
+                column_id: '0002',
+                column_name: 'lastname',
+                value: 'James',
+                replace: 'Jimmy',
+            }];
 
             stateMock.playground.filter = {
                 applyTransformationOnFilters: true,
@@ -792,18 +794,18 @@ describe('Recipe service', function () {
             expect(StateService.setRecipePreviewSteps).toHaveBeenCalled();
             const steps = StateService.setRecipePreviewSteps.calls.argsFor(0)[0];
             expect(steps).not.toBe(originalRecipe);
-            expect(steps.length).toBe(4);
+            expect(steps.length).toBe(5);
             expect(steps[0]).toBe(originalRecipe[0]);
             expect(steps[1]).toBe(originalRecipe[1]);
             expect(steps[2]).toBe(originalRecipe[2]);
             expect(steps[3]).toEqual({
                 column: {
-                    id: column.id,
-                    name: column.name,
+                    id: params[0].column_id,
+                    name: params[0].column_name,
                 },
                 row: { id: undefined },
                 transformation: {
-                    stepId: 'early preview',
+                    stepId: 'early_preview_0',
                     name: transformation.name,
                     label: transformation.label,
                     description: transformation.description,
@@ -822,12 +824,43 @@ describe('Recipe service', function () {
                 },
                 actionParameters: {
                     action: transformation.name,
-                    parameters: params,
+                    parameters: params[0],
                 },
                 preview: true,
                 filters: [88],
             });
             expect(steps[3].transformation.parameters).not.toBe(transformation.parameters);
+            expect(steps[4]).toEqual({
+                column: {
+                    id: params[1].column_id,
+                    name: params[1].column_name,
+                },
+                row: { id: undefined },
+                transformation: {
+                    stepId: 'early_preview_1',
+                    name: transformation.name,
+                    label: transformation.label,
+                    description: transformation.description,
+                    parameters: [
+                        { name: 'value', type: 'string', value: 'James', initialValue: 'James', inputType: 'text' },
+                        { name: 'replace', type: 'string', value: 'Jimmy', initialValue: 'Jimmy', inputType: 'text' },
+                        {
+                            name: 'dummy param',
+                            type: 'select',
+                            value: undefined,
+                            initialValue: undefined,
+                            inputType: 'text',
+                        },
+                    ],
+                    dynamic: transformation.dynamic,
+                },
+                actionParameters: {
+                    action: transformation.name,
+                    parameters: params[1],
+                },
+                preview: true,
+                filters: [88],
+            });
         }));
 
         it('should cancel preview and set back previous state', inject((StateService, RecipeService) => {

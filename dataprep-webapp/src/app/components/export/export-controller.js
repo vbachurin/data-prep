@@ -11,6 +11,8 @@
 
  ============================================================================*/
 
+import { chain } from 'lodash';
+
 /**
  * @ngdoc controller
  * @name data-prep.export.controller:ExportCtrl
@@ -32,7 +34,7 @@ export default class ExportCtrl {
         this.StorageService = StorageService;
         this.StepUtilsService = StepUtilsService;
 
-        this.exportParams = StorageService.getExportParams();
+        this.exportParams = this.state.export.defaultExportType;
         this.selectedType = ExportService.getType(this.exportParams.exportType);
     }
 
@@ -45,7 +47,7 @@ export default class ExportCtrl {
      */
     selectType(type) {
         this._initExportParameters(type);
-        this.nextSelectedType = type;
+        this.selectedType = type;
         this.showModal = true;
     }
 
@@ -56,9 +58,19 @@ export default class ExportCtrl {
      * @description Init parameters and display the params modal
      */
     saveAndExport() {
-        this.selectedType = this.nextSelectedType;
         const params = this._extractParameters(this.selectedType);
-        this.StorageService.saveExportParams(params);
+        this.ExportService.setExportParams(params);
+        this.launchExport();
+    }
+
+    /**
+     * @ngdoc method
+     * @name launchDefaultExport
+     * @methodOf data-prep.export.controller:ExportCtrl
+     * @description launches default export without export type selection
+     */
+    launchDefaultExport() {
+        this._initExportParameters(this.selectedType);
         this.launchExport();
     }
 
@@ -85,7 +97,7 @@ export default class ExportCtrl {
      * @description Change the fileName of the type parameters to fit the current prep/dataset
      */
     _initExportParameters(exportType) {
-        _.chain(exportType.parameters)
+        chain(exportType.parameters)
             .filter({ name: 'fileName' })
             .forEach((param) => {
                 param.value = this.state.playground.preparation ?
@@ -104,7 +116,7 @@ export default class ExportCtrl {
      */
     _extractParameters(exportType) {
         const parameters = { exportType: exportType.id };
-        _.forEach(exportType.parameters, (param) => {
+        exportType.parameters.forEach((param) => {
             parameters['exportParameters.' + param.name] = param.value ? param.value : param.default;
         });
 

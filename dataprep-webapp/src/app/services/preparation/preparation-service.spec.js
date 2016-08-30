@@ -22,19 +22,21 @@ describe('Preparation Service', () => {
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(inject(($q, PreparationListService, PreparationRestService, StorageService) => {
-        spyOn(PreparationListService, 'refreshPreparations').and.returnValue($q.when(preparations));
-        spyOn(PreparationListService, 'create').and.returnValue($q.when({ id: newPreparationId }));
-        spyOn(PreparationListService, 'update').and.returnValue($q.when({
+    beforeEach(inject(($q, PreparationRestService, StorageService) => {
+        spyOn(PreparationRestService, 'create').and.returnValue($q.when({ id: newPreparationId }));
+        spyOn(PreparationRestService, 'update').and.returnValue($q.when({
             id: updatedPreparationId,
             dataSetId: updatedDatasetId,
         }));
-        spyOn(PreparationListService, 'delete').and.returnValue($q.when(true));
-        spyOn(PreparationListService, 'copy').and.returnValue($q.when(true));
+        spyOn(PreparationRestService, 'delete').and.returnValue($q.when(true));
+        spyOn(PreparationRestService, 'copy').and.returnValue($q.when(true));
 
         spyOn(PreparationRestService, 'updateStep').and.returnValue($q.when(true));
         spyOn(PreparationRestService, 'getContent').and.returnValue($q.when(true));
-        spyOn(PreparationRestService, 'getDetails').and.returnValue($q.when(true));
+        spyOn(PreparationRestService, 'getDetails').and.returnValue($q.when({
+            id: newPreparationId,
+            dataSetId: updatedDatasetId,
+        }));
         spyOn(PreparationRestService, 'getPreviewDiff').and.returnValue($q.when(true));
         spyOn(PreparationRestService, 'getPreviewUpdate').and.returnValue($q.when(true));
         spyOn(PreparationRestService, 'getPreviewAdd').and.returnValue($q.when(true));
@@ -44,58 +46,9 @@ describe('Preparation Service', () => {
         spyOn(StorageService, 'moveAggregations').and.returnValue();
     }));
 
-    describe('getter/refresher', () => {
-        it('should return the pending refresh promise when it is defined', inject(($q, $rootScope, PreparationService, PreparationListService) => {
-            //given
-            const fetchPromise = $q.when(preparations);
-            spyOn(PreparationListService, 'getPreparationsPromise').and.returnValue(fetchPromise);
-            spyOn(PreparationListService, 'hasPreparationsPromise').and.returnValue(true);
-            expect(PreparationListService.refreshPreparations).not.toHaveBeenCalled();
-
-            let result = null;
-
-            //when
-            PreparationService.getPreparations().then((promiseResult) => result = promiseResult);
-            $rootScope.$digest();
-
-            //then
-            expect(result).toBe(preparations);
-            expect(PreparationListService.refreshPreparations).not.toHaveBeenCalled();
-        }));
-
-        it('should return preparations from state when there are already fetched', inject((state, $rootScope, PreparationService, PreparationListService) => {
-            //given
-            stateMock.inventory.preparations = preparations;
-            spyOn(PreparationListService, 'hasPreparationsPromise').and.returnValue(false);
-            expect(PreparationListService.refreshPreparations).not.toHaveBeenCalled();
-
-            let result = null;
-
-            //when
-            PreparationService.getPreparations().then((promiseResult) => result = promiseResult);
-            $rootScope.$digest();
-
-            //then
-            expect(result).toBe(preparations);
-            expect(PreparationListService.refreshPreparations).not.toHaveBeenCalled();
-        }));
-
-        it('should fetch preparations when they are not already fetched', inject(($rootScope, PreparationService, PreparationListService) => {
-            //given
-            spyOn(PreparationListService, 'hasPreparationsPromise').and.returnValue(null);
-            stateMock.inventory.preparations = null;
-            expect(PreparationListService.refreshPreparations).not.toHaveBeenCalled();
-            let result = null;
-
-            //when
-            PreparationService.getPreparations().then((promiseResult) => result = promiseResult);
-            $rootScope.$digest();
-
-            //then
-            expect(result).toBe(preparations);
-            expect(PreparationListService.refreshPreparations).toHaveBeenCalled();
-        }));
-    });
+    afterEach(inject((StateService) => {
+        StateService.resetRoute();
+    }));
 
     describe('lifecycle', () => {
         describe('create', () => {
@@ -103,7 +56,7 @@ describe('Preparation Service', () => {
                 spyOn(StateService, 'setPreviousRoute').and.returnValue();
             }));
 
-            it('should set previous route', inject(($stateParams, $rootScope, PreparationService, PreparationListService, StateService) => {
+            it('should set previous route', inject(($stateParams, $rootScope, PreparationService, StateService) => {
                 //given
                 const datasetId = '2430e5df845ab6034c85';
                 const name = 'my preparation';
@@ -116,18 +69,18 @@ describe('Preparation Service', () => {
                 expect(StateService.setPreviousRoute).toHaveBeenCalledWith('nav.index.preparations', { folderId: $stateParams.folderId });
             }));
 
-            it('should create a new preparation', inject(($rootScope, PreparationService, PreparationListService) => {
+            it('should create a new preparation', inject(($rootScope, PreparationService, PreparationRestService) => {
                 //given
                 const datasetId = '2430e5df845ab6034c85';
                 const name = 'my preparation';
-                expect(PreparationListService.create).not.toHaveBeenCalled();
+                expect(PreparationRestService.create).not.toHaveBeenCalled();
 
                 //when
                 PreparationService.create(datasetId, name, 'destinationFolder');
                 $rootScope.$digest();
 
                 //then
-                expect(PreparationListService.create).toHaveBeenCalledWith(datasetId, name, 'destinationFolder');
+                expect(PreparationRestService.create).toHaveBeenCalledWith(datasetId, name, 'destinationFolder');
             }));
 
             it('should save aggregations for preparation from dataset aggregations', inject(($rootScope, PreparationService, StorageService) => {
@@ -145,18 +98,18 @@ describe('Preparation Service', () => {
         });
 
         describe('update', () => {
-            it('should update current preparation name', inject(($rootScope, PreparationService, PreparationListService) => {
+            it('should update current preparation name', inject(($rootScope, PreparationService, PreparationRestService) => {
                 //given
                 const preparationId = '6cd546546548a745';
                 const name = 'my preparation';
-                expect(PreparationListService.update).not.toHaveBeenCalled();
+                expect(PreparationRestService.update).not.toHaveBeenCalled();
 
                 //when
                 PreparationService.setName(preparationId, name);
                 $rootScope.$digest();
 
                 //then
-                expect(PreparationListService.update).toHaveBeenCalledWith(preparationId, name);
+                expect(PreparationRestService.update).toHaveBeenCalledWith(preparationId, {name});
             }));
 
             it('should move aggregations to the new preparation id key in localStorage', inject(($rootScope, PreparationService, StorageService) => {
@@ -170,24 +123,24 @@ describe('Preparation Service', () => {
                 $rootScope.$digest();
 
                 //then
-                expect(StorageService.moveAggregations).toHaveBeenCalledWith(updatedDatasetId, preparationId, updatedPreparationId);
+                expect(StorageService.moveAggregations).toHaveBeenCalledWith(updatedDatasetId, preparationId, newPreparationId);
             }));
         });
 
         describe('delete', () => {
-            it('should delete a preparation', inject(($rootScope, PreparationService, PreparationListService) => {
+            it('should delete a preparation', inject(($rootScope, PreparationService, PreparationRestService) => {
                 //given
-                expect(PreparationListService.delete).not.toHaveBeenCalled();
+                expect(PreparationRestService.delete).not.toHaveBeenCalled();
 
                 //when
                 PreparationService.delete(preparations[0]);
                 $rootScope.$digest();
 
                 //then
-                expect(PreparationListService.delete).toHaveBeenCalledWith(preparations[0]);
+                expect(PreparationRestService.delete).toHaveBeenCalledWith(preparations[0].id);
             }));
 
-            it('should remove aggregations from storage', inject(($rootScope, PreparationService, PreparationListService, StorageService) => {
+            it('should remove aggregations from storage', inject(($rootScope, PreparationService, StorageService) => {
                 //given
                 stateMock.inventory.preparations = preparations;
                 expect(StorageService.removeAllAggregations).not.toHaveBeenCalled();
@@ -209,7 +162,6 @@ describe('Preparation Service', () => {
             it('should open a preparation in the current tab', inject(($stateParams, $rootScope, $state, StateService, PreparationService) => {
                 //given
                 spyOn($state, 'go').and.returnValue();
-                spyOn(StateService, 'setPreviousRoute').and.returnValue();
 
                 const preparation = {
                     id: 'de618c62ef97b3a95b5c171bc077ffe22e1d6f79',
@@ -222,79 +174,7 @@ describe('Preparation Service', () => {
                 PreparationService.open(preparation);
 
                 //then
-                expect($state.go).toHaveBeenCalledWith('playground.preparation', { prepid: preparation.id });
-                expect(StateService.setPreviousRoute).toHaveBeenCalledWith('nav.index.preparations', { folderId: 'test/' });
-            }));
-
-            it('should open a preparation in a new tab on scroll click', inject(($stateParams, $rootScope, $state, $window, StateService, PreparationService) => {
-                //given
-                const event = {
-                    which: 2,
-                };
-                spyOn($state, 'go').and.returnValue();
-                spyOn($window, 'open').and.returnValue();
-                spyOn(StateService, 'setPreviousRoute').and.returnValue();
-                const preparation = {
-                    id: 'de618c62ef97b3a95b5c171bc077ffe22e1d6f79',
-                    dataSetId: 'dacd45cf-5bd0-4768-a9b7-f6c199581efc',
-                    author: 'anonymousUser',
-                };
-
-                //when
-                PreparationService.open(preparation, event);
-
-                //then
-                expect($state.go).not.toHaveBeenCalled();
-                expect($state.href).toHaveBeenCalledWith('playground.preparation', { prepid: preparation.id }, { absolute: true });
-                expect($window.open).toHaveBeenCalledWith('absoluetUrl', '_blank');
-            }));
-
-            it('should open a preparation in a new tab on ctrl + click combination', inject(($stateParams, $rootScope, $state, $window, StateService, PreparationService) => {
-                //given
-                const event = {
-                    which: 1,
-                    ctrlKey: true,
-                };
-                spyOn($state, 'go').and.returnValue();
-                spyOn($window, 'open').and.returnValue();
-                spyOn(StateService, 'setPreviousRoute').and.returnValue();
-                const preparation = {
-                    id: 'de618c62ef97b3a95b5c171bc077ffe22e1d6f79',
-                    dataSetId: 'dacd45cf-5bd0-4768-a9b7-f6c199581efc',
-                    author: 'anonymousUser',
-                };
-
-                //when
-                PreparationService.open(preparation, event);
-
-                //then
-                expect($state.go).not.toHaveBeenCalled();
-                expect($state.href).toHaveBeenCalledWith('playground.preparation', { prepid: preparation.id }, { absolute: true });
-                expect($window.open).toHaveBeenCalledWith('absoluetUrl', '_blank');
-            }));
-
-            it('should open a preparation in a new tab on metakey + click combination', inject(($stateParams, $rootScope, $state, $window, StateService, PreparationService) => {
-                //given
-                const event = {
-                    which: 1,
-                    metaKey: true,
-                };
-                spyOn($state, 'go').and.returnValue();
-                spyOn($window, 'open').and.returnValue();
-                spyOn(StateService, 'setPreviousRoute').and.returnValue();
-                const preparation = {
-                    id: 'de618c62ef97b3a95b5c171bc077ffe22e1d6f79',
-                    dataSetId: 'dacd45cf-5bd0-4768-a9b7-f6c199581efc',
-                    author: 'anonymousUser',
-                };
-
-                //when
-                PreparationService.open(preparation, event);
-
-                //then
-                expect($state.go).not.toHaveBeenCalled();
-                expect($state.href).toHaveBeenCalledWith('playground.preparation', { prepid: preparation.id }, { absolute: true });
-                expect($window.open).toHaveBeenCalledWith('absoluetUrl', '_blank');
+                expect($state.go).toHaveBeenCalledWith('playground.preparation', {prepid: preparation.id});
             }));
         });
     });

@@ -14,11 +14,17 @@
   -->
 
 <div class="actions-suggestions">
-    <div class="suggestions-title">
+    <div class="suggestions-title" ng-switch="actionsSuggestionsCtrl.state.playground.grid.selectedColumns.length > 1">
         <span class="title"
-              title="{{actionsSuggestionsCtrl.state.playground.grid.selectedColumn.name}}"
-              ng-if="actionsSuggestionsCtrl.state.playground.grid.selectedColumn.name">
-            {{actionsSuggestionsCtrl.state.playground.grid.selectedColumn.name}}
+              title="{{actionsSuggestionsCtrl.state.playground.grid.selectedColumns[0].name}}"
+              ng-switch-when="false"
+              ng-if="actionsSuggestionsCtrl.state.playground.grid.selectedColumns[0].name">
+            {{actionsSuggestionsCtrl.state.playground.grid.selectedColumns[0].name}}
+        </span>
+        <span class="title"
+              ng-switch-when="true"
+              translate="MULTI_COLUMNS_SELECTED"
+              translate-values="{nb: actionsSuggestionsCtrl.state.playground.grid.selectedColumns.length}">
         </span>
     </div>
 
@@ -33,7 +39,7 @@
 
     <sc-tabs ng-if="!actionsSuggestionsCtrl.state.playground.suggestions.isLoading"
              class="actions-scope"
-             selected-tab="actionsSuggestionsCtrl.suggestionService.tab">
+             selected-tab="actionsSuggestionsCtrl.state.playground.suggestions.tab">
         <sc-tabs-item tab-title="Text">
             <div class="action-suggestion-tab-items watermark" translate-once="NO_FUNCTION"></div>
         </sc-tabs-item>
@@ -56,29 +62,27 @@
             </div>
         </sc-tabs-item>
         <sc-tabs-item tab-title="Column" is-default="true">
-            <div ng-switch="!!actionsSuggestionsCtrl.state.playground.grid.selectedColumn">
+            <div ng-if="actionsSuggestionsCtrl.state.playground.grid.selectedColumns.length">
                 <input type="search"
                        class="action-search"
                        id="action-suggestions-search"
                        translate-once-placeholder="FIND_FUNCTION"
                        ng-model="actionsSuggestionsCtrl.state.playground.suggestions.column.searchActionString"
                        ng-model-options="{debounce: { default: 300, blur: 0 }}"
-                       ng-change="actionsSuggestionsCtrl.columnSuggestionService.filterTransformations()"
-                       talend-search-input
-                       ng-switch-when="true">
+                       ng-change="actionsSuggestionsCtrl.TransformationService.filter('column', actionsSuggestionsCtrl.state.playground.suggestions.column.searchActionString)"
+                       talend-search-input>
 
                 <actions-list class="action-suggestion-tab-items"
                               actions="actionsSuggestionsCtrl.state.playground.suggestions.column.filteredTransformations"
                               scope="column"
                               should-render-category="actionsSuggestionsCtrl.shouldRenderCategory"
                               should-render-action="actionsSuggestionsCtrl.shouldRenderAction"
-                              ng-switch-when="true"
                               scroll-to-bottom="actionsSuggestionsCtrl.scrollToBottom"></actions-list>
-
-                <div class="watermark"
-                     ng-switch-when="false"
-                     translate-once="SELECT_COLUMN_TO_DISPLAY_ACTIONS"></div>
             </div>
+            <div ng-if="!actionsSuggestionsCtrl.state.playground.grid.selectedColumns.length"
+                 class="watermark"
+                 translate-once="SELECT_COLUMN_TO_DISPLAY_ACTIONS"></div>
+
         </sc-tabs-item>
 
         <sc-tabs-item tab-title="Table">

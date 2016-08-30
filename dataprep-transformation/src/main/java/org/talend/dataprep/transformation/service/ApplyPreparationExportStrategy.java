@@ -1,6 +1,8 @@
 package org.talend.dataprep.transformation.service;
 
-import com.fasterxml.jackson.core.JsonParser;
+import java.io.InputStream;
+import java.io.OutputStream;
+
 import org.apache.commons.io.output.TeeOutputStream;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -18,8 +20,7 @@ import org.talend.dataprep.format.export.ExportFormat;
 import org.talend.dataprep.transformation.api.transformer.configuration.Configuration;
 import org.talend.dataprep.transformation.cache.TransformationCacheKey;
 
-import java.io.InputStream;
-import java.io.OutputStream;
+import com.fasterxml.jackson.core.JsonParser;
 
 /**
  * A {@link ExportStrategy strategy} to apply a preparation on a different dataset (different from the one initially
@@ -97,6 +98,8 @@ public class ApplyPreparationExportStrategy extends StandardExportStrategy {
                 } catch (Throwable e) { // NOSONAR
                     contentCache.evict(key);
                     throw e;
+                } finally {
+                    tee.close();
                 }
             }
         } catch (TDPException e) {

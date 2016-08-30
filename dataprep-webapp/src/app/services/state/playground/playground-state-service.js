@@ -65,6 +65,8 @@ export function PlaygroundStateService(RecipeStateService, recipeState,
         // datagrid
         setColumnFocus: GridStateService.setColumnFocus,
         setGridSelection: GridStateService.setGridSelection,
+        toggleColumnSelection: GridStateService.toggleColumnSelection,
+        changeRangeSelection: GridStateService.changeRangeSelection,
 
         // lookup
         setLookupActions: LookupStateService.setActions,
@@ -73,7 +75,7 @@ export function PlaygroundStateService(RecipeStateService, recipeState,
         setLookupAddMode: LookupStateService.setAddMode,
         setLookupSelectedColumn: LookupStateService.setSelectedColumn,
         setLookupUpdateMode: LookupStateService.setUpdateMode,
-        setLookupVisibility: LookupStateService.setVisibility,
+        setLookupVisibility,
         updateLookupColumnsToAdd: LookupStateService.updateColumnsToAdd,
         setLookupDatasetsSort: LookupStateService.setSort,
         setLookupDatasetsOrder: LookupStateService.setOrder,
@@ -86,10 +88,10 @@ export function PlaygroundStateService(RecipeStateService, recipeState,
         enableFilters,
         disableFilters,
 
-        // suggestion
-        setColumnTransformations: SuggestionsStateService.setColumnTransformations,
-        setLineTransformations: SuggestionsStateService.setLineTransformations,
-        setSuggestionsLoading: SuggestionsStateService.setLoading,
+        // actions
+        selectTransformationsTab: SuggestionsStateService.selectTab,
+        setTransformations: SuggestionsStateService.setTransformations,
+        setTransformationsLoading: SuggestionsStateService.setLoading,
         setTransformationsForEmptyCells: SuggestionsStateService.setTransformationsForEmptyCells,
         setTransformationsForInvalidCells: SuggestionsStateService.setTransformationsForInvalidCells,
         updateFilteredTransformations: SuggestionsStateService.updateFilteredTransformations,
@@ -156,6 +158,12 @@ export function PlaygroundStateService(RecipeStateService, recipeState,
         playgroundState.isSavingPreparation = value;
     }
 
+    function setLookupVisibility(value) {
+        if (value && playgroundState.grid.selectedColumns.length > 1) {
+            playgroundState.grid.selectedColumns = [playgroundState.grid.selectedColumns[0]];
+        }
+        LookupStateService.setVisibility(value);
+    }
     //--------------------------------------------------------------------------------------------------------------
     // -------------------------------------------------PARAMETERS---------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------

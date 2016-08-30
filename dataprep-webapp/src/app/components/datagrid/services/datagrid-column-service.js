@@ -166,14 +166,15 @@ export default function DatagridColumnService($rootScope, $compile, $log, $trans
 
         const result = findMovedCols(original, columnsMetadata);
 
-        PlaygroundService.appendStep('reorder',
-            {
-                selected_column: result.target,
-                scope: 'dataset',
-                column_id: result.selected,
-                column_name: result.name,
-                dataset_action_display_type: 'column',
-            });
+        const params = {
+            selected_column: result.target,
+            scope: 'dataset',
+            column_id: result.selected,
+            column_name: result.name,
+            dataset_action_display_type: 'column',
+        };
+
+        PlaygroundService.appendStep([{ action: 'reorder', parameters: params }]);
     }
 
     /**

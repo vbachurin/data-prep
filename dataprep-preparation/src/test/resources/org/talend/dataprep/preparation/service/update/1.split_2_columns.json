@@ -1,4 +1,4 @@
-{
+[{
   "actions": [
     {
       "action": "split",
@@ -12,4 +12,4 @@
   "diff": {
     "createdColumns": ["0008", "0009"]
   }
-}
+}]

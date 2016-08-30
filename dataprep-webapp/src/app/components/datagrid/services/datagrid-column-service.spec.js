@@ -416,14 +416,18 @@ describe('Datagrid column service', () => {
             DatagridColumnService.columnsOrderChanged(newCols, original);
 
             //then
-            expect(PlaygroundService.appendStep).toHaveBeenCalledWith('reorder',
-                {
+            const expectedParams = [{
+                action: 'reorder',
+                parameters: {
                     selected_column: '0002',
                     scope: 'dataset',
                     column_id: '0000',
                     column_name: 'beer',
                     dataset_action_display_type: 'column',
-                });
+                }
+            }];
+
+            expect(PlaygroundService.appendStep).toHaveBeenCalledWith(expectedParams);
         }));
 
         it('should find move columns 2 steps', inject(function (DatagridColumnService, PlaygroundService) {
@@ -445,15 +449,18 @@ describe('Datagrid column service', () => {
             DatagridColumnService.columnsOrderChanged(newCols, original);
 
             //then
-            expect(PlaygroundService.appendStep).toHaveBeenCalledWith('reorder',
-                {
+            const expectedParams = [{
+                action: 'reorder',
+                parameters: {
                     selected_column: '0002',
                     scope: 'dataset',
                     column_id: '0000',
                     column_name: 'beer',
                     dataset_action_display_type: 'column',
                 }
-            );
+            }];
+
+            expect(PlaygroundService.appendStep).toHaveBeenCalledWith(expectedParams);
         }));
 
         it('should find move columns simple swap', inject(function (DatagridColumnService, PlaygroundService) {
@@ -475,15 +482,18 @@ describe('Datagrid column service', () => {
             DatagridColumnService.columnsOrderChanged(newCols, original);
 
             //then
-            expect(PlaygroundService.appendStep).toHaveBeenCalledWith('reorder',
-                {
+            const expectedParams = [{
+                action: 'reorder',
+                parameters: {
                     selected_column: '0002',
                     scope: 'dataset',
                     column_id: '0001',
                     column_name: 'beer',
                     dataset_action_display_type: 'column',
                 }
-            );
+            }];
+
+            expect(PlaygroundService.appendStep).toHaveBeenCalledWith(expectedParams);
         }));
 
         it('should find move columns 3 steps', inject(function (DatagridColumnService, PlaygroundService) {
@@ -505,15 +515,18 @@ describe('Datagrid column service', () => {
             DatagridColumnService.columnsOrderChanged(newCols, original);
 
             //then
-            expect(PlaygroundService.appendStep).toHaveBeenCalledWith('reorder',
-                {
+            const expectedParams = [{
+                action: 'reorder',
+                parameters: {
                     selected_column: '0003',
                     scope: 'dataset',
                     column_id: '0000',
                     column_name: 'beer',
                     dataset_action_display_type: 'column',
                 }
-            );
+            }];
+
+            expect(PlaygroundService.appendStep).toHaveBeenCalledWith(expectedParams);
         }));
 
         it('should find not moved', inject(function (DatagridColumnService, PlaygroundService) {
@@ -557,15 +570,18 @@ describe('Datagrid column service', () => {
             DatagridColumnService.columnsOrderChanged(newCols, original);
 
             //then
-            expect(PlaygroundService.appendStep).toHaveBeenCalledWith('reorder',
-                {
+            const expectedParams = [{
+                action: 'reorder',
+                parameters: {
                     selected_column: '0000',
                     scope: 'dataset',
                     column_id: '0002',
                     column_name: 'beer',
                     dataset_action_display_type: 'column',
                 }
-            );
+            }];
+
+            expect(PlaygroundService.appendStep).toHaveBeenCalledWith(expectedParams);
         }));
 
         it('should find move columns 2 steps backward in the middle', inject(function (DatagridColumnService, PlaygroundService) {
@@ -589,15 +605,18 @@ describe('Datagrid column service', () => {
             DatagridColumnService.columnsOrderChanged(newCols, original);
 
             //then
-            expect(PlaygroundService.appendStep).toHaveBeenCalledWith('reorder',
-                {
+            const expectedParams = [{
+                action: 'reorder',
+                parameters: {
                     selected_column: '0001',
                     scope: 'dataset',
                     column_id: '0003',
                     column_name: 'beer',
                     dataset_action_display_type: 'column',
                 }
-            );
+            }];
+
+            expect(PlaygroundService.appendStep).toHaveBeenCalledWith(expectedParams);
         }));
     });
 });

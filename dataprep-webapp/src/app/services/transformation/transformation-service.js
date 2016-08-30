@@ -11,7 +11,9 @@
 
  ============================================================================*/
 
-import _ from 'lodash';
+import { chain } from 'lodash';
+
+const COLUMN = 'column';
 
 /**
  * @ngdoc service
@@ -19,211 +21,91 @@ import _ from 'lodash';
  * @description Transformation service.
  * This service provide the entry point to get and manipulate transformations
  * @requires data-prep.services.parameters.service:ParametersService
- * @requires data-prep.services.utils.service:ConverterService
+ * @requires data-prep.services.transformation.service:TransformationCacheService
+ * @requires data-prep.services.transformation.service:TransformationUtilsService
  * @requires data-prep.services.transformation.service:TransformationRestService
  */
-export default function TransformationService(TransformationRestService, ParametersService, ConverterService) {
-    'ngInject';
+export default class TransformationService {
 
-    const COLUMN_CATEGORY = 'column_metadata';
-
-    return {
-        getLineTransformations,
-        getColumnTransformations,
-        getColumnSuggestions,
-        initDynamicParameters,
-    };
-
-    // --------------------------------------------------------------------------------------------
-    // ----------------------------------Transformations suggestions Utils-------------------------
-    // --------------------------------------------------------------------------------------------
-    /**
-     * @ngdoc method
-     * @name cleanParams
-     * @methodOf data-prep.services.transformation.service:TransformationService
-     * @param {object[]} menus - the menus to clean
-     * @description Remove 'column_id' and 'column_name' parameters (automatically sent),
-     * and clean empty arrays (choices and params)
-     */
-    function cleanParams(menus) {
-        return _.forEach(menus, (menu) => {
-            const filteredParameters = _.filter(menu.parameters, (param) => !param.implicit);
-            menu.parameters = filteredParameters.length ? filteredParameters : null;
-        });
+    constructor($q, state, StateService,
+                ParametersService, TransformationCacheService,
+                TransformationUtilsService, TransformationRestService) {
+        'ngInject';
+        this.$q = $q;
+        this.state = state;
+        this.StateService = StateService;
+        this.ParametersService = ParametersService;
+        this.TransformationCacheService = TransformationCacheService;
+        this.TransformationUtilsService = TransformationUtilsService;
+        this.TransformationRestService = TransformationRestService;
     }
 
     /**
      * @ngdoc method
-     * @name insertType
+     * @name getTransformations
      * @methodOf data-prep.services.transformation.service:TransformationService
-     * @param {object[]} transformation The transformation with parameters to adapt
-     * @description Insert adapted html input type in each parameter in the menu
+     * @description Get transformations from REST call, clean and adapt them
+     * @param {string} scope The transformations scope
+     * @param {object} entity The transformations target entity
+     * @return {Object} An object {allTransformations, allCategories} .
+     * "allTransformations" is the array of all transformations (cleaned and adapted for UI)
+     * "allCategories" is the array of all transformations grouped by category
      */
-    function insertType(transformation) {
-        if (transformation.parameters) {
-            _.forEach(transformation.parameters, (param) => {
-                param.inputType = ConverterService.toInputType(param.type);
-
-                // also take care of select parameters...
-                if (param.type === 'select' && param.configuration && param.configuration.values) {
-                    _.forEach(param.configuration.values, (selectItem) => {
-                        selectItem.inputType = ConverterService.toInputType(selectItem.type);
-                        // ...and its parameters
-                        if (selectItem.parameters) {
-                            insertType(selectItem);
-                        }
-                    });
-                }
-            });
+    getTransformations(scope, entity) {
+        const fromCache = this.TransformationCacheService.getTransformations(scope, entity);
+        if (fromCache) {
+            return this.$q.when(fromCache);
         }
-    }
 
-    /**
-     * @ngdoc method
-     * @name insertInputTypes
-     * @methodOf data-prep.services.transformation.service:TransformationService
-     * @param {Array} transformations The transformations with parameters to adapt
-     * @description Insert parameter type to HTML input type in each transformations
-     */
-    function insertInputTypes(transformations) {
-        _.forEach(transformations, insertType);
-    }
-
-    /**
-     * @ngdoc method
-     * @name setHtmlDisplayLabels
-     * @methodOf data-prep.services.transformation.service:TransformationService
-     * @description Inject the UI label in each transformations
-     * @param {Array} transformations The list of transformations
-     */
-    function setHtmlDisplayLabels(transformations) {
-        _.forEach(transformations, (transfo) => {
-            transfo.labelHtml =
-                transfo.label + (transfo.parameters || transfo.dynamic ? '...' : '');
-        });
-    }
-
-    function isNotColumnCategory(category) {
-        return (item) => {
-            return item.category !== category;
-        };
-    }
-
-    function labelCriteria(transfo) {
-        return transfo.label.toLowerCase();
-    }
-
-    /**
-     * @ngdoc method
-     * @name prepareTransformations
-     * @methodOf data-prep.services.transformation.service:TransformationService
-     * @description Sort and group transformations by category
-     * @return {Object} An object {category, categoryHtml, transformations} .
-     * "category" the category
-     * "categoryHtml" the adapted category for UI
-     * "transformations" the array of transformations for this category
-     */
-    function prepareTransformations(transformations) {
-        const groupedTransformations = _.chain(transformations)
-            .filter(isNotColumnCategory(COLUMN_CATEGORY))
-            .sortBy(labelCriteria)
-            .groupBy('category')
-            .value();
-
-        return _.chain(Object.getOwnPropertyNames(groupedTransformations))
-            .sort()
-            .map((key) => {
+        return this.TransformationRestService.getTransformations(scope, entity)
+            .then((response) => {
+                const allTransformations = this.TransformationUtilsService.adaptTransformations(response);
+                const allCategories = this.TransformationUtilsService.sortAndGroupByCategory(allTransformations);
                 return {
-                    category: key,
-                    categoryHtml: key.toUpperCase(),
-                    transformations: groupedTransformations[key],
+                    allTransformations,
+                    allCategories,
                 };
             })
-            .value();
-    }
-
-    // --------------------------------------------------------------------------------------------
-    // -----------------------------------Transformations suggestions------------------------------
-    // --------------------------------------------------------------------------------------------
-    /**
-     * @ngdoc method
-     * @name getLineTransformations
-     * @methodOf data-prep.services.transformation.service:TransformationService
-     * @description Get transformations from REST call, clean and adapt them
-     * @return {Object} An object {allTransformations, allCategories} .
-     * "allTransformations" is the array of all transformations (cleaned and adapted for UI)
-     * "allCategories" is the array of all transformations grouped by category
-     */
-    function getLineTransformations() {
-        return TransformationRestService.getLineTransformations()
-            .then((response) => {
-                const allTransformations = cleanParams(response.data);
-                insertInputTypes(allTransformations);
-                setHtmlDisplayLabels(allTransformations);
-                const allCategories = prepareTransformations(allTransformations);
-                return {
-                    allTransformations,
-                    allCategories,
-                };
+            .then((transformations) => {
+                this.TransformationCacheService.setTransformations(scope, entity, transformations);
+                return transformations;
             });
     }
 
     /**
      * @ngdoc method
-     * @name getColumnTransformations
+     * @name getSuggestions
      * @methodOf data-prep.services.transformation.service:TransformationService
-     * @param {object} column The transformations target column
-     * @description Get transformations from REST call, clean and adapt them
-     * @return {Object} An object {allTransformations, allCategories} .
-     * "allTransformations" is the array of all transformations (cleaned and adapted for UI)
-     * "allCategories" is the array of all transformations grouped by category
-     */
-    function getColumnTransformations(column) {
-        return TransformationRestService.getColumnTransformations(column)
-            .then((response) => {
-                const allTransformations = cleanParams(response.data);
-                insertInputTypes(allTransformations);
-                setHtmlDisplayLabels(allTransformations);
-                const allCategories = prepareTransformations(allTransformations);
-                return {
-                    allTransformations,
-                    allCategories,
-                };
-            });
-    }
-
-    /**
-     * @ngdoc method
-     * @name getColumnSuggestions
-     * @methodOf data-prep.services.transformation.service:TransformationService
-     * @param {object} column The transformations target column
+     * @param {string} scope The transformations scope
+     * @param {object} entity The transformations target entity
      * @description Get suggestions from REST call, clean and adapt them
      * @returns {Array} All the suggestions, cleaned and adapted for UI
      */
-    function getColumnSuggestions(column) {
-        return TransformationRestService.getColumnSuggestions(column)
-            .then((response) => {
-                const allTransformations = cleanParams(response.data);
-                insertInputTypes(allTransformations);
-                setHtmlDisplayLabels(allTransformations);
-                return allTransformations;
+    getSuggestions(scope, entity) {
+        const fromCache = this.TransformationCacheService.getSuggestions(scope, entity);
+        if (fromCache) {
+            return this.$q.when(fromCache);
+        }
+
+        return this.TransformationRestService.getSuggestions(scope, entity)
+            .then((response) => this.TransformationUtilsService.adaptTransformations(response))
+            .then((suggestions) => {
+                this.TransformationCacheService.setSuggestions(scope, entity, suggestions);
+                return suggestions;
             });
     }
 
-    // --------------------------------------------------------------------------------------------
-    // ---------------------------Transformation Dynamic parameters--------------------------------
-    // --------------------------------------------------------------------------------------------
     /**
      * @ngdoc method
      * @name initDynamicParameters
      * @methodOf data-prep.services.transformation.service:TransformationService
      * @description Fetch the dynamic parameter and set them in transformation
      */
-    function initDynamicParameters(transformation, infos) {
-        ParametersService.resetParameters(transformation);
+    initDynamicParameters(transformation, infos) {
+        this.ParametersService.resetParameters(transformation);
 
         const action = transformation.name;
-        return TransformationRestService
+        return this.TransformationRestService
             .getDynamicParameters(
                 action,
                 infos.columnId,
@@ -231,10 +113,72 @@ export default function TransformationService(TransformationRestService, Paramet
                 infos.preparationId,
                 infos.stepId
             )
-            .then((response) => {
-                const parameters = response.data;
+            .then((parameters) => {
                 transformation[parameters.type] = parameters.details;
                 return transformation;
             });
+    }
+
+    /**
+     * Fetch the suggestions and transformations
+     * @param scope The transformation scope
+     * @param entity The target entity
+     * @returns {Promise} The fetch promise
+     */
+    fetchSuggestionsAndTransformations(scope, entity) {
+        const fetchSuggestions = scope === COLUMN ?
+            this.getSuggestions(scope, entity) :
+            this.$q.when([]);
+        const fetchTransformations = this.getTransformations(scope, entity);
+
+        return this.$q.all([fetchSuggestions, fetchTransformations]);
+    }
+
+    /**
+     * Init transformations and suggestions on the scope/entity (ex: column)
+     *
+     * @param scope The transformation scope
+     * @param entity The target entity
+     * @returns {Promise} The process promise
+     */
+    initTransformations(scope, entity) {
+        this.StateService.setTransformationsLoading(true);
+
+        return this.fetchSuggestionsAndTransformations(scope, entity)
+            .then(([allSuggestions, { allCategories, allTransformations }]) => {
+                const adaptedCategories = this.TransformationUtilsService.adaptCategories(allSuggestions, allCategories);
+                const actions = {
+                    allSuggestions,
+                    allTransformations,
+                    filteredTransformations: adaptedCategories,
+                    allCategories: adaptedCategories,
+                    searchActionString: '',
+                };
+
+                this.StateService.setTransformations(scope, actions);
+            })
+            .finally(() => {
+                this.StateService.setTransformationsLoading(false);
+            });
+    }
+
+    /**
+     * Filter the transformations on the provided scope
+     * @param scope The transformations scope
+     * @param search The search term
+     */
+    filter(scope, search) {
+        const searchValue = search.toLowerCase();
+        const actionsPayload = this.state.playground.suggestions[scope];
+
+        const filteredCategories = search ?
+            chain(actionsPayload.allCategories)
+                .map(this.TransformationUtilsService.extractTransfosThatMatch(searchValue))
+                .filter((category) => category.transformations.length)
+                .map(this.TransformationUtilsService.highlightDisplayedLabels(searchValue))
+                .value() :
+            actionsPayload.allCategories;
+
+        this.StateService.updateFilteredTransformations(scope, filteredCategories);
     }
 }

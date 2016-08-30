@@ -15,6 +15,7 @@ package org.talend.dataprep.api.service;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 import static org.talend.dataprep.api.folder.FolderContentType.PREPARATION;
@@ -34,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.folder.Folder;
 import org.talend.dataprep.api.folder.FolderEntry;
 import org.talend.dataprep.api.preparation.Preparation;
+import org.talend.dataprep.api.preparation.PreparationActions;
 import org.talend.dataprep.api.preparation.Step;
 import org.talend.dataprep.security.Security;
 
@@ -283,6 +285,23 @@ public class PreparationAPITest extends ApiServiceTestBase {
         assertThat(steps.size(), is(2));
         assertThat(steps.get(0), is(rootStep.id()));
         assertThat(steps.get(1), is("c19c0f82ff8c2296acb4da9c485e6dc83ead6c45"));
+    }
+
+    @Test
+    public void shouldAddMultipleActionStepAfterHead() throws Exception {
+        /// when: 1 AppendStep with 2 actions
+        final String preparationId = createPreparationFromFile("dataset/dataset.csv", "testPreparation", "text/csv");
+
+        // when
+        applyActionFromFile(preparationId, "transformation/upper_case_lastname_firstname.json");
+
+        // then : it should have appended 2 actions
+        final List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath()
+                .getList("steps");
+        assertThat(steps.size(), is(3));
+        assertThat(steps.get(0), is(rootStep.id()));
+        assertThat(steps.get(1), is("81d219222e99d73b6a762cf2b0ec74261196df75"));
+        assertThat(steps.get(2), is("3505adaabdcdb1d7fd4e7d2898a2782ec572401d"));
     }
 
     @Test
@@ -688,14 +707,14 @@ public class PreparationAPITest extends ApiServiceTestBase {
         final String input = "{" //
                 + "   \"preparationId\": \"" + preparationId + "\",\n" //
                 + "   \"tdpIds\": [2, 4, 6],\n" //
-                + "   \"action\": {\n"
+                + "   \"actions\": [{\n"
                 + "         \"action\": \"uppercase\",\n"
                 + "         \"parameters\": {\n"
                 + "             \"column_id\": \"0005\",\n"
                 + "             \"column_name\": \"alive\"\n,"
                 + "             \"scope\": \"column\"\n"
                 + "         }\n" //
-                + "    }\n" //
+                + "    }]\n" //
                 + "}";
         final InputStream expectedPreviewStream = getClass().getResourceAsStream("preview/expected_add_preview.json");
 
@@ -720,20 +739,65 @@ public class PreparationAPITest extends ApiServiceTestBase {
         final String input = "{" //
                 + "   \"datasetId\": \"" + datasetId + "\",\n" //
                 + "   \"tdpIds\": [2, 4, 6],\n" //
-                + "   \"action\": {\n"
+                + "   \"actions\": [{\n"
                 + "         \"action\": \"uppercase\",\n"
                 + "         \"parameters\": {\n"
                 + "             \"column_id\": \"0005\",\n"
                 + "             \"column_name\": \"alive\"\n,"
                 + "             \"scope\": \"column\"\n"
                 + "         }\n" //
-                + "    }\n" //
+                + "    }]\n" //
                 + "}";
         final InputStream expectedPreviewStream = PreparationAPITest.class
                 .getResourceAsStream("preview/expected_add_preview_on_dataset.json");
 
         // when
         final String preview = given().contentType(ContentType.JSON).body(input).when().post("/api/preparations/preview/add")
+                .asString();
+
+        // then
+        assertThat(preview, sameJSONAsFile(expectedPreviewStream));
+    }
+
+    @Test
+    public void testPreparationMultipleAddPreview() throws Exception {
+        // given
+        final String preparationId = createPreparationFromFile("preview/preview_dataset.csv", "testPreview", "text/csv");
+        applyActionFromFile(preparationId, "preview/upper_case_lastname.json");
+        applyActionFromFile(preparationId, "preview/upper_case_firstname.json");
+        applyActionFromFile(preparationId, "preview/delete_city.json");
+
+        final String input = "{" //
+                + "   \"preparationId\": \"" + preparationId + "\",\n" //
+                + "   \"tdpIds\": [2, 4, 6],\n" //
+                + "   \"actions\": ["
+                + "         {\n"
+                + "             \"action\": \"uppercase\",\n"
+                + "             \"parameters\": {\n"
+                + "                 \"column_id\": \"0005\",\n"
+                + "                 \"column_name\": \"alive\"\n,"
+                + "                 \"scope\": \"column\"\n"
+                + "             }\n" //
+                + "         },\n"
+                + "         {\n"
+                + "             \"action\": \"uppercase\",\n"
+                + "             \"parameters\": {\n"
+                + "                 \"column_id\": \"0006\",\n"
+                + "                 \"column_name\": \"city\"\n,"
+                + "                 \"scope\": \"column\"\n"
+                + "             }\n" //
+                + "         }\n"
+                + "    ]\n" //
+                + "}";
+        final InputStream expectedPreviewStream = getClass().getResourceAsStream("preview/expected_multi_add_preview.json");
+
+        // when
+        final String preview = given() //
+                .contentType(ContentType.JSON) //
+                .body(input) //
+                .when() //
+                .expect().statusCode(200).log().ifError() //
+                .post("/api/preparations/preview/add") //
                 .asString();
 
         // then

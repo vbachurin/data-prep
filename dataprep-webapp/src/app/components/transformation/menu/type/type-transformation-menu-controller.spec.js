@@ -97,14 +97,18 @@ describe('Type transform menu controller', function () {
         expect(ctrl.currentDomain).toBe('COUNTRY');
         expect(ctrl.currentSimplifiedDomain).toBe('COUNTRY');
 
-        expect(PlaygroundService.appendStep).toHaveBeenCalledWith('domain_change', {
-            scope: 'column',
-            column_id: '0001',
-            column_name: 'awesome cities',
-            new_domain_id: 'COUNTRY',
-            new_domain_label: 'COUNTRY',
-            new_domain_frequency: 17,
-        });
+        const expectedParams = [{
+            action: 'domain_change',
+            parameters: {
+                scope: 'column',
+                column_id: '0001',
+                column_name: 'awesome cities',
+                new_domain_id: 'COUNTRY',
+                new_domain_label: 'COUNTRY',
+                new_domain_frequency: 17,
+            }
+        }];
+        expect(PlaygroundService.appendStep).toHaveBeenCalledWith(expectedParams);
     }));
 
     it('should revert domain when backend return error', inject(function ($q, PlaygroundService) {
@@ -147,12 +151,18 @@ describe('Type transform menu controller', function () {
         expect(ctrl.column.domainFrequency).toBe(0);
         expect(ctrl.currentDomain).toBe('INTEGER');
         expect(ctrl.currentSimplifiedDomain).toBe('integer');
-        expect(PlaygroundService.appendStep).toHaveBeenCalledWith('type_change', {
-            scope: 'column',
-            column_id: '0001',
-            column_name: 'awesome cities',
-            new_type: 'integer',
-        });
+
+        const expectedParams = [{
+            action: 'type_change',
+            parameters: {
+                scope: 'column',
+                column_id: '0001',
+                column_name: 'awesome cities',
+                new_type: 'integer',
+            }
+        }];
+
+        expect(PlaygroundService.appendStep).toHaveBeenCalledWith(expectedParams);
     }));
 
     it('should revert type and domain when backend return error', inject(function ($q, PlaygroundService) {

@@ -66,14 +66,15 @@ export default class DatagridStyleService {
 
     /**
      * @ngdoc method
-     * @name updateSelectionClass
+     * @name updateSelectionsClass
      * @methodOf data-prep.datagrid.service:DatagridStyleService
      * @description Add 'selected' class if the column is the selected one
      * @param {object} column The target column
-     * @param {string} selectedColId The selected column id
+     * @param {array} selectedCols The selected columns
      */
-    updateSelectionClass(column, selectedColId) {
-        if (column.id === selectedColId) {
+    updateSelectionsClass(column, selectedCols) {
+        if ((selectedCols.length === 1 && column.id === selectedCols[0].id) ||
+            selectedCols.length > 1 && _.find(selectedCols, { id: column.id })) {
             this._addClass(column, 'selected');
         }
     }
@@ -94,19 +95,19 @@ export default class DatagridStyleService {
 
     /**
      * @ngdoc method
-     * @name updateColumnClass
+     * @name updateColumnsClass
      * @methodOf data-prep.datagrid.service:DatagridStyleService
      * @description Set style classes on columns depending on its state (type, selection, ...)
-     * @param {string} selectedColId The grid selected column Id
+     * @param {array} selectedCols The grid selected columns
      */
-    updateColumnClass(selectedColId) {
+    updateColumnsClass(selectedCols) {
         _.forEach(this.grid.getColumns(), (column) => {
             if (column.id === 'tdpId') {
                 column.cssClass = 'index-column';
             }
             else {
                 column.cssClass = null;
-                this.updateSelectionClass(column, selectedColId);
+                this.updateSelectionsClass(column, selectedCols);
                 this.updateNumbersClass(column);
             }
         });
@@ -191,11 +192,11 @@ export default class DatagridStyleService {
      * @name resetStyles
      * @methodOf data-prep.datagrid.service:DatagridStyleService
      * @description Reset the cell styles and update the columns style
-     * @param {string} selectedColId The selected column id
+     * @param {array} selectedCols The selected columns
      */
-    resetStyles(selectedColId) {
+    resetStyles(selectedCols) {
         this.resetCellStyles();
-        this.updateColumnClass(selectedColId);
+        this.updateColumnsClass(selectedCols);
     }
 
     /**

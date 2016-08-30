@@ -75,7 +75,7 @@ describe('DatasetList component', () => {
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(inject(($rootScope, $compile, StateService, DatasetService, PreparationService) => {
+    beforeEach(inject(($q, $rootScope, $compile, StateService, DatasetService) => {
         scope = $rootScope.$new();
 
         createElement = () => {
@@ -85,8 +85,7 @@ describe('DatasetList component', () => {
         };
 
         spyOn(StateService, 'setFetchingInventoryDatasets').and.returnValue();
-        spyOn(DatasetService, 'init').and.returnValue();
-        spyOn(PreparationService, 'refreshPreparations').and.returnValue();
+        spyOn(DatasetService, 'init').and.returnValue($q.when());
     }));
 
     afterEach(() => {
@@ -156,7 +155,7 @@ describe('DatasetList component loading', () => {
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(inject(($rootScope, $compile, StateService, DatasetService, PreparationService) => {
+    beforeEach(inject(($q, $rootScope, $compile, StateService, DatasetService) => {
         scope = $rootScope.$new();
 
         createElement = () => {
@@ -166,8 +165,7 @@ describe('DatasetList component loading', () => {
         };
 
         spyOn(StateService, 'setFetchingInventoryDatasets').and.returnValue();
-        spyOn(DatasetService, 'init').and.returnValue();
-        spyOn(PreparationService, 'refreshPreparations').and.returnValue();
+        spyOn(DatasetService, 'init').and.returnValue($q.when());
     }));
 
     afterEach(() => {
@@ -222,7 +220,7 @@ describe('DatasetList component with no datasets', () => {
         $translateProvider.preferredLanguage('en');
     }));
 
-    beforeEach(inject(($rootScope, $compile, StateService, DatasetService, PreparationService) => {
+    beforeEach(inject(($q, $rootScope, $compile, StateService, DatasetService, PreparationService) => {
         scope = $rootScope.$new();
 
         createElement = () => {
@@ -232,8 +230,7 @@ describe('DatasetList component with no datasets', () => {
         };
 
         spyOn(StateService, 'setFetchingInventoryDatasets').and.returnValue();
-        spyOn(DatasetService, 'init').and.returnValue();
-        spyOn(PreparationService, 'refreshPreparations').and.returnValue();
+        spyOn(DatasetService, 'init').and.returnValue($q.when());
     }));
 
     afterEach(() => {

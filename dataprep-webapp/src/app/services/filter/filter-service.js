@@ -299,7 +299,7 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
      * @returns {function} The predicate function
      */
     function createDateRangeFilterFn(colId, values) {
-        const patterns = _.chain(state.playground.grid.selectedColumn.statistics.patternFrequencyTable)
+        const patterns = _.chain(state.playground.grid.selectedColumns[0].statistics.patternFrequencyTable)
             .map('pattern')
             .map(TextFormatService.convertJavaDateFormatToMomentDateFormat)
             .value();

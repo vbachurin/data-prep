@@ -11,6 +11,8 @@
 
  ============================================================================*/
 
+import angular from 'angular';
+
 /**
  * @ngdoc service
  * @name data-prep.datagrid.service:DatagridGridService
@@ -75,22 +77,37 @@ export default class DatagridGridService {
         this.grid.onActiveCellChanged.subscribe((e, args) => {
             this.$timeout.cancel(this.changeActiveTimeout);
             this.changeActiveTimeout = this.$timeout(() => {
-                let columnMetadata = this.state.playground.grid.selectedColumn;
                 if (angular.isDefined(args.cell)) {
                     const column = this.grid.getColumns()[args.cell];
-                    columnMetadata = column && column.tdpColMetadata;
+                    const columnMetadata = column && column.tdpColMetadata ? [column.tdpColMetadata] : [];
+                    this.StateService.setGridSelection(columnMetadata, args.row);
                 }
-
-                this.StateService.setGridSelection(columnMetadata, args.row);
             });
         });
 
         this.grid.onHeaderContextMenu.subscribe((e, args) => {
-            this.$timeout(() => this.StateService.setGridSelection(args.column.tdpColMetadata, null));
+            this.$timeout(() => this.StateService.setGridSelection([args.column.tdpColMetadata], null));
         });
 
         this.grid.onHeaderClick.subscribe((e, args) => {
-            this.$timeout(() => this.StateService.setGridSelection(args.column.tdpColMetadata, null));
+            this.$timeout(() => {
+                // multi selection disabled in lookup mode
+                const multiSelectionEnabled = !this.state.playground.lookup.visibility;
+                const column = args.column && args.column.tdpColMetadata;
+                if (!column) {
+                    return;
+                }
+
+                if (multiSelectionEnabled && (e.ctrlKey || e.metaKey)) {
+                    this.StateService.toggleColumnSelection(column);
+                }
+                else if (multiSelectionEnabled && e.shiftKey) {
+                    this.StateService.changeRangeSelection(column);
+                }
+                else {
+                    this.StateService.setGridSelection([column]);
+                }
+            });
         });
 
         this.grid.onColumnsReordered.subscribe((e, args) => {

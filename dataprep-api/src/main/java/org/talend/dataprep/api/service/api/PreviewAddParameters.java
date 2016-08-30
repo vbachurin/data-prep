@@ -29,7 +29,7 @@ public class PreviewAddParameters {
 
     /** The action to preview. */
     @NotNull
-    private Action action;
+    private List<Action> actions;
 
     /** The list of lines to preview. */
     @NotEmpty
@@ -47,15 +47,15 @@ public class PreviewAddParameters {
     /**
      * @return the Action
      */
-    public Action getAction() {
-        return action;
+    public List<Action> getActions() {
+        return actions;
     }
 
     /**
-     * @param action the action to set.
+     * @param actions the action to set.
      */
-    public void setAction(Action action) {
-        this.action = action;
+    public void setActions(List<Action> actions) {
+        this.actions = actions;
     }
 
     /**
@@ -116,7 +116,7 @@ public class PreviewAddParameters {
 
     @Override
     public String toString() {
-        return "PreviewAddParameters{" + "action=" + action + ", tdpIds=" + tdpIds + ", datasetId='" + datasetId + '\''
+        return "PreviewAddParameters{" + "actions=" + actions + ", tdpIds=" + tdpIds + ", datasetId='" + datasetId + '\''
                 + ", preparationId='" + preparationId + '\'' + ", sample=" + sample + '}';
     }
 }

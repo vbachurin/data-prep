@@ -11,9 +11,14 @@
 
  ============================================================================*/
 
+import angular from 'angular';
+import { chain, find, map, sortBy } from 'lodash';
+
 export const gridState = {
     dataView: new Slick.Data.DataView({ inlineFilters: false }),
     numericColumns: [],
+    columns: [],
+    selectedColumns: [],
 };
 
 const NUMERIC_TYPES = ['numeric', 'integer', 'double', 'float', 'decimal'];
@@ -27,10 +32,12 @@ export function GridStateService() {
     return {
         reset,
 
+        changeRangeSelection,
         setColumnFocus,
         setData,
         setFilter,
         setGridSelection,
+        toggleColumnSelection,
     };
 
     /**
@@ -58,7 +65,9 @@ export function GridStateService() {
             gridState.filteredRecords.push(gridState.dataView.getItem(i));
         }
 
-        updateFilteredOccurrencesOnSelectedColumn();
+        if (gridState.selectedColumns.length === 1 && gridState.selectedColumns[0]) {
+            updateFilteredOccurrencesOnSelectedColumn();
+        }
     }
 
     /**
@@ -68,10 +77,9 @@ export function GridStateService() {
      * @description Update the occurrences of the filtered records
      */
     function updateFilteredOccurrencesOnSelectedColumn() {
-        gridState.filteredOccurences = !gridState.selectedColumn ?
-        {} :
-            _.chain(gridState.filteredRecords)
-                .pluck(gridState.selectedColumn.id)
+        gridState.filteredOccurences =
+            chain(gridState.filteredRecords)
+                .pluck(gridState.selectedColumns[0].id)
                 .groupBy(function (value) {
                     return value;
                 })
@@ -98,7 +106,7 @@ export function GridStateService() {
          */
         const allFilterFn = function allFilterFn(item, args) {
             // init filters with actual data
-            const initializedFilters = _.map(args.filters, function (filter) {
+            const initializedFilters = map(args.filters, function (filter) {
                 return filter(data);
             });
             // execute each filter on the value
@@ -113,7 +121,7 @@ export function GridStateService() {
         };
 
         gridState.dataView.beginUpdate();
-        gridState.dataView.setFilterArgs({ filters: _.map(filters, 'filterFn') });
+        gridState.dataView.setFilterArgs({ filters: map(filters, 'filterFn') });
         gridState.dataView.setFilter(allFilterFn);
         gridState.dataView.endUpdate();
 
@@ -147,6 +155,7 @@ export function GridStateService() {
         updateLinesCount(data);
         updateSelectedColumnLine(data);
         updateFilteredRecords();
+        updateColumns(data);
         updateNumericColumns(data);
     }
 
@@ -164,7 +173,7 @@ export function GridStateService() {
         }
 
         const hasSelectedLine = angular.isNumber(gridState.lineIndex);
-        if (!hasSelectedLine || gridState.selectedColumn) {
+        if (!hasSelectedLine || gridState.selectedColumns.length) {
             updateSelectedColumn(data);
         }
 
@@ -182,15 +191,18 @@ export function GridStateService() {
      */
     function updateSelectedColumn(data) {
         // if there is already a selected column, we update the column metadata to reference one of the new columns
-        if (gridState.selectedColumn) {
-            gridState.selectedColumn = _.find(data.metadata.columns, { id: gridState.selectedColumn.id }) || data.metadata.columns[0];
+        if (gridState.selectedColumns.length === 1) {
+            gridState.selectedColumns = [_.find(data.metadata.columns, { id: gridState.selectedColumns[0].id }) || data.metadata.columns[0]];
+        }
+        else if (gridState.selectedColumns.length > 1) {
+            gridState.selectedColumns = gridState.selectedColumns.map((col) =>
+                find(data.metadata.columns, { id: col.id })
+            );
         }
         // the first column is selected by default
         else {
-            gridState.selectedColumn = data.metadata.columns[0];
+            gridState.selectedColumns = [data.metadata.columns[0]];
         }
-
-        updateFilteredOccurrencesOnSelectedColumn();
     }
 
     /**
@@ -207,18 +219,74 @@ export function GridStateService() {
      * @ngdoc method
      * @name setGridSelection
      * @methodOf data-prep.services.state.service:GridStateService
-     * @param {object} column The column metadata
+     * @param {Array} columns The columns metadata
      * @param {number} lineIndex The line number
      * @description Set the actual selected column and line
      */
-    function setGridSelection(column, lineIndex) {
+    function setGridSelection(columns, lineIndex) {
         const hasIndex = !isNaN(lineIndex);
 
-        gridState.selectedColumn = column;
+        gridState.selectedColumns = columns;
+
         gridState.lineIndex = hasIndex ? lineIndex : null;
         gridState.selectedLine = hasIndex ? gridState.dataView.getItem(lineIndex) : null;
 
-        updateFilteredOccurrencesOnSelectedColumn();
+        if (gridState.selectedColumns.length === 1 && gridState.selectedColumns[0]) {
+            updateFilteredOccurrencesOnSelectedColumn();
+        }
+    }
+
+    /**
+     * @ngdoc method
+     * @name toggleColumnSelection
+     * @methodOf data-prep.services.state.service:GridStateService
+     * @param {object} columnToToggle The columns to toggle
+     * @description Toggle a column selection (ie ctrl + click)
+     */
+    function toggleColumnSelection(columnToToggle) {
+        let selectedColumns = gridState.selectedColumns.indexOf(columnToToggle) > -1 ?
+            gridState.selectedColumns.filter((col) => col !== columnToToggle) :
+            gridState.selectedColumns.concat([columnToToggle]);
+        selectedColumns = sortBy(selectedColumns, (col) => {
+            return gridState.columns.indexOf(col);
+        });
+        setGridSelection(selectedColumns, gridState.selectedLine);
+    }
+
+    /**
+     * @ngdoc method
+     * @name changeRangeSelection
+     * @methodOf data-prep.services.state.service:GridStateService
+     * @param {object} column The selected column
+     * @description Select a range of columns merging current selection
+     * with the new selected one (ie shift + click)
+     */
+    function changeRangeSelection(column) {
+        if (gridState.selectedColumns.length === 0) {
+            setGridSelection([column], gridState.selectedLine);
+        }
+        else {
+            const colIndex = gridState.columns.indexOf(column);
+            const firstSelectedCol = gridState.selectedColumns[0];
+            const lastSelectedCol = gridState.selectedColumns[gridState.selectedColumns.length - 1];
+            const firstSelectedColIndex = gridState.columns.indexOf(firstSelectedCol);
+            const lastSelectedColIndex = gridState.columns.indexOf(lastSelectedCol);
+
+            let min;
+            let max;
+
+            if (colIndex < firstSelectedColIndex) {
+                min = colIndex;
+                max = lastSelectedColIndex;
+            }
+            else {
+                min = firstSelectedColIndex;
+                max = colIndex;
+            }
+
+            const selectedColumns = gridState.columns.filter((col, index) => index >= min && index <= max);
+            setGridSelection(selectedColumns, gridState.selectedLine);
+        }
     }
 
     /**
@@ -239,16 +307,31 @@ export function GridStateService() {
 
     /**
      * @ngdoc method
+     * @name updateColumns
+     * @methodOf data-prep.services.state.service:GridStateService
+     * @param {object} data The new data
+     * @description update columns metadata
+     */
+    function updateColumns(data) {
+        if (data.preview) {
+            return;
+        }
+        gridState.columns = data.metadata.columns;
+    }
+
+    /**
+     * @ngdoc method
      * @name reset
      * @methodOf data-prep.services.state.service:GridStateService
      * @description Reset the grid internal values
      */
     function reset() {
         gridState.columnFocus = null;
-        gridState.selectedColumn = null;
+        gridState.selectedColumns = [];
         gridState.selectedLine = null;
         gridState.filteredRecords = [];
         gridState.filteredOccurences = {};
         gridState.numericColumns = [];
+        gridState.columns = [];
     }
 }

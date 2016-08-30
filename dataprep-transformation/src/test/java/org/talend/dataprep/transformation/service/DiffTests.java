@@ -20,6 +20,9 @@ import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
@@ -88,11 +91,12 @@ public class DiffTests extends TransformationServiceBaseTests {
     @Test
     public void should_return_created_columns() throws Exception {
         // given
-        PreviewParameters input = new PreviewParameters( //
+        final PreviewParameters previewParams = new PreviewParameters( //
                 getSingleTransformation(), //
                 getMultipleTransformationWithNewColumn(), //
                 createDataset("../preview/input.csv", "input4preview", "text/csv"), //
                 null);
+        final List<PreviewParameters> input = Collections.singletonList(previewParams);
 
         // when
         final String response = given() //
@@ -103,18 +107,50 @@ public class DiffTests extends TransformationServiceBaseTests {
                 .asString();
 
         // then
-        assertEquals("{\"createdColumns\":[\"0009\"]}", response, false);
+        assertEquals("[{\"createdColumns\":[\"0009\"]}]", response, false);
+    }
+
+    @Test
+    public void should_return_created_columns_for_multiple_diffs() throws Exception {
+        // given
+        final String datasetId = createDataset("../preview/input.csv", "input4preview", "text/csv");
+        final PreviewParameters previewParams = new PreviewParameters( //
+                getSingleTransformation(), //
+                getMultipleTransformationWithNewColumn(), //
+                datasetId, //
+                null);
+        final PreviewParameters previewParamsBis = new PreviewParameters( //
+                getMultipleTransformationWithNewColumn(), //
+                getMultipleTransformationWithNewColumnBis(), //
+                datasetId, //
+                null);
+        final List<PreviewParameters> input = new ArrayList<>(2);
+        input.add(previewParams);
+        input.add(previewParamsBis);
+
+        // when
+        final String response = given() //
+                .contentType(ContentType.JSON) //
+                .body(mapper.writer().writeValueAsString(input)) //
+                .when().expect().statusCode(200).log().ifError() //
+                .post("/transform/diff/metadata")
+                .asString();
+
+        // then
+        System.out.printf(response);
+        assertEquals("[{\"createdColumns\":[\"0009\"]}, {\"createdColumns\":[\"0010\"]}]", response, false);
     }
 
 
     @Test
     public void should_return_empty_array_when_step_does_not_create_columns() throws Exception {
         // given
-        PreviewParameters input = new PreviewParameters( //
+        final PreviewParameters previewParams = new PreviewParameters( //
                 getSingleTransformation(), //
                 getMultipleTransformationWithoutNewColumn(), //
                 createDataset("../preview/input.csv", "input4preview", "text/csv"), //
                 null);
+        final List<PreviewParameters> input = Collections.singletonList(previewParams);
 
         // when
         final String response = given() //
@@ -125,7 +161,7 @@ public class DiffTests extends TransformationServiceBaseTests {
                 .asString();
 
         // then
-        assertEquals("{\"createdColumns\":[]}", response, false);
+        assertEquals("[{\"createdColumns\":[]}]", response, false);
     }
 
     private String getSingleTransformation() throws IOException {
@@ -136,10 +172,11 @@ public class DiffTests extends TransformationServiceBaseTests {
         return IOUtils.toString(this.getClass().getResourceAsStream("../preview/uppercase_copy.json"));
     }
 
+    private String getMultipleTransformationWithNewColumnBis() throws IOException {
+        return IOUtils.toString(this.getClass().getResourceAsStream("../preview/uppercase_copy_bis.json"));
+    }
+
     private String getTransformation_TDP_1184_step_1() throws IOException {
-        // return "{\"actions\": [ { \"action\": \"delete_column\", \"parameters\":{ \"column_id\": \"lastname\",
-        // \"scope\": \"column\" } }, { \"action\": \"split\", \"parameters\":{ \"column_id\": \"city\", \"scope\":
-        // \"column\", \"separator\":\" \", \"limit\":\"2\" } } ]}";
         return IOUtils.toString(this.getClass().getResourceAsStream("../preview/deletecolumn_split.json"));
     }
 

@@ -27,6 +27,7 @@ export default function TextFormatService() {
         convertPatternToRegexp,
         convertJavaDateFormatToMomentDateFormat,
         highlight,
+        highlightWords,
         valueMatchPatternFn,
     };
 
@@ -220,16 +221,32 @@ export default function TextFormatService() {
      * @param {Object} object
      * @param {Integer} key
      * @param {String} highlightText text to highlight
-     * @param {String} hightlightCssClass css class to highlight
-     * @description highlight an item of the object
+     * @param {String} highlightCssClass css class to highlight
+     * @description Highlight an item of the object and replace it
      */
-    function highlight(object, key, highlightText, hightlightCssClass) {
+    function highlight(object, key, highlightText, highlightCssClass) {
         const originalValue = object[key];
-        if (originalValue.toLowerCase().indexOf(highlightText.toLowerCase()) !== -1) {
-            object[key] = originalValue.replace(
-                new RegExp('(' + escapeRegex(highlightText) + ')', 'gi'),
-                '<span class="' + hightlightCssClass + '">$1</span>');
+        object[key] = highlightWords(originalValue, highlightText, highlightCssClass);
+    }
+
+    /**
+     * @ngdoc method
+     * @name highlightWords
+     * @methodOf data-prep.services.utils:TextFormatService
+     * @param {string} value The value to process
+     * @param {string} words The phrase to highlight
+     * @param {String} highlightCssClass css class to apply
+     * @description Highlight a phrase in a string value
+     */
+    function highlightWords(value, words, highlightCssClass) {
+        if (value.toLowerCase().indexOf(words.toLowerCase()) === -1) {
+            return value;
         }
+
+        return value.replace(
+            new RegExp('(' + escapeRegex(words) + ')', 'gi'),
+            '<span class="' + highlightCssClass + '">$1</span>'
+        );
     }
 
     // --------------------------------------------------------------------------------------------

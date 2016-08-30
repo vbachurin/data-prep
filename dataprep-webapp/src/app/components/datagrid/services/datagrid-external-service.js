@@ -15,28 +15,30 @@
  * @ngdoc service
  * @name data-prep.datagrid.service:DatagridExternalService
  * @description Datagrid private service that manage the selected column action to the outer world (non dratagrid)
+ * @requires data-prep.services.state.service:StateService
  * @requires data-prep.services.statistics.service:StatisticsService
- * @requires data-prep.services.transformation.service:SuggestionService
- * @requires data-prep.services.transformation.service:ColumnSuggestionService
+ * @requires data-prep.services.transformation.service:TransformationService
  * @requires data-prep.services.playground.service:PreviewService
  * @requires data-prep.services.lookup.service:LookupService
  *
  */
 export default class DatagridExternalService {
-    constructor($timeout, state, StatisticsService, SuggestionService, PreviewService, LookupService) {
+    constructor($timeout, state, StateService, StatisticsService, TransformationService, PreviewService, LookupService) {
         'ngInject';
 
         this.grid = null;
         this.scrollTimeout = null;
         this.lastSelectedTab = null;
         this.lastSelectedColumn = null;
+        this.lastSelectedColumnsNumber = null;
         this.lastSelectedLine = null;
 
         this.$timeout = $timeout;
         this.state = state;
 
+        this.StateService = StateService;
         this.StatisticsService = StatisticsService;
-        this.SuggestionService = SuggestionService;
+        this.TransformationService = TransformationService;
         this.PreviewService = PreviewService;
         this.LookupService = LookupService;
     }
@@ -46,41 +48,50 @@ export default class DatagridExternalService {
      * @name updateSuggestionPanel
      * @methodOf data-prep.datagrid.service:DatagridExternalService
      * @description Set the selected column into external services except the index column. This will trigger actions that use this property
-     * Ex : StatisticsService for dataviz, ColumnSuggestionService for transformation list
+     * Ex : StatisticsService for dataviz, TransformationService for transformations list
      */
     updateSuggestionPanel() {
-        const column = this.state.playground.grid.selectedColumn;
+        const columnNumber = this.state.playground.grid.selectedColumns.length;
+        const column = columnNumber === 1 ? this.state.playground.grid.selectedColumns[0] : null;
         const line = this.state.playground.grid.selectedLine;
 
-        const columnHasChanged = column !== this.lastSelectedColumn;
+        const columnsHaveChanged = columnNumber !== this.lastSelectedColumnsNumber || column !== this.lastSelectedColumn;
         const lineHasChanged = line !== this.lastSelectedLine;
 
-        if (!columnHasChanged && !lineHasChanged) {
+        if (!columnsHaveChanged && !lineHasChanged) {
             return;
         }
 
+        this.lastSelectedColumnsNumber = columnNumber;
         this.lastSelectedColumn = column;
         this.lastSelectedLine = line;
-        this.lastSelectedTab = !column ? 'LINE' : 'COLUMN';
+        this.lastSelectedTab = !columnNumber ? 'LINE' : 'COLUMN';
 
         // change tab
-        this.SuggestionService.selectTab(this.lastSelectedTab);
+        this.StateService.selectTransformationsTab(this.lastSelectedTab);
 
         // reset charts if we have no selected column
-        if (!this.lastSelectedColumn) {
+        if (!this.lastSelectedColumnsNumber) {
             this.StatisticsService.reset();
         }
 
         // update line scope transformations if line has changed
         if (this.lastSelectedLine && lineHasChanged) {
-            this.SuggestionService.setLine(this.lastSelectedLine);
+            this.TransformationService.initTransformations('line');
         }
 
         // update column scope transformations and charts if we have a selected column that has changed
-        if (this.lastSelectedColumn && columnHasChanged) {
-            this.SuggestionService.setColumn(this.lastSelectedColumn);
-            this.StatisticsService.updateStatistics();
-            this.LookupService.updateTargetColumn();
+        if (columnsHaveChanged && this.lastSelectedColumnsNumber) {
+            const firstSelected = this.state.playground.grid.selectedColumns[0];
+            this.TransformationService.initTransformations('column', firstSelected);
+
+            if (this.lastSelectedColumnsNumber === 1 && column) {
+                this.StatisticsService.updateStatistics();
+                this.LookupService.updateTargetColumn();
+            }
+            else {
+                this.StatisticsService.reset();
+            }
         }
     }
 

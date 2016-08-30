@@ -54,6 +54,7 @@ function getDefaultConfig(options) {
 function addDevServerConfig(config) {
     config.devServer = {
         port: appConf.port,
+        host: appConf.host,
         watchOptions: {
             aggregateTimeout: 300,
             poll: 1000
@@ -96,15 +97,6 @@ function addTestConfig(config) {
 
 function addPlugins(config, options) {
     config.plugins.push(
-
-        /*
-         * Plugin: NoErrorsPlugin
-         * Description: Only emit files when there are no errors
-         * Copies project static assets.
-         *
-         * See: http://webpack.github.io/docs/list-of-plugins.html#noerrorsplugin
-         */
-        new webpack.NoErrorsPlugin(),
 
         /*
          * Plugin: CopyWebpackPlugin
