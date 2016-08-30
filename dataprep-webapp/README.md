@@ -108,9 +108,9 @@ Then it will start a web server on port 3000 and watch any code change to refres
 
 ### Alternative way to launch, this does't require the prerequisites.
 
-`docker run -v /home/stef/talend/checkouts/data-prep/dataprep-webapp:/dataprep-webapp -p 3000:3000 talend-registry:5000/talend/data-prep-webapp-tools:1.4 /bin/sh -c "npm run serve"`
+`docker run -v /home/smallet/Development/clones/data-prep/dataprep-webapp/:/data-prep/ -p 3000:3000 registry.talend.com:5000/talend/data-prep-webapp-tools:1.8 /bin/sh -c "npm run serve"`
 
-Of course change */home/stef/talend/checkouts/data-prep/dataprep-webapp* regarding the path of your git clone.
+Of course change */home/smallet/Development/clones/data-prep/dataprep-webapp* regarding the path of your git clone.
 
 Then application is available at http://localhost:3000
 
