@@ -69,7 +69,7 @@ public class PreparationCleaner {
      * @return The step ids
      */
     private Set<String> getPreparationStepIds() {
-        return repository.listAll(Preparation.class).stream()
+        return repository.list(Preparation.class) //
                 .flatMap(prep -> preparationUtils.listStepsIds(prep.getHeadId(), repository).stream()).collect(toSet());
     }
 
@@ -79,7 +79,7 @@ public class PreparationCleaner {
      * @return The orphan steps
      */
     private List<Step> getCurrentOrphanSteps() {
-        final Collection<Step> steps = repository.listAll(Step.class);
+        final Collection<Step> steps = repository.list(Step.class).collect(toList());
         final Set<String> preparationStepIds = getPreparationStepIds();
 
         final Predicate<Step> isNotRootStep = step -> !rootStep.getId().equals(step.getId());
@@ -124,7 +124,7 @@ public class PreparationCleaner {
         }
         // Compute usage information (to prevent shared step deletion).
         final Map<Step, Integer> stepUsageCount = new HashMap<>();
-        repository.listAll(Preparation.class).stream()
+        repository.list(Preparation.class) //
                 .flatMap(prep -> preparationUtils.listSteps(prep.getHeadId(), repository).stream()).forEach(s -> {
                     if (stepUsageCount.containsKey(s)) {
                         stepUsageCount.put(s, stepUsageCount.get(s) + 1);

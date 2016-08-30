@@ -13,9 +13,27 @@
 
 package org.talend.dataprep.dataset.service;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import static java.util.stream.Collectors.toSet;
+import static java.util.stream.StreamSupport.stream;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
+import static org.springframework.web.bind.annotation.RequestMethod.*;
+import static org.talend.dataprep.exception.error.DataSetErrorCodes.DATASET_NAME_ALREADY_USED;
+import static org.talend.dataprep.exception.error.DataSetErrorCodes.UNABLE_TO_CREATE_OR_UPDATE_DATASET;
+import static org.talend.dataprep.util.SortAndOrderHelper.getDataSetMetadataComparator;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.annotation.PostConstruct;
+import javax.jms.Message;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,27 +82,10 @@ import org.talend.dataprep.schema.Schema;
 import org.talend.dataprep.security.PublicAPI;
 import org.talend.dataprep.security.Security;
 import org.talend.dataprep.user.store.UserDataRepository;
-import org.talend.dataprep.util.StringsHelper;
 
-import javax.annotation.PostConstruct;
-import javax.jms.Message;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.Charset;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static java.util.stream.Collectors.toSet;
-import static java.util.stream.StreamSupport.stream;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
-import static org.springframework.web.bind.annotation.RequestMethod.*;
-import static org.talend.dataprep.exception.error.DataSetErrorCodes.DATASET_NAME_ALREADY_USED;
-import static org.talend.dataprep.exception.error.DataSetErrorCodes.UNABLE_TO_CREATE_OR_UPDATE_DATASET;
-import static org.talend.dataprep.util.SortAndOrderHelper.getDataSetMetadataComparator;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
 @RestController
 @Api(value = "datasets", basePath = "/datasets", description = "Operations on data sets")
@@ -251,38 +252,49 @@ public class DataSetService extends BaseDataSetService {
     @RequestMapping(value = "/datasets", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List all data sets and filters on certified, or favorite or a limited number when asked", notes = "Returns the list of data sets (and filters) the current user is allowed to see. Creation date is a Epoch time value (in UTC time zone).")
     @Timed
-    public Iterable<DataSetMetadata> list(
+    public Callable<List<DataSetMetadata>> list(
             @ApiParam(value = "Sort key (by name, creation or modification date)") @RequestParam(defaultValue = "DATE") String sort,
             @ApiParam(value = "Order for sort key (desc or asc or modif)") @RequestParam(defaultValue = "DESC") String order,
             @ApiParam(value = "Filter on name containing the specified name") @RequestParam(defaultValue = "") String name,
             @ApiParam(value = "Filter on certified data sets") @RequestParam(defaultValue = "false") boolean certified,
             @ApiParam(value = "Filter on favorite data sets") @RequestParam(defaultValue = "false") boolean favorite,
             @ApiParam(value = "Only return a limited number of data sets") @RequestParam(defaultValue = "false", required = false) boolean limit) {
+        return () -> {
+            // Build filter for data sets
+            String userId = security.getUserId();
+            final UserData userData = userDataRepository.get(userId);
+            final List<String> predicates = new ArrayList<>();
+            predicates.add("lifecycle.importing = false");
+            if (favorite) {
+                if (userData != null) {
+                    predicates.add("id in [" + userData.getFavoritesDatasets().stream().collect(Collectors.joining(",")) + "]");
+                } else {
+                    predicates.add("isFavorite = 'true'");
+                }
+            }
+            if (certified) {
+                predicates.add("governance.certificationStep = '" + Certification.CERTIFIED + "'");
+            }
+            if (!StringUtils.isEmpty(name)) {
+                predicates.add("name contains '" + name + "'");
+            }
+            final String tqlFilter = predicates.stream().collect(Collectors.joining(" and "));
+            LOG.debug("TQL Filter in use: {}", tqlFilter);
 
-        Spliterator<DataSetMetadata> iterator = dataSetMetadataRepository.list().spliterator();
-        // Return sorted results
-        String userId = security.getUserId();
-        final UserData userData = userDataRepository.get(userId);
-        try (Stream<DataSetMetadata> stream = stream(iterator, false)) {
-            // @formatter:off
-            final Comparator<DataSetMetadata> comparator = getDataSetMetadataComparator(sort, order);
-            final List<DataSetMetadata> collect = stream.filter(metadata -> !metadata.getLifecycle().importing()) // NOSONAR
-                    .map(metadata -> {
-                        if (userData != null) {
-                            metadata.setFavorite(userData.getFavoritesDatasets().contains(metadata.getId()));
-                        }
-                        return metadata;
-                    })
-                    .filter(metadata -> !favorite || metadata.isFavorite())
-                    .filter(metadata -> !certified || Certification.CERTIFIED.equals(metadata.getGovernance().getCertificationStep()))
-                    .filter(metadata -> StringUtils.isEmpty(name) || StringUtils.containsIgnoreCase(metadata.getName(), name))
-                    .sorted(comparator)
-                    .limit(limit ? datasetListLimit : Long.MAX_VALUE)
-                    .collect(Collectors.toList());
-            LOG.debug("found {} datasets [favorite: {}, certified: {}, name: {}, limit: {}]", collect.size(), favorite, certified, name, limit);
-            return collect;
-            // @formatter:on
-        }
+            // Get all data sets according to filter
+            try (Stream<DataSetMetadata> stream = dataSetMetadataRepository.list(tqlFilter)) {
+                final Comparator<DataSetMetadata> comparator = getDataSetMetadataComparator(sort, order);
+                return stream.sorted(comparator) //
+                        .map(metadata -> {
+                            if (userData != null) {
+                                metadata.setFavorite(userData.getFavoritesDatasets().contains(metadata.getId()));
+                            }
+                            return metadata;
+                        }) //
+                        .limit(limit ? datasetListLimit : Long.MAX_VALUE) //
+                        .collect(Collectors.toList());
+            }
+        };
     }
 
     /**
@@ -562,12 +574,7 @@ public class DataSetService extends BaseDataSetService {
      * @param name the name to check.
      */
     private void checkIfNameIsAvailable(String id, String name) {
-
-        final Optional<DataSetMetadata> clash = stream(dataSetMetadataRepository.list().spliterator(), false) //
-                .filter(m -> name.equals(m.getName())) //
-                .findFirst();
-
-        if (clash.isPresent()) {
+        if (dataSetMetadataRepository.exist("name = '" + name + "'")) {
             final ExceptionContext context = ExceptionContext.build() //
                     .put("id", id) //
                     .put("name", name);
@@ -1006,10 +1013,13 @@ public class DataSetService extends BaseDataSetService {
 
         LOG.debug("search datasets metadata for {}", name);
 
-        final Set<DataSetMetadata> found;
-        try (final Stream<DataSetMetadata> stream = stream(dataSetMetadataRepository.list().spliterator(), false)) {
-            found = stream.filter(metadata -> StringsHelper.match(metadata.getName(), name, strict)).collect(toSet());
+        final String filter;
+        if (strict) {
+            filter = "name = '" + name + "'";
+        } else {
+            filter = "name contains '" + name + "'";
         }
+        final Set<DataSetMetadata> found = dataSetMetadataRepository.list(filter).collect(toSet());
 
         LOG.info("found {} dataset while searching {}", found.size(), name);
 

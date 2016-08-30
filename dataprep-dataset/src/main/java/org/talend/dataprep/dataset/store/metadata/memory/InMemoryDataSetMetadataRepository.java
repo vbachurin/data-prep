@@ -16,13 +16,12 @@ package org.talend.dataprep.dataset.store.metadata.memory;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
-import org.apache.commons.collections.IteratorUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +30,7 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadataBuilder;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
-import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepositoryAdapter;
-import org.talend.dataprep.lock.DistributedLock;
+import org.talend.dataprep.dataset.store.metadata.ObjectDataSetMetadataRepository;
 
 import com.google.common.base.Defaults;
 
@@ -41,7 +39,7 @@ import com.google.common.base.Defaults;
  */
 @Component
 @ConditionalOnProperty(name = "dataset.metadata.store", havingValue = "in-memory", matchIfMissing = true)
-public class InMemoryDataSetMetadataRepository extends DataSetMetadataRepositoryAdapter {
+public class InMemoryDataSetMetadataRepository extends ObjectDataSetMetadataRepository {
 
     /** This class' logger. */
     private static final Logger LOG = LoggerFactory.getLogger(InMemoryDataSetMetadataRepository.class);
@@ -52,14 +50,13 @@ public class InMemoryDataSetMetadataRepository extends DataSetMetadataRepository
     /** Where the DatasetMetadata is actually stored. */
     private final Map<String, DataSetMetadata> store = new ConcurrentHashMap<>();
 
-    /**
-     * @see DataSetMetadataRepository#list()
-     */
     @Override
-    public Iterable<DataSetMetadata> list() {
+    public Stream<DataSetMetadata> source() {
         final Collection<DataSetMetadata> values = store.values();
-        LOG.debug("list {} dataset metadata", values.size());
-        return values;
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("list {} dataset metadata", values.size());
+        }
+        return values.stream();
     }
 
     /**
@@ -91,32 +88,6 @@ public class InMemoryDataSetMetadataRepository extends DataSetMetadataRepository
                 }
             }
         } // else null so do nothing
-    }
-
-    /**
-     * @see DataSetMetadataRepository#clear()
-     */
-    @Override
-    public void clear() {
-        // Remove all data set (but use lock for remaining asynchronous processes).
-        final List<DataSetMetadata> list = IteratorUtils.toList(list().iterator());
-        for (DataSetMetadata metadata : list) {
-            final DistributedLock lock = createDatasetMetadataLock(metadata.getId());
-            try {
-                lock.lock();
-                remove(metadata.getId());
-            } finally {
-                lock.unlock();
-            }
-        }
-    }
-
-    /**
-     * @see DataSetMetadataRepository#size()
-     */
-    @Override
-    public int size() {
-        return store.size();
     }
 
     /**

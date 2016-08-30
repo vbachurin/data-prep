@@ -1,15 +1,15 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.dataset.store.metadata.file;
 
@@ -19,7 +19,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
@@ -37,10 +36,9 @@ import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.share.Owner;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
-import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepositoryAdapter;
+import org.talend.dataprep.dataset.store.metadata.ObjectDataSetMetadataRepository;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.DataSetErrorCodes;
-import org.talend.dataprep.lock.DistributedLock;
 import org.talend.dataprep.util.FilesHelper;
 import org.talend.dataprep.util.ReentrantReadWriteLockGroup;
 
@@ -53,10 +51,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 @Component
 @ConditionalOnProperty(name = "dataset.metadata.store", havingValue = "file")
-public class FileSystemDataSetMetadataRepository extends DataSetMetadataRepositoryAdapter {
+public class FileSystemDataSetMetadataRepository extends ObjectDataSetMetadataRepository {
 
     /** This class' logger. */
     private static final Logger LOG = LoggerFactory.getLogger(FileSystemDataSetMetadataRepository.class);
+
+    /**
+     * A group of ReentrantReadWriteLock associating to each dataset id a unique ReentrantReadWriteLock.
+     */
+    private final ReentrantReadWriteLockGroup locks = new ReentrantReadWriteLockGroup(true, 100);
 
     /** The dataprep ready jackson builder. */
     @Autowired
@@ -76,11 +79,6 @@ public class FileSystemDataSetMetadataRepository extends DataSetMetadataReposito
     }
 
     /**
-     * A group of ReentrantReadWriteLock associating to each dataset id a unique ReentrantReadWriteLock.
-     */
-    private final ReentrantReadWriteLockGroup locks = new ReentrantReadWriteLockGroup(true, 100);
-
-    /**
      * @see DataSetMetadataRepository#add(DataSetMetadata)
      */
     @Override
@@ -96,8 +94,7 @@ public class FileSystemDataSetMetadataRepository extends DataSetMetadataReposito
             mapper.writer().writeValue(output, metadata);
         } catch (IOException e) {
             LOG.error("Error saving {}", metadata, e);
-            throw new TDPException(DataSetErrorCodes.UNABLE_TO_STORE_DATASET_METADATA, e,
-                    ExceptionContext.build().put("id", metadata.getId()));
+            throw new TDPException(DataSetErrorCodes.UNABLE_TO_STORE_DATASET_METADATA, e,  ExceptionContext.build().put("id", metadata.getId()));
         } finally {
             lock.writeLock().unlock();
         }
@@ -147,51 +144,15 @@ public class FileSystemDataSetMetadataRepository extends DataSetMetadataReposito
         LOG.debug("metadata {} successfully deleted", id);
     }
 
-    /**
-     * @see DataSetMetadataRepository#size()
-     */
     @Override
-    public int size() {
-        File folder = getRootFolder();
-        int size = folder.list().length;
-        LOG.debug("found {} datasets metadata", size);
-        return size;
-    }
-
-    /**
-     * @see DataSetMetadataRepository#list()
-     */
-    @Override
-    public Iterable<DataSetMetadata> list() {
+    public Stream<DataSetMetadata> source() {
         final File folder = getRootFolder();
         final File[] files = folder.listFiles();
         if (files == null) {
-            return Collections.emptyList();
+            return Stream.of();
         }
 
-        final Stream<DataSetMetadata> stream = Arrays.stream(files).map(f -> get(f.getName())).filter(m -> m != null);
-        return stream::iterator;
-    }
-
-    /**
-     * @see DataSetMetadataRepository#clear()
-     */
-    @Override
-    public void clear() {
-        // Remove all data set (but use lock for remaining asynchronous processes).
-        for (DataSetMetadata metadata : list()) {
-            if (metadata == null) {
-                continue;
-            }
-            final DistributedLock lock = createDatasetMetadataLock(metadata.getId());
-            try {
-                lock.lock();
-                remove(metadata.getId());
-            } finally {
-                lock.unlock();
-            }
-        }
-        LOG.debug("dataset metadata repository cleared.");
+        return Arrays.stream(files).map(f -> get(f.getName())).filter(m -> m != null);
     }
 
     /**

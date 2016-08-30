@@ -154,7 +154,7 @@ public class FileSystemPreparationRepositoryTest extends PreparationRepositoryTe
                 .map(i -> getPreparation(String.valueOf(i))) //
                 .collect(Collectors.toList());
 
-        preparations.stream().forEach(prep -> repository.add(prep));
+        preparations.forEach(prep -> repository.add(prep));
 
         // and some steps to add some noise
         ids.stream().map(i -> new Step(rootStep.id(), "step" + i, versionService.version().getVersionId())) //
@@ -163,7 +163,7 @@ public class FileSystemPreparationRepositoryTest extends PreparationRepositoryTe
         // get some preparation by dataset id
         final Preparation expected1 = preparations.get(0);
         final Preparation expected2 = preparations.get(1);
-        final Collection<Preparation> actual = repository.getByMatchingName("1", false);
+        final Collection<Preparation> actual = repository.list(Preparation.class, "name contains '1'").collect(Collectors.toList());
 
         assertEquals(2, actual.size());
         assertTrue(actual.contains(expected1));
@@ -180,7 +180,7 @@ public class FileSystemPreparationRepositoryTest extends PreparationRepositoryTe
                 .map(i -> getPreparation(String.valueOf(i))) //
                 .collect(Collectors.toList());
 
-        preparations.stream().forEach(prep -> repository.add(prep));
+        preparations.forEach(prep -> repository.add(prep));
 
         // and some steps to add some noise
         ids.stream().map(i -> new Step(rootStep.id(), "step" + i, versionService.version().getVersionId())) //
@@ -188,7 +188,7 @@ public class FileSystemPreparationRepositoryTest extends PreparationRepositoryTe
 
         // get some preparation by dataset id
         final Preparation expected = preparations.get(0);
-        final Collection<Preparation> actual = repository.getByMatchingName("prep-1", true);
+        final Collection<Preparation> actual = repository.list(Preparation.class, "name = 'prep-1'").collect(Collectors.toList());
 
         assertEquals(1, actual.size());
         assertTrue(actual.contains(expected));

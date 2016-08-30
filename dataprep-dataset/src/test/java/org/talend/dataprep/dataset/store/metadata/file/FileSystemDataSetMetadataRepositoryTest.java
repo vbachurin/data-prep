@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.After;
@@ -43,6 +44,36 @@ public class FileSystemDataSetMetadataRepositoryTest extends DataSetBaseTest {
     /** The repository to test. */
     @Autowired
     private FileSystemDataSetMetadataRepository repository;
+
+    @Test
+    public void match() throws Exception {
+        // given
+        repository.add(getMetadata("456789"));
+
+        // when
+        final boolean match = repository.exist("id = 456789");
+        final boolean noMatch = repository.exist("id = 1234");
+
+        // then
+        assertTrue(match);
+        assertFalse(noMatch);
+    }
+
+    @Test
+    public void matchOnNested() throws Exception {
+        // given
+        final DataSetMetadata metadata = getMetadata("456789");
+        metadata.getLifecycle().importing(true);
+        repository.add(metadata);
+
+        // when
+        final boolean match = repository.exist("lifecycle.importing = true");
+        final boolean noMatch = repository.exist("lifecycle.importing = false");
+
+        // then
+        assertTrue(match);
+        assertFalse(noMatch);
+    }
 
     @After
     public void clear() {
@@ -155,8 +186,8 @@ public class FileSystemDataSetMetadataRepositoryTest extends DataSetBaseTest {
     public void shouldList() throws IOException {
 
         // list nothing
-        final Iterable<DataSetMetadata> emptyList = repository.list();
-        assertFalse(emptyList.iterator().hasNext());
+        final Iterator<DataSetMetadata> emptyList = repository.list().iterator();
+        assertFalse(emptyList.hasNext());
 
         // given
         int expected = 26;
@@ -165,12 +196,12 @@ public class FileSystemDataSetMetadataRepositoryTest extends DataSetBaseTest {
         }
 
         // when
-        final Iterable<DataSetMetadata> actual = repository.list();
+        final Iterator<DataSetMetadata> actual = repository.list().iterator();
 
         // then
         final AtomicInteger count = new AtomicInteger(0); // need of a final object that can be incremented in the
                                                           // following lambda expression
-        actual.forEach(dataSetMetadata -> {
+        actual.forEachRemaining(dataSetMetadata -> {
             assertTrue(Integer.valueOf(dataSetMetadata.getId()) <= expected);
             count.addAndGet(1);
 
@@ -203,7 +234,7 @@ public class FileSystemDataSetMetadataRepositoryTest extends DataSetBaseTest {
     public void shouldIgnoreHiddenFiles() throws Exception {
 
         // given
-        assertFalse(repository.list().iterator().hasNext());
+        assertFalse(repository.list().findFirst().isPresent());
 
         // when
         File hidden = new File("target/test/store/metadata/.hidden_file");

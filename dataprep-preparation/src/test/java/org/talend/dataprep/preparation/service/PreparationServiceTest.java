@@ -646,7 +646,6 @@ public class PreparationServiceTest extends BasePreparationTest {
 
         // given
         final String preparationId = createPreparation("154753", "preparation");
-        Preparation expected = repository.get(preparationId, Preparation.class);
 
         // when
         final Response response = given() //
@@ -663,7 +662,6 @@ public class PreparationServiceTest extends BasePreparationTest {
 
         // given
         final String preparationId = createPreparation("154753", "preparation");
-        Preparation expected = repository.get(preparationId, Preparation.class);
 
         // when
         given() //
@@ -685,7 +683,6 @@ public class PreparationServiceTest extends BasePreparationTest {
 
         // given
         final String preparationId = createPreparation("154753", "preparation");
-        Preparation expected = repository.get(preparationId, Preparation.class);
 
         // when
         given() //
@@ -734,12 +731,14 @@ public class PreparationServiceTest extends BasePreparationTest {
     @Test
     public void create() throws Exception {
         // given
-        assertThat(repository.listAll(Preparation.class).size(), is(0));
+        assertThat(repository.list(Preparation.class).count(), is(0L));
         final String preparationId = createPreparationWithAPI("{\"name\": \"test_name\", \"dataSetId\": \"1234\"}");
-        assertThat(repository.listAll(Preparation.class).size(), is(1));
+        assertThat(repository.list(Preparation.class).count(), is(1L));
 
         // when
-        final Preparation preparation = repository.listAll(Preparation.class).iterator().next();
+        final Optional<Preparation> first = repository.list(Preparation.class).findFirst();
+        assertThat(first.isPresent(), is(true));
+        final Preparation preparation = first.get();
 
         // then
         assertThat(preparation.id(), is(preparationId));
@@ -769,13 +768,14 @@ public class PreparationServiceTest extends BasePreparationTest {
     @Test
     public void createWithSpecialCharacters() throws Exception {
         // given
-        assertThat(repository.listAll(Preparation.class).size(), is(0));
+        final List<Preparation> list = repository.list(Preparation.class).collect(Collectors.toList());
+        assertThat(list.size(), is(0));
 
         // when
         final String preparationId = createPreparationWithAPI("{\"name\": \"éàçè\", \"dataSetId\": \"1234\"}");
 
         // then
-        final Collection<Preparation> preparations = repository.listAll(Preparation.class);
+        final Collection<Preparation> preparations = repository.list(Preparation.class).collect(Collectors.toList());
         assertThat(preparationId, is(preparationId));
         assertThat(preparations.size(), is(1));
 
@@ -787,13 +787,11 @@ public class PreparationServiceTest extends BasePreparationTest {
     @Test
     public void delete() throws Exception {
         // given
-        assertThat(repository.listAll(Preparation.class).size(), is(0));
+        assertThat(repository.list(Preparation.class).count(), is(0L));
 
         final String preparationId = createPreparationWithAPI("{\"name\": \"test_name\", \"dataSetId\": \"1234\"}");
-        final Collection<Preparation> preparations = repository.listAll(Preparation.class);
-        final Collection<Step> steps = repository.listAll(Step.class);
-        final Collection<PreparationActions> actions = repository.listAll(PreparationActions.class);
-        assertThat(repository.listAll(Preparation.class).size(), is(1));
+        final Collection<Preparation> preparations = repository.list(Preparation.class).collect(Collectors.toList());
+        assertThat(repository.list(Preparation.class).count(), is(1L));
 
         final Preparation preparation = preparations.iterator().next();
         assertThat(preparation.id(), is(preparationId));
@@ -804,58 +802,58 @@ public class PreparationServiceTest extends BasePreparationTest {
         when().delete("/preparations/{id}", preparationId).then().statusCode(HttpStatus.OK.value());
 
         // then
-        assertThat(repository.listAll(Preparation.class).size(), is(0));
+        assertThat(repository.list(Preparation.class).count(), is(0L));
         assertThat(folderRepository.findFolderEntries(preparationId, PREPARATION).iterator().hasNext(), is(false));
     }
 
     @Test
     public void testDeleteCleanUp() throws Exception {
         // given
-        assertThat(repository.listAll(Preparation.class).size(), is(0));
+        assertThat(repository.list(Preparation.class).count(), is(0L));
         final String preparationId = createPreparationWithAPI("{\"name\": \"test_name\", \"dataSetId\": \"1234\"}");
         applyTransformation(preparationId, "actions/append_copy_lastname.json");
 
-        assertThat(repository.listAll(Preparation.class).size(), is(1));
-        assertThat(repository.listAll(Step.class).size(), is(2));
-        assertThat(repository.listAll(PreparationActions.class).size(), is(2));
+        assertThat(repository.list(Preparation.class).count(), is(1L));
+        assertThat(repository.list(Step.class).count(), is(2L));
+        assertThat(repository.list(PreparationActions.class).count(), is(2L));
 
         // when
         when().delete("/preparations/{id}", preparationId).then().statusCode(HttpStatus.OK.value());
 
         // then
-        assertThat(repository.listAll(Preparation.class).size(), is(0));
-        assertThat(repository.listAll(Step.class).size(), is(1));
-        assertThat(repository.listAll(PreparationActions.class).size(), is(1));
+        assertThat(repository.list(Preparation.class).count(), is(0L));
+        assertThat(repository.list(Step.class).count(), is(1L));
+        assertThat(repository.list(PreparationActions.class).count(), is(1L));
     }
 
     @Test
     public void testDeleteCleanUpWithSharedSteps() throws Exception {
         // given
-        assertThat(repository.listAll(Preparation.class).size(), is(0));
+        assertThat(repository.list(Preparation.class).count(), is(0L));
         final String preparationId1 = createPreparationWithAPI("{\"name\": \"test_name\", \"dataSetId\": \"1234\"}");
         applyTransformation(preparationId1, "actions/append_copy_lastname.json");
         final String preparationId2 = createPreparationWithAPI("{\"name\": \"test_name\", \"dataSetId\": \"1234\"}");
         applyTransformation(preparationId2, "actions/append_copy_lastname.json");
 
-        assertThat(repository.listAll(Preparation.class).size(), is(2));
-        assertThat(repository.listAll(Step.class).size(), is(2));
-        assertThat(repository.listAll(PreparationActions.class).size(), is(2));
+        assertThat(repository.list(Preparation.class).count(), is(2L));
+        assertThat(repository.list(Step.class).count(), is(2L));
+        assertThat(repository.list(PreparationActions.class).count(), is(2L));
 
         // when
         when().delete("/preparations/{id}", preparationId1).then().statusCode(HttpStatus.OK.value());
 
         // then
-        assertThat(repository.listAll(Preparation.class).size(), is(1));
-        assertThat(repository.listAll(Step.class).size(), is(2));
-        assertThat(repository.listAll(PreparationActions.class).size(), is(2));
+        assertThat(repository.list(Preparation.class).count(), is(1L));
+        assertThat(repository.list(Step.class).count(), is(2L));
+        assertThat(repository.list(PreparationActions.class).count(), is(2L));
     }
 
     @Test
     public void update() throws Exception {
-        assertThat(repository.listAll(Preparation.class).size(), is(0));
+        assertThat(repository.list(Preparation.class).count(), is(0L));
         final String preparationId = createPreparationWithAPI("{\"name\": \"test_name\", \"dataSetId\": \"1234\"}");
 
-        final Preparation createdPreparation = repository.listAll(Preparation.class).iterator().next();
+        final Preparation createdPreparation = repository.list(Preparation.class).iterator().next();
         assertThat(createdPreparation.getId(), is(preparationId));
         final long oldModificationDate = createdPreparation.getLastModificationDate();
 
@@ -868,7 +866,7 @@ public class PreparationServiceTest extends BasePreparationTest {
 
         // Preparation id should not change (name is not part of preparation id).
         assertThat(updatedId, is(preparationId));
-        final Collection<Preparation> preparations = repository.listAll(Preparation.class);
+        final Collection<Preparation> preparations = repository.list(Preparation.class).collect(Collectors.toList());
         assertThat(preparations.size(), is(1));
         final Preparation preparation = preparations.iterator().next();
         assertThat(preparation.getName(), is("test_name_updated"));
@@ -893,7 +891,7 @@ public class PreparationServiceTest extends BasePreparationTest {
         // then
         // Preparation id should not change (new name)
         assertThat(updatedId, is(preparationId));
-        final Collection<Preparation> preparations = repository.listAll(Preparation.class);
+        final Collection<Preparation> preparations = repository.list(Preparation.class).collect(Collectors.toList());
         assertThat(preparations.size(), is(1));
         final Preparation preparation = preparations.iterator().next();
         assertThat(preparation.id(), is(updatedId));

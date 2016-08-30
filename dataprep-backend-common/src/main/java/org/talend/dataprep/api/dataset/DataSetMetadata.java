@@ -138,8 +138,8 @@ public class DataSetMetadata implements Serializable, SharedResource {
     @Transient // no saved in the database but computed when needed
     private Set<String> roles = new HashSet<>();
 
+    /** A arbitrary tag for the data set (used by studio on creation for a visual distinction). */
     private String tag;
-
 
     /**
      * Default empty constructor.
@@ -429,10 +429,19 @@ public class DataSetMetadata implements Serializable, SharedResource {
         this.roles = roles;
     }
 
+    /**
+     * @return The tag value for the data set metadata. This tag is for example used to distinguish data sets created by a job
+     * from one created through UI.
+     */
     public String getTag() {
         return tag;
     }
 
+    /**
+     * Set a "tag" value on the data set metadata. This tag is for example used to distinguish data sets created by a job
+     * from one created through UI.
+     * @param tag The tag value for the data set metadata.
+     */
     public void setTag(String tag) {
         this.tag = tag;
     }

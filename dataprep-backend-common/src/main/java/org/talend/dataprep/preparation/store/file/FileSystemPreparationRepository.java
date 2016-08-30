@@ -13,14 +13,13 @@
 
 package org.talend.dataprep.preparation.store.file;
 
+import static org.apache.commons.lang.StringUtils.startsWith;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -43,14 +42,12 @@ import org.talend.dataprep.api.preparation.Step;
 import org.talend.dataprep.api.share.Owner;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
+import org.talend.dataprep.preparation.store.ObjectPreparationRepository;
 import org.talend.dataprep.preparation.store.PreparationRepository;
 import org.talend.dataprep.security.Security;
-import org.talend.dataprep.transformation.actions.datablending.Lookup;
 import org.talend.dataprep.util.FilesHelper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import static org.apache.commons.lang.StringUtils.startsWith;
 
 
 /**
@@ -58,7 +55,7 @@ import static org.apache.commons.lang.StringUtils.startsWith;
  */
 @Component
 @ConditionalOnProperty(name = "preparation.store", havingValue = "file")
-public class FileSystemPreparationRepository implements PreparationRepository {
+public class FileSystemPreparationRepository extends ObjectPreparationRepository {
 
     /** This class' logger. */
     private static final Logger LOG = LoggerFactory.getLogger(FileSystemPreparationRepository.class);
@@ -117,11 +114,23 @@ public class FileSystemPreparationRepository implements PreparationRepository {
         LOG.debug("preparation #{} saved", object.id());
     }
 
-    /**
-     * @see PreparationRepository#get(String, Class)
-     */
     @Override
-    public <T extends Identifiable> T get(String id, Class<T> clazz) {
+    public <T extends Identifiable> Stream<T> source(Class<T> clazz) {
+        File[] files = getRootFolder().listFiles();
+        if (files == null) {
+            LOG.error("error listing preparations");
+            files = new File[0];
+        }
+        final Stream<File> stream = Arrays.stream(files);
+        return stream.filter(file -> startsWith(file.getName(), clazz.getSimpleName())) //
+                .map(file -> read(file.getName(), clazz)) // read all files
+                .filter(entry -> entry != null) // filter out null entries
+                .filter(entry -> clazz.isAssignableFrom(entry.getClass())) // filter out the unwanted objects (should not be
+                                                                           // necessary but you never know)
+                .onClose(stream::close);
+    }
+
+    private <T extends Identifiable> T read(String id, Class<T> clazz) {
 
         final File from = getIdentifiableFile(clazz, id);
         if (from.getName().startsWith(".")) {
@@ -145,48 +154,6 @@ public class FileSystemPreparationRepository implements PreparationRepository {
             return null;
         }
 
-        return result;
-    }
-
-    /**
-     * @see PreparationRepository#getByDataSet(String)
-     */
-    @Override
-    public Collection<Preparation> getByDataSet(String dataSetId) {
-
-        // defensive programming
-        if (StringUtils.isEmpty(dataSetId)) {
-            return Collections.emptyList();
-        }
-
-        // first filter on the class (listAll()) and then second filter on the dataset id
-        return listAll(Preparation.class) //
-                .stream() //
-                .filter(preparation -> dataSetId.equals(preparation.getDataSetId())) //
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * @see PreparationRepository#listAll(Class)
-     */
-    @Override
-    public <T extends Identifiable> Collection<T> listAll(Class<T> clazz) {
-        //@formatter:off
-        File[] files = getRootFolder().listFiles();
-        if(files == null) {
-            LOG.error("error listing preparations");
-            files = new File[0];
-        }
-        Collection<T> result;
-        try (final Stream<File> stream = Arrays.stream(files)) {
-             result = stream.filter(file -> startsWith(file.getName(), clazz.getSimpleName()))
-                    .map(file -> get(file.getName(), clazz))                   // read all files
-                    .filter(entry -> entry != null)                            // filter out null entries
-                    .filter(entry -> clazz.isAssignableFrom(entry.getClass())) // filter out the unwanted objects (should not be necessary but you never know)
-                    .collect(Collectors.toSet());                              // and put it in a set
-        }
-        //@formatter:on
-        LOG.debug("There are {} for class {}", result.size(), clazz.getName());
         return result;
     }
 
@@ -220,61 +187,6 @@ public class FileSystemPreparationRepository implements PreparationRepository {
         final File file = getIdentifiableFile(object);
         FilesHelper.deleteQuietly(file);
         LOG.debug("preparation #{} removed", object.id());
-    }
-
-    /**
-     * @see PreparationRepository#findOneByDataset
-     */
-    @Override
-    public Preparation findOneByDataset(String datasetId) {
-        if (StringUtils.isEmpty(datasetId)) {
-            return null;
-        }
-
-        File[] files = getRootFolder().listFiles();
-        if(files == null) {
-            LOG.error("error listing preparations");
-            files = new File[0];
-        }
-
-        try (final Stream<File> stream = Arrays.stream(files)) {
-            return stream
-                    .filter(file -> startsWith(file.getName(), Preparation.class.getSimpleName()))  // only preparations
-                    .map(file -> get(file.getName(), Preparation.class))                            // read the file
-                    .filter(prep -> prep != null)                                                   // filter out null entries
-                    .filter(prep -> datasetId.equals(prep.getDataSetId()))                          // filter preps on other datasets
-                    .findFirst()
-                    .orElse(null);
-        }
-    }
-
-    /**
-     * @see PreparationRepository#findOneStepActionByDataset
-     */
-    @Override
-    public PreparationActions findOneStepActionByDataset(String datasetId) {
-        if (StringUtils.isEmpty(datasetId)) {
-            return null;
-        }
-
-        File[] files = getRootFolder().listFiles();
-        if(files == null) {
-            LOG.error("error listing preparations");
-            files = new File[0];
-        }
-
-        try (final Stream<File> stream = Arrays.stream(files)) {
-            final String datasetParamName = Lookup.Parameters.LOOKUP_DS_ID.getKey();
-            return stream
-                    .filter(file -> startsWith(file.getName(), PreparationActions.class.getSimpleName()))   // only preparations
-                    .map(file -> get(file.getName(), PreparationActions.class))                             // read the file
-                    .filter(actions -> actions != null)                                                     // filter out null entries
-                    .filter(actions -> actions.getActions()
-                            .stream()
-                            .anyMatch(act -> datasetId.equals(act.getParameters().get(datasetParamName))))    // filter out non lookup on this dataset actions
-                    .findFirst()
-                    .orElse(null);
-        }
     }
 
     private File getIdentifiableFile(Identifiable object) {

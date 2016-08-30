@@ -13,34 +13,52 @@
 
 package org.talend.dataprep.preparation.store;
 
-import java.util.Collection;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.preparation.Identifiable;
-import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.preparation.PreparationActions;
-import org.talend.dataprep.api.preparation.Step;
-import org.talend.dataprep.util.StringsHelper;
+import org.talend.dataprep.transformation.actions.datablending.Lookup;
 
 /**
  * Base interface for preparation repositories (mongodb & in memory).
  *
- * This repository manage both Preparation and Step, hence the use of Idenfiable.
+ * This repository manages both Preparation and Step, hence the use of {@link Identifiable}.
  *
- * @see Preparation
- * @see Step
+ * @see org.talend.dataprep.api.preparation.Preparation
+ * @see org.talend.dataprep.api.preparation.Step
  */
 public interface PreparationRepository {
 
     /**
+     * Returns <code>true</code> if at least one <code>clazz</code> matches given filter.
+     *
+     * @param clazz The class used for checking.
+     * @param filter A TQL filter (i.e. storage-agnostic)
+     * @return <code>true</code> if at least one <code>clazz</code> matches <code>filter</code>.
+     */
+    <T extends Identifiable> boolean exist(Class<T> clazz, String filter);
+
+    /**
+     * @return A {@link java.lang.Iterable iterable} of <code>clazz</code>.
+     */
+    <T extends Identifiable> Stream<T> list(Class<T> clazz);
+
+    /**
+     * @return A {@link java.lang.Iterable iterable} of <code>clazz</code> that match given <code>filter</code>.
+     */
+    <T extends Identifiable> Stream<T> list(Class<T> clazz, String filter);
+
+    /**
      * Save or update an identifiable object.
+     * 
      * @param object the identifiable to save.
      */
     void add(Identifiable object);
 
     /**
      * Returns the Identifiable that matches the id and the class or null if none match.
+     * 
      * @param id the wanted Identifiable id.
      * @param clazz the wanted Identifiable class.
      * @param <T> the type of Identifiable.
@@ -49,55 +67,36 @@ public interface PreparationRepository {
     <T extends Identifiable> T get(String id, Class<T> clazz);
 
     /**
-     * @param dataSetId the wanted dataset id.
-     * @return all preparations used by a dataset or an empty list if there's none.
+     * Removes all {@link Identifiable} stored in this repository.
      */
-    Collection<Preparation> getByDataSet(String dataSetId);
-
-    /**
-     * Returns all the preparations that match the specified name on an exact match whether <i>exactMatch</i> is
-     * <tt>true</tt>. Otherwise it returns all the preparations having their names containing the specified name.
-     *
-     * If <i>name</i> is null or empty it returns the list of all preparations.
-     * 
-     * @param name the specified name
-     * @param exactMatch the specified boolean
-     * @return all the preparations having their names either matching <i>name</i> or containing <i>name</i>according to
-     * specified <i>exactMatch</i>
-     */
-    /**
-     * @see PreparationRepository#getByMatchingName(String, boolean)
-     */
-    default Collection<Preparation> getByMatchingName(String name, boolean exactMatch) {
-        Collection<Preparation> result;
-        if (StringUtils.isEmpty(name)) {
-            result = listAll(Preparation.class);
-        } else {
-            result = listAll(Preparation.class) //
-                    .stream() //
-                    .filter(preparation -> StringsHelper.match(preparation.getName(), name, exactMatch)) //
-                    .collect(Collectors.toList()); //
-        }
-        return result;
-    }
-
-    <T extends Identifiable> Collection<T> listAll(Class<T> clazz);
-
     void clear();
 
+    /**
+     * Removes the {@link Identifiable identifiable} from repository.
+     * 
+     * @param object The {@link Identifiable identifiable} to be deleted (only {@link Identifiable#getId()} will be used for
+     * delete).
+     */
     void remove(Identifiable object);
 
     /**
-     * Find a preparation that use the dataset
-     * @param datasetId The dataset id.
-     * @return A preparation that use the dataset.
-     */
-    Preparation findOneByDataset(String datasetId);
-
-    /**
      * Find a preparation step action that use the dataset (ex: lookup)
+     * 
      * @param datasetId The dataset id.
      * @return A preparation action that use the dataset.
      */
-    PreparationActions findOneStepActionByDataset(String datasetId);
+    default boolean findOneStepActionByDataset(String datasetId) {
+        if (StringUtils.isEmpty(datasetId)) {
+            return false;
+        }
+        final String datasetParamName = Lookup.Parameters.LOOKUP_DS_ID.getKey();
+        return list(PreparationActions.class) //
+                .filter(actions -> actions != null) // filter out null entries
+                .filter(actions -> actions.getActions().stream() //
+                        .anyMatch(act -> datasetId.equals(act.getParameters().get(datasetParamName)))
+                ) // filter out non lookup on this dataset actions
+                .findFirst() //
+                .isPresent();
+    }
+
 }

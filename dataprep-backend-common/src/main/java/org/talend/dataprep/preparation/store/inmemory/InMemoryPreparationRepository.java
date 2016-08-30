@@ -14,31 +14,27 @@
 package org.talend.dataprep.preparation.store.inmemory;
 
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.preparation.Identifiable;
-import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.preparation.PreparationActions;
 import org.talend.dataprep.api.preparation.Step;
+import org.talend.dataprep.preparation.store.ObjectPreparationRepository;
 import org.talend.dataprep.preparation.store.PreparationRepository;
-import org.talend.dataprep.transformation.actions.datablending.Lookup;
 
 /**
  * In memory Preparation repository.
  */
 @Component
 @ConditionalOnProperty(name = "preparation.store", havingValue = "in-memory", matchIfMissing = true)
-public class InMemoryPreparationRepository implements PreparationRepository {
+public class InMemoryPreparationRepository extends ObjectPreparationRepository {
 
     /**
      * The root step.
@@ -66,13 +62,19 @@ public class InMemoryPreparationRepository implements PreparationRepository {
         add(rootStep);
     }
 
-
     /**
      * @see PreparationRepository#add(Identifiable)
      */
     @Override
     public void add(Identifiable object) {
         store.put(object.id(), object);
+    }
+
+    @Override
+    public <T extends Identifiable> Stream<T> source(Class<T> clazz) {
+        return store.entrySet().stream() //
+                .filter(entry -> clazz.isAssignableFrom(entry.getValue().getClass())) //
+                .map(entry -> (T) entry.getValue());
     }
 
     /**
@@ -97,30 +99,6 @@ public class InMemoryPreparationRepository implements PreparationRepository {
     }
 
     /**
-     * @see PreparationRepository#getByDataSet(String)
-     */
-    @Override
-    public Collection<Preparation> getByDataSet(String dataSetId) {
-        // defensive programming
-        if (StringUtils.isEmpty(dataSetId)) {
-            return Collections.emptyList();
-        }
-        // first filter on the class (listAll()) and then second filter on the dataset id
-        return listAll(Preparation.class).stream()
-                .filter(p -> dataSetId.equals(p.getDataSetId())) // filter on the dataset id
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * @see PreparationRepository#listAll(Class)
-     */
-    @Override
-    public <T extends Identifiable> Collection<T> listAll(Class<T> clazz) {
-        return store.entrySet().stream().filter(entry -> clazz.isAssignableFrom(entry.getValue().getClass()))
-                .map(entry -> (T) entry.getValue()).collect(Collectors.toSet());
-    }
-
-    /**
      * @see PreparationRepository#clear()
      */
     @Override
@@ -139,39 +117,6 @@ public class InMemoryPreparationRepository implements PreparationRepository {
             return;
         }
         store.remove(object.id());
-    }
-
-    /**
-     * @see PreparationRepository#findOneByDataset
-     */
-    @Override
-    public Preparation findOneByDataset(String datasetId) {
-        if (StringUtils.isEmpty(datasetId)) {
-            return null;
-        }
-
-        return listAll(Preparation.class).stream()
-                .filter(p -> datasetId.equals(p.getDataSetId()))
-                .findFirst()
-                .orElse(null);
-    }
-
-    /**
-     * @see PreparationRepository#findOneStepActionByDataset
-     */
-    @Override
-    public PreparationActions findOneStepActionByDataset(String datasetId) {
-        if (StringUtils.isEmpty(datasetId)) {
-            return null;
-        }
-
-        final String datasetParamName = Lookup.Parameters.LOOKUP_DS_ID.getKey();
-        return listAll(PreparationActions.class).stream()
-                .filter(actions -> actions.getActions()
-                        .stream()
-                        .anyMatch(act -> datasetId.equals(act.getParameters().get(datasetParamName))))
-                .findFirst()
-                .orElse(null);
     }
 
 }

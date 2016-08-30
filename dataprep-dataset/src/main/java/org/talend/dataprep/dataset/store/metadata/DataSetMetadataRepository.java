@@ -15,7 +15,6 @@ package org.talend.dataprep.dataset.store.metadata;
 
 import java.util.Collections;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import javax.annotation.Nullable;
 
@@ -28,25 +27,24 @@ import org.talend.dataprep.lock.DistributedLock;
 public interface DataSetMetadataRepository {
 
     /**
+     * Returns <code>true</code> if at least one {@link DataSetMetadata} matches given filter.
+     * @param filter A TQL filter (i.e. storage-agnostic)
+     * @return <code>true</code> if at least one {@link DataSetMetadata} matches <code>filter</code>.
+     */
+    boolean exist(String filter);
+
+    /**
      * @return A {@link java.lang.Iterable iterable} of {@link DataSetMetadata data set}. Returned data set are expected
      * to be visible by current user.
      */
-    Iterable<DataSetMetadata> list();
+    Stream<DataSetMetadata> list();
 
     /**
-     * Returns data set that are in this repository which are compatible with the data set of the specified id.
-     * @param id the id of a data set
-     * @return A {@link java.lang.Iterable iterable} of {@link DataSetMetadata data set}.
+     * Returns an {@link Iterable} of all {@link DataSetMetadata} that match given filter.
+     * @param filter A TQL filter (i.e. storage-agnostic)
+     * @return A {@link Iterable} of {@link DataSetMetadata} that matches <code>filter</code>.
      */
-    default Iterable<DataSetMetadata> listCompatible(String id) {
-        final DataSetMetadata metadata = get(id);
-        if (metadata == null){
-            return Collections.emptyList();
-        }
-        final Stream<DataSetMetadata> stream = StreamSupport.stream(list().spliterator(), false)
-                .filter(m -> m != null && !metadata.equals(m) && metadata.compatible(m));
-        return stream::iterator;
-    }
+    Stream<DataSetMetadata> list(String filter);
 
     /**
      * <p>
@@ -57,7 +55,7 @@ public interface DataSetMetadataRepository {
      * <b>However</b>, if a previous data set exists but the current user has no write rights on it, an exception should
      * be thrown.
      * </p>
-     * 
+     *
      * @param dataSetMetadata The {@link DataSetMetadata data set} to create or update.
      */
     void add(DataSetMetadata dataSetMetadata);
@@ -80,7 +78,7 @@ public interface DataSetMetadataRepository {
 
     /**
      * Returns the {@link DataSetMetadata data set} with given id.
-     * 
+     *
      * @param id A data set id.
      * @return The {@link DataSetMetadata} with given <code>id</code> or null if non found.
      */
@@ -89,7 +87,7 @@ public interface DataSetMetadataRepository {
 
     /**
      * Removes the {@link DataSetMetadata data set} with given id.
-     * 
+     *
      * @param id The id of the {@link DataSetMetadata data set} to delete.
      * @see DataSetMetadata#getId()
      */
@@ -98,10 +96,24 @@ public interface DataSetMetadataRepository {
     /**
      * create a general cluster lock for the given DatasetMetadata ID This is up to the client to use it or not and of
      * course to release it.
-     * 
+     *
      * @param id of the metadata to get the lock on.
      * @return the lock instance to be used for locking and unlocking metadata access.
      */
     DistributedLock createDatasetMetadataLock(String id);
+
+    /**
+     * Returns data set that are in this repository which are compatible with the data set of the specified id.
+     * @param id the id of a data set
+     * @return A {@link java.lang.Iterable iterable} of {@link DataSetMetadata data set}.
+     */
+    default Iterable<DataSetMetadata> listCompatible(String id) {
+        final DataSetMetadata metadata = get(id);
+        if (metadata == null) {
+            return Collections.emptyList();
+        }
+        final Stream<DataSetMetadata> stream = list().filter(m -> m != null && !metadata.equals(m) && metadata.compatible(m));
+        return stream::iterator;
+    }
 
 }

@@ -83,12 +83,11 @@ public class DataSetImportTest extends DataSetBaseTest {
         Thread creationThread = new Thread(creation);
         creationThread.start();
         // Wait for creation of data set object
-        while (!dataSetMetadataRepository.list().iterator().hasNext()) {
+        while (!dataSetMetadataRepository.list().findFirst().isPresent()) {
             TimeUnit.MILLISECONDS.sleep(20);
         }
         // Data set should show as importing
-        final Iterable<DataSetMetadata> list = dataSetMetadataRepository.list();
-        final Iterator<DataSetMetadata> iterator = list.iterator();
+        final Iterator<DataSetMetadata> iterator = dataSetMetadataRepository.list().iterator();
         assertThat(iterator.hasNext(), is(true));
         final DataSetMetadata next = iterator.next();
         assertThat(next.getLifecycle().importing(), is(true));
@@ -126,8 +125,7 @@ public class DataSetImportTest extends DataSetBaseTest {
             TimeUnit.MILLISECONDS.sleep(20);
         }
         // Find data set being imported...
-        final Iterable<DataSetMetadata> list = dataSetMetadataRepository.list();
-        final Iterator<DataSetMetadata> iterator = list.iterator();
+        final Iterator<DataSetMetadata> iterator = dataSetMetadataRepository.list().iterator();
         assertThat(iterator.hasNext(), is(true));
         final DataSetMetadata next = iterator.next();
         assertThat(next.getLifecycle().importing(), is(true));

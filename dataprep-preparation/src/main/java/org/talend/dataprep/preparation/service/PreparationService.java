@@ -56,8 +56,8 @@ import org.talend.dataprep.exception.json.JsonErrorCodeDescription;
 import org.talend.dataprep.folder.store.FolderRepository;
 import org.talend.dataprep.http.HttpResponseContext;
 import org.talend.dataprep.lock.store.LockedResource;
-import org.talend.dataprep.lock.store.LockedResource.LockUserInfo;
 import org.talend.dataprep.lock.store.LockedResourceRepository;
+import org.talend.dataprep.lock.store.LockedResource.LockUserInfo;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.preparation.store.PreparationRepository;
 import org.talend.dataprep.preparation.task.PreparationCleaner;
@@ -186,8 +186,7 @@ public class PreparationService {
 
         LOGGER.debug("Get list of preparations (summary).");
 
-        final List<String> preparations = preparationRepository.listAll(Preparation.class).stream().collect(Collectors.toList())
-                .stream() //
+        final List<String> preparations = preparationRepository.list(Preparation.class) //
                 .sorted(getPreparationComparator(sort, order)) //
                 .map(Preparation::id).collect(toList());
 
@@ -209,8 +208,7 @@ public class PreparationService {
             @ApiParam(value = "Sort key (by name or date).") @RequestParam(defaultValue = "MODIF", required = false) String sort,
             @ApiParam(value = "Order for sort key (desc or asc).") @RequestParam(defaultValue = "DESC", required = false) String order) {
         LOGGER.debug("Get list of preparations (with details).");
-        Collection<Preparation> preparations = preparationRepository.listAll(Preparation.class);
-        Collection<PreparationDetails> details = preparations.stream() //
+        Collection<PreparationDetails> details = preparationRepository.list(Preparation.class) //
                 .sorted(getPreparationComparator(sort, order)) //
                 .map(this::getDetails) //
                 .collect(Collectors.toList());
@@ -278,14 +276,8 @@ public class PreparationService {
      * @return the preparations that are based on the given dataset.
      */
     private Collection<Preparation> searchByDataSet(String dataSetId) {
-
         LOGGER.debug("looking for preparations based on dataset #{}", dataSetId);
-
-        Collection<Preparation> preparations = preparationRepository.getByDataSet(dataSetId);
-
-        LOGGER.info("found {} preparation(s) for dataset {}.", preparations.size(), dataSetId);
-
-        return preparations;
+        return preparationRepository.list(Preparation.class, "dataSetId = '" + dataSetId + "'").collect(toList());
     }
 
     /**
@@ -323,13 +315,13 @@ public class PreparationService {
 
         LOGGER.debug("looking for preparations with the name '{}' exact match is ", name, exactMatch);
 
-        Collection<Preparation> preparations = preparationRepository.getByMatchingName(name, exactMatch);
-
-        String message = exactMatch ? "{} preparation(s) having name that match {}."
-                : "{} preparation(s) having name containing {}.";
-        LOGGER.info(message, preparations.size(), name);
-
-        return preparations;
+        final String filter;
+        if (exactMatch) {
+            filter = "name = '" + name + "'";
+        } else {
+            filter = "name contains '" + name + "'";
+        }
+        return preparationRepository.list(Preparation.class, filter).collect(toList());
     }
 
     /**
@@ -866,8 +858,9 @@ public class PreparationService {
     @ApiOperation(value = "Check if dataset is used by a preparation.", notes = "Returns no content, the response code is the meaning.")
     @Timed
     public ResponseEntity<Void> preparationsThatUseDataset(@ApiParam("datasetId") @PathVariable("datasetId") final String datasetId) {
-        if (preparationRepository.findOneByDataset(datasetId) == null &&
-                preparationRepository.findOneStepActionByDataset(datasetId) == null) {
+        final boolean preparationUseDataSet = preparationRepository.exist(Preparation.class, "dataSetId = '" + datasetId + "'");
+        final boolean dataSetUsedInLookup = preparationRepository.findOneStepActionByDataset(datasetId);
+        if (!preparationUseDataSet && !dataSetUsedInLookup) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.noContent().build();

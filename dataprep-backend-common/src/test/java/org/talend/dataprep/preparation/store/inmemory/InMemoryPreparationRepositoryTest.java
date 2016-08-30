@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -60,8 +61,6 @@ public class InMemoryPreparationRepositoryTest extends PreparationRepositoryTest
 
     /**
      * Test the getByDataSet method.
-     * 
-     * @see PreparationRepository#getByDataSet(String)
      */
     @Test
     public void getByDataSetTest() {
@@ -88,7 +87,7 @@ public class InMemoryPreparationRepositoryTest extends PreparationRepositoryTest
         }
 
         // run the test
-        Collection<Preparation> actual = repository.getByDataSet(dataSetId);
+        Collection<Preparation> actual = getRepository().list(Preparation.class, "dataSetId = '" + dataSetId + "'").collect(Collectors.toList());
 
         // check the result
         Assert.assertEquals(3, actual.size());

@@ -14,16 +14,11 @@
 package org.talend.dataprep.preparation.store;
 
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.preparation.Preparation;
@@ -45,13 +40,13 @@ public abstract class PreparationRepositoryTest {
                 .map(i -> getPreparation(String.valueOf(i))) //
                 .collect(Collectors.toList());
 
-        preparations.stream().forEach(prep -> getRepository().add(prep));
+        preparations.forEach(prep -> getRepository().add(prep));
 
         // list all preparations
-        final Collection<Preparation> actual = getRepository().listAll(Preparation.class);
+        final List<Preparation> actual = getRepository().list(Preparation.class).collect(Collectors.toList());
 
         assertEquals(ids.size(), actual.size());
-        preparations.stream().forEach(actual::contains);
+        preparations.forEach(actual::contains);
     }
 
     @Test
@@ -63,11 +58,11 @@ public abstract class PreparationRepositoryTest {
                 .map(i -> getPreparation(String.valueOf(i))) //
                 .collect(Collectors.toList());
 
-        preparations.stream().forEach(prep -> getRepository().add(prep));
+        preparations.forEach(prep -> getRepository().add(prep));
 
         // get preparation by name
         final Preparation expected = preparations.get(1);
-        final Collection<Preparation> actual = getRepository().getByDataSet(expected.getDataSetId());
+        final Collection<Preparation> actual = getRepository().list(Preparation.class, "dataSetId = '" + expected.getDataSetId() + "'").collect(Collectors.toList());
 
         assertEquals(1, actual.size());
         assertTrue(actual.contains(expected));
@@ -87,11 +82,10 @@ public abstract class PreparationRepositoryTest {
         getRepository().add(prep2);
 
         // when
-        final Preparation result = getRepository().findOneByDataset(datasetId);
+        final boolean result = getRepository().exist(Preparation.class, "dataSetId = '" + datasetId + "'");
 
         // then
-        assertThat(result, notNullValue());
-        assertThat(result.getDataSetId(), is(datasetId));
+        assertThat(result, is(true));
     }
 
     @Test
@@ -107,10 +101,10 @@ public abstract class PreparationRepositoryTest {
         getRepository().add(prep2);
 
         // when
-        final Preparation result = getRepository().findOneByDataset(datasetId);
+        final boolean result = getRepository().exist(Preparation.class, "dataSetId = " + datasetId);
 
         // then
-        assertThat(result, nullValue());
+        assertThat(result, is(false));
     }
 
     @Test
@@ -134,11 +128,10 @@ public abstract class PreparationRepositoryTest {
         getRepository().add(prepAction2);
 
         // when
-        final PreparationActions result = getRepository().findOneStepActionByDataset(datasetId);
+        final boolean result = getRepository().findOneStepActionByDataset(datasetId);
 
         // then
-        assertThat(result, notNullValue());
-        assertThat(result.getActions().get(0).getParameters().get("lookup_ds_id"), is(datasetId));
+        assertThat(result, is(true));
     }
 
     @Test
@@ -162,9 +155,9 @@ public abstract class PreparationRepositoryTest {
         getRepository().add(prepAction2);
 
         // when
-        final PreparationActions result = getRepository().findOneStepActionByDataset(datasetId);
+        final boolean result = getRepository().findOneStepActionByDataset(datasetId);
 
         // then
-        assertThat(result, nullValue());
+        assertThat(result, is(false));
     }
 }

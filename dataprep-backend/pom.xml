@@ -491,6 +491,11 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+            <dependency>
+                <groupId>org.talend.datastewardship</groupId>
+                <artifactId>tql</artifactId>
+                <version>0.4.0-BUILD-SNAPSHOT</version>
+            </dependency>
             <!-- SWAGGER DEPENDENCIES -->
             <dependency>
                 <groupId>io.springfox</groupId>
@@ -536,7 +541,6 @@
                 <version>3.3.0</version>
                 <scope>test</scope>
             </dependency>
-
             <dependency>
                 <groupId>org.talend.dataprep</groupId>
                 <artifactId>dataprep-backend-common</artifactId>
