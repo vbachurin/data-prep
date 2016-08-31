@@ -17,7 +17,12 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.http.*;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.ConnectionKeepAliveStrategy;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.LayeredConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.DefaultRedirectStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -63,12 +68,25 @@ public class HttpClient {
     @Value("${http.pool.connectionRequestTimeout:10}") // default is 10 seconds
     private int connectionRequestTimeout;
 
+    /** Optional SSL socket factory. */
+    @Autowired(required = false)
+    private LayeredConnectionSocketFactory sslSocketFactory;
+
     /**
      * @return the http connection manager.
      */
     @Bean(destroyMethod = "shutdown")
     public PoolingHttpClientConnectionManager getConnectionManager() {
-        PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
+
+        // fallback to default implementation
+        if (sslSocketFactory == null) {
+            sslSocketFactory = SSLConnectionSocketFactory.getSocketFactory();
+        }
+
+        PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager(RegistryBuilder
+                .<ConnectionSocketFactory> create().register("http", PlainConnectionSocketFactory.getSocketFactory())
+                .register("https", sslSocketFactory).build());
+
         connectionManager.setMaxTotal(maxPoolSize);
         connectionManager.setDefaultMaxPerRoute(maxPerRoute);
         return connectionManager;
