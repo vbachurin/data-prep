@@ -13,6 +13,15 @@
 
 package org.talend.dataprep.api.dataset;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.talend.dataprep.api.dataset.diff.Flag;
+import org.talend.dataprep.api.dataset.json.ColumnContextDeserializer;
+
+import javax.annotation.Nonnull;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -20,17 +29,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-
-import javax.annotation.Nonnull;
-
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.talend.dataprep.api.dataset.diff.Flag;
-import org.talend.dataprep.api.dataset.json.ColumnContextDeserializer;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 /**
  * Models metadata information for a row of a data set.
@@ -43,8 +41,7 @@ public class RowMetadata implements Serializable {
     /** Class logger. */
     private static final Logger LOGGER = LoggerFactory.getLogger(RowMetadata.class);
 
-    /** Column ID format. */
-    private static final DecimalFormat COLUMN_ID_DECIMAL_FORMAT = new DecimalFormat("0000"); //$NON-NLS-1$
+    private static final String COLUMN_ID_PATTERN = "0000";
 
     /** List of row metadata. */
     @JsonProperty("columns")
@@ -62,7 +59,7 @@ public class RowMetadata implements Serializable {
 
     /**
      * Default constructor.
-     * 
+     *
      * @param columns the list of column metadata.
      */
     public RowMetadata(List<ColumnMetadata> columns) {
@@ -79,7 +76,7 @@ public class RowMetadata implements Serializable {
     /**
      * Returns true if this data set metadata is compatible with <tt>rowMetadata</tt> (they have same types in
      * the same order and same column names) and false otherwise.
-     * 
+     *
      * @param other the specified row metadata
      * @return true if this row metadata is compatible with the specified one and false otherwise
      */
@@ -130,12 +127,13 @@ public class RowMetadata implements Serializable {
 
     private ColumnMetadata addColumn(ColumnMetadata columnMetadata, int index) {
         String columnIdFromMetadata = columnMetadata.getId();
+        DecimalFormat columnIdFormat = new DecimalFormat(COLUMN_ID_PATTERN);
         if (StringUtils.isBlank(columnIdFromMetadata)) {
-            columnMetadata.setId(COLUMN_ID_DECIMAL_FORMAT.format(nextId));
+            columnMetadata.setId(columnIdFormat.format(nextId));
             nextId++;
         } else {
             try {
-                int columnId = COLUMN_ID_DECIMAL_FORMAT.parse(columnIdFromMetadata).intValue();
+                int columnId = columnIdFormat.parse(columnIdFromMetadata).intValue();
                 int possibleNextId = columnId + 1;
                 if (possibleNextId > nextId) {
                     nextId = possibleNextId;
@@ -174,7 +172,7 @@ public class RowMetadata implements Serializable {
 
     /**
      * Compute the diff from the given reference to this and update the diffFlag on each columnMetadata.
-     * 
+     *
      * @param reference the starting point to compute the diff.
      */
     public void diff(RowMetadata reference) {
@@ -207,13 +205,14 @@ public class RowMetadata implements Serializable {
 
     /**
      * Change detection between column and its reference (before the transformation)
-     * 
-     * @param column The column metadata
+     *
+     * @param column    The column metadata
      * @param reference The column reference
      * @return True if the name, domain or type has changed
      */
     private boolean columnHasChanged(final ColumnMetadata column, final ColumnMetadata reference) {
-        return !column.getName().equals(reference.getName()) || !column.getDomain().equals(reference.getDomain())
+        return !column.getName().equals(reference.getName()) //
+                || !column.getDomain().equals(reference.getDomain()) //
                 || !column.getType().equals(reference.getType());
     }
 
@@ -221,7 +220,7 @@ public class RowMetadata implements Serializable {
      * Return the column position within the given columns.
      *
      * @param columns the list of columns to search the column from.
-     * @param colId the wanted column id.
+     * @param colId   the wanted column id.
      * @return the column position within the given columns.
      */
     private int findColumnPosition(List<ColumnMetadata> columns, String colId) {
@@ -265,10 +264,10 @@ public class RowMetadata implements Serializable {
     /**
      * Insert a new column in this metadata right after the existing <code>columnId</code>. If no column with
      * <code>columnId</code> is to be found, append new column at the end of this row's columns.
-     * 
+     *
      * @param columnId A non null column id. Empty string is allowed, in this case, column will be appended at the end
-     * of existing columns.
-     * @param column A non null column to insert in this row's metadata.
+     *                 of existing columns.
+     * @param column   A non null column to insert in this row's metadata.
      * @return The column id of the newly inserted column.
      */
     public String insertAfter(@Nonnull String columnId, @Nonnull ColumnMetadata column) {
