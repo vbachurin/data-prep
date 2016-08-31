@@ -35,11 +35,9 @@ public class JsonErrorCodeDescription implements ErrorCode {
     private String code;
 
     /** The error code http status. */
-    @JsonProperty("http-status-code")
     private int httpStatus;
 
     /** The error code context. */
-    @JsonProperty("context")
     private Collection<String> expectedContextEntries;
 
     /**
@@ -110,6 +108,7 @@ public class JsonErrorCodeDescription implements ErrorCode {
      * @return the error code http status.
      */
     @Override
+    @JsonProperty("http-status-code")
     public int getHttpStatus() {
         return this.httpStatus;
     }
@@ -125,6 +124,7 @@ public class JsonErrorCodeDescription implements ErrorCode {
      * @return the error code expected context entries.
      */
     @Override
+    @JsonProperty("context")
     public Collection<String> getExpectedContextEntries() {
         return this.expectedContextEntries;
     }

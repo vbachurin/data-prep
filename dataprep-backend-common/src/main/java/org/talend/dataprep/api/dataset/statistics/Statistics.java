@@ -29,49 +29,34 @@ public class Statistics implements Serializable {
      */
     private static final long serialVersionUID = 1L;
 
-    @JsonProperty("count")
     long count;
 
-    @JsonProperty("valid")
     long valid;
 
-    @JsonProperty("invalid")
     long invalid;
 
-    @JsonProperty("empty")
     long empty;
 
-    @JsonProperty("max")
     double max = 0;
 
-    @JsonProperty("min")
     double min = 0;
 
-    @JsonProperty("mean")
     double mean = 0;
 
-    @JsonProperty("variance")
     double variance = 0;
 
-    @JsonProperty("duplicateCount")
     long duplicateCount = 0;
 
-    @JsonProperty("distinctCount")
     long distinctCount = 0;
 
-    @JsonProperty("frequencyTable")
     List<DataFrequency> dataFrequencies = new LinkedList<>();
 
-    @JsonProperty("patternFrequencyTable")
     List<PatternFrequency> patternFrequencies = new LinkedList<>();
 
-    @JsonProperty("quantiles")
     Quantiles quantiles = new Quantiles();
 
-    @JsonProperty("histogram")
     Histogram histogram;
 
-    @JsonProperty("textLengthSummary")
     TextLengthSummary textLengthSummary = new TextLengthSummary();
 
     public long getCount() {
@@ -154,6 +139,7 @@ public class Statistics implements Serializable {
         this.distinctCount = distinctCount;
     }
 
+    @JsonProperty("frequencyTable")
     public List<DataFrequency> getDataFrequencies() {
         return dataFrequencies;
     }
@@ -162,6 +148,7 @@ public class Statistics implements Serializable {
         this.dataFrequencies = dataFrequencies;
     }
 
+    @JsonProperty("patternFrequencyTable")
     public List<PatternFrequency> getPatternFrequencies() {
         return patternFrequencies;
     }

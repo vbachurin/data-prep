@@ -15,17 +15,13 @@ package org.talend.dataprep.api.dataset.statistics;
 
 import java.io.Serializable;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public class PatternFrequency implements Serializable {
 
     /** Serialization UID. */
     private static final long serialVersionUID = 1L;
 
-    @JsonProperty("pattern")
     String pattern;
 
-    @JsonProperty("occurrences")
     long occurrences;
 
     // Here for JSON deserialization

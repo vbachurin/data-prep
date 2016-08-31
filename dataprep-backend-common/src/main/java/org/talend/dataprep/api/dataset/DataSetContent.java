@@ -32,26 +32,19 @@ public class DataSetContent implements Serializable {
     /** Serialization UID. */
     private static final long serialVersionUID = 1L;
 
-    @JsonProperty("records")
     private long nbRecords = 0;
 
-    @JsonProperty("nbLinesHeader")
     private int nbLinesInHeader;
 
-    @JsonProperty("nbLinesFooter")
     private int nbLinesInFooter;
 
-    @JsonProperty("type")
     private String mediaType;
 
-    @JsonProperty("parameters")
     private Map<String, String> parameters = new HashMap<>();
 
-    @JsonProperty("formatGuess")
     private String formatFamilyId;
 
     /** If the dataset is too big, */
-    @JsonProperty("limit")
     @JsonInclude(value = NON_ABSENT, content = NON_ABSENT)
     private Optional<Long> limit = Optional.empty();
 
@@ -70,6 +63,7 @@ public class DataSetContent implements Serializable {
         this.parameters.put(key, value);
     }
 
+    @JsonProperty("type")
     public String getMediaType() {
         return mediaType;
     }
@@ -78,6 +72,7 @@ public class DataSetContent implements Serializable {
         this.mediaType = mediaType;
     }
 
+    @JsonProperty("formatGuess")
     public String getFormatFamilyId() {
         return formatFamilyId;
     }
@@ -86,6 +81,7 @@ public class DataSetContent implements Serializable {
         this.formatFamilyId = formatFamilyId;
     }
 
+    @JsonProperty("records")
     public long getNbRecords() {
         return this.nbRecords;
     }
@@ -94,6 +90,7 @@ public class DataSetContent implements Serializable {
         this.nbRecords = lines;
     }
 
+    @JsonProperty("nbLinesHeader")
     public int getNbLinesInHeader() {
         return this.nbLinesInHeader;
     }
@@ -102,6 +99,7 @@ public class DataSetContent implements Serializable {
         this.nbLinesInHeader = nbLinesInHeader;
     }
 
+    @JsonProperty("nbLinesFooter")
     public int getNbLinesInFooter() {
         return this.nbLinesInFooter;
     }

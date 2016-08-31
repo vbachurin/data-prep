@@ -15,20 +15,15 @@ package org.talend.dataprep.api.dataset.statistics;
 
 import java.io.Serializable;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public class TextLengthSummary implements Serializable {
 
     /** Serialization UID. */
     private static final long serialVersionUID = 1L;
 
-    @JsonProperty("minimalLength")
     double minimalLength = Double.NaN;
 
-    @JsonProperty("maximalLength")
     double maximalLength = Double.NaN;
 
-    @JsonProperty("averageLength")
     double averageLength = Double.NaN;
 
     public double getMinimalLength() {

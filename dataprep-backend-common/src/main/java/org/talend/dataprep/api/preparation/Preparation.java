@@ -53,7 +53,6 @@ public class Preparation extends Identifiable implements SharedResource, Seriali
     private String headId;
 
     /** Version of the app */
-    @JsonProperty("app-version")
     private String appVersion;
 
     /** List of the steps id for this preparation. */
@@ -203,6 +202,7 @@ public class Preparation extends Identifiable implements SharedResource, Seriali
     /**
      * @return the AppVersion
      */
+    @JsonProperty("app-version")
     public String getAppVersion() {
         return appVersion;
     }

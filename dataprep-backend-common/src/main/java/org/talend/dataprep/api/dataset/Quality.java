@@ -17,8 +17,6 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 /**
  * Quality bean linked to column metadata.
  */
@@ -28,19 +26,15 @@ public class Quality implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /** Number of empty records. */
-    @JsonProperty("empty")
     private int empty;
 
     /** Number of invalid records. */
-    @JsonProperty("invalid")
     private int invalid;
 
     /** Number of valid records. */
-    @JsonProperty("valid")
     private int valid;
 
     /** List of invalid values. */
-    @JsonProperty("invalidValues")
     private Set<String> invalidValues = new HashSet<>();
 
     /**

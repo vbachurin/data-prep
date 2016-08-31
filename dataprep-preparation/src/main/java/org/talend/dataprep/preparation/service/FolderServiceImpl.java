@@ -15,8 +15,6 @@ package org.talend.dataprep.preparation.service;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.web.bind.annotation.RequestMethod.*;
 import static org.talend.daikon.exception.ExceptionContext.build;
 import static org.talend.dataprep.api.folder.FolderContentType.PREPARATION;
 import static org.talend.dataprep.exception.error.FolderErrorCodes.FOLDER_NOT_EMPTY;
@@ -29,25 +27,20 @@ import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.talend.daikon.annotation.ServiceImplementation;
 import org.talend.dataprep.api.folder.*;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.FolderErrorCodes;
 import org.talend.dataprep.folder.store.FolderRepository;
 import org.talend.dataprep.folder.store.NotEmptyFolderException;
-import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.security.Security;
+import org.talend.services.dataprep.FolderService;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-
-@RestController
-@Api(value = "folders", basePath = "/folders", description = "Operations on folders")
-public class FolderService {
+@ServiceImplementation
+public class FolderServiceImpl implements FolderService {
 
     /** This class' logger. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(FolderService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FolderServiceImpl.class);
 
     /** Where the folders are stored. */
     @Autowired
@@ -57,22 +50,14 @@ public class FolderService {
     @Autowired
     private Security security;
 
-
     /**
      * List direct sub folders for the given id.
      *
      * @param id the current folder where to look for children.
      * @return direct sub folders for the given id.
      */
-    //@formatter:off
-    @RequestMapping(value = "/folders/{id}/children", method = GET, produces = APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Folder children", produces = APPLICATION_JSON_VALUE, notes = "List all child folders of the one as parameter")
-    @Timed
-    public Iterable<Folder> children(@PathVariable String id,
-                                     @RequestParam(defaultValue = "MODIF") @ApiParam(value = "Sort key (by name or date).") String sort,
-                                     @RequestParam(defaultValue = "DESC") @ApiParam(value = "Order for sort key (desc or asc).") String order) {
-    //@formatter:on
-
+    @Override
+    public Iterable<Folder> children(String id, String sort, String order) {
         if (!folderRepository.exists(id)) {
             throw new TDPException(FOLDER_NOT_FOUND, build().put("id", id));
         }
@@ -100,10 +85,8 @@ public class FolderService {
      * @param id the folder id.
      * @return the folder metadata with its hierarchy.
      */
-    @RequestMapping(value = "/folders/{id}", method = GET, produces = APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Get folder by id", produces = APPLICATION_JSON_VALUE, notes = "GET a folder by id")
-    @Timed
-    public FolderInfo getFolderAndHierarchyById(@PathVariable(value = "id") final String id) {
+    @Override
+    public FolderInfo getFolderAndHierarchyById(final String id) {
         final Folder folder = folderRepository.getFolderById(id);
         final List<Folder> hierarchy = folderRepository.getHierarchy(folder);
 
@@ -117,11 +100,8 @@ public class FolderService {
      * @param strict strict mode means the name is the full name.
      * @return the folders whose part of their name match the given path.
      */
-    @RequestMapping(value = "/folders/search", method = GET, produces = APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Search Folders with parameter as part of the name", produces = APPLICATION_JSON_VALUE)
-    @Timed
-    public Iterable<Folder> search(@RequestParam final String name,
-                                   @RequestParam(required = false) final boolean strict) {
+    @Override
+    public Iterable<Folder> search(final String name, final boolean strict) {
         final Iterable<Folder> folders = folderRepository.searchFolders(name, strict);
 
         int foldersFound = 0;
@@ -142,10 +122,8 @@ public class FolderService {
      * @param parentId where to add the folder.
      * @return the created folder.
      */
-    @RequestMapping(value = "/folders", method = PUT, produces = APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Create a Folder", produces = APPLICATION_JSON_VALUE, notes = "Create a folder")
-    @Timed
-    public Folder addFolder(@RequestParam String parentId, @RequestParam String path) {
+    @Override
+    public Folder addFolder(String parentId, String path) {
         return folderRepository.addFolder(parentId, path);
     }
 
@@ -154,10 +132,8 @@ public class FolderService {
      *
      * @param id the id that points to the folder to remove.
      */
-    @RequestMapping(value = "/folders/{id}", method = DELETE)
-    @ApiOperation(value = "Remove a Folder", produces = APPLICATION_JSON_VALUE, notes = "Remove the folder")
-    @Timed
-    public void removeFolder(@PathVariable String id) {
+    @Override
+    public void removeFolder(String id) {
         try {
             folderRepository.removeFolder(id);
         } catch (NotEmptyFolderException e) {
@@ -171,10 +147,8 @@ public class FolderService {
      * @param id where to look for the folder.
      * @param newName the new folder id.
      */
-    @RequestMapping(value = "/folders/{id}/name", method = PUT)
-    @ApiOperation(value = "Rename a Folder", produces = APPLICATION_JSON_VALUE)
-    @Timed
-    public void renameFolder(@PathVariable String id, @RequestBody String newName) {
+    @Override
+    public void renameFolder(String id, String newName) {
         folderRepository.renameFolder(id, newName);
     }
 
@@ -186,17 +160,10 @@ public class FolderService {
      * @param contentId the content id.
      * @param contentType the entry content type.
      */
-    @Deprecated
-    //@formatter:off
-    @RequestMapping(value = "/folders/entries/{contentType}/{id}", method = DELETE)
-    @ApiOperation(value = "Remove a FolderEntry", notes = "Delete the folder entry")
-    @Timed
-    public void deleteFolderEntry(
-            @PathVariable(value = "contentType") final String contentType, //
-            @PathVariable(value = "id") final String contentId, //
-            @RequestParam final String folderId) {
-    //@formatter:on
-
+    @Override
+    public void deleteFolderEntry(final String contentType, //
+            final String contentId, //
+            final String folderId) {
         try {
             FolderContentType checkedContentType = FolderContentType.fromName(contentType);
             folderRepository.removeFolderEntry(folderId, contentId, checkedContentType);
@@ -212,11 +179,8 @@ public class FolderService {
      * @param contentType the type of wanted entries.
      * @return the list of folder entries out of the given path.
      */
-    @RequestMapping(value = "/folders/entries", method = GET, produces = APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "List folder entries", produces = APPLICATION_JSON_VALUE, notes = "List all folder entries of the given content type")
-    @Timed
-    @Deprecated
-    public Iterable<FolderEntry> entries(@RequestParam String path, @RequestParam String contentType) {
+    @Override
+    public Iterable<FolderEntry> entries(String path, String contentType) {
         try {
             FolderContentType checkedContentType = FolderContentType.fromName(contentType);
             return folderRepository.entries(path, checkedContentType);
@@ -225,9 +189,7 @@ public class FolderService {
         }
     }
 
-    @RequestMapping(value = "/folders/tree", method = GET)
-    @ApiOperation(value = "List all folders", produces = APPLICATION_JSON_VALUE)
-    @Timed
+    @Override
     public FolderTreeNode getTree() {
         final Folder home = folderRepository.getHome();
         return getTree(home);
@@ -235,8 +197,7 @@ public class FolderService {
 
     private FolderTreeNode getTree(final Folder root) {
         final Iterable<Folder> children = folderRepository.children(root.getId());
-        final List<FolderTreeNode> childrenSubtrees = StreamSupport.stream(children.spliterator(), false)
-                .map(this::getTree)
+        final List<FolderTreeNode> childrenSubtrees = StreamSupport.stream(children.spliterator(), false).map(this::getTree)
                 .collect(toList());
         return new FolderTreeNode(root, childrenSubtrees);
     }

@@ -53,6 +53,7 @@
         <javax.measure.jsr-275.version>0.9.3</javax.measure.jsr-275.version>
     </properties>
     <modules>
+        <module>../dataprep-service</module>
         <module>../dataprep-backend-common</module>
         <module>../dataprep-actions</module>
         <module>../dataprep-dataset</module>

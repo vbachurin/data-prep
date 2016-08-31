@@ -20,7 +20,7 @@ public class Destinations {
     /**
      * JMS Destination for data statistics information of a data set.
      *
-     * @see org.talend.dataprep.dataset.service.DataSetService#create(String, String, InputStream)
+     * @see DataSetServiceImpl#create(String, String, InputStream)
      */
     public static final String STATISTICS_ANALYSIS = "org.talend.tdp.dataset.content.statistics"; //$NON-NLS-1
 

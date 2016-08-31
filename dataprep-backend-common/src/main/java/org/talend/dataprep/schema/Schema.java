@@ -29,13 +29,10 @@ public class Schema implements Serializable {
     /** Serialization UID. */
     private static final long serialVersionUID = 1L;
 
-    @JsonProperty("draft")
     private boolean draft;
 
-    @JsonProperty("sheetContents")
     private List<SheetContent> sheetContents;
 
-    @JsonProperty("sheetName")
     private String sheetName;
 
     private Schema(boolean draft, List<SheetContent> sheetContents, String sheetName) {
@@ -70,11 +67,9 @@ public class Schema implements Serializable {
         private static final long serialVersionUID = 1L;
 
         /** The sheet name. */
-        @JsonProperty("name")
         private String name;
 
         /** List of column metadata. */
-        @JsonProperty("columnMetadatas")
         private List<ColumnMetadata> columnMetadatas;
 
         /**
@@ -103,6 +98,7 @@ public class Schema implements Serializable {
             this.name = name;
         }
 
+        @JsonProperty("columnMetadatas")
         public List<ColumnMetadata> getColumnMetadatas() {
             return columnMetadatas;
         }

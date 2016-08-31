@@ -14,64 +14,45 @@
 package org.talend.dataprep.transformation.service;
 
 import static java.util.stream.Collectors.toList;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.web.bind.annotation.RequestMethod.*;
 import static org.talend.daikon.exception.ExceptionContext.build;
-import static org.talend.dataprep.api.export.ExportParameters.SourceType.HEAD;
 import static org.talend.dataprep.transformation.actions.category.ScopeCategory.COLUMN;
 import static org.talend.dataprep.transformation.actions.category.ScopeCategory.LINE;
-import static org.talend.dataprep.transformation.format.JsonFormat.JSON;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.concurrent.Callable;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import javax.annotation.Resource;
-import javax.validation.Valid;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.task.TaskExecutor;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
+import org.talend.daikon.annotation.ServiceImplementation;
+import org.talend.daikon.client.ClientService;
 import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSet;
-import org.talend.dataprep.api.dataset.DataSetMetadata;
-import org.talend.dataprep.api.dataset.RowMetadata;
-import org.talend.dataprep.api.dataset.row.Flag;
-import org.talend.dataprep.api.export.ExportParameters;
-import org.talend.dataprep.api.preparation.Action;
-import org.talend.dataprep.api.preparation.Step;
+import org.talend.dataprep.api.org.talend.dataprep.api.export.ExportParameters;
 import org.talend.dataprep.api.preparation.StepDiff;
-import org.talend.dataprep.cache.ContentCache;
-import org.talend.dataprep.cache.ContentCacheKey;
-import org.talend.dataprep.command.dataset.DataSetGet;
-import org.talend.dataprep.command.dataset.DataSetGetMetadata;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.exception.error.TransformationErrorCodes;
 import org.talend.dataprep.exception.json.JsonErrorCodeDescription;
 import org.talend.dataprep.format.export.ExportFormat;
-import org.talend.dataprep.metrics.Timed;
-import org.talend.dataprep.metrics.VolumeMetered;
-import org.talend.dataprep.security.PublicAPI;
 import org.talend.dataprep.security.SecurityProxy;
 import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.transformation.aggregation.AggregationService;
 import org.talend.dataprep.transformation.aggregation.api.AggregationParameters;
 import org.talend.dataprep.transformation.aggregation.api.AggregationResult;
-import org.talend.dataprep.transformation.api.action.ActionParser;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.dynamic.DynamicType;
 import org.talend.dataprep.transformation.api.action.dynamic.GenericParameter;
 import org.talend.dataprep.transformation.api.transformer.TransformerFactory;
@@ -79,24 +60,23 @@ import org.talend.dataprep.transformation.api.transformer.configuration.Configur
 import org.talend.dataprep.transformation.api.transformer.configuration.PreviewConfiguration;
 import org.talend.dataprep.transformation.api.transformer.suggestion.Suggestion;
 import org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngine;
-import org.talend.dataprep.transformation.cache.CacheKeyGenerator;
-import org.talend.dataprep.transformation.cache.TransformationMetadataCacheKey;
+import org.talend.dataprep.transformation.format.JsonFormat;
 import org.talend.dataprep.transformation.preview.api.PreviewParameters;
+import org.talend.services.dataprep.DataSetService;
+import org.talend.services.dataprep.TransformationService;
 
 import com.fasterxml.jackson.core.JsonParser;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-
-@RestController
-@Api(value = "transformations", basePath = "/transform", description = "Transformations on data")
-public class TransformationService extends BaseTransformationService {
+@ServiceImplementation
+public class TransformationServiceImpl extends BaseTransformationService implements TransformationService {
 
     /**
      * This class' logger.
      */
     private static final Logger LOG = LoggerFactory.getLogger(TransformationService.class);
+
+    @Autowired
+    ClientService clientService;
 
     /**
      * The Spring application context.
@@ -155,35 +135,14 @@ public class TransformationService extends BaseTransformationService {
     @Resource(name = "rootStep")
     private Step rootStep;
 
-    @RequestMapping(value = "/apply", method = POST, consumes = APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Run the transformation given the provided export parameters", notes = "This operation transforms the dataset or preparation using parameters in export parameters.")
-    @VolumeMetered
-    public StreamingResponseBody execute(
-            @ApiParam(value = "Preparation id to apply.") @RequestBody @Valid final ExportParameters parameters) {
+    @Override
+    public StreamingResponseBody execute(ExportParameters parameters) {
         return executeSampleExportStrategy(parameters);
     }
 
-
-    /**
-     * Apply the preparation to the dataset out of the given IDs.
-     *
-     * @param preparationId the preparation id to apply on the dataset.
-     * @param datasetId     the dataset id to transform.
-     * @param formatName    The output {@link ExportFormat format}. This format also set the MIME response type.
-     * @param stepId        the preparation step id to use (default is 'head').
-     * @param name          the transformation name.
-     * @param exportParams  additional (optional) export parameters.
-     */
-    //@formatter:off
-    @RequestMapping(value = "/apply/preparation/{preparationId}/dataset/{datasetId}/{format}", method = GET)
-    @ApiOperation(value = "Transform the given preparation to the given format on the given dataset id", notes = "This operation transforms the dataset using preparation id in the provided format.")
-    @VolumeMetered
-    public StreamingResponseBody applyOnDataset(@ApiParam(value = "Preparation id to apply.") @PathVariable(value = "preparationId") final String preparationId,
-                                                @ApiParam(value = "DataSet id to transform.") @PathVariable(value = "datasetId") final String datasetId,
-                                                @ApiParam(value = "Output format") @PathVariable("format") final String formatName,
-                                                @ApiParam(value = "Step id", defaultValue = "head") @RequestParam(value = "stepId", required = false, defaultValue = "head") final String stepId,
-                                                @ApiParam(value = "Name of the transformation", defaultValue = "untitled") @RequestParam(value = "name", required = false, defaultValue = "untitled") final String name,
-                                                @RequestParam final Map<String, String> exportParams) {
+    @Override
+    public StreamingResponseBody applyOnDataset(String preparationId, String datasetId, String formatName, String stepId,
+            String name, final Map<String, String> exportParams) {
         //@formatter:on
         final ExportParameters exportParameters = new ExportParameters();
         exportParameters.setPreparationId(preparationId);
@@ -196,39 +155,14 @@ public class TransformationService extends BaseTransformationService {
         return executeSampleExportStrategy(exportParameters);
     }
 
-    /**
-     * Export the dataset to the given format.
-     *
-     * @param datasetId    the dataset id to transform.
-     * @param formatName   The output {@link ExportFormat format}. This format also set the MIME response type.
-     * @param name         the transformation name.
-     * @param exportParams additional (optional) export parameters.
-     */
-    //@formatter:off
-    @RequestMapping(value = "/export/dataset/{datasetId}/{format}", method = GET)
-    @ApiOperation(value = "Export the given dataset")
-    @Timed
-    public StreamingResponseBody exportDataset(
-            @ApiParam(value = "DataSet id to transform.") @PathVariable(value = "datasetId") final String datasetId,
-            @ApiParam(value = "Output format") @PathVariable("format") final String formatName,
-            @ApiParam(value = "Name of the transformation", defaultValue = "untitled") @RequestParam(value = "name", required = false, defaultValue = "untitled") final String name,
-            @RequestParam final Map<String, String> exportParams) {
-        //@formatter:on
+    @Override
+    public StreamingResponseBody exportDataset(String datasetId, String formatName, String name,
+            final Map<String, String> exportParams) {
         return applyOnDataset(null, datasetId, formatName, null, name, exportParams);
     }
 
-    /**
-     * Compute the given aggregation.
-     *
-     * @param rawParams the aggregation rawParams as body rawParams.
-     */
-    // @formatter:off
-    @RequestMapping(value = "/aggregate", method = POST, produces = APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Compute the aggregation according to the request body rawParams", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @VolumeMetered
-    public AggregationResult aggregate(@ApiParam(value = "The aggregation rawParams in json") @RequestBody final String rawParams) {
-        // @formatter:on
-
+    @Override
+    public AggregationResult aggregate(String rawParams) {
         // parse the aggregation parameters
         final AggregationParameters parameters;
         try {
@@ -255,7 +189,7 @@ public class TransformationService extends BaseTransformationService {
                         if (parameters.getFilter() != null) {
                             exportParameters.setFilter(mapper.readTree(parameters.getFilter()));
                         }
-                        exportParameters.setExportType(JSON);
+                        exportParameters.setExportType(JsonFormat.JSON);
                         exportParameters.setStepId(parameters.getStepId());
 
                         final StreamingResponseBody body = executeSampleExportStrategy(exportParameters);
@@ -269,8 +203,7 @@ public class TransformationService extends BaseTransformationService {
                 throw new TDPException(CommonErrorCodes.UNABLE_TO_AGGREGATE, e);
             }
         } else {
-            final DataSetGet dataSetGet = context.getBean(DataSetGet.class, parameters.getDatasetId(), false, true);
-            contentToAggregate = dataSetGet.execute();
+            contentToAggregate = clientService.of(DataSetService.class).get(true, parameters.getDatasetId());;
         }
 
         // apply the aggregation
@@ -291,33 +224,8 @@ public class TransformationService extends BaseTransformationService {
         }
     }
 
-    /**
-     * This operation allow client to create a diff between 2 list of actions starting from the same data. For example,
-     * sending:
-     * <ul>
-     * <li>{a1, a2} as old actions</li>
-     * <li>{a1, a2, a3} as new actions</li>
-     * </ul>
-     * ... will highlight changes done by a3.
-     * <p>
-     * To prevent the actions to exceed URL length limit, everything is shipped within via the multipart request body.
-     *
-     * @param previewParameters The preview parameters, encoded in json within the request body.
-     * @param output            Where to write the response.
-     */
-    //@formatter:off
-    @RequestMapping(value = "/transform/preview", method = POST, produces = APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Preview the transformation on input data", notes = "This operation returns the input data diff between the old and the new transformation actions", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @VolumeMetered
-    public void transformPreview(@ApiParam(name = "body", value = "Preview parameters.") @RequestBody final PreviewParameters previewParameters,
-                                 final OutputStream output) {
-        //@formatter:on
-        if (shouldApplydiffToSampleSource(previewParameters)) {
-            executeDiffOnSample(previewParameters, output);
-        } else {
-            executeDiffOnDataset(previewParameters, output);
-        }
-    }
+    @Override
+    public void transformPreview(PreviewParameters previewParameters, final OutputStream output) {
 
     private void executeDiffOnSample(final PreviewParameters previewParameters, final OutputStream output) {
         final TransformationMetadataCacheKey metadataKey = cacheKeyGenerator.generateMetadataKey(
@@ -362,26 +270,21 @@ public class TransformationService extends BaseTransformationService {
 
     private void executeDiffOnDataset(final PreviewParameters previewParameters, final OutputStream output) {
         // because of dataset records streaming, the dataset content must be within an auto closeable block
-        final DataSetGet dataSetGet = context.getBean(DataSetGet.class, previewParameters.getDataSetId(), false, true);
 
         boolean identityReleased = false;
         securityProxy.asTechnicalUser();
-        try (final InputStream dataSetContent = dataSetGet.execute(); //
-             final JsonParser parser = mapper.getFactory().createParser(dataSetContent)) {
+        try {
 
             securityProxy.releaseIdentity();
             identityReleased = true;
 
-            final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
-            executePreview( //
-                    previewParameters.getNewActions(), //
-                    previewParameters.getBaseActions(),  //
-                    previewParameters.getTdpIds(), //
-                    dataSet, //
-                    output //
-            );
+            final Callable<DataSet> dataSet = clientService.of(DataSetService.class).get(true, previewParameters.getDataSetId());
 
-        } catch (IOException e) {
+            // execute the... preview !
+            executePreview(previewParameters.getNewActions(), previewParameters.getBaseActions(), previewParameters.getTdpIds(),
+                    dataSet.call(), output);
+
+        } catch (Exception e) {
             throw new TDPException(TransformationErrorCodes.UNABLE_TO_PERFORM_PREVIEW, e);
         } finally {
             // make sure the technical identity is released
@@ -391,40 +294,12 @@ public class TransformationService extends BaseTransformationService {
         }
     }
 
-    private boolean shouldApplydiffToSampleSource(final PreviewParameters previewParameters) {
-        if (previewParameters.getSourceType() != HEAD && previewParameters.getPreparationId() != null) {
-            final TransformationMetadataCacheKey metadataKey = cacheKeyGenerator.generateMetadataKey(
-                    previewParameters.getPreparationId(),
-                    rootStep.id(),
-                    previewParameters.getSourceType()
-            );
-
-            final ContentCacheKey contentKey = cacheKeyGenerator.generateContentKey(
-                    previewParameters.getDataSetId(),
-                    previewParameters.getPreparationId(),
-                    rootStep.id(),
-                    JSON,
-                    previewParameters.getSourceType()
-            );
-
-            return contentCache.has(metadataKey) && contentCache.has(contentKey);
-        }
-        return false;
-    }
-
-
-    /**
-     * Given a list of requested preview, it applies the diff to each one.
-     * A diff is between 2 sets of actions and return the info like created columns ids
-     */
-    //@formatter:off
-    @RequestMapping(value = "/transform/diff/metadata", method = POST, produces = APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Given a list of requested preview, it applies the diff to each one. A diff is between 2 sets of actions and return the info like created columns ids", notes = "This operation returns the diff metadata", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @VolumeMetered
-    public List<StepDiff> getCreatedColumns(@ApiParam(name = "body", value = "Preview parameters list in json.") @RequestBody final List<PreviewParameters> previewParameters) {
+    @Override
+    public List<StepDiff> getCreatedColumns(List<PreviewParameters> previewParameters) {
         return previewParameters.stream().map(this::getCreatedColumns).collect(toList());
     }
 
+    @Override
     @RequestMapping(value = "/preparation/{preparationId}/cache", method = DELETE)
     @ApiOperation(value = "Evict content entries related to the preparation", notes = "This operation remove content entries related to the preparation.")
     @VolumeMetered
@@ -451,6 +326,11 @@ public class TransformationService extends BaseTransformationService {
      * Compare the results of 2 sets of actions, and return the diff metadata Ex : the created columns ids
      */
     private StepDiff getCreatedColumns(final PreviewParameters previewParameters) {
+        boolean identityReleased = false;
+        securityProxy.asTechnicalUser();
+        try {
+            securityProxy.releaseIdentity();
+            identityReleased = true;
         final DataSetGetMetadata dataSetGetMetadata = context.getBean(DataSetGetMetadata.class, previewParameters.getDataSetId());
         DataSetMetadata dataSetMetadata = dataSetGetMetadata.execute();
         StepDiff stepDiff;
@@ -462,6 +342,8 @@ public class TransformationService extends BaseTransformationService {
             applyActionsOnMetadata(context, metadataBase, previewParameters.getBaseActions());
             applyActionsOnMetadata(context, metadataAfter, previewParameters.getNewActions());
 
+            final DataSet dataSet = clientService.of(DataSetService.class).get(true, previewParameters.getDataSetId()).call();
+            dataSet.setRecords(dataSet.getRecords().limit(1));
             metadataAfter.diff(metadataBase);
 
             List<String> createdColumnIds = metadataAfter.getColumns().stream()
@@ -469,6 +351,31 @@ public class TransformationService extends BaseTransformationService {
                     .map(ColumnMetadata::getId)
                     .collect(Collectors.toList());
 
+            // call diff
+            executePreview(previewParameters.getNewActions(), previewParameters.getBaseActions(), null, dataSet, output);
+
+            // extract created columns ids
+            final JsonNode node = mapper.readTree(output.toString());
+            final JsonNode columnsNode = node.findPath("columns");
+            final List<String> createdColumns;
+            try (Stream<JsonNode> stream = StreamSupport.stream(columnsNode.spliterator(), false)) {
+                createdColumns = stream.filter(col -> "new".equals(col.path("__tdpColumnDiff").asText())) //
+                        .map(col -> col.path("id").asText()) //
+                        .collect(toList());
+            }
+
+            // create/return diff
+            final StepDiff diff = new StepDiff();
+            diff.setCreatedColumns(createdColumns);
+            LOG.debug("{} creates {} columns", previewParameters, diff);
+            return diff;
+        } catch (Exception e) {
+            throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
+        } finally {
+            // make sure the identity is released !
+            if (!identityReleased) {
+                securityProxy.releaseIdentity();
+            }
             stepDiff = new StepDiff();
             stepDiff.setCreatedColumns(createdColumnIds);
         } else {
@@ -490,20 +397,20 @@ public class TransformationService extends BaseTransformationService {
     /**
      * Execute the preview and write result in the provided output stream
      *
-     * @param actions          The actions to execute to diff with reference
+     * @param actions The actions to execute to diff with reference
      * @param referenceActions The reference actions
-     * @param indexes          The record indexes to diff. If null, it will process all records
-     * @param dataSet          The dataset (column metadata and records)
-     * @param output           The output stream where to write the result
+     * @param indexes The record indexes to diff. If null, it will process all records
+     * @param dataSet The dataset (column metadata and records)
+     * @param output The output stream where to write the result
      */
     private void executePreview(final String actions, final String referenceActions, final String indexes, final DataSet dataSet,
-                                final OutputStream output) {
+            final OutputStream output) {
         final PreviewConfiguration configuration = PreviewConfiguration.preview() //
                 .withActions(actions) //
                 .withIndexes(indexes) //
                 .fromReference( //
                         Configuration.builder() //
-                                .format(JSON) //
+                                .format(JsonFormat.JSON) //
                                 .output(output) //
                                 .actions(referenceActions) //
                                 .build() //
@@ -512,19 +419,8 @@ public class TransformationService extends BaseTransformationService {
         factory.get(configuration).transform(dataSet, configuration);
     }
 
-    /**
-     * Get the action dynamic params.
-     */
-    //@formatter:off
-    @RequestMapping(value = "/transform/suggest/{action}/params", method = POST)
-    @ApiOperation(value = "Get the transformation dynamic parameters", notes = "Returns the transformation parameters.")
-    @Timed
-    public GenericParameter dynamicParams(
-            @ApiParam(value = "Action name.") @PathVariable("action") final String action,
-            @ApiParam(value = "The column id.") @RequestParam(value = "columnId") final String columnId,
-            @ApiParam(value = "Data set content as JSON") final InputStream content) {
-        //@formatter:on
-
+    @Override
+    public GenericParameter dynamicParams(String action, String columnId, InputStream content) {
         final DynamicType actionType = DynamicType.fromAction(action);
         if (actionType == null) {
             final ExceptionContext exceptionContext = build().put("name", action);
@@ -538,36 +434,16 @@ public class TransformationService extends BaseTransformationService {
         }
     }
 
-    /**
-     * Returns all {@link ActionMetadata actions} data prep may apply to a column. Column is optional and only needed to
-     * fill out default parameter values.
-     *
-     * @return A list of {@link ActionMetadata} that can be applied to this column.
-     * @see #suggest(ColumnMetadata, int)
-     */
-    @RequestMapping(value = "/actions/column", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Return all actions for a column (regardless of column metadata)", notes = "This operation returns an array of actions.")
-    @ResponseBody
-    public List<ActionMetadata> columnActions(@RequestBody(required = false) ColumnMetadata column) {
+    @Override
+    public List<ActionMetadata> columnActions(ColumnMetadata column) {
         return Stream.of(allActions) //
                 .filter(action -> action.acceptScope(COLUMN)) //
                 .map(am -> column != null ? am.adapt(column) : am) //
                 .collect(toList());
     }
 
-    /**
-     * Suggest what {@link ActionMetadata actions} can be applied to <code>column</code>.
-     *
-     * @param column A {@link ColumnMetadata column} definition.
-     * @param limit  An optional limit parameter to return the first <code>limit</code> suggestions.
-     * @return A list of {@link ActionMetadata} that can be applied to this column.
-     * @see #suggest(DataSet)
-     */
-    @RequestMapping(value = "/suggest/column", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Suggest actions for a given column metadata", notes = "This operation returns an array of suggested actions in decreasing order of importance.")
-    @ResponseBody
-    public List<ActionMetadata> suggest(@RequestBody(required = false) ColumnMetadata column, //
-                                        @ApiParam(value = "How many actions should be suggested at most", defaultValue = "5") @RequestParam(value = "limit", defaultValue = "5", required = false) int limit) {
+    @Override
+    public List<ActionMetadata> suggest(ColumnMetadata column, int limit) {
         if (column == null) {
             return Collections.emptyList();
         }
@@ -587,14 +463,7 @@ public class TransformationService extends BaseTransformationService {
                 .collect(toList());
     }
 
-    /**
-     * Returns all {@link ActionMetadata actions} data prep may apply to a line.
-     *
-     * @return A list of {@link ActionMetadata} that can be applied to a line.
-     */
-    @RequestMapping(value = "/actions/line", method = GET, produces = APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Return all actions on lines", notes = "This operation returns an array of actions.")
-    @ResponseBody
+    @Override
     public List<ActionMetadata> lineActions() {
         try (Stream<ActionMetadata> stream = Stream.of(this.allActions)) {
             return stream //
@@ -604,26 +473,12 @@ public class TransformationService extends BaseTransformationService {
         }
     }
 
-    /**
-     * Suggest what {@link ActionMetadata actions} can be applied to <code>dataSetMetadata</code>.
-     *
-     * @param dataSet A {@link DataSetMetadata dataset} definition.
-     * @return A list of {@link ActionMetadata} that can be applied to this data set.
-     * @see #suggest(ColumnMetadata, int)
-     */
-    @RequestMapping(value = "/suggest/dataset", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Suggest actions for a given data set metadata", notes = "This operation returns an array of suggested actions in decreasing order of importance.")
-    @ResponseBody
+    @Override
     public List<ActionMetadata> suggest(DataSet dataSet) {
         return Collections.emptyList();
     }
 
-    /**
-     * List all transformation related error codes.
-     */
-    @RequestMapping(value = "/transform/errors", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Get all transformation related error codes.", notes = "Returns the list of all transformation related error codes.")
-    @Timed
+    @Override
     public Iterable<JsonErrorCodeDescription> listErrors() {
         // need to cast the typed dataset errors into mock ones to use json parsing
         List<JsonErrorCodeDescription> errors = new ArrayList<>(TransformationErrorCodes.values().length);
@@ -633,13 +488,7 @@ public class TransformationService extends BaseTransformationService {
         return errors;
     }
 
-    /**
-     * Get the available export formats
-     */
-    @RequestMapping(value = "/export/formats", method = GET)
-    @ApiOperation(value = "Get the available format types")
-    @Timed
-    @PublicAPI
+    @Override
     public List<ExportFormat> exportTypes() {
         return formatRegistrationService.getExternalFormats().stream() //
                 .sorted((f1, f2) -> f1.getOrder() - f2.getOrder()) // Enforce strict order.

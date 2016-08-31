@@ -19,7 +19,6 @@ import org.talend.dataprep.api.dataset.json.DataSetRowStreamDeserializer;
 import org.talend.dataprep.api.dataset.json.DataSetRowStreamSerializer;
 import org.talend.dataprep.api.dataset.row.DataSetRow;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -27,10 +26,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @JsonRootName("dataset")
 public class DataSet {
 
-    @JsonProperty(value = "metadata")
     DataSetMetadata metadata;
 
-    @JsonProperty(value = "records")
     @JsonSerialize(using = DataSetRowStreamSerializer.class)
     @JsonDeserialize(using = DataSetRowStreamDeserializer.class)
     Stream<DataSetRow> records;

@@ -52,65 +52,51 @@ public class DataSetMetadata implements Serializable, SharedResource {
     /** Row description. */
     @JsonUnwrapped
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    @JsonProperty(value = "columns", required = false)
     private RowMetadata rowMetadata;
 
     /** Dataset life cycle status. */
-    @JsonProperty("lifecycle")
     private final DataSetLifecycle lifecycle = new DataSetLifecycle();
 
-    @JsonProperty("content")
     @JsonUnwrapped
     private DataSetContent content = new DataSetContent();
 
     /** Dataset governance. */
-    @JsonProperty("governance")
     @JsonUnwrapped
     private final DataSetGovernance governance = new DataSetGovernance();
 
     /** Dataset location. */
-    @JsonProperty("location")
     private DataSetLocation location;
 
     /** Dataset name. */
-    @JsonProperty("name")
     private String name;
 
     /** Dataset author. */
-    @JsonProperty("author")
     private String author;
 
-    @JsonProperty("created")
     private long creationDate;
 
-    @JsonProperty("lastModificationDate")
     private long lastModificationDate;
 
     /** Sheet number in case of excel source. */
-    @JsonProperty("sheetName")
     private String sheetName;
 
     /** The application version. */
-    @JsonProperty("app-version")
     private String appVersion;
 
     /**
      * if <code>true</code> this dataset is still a draft as we need more information from the user
      */
-    @JsonProperty("draft")
     private boolean draft = false;
 
     /**
      * available only when draft is <code>true</code> i.e until some information has been confirmed by the user
      */
-    @JsonProperty("schemaParserResult")
     private Schema schemaParserResult;
 
     /**
      * flag to tell the dataset is one of the favorites for the current user this value is sent back to front but not
      * stored because it stored in another user related storage
      */
-    @JsonProperty("favorite")
     private transient boolean favorite;
 
     /**
@@ -119,7 +105,6 @@ public class DataSetMetadata implements Serializable, SharedResource {
      *
      * @see Serializer#serialize(java.io.InputStream, DataSetMetadata, long)
      */
-    @JsonProperty("encoding")
     private String encoding = "UTF-8";
 
     /** True if this dataset metadata is shared by another user. */
@@ -179,6 +164,7 @@ public class DataSetMetadata implements Serializable, SharedResource {
     /**
      * @return the dataset row description.
      */
+    @JsonProperty(value = "columns", required = false)
     public RowMetadata getRowMetadata() {
         return rowMetadata;
     }
@@ -273,6 +259,7 @@ public class DataSetMetadata implements Serializable, SharedResource {
     /**
      * @return the dataset creation date.
      */
+    @JsonProperty("created")
     public long getCreationDate() {
         return creationDate;
     }
@@ -347,6 +334,7 @@ public class DataSetMetadata implements Serializable, SharedResource {
     /**
      * @return the Version
      */
+    @JsonProperty("app-version")
     public String getAppVersion() {
         return appVersion;
     }

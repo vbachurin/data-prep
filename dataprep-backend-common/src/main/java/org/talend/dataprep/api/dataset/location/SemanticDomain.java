@@ -16,8 +16,6 @@ package org.talend.dataprep.api.dataset.location;
 import java.io.Serializable;
 import java.util.Objects;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 /**
  * Represents information about alternate semantic type
  * <ul>
@@ -32,13 +30,10 @@ public class SemanticDomain implements Serializable {
     /** Serialization UID. */
     private static final long serialVersionUID = 1L;
 
-    @JsonProperty("id")
     private String id;
 
-    @JsonProperty("label")
     private String label;
 
-    @JsonProperty("frequency")
     private float frequency;
 
     /**

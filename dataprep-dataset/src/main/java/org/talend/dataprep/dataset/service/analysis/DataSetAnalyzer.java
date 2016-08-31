@@ -13,6 +13,7 @@
 
 package org.talend.dataprep.dataset.service.analysis;
 
+import org.talend.dataprep.dataset.service.DataSetServiceImpl;
 import org.talend.dataprep.dataset.service.analysis.asynchronous.AsynchronousDataSetAnalyzer;
 import org.talend.dataprep.dataset.service.analysis.synchronous.SynchronousDataSetAnalyzer;
 
@@ -27,7 +28,7 @@ import org.talend.dataprep.dataset.service.analysis.synchronous.SynchronousDataS
  * 
  * @see SynchronousDataSetAnalyzer
  * @see AsynchronousDataSetAnalyzer
- * @see org.talend.dataprep.dataset.service.DataSetService#queueEvents(String, Class[])
+ * @see DataSetServiceImpl#queueEvents(String, Class[])
  */
 public interface DataSetAnalyzer {
 
