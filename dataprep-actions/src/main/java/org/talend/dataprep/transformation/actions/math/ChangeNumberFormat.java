@@ -280,8 +280,10 @@ public class ChangeNumberFormat extends AbstractActionMetadata implements Column
             case CUSTOM:
                 bd = parseCustomNumber(context, value);
                 break;
-            case UNKNOWN_SEPARATORS:
             case US_SEPARATORS:
+                bd = BigDecimalParser.toBigDecimal(value, '.', ',');
+                break;
+            case UNKNOWN_SEPARATORS:
             default:
                 bd = BigDecimalParser.toBigDecimal(value);
                 break;
