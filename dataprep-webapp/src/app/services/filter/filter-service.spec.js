@@ -299,7 +299,7 @@ describe('Filter service', function () {
                 expect(StateService.removeGridFilter).toHaveBeenCalledWith(oldFilter);
             }));
 
-            it('should update filter when on already exists with a different value', inject(function (FilterService, StateService) {
+            it('should update filter when on already exists with a different value with caseSensitive', inject(function (FilterService, StateService) {
                 //given
                 var oldFilter = {
                     colId: 'col1',
@@ -309,6 +309,7 @@ describe('Filter service', function () {
                                 value: 'tata',
                             },
                         ],
+                        caseSensitive: true,
                     },
                     type: 'exact',
                 };
@@ -337,6 +338,7 @@ describe('Filter service', function () {
                             value: 'toto',
                         },
                     ],
+                    caseSensitive: true,
                 });
             }));
         });

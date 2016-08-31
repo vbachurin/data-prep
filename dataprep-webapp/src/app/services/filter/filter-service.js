@@ -701,6 +701,7 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
 
             newArgs = {
                 phrase: newComputedValue,
+                caseSensitive: oldFilter.args.caseSensitive,
             };
             newFilterFn = createExactFilterFn(oldFilter.colId, newComputedValue, oldFilter.args.caseSensitive);
             editableFilter = true;
