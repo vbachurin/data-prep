@@ -1,23 +1,37 @@
-package org.talend.dataprep.transformation.service;
+// ============================================================================
+//
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+//
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
+//
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
+//
+// ============================================================================
+
+package org.talend.dataprep.transformation.service.export;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 import org.talend.dataprep.api.dataset.DataSet;
-import org.talend.dataprep.api.org.talend.dataprep.api.export.ExportParameters;
+import org.talend.dataprep.api.export.ExportParameters;
 import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.preparation.Step;
 import org.talend.dataprep.cache.ContentCache;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.preparation.store.PreparationRepository;
+import org.talend.dataprep.transformation.cache.CacheKeyGenerator;
 import org.talend.dataprep.transformation.cache.TransformationCacheKey;
-import org.talend.dataprep.transformation.cache.TransformationMetadataCacheKey;
+import org.talend.dataprep.transformation.service.TransformationServiceBaseTests;
 
 import javax.annotation.Resource;
-
 import java.io.OutputStream;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.talend.dataprep.api.export.ExportParameters.SourceType.HEAD;
 
 public class OptimizedExportStrategyTest extends TransformationServiceBaseTests {
 
@@ -33,6 +47,9 @@ public class OptimizedExportStrategyTest extends TransformationServiceBaseTests 
 
     @Autowired
     ContentCache contentCache;
+
+    @Autowired
+    CacheKeyGenerator cacheKeyGenerator;
 
     @Test
     public void testAcceptNullParameters() throws Exception {
@@ -103,7 +120,7 @@ public class OptimizedExportStrategyTest extends TransformationServiceBaseTests 
 
         final Preparation preparationDetails = getPreparation(preparation);
         for (String step : preparationDetails.getSteps()) {
-            try (OutputStream content = contentCache.put(new TransformationMetadataCacheKey(preparation, step), ContentCache.TimeToLive.DEFAULT)) {
+            try (OutputStream content = contentCache.put(cacheKeyGenerator.generateMetadataKey(preparation, step, HEAD), ContentCache.TimeToLive.DEFAULT)) {
                 content.write("{}".getBytes());
                 content.flush();
             }
@@ -111,6 +128,7 @@ public class OptimizedExportStrategyTest extends TransformationServiceBaseTests 
 
         ExportParameters exportParameters = new ExportParameters();
         exportParameters.setPreparationId(preparation);
+        exportParameters.setFrom(HEAD);
 
         // Then
         assertFalse(optimizedExportStrategy.accept(exportParameters));
@@ -127,11 +145,19 @@ public class OptimizedExportStrategyTest extends TransformationServiceBaseTests 
 
         final Preparation preparationDetails = getPreparation(preparation);
         for (String step : preparationDetails.getSteps()) {
-            try (OutputStream content = contentCache.put(new TransformationMetadataCacheKey(preparation, step), ContentCache.TimeToLive.DEFAULT)) {
+            try (OutputStream content = contentCache.put(cacheKeyGenerator.generateMetadataKey(preparation, step, HEAD), ContentCache.TimeToLive.DEFAULT)) {
                 content.write("{}".getBytes());
                 content.flush();
             }
-            try (OutputStream content = contentCache.put(new TransformationCacheKey(preparation, datasetId, format, step), ContentCache.TimeToLive.DEFAULT)) {
+
+            final TransformationCacheKey key = cacheKeyGenerator.generateContentKey(
+                    datasetId,
+                    preparation,
+                    step,
+                    format,
+                    HEAD
+            );
+            try (OutputStream content = contentCache.put(key, ContentCache.TimeToLive.DEFAULT)) {
                 content.write("{}".getBytes());
                 content.flush();
             }
@@ -141,6 +167,7 @@ public class OptimizedExportStrategyTest extends TransformationServiceBaseTests 
         exportParameters.setPreparationId(preparation);
         exportParameters.setDatasetId(datasetId);
         exportParameters.setExportType(format);
+        exportParameters.setFrom(HEAD);
 
         // Then
         assertTrue(optimizedExportStrategy.accept(exportParameters));
@@ -157,11 +184,19 @@ public class OptimizedExportStrategyTest extends TransformationServiceBaseTests 
 
         final Preparation preparationDetails = getPreparation(preparation);
         for (String step : preparationDetails.getSteps()) {
-            try (OutputStream content = contentCache.put(new TransformationMetadataCacheKey(preparation, step), ContentCache.TimeToLive.DEFAULT)) {
+            try (OutputStream content = contentCache.put(cacheKeyGenerator.generateMetadataKey(preparation, step, HEAD), ContentCache.TimeToLive.DEFAULT)) {
                 content.write("{}".getBytes());
                 content.flush();
             }
-            try (OutputStream content = contentCache.put(new TransformationCacheKey(preparation, datasetId, format, step), ContentCache.TimeToLive.DEFAULT)) {
+
+            final TransformationCacheKey key = cacheKeyGenerator.generateContentKey(
+                    datasetId,
+                    preparation,
+                    step,
+                    format,
+                    HEAD
+            );
+            try (OutputStream content = contentCache.put(key, ContentCache.TimeToLive.DEFAULT)) {
                 content.write("{\"records\": [{\"0000\": \"a\"}]}".getBytes());
                 content.flush();
             }
@@ -171,8 +206,9 @@ public class OptimizedExportStrategyTest extends TransformationServiceBaseTests 
         exportParameters.setPreparationId(preparation);
         exportParameters.setDatasetId(datasetId);
         exportParameters.setExportType(format);
+        exportParameters.setFrom(HEAD);
 
         // Then
-        final StreamingResponseBody execute = optimizedExportStrategy.execute(exportParameters);
+        optimizedExportStrategy.execute(exportParameters);
     }
 }

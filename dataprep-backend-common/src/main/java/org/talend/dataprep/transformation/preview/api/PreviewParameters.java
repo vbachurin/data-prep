@@ -13,6 +13,8 @@
 
 package org.talend.dataprep.transformation.preview.api;
 
+import org.talend.dataprep.api.export.ExportParameters;
+
 /**
  * Bean that holds all required data to perform a preview.
  */
@@ -30,6 +32,12 @@ public class PreviewParameters {
     /** Id of the dataset to perform the preview on. */
     private String dataSetId;
 
+    /** Preparation id in case we want the preview on a specific sample */
+    private String preparationId;
+
+    /** Source type in case we want the preview on a specific sample */
+    private ExportParameters.SourceType sourceType;
+
     /**
      * Default empty constructor.
      */
@@ -43,14 +51,18 @@ public class PreviewParameters {
      * @param baseActions Actions to perform to get the base state of the preview.
      * @param newActions Actions to perform to get the new state for the diff.
      * @param datasetId Id of the dataset to perform the preview on.
+     * @param preparationId Id of the preparation to apply.
      * @param tdpIds List of row ids to perform the preview on.
+     * @param sourceType The source type.
      */
-    public PreviewParameters(String baseActions, String newActions, String datasetId, String tdpIds) {
+    public PreviewParameters(String baseActions, String newActions, String datasetId, String preparationId, String tdpIds, ExportParameters.SourceType sourceType) {
         this();
         this.baseActions = baseActions;
         this.newActions = newActions;
         this.dataSetId = datasetId;
+        this.preparationId = preparationId;
         this.tdpIds = tdpIds;
+        this.sourceType = sourceType;
     }
 
     /**
@@ -79,6 +91,20 @@ public class PreviewParameters {
      */
     public String getDataSetId() {
         return dataSetId;
+    }
+
+    /**
+     * @return the preparation id
+     */
+    public String getPreparationId() {
+        return preparationId;
+    }
+
+    /**
+     * @return the source type
+     */
+    public ExportParameters.SourceType getSourceType() {
+        return sourceType;
     }
 
     /**

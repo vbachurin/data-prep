@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.dataset.row.DataSetRow;
@@ -13,6 +15,8 @@ import org.talend.dataquality.common.inference.Analyzer;
 import org.talend.dataquality.common.inference.Analyzers;
 
 public class StatisticsNode extends ColumnFilteredNode {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(StatisticsNode.class);
 
     private final Function<List<ColumnMetadata>, Analyzer<Analyzers.Result>> analyzer;
 
@@ -40,7 +44,13 @@ public class StatisticsNode extends ColumnFilteredNode {
 
     @Override
     public void signal(Signal signal) {
-        adapter.adapt(filteredColumns, configuredAnalyzer.getResult());
+        if (signal == Signal.END_OF_STREAM || signal == Signal.CANCEL || signal == Signal.STOP) {
+            if (configuredAnalyzer != null) {
+                adapter.adapt(filteredColumns, configuredAnalyzer.getResult());
+            } else {
+                LOGGER.warn("No data received.");
+            }
+        }
         super.signal(signal);
     }
 }

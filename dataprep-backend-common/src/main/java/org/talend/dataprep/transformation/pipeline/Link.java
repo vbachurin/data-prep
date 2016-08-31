@@ -17,4 +17,8 @@ public interface Link {
     void accept(Visitor visitor);
 
     RuntimeLink exec();
+
+    default Node getTarget() {
+        return null;
+    }
 }

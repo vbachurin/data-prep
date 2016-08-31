@@ -15,10 +15,14 @@ package org.talend.dataprep.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.AsyncListenableTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.talend.dataprep.schema.csv.CSVSerializer;
 
+/**
+ * Return the async task execution configuration.
+ */
 @Configuration
 @SuppressWarnings("InsufficientBranchCoverage")
 public class TaskExecution {
@@ -29,11 +33,7 @@ public class TaskExecution {
      */
     @Bean(name = "serializer#csv#executor")
     TaskExecutor getCsvTaskExecutor() {
-        final ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(4);
-        executor.setMaxPoolSize(10);
-        executor.setWaitForTasksToCompleteOnShutdown(false);
-        return executor;
+        return getAsyncExecutor();
     }
 
     /**
@@ -42,11 +42,7 @@ public class TaskExecution {
      */
     @Bean(name = "serializer#html#executor")
     TaskExecutor getHtmlTaskExecutor() {
-        final ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(4);
-        executor.setMaxPoolSize(10);
-        executor.setWaitForTasksToCompleteOnShutdown(false);
-        return executor;
+        return getAsyncExecutor();
     }
 
     /**
@@ -55,11 +51,7 @@ public class TaskExecution {
      */
     @Bean(name = "serializer#excel#executor")
     TaskExecutor getExcelTaskExecutor() {
-        final ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(4);
-        executor.setMaxPoolSize(10);
-        executor.setWaitForTasksToCompleteOnShutdown(false);
-        return executor;
+        return getAsyncExecutor();
     }
 
     /**
@@ -67,6 +59,13 @@ public class TaskExecution {
      */
     @Bean(name = "serializer#json#executor")
     TaskExecutor getJsonTaskExecutor() {
+        return getAsyncExecutor();
+    }
+
+    /**
+     * @return an Authenticated task executor ready to run.
+     */
+    private AsyncListenableTaskExecutor getAsyncExecutor() {
         final ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(4);
         executor.setMaxPoolSize(10);
@@ -74,4 +73,5 @@ public class TaskExecution {
         executor.initialize();
         return AuthenticatedTaskExecutor.authenticated(executor);
     }
+
 }

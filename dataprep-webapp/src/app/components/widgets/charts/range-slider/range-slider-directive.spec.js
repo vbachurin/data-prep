@@ -49,7 +49,7 @@ describe('Range slider directive', () => {
 
     afterEach(() => {
         scope.$destroy();
-        if (element) { //TODO JSO
+        if (element) {
             element.remove();
         }
     });

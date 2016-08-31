@@ -17,6 +17,9 @@ import static com.jayway.restassured.RestAssured.given;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
 import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
+import static org.talend.dataprep.api.export.ExportParameters.SourceType.FILTER;
+import static org.talend.dataprep.api.export.ExportParameters.SourceType.HEAD;
+import static org.talend.dataprep.transformation.format.JsonFormat.JSON;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
@@ -26,9 +29,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.cache.ContentCache;
+import org.talend.dataprep.transformation.cache.CacheKeyGenerator;
 import org.talend.dataprep.transformation.cache.TransformationCacheKey;
 
 import com.jayway.restassured.response.Response;
+import org.talend.dataprep.transformation.format.JsonFormat;
 
 /**
  * Integration tests on actions.
@@ -38,6 +43,9 @@ public class TransformTests extends TransformationServiceBaseTests {
     /** Content cache for the tests. */
     @Autowired
     private ContentCache contentCache;
+
+    @Autowired
+    private CacheKeyGenerator cacheKeyGenerator;
 
     @Before
     public void customSetUp() throws Exception {
@@ -157,17 +165,16 @@ public class TransformTests extends TransformationServiceBaseTests {
         String prepId = createEmptyPreparationFromDataset(dsId, "uppercase prep");
         applyActionFromFile(prepId, "uppercase_action.json");
 
-        String dataSetMetadataContent = given() //
-                .expect().statusCode(200).log().ifError()//
-                .when() //
-                .get("/datasets/{id}/metadata", dsId) //
-                .asString();
-        final DataSetMetadata metadata = mapper.readerFor(DataSetMetadata.class).readValue(dataSetMetadataContent);
-
         final Preparation preparation = getPreparation(prepId);
         final String headId = preparation.getSteps().get(preparation.getSteps().size() - 1);
 
-        TransformationCacheKey key = new TransformationCacheKey(prepId, metadata.getId(), "JSON", headId);
+        final TransformationCacheKey key = cacheKeyGenerator.generateContentKey(
+                dsId,
+                preparation.getId(),
+                headId,
+                JSON,
+                HEAD
+        );
         assertFalse(contentCache.has(key));
 
         // when
@@ -220,10 +227,13 @@ public class TransformTests extends TransformationServiceBaseTests {
 
         // then
         // Transformation failure
-        final TransformationCacheKey key = new TransformationCacheKey(preparationId, //
-                dataSetId, //
-                "JSON", //
-                getPreparation(preparationId).getHeadId());
+        final TransformationCacheKey key = cacheKeyGenerator.generateContentKey(
+                dataSetId,
+                preparationId,
+                getPreparation(preparationId).getHeadId(),
+                JSON,
+                HEAD
+        );
         assertFalse(contentCache.has(key));
     }
 

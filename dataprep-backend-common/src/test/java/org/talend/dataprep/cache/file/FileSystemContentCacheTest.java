@@ -208,6 +208,25 @@ public class FileSystemContentCacheTest {
         });
     }
 
+    @Test
+    public void testMove() throws Exception {
+        // given
+        final ContentCacheKey key1 = new DummyCacheKey("tata");
+        final ContentCacheKey key2 = new DummyCacheKey("tata2");
+        String content = "yet another content...";
+        addCacheEntry(key1, content, ContentCache.TimeToLive.DEFAULT);
+        Assert.assertTrue(cache.has(key1));
+        Assert.assertFalse(cache.has(key2));
+
+        // when
+        cache.move(key1, key2, ContentCache.TimeToLive.DEFAULT);
+
+        // then
+        final String actual = IOUtils.toString(cache.get(key2));
+        Assert.assertThat(actual, is(content));
+        Assert.assertFalse(cache.has(key1));
+        Assert.assertTrue(cache.has(key2));
+    }
 
     /**
      * Add the cache entry.

@@ -71,7 +71,7 @@ public class PreviewUpdate extends PreviewAbstract {
         }
 
         // execute transformation preview with content and the 2 transformations
-        setContext(originalActions.values(), modifiedActions.values(), dataSetId, parameters.getTdpIds());
+        setContext(originalActions.values(), modifiedActions.values(), dataSetId, parameters.getPreparationId(), parameters.getTdpIds(), parameters.getSourceType());
         return super.run();
     }
 

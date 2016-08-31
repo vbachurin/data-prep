@@ -1,48 +1,50 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.exception.error;
-
-import static org.springframework.http.HttpStatus.*;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
 import org.talend.daikon.exception.error.ErrorCode;
 
 /**
  * Transformation error codes.
  */
 public enum TransformationErrorCodes implements ErrorCode {
-    // 400
-    BAD_LOOKUP_PARAMETER(BAD_REQUEST),
-    UNABLE_TO_USE_EXPORT(BAD_REQUEST, "format"),
-    EXPORT_IN_PROGRESS(BAD_REQUEST),
-    // 403
-    INSUFFICIENT_ROLE(FORBIDDEN),
-    // 404
-    UNKNOWN_DYNAMIC_ACTION(NOT_FOUND, "value"),
-    // 415
-    OUTPUT_TYPE_NOT_SUPPORTED(UNSUPPORTED_MEDIA_TYPE),
-    // 500
-    UNABLE_TO_COMPUTE_DATASET_ACTIONS(INTERNAL_SERVER_ERROR),
-    UNABLE_TO_TRANSFORM_DATASET(INTERNAL_SERVER_ERROR),
-    UNEXPECTED_EXCEPTION(INTERNAL_SERVER_ERROR),
-    UNABLE_TO_READ_LOOKUP_DATASET(INTERNAL_SERVER_ERROR),
-    UNABLE_TO_PERFORM_PREVIEW(INTERNAL_SERVER_ERROR);
+                                                           // 400
+                                                           BAD_LOOKUP_PARAMETER(400),
+                                                           UNABLE_TO_USE_EXPORT(400, "format"),
+                                                           EXPORT_IN_PROGRESS(400),
+                                                           UNSUPPORTED_SAMPLE_TYPE(400, "type"),
+                                                           UNSUPPORTED_SAMPLE_STATUS_UPDATE(400, "status"),
+                                                           // 403
+                                                           INSUFFICIENT_ROLE(403),
+                                                           // 404
+                                                           UNKNOWN_DYNAMIC_ACTION(404, "value"),
+                                                           NO_RUNNING_SAMPLING(404, "preparation"),
+                                                           // 415
+                                                           OUTPUT_TYPE_NOT_SUPPORTED(415),
+                                                           // 500
+                                                           UNABLE_TO_COMPUTE_DATASET_ACTIONS(500),
+                                                           UNABLE_TO_TRANSFORM_DATASET(500),
+                                                           UNEXPECTED_EXCEPTION(500),
+                                                           UNABLE_TO_READ_LOOKUP_DATASET(500),
+                                                           UNABLE_CREATE_SAMPLE(500),
+                                                           UNABLE_TO_PERFORM_PREVIEW(500);
+
     /** The http status to use. */
     private int httpStatus;
 
@@ -52,21 +54,21 @@ public enum TransformationErrorCodes implements ErrorCode {
     /**
      * default constructor.
      * 
-     * @param httpStatus the http status to use.
+     * @param httpStatusCode the http status to use.
      */
-    TransformationErrorCodes(final HttpStatus httpStatus) {
-        this.httpStatus = httpStatus.value();
+    TransformationErrorCodes(final int httpStatusCode) {
+        this.httpStatus = httpStatusCode;
         this.expectedContextEntries = Collections.emptyList();
     }
 
     /**
      * default constructor.
      *
-     * @param httpStatus the http status to use.
+     * @param httpStatusCode the http status to use.
      * @param contextEntries expected context entries.
      */
-    TransformationErrorCodes(final HttpStatus httpStatus, final String... contextEntries) {
-        this.httpStatus = httpStatus.value();
+    TransformationErrorCodes(final int httpStatusCode, final String... contextEntries) {
+        this.httpStatus = httpStatusCode;
         this.expectedContextEntries = Arrays.asList(contextEntries);
     }
 

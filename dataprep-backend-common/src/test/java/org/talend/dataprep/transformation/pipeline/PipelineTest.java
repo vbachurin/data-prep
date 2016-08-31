@@ -3,7 +3,7 @@ package org.talend.dataprep.transformation.pipeline;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -21,9 +21,15 @@ import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.pipeline.builder.NodeBuilder;
 import org.talend.dataprep.transformation.pipeline.link.BasicLink;
 import org.talend.dataprep.transformation.pipeline.link.CloneLink;
 import org.talend.dataprep.transformation.pipeline.node.*;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.*;
+import static org.talend.dataprep.transformation.pipeline.Signal.END_OF_STREAM;
 
 public class PipelineTest {
 
@@ -60,11 +66,11 @@ public class PipelineTest {
         final RowMetadata rowMetadata = new RowMetadata();
         final DataSetRow row = new DataSetRow(rowMetadata);
 
-        // When
+        // when
         assertFalse(actionContext.has("ExecutedCompile"));
         node.exec().receive(row, rowMetadata);
 
-        // Then
+        // then
         assertTrue(actionContext.has("ExecutedCompile"));
         assertTrue(actionContext.get("ExecutedCompile"));
     }
@@ -117,14 +123,14 @@ public class PipelineTest {
         final RowMetadata rowMetadata = new RowMetadata();
         final DataSetRow row = new DataSetRow(rowMetadata);
 
-        // When
+        // when
         assertEquals(0, compileCount.get());
         node.exec().receive(row, rowMetadata);
         rowMetadata.addColumn(new ColumnMetadata()); // Change row metadata in middle of the transformation (to trigger
                                                      // new compile).
         node.exec().receive(row, rowMetadata);
 
-        // Then
+        // then
         assertEquals(2, compileCount.get());
     }
 
@@ -146,11 +152,11 @@ public class PipelineTest {
         final RowMetadata rowMetadata = new RowMetadata();
         final DataSetRow row = new DataSetRow(rowMetadata);
 
-        // When
+        // when
         assertFalse(actionContext.has("ExecutedApply"));
         node.exec().receive(row, rowMetadata);
 
-        // Then
+        // then
         assertTrue(actionContext.has("ExecutedApply"));
         assertTrue(actionContext.get("ExecutedApply"));
     }
@@ -174,10 +180,10 @@ public class PipelineTest {
         final RowMetadata rowMetadata = new RowMetadata();
         final DataSetRow row = new DataSetRow(rowMetadata);
 
-        // When
+        // when
         node.exec().receive(row, rowMetadata);
 
-        // Then
+        // then
         assertFalse(actionContext.has("Executed"));
     }
 
@@ -185,27 +191,27 @@ public class PipelineTest {
     public void testCloneLink() throws Exception {
         // Given
         final TestOutput output2 = new TestOutput();
-        final Node node = NodeBuilder.source().toMany(output, output2).build();
+        final Node node = NodeBuilder.source().dispatchTo(output, output2).build();
         final RowMetadata rowMetadata = new RowMetadata();
         final DataSetRow row1 = new DataSetRow(rowMetadata);
         final DataSetRow row2 = row1.clone();
         row1.setTdpId(1L);
         row2.setTdpId(2L);
 
-        // When
+        // when
         node.exec().receive(row1, rowMetadata);
         node.exec().receive(row2, rowMetadata);
-        node.exec().signal(Signal.END_OF_STREAM);
+        node.exec().signal(END_OF_STREAM);
 
-        // Then
+        // then
         assertEquals(2, output.getCount());
         assertEquals(2, output2.getCount());
         assertEquals(row2, output.getRow());
         assertEquals(row2, output2.getRow());
         assertEquals(rowMetadata, output.getMetadata());
         assertEquals(rowMetadata, output2.getMetadata());
-        assertEquals(Signal.END_OF_STREAM, output.getSignal());
-        assertEquals(Signal.END_OF_STREAM, output2.getSignal());
+        assertEquals(END_OF_STREAM, output.getSignal());
+        assertEquals(END_OF_STREAM, output2.getSignal());
     }
 
     @Test
@@ -218,11 +224,11 @@ public class PipelineTest {
         row1.setTdpId(1L);
         row2.setTdpId(2L);
 
-        // When
+        // when
         node.exec().receive(row1, rowMetadata);
         node.exec().receive(row2, rowMetadata);
 
-        // Then
+        // then
         assertEquals(2, output.getCount());
         assertEquals(row2, output.getRow());
         assertEquals(rowMetadata, output.getMetadata());
@@ -238,11 +244,11 @@ public class PipelineTest {
         row1.setTdpId(1L);
         row2.setTdpId(2L);
 
-        // When
+        // when
         node.exec().receive(row1, rowMetadata);
         node.exec().receive(row2, rowMetadata);
 
-        // Then
+        // then
         assertEquals(1, output.getCount());
         assertEquals(row2, output.getRow());
         assertEquals(rowMetadata, output.getMetadata());
@@ -250,24 +256,57 @@ public class PipelineTest {
 
     @Test
     public void testPipeline() throws Exception {
-        // Given
+        // given
         final Pipeline pipeline = new Pipeline(NodeBuilder.source().to(output).build());
         final RowMetadata rowMetadata = new RowMetadata();
-        final DataSetRow row = new DataSetRow(rowMetadata);
+        final DataSetRow row1 = new DataSetRow(rowMetadata);
+        final DataSetRow row2 = new DataSetRow(rowMetadata);
+        final List<DataSetRow> records = new ArrayList<>();
+        records.add(row1);
+        records.add(row2);
 
-        // When
         final DataSet dataSet = new DataSet();
         final DataSetMetadata metadata = new DataSetMetadata();
         metadata.setRowMetadata(rowMetadata);
         dataSet.setMetadata(metadata);
-        dataSet.setRecords(Collections.singletonList(row).stream());
+        dataSet.setRecords(records.stream());
+
+        // when
         pipeline.execute(dataSet);
 
-        // Then
-        assertEquals(1, output.getCount());
-        assertEquals(row, output.getRow());
-        assertEquals(rowMetadata, output.getMetadata());
-        assertEquals(Signal.END_OF_STREAM, output.getSignal());
+        // then
+        assertThat(output.getCount(), is(2));
+        assertThat(output.getRow(), is(row2));
+        assertThat(output.getMetadata(), is(rowMetadata));
+        assertThat(output.getSignal(), is(END_OF_STREAM));
+    }
+
+    @Test
+    public void testCancelledPipeline() throws Exception {
+        // given
+        final Pipeline pipeline = new Pipeline(NodeBuilder.source().to(output).build());
+        final RowMetadata rowMetadata = new RowMetadata();
+        final DataSetRow row1 = new DataSetRow(rowMetadata);
+        final DataSetRow row2 = new DataSetRow(rowMetadata);
+        final List<DataSetRow> records = new ArrayList<>();
+        records.add(row1);
+        records.add(row2);
+
+        final DataSet dataSet = new DataSet();
+        final DataSetMetadata metadata = new DataSetMetadata();
+        metadata.setRowMetadata(rowMetadata);
+        dataSet.setMetadata(metadata);
+        dataSet.setRecords(records.stream());
+
+        // when
+        pipeline.stop();
+        pipeline.execute(dataSet);
+
+        // then
+        assertThat(output.getCount(), is(1));
+        assertThat(output.getRow(), is(row1));
+        assertThat(output.getMetadata(), is(rowMetadata));
+        assertThat(output.getSignal(), is(END_OF_STREAM));
     }
 
     @Test
@@ -277,45 +316,29 @@ public class PipelineTest {
         final Node node = NodeBuilder.source().to(output).build();
 
         for (final Signal signal : Signal.values()) {
-            // When
+            // when
             node.exec().signal(signal);
 
-            // Then
+            // then
             assertEquals(signal, output.getSignal());
         }
-    }
-
-    @Test
-    public void testSink() throws Exception {
-        // Given
-        final Node node = NodeBuilder.source().sink().build();
-        final RowMetadata rowMetadata = new RowMetadata();
-        final DataSetRow row = new DataSetRow(rowMetadata);
-
-        // When
-        node.exec().receive(row, rowMetadata);
-
-        // Then
-        assertEquals(0, output.getCount());
-        assertEquals(null, output.getRow());
-        assertEquals(null, output.getMetadata());
     }
 
     @Test
     public void testVisitorAndToString() throws Exception {
         final Node node = NodeBuilder.source() //
                 .to(new BasicNode()) //
-                .toMany(new BasicNode()) //
+                .dispatchTo(new BasicNode()) //
                 .to(new ActionNode(new Action(), new ActionContext(new TransformationContext()))) //
                 .to(output) //
                 .build();
         final Pipeline pipeline = new Pipeline(node);
         final TestVisitor visitor = new TestVisitor();
 
-        // When
+        // when
         pipeline.accept(visitor);
 
-        // Then
+        // then
         final Class[] expectedClasses = { Pipeline.class, SourceNode.class, BasicLink.class, BasicNode.class, CloneLink.class,
                 ActionNode.class };
         Assert.assertThat(visitor.traversedClasses, CoreMatchers.hasItems(expectedClasses));
@@ -336,11 +359,30 @@ public class PipelineTest {
                 .to(output) //
                 .build();
 
-        // When
-        node.exec().signal(Signal.END_OF_STREAM);
+        // when
+        node.exec().signal(END_OF_STREAM);
 
-        // Then
+        // then
         assertEquals(2, wasDestroyed.get());
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testMultiRowAsInput() throws Exception {
+        // given
+        final Pipeline pipeline = new Pipeline(NodeBuilder.source().to(output).build());
+
+        final DataSetRow row1 = new DataSetRow(new HashMap<>());
+        final DataSetRow row2 = new DataSetRow(new HashMap<>());
+        final RowMetadata metadata1 = new RowMetadata(new ArrayList<>());
+        final RowMetadata metadata2 = new RowMetadata(new ArrayList<>());
+
+        final DataSetRow[] rows = new DataSetRow[] { row1, row2 };
+        final RowMetadata[] metadatas = new RowMetadata[] { metadata1, metadata2 };
+
+        // when
+        pipeline.receive(rows, metadatas);
+
+        // then : should throw UnsupportedOperationException
     }
 
     private static class TestOutput extends BasicNode {

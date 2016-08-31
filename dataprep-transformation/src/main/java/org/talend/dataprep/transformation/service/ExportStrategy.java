@@ -1,3 +1,16 @@
+// ============================================================================
+//
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+//
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
+//
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
+//
+// ============================================================================
+
 package org.talend.dataprep.transformation.service;
 
 import static org.talend.daikon.exception.ExceptionContext.build;
@@ -18,8 +31,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 import org.talend.daikon.exception.ExceptionContext;
+import org.talend.dataprep.api.export.ExportParameters;
 import org.talend.dataprep.api.filter.FilterService;
-import org.talend.dataprep.api.org.talend.dataprep.api.export.ExportParameters;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.preparation.Step;
@@ -29,7 +42,8 @@ import org.talend.dataprep.command.preparation.PreparationGetActions;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.TransformationErrorCodes;
 import org.talend.dataprep.format.export.ExportFormat;
-import org.talend.dataprep.http.HttpResponseContext;
+import org.talend.dataprep.lock.LockFactory;
+import org.talend.dataprep.security.SecurityProxy;
 import org.talend.dataprep.transformation.api.transformer.TransformerFactory;
 import org.talend.dataprep.transformation.format.FormatRegistrationService;
 
@@ -44,7 +58,7 @@ public abstract class ExportStrategy {
 
     /** The root step. */
     @Resource(name = "rootStep")
-    Step rootStep;
+    protected Step rootStep;
 
     @Autowired
     protected ObjectMapper mapper;
@@ -62,6 +76,14 @@ public abstract class ExportStrategy {
     /** The transformer factory. */
     @Autowired
     protected TransformerFactory factory;
+
+    /** The lock factory. */
+    @Autowired
+    protected LockFactory lockFactory;
+
+    /** The security proxy to use to get the dataset despite the roles/ownership. */
+    @Autowired
+    protected SecurityProxy securityProxy;
 
     /**
      * @return A arbitrary order to prioritize strategies.
@@ -96,6 +118,18 @@ public abstract class ExportStrategy {
             throw new TDPException(TransformationErrorCodes.OUTPUT_TYPE_NOT_SUPPORTED);
         }
         return format;
+    }
+
+    /**
+     * Return the real step id in case of "head" or empty
+     * @param preparation The preparation
+     * @param stepId The step id
+     */
+    protected String getCleanStepId(final Preparation preparation, final String stepId) {
+        if (StringUtils.equals("head", stepId) || StringUtils.isEmpty(stepId)) {
+            return preparation.getSteps().get(preparation.getSteps().size() - 1);
+        }
+        return stepId;
     }
 
     /**

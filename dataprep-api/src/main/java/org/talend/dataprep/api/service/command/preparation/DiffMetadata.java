@@ -17,6 +17,7 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
 import static org.talend.daikon.exception.ExceptionContext.withBuilder;
+import static org.talend.dataprep.api.export.ExportParameters.SourceType.HEAD;
 import static org.talend.dataprep.command.Defaults.pipeStream;
 import static org.talend.dataprep.exception.error.PreparationErrorCodes.UNABLE_TO_READ_PREPARATION;
 
@@ -33,6 +34,7 @@ import org.apache.http.entity.StringEntity;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.talend.dataprep.api.export.ExportParameters;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.service.command.common.ChainedCommand;
 import org.talend.dataprep.command.GenericCommand;
@@ -96,7 +98,9 @@ public class DiffMetadata extends ChainedCommand<InputStream, InputStream> {
                                 serializeActions(baseActions), //
                                 serializeActions(diffActions), //
                                 dataSetId, //
-                                null);
+                                null, //
+                                null, //
+                                HEAD);
                     } catch (IOException e) {
                         throw new TDPException(UNABLE_TO_READ_PREPARATION, e, withBuilder().put("id", preparationId).build());
                     }

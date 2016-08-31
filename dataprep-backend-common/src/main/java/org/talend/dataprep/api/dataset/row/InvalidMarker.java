@@ -53,19 +53,14 @@ public class InvalidMarker implements Function<DataSetRow, DataSetRow> {
             }
         }
 
-        if (!invalidBitSet.isEmpty()) {
-            // Set invalid / unknown status for columns
-            for (int i = 0; i < invalidBitSet.length(); i++) {
-                final String columnId = columns.get(i).getId();
-                if (invalidBitSet.get(i)) {
-                    dataSetRow.setInvalid(columnId);
-                } else {
-                    dataSetRow.unsetInvalid(columnId);
-                }
+        // Set invalid / unknown status for columns
+        for (int i = 0; i < columns.size(); i++) {
+            final String columnId = columns.get(i).getId();
+            if (invalidBitSet.get(i)) {
+                dataSetRow.setInvalid(columnId);
+            } else {
+                dataSetRow.unsetInvalid(columnId);
             }
-        } else {
-            // Unset all columns (no invalid).
-            dataSetRow.set(FlagNames.TDP_INVALID, StringUtils.EMPTY);
         }
 
         return dataSetRow;

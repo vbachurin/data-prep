@@ -13,21 +13,21 @@
 
 package org.talend.dataprep.transformation.api.transformer.configuration;
 
+import org.apache.commons.lang.StringUtils;
+import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
+import org.talend.dataprep.api.export.ExportParameters;
+import org.talend.dataprep.format.export.ExportFormat;
+import org.talend.dataprep.transformation.format.JsonFormat;
+import org.talend.dataprep.transformation.pipeline.Node;
+import org.talend.dataprep.transformation.pipeline.node.BasicNode;
+
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-
-import org.apache.commons.lang.StringUtils;
-import org.talend.dataprep.api.dataset.RowMetadata;
-import org.talend.dataprep.api.dataset.row.DataSetRow;
-import org.talend.dataprep.format.export.ExportFormat;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
-import org.talend.dataprep.transformation.format.JsonFormat;
-import org.talend.dataprep.transformation.pipeline.Node;
-import org.talend.dataprep.transformation.pipeline.node.BasicNode;
 
 /**
  * Full configuration for a transformation.
@@ -48,6 +48,11 @@ public class Configuration {
     private final String format;
 
     /**
+     * The format format {@link ExportParameters.SourceType}
+     */
+    private final ExportParameters.SourceType sourceType;
+
+    /**
      * The actions in JSON string format
      */
     private final String actions;
@@ -65,12 +70,8 @@ public class Configuration {
     private final boolean allowMetadataChange;
 
     private final boolean globalStatistics;
-    private final Volume dataVolume;
 
-    /**
-     * List of transformation context, one per action.
-     */
-    private TransformationContext transformationContext;
+    private final Volume dataVolume;
 
     private String preparationId;
 
@@ -81,6 +82,7 @@ public class Configuration {
                             final Predicate<DataSetRow> filter, //
                             final Function<RowMetadata, Predicate<DataSetRow>> outFilter, //
                             final Supplier<Node> monitorSupplier, //
+                            final ExportParameters.SourceType sourceType, //
                             final String format, //
                             final String actions, //
                             final Map<String, String> arguments, //
@@ -93,6 +95,7 @@ public class Configuration {
         this.filter = filter;
         this.outFilter = outFilter;
         this.monitorSupplier = monitorSupplier;
+        this.sourceType = sourceType;
         this.format = format;
         this.actions = actions;
         this.arguments = arguments;
@@ -101,7 +104,6 @@ public class Configuration {
         this.allowMetadataChange = allowMetadataChange;
         this.globalStatistics = globalStatistics;
         this.dataVolume = dataVolume;
-        this.transformationContext = new TransformationContext();
     }
 
     /**
@@ -147,13 +149,6 @@ public class Configuration {
         return output;
     }
 
-    /**
-     * @return the transformation context that match the given index.
-     */
-    public TransformationContext getTransformationContext() {
-        return transformationContext;
-    }
-
     public Volume volume() {
         return dataVolume;
     }
@@ -178,6 +173,10 @@ public class Configuration {
         return preparationId;
     }
 
+    public ExportParameters.SourceType getSourceType() {
+        return sourceType;
+    }
+
     public enum Volume {
         LARGE,
         SMALL
@@ -192,6 +191,11 @@ public class Configuration {
          * The format format {@link ExportFormat}
          */
         private String format = JsonFormat.JSON;
+
+        /**
+         * The format format {@link ExportFormat}
+         */
+        private ExportParameters.SourceType sourceType = ExportParameters.SourceType.HEAD;
 
         /**
          * The actions in JSON string format
@@ -245,7 +249,7 @@ public class Configuration {
          * @return a new {@link Configuration} from the mapper setup.
          */
         public Configuration build() {
-            return new Configuration(output, filter, outFilter, monitorSupplier, format, actions, arguments, preparationId, stepId, allowMetadataChange, globalStatistics, dataVolume);
+            return new Configuration(output, filter, outFilter, monitorSupplier, sourceType, format, actions, arguments, preparationId, stepId, allowMetadataChange, globalStatistics, dataVolume);
         }
 
         /**
@@ -256,6 +260,17 @@ public class Configuration {
          */
         public Builder format(final String format) {
             this.format = format;
+            return this;
+        }
+
+        /**
+         * Builder DSL for format setter
+         *
+         * @param sourceType The source type.
+         * @return The mapper
+         */
+        public Builder sourceType(final ExportParameters.SourceType sourceType) {
+            this.sourceType = sourceType;
             return this;
         }
 

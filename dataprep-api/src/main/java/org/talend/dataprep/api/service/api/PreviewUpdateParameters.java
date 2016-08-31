@@ -15,6 +15,7 @@ package org.talend.dataprep.api.service.api;
 
 import java.util.List;
 
+import org.talend.dataprep.api.export.ExportParameters;
 import org.talend.dataprep.api.preparation.Action;
 
 public class PreviewUpdateParameters {
@@ -24,6 +25,7 @@ public class PreviewUpdateParameters {
     private String currentStepId;
     private String updateStepId;
     private String preparationId;
+    private ExportParameters.SourceType sourceType = ExportParameters.SourceType.HEAD;
 
     /** The sample size (null means full dataset/preparation). */
     private Long sample;
@@ -110,5 +112,19 @@ public class PreviewUpdateParameters {
      */
     public void setSample(Long sample) {
         this.sample = sample;
+    }
+
+    /**
+     * @return the source type
+     */
+    public ExportParameters.SourceType getSourceType() {
+        return sourceType;
+    }
+
+    /**
+     * @param sourceType the source type
+     */
+    public void setSourceType(ExportParameters.SourceType sourceType) {
+        this.sourceType = sourceType;
     }
 }

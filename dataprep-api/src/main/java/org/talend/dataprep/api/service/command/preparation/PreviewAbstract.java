@@ -25,6 +25,7 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.springframework.http.HttpStatus;
+import org.talend.dataprep.api.export.ExportParameters;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.command.GenericCommand;
@@ -88,18 +89,26 @@ public abstract class PreviewAbstract extends GenericCommand<InputStream> {
      *
      * @param baseActions the list of actions to use as the starting state for the preview.
      * @param newActions the list of action to add to the starting ones.
-     * @param datasetId the datasret id.
+     * @param datasetId the dataset id.
+     * @param preparationId the preparation id.
      * @param tdpIds the list of rows to apply.
+     * @param sourceType the source type.
      * @throws JsonProcessingException if an error occurs.
      */
-    protected void setContext(Collection<Action> baseActions, Collection<Action> newActions, String datasetId,
-            List<Integer> tdpIds) throws JsonProcessingException {
+    protected void setContext(Collection<Action> baseActions,
+                              Collection<Action> newActions,
+                              String datasetId,
+                              String preparationId,
+                              List<Integer> tdpIds,
+                              ExportParameters.SourceType sourceType) throws JsonProcessingException {
 
         this.parameters = new PreviewParameters( //
                 serializeActions(baseActions), //
                 serializeActions(newActions), //
                 datasetId, //
-                serializeIds(tdpIds));
+                preparationId,
+                serializeIds(tdpIds),
+                sourceType);
     }
 
     /**

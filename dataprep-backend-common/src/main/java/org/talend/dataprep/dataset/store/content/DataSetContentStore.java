@@ -42,7 +42,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public abstract class DataSetContentStore {
 
-    @Value("${dataset.records.limit}")
+    @Value("${dataset.records.limit:10000}")
     private long sampleSize;
 
     @Autowired

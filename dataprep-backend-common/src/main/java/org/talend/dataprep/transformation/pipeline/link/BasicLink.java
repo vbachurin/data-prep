@@ -18,6 +18,11 @@ public class BasicLink implements Link, RuntimeLink {
     }
 
     @Override
+    public void emit(DataSetRow[] rows, RowMetadata[] metadatas) {
+        target.exec().receive(rows, metadatas);
+    }
+
+    @Override
     public void accept(Visitor visitor) {
         visitor.visitBasicLink(this);
     }
@@ -32,6 +37,7 @@ public class BasicLink implements Link, RuntimeLink {
         target.exec().signal(signal);
     }
 
+    @Override
     public Node getTarget() {
         return target;
     }

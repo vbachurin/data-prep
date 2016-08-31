@@ -72,7 +72,7 @@ public class PreviewAdd extends PreviewAbstract {
         modifiedActions.addAll(addParameters.getActions());
 
         // execute transformation preview with content and the 2 transformations
-        setContext(originalActions, modifiedActions, dataSetId, addParameters.getTdpIds());
+        setContext(originalActions, modifiedActions, dataSetId, addParameters.getPreparationId(), addParameters.getTdpIds(), addParameters.getSourceType());
         return super.run();
     }
 

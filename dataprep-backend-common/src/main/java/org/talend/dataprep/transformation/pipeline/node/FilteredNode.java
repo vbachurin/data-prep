@@ -39,7 +39,7 @@ public class FilteredNode extends BasicNode {
 
     @Override
     public void signal(Signal signal) {
-        if (signal == Signal.END_OF_STREAM && !hasMatchedFilter) {
+        if ((signal == Signal.END_OF_STREAM || signal == Signal.CANCEL || signal == Signal.STOP) && !hasMatchedFilter) {
             // Ensure next steps at least receives metadata information.
             final DataSetRow row = new DataSetRow(lastRowMetadata, Collections.emptyMap());
             super.receive(row, lastRowMetadata);

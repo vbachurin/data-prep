@@ -22,6 +22,9 @@ import org.springframework.web.context.request.async.CallableProcessingIntercept
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.talend.dataprep.exception.TDPException;
 
+/**
+ * Configuration for non blocking HTTP handling.
+ */
 @Configuration
 public class Async {
 

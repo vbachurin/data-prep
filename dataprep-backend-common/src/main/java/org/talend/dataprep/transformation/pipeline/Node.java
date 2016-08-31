@@ -1,5 +1,6 @@
 package org.talend.dataprep.transformation.pipeline;
 
+import org.slf4j.Logger;
 import org.talend.dataprep.transformation.pipeline.link.NullLink;
 
 /**
@@ -27,4 +28,18 @@ public interface Node {
     void accept(Visitor visitor);
 
     RuntimeNode exec();
+
+    /**
+     * Log pipeline to DEBUG level using provided message
+     * @param logger The logger to log into
+     * @param message The message to append to the pipeline dump
+     */
+    default void logStatus(final Logger logger, final String message) {
+        if (logger.isDebugEnabled()) {
+            final StringBuilder builder = new StringBuilder();
+            final PipelineConsoleDump visitor = new PipelineConsoleDump(builder);
+            this.accept(visitor);
+            logger.debug(message, builder);
+        }
+    }
 }

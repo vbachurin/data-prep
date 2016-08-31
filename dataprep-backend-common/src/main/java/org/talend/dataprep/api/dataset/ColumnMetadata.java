@@ -26,6 +26,8 @@ import org.talend.dataprep.api.type.Type;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import static java.util.Collections.emptyList;
+
 /**
  * Represents information about a column in a data set. It includes:
  * <ul>
@@ -77,7 +79,7 @@ public class ColumnMetadata implements Serializable {
     private float domainFrequency;
 
     @JsonProperty("semanticDomains")
-    private List<SemanticDomain> semanticDomains = Collections.emptyList();
+    private List<SemanticDomain> semanticDomains = emptyList();
 
     /** if the domain has been changed/forced manually by the user */
     @JsonProperty("domainForced")
@@ -330,10 +332,7 @@ public class ColumnMetadata implements Serializable {
         private String diffFlagValue = null;
 
         /** The column statistics. */
-        private Statistics statistics = new Statistics();
-
-        /** The invalid values. */
-        private Set<String> invalidValues = new HashSet<>();
+        private Statistics statistics;
 
         private String domain;
 
@@ -431,17 +430,6 @@ public class ColumnMetadata implements Serializable {
          */
         public ColumnMetadata.Builder invalid(int value) {
             invalid = value;
-            return this;
-        }
-
-        /**
-         * Set the invalid values of the column.
-         *
-         * @param invalidValues the invalid values of the column to set.
-         * @return the builder to carry on building the column.
-         */
-        public ColumnMetadata.Builder invalidValues(Set<String> invalidValues) {
-            this.invalidValues = invalidValues;
             return this;
         }
 
@@ -567,11 +555,11 @@ public class ColumnMetadata implements Serializable {
             columnMetadata.getQuality().setValid(valid);
             columnMetadata.setHeaderSize(this.headerSize);
             columnMetadata.setDiffFlagValue(this.diffFlagValue);
-            columnMetadata.setStatistics(this.statistics);
+            columnMetadata.setStatistics(this.statistics == null ? new Statistics() : this.statistics);
             columnMetadata.setDomain(this.domain == null ? StringUtils.EMPTY : this.domain);
             columnMetadata.setDomainLabel(this.domainLabel == null ? StringUtils.EMPTY : this.domainLabel);
             columnMetadata.setDomainFrequency(this.domainFrequency);
-            columnMetadata.setSemanticDomains(this.semanticDomains == null ? Collections.emptyList() : this.semanticDomains);
+            columnMetadata.setSemanticDomains(this.semanticDomains == null ? emptyList() : this.semanticDomains);
             columnMetadata.setDomainForced(this.domainForced);
             columnMetadata.setTypeForced(this.typeForced);
             return columnMetadata;

@@ -29,7 +29,7 @@ import org.springframework.stereotype.Component;
 public class MessagesBundle {
 
     /**
-     * Source resource bundle that holds all the actions name and parameters name.
+     * SourceType resource bundle that holds all the actions name and parameters name.
      */
     @Autowired
     private ResourceBundleMessageSource source;

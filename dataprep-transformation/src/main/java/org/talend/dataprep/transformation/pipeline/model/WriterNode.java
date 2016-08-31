@@ -1,22 +1,20 @@
 package org.talend.dataprep.transformation.pipeline.model;
 
 import java.io.IOException;
-import java.io.OutputStream;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.dataset.row.DataSetRow;
-import org.talend.dataprep.cache.ContentCache;
+import org.talend.dataprep.cache.ContentCacheKey;
+import org.talend.dataprep.transformation.api.transformer.ConfiguredCacheWriter;
 import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
-import org.talend.dataprep.transformation.cache.TransformationMetadataCacheKey;
 import org.talend.dataprep.transformation.pipeline.Monitored;
+import org.talend.dataprep.transformation.pipeline.RuntimeNode;
 import org.talend.dataprep.transformation.pipeline.Signal;
 import org.talend.dataprep.transformation.pipeline.Visitor;
 import org.talend.dataprep.transformation.pipeline.node.BasicNode;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 
 public class WriterNode extends BasicNode implements Monitored {
 
@@ -24,11 +22,9 @@ public class WriterNode extends BasicNode implements Monitored {
 
     private final TransformerWriter writer;
 
-    private final ContentCache contentCache;
+    private final ConfiguredCacheWriter metadataCacheWriter;
 
-    private final String preparationId;
-
-    private final String stepId;
+    private final ContentCacheKey metadataKey;
 
     private RowMetadata lastRowMetadata;
 
@@ -38,15 +34,37 @@ public class WriterNode extends BasicNode implements Monitored {
 
     private int count;
 
-    public WriterNode(TransformerWriter writer, ContentCache contentCache, String preparationId, String stepId) {
+    /** True if the writer is stopped. */
+    private AtomicBoolean isStopped = new AtomicBoolean(false);
+
+    /**
+     * Constructor.
+     * 
+     * @param writer the transformer writer.
+     * @param metadataCacheWriter the metadata cache writer.
+     * @param metadataKey the transformation metadata cache key to use.
+     */
+    public WriterNode(final TransformerWriter writer, final ConfiguredCacheWriter metadataCacheWriter, final ContentCacheKey metadataKey) {
         this.writer = writer;
-        this.contentCache = contentCache;
-        this.preparationId = preparationId;
-        this.stepId = stepId;
+        this.metadataCacheWriter = metadataCacheWriter;
+        this.metadataKey = metadataKey;
     }
 
+    /**
+     * Synchronized method not to clash with the signal method.
+     * 
+     * @see WriterNode#signal(Signal)
+     * @see RuntimeNode#receive(DataSetRow, RowMetadata)
+     */
     @Override
-    public void receive(DataSetRow row, RowMetadata metadata) {
+    public synchronized void receive(DataSetRow row, RowMetadata metadata) {
+
+        // do not write this row if the writer is stopped
+        if (isStopped.get()) {
+            LOGGER.debug("already stopped, let's skip this row");
+            return;
+        }
+
         final long start = System.currentTimeMillis();
         try {
             if (!startRecords) {
@@ -69,9 +87,28 @@ public class WriterNode extends BasicNode implements Monitored {
         super.receive(row, metadata);
     }
 
+    /**
+     * Synchronized method not to clash with the receive method.
+     * 
+     * @see WriterNode#receive(DataSetRow, RowMetadata)
+     * @see RuntimeNode#signal(Signal)
+     */
     @Override
-    public void signal(Signal signal) {
-        if (signal == Signal.END_OF_STREAM || signal == Signal.CANCEL) {
+    public synchronized void signal(Signal signal) {
+
+        LOGGER.debug("receive {}", signal);
+
+        if (signal == Signal.END_OF_STREAM || signal == Signal.CANCEL || signal == Signal.STOP) {
+
+            if (isStopped.get()) {
+                LOGGER.debug("cannot process {} because WriterNode is already stopped", signal);
+                super.signal(signal);
+                return;
+            }
+
+            // set this writer to stopped
+            this.isStopped.set(true);
+
             final long start = System.currentTimeMillis();
             try {
                 writer.endArray(); // <- end records
@@ -89,23 +126,18 @@ public class WriterNode extends BasicNode implements Monitored {
             } finally {
                 totalTime += System.currentTimeMillis() - start;
             }
+
+            // Cache computed metadata for later reuse
+            try {
+                metadataCacheWriter.write(metadataKey, lastRowMetadata);
+                writer.flush();
+            } catch (IOException e) {
+                LOGGER.error("Unable to cache metadata for preparation #{} @ step #{}", metadataKey.getKey());
+                LOGGER.debug("Unable to cache metadata due to exception.", e);
+            }
+
         } else {
             LOGGER.debug("Unhandled signal {}.", signal);
-        }
-
-        // Cache computed metadata for later reuse
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            final ObjectWriter objectWriter = mapper.writerFor(RowMetadata.class);
-            final TransformationMetadataCacheKey key = new TransformationMetadataCacheKey(preparationId, stepId);
-            try (OutputStream stream = contentCache.put(key, ContentCache.TimeToLive.DEFAULT)) {
-                objectWriter.writeValue(stream, lastRowMetadata);
-                LOGGER.debug("New metadata cache entry -> {}.", key.getKey());
-            }
-            writer.flush();
-        } catch (IOException e) {
-            LOGGER.error("Unable to cache metadata for preparation #{} @ step #{}", preparationId, stepId);
-            LOGGER.debug("Unable to cache metadata due to exception.", e);
         }
 
         super.signal(signal);

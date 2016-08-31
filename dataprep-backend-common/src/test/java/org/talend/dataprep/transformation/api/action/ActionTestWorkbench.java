@@ -13,23 +13,18 @@
 
 package org.talend.dataprep.transformation.api.action;
 
-import java.util.*;
-import java.util.function.Function;
-
-import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.api.dataset.statistics.StatisticsAdapter;
 import org.talend.dataprep.api.preparation.Action;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
-import org.talend.dataprep.transformation.api.transformer.json.NullAnalyzer;
+import org.talend.dataprep.quality.AnalyzerService;
 import org.talend.dataprep.transformation.pipeline.ActionRegistry;
 import org.talend.dataprep.transformation.pipeline.Pipeline;
 import org.talend.dataprep.transformation.pipeline.node.BasicNode;
-import org.talend.dataquality.common.inference.Analyzer;
-import org.talend.dataquality.common.inference.Analyzers;
+
+import java.util.*;
 
 public class ActionTestWorkbench {
 
@@ -45,14 +40,13 @@ public class ActionTestWorkbench {
     }
 
     public static void test(Collection<DataSetRow> input, ActionRegistry actionRegistry, Action... actions) {
-        test(input, c -> Analyzers.with(NullAnalyzer.INSTANCE), c -> Analyzers.with(NullAnalyzer.INSTANCE), actionRegistry, actions);
+        test(input, null, actionRegistry, actions);
     }
 
     public static void test(Collection<DataSetRow> input,
-                            Function<List<ColumnMetadata>, Analyzer<Analyzers.Result>> inlineAnalysis,
-                            Function<List<ColumnMetadata>, Analyzer<Analyzers.Result>> delayedAnalysis,
-                            ActionRegistry actionRegistry, Action... actions) {
-        TransformationContext context = new TransformationContext();
+                            AnalyzerService analyzerService,
+                            ActionRegistry actionRegistry,
+                            Action... actions) {
         final List<Action> allActions = new ArrayList<>();
         Collections.addAll(allActions, actions);
 
@@ -67,9 +61,7 @@ public class ActionTestWorkbench {
                 .withActionRegistry(actionRegistry)
                 .withInitialMetadata(rowMetadata, true) //
                 .withActions(allActions) //
-                .withContext(context) //
-                .withInlineAnalysis(inlineAnalysis)
-                .withDelayedAnalysis(delayedAnalysis)
+                .withAnalyzerService(analyzerService)
                 .withStatisticsAdapter(new StatisticsAdapter()) //
                 .withOutput(() -> outputNode) //
                 .build();

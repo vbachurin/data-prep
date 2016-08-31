@@ -46,6 +46,6 @@ public class DummyCacheKey implements ContentCacheKey {
      */
     @Override
     public String getKey() {
-        return this.getClass().getSimpleName() + '-' + Objects.hash(name, random);
+        return this.getClass().getSimpleName() + '_' + Objects.hash(name, random);
     }
 }

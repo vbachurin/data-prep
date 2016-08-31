@@ -11,18 +11,18 @@
 //
 // ============================================================================
 
-package org.talend.dataprep.api.org.talend.dataprep.api.export;
+package org.talend.dataprep.api.export;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.validation.constraints.NotNull;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
 import org.talend.dataprep.api.dataset.DataSet;
+import org.talend.dataprep.async.AsyncGroupKey;
 import org.talend.dataprep.validation.OneNotBlank;
 
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -30,21 +30,43 @@ import com.fasterxml.jackson.databind.JsonNode;
 /**
  * Parameter for dataset/preparation format
  */
-@OneNotBlank({ "preparationId", "datasetId" })
-public class ExportParameters {
+@OneNotBlank({"preparationId", "datasetId"})
+public class ExportParameters implements AsyncGroupKey {
 
-    /** The export format. */
+    /**
+     * Where should the data com from.
+     */
+    public enum SourceType {
+        HEAD,
+        FILTER,
+        RESERVOIR
+    }
+
+    /**
+     * The export format.
+     */
     @NotNull
     private String exportType;
 
-    /** The preparation id to format. If this is null, datasetId must be set. */
+    /**
+     * The preparation id to format. If this is null, datasetId must be set.
+     */
     private String preparationId;
 
-    /** The step id to format at a specific state. By default preparation head version is exported. */
+    /**
+     * The step id to format at a specific state. By default preparation head version is exported.
+     */
     private String stepId = "head";
 
-    /** The dataset id to format. If this is null, preparationId must be set. */
+    /**
+     * The dataset id to format. If this is null, preparationId must be set.
+     */
     private String datasetId;
+
+    /**
+     * Where should the data come from.
+     */
+    private SourceType from;
 
     private String exportName;
 
@@ -59,6 +81,7 @@ public class ExportParameters {
     private Object outFilter;
 
     private Map<String, String> unmappedProperties = new HashMap<>();
+
     private DataSet content;
 
     public String getExportType() {
@@ -110,6 +133,20 @@ public class ExportParameters {
     }
 
     /**
+     * @return the From
+     */
+    public SourceType getFrom() {
+        return from;
+    }
+
+    /**
+     * @param from the from to set.
+     */
+    public void setFrom(SourceType from) {
+        this.from = from;
+    }
+
+    /**
      * @return The filter (as raw JSON) for the export.
      * @see org.talend.dataprep.api.filter.FilterService
      */
@@ -143,7 +180,6 @@ public class ExportParameters {
         }
     }
 
-
     public Map<String, String> any() {
         return unmappedProperties;
     }
@@ -154,7 +190,7 @@ public class ExportParameters {
     }
 
     @Override
-    public String toString() {
+    public String getAsyncGroupKey() {
         if (preparationId != null) {
             return preparationId;
         } else {
@@ -168,5 +204,20 @@ public class ExportParameters {
 
     public DataSet getContent() {
         return content;
+    }
+
+    @Override
+    public String toString() {
+        return "ExportParameters{" + //
+                "exportType='" + exportType + '\'' + //
+                ", preparationId='" + preparationId + '\'' + //
+                ", stepId='" + stepId + '\'' + //
+                ", datasetId='" + datasetId + '\'' + //
+                ", from='" + from + '\'' + //
+                ", exportName='" + exportName + '\'' + //
+                ", arguments=" + arguments + //
+                ", filter=" + filter + //
+                ", outFilter=" + outFilter + //
+                '}';
     }
 }

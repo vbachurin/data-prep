@@ -17,6 +17,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
 import static org.talend.dataprep.api.dataset.row.Flag.*;
+import static org.talend.dataprep.api.dataset.row.FlagNames.TDP_INVALID;
 
 import java.util.*;
 
@@ -324,5 +325,46 @@ public class DataSetRowTest {
         assertThat(newRow.values().size(), is(2));
     }
 
+    @Test
+    public void should_set_invalid_column() throws Exception {
+        // given
+        final Map<String, String> values = new HashMap<>();
+        final DataSetRow row = new DataSetRow(values);
 
+        // when
+        row.setInvalid("0001");
+        row.setInvalid("0004");
+
+        // then
+        assertThat(row.values().get(TDP_INVALID), is("0004,0001"));
+    }
+
+    @Test
+    public void should_unset_invalid_column() throws Exception {
+        // given
+        final Map<String, String> values = new HashMap<>();
+        final DataSetRow row = new DataSetRow(values);
+
+        row.setInvalid("0001");
+        row.setInvalid("0004");
+
+        // when
+        row.unsetInvalid("0004");
+
+        // then
+        assertThat(row.values().get(TDP_INVALID), is("0001"));
+    }
+
+    @Test
+    public void should_parse_invalid_columns_on_creation() throws Exception {
+        // given
+        final Map<String, String> values = new HashMap<>();
+        values.put(TDP_INVALID, "0001,0004");
+
+        // when
+        final DataSetRow row = new DataSetRow(values);
+
+        // then
+        assertThat(row.values().get(TDP_INVALID), is("0004,0001"));
+    }
 }

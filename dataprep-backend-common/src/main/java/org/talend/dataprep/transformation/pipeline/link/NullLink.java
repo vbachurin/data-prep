@@ -23,6 +23,11 @@ public class NullLink implements Link, RuntimeLink {
     }
 
     @Override
+    public void emit(DataSetRow[] rows, RowMetadata[] metadatas) {
+        // Nothing to do
+    }
+
+    @Override
     public void accept(Visitor visitor) {
         // Nothing to do
     }

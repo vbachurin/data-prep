@@ -18,6 +18,7 @@ import java.util.List;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotEmpty;
+import org.talend.dataprep.api.export.ExportParameters;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.validation.OneNotBlank;
 
@@ -43,6 +44,9 @@ public class PreviewAddParameters {
 
     /** The sample size (null means full dataset/preparation). */
     private Long sample;
+
+    /** The dataset sample source type */
+    private ExportParameters.SourceType sourceType = ExportParameters.SourceType.HEAD;
 
     /**
      * @return the Action
@@ -112,6 +116,20 @@ public class PreviewAddParameters {
      */
     public void setSample(Long sample) {
         this.sample = sample;
+    }
+
+    /**
+     * @return the source type
+     */
+    public ExportParameters.SourceType getSourceType() {
+        return sourceType;
+    }
+
+    /**
+     * @param sourceType the source type
+     */
+    public void setSourceType(ExportParameters.SourceType sourceType) {
+        this.sourceType = sourceType;
     }
 
     @Override

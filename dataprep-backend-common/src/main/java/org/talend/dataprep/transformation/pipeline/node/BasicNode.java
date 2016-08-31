@@ -5,13 +5,19 @@ import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.transformation.pipeline.*;
 
 public class BasicNode implements Node, RuntimeNode {
-
     protected Link link;
 
     @Override
     public void receive(DataSetRow row, RowMetadata metadata) {
         if (link != null) {
             link.exec().emit(row, metadata);
+        }
+    }
+
+    @Override
+    public void receive(DataSetRow[] rows, RowMetadata[] metadatas) {
+        if (link != null) {
+            link.exec().emit(rows, metadatas);
         }
     }
 

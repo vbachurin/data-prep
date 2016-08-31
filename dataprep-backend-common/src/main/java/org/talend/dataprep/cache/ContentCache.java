@@ -1,15 +1,15 @@
-//  ============================================================================
+// ============================================================================
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.cache;
 
@@ -73,6 +73,22 @@ public interface ContentCache {
      * @param key content cache key.
      */
     void evict(ContentCacheKey key);
+
+    /**
+     * <p>
+     * Moves a cache entry from the <code>from</code> key to a <code>to</code> key. After method completes,
+     * {@link #has(ContentCacheKey)} returns <code>false</code> for <code>from</code> key and <code>true</code> for
+     * <code>to</code> key.
+     * </p>
+     * <p>
+     * If <code>to</code> is a cache key with content, it will be overridden with new content.
+     * </p>
+     *
+     * @param from A source content cache key.
+     * @param to A destination content cache key.
+     * @param toTimeToLive The {@link TimeToLive TTL} for the destination cache key.
+     */
+    void move(ContentCacheKey from, ContentCacheKey to, TimeToLive toTimeToLive);
 
     /**
      * Removes all content cached by this {@link ContentCache cache}.

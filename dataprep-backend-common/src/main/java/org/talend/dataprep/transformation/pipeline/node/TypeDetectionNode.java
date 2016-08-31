@@ -23,6 +23,7 @@ import org.talend.dataprep.api.dataset.row.FlagNames;
 import org.talend.dataprep.api.dataset.statistics.StatisticsAdapter;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
+import org.talend.dataprep.quality.AnalyzerService;
 import org.talend.dataprep.transformation.pipeline.Monitored;
 import org.talend.dataprep.transformation.pipeline.Signal;
 import org.talend.dataprep.transformation.pipeline.Visitor;
@@ -55,11 +56,11 @@ public class TypeDetectionNode extends ColumnFilteredNode implements Monitored {
 
     private long count;
 
-    public TypeDetectionNode(Function<List<ColumnMetadata>, Analyzer<Analyzers.Result>> analyzer, //
-            Predicate<ColumnMetadata> filter, //
-            StatisticsAdapter adapter) {
+    public TypeDetectionNode(final AnalyzerService analyzerService, //
+                             Predicate<ColumnMetadata> filter, //
+                             StatisticsAdapter adapter) {
         super(filter);
-        this.analyzer = analyzer;
+        this.analyzer = analyzerService::schemaAnalysis;
         this.filter = filter;
         this.adapter = adapter;
         try {
@@ -137,7 +138,7 @@ public class TypeDetectionNode extends ColumnFilteredNode implements Monitored {
 
         final long start = System.currentTimeMillis();
         try {
-            if (signal == Signal.END_OF_STREAM) {
+            if (signal == Signal.END_OF_STREAM || signal == Signal.CANCEL || signal == Signal.STOP) {
                 // End temporary output
                 generator.writeEndArray();
                 generator.writeEndObject();

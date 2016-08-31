@@ -32,11 +32,8 @@ public class PreviewConfiguration extends Configuration {
     /** Indexes of rows (used in diff). */
     private final List<Long> indexes;
 
-    /** List of transformation context, one per action. */
-    private final TransformationContext context = new TransformationContext();
-
     protected PreviewConfiguration(Configuration configuration, String previewActions, List<Long> indexes) {
-        super(configuration.output(), configuration.getFilter(), configuration.getOutFilter(), configuration.getMonitor(), configuration.formatId(), configuration.getActions(), configuration.getArguments(),
+        super(configuration.output(), configuration.getFilter(), configuration.getOutFilter(), configuration.getMonitor(), configuration.getSourceType(), configuration.formatId(), configuration.getActions(), configuration.getArguments(),
                 configuration.getPreparationId(), configuration.stepId(), false, false, configuration.volume());
         this.previewActions = previewActions;
         this.indexes = indexes;
@@ -44,14 +41,6 @@ public class PreviewConfiguration extends Configuration {
 
     public static Builder preview() {
         return new Builder();
-    }
-
-    public TransformationContext getReferenceContext() {
-        return super.getTransformationContext();
-    }
-
-    public TransformationContext getPreviewContext() {
-        return context;
     }
 
     public List<Long> getIndexes() {

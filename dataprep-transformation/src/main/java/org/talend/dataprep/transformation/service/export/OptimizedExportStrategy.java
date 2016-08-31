@@ -1,29 +1,45 @@
-package org.talend.dataprep.transformation.service;
+// ============================================================================
+//
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+//
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
+//
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
+//
+// ============================================================================
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.List;
+package org.talend.dataprep.transformation.service.export;
 
+import com.fasterxml.jackson.core.JsonParser;
 import org.apache.commons.io.output.TeeOutputStream;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
-import org.talend.dataprep.api.org.talend.dataprep.api.export.ExportParameters;
+import org.talend.dataprep.api.export.ExportParameters;
 import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.cache.ContentCache;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.TransformationErrorCodes;
 import org.talend.dataprep.format.export.ExportFormat;
 import org.talend.dataprep.transformation.api.transformer.configuration.Configuration;
+import org.talend.dataprep.transformation.cache.CacheKeyGenerator;
 import org.talend.dataprep.transformation.cache.TransformationCacheKey;
 import org.talend.dataprep.transformation.cache.TransformationMetadataCacheKey;
+import org.talend.dataprep.transformation.service.ExportStrategy;
+import org.talend.dataprep.transformation.service.ExportUtils;
 
-import com.fasterxml.jackson.core.JsonParser;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.List;
 
 /**
  * A {@link ExportStrategy strategy} to export a preparation (using its default data set), using any information
@@ -33,6 +49,9 @@ import com.fasterxml.jackson.core.JsonParser;
 public class OptimizedExportStrategy extends StandardExportStrategy {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OptimizedExportStrategy.class);
+
+    @Autowired
+    private CacheKeyGenerator cacheKeyGenerator;
 
     @Override
     public int order() {
@@ -66,7 +85,7 @@ public class OptimizedExportStrategy extends StandardExportStrategy {
 
     private void performOptimizedTransform(ExportParameters parameters, OutputStream outputStream) throws IOException {
         // Initial check
-        OptimizedPreparationInput optimizedPreparationInput = new OptimizedPreparationInput(parameters).invoke();
+        final OptimizedPreparationInput optimizedPreparationInput = new OptimizedPreparationInput(parameters).invoke();
         if (optimizedPreparationInput == null) {
             throw new IllegalStateException("Unable to use this strategy (call accept() before calling this).");
         }
@@ -85,20 +104,26 @@ public class OptimizedExportStrategy extends StandardExportStrategy {
             dataSet.setMetadata(metadata);
 
             // get the actions to apply (no preparation ==> dataset export ==> no actions)
-            String actions = getActions(preparationId, previousVersion, version);
+            final String actions = getActions(preparationId, previousVersion, version);
 
             LOGGER.debug("Running optimized strategy for preparation {} @ step #{}", preparationId, version);
 
-            final TransformationCacheKey key = new TransformationCacheKey(preparationId, dataSetId, parameters.getExportType(),
-                    version);
+            // create tee to broadcast to cache + service output
+            final TransformationCacheKey key = cacheKeyGenerator.generateContentKey(
+                    dataSetId,
+                    preparationId,
+                    version,
+                    parameters.getExportType(),
+                    parameters.getFrom()
+            );
             LOGGER.debug("Cache key: " + key.getKey());
             LOGGER.debug("Cache key details: " + key.toString());
 
-            TeeOutputStream tee = new TeeOutputStream(outputStream, contentCache.put(key, ContentCache.TimeToLive.DEFAULT));
-            try {
-                Configuration configuration = Configuration.builder() //
+            try (final TeeOutputStream tee = new TeeOutputStream(outputStream, contentCache.put(key, ContentCache.TimeToLive.DEFAULT))) {
+                final Configuration configuration = Configuration.builder() //
                         .args(parameters.getArguments()) //
                         .outFilter(rm -> filterService.build(parameters.getFilter(), rm)) //
+                        .sourceType(parameters.getFrom())
                         .format(format.getName()) //
                         .actions(actions) //
                         .preparationId(preparationId) //
@@ -111,8 +136,6 @@ public class OptimizedExportStrategy extends StandardExportStrategy {
             } catch (Throwable e) { // NOSONAR
                 contentCache.evict(key);
                 throw e;
-            } finally {
-                tee.close();
             }
         } catch (TDPException e) {
             throw e;
@@ -137,6 +160,8 @@ public class OptimizedExportStrategy extends StandardExportStrategy {
 
         private final Preparation preparation;
 
+        private final ExportParameters.SourceType sourceType;
+
         private String version;
 
         private DataSetMetadata metadata;
@@ -148,6 +173,7 @@ public class OptimizedExportStrategy extends StandardExportStrategy {
         private OptimizedPreparationInput(ExportParameters parameters) {
             this.stepId = parameters.getStepId();
             this.preparationId = parameters.getPreparationId();
+            this.sourceType = parameters.getFrom();
             if (preparationId != null) {
                 this.preparation = getPreparation(preparationId);
             } else {
@@ -209,7 +235,7 @@ public class OptimizedExportStrategy extends StandardExportStrategy {
                 previousVersion = steps.get(steps.size() - 2);
             }
             // Get metadata of previous step
-            TransformationMetadataCacheKey transformationMetadataCacheKey = new TransformationMetadataCacheKey(preparationId, previousVersion);
+            final TransformationMetadataCacheKey transformationMetadataCacheKey = cacheKeyGenerator.generateMetadataKey(preparationId, previousVersion, sourceType);
             if (!contentCache.has(transformationMetadataCacheKey)) {
                 LOGGER.debug("No metadata cached for previous version '{}' (key for lookup: '{}')", previousVersion,
                         transformationMetadataCacheKey.getKey());
@@ -218,7 +244,13 @@ public class OptimizedExportStrategy extends StandardExportStrategy {
             try (InputStream input = contentCache.get(transformationMetadataCacheKey)) {
                 metadata = mapper.readerFor(DataSetMetadata.class).readValue(input);
             }
-            transformationCacheKey = new TransformationCacheKey(preparationId, dataSetId, formatName, previousVersion);
+            transformationCacheKey = cacheKeyGenerator.generateContentKey(
+                    dataSetId,
+                    preparationId,
+                    previousVersion,
+                    formatName,
+                    sourceType
+            );
             LOGGER.debug("Previous content cache key: " + transformationCacheKey.getKey());
             LOGGER.debug("Previous content cache key details: " + transformationCacheKey.toString());
             final InputStream inputStream = contentCache.get(transformationCacheKey);

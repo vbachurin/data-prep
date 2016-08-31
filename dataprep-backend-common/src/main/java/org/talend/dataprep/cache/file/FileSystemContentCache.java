@@ -13,6 +13,9 @@
 
 package org.talend.dataprep.cache.file;
 
+import static java.nio.file.StandardCopyOption.ATOMIC_MOVE;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,6 +38,15 @@ import org.talend.dataprep.cache.ContentCache;
 import org.talend.dataprep.cache.ContentCacheKey;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.BiConsumer;
 
 /**
  * File system cache implementation.
@@ -79,6 +91,11 @@ public class FileSystemContentCache implements ContentCache {
      * otherwise (or if time to live is not a number).
      */
     private static boolean isLiveEntry(String timeToLive) {
+        // deal with permanent content
+        if (StringUtils.isBlank(timeToLive)) {
+            return true;
+        }
+
         try {
             return Long.parseLong(timeToLive) > (System.currentTimeMillis() + EVICTION_PERIOD);
         } catch (NumberFormatException e) {
@@ -103,7 +120,33 @@ public class FileSystemContentCache implements ContentCache {
                 // Leave path as it is (don't add timestamp).
             }
         }
-        return Paths.get(path);
+        final Path result = Paths.get(path);
+        LOGGER.trace("path entry for {} is {}", key.getKey(), result);
+        return result;
+    }
+
+    private Path findEntry(ContentCacheKey key) {
+        final Path path = computeEntryPath(key, null);
+        final File[] files = path.getParent().toFile().listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (!StringUtils.startsWith(file.getName(), key.getKey())) {
+                    LOGGER.trace("file {} does not match key {}", file.getName(), key.getKey());
+                    continue;
+                }
+                if(Paths.get(file.toURI()).equals(path.toAbsolutePath())) {
+                    LOGGER.debug("cache entry for #{} is {}", key, file.toPath());
+                    return file.toPath();
+                }
+                final String suffix = StringUtils.substringAfterLast(file.getName(), ".");
+                if (isLiveEntry(suffix)) {
+                    LOGGER.debug("cache entry for #{} is {}", key, file.toPath());
+                    return file.toPath();
+                }
+            }
+        }
+        LOGGER.debug("No cache for entry #{}", key);
+        return null;
     }
 
     @Override
@@ -112,14 +155,16 @@ public class FileSystemContentCache implements ContentCache {
         final File[] files = path.getParent().toFile().listFiles();
         if (files != null) {
             for (File file : files) {
-                if(Paths.get(file.toURI()).equals(path.toAbsolutePath())) {
-                    return true;
-                }
                 final String fileName = file.getName();
-                final String suffix = StringUtils.substringAfterLast(fileName, ".");
-                if (isLiveEntry(suffix)) {
-                    LOGGER.debug("[{}] Cache hit.", key);
-                    return true;
+                // first check the key...
+                final String prefix = StringUtils.substringBeforeLast(fileName, ".");
+                if (StringUtils.equals(prefix, key.getKey())) {
+                    // ...then the TTL
+                    final String suffix = StringUtils.substringAfterLast(fileName, ".");
+                    if (isLiveEntry(suffix)) {
+                        LOGGER.debug("[{}] Cache hit --> {}", key, fileName);
+                        return true;
+                    }
                 }
             }
         }
@@ -129,28 +174,16 @@ public class FileSystemContentCache implements ContentCache {
 
     @Override
     public InputStream get(ContentCacheKey key) {
-        final Path path = computeEntryPath(key, null);
-        final File[] files = path.getParent().toFile().listFiles();
-        if (files != null) {
-            for (File file : files) {
-                if (!StringUtils.startsWith(file.getName(), key.getKey())) {
-                    continue;
-                }
-                try {
-                    if(Paths.get(file.toURI()).equals(path.toAbsolutePath())) {
-                        return Files.newInputStream(file.toPath());
-                    }
-                    final String suffix = StringUtils.substringAfterLast(file.getName(), ".");
-                    if (isLiveEntry(suffix)) {
-                            return Files.newInputStream(file.toPath());
-                    }
-                } catch (IOException e) {
-                    throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
-                }
-            }
+        final Path path = findEntry(key);
+        if (path == null) {
+            LOGGER.debug("No cache for entry #{}", key);
+            return null;
         }
-        LOGGER.debug("No cache for entry #{}", key);
-        return null;
+        try {
+            return Files.newInputStream(path);
+        } catch (IOException e) {
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
+        }
     }
 
     @Override
@@ -189,7 +222,7 @@ public class FileSystemContentCache implements ContentCache {
                     try {
                         if (StringUtils.startsWith(file.getFileName().toString(), key.getKey())) {
                             final Path evictedFile = Paths.get(file.toAbsolutePath().toString() + ".0");
-                            Files.move(file, evictedFile, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+                            Files.move(file, evictedFile, REPLACE_EXISTING, ATOMIC_MOVE);
                         }
                     } catch (IOException e) {
                         LOGGER.error("Unable to evict {}.", file.getFileName(), e);
@@ -201,6 +234,25 @@ public class FileSystemContentCache implements ContentCache {
             LOGGER.error("Unable to evict.", e);
         }
         LOGGER.debug("[{}] Evict.", key);
+    }
+
+    @Override
+    public void move(ContentCacheKey from, ContentCacheKey to, TimeToLive toTimeToLive) {
+        if (StringUtils.equals(from.getKey(), to.getKey())) {
+            return; // Move to itself -> no op.
+        }
+        try {
+            final Path fromPath = findEntry(from);
+            if (fromPath == null) {
+                LOGGER.warn("Cache entry '{}' cannot be found.", from.getKey());
+                return;
+            }
+            final Path toPath = computeEntryPath(to, toTimeToLive);
+            Files.move(fromPath, toPath, REPLACE_EXISTING, ATOMIC_MOVE);
+            evict(from);
+        } catch (IOException e) {
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
+        }
     }
 
     @Override
@@ -226,48 +278,59 @@ public class FileSystemContentCache implements ContentCache {
         final AtomicLong totalCount = new AtomicLong();
         LOGGER.debug("Janitor process started @ {}.", start);
         try {
-            Files.walkFileTree(Paths.get(location), new SimpleFileVisitor<Path>() {
-
-                @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                    final String fileName = file.toFile().getName();
-                    // Ignore "." files (hidden files like MacOS).
-                    if (fileName.startsWith(".")) {
-                        return FileVisitResult.CONTINUE;
-                    }
-                    final String suffix = StringUtils.substringAfterLast(fileName, ".");
-                    // Ignore NFS files (may happen in local mode when NFS is used).
-                    if (suffix.startsWith("nfs")) {
-                        return FileVisitResult.CONTINUE;
-                    }
-                    if (StringUtils.isEmpty(suffix)) {
-                        return FileVisitResult.CONTINUE;
-                    }
-                    try {
-                        final long time = Long.parseLong(suffix);
-                        if (time < start) {
-                            try {
-                                Files.delete(file);
-                                deletedCount.incrementAndGet();
-                            } catch (NoSuchFileException e) {
-                                LOGGER.debug("Ignored delete issue for '{}'.", file.getFileName(), e);
-                            } catch (IOException e) {
-                                LOGGER.warn("Unable to delete '{}'.", file.getFileName());
-                                LOGGER.debug("Unable to delete '{}'.", file.getFileName(), e);
-                            }
+            final BiConsumer<Path, Long> deleteOld = (file, time) -> {
+                try {
+                    if (time < start) {
+                        try {
+                            Files.delete(file);
+                            deletedCount.incrementAndGet();
+                        } catch (NoSuchFileException e) {
+                            LOGGER.debug("Ignored delete issue for '{}'.", file.getFileName(), e);
+                        } catch (IOException e) {
+                            LOGGER.warn("Unable to delete '{}'.", file.getFileName());
+                            LOGGER.debug("Unable to delete '{}'.", file.getFileName(), e);
                         }
-                    } catch (NumberFormatException e) {
-                        LOGGER.debug("Ignore file '{}'", file);
                     }
-                    totalCount.incrementAndGet();
-                    return super.visitFile(file, attrs);
+                } catch (NumberFormatException e) {
+                    LOGGER.debug("Ignore file '{}'", file);
                 }
-            });
+                totalCount.incrementAndGet();
+            };
+            Files.walkFileTree(Paths.get(location), new FileSystemVisitor(deleteOld));
         } catch (IOException e) {
             LOGGER.error("Unable to clean up cache", e);
         }
         LOGGER.debug("Janitor process ended @ {} ({}/{} files successfully deleted).", System.currentTimeMillis(), deletedCount,
                 totalCount);
+    }
+
+    private class FileSystemVisitor extends SimpleFileVisitor<Path> {
+
+        private final BiConsumer<Path, Long> consumer;
+
+        FileSystemVisitor(final BiConsumer<Path, Long> consumer) {
+            this.consumer = consumer;
+        }
+
+        @Override
+        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+            final String fileName = file.toFile().getName();
+            // Ignore "." files (hidden files like MacOS).
+            if (fileName.startsWith(".")) {
+                return FileVisitResult.CONTINUE;
+            }
+            final String suffix = StringUtils.substringAfterLast(fileName, ".");
+            // Ignore NFS files (may happen in local mode when NFS is used).
+            if (suffix.startsWith("nfs")) {
+                return FileVisitResult.CONTINUE;
+            }
+            if (StringUtils.isEmpty(suffix)) {
+                return FileVisitResult.CONTINUE;
+            }
+            final long time = Long.parseLong(suffix);
+            consumer.accept(file, time);
+            return super.visitFile(file, attrs);
+        }
     }
 
 }

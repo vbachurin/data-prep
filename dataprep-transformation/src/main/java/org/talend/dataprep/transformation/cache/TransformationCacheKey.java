@@ -17,8 +17,8 @@ import java.io.IOException;
 import java.util.Objects;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
+import org.talend.dataprep.api.export.ExportParameters;
 import org.talend.dataprep.cache.ContentCacheKey;
 
 /**
@@ -28,6 +28,12 @@ public class TransformationCacheKey implements ContentCacheKey {
 
     /** Format parameters (if any, if none, default to empty string) */
     private final String parameters;
+
+    /** The source type */
+    private final ExportParameters.SourceType sourceType;
+
+    /** The User id */
+    private final String userId;
 
     /** The dataset id. */
     private String datasetId;
@@ -42,29 +48,23 @@ public class TransformationCacheKey implements ContentCacheKey {
     private String format;
 
     /**
-     * Create a content cache for this transformation.
-     *
-     * @param preparationId the preparation id.
-     * @param metadata the dataset metadata.
-     * @param format the transformation format.
-     * @param stepId the preparation version (step).
-     * @throws IOException if an error occurs while computing the cache key.
+     * Create a cache key for transformation result content
+     * @param preparationId The preparation id.
+     * @param datasetId the dataset id.
+     * @param format The output format.
+     * @param stepId The step id.
+     * @param parameters Additional parameters.
+     * @param sourceType The source type.
+     * @param userId The user id.
      */
-    public TransformationCacheKey(String preparationId, String datasetId, String format, String stepId) throws IOException {
-        this(preparationId, datasetId, format, StringUtils.EMPTY, stepId);
-    }
-
-    /**
-     * Create a content cache key that only matches the given dataset id.
-     *
-     * @param preparationId the preparation id.
-     * @param metadata the dataset metadata.
-     * @param format the transformation format.
-     * @param stepId the preparation version (step).
-     * @throws IOException if an error occurs while computing the cache key.
-     */
-    public TransformationCacheKey(String preparationId, String datasetId, String format, String parameters, String stepId)
-            throws IOException {
+    TransformationCacheKey(
+            final String preparationId,
+            final String datasetId,
+            final String format,
+            final String stepId,
+            final String parameters,
+            final ExportParameters.SourceType sourceType,
+            final String userId) {
         if (StringUtils.equals("head", stepId)) {
             throw new IllegalArgumentException("'head' is not allowed as step id for cache key");
         }
@@ -73,6 +73,8 @@ public class TransformationCacheKey implements ContentCacheKey {
         this.format = format;
         this.stepId = stepId;
         this.parameters = parameters;
+        this.sourceType = sourceType;
+        this.userId = userId;
     }
 
     /**
@@ -80,8 +82,15 @@ public class TransformationCacheKey implements ContentCacheKey {
      */
     @Override
     public String toString() {
-        return "TransformationCacheKey{" + "datasetId='" + datasetId + '\'' + ", preparationId='" + preparationId + '\''
-                + ", stepId='" + stepId + '\'' + ", format='" + format + '\'' + '}';
+        return "TransformationCacheKey{"
+                + "datasetId='" + datasetId  + '\''
+                + ", preparationId='" + preparationId + '\''
+                + ", format='" + format + '\''
+                + ", stepId='" + stepId + '\''
+                + ", parameters='" + parameters + '\''
+                + ", sourceType='" + sourceType + '\''
+                + ", userId='" + userId + '\''
+                + '}';
     }
 
     /**
@@ -91,6 +100,7 @@ public class TransformationCacheKey implements ContentCacheKey {
      */
     @Override
     public String getKey() {
-        return "transformation-" + DigestUtils.sha1Hex(preparationId + datasetId + stepId + format + Objects.hash(parameters));
+        return "transformation_" + DigestUtils.sha1Hex(
+                preparationId + datasetId + stepId + format + Objects.hash(parameters) + sourceType + userId);
     }
 }

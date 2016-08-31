@@ -17,6 +17,14 @@ public interface RuntimeNode {
     void receive(DataSetRow row, RowMetadata metadata);
 
     /**
+     * Called by an incoming {@link RuntimeLink} when new group of row is submitted to the pipeline.
+     *
+     * @param rows An array of {@link DataSetRow row} to be processed by this node.
+     * @param metadatas The array of {@link RowMetadata row metadata} to be used when processing the <code>row</code>.
+     */
+    void receive(DataSetRow[] rows, RowMetadata[] metadatas);
+
+    /**
      * Sends a {@link Signal event} to the node. Signals are data-independent events to indicate external events (such
      * as end of the stream). Node implementations are responsible of the signal propagation using the
      * {@link RuntimeLink link} .

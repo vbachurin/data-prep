@@ -18,6 +18,14 @@ public interface RuntimeLink {
     void emit(DataSetRow row, RowMetadata metadata);
 
     /**
+     * Emits a new row and its corresponding metadata.
+     *
+     * @param rows An array of {@link DataSetRow row} to emit to the next {@link RuntimeNode}.
+     * @param metadatas The array of {@link RowMetadata row metadata} to be used by the next {@link RuntimeNode}.
+     */
+    void emit(DataSetRow[] rows, RowMetadata[] metadatas);
+
+    /**
      * Sends a {@link Signal event} to the {@link RuntimeNode}. Signals are data-independent events to indicate external
      * events (such as end of the stream).
      * 

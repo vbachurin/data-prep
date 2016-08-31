@@ -291,9 +291,9 @@ public class SplitTest extends AbstractMetadataBaseTest {
 
         // when
         ActionTestWorkbench.test(Collections.singletonList(row), //
-                c -> analyzerService.schemaAnalysis(c), // Test requires some analysis in asserts
-                c -> analyzerService.full(c), // Test requires some analysis in asserts
-                actionRegistry, factory.create(action, parameters));
+                analyzerService, // Test requires some analysis in asserts
+                actionRegistry,
+                factory.create(action, parameters));
 
         // then
         Statistics originalStats = row.getRowMetadata().getById("0001").getStatistics();

@@ -32,13 +32,9 @@ public class InvalidDetectionNode extends ColumnFilteredNode implements Monitore
 
     private long count;
 
-    public InvalidDetectionNode(AnalyzerService analyzerService, Predicate<? super ColumnMetadata> filter) {
+    public InvalidDetectionNode(final AnalyzerService analyzerService, final Predicate<? super ColumnMetadata> filter) {
         super(filter);
-        if (analyzerService != null) {
-            this.analyzer = c -> analyzerService.build(c, AnalyzerService.Analysis.QUALITY);
-        } else {
-            this.analyzer = c -> Analyzers.with(NullAnalyzer.INSTANCE);
-        }
+        this.analyzer = c -> analyzerService.build(c, AnalyzerService.Analysis.QUALITY);
     }
 
     @Override

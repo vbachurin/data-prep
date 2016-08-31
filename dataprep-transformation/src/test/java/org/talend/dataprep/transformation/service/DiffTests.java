@@ -13,10 +13,10 @@
 
 package org.talend.dataprep.transformation.service;
 
-import static com.jayway.restassured.RestAssured.given;
-import static org.junit.Assert.assertThat;
-import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
-import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
+import com.jayway.restassured.http.ContentType;
+import org.apache.commons.io.IOUtils;
+import org.junit.Test;
+import org.talend.dataprep.transformation.preview.api.PreviewParameters;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,11 +24,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
-import org.junit.Test;
-import org.talend.dataprep.transformation.preview.api.PreviewParameters;
-
-import com.jayway.restassured.http.ContentType;
+import static com.jayway.restassured.RestAssured.given;
+import static org.junit.Assert.assertThat;
+import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
+import static org.talend.dataprep.api.export.ExportParameters.SourceType.HEAD;
+import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
 
 /**
  * Diff integration tests.
@@ -42,7 +42,10 @@ public class DiffTests extends TransformationServiceBaseTests {
                 getSingleTransformation(), //
                 getMultipleTransformation(), //
                 createDataset("../preview/input.csv", "input4preview", "text/csv"), //
-                "[2,4,6]");
+                null, //
+                "[2,4,6]", //
+                HEAD
+        );
 
         // when
         final String response = given() //
@@ -63,7 +66,7 @@ public class DiffTests extends TransformationServiceBaseTests {
      * - delete a column (lastname here)
      * - add new columns (with split on city here)
      * - preview an action on the first new column (uppercase on 0000 here)
-     *
+     * <p>
      * -> lastname is still on the preview data for lines 4 & 6. it is absent (which is what we expect) only for the first line!
      */
     @Test
@@ -73,7 +76,10 @@ public class DiffTests extends TransformationServiceBaseTests {
                 getTransformation_TDP_1184_step_1(), //
                 getTransformation_TDP_1184_step_2(), //
                 createDataset("../preview/input.csv", "tdp-1184", "text/csv"), //
-                "[1,4,6]");
+                null, //
+                "[1,4,6]", //
+                HEAD
+        );
 
         // when
         final String response = given() //
@@ -95,7 +101,10 @@ public class DiffTests extends TransformationServiceBaseTests {
                 getSingleTransformation(), //
                 getMultipleTransformationWithNewColumn(), //
                 createDataset("../preview/input.csv", "input4preview", "text/csv"), //
-                null);
+                null, //
+                null, //
+                HEAD
+        );
         final List<PreviewParameters> input = Collections.singletonList(previewParams);
 
         // when
@@ -118,12 +127,18 @@ public class DiffTests extends TransformationServiceBaseTests {
                 getSingleTransformation(), //
                 getMultipleTransformationWithNewColumn(), //
                 datasetId, //
-                null);
+                null, //
+                null, //
+                HEAD
+        );
         final PreviewParameters previewParamsBis = new PreviewParameters( //
                 getMultipleTransformationWithNewColumn(), //
                 getMultipleTransformationWithNewColumnBis(), //
                 datasetId, //
-                null);
+                null, //
+                null, //
+                HEAD
+        );
         final List<PreviewParameters> input = new ArrayList<>(2);
         input.add(previewParams);
         input.add(previewParamsBis);
@@ -148,7 +163,10 @@ public class DiffTests extends TransformationServiceBaseTests {
                 getSingleTransformation(), //
                 getMultipleTransformationWithoutNewColumn(), //
                 createDataset("../preview/input.csv", "input4preview", "text/csv"), //
-                null);
+                null, //
+                null, //
+                HEAD
+        );
         final List<PreviewParameters> input = Collections.singletonList(previewParams);
 
         // when

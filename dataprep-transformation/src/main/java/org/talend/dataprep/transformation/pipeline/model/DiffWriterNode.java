@@ -1,8 +1,6 @@
 package org.talend.dataprep.transformation.pipeline.model;
 
 import java.io.IOException;
-import java.util.ArrayDeque;
-import java.util.Deque;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,13 +17,7 @@ public class DiffWriterNode extends BasicNode implements Monitored {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DiffWriterNode.class);
 
-    private final int sourceNumber;
-
     private final TransformerWriter writer;
-
-    private final Deque<DataSetRow> rowStack;
-
-    private final Deque<RowMetadata> metadataStack;
 
     private long totalTime;
 
@@ -35,11 +27,10 @@ public class DiffWriterNode extends BasicNode implements Monitored {
 
     private boolean endMetadata;
 
-    public DiffWriterNode(int sourceNumber, TransformerWriter writer) {
-        this.sourceNumber = sourceNumber;
+    private RowMetadata[] lastMetadatas;
+
+    public DiffWriterNode(final TransformerWriter writer) {
         this.writer = writer;
-        rowStack = new ArrayDeque<>(sourceNumber);
-        metadataStack = new ArrayDeque<>(sourceNumber);
     }
 
     @Override
@@ -53,24 +44,29 @@ public class DiffWriterNode extends BasicNode implements Monitored {
     }
 
     @Override
-    public void receive(DataSetRow row, RowMetadata metadata) {
+    public void receive(final DataSetRow[] rows, final RowMetadata[] metadatas) {
         final long start = System.currentTimeMillis();
         try {
+            // write start if not already started
             if (!startRecords) {
                 writer.startObject();
                 writer.fieldName("records");
                 writer.startArray();
                 startRecords = true;
             }
-            // Values
-            rowStack.push(row.clone());
-            emptyRowSources();
-            // Metadata
-            if (metadataStack.size() % sourceNumber == 0) {
-                metadataStack.clear();
+
+            // write diff
+            final DataSetRow initialRow = rows[rows.length - 1];
+            for (int i = rows.length - 2; i >= 0; --i) {
+                initialRow.diff(rows[i]);
             }
-            metadataStack.push(metadata.clone());
-        } catch (IOException e) {
+            if (initialRow.shouldWrite()) {
+                writer.write(initialRow);
+            }
+
+            // save metadata array to write at the end
+            lastMetadatas = metadatas;
+        } catch (final IOException e) {
             LOGGER.error("Unable to write record.", e);
         } finally {
             totalTime += System.currentTimeMillis() - start;
@@ -78,35 +74,22 @@ public class DiffWriterNode extends BasicNode implements Monitored {
         }
     }
 
-    private void emptyRowSources() throws IOException {
-        if (!rowStack.isEmpty() && rowStack.size() % sourceNumber == 0) {
-            final DataSetRow initialRow = rowStack.pop();
-            while (!rowStack.isEmpty()) {
-                initialRow.diff(rowStack.pop());
-            }
-            if (initialRow.shouldWrite()) {
-                writer.write(initialRow);
-            }
-        }
-    }
-
     @Override
     public void signal(Signal signal) {
-        if ((signal == Signal.END_OF_STREAM || signal == Signal.CANCEL) && !endMetadata) {
+        if ((signal == Signal.END_OF_STREAM || signal == Signal.CANCEL || signal == Signal.STOP) && !endMetadata) {
             final long start = System.currentTimeMillis();
             try {
-                emptyRowSources();
                 writer.endArray(); // <- end records
                 writer.fieldName("metadata"); // <- start metadata
                 writer.startObject();
 
                 writer.fieldName("columns");
-                final RowMetadata initialMetadata = metadataStack.pop();
-                while (!metadataStack.isEmpty()) {
-                    initialMetadata.diff(metadataStack.pop());
+                final RowMetadata initialMetadata = lastMetadatas[lastMetadatas.length - 1];
+                for (int i = lastMetadatas.length - 2; i >= 0; --i) {
+                    initialMetadata.diff(lastMetadatas[i]);
                 }
                 // Preview don't need statistics, so wipe them out
-                for (ColumnMetadata column : initialMetadata.getColumns()) {
+                for (final ColumnMetadata column : initialMetadata.getColumns()) {
                     column.getStatistics().setInvalid(0);
                     column.getQuality().setInvalid(0);
                 }

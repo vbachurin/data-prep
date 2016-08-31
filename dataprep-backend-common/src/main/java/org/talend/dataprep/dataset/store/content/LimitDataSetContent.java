@@ -11,7 +11,7 @@ import org.talend.dataprep.api.dataset.row.DataSetRow;
 @Component
 class LimitDataSetContent implements DataSetContentLimit {
 
-    @Value("${dataset.records.limit}")
+    @Value("${dataset.records.limit:10000}")
     private long limit;
 
     @Override

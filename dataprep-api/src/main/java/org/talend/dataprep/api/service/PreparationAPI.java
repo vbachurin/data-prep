@@ -13,21 +13,27 @@
 
 package org.talend.dataprep.api.service;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
+import static org.springframework.web.bind.annotation.RequestMethod.*;
+import static org.talend.daikon.exception.ExceptionContext.withBuilder;
+import static org.talend.dataprep.exception.error.PreparationErrorCodes.UNABLE_TO_READ_PREPARATION;
+import static org.talend.dataprep.util.SortAndOrderHelper.Order;
+import static org.talend.dataprep.util.SortAndOrderHelper.Sort;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.validation.Valid;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.netflix.hystrix.HystrixCommand;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
+import org.talend.dataprep.api.export.ExportParameters;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.preparation.AppendStep;
 import org.talend.dataprep.api.preparation.Preparation;
@@ -256,15 +262,17 @@ public class PreparationAPI extends APIService {
     @RequestMapping(value = "/api/preparations/{id}/content", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get preparation content by id and at a given version.", notes = "Returns the preparation content at version.")
     @Timed
-    public StreamingResponseBody getPreparation(
-            @PathVariable(value = "id") @ApiParam(name = "id", value = "Preparation id.") String preparationId,
+    public StreamingResponseBody getPreparation( //
+            @PathVariable(value = "id") @ApiParam(name = "id", value = "Preparation id.") String preparationId, //
             @RequestParam(value = "version", defaultValue = "head") @ApiParam(name = "version", value = "Version of the preparation (can be 'origin', 'head' or the version id). Defaults to 'head'.") String version,
-            @RequestParam(required = false, defaultValue = "full") @ApiParam(name = "sample", value = "Size of the wanted sample, if missing or 'full', the full preparation content is returned") String sample) {
+            @RequestParam(value = "from", defaultValue = "HEAD") @ApiParam(name = "from", value = "Where to get the data from") ExportParameters.SourceType from) {
+
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Retrieving preparation content (pool: {} )...", getConnectionStats());
+            LOG.debug("Retrieving preparation content for {}/{} (pool: {} )...", preparationId, version, getConnectionStats());
         }
+
         try {
-            HystrixCommand<InputStream> command = getCommand(PreparationGetContent.class, preparationId, version);
+            HystrixCommand<InputStream> command = getCommand(PreparationGetContent.class, preparationId, version, from);
             return CommandHelper.toStreaming(command);
         } finally {
             if (LOG.isDebugEnabled()) {

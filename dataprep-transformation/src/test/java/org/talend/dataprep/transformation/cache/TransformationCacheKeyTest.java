@@ -15,63 +15,60 @@ package org.talend.dataprep.transformation.cache;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-
-import java.io.IOException;
-import java.util.Date;
+import static org.talend.dataprep.api.export.ExportParameters.SourceType.FILTER;
 
 import org.junit.Test;
-import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetMetadata;
-import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.TransformationBaseTest;
 
 /**
  * Unit test for the TransformationCacheKey.
- * 
+ *
  * @see TransformationCacheKey
  */
 public class TransformationCacheKeyTest extends TransformationBaseTest {
 
-    /** When the unit test is created. */
-    private Long now;
-
-    /**
-     * Default empty constructor.
-     */
-    public TransformationCacheKeyTest() {
-        this.now = new Date().getTime();
-    }
-
     @Test
     public void shouldGenerateKey() throws Exception {
-        TransformationCacheKey key = getSampleKey("prep1", "good name", "JSON", "v1");
+        // when
+        final TransformationCacheKey key = createTestDefaultKey();
+
+        // then
         assertNotNull(key.getKey());
     }
 
     @Test
     public void shouldGenerateSameKey() throws Exception {
-        TransformationCacheKey key1 = getSampleKey("prep1", "good name", "JSON", "v3");
-        TransformationCacheKey key2 = getSampleKey("prep1", "good name", "JSON", "v3");
+        // given
+        final TransformationCacheKey key1 = createTestDefaultKey();
+        final TransformationCacheKey key2 = createTestDefaultKey(); // same params
+
+        // then
         assertEquals(key1.getKey(), key2.getKey());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void headNotAllowed() throws Exception {
-        getSampleKey("prep1", "good name", "JSON", "head");
+        // when
+        new TransformationCacheKey(
+                "prep1",
+                "123456789",
+                "JSON",
+                "head", // this is not allowed
+                "params",
+                FILTER,
+                "user 1"
+        );
     }
 
-    private TransformationCacheKey getSampleKey(String prepId, String name, String format, String step) throws IOException {
-        return new TransformationCacheKey(prepId, getDataSetMetadataSample(name).getId(), format, step);
-    }
-
-    private DataSetMetadata getDataSetMetadataSample(String name) {
-        return metadataBuilder.metadata() //
-                .id("123456789") //
-                .modified(now)
-                .created(now) //
-                .name(name).mediaType("String").encoding("ISO-8859-1")
-                .row(ColumnMetadata.Builder.column().name("col1").type(Type.STRING))
-                .row(ColumnMetadata.Builder.column().name("col2").type(Type.STRING))
-                .row(ColumnMetadata.Builder.column().name("col3").type(Type.STRING)).build();
+    private TransformationCacheKey createTestDefaultKey() {
+        return new TransformationCacheKey(
+                "prep1",
+                "123456789",
+                "JSON",
+                "v1",
+                "params",
+                FILTER,
+                "user 1"
+        );
     }
 }

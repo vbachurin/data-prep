@@ -13,6 +13,7 @@
 
 package org.talend.dataprep.api.service.command.preparation;
 
+import static org.talend.dataprep.api.export.ExportParameters.SourceType.HEAD;
 import static org.talend.dataprep.command.Defaults.pipeStream;
 
 import java.io.InputStream;
@@ -23,7 +24,7 @@ import org.apache.http.entity.StringEntity;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.org.talend.dataprep.api.export.ExportParameters;
+import org.talend.dataprep.api.export.ExportParameters;
 import org.talend.dataprep.command.GenericCommand;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.APIErrorCodes;
@@ -46,6 +47,15 @@ public class PreparationGetContent extends GenericCommand<InputStream> {
      * @param version the preparation version.
      */
     private PreparationGetContent(String id, String version) {
+        this(id, version, HEAD);
+    }
+
+    /**
+     * @param id the preparation id.
+     * @param version the preparation version.
+     * @param from where to read the data from.
+     */
+    private PreparationGetContent(String id, String version, ExportParameters.SourceType from) {
         super(PREPARATION_GROUP);
         this.id = id;
         this.version = version;
@@ -55,6 +65,7 @@ public class PreparationGetContent extends GenericCommand<InputStream> {
                 parameters.setPreparationId(this.id);
                 parameters.setStepId(this.version);
                 parameters.setExportType("JSON");
+                parameters.setFrom(from);
 
                 final String parametersAsString = objectMapper.writerFor(ExportParameters.class).writeValueAsString(parameters);
                 final HttpPost post = new HttpPost(transformationServiceUrl + "/apply");

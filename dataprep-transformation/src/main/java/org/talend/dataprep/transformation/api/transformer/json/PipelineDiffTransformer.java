@@ -34,7 +34,9 @@ import org.talend.dataprep.transformation.api.transformer.configuration.Configur
 import org.talend.dataprep.transformation.api.transformer.configuration.PreviewConfiguration;
 import org.talend.dataprep.transformation.format.WriterRegistrationService;
 import org.talend.dataprep.transformation.pipeline.*;
+import org.talend.dataprep.transformation.pipeline.builder.NodeBuilder;
 import org.talend.dataprep.transformation.pipeline.model.DiffWriterNode;
+import org.talend.dataprep.transformation.pipeline.node.BasicNode;
 
 /**
  * Transformer that preview the transformation (puts additional json content so that the front can display the
@@ -71,15 +73,18 @@ class PipelineDiffTransformer implements Transformer {
         Validate.notNull(input, "Input cannot be null.");
         final PreviewConfiguration previewConfiguration = (PreviewConfiguration) configuration;
         final RowMetadata rowMetadata = input.getMetadata().getRowMetadata();
-        final TransformerWriter writer = writerRegistrationService.getWriter(configuration.formatId(), configuration.output(),
-                configuration.getArguments());
+        final TransformerWriter writer = writerRegistrationService.getWriter(
+                configuration.formatId(),
+                configuration.output(),
+                configuration.getArguments()
+        );
 
         // Build diff pipeline
-        Node diffWriterNode = new DiffWriterNode(2, writer);
+        final Node diffWriterNode = new DiffWriterNode(writer);
         final String referenceActions = previewConfiguration.getReferenceActions();
         final String previewActions = previewConfiguration.getPreviewActions();
-        final Pipeline referencePipeline = buildPipeline(rowMetadata, referenceActions, previewConfiguration.getReferenceContext(), diffWriterNode);
-        final Pipeline previewPipeline = buildPipeline(rowMetadata, previewActions, previewConfiguration.getPreviewContext(), diffWriterNode);
+        final Pipeline referencePipeline = buildPipeline(rowMetadata, referenceActions);
+        final Pipeline previewPipeline = buildPipeline(rowMetadata, previewActions);
 
         // Filter source records (extract TDP ids information)
         final List<Long> indexes = previewConfiguration.getIndexes();
@@ -89,43 +94,30 @@ class PipelineDiffTransformer implements Transformer {
         final Predicate<DataSetRow> filter = isWithinWantedIndexes(minIndex, maxIndex);
 
         // Build diff pipeline
-        Node diffPipeline = NodeBuilder.filteredSource(filter) //
-                .toMany(referencePipeline, previewPipeline) //
+        final Node diffPipeline = NodeBuilder.filteredSource(filter) //
+                .dispatchTo(referencePipeline, previewPipeline) //
+                .zipTo(diffWriterNode) //
                 .build();
         // Run diff
         try {
             // Print pipeline before execution (for debug purposes).
-            logPipelineStatus(diffPipeline, "Before execution: {}");
+            diffPipeline.logStatus(LOGGER, "Before execution: {}");
             input.getRecords().forEach(r -> diffPipeline.exec().receive(r, rowMetadata));
             diffPipeline.exec().signal(Signal.END_OF_STREAM);
         } finally {
             // Print pipeline after execution (for debug purposes).
-            logPipelineStatus(diffPipeline, "After execution: {}");
-        }
-    }
-
-    // Log diff pipeline to DEBUG level using provided message
-    private void logPipelineStatus(Node diffPipeline, String message) {
-        if (LOGGER.isDebugEnabled()) {
-            final StringBuilder builder = new StringBuilder();
-            final PipelineConsoleDump visitor = new PipelineConsoleDump(builder);
-            diffPipeline.accept(visitor);
-            LOGGER.debug(message, builder);
+            diffPipeline.logStatus(LOGGER, "After execution: {}");
         }
     }
 
     private Pipeline buildPipeline(RowMetadata rowMetadata,
-                                   String actions,
-                                   TransformationContext transformationContext,
-                                   Node output) {
+                                   String actions) {
         return Pipeline.Builder.builder() //
                 .withAnalyzerService(analyzerService) //
                 .withActionRegistry(actionRegistry) //
                 .withActions(actionParser.parse(actions)) //
                 .withInitialMetadata(rowMetadata, true) //
-                .withOutput(() -> output) //
-                .withContext(transformationContext) //
-                .withInlineAnalysis(analyzerService::schemaAnalysis) //
+                .withOutput(BasicNode::new) //
                 .withGlobalStatistics(false) //
                 .allowMetadataChange(false) //
                 .withStatisticsAdapter(adapter) //

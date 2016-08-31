@@ -10,13 +10,19 @@ import org.talend.dataprep.api.dataset.statistics.StatisticsAdapter;
 import org.talend.dataprep.cache.ContentCache;
 import org.talend.dataprep.quality.AnalyzerService;
 import org.talend.dataprep.transformation.api.action.ActionParser;
+import org.talend.dataprep.transformation.api.transformer.ConfiguredCacheWriter;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
 import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
 import org.talend.dataprep.transformation.api.transformer.configuration.Configuration;
+import org.talend.dataprep.transformation.cache.CacheKeyGenerator;
+import org.talend.dataprep.transformation.cache.TransformationMetadataCacheKey;
 import org.talend.dataprep.transformation.format.WriterRegistrationService;
 import org.talend.dataprep.transformation.pipeline.ActionRegistry;
 import org.talend.dataprep.transformation.pipeline.Pipeline;
 import org.talend.dataprep.transformation.pipeline.model.WriterNode;
+
+import static org.talend.dataprep.cache.ContentCache.TimeToLive.DEFAULT;
+import static org.talend.dataprep.transformation.api.transformer.configuration.Configuration.Volume.SMALL;
 
 @Component
 public class PipelineTransformer implements Transformer {
@@ -41,35 +47,26 @@ public class PipelineTransformer implements Transformer {
     @Autowired
     ContentCache contentCache;
 
+    @Autowired
+    CacheKeyGenerator cacheKeyGenerator;
+
     @Override
     public void transform(DataSet input, Configuration configuration) {
         final RowMetadata rowMetadata = input.getMetadata().getRowMetadata();
         final TransformerWriter writer = writerRegistrationService.getWriter(configuration.formatId(), configuration.output(),
                 configuration.getArguments());
-        final Pipeline pipeline = Pipeline.Builder.builder().withAnalyzerService(analyzerService) //
+        final ConfiguredCacheWriter metadataWriter = new ConfiguredCacheWriter(contentCache, DEFAULT);
+        final TransformationMetadataCacheKey metadataKey = cacheKeyGenerator.generateMetadataKey(configuration.getPreparationId(), configuration.stepId(), configuration.getSourceType());
+        final Pipeline pipeline = Pipeline.Builder.builder()
+                .withAnalyzerService(analyzerService) //
                 .withActionRegistry(actionRegistry)
                 .withActions(actionParser.parse(configuration.getActions()))
-                .withInitialMetadata(rowMetadata, configuration.volume() == Configuration.Volume.SMALL)
-                .withInlineAnalysis(analyzerService::schemaAnalysis)
-                .withDelayedAnalysis(columns -> {
-                    if (columns.isEmpty()) {
-                        return NullAnalyzer.INSTANCE;
-                    } else {
-                        return analyzerService.build(columns, //
-                                AnalyzerService.Analysis.QUALITY, //
-                                AnalyzerService.Analysis.CARDINALITY, //
-                                AnalyzerService.Analysis.FREQUENCY, //
-                                AnalyzerService.Analysis.PATTERNS, //
-                                AnalyzerService.Analysis.LENGTH, //
-                                AnalyzerService.Analysis.QUANTILES, //
-                                AnalyzerService.Analysis.SUMMARY, //
-                                AnalyzerService.Analysis.HISTOGRAM);
-                    }
-                }) //
-                .withMonitor(configuration.getMonitor()).withFilter(configuration.getFilter())
+                .withInitialMetadata(rowMetadata, configuration.volume() == SMALL)
+                .withMonitor(configuration.getMonitor())
+                .withFilter(configuration.getFilter())
                 .withFilterOut(configuration.getOutFilter())
-                .withOutput(() -> new WriterNode(writer, contentCache, configuration.getPreparationId(), configuration.stepId()))
-                .withContext(configuration.getTransformationContext()).withStatisticsAdapter(adapter)
+                .withOutput(() -> new WriterNode(writer, metadataWriter, metadataKey))
+                .withStatisticsAdapter(adapter)
                 .withGlobalStatistics(configuration.isGlobalStatistics())
                 .allowMetadataChange(configuration.isAllowMetadataChange())
                 .build();

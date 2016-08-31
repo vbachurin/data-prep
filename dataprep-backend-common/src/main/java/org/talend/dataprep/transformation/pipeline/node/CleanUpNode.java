@@ -20,7 +20,7 @@ public class CleanUpNode extends BasicNode {
 
     @Override
     public void signal(Signal signal) {
-        if (signal == Signal.END_OF_STREAM || signal == Signal.CANCEL) {
+        if (signal == Signal.END_OF_STREAM || signal == Signal.CANCEL || signal == Signal.STOP) {
             try {
                 context.cleanup();
             } catch (Exception e) {
