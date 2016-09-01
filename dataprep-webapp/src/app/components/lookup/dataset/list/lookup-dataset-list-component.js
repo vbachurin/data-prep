@@ -29,7 +29,7 @@ const LookupDatasetListComponent = {
     bindings: {
         datasets: '<',
         searchText: '<',
-    }
+    },
 };
 
 export default LookupDatasetListComponent;

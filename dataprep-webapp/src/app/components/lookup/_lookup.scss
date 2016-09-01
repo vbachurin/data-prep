@@ -17,14 +17,14 @@
   @include flex-direction(column);
 
   .lookup-header {
-    @include flex-basis(20px);
+    @include flex-basis(15px);
     @include flex-grow(0);
     @include flex-shrink(0);
     border-top: 1px solid $medium-gray;
   }
 
   .lookup-container {
-    @include flex-basis(277px);
+    @include flex-basis(273px);
     @include flex-grow(0);
     @include flex-shrink(0);
     border-top: 1px solid $medium-gray;
@@ -37,7 +37,6 @@
       @include flex-grow(1);
       @include flex-shrink(1);
 
-      height: 277px;
       position: relative;
 
       #lookup-add-instruction {

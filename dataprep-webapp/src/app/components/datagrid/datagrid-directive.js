@@ -46,9 +46,10 @@ export default function Datagrid($timeout, state, DatagridGridService, DatagridC
         controller() {
             this.state = state;
             this.datagridTooltipService = DatagridTooltipService;
+            this.datagridHeight = '100%';
         },
 
-        link(scope, iElement) {
+        link(scope, iElement, attr, ctrl) {
             let grid;
             let columnTimeout;
             let columnStyleTimeout;
@@ -120,12 +121,12 @@ export default function Datagrid($timeout, state, DatagridGridService, DatagridC
             }
 
             /**
-                     * @ngdoc method
-                     * @name getResizeCondition
-                     * @methodOf data-prep.datagrid.directive:Datagrid
-                     * @description Return condition that trigger a grid resize
-                     */
-            function getResizeCondition() {
+             * @ngdoc method
+             * @name getLookupVisibility
+             * @methodOf data-prep.datagrid.directive:Datagrid
+             * @description Return condition that trigger a grid resize
+             */
+            function getLookupVisibility() {
                 return state.playground.lookup.visibility;
             }
 
@@ -272,7 +273,8 @@ export default function Datagrid($timeout, state, DatagridGridService, DatagridC
              */
             function resize() {
                 if (grid) {
-                    $timeout(grid.resizeCanvas, 250, false);
+                    ctrl.datagridHeight = getLookupVisibility() ? 'calc(100% - 315px)' : '100%';
+                    $timeout(grid.resizeCanvas, 0, false);
                 }
             }
 
@@ -317,7 +319,7 @@ export default function Datagrid($timeout, state, DatagridGridService, DatagridC
             /**
              * When lookup is displayed/hidden changes, the grid should be resized fit available space
              */
-            scope.$watch(getResizeCondition, resize);
+            scope.$watch(getLookupVisibility, resize);
 
             /**
              * when new columns are selected

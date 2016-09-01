@@ -44,6 +44,13 @@ $slide-action-background: $base-background-color;
       margin: 10px;
       @include calc(height, "100vh - 130px");
     }
+
+    .lookup-slide {
+      .content {
+        height: 318px;
+        overflow: hidden;
+      }
+    }
   }
 }
 

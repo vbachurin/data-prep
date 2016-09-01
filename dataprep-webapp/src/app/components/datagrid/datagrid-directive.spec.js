@@ -219,6 +219,26 @@ describe('Datagrid directive', () => {
             //then
             expect(grid.resizeCanvas).toHaveBeenCalled();
         }));
+
+        it('should change grid height on lookup visibility change', inject(($timeout) => {
+            //given
+            createElement();
+            stateMock.playground.data = { metadata: { columns: [{ id: '0000' }, { id: '0001' }] }, preview: false };
+            scope.$digest();
+            let ctrl = element.controller('datagrid');
+
+            $timeout.flush();
+            expect(ctrl.datagridHeight).toEqual('100%');
+
+            //when
+            stateMock.playground.lookup.visibility = true;
+            scope.$digest();
+            $timeout.flush();
+
+            //then
+            expect(ctrl.datagridHeight).toEqual('calc(100% - 315px)');
+        }));
+
     });
 
     describe('on filter change', () => {

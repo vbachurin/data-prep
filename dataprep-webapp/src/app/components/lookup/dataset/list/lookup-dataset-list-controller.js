@@ -20,7 +20,7 @@
 export default class LookupDatasetListCtrl {
     $onChanges() {
         this.filterDatasets();
-    };
+    }
 
     /**
      * @ngdoc method
@@ -38,7 +38,7 @@ export default class LookupDatasetListCtrl {
         else {
             this.filteredDatasets = this.datasets;
         }
-    };
+    }
 
     /**
      * @ngdoc method
@@ -50,6 +50,6 @@ export default class LookupDatasetListCtrl {
         if (dataset.enableToAddToLookup) {
             dataset.addedToLookup = !dataset.addedToLookup;
         }
-    };
+    }
 
 }
