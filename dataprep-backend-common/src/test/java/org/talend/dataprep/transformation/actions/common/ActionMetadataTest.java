@@ -28,13 +28,13 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.ActiveProfiles;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.parameters.Parameter;
+import org.talend.dataprep.transformation.actions.AbstractMetadataBaseTest;
 import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.actions.AbstractMetadataBaseTest;
-import org.talend.dataprep.parameters.Parameter;
 
 @ActiveProfiles(profiles = "test")
 public class ActionMetadataTest extends AbstractMetadataBaseTest {

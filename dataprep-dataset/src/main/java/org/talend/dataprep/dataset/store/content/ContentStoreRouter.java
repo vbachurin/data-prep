@@ -20,7 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 
 /**
  * Routes the requests to the targeted content store.

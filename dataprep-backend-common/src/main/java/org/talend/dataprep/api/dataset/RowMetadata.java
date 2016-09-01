@@ -18,7 +18,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.talend.dataprep.api.dataset.diff.Flag;
+import org.talend.dataprep.api.dataset.row.Flag;
 import org.talend.dataprep.api.dataset.json.ColumnContextDeserializer;
 
 import javax.annotation.Nonnull;

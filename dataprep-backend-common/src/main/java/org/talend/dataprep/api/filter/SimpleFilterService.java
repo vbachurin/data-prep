@@ -14,15 +14,12 @@
 package org.talend.dataprep.api.filter;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
-import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.text.ParseException;
 import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.Set;
 import java.util.function.Predicate;
 
 import org.apache.commons.lang.StringUtils;
@@ -33,8 +30,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.talend.daikon.number.BigDecimalParser;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.date.DateManipulator;
 import org.talend.dataprep.exception.TDPException;
@@ -129,9 +126,9 @@ public class SimpleFilterService implements FilterService {
         case MATCHES:
             return createMatchesPredicate(currentNode, columnId, value);
         case INVALID:
-            return createInvalidPredicate(columnId, rowMetadata);
+            return createInvalidPredicate(columnId);
         case VALID:
-            return createValidPredicate(columnId, rowMetadata);
+            return createValidPredicate(columnId);
         case EMPTY:
             return createEmptyPredicate(columnId);
         case RANGE:
@@ -291,30 +288,20 @@ public class SimpleFilterService implements FilterService {
      * Create a predicate that checks if the value is invalid
      *
      * @param columnId The column id
-     * @param rowMetadata Row metadata to used to obtain information (valid/invalid, types...)
      * @return The invalid value predicate
      */
-    private Predicate<DataSetRow> createInvalidPredicate(final String columnId, RowMetadata rowMetadata) {
-        return r -> {
-            final Set<String> invalidValues = getInvalidValues(columnId, rowMetadata);
-            final String columnValue = r.get(columnId);
-            return invalidValues.contains(columnValue);
-        };
+    private Predicate<DataSetRow> createInvalidPredicate(final String columnId) {
+        return r -> r.isInvalid(columnId);
     }
 
     /**
      * Create a predicate that checks if the value is value (not empty and not invalid)
      *
      * @param columnId The column id
-     * @param rowMetadata Row metadata to used to obtain information (valid/invalid, types...)
      * @return The valid value predicate
      */
-    private Predicate<DataSetRow> createValidPredicate(final String columnId, RowMetadata rowMetadata) {
-        return r -> {
-            final Set<String> invalidValues = getInvalidValues(columnId, rowMetadata);
-            final String columnValue = r.get(columnId);
-            return isNotEmpty(columnValue) && !invalidValues.contains(columnValue);
-        };
+    private Predicate<DataSetRow> createValidPredicate(final String columnId) {
+        return r -> !r.isInvalid(columnId);
     }
 
     /**
@@ -398,20 +385,6 @@ public class SimpleFilterService implements FilterService {
             LOGGER.debug("Unable to create number range predicate.", e);
             throw new IllegalArgumentException("Unsupported query, malformed 'range' (expected number min and max properties).");
         }
-    }
-
-    /**
-     * Get the invalid value collection on a specific column
-     *
-     * @param columnId The column id
-     * @return The invalid values for the specified column
-     */
-    private Set<String> getInvalidValues(final String columnId, final RowMetadata rowMetadata) {
-        final ColumnMetadata column = rowMetadata.getById(columnId);
-        if (column != null) {
-            return column.getQuality().getInvalidValues();
-        }
-        return Collections.emptySet();
     }
 
     /**

@@ -18,7 +18,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
-import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.transformation.aggregation.api.AggregationResult;
 import org.talend.dataprep.transformation.aggregation.api.WorkingContext;
 

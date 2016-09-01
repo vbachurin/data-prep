@@ -1,7 +1,7 @@
 package org.talend.dataprep.transformation.pipeline;
 
-import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 
 /**
  * Links together {@link RuntimeNode nodes}. Each implementation is responsible for handling correct

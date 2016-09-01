@@ -14,18 +14,13 @@
 package org.talend.dataprep.transformation.actions.datablending;
 
 import static org.apache.commons.lang.StringUtils.EMPTY;
-import static org.talend.dataprep.transformation.actions.common.ImplicitParameters.COLUMN_ID;
-import static org.talend.dataprep.transformation.actions.datablending.Lookup.Parameters.*;
 import static org.talend.dataprep.parameters.ParameterType.LIST;
 import static org.talend.dataprep.parameters.ParameterType.STRING;
+import static org.talend.dataprep.transformation.actions.common.ImplicitParameters.COLUMN_ID;
+import static org.talend.dataprep.transformation.actions.datablending.Lookup.Parameters.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 
 import org.apache.commons.lang.StringUtils;
@@ -38,15 +33,15 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
+import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.transformation.actions.category.ActionCategory;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
+import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.transformation.actions.common.DataSetAction;
 import org.talend.dataprep.transformation.actions.common.ImplicitParameters;
-import org.talend.dataprep.parameters.Parameter;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

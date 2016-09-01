@@ -16,13 +16,14 @@ package org.talend.dataprep.api.dataset;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
-import static org.talend.dataprep.api.dataset.diff.Flag.*;
+import static org.talend.dataprep.api.dataset.row.Flag.*;
 
 import java.util.*;
 
 import org.junit.Test;
-import org.talend.dataprep.api.dataset.diff.Flag;
-import org.talend.dataprep.api.dataset.diff.FlagNames;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
+import org.talend.dataprep.api.dataset.row.Flag;
+import org.talend.dataprep.api.dataset.row.FlagNames;
 import org.talend.dataprep.api.type.Type;
 
 public class DataSetRowTest {
@@ -286,7 +287,7 @@ public class DataSetRowTest {
     @Test
     public void testToArrayFilterTdpId() throws Exception {
         final Map<String, String> values = new HashMap<>(4);
-        values.put(DataSetRow.TDP_ID, "1");
+        values.put(FlagNames.TDP_ID, "1");
         values.put("column0", "2");
         values.put("column1", "3");
         final DataSetRow row = new DataSetRow(values);
@@ -299,7 +300,7 @@ public class DataSetRowTest {
     @Test
     public void testToArrayMultipleFilters() throws Exception {
         final Map<String, String> values = new HashMap<>(4);
-        values.put(DataSetRow.TDP_ID, "1");
+        values.put(FlagNames.TDP_ID, "1");
         values.put("column0", "2");
         values.put("column1", "3");
         final DataSetRow row = new DataSetRow(values);

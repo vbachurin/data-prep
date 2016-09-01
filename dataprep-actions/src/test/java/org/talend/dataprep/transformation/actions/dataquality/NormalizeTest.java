@@ -25,13 +25,13 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.actions.AbstractMetadataBaseTest;
 import org.talend.dataprep.transformation.actions.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.actions.category.ActionCategory;
 import org.talend.dataprep.transformation.actions.text.LowerCase;
+import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 
 /**
  * Test class for LowerCase action. Creates one consumer, and test it.
@@ -88,13 +88,11 @@ public class NormalizeTest extends AbstractMetadataBaseTest {
     public void should_do_nothing_since_column_does_not_exist() {
         //given
         final Map<String, String> values = new HashMap<>();
-        values.put("name", "Vincent");
-        values.put("joined", "May 20th 2015");
+        values.put("0000", "Vincent");
         final DataSetRow row = new DataSetRow(values);
 
         final Map<String, Object> expectedValues = new HashMap<>();
-        expectedValues.put("name", "Vincent");
-        expectedValues.put("joined", "May 20th 2015");
+        expectedValues.put("0000", "Vincent");
 
         //when
         ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));

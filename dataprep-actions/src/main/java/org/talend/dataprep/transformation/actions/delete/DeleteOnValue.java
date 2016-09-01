@@ -26,6 +26,7 @@ import javax.annotation.Nonnull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
@@ -89,13 +90,13 @@ public class DeleteOnValue extends AbstractDelete {
     }
 
     /**
-     * @see AbstractDelete#toDelete(ActionContext, String)
+     * @see AbstractDelete#toDelete(DataSetRow, String, ActionContext)
      */
     @Override
-    public boolean toDelete(ActionContext context, String value) {
+    public boolean toDelete(DataSetRow dataSetRow, String columnId, ActionContext context) {
         try {
             final ReplaceOnValueHelper helper = context.get("replaceOnValue");
-            return helper.matches(value);
+            return helper.matches(dataSetRow.get(columnId));
         } catch (IllegalArgumentException e) {
             return false;
         }

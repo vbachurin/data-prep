@@ -174,6 +174,5 @@ public class OptimizedExportStrategyTest extends TransformationServiceBaseTests 
 
         // Then
         final StreamingResponseBody execute = optimizedExportStrategy.execute(exportParameters);
-        execute.writeTo(System.out);
     }
 }

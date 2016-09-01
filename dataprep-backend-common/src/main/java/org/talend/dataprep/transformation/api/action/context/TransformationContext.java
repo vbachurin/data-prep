@@ -22,9 +22,9 @@ import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
-import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.transformation.api.action.DataSetRowAction;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.transformation.actions.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 
 /**
  * Transformation context used by ActionMetadata to store/access contextual values while running.

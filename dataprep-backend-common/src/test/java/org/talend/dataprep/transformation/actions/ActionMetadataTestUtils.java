@@ -16,12 +16,11 @@ package org.talend.dataprep.transformation.actions;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.api.dataset.statistics.Statistics;
 import org.talend.dataprep.api.preparation.Actions;
 import org.talend.dataprep.api.preparation.json.MixedContentMapModule;

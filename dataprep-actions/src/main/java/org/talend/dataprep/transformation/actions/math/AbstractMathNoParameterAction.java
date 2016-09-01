@@ -13,7 +13,7 @@
 package org.talend.dataprep.transformation.actions.math;
 
 import org.apache.commons.lang.math.NumberUtils;
-import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.transformation.actions.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 

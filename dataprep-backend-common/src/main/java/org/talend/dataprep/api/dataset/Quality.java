@@ -85,20 +85,6 @@ public class Quality implements Serializable {
         this.valid = valid;
     }
 
-    /**
-     * @return the invalid values
-     */
-    public Set<String> getInvalidValues() {
-        return invalidValues;
-    }
-
-    /**
-     * @param invalidValues the invalid values to set.
-     */
-    public void setInvalidValues(Set<String> invalidValues) {
-        this.invalidValues = invalidValues;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -119,8 +105,7 @@ public class Quality implements Serializable {
         if (valid != quality.valid) {
             return false;
         }
-        return invalidValues != null ? invalidValues.equals(quality.invalidValues) : quality.invalidValues == null;
-
+        return true;
     }
 
     @Override
@@ -128,7 +113,6 @@ public class Quality implements Serializable {
         int result = empty;
         result = 31 * result + invalid;
         result = 31 * result + valid;
-        result = 31 * result + (invalidValues != null ? invalidValues.hashCode() : 0);
         return result;
     }
 

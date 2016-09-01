@@ -29,7 +29,7 @@ import org.springframework.stereotype.Component;
 import org.talend.daikon.number.BigDecimalFormatter;
 import org.talend.daikon.number.BigDecimalParser;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.SelectParameter;

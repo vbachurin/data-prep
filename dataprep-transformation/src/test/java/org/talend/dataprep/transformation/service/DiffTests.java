@@ -137,7 +137,6 @@ public class DiffTests extends TransformationServiceBaseTests {
                 .asString();
 
         // then
-        System.out.printf(response);
         assertEquals("[{\"createdColumns\":[\"0009\"]}, {\"createdColumns\":[\"0010\"]}]", response, false);
     }
 

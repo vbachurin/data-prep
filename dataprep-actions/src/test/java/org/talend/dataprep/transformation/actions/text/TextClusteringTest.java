@@ -24,11 +24,11 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.actions.AbstractMetadataBaseTest;
 import org.talend.dataprep.transformation.actions.category.ActionCategory;
+import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 
 public class TextClusteringTest extends AbstractMetadataBaseTest {
 

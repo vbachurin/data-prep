@@ -2,10 +2,8 @@ package org.talend.dataprep.transformation.pipeline;
 
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
-import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.transformation.pipeline.link.BasicLink;

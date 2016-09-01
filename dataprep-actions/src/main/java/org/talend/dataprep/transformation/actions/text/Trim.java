@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.actions.category.ActionCategory;
 import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;

@@ -22,7 +22,7 @@ import java.util.Set;
 
 import org.talend.daikon.number.BigDecimalParser;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.transformation.actions.category.ActionCategory;

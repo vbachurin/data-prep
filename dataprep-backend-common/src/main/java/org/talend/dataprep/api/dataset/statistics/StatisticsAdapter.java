@@ -18,7 +18,10 @@ import static org.talend.dataprep.api.type.Type.*;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -36,6 +39,8 @@ import org.talend.dataprep.api.dataset.statistics.number.NumberHistogram;
 import org.talend.dataprep.api.dataset.statistics.number.StreamNumberHistogramStatistics;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.api.type.TypeUtils;
+import org.talend.dataquality.common.inference.Analyzers;
+import org.talend.dataquality.common.inference.ValueQualityStatistics;
 import org.talend.dataquality.semantic.classifier.SemanticCategoryEnum;
 import org.talend.dataquality.semantic.recognizer.CategoryFrequency;
 import org.talend.dataquality.semantic.statistics.SemanticType;
@@ -47,8 +52,6 @@ import org.talend.dataquality.statistics.numeric.summary.SummaryStatistics;
 import org.talend.dataquality.statistics.text.TextLengthStatistics;
 import org.talend.dataquality.statistics.type.DataTypeEnum;
 import org.talend.dataquality.statistics.type.DataTypeOccurences;
-import org.talend.dataquality.common.inference.Analyzers;
-import org.talend.dataquality.common.inference.ValueQualityStatistics;
 
 /**
  * Statistics adapter. This is used to inject every statistics part in the columns metadata.
@@ -83,30 +86,6 @@ public class StatisticsAdapter {
      * @param filter A {@link Predicate predicate} to filter columns to adapt.
      */
     public void adapt(List<ColumnMetadata> columns, List<Analyzers.Result> results, Predicate<ColumnMetadata> filter) {
-        genericAdapt(columns, results, filter);
-    }
-
-    /**
-     * Extract analysis result and inject them in columns metadata. This method allows to use a subtype, when possible,
-     * of the actual type that have been detected. This methods does not filter any column.
-     *
-     * @param columns The columns metadata
-     * @param results The analysis results
-     * @see #adapt(List, List, Predicate) to filter out columns during extraction of results.
-     */
-    public void adaptForSampling(List<ColumnMetadata> columns, List<Analyzers.Result> results) {
-        adaptForSampling(columns, results, c -> true);
-    }
-
-    /**
-     * Extract analysis result and inject them in columns metadata. This method allows to use a subtype, when possible,
-     * of the actual type that have been detected.
-     * 
-     * @param columns The columns metadata
-     * @param results The analysis results
-     * @param filter A {@link Predicate predicate} to filter columns to adapt.
-     */
-    public void adaptForSampling(List<ColumnMetadata> columns, List<Analyzers.Result> results, Predicate<ColumnMetadata> filter) {
         genericAdapt(columns, results, filter);
     }
 
@@ -173,7 +152,6 @@ public class StatisticsAdapter {
             quality.setEmpty((int) emptyCount);
             quality.setValid((int) validCount);
             quality.setInvalid((int) invalidCount);
-            quality.setInvalidValues(valueQualityStatistics.getInvalidValues());
             // ... and statistics
             statistics.setCount(allCount);
             statistics.setEmpty((int) emptyCount);

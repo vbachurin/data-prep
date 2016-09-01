@@ -22,10 +22,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
-import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.parameters.Parameter;
-import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.actions.AbstractMetadataBaseTest;
+import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 
 /**
  * Base class for all round tests.

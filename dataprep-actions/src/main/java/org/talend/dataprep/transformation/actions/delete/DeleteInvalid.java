@@ -21,6 +21,7 @@ import java.util.Set;
 
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
@@ -59,10 +60,8 @@ public class DeleteInvalid extends AbstractDelete {
     }
 
     @Override
-    public boolean toDelete(ActionContext context, String value) {
-        // update invalid values of column metadata to prevent unnecessary future analysis
-        final ColumnMetadata column = context.getRowMetadata().getById(context.getColumnId());
-        return column.getQuality().getInvalidValues().contains(value);
+    public boolean toDelete(DataSetRow dataSetRow, String columnId, ActionContext context) {
+        return dataSetRow.isInvalid(columnId);
     }
 
     @Override

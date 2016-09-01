@@ -40,12 +40,12 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadataBuilder;
-import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.test.MockTestApplication;
-import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.actions.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.actions.common.ActionFactory;
+import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.pipeline.ActionRegistry;
 
 /**

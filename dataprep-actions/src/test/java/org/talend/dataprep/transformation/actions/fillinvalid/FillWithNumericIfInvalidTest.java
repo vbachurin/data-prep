@@ -13,27 +13,27 @@
 
 package org.talend.dataprep.transformation.actions.fillinvalid;
 
-import static com.google.common.collect.Sets.newHashSet;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 import static org.talend.dataprep.transformation.actions.ActionMetadataTestUtils.getColumn;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.actions.AbstractMetadataBaseTest;
 import org.talend.dataprep.transformation.actions.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.actions.fill.FillInvalid;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 
 /**
  * Unit test for the FillWithNumericIfInvalid action.
@@ -48,7 +48,7 @@ public class FillWithNumericIfInvalidTest extends AbstractMetadataBaseTest {
 
     @PostConstruct
     public void init() {
-        fillInvalid = (FillInvalid) fillInvalid.adapt(ColumnMetadata.Builder.column().type(Type.INTEGER).build());
+        fillInvalid = fillInvalid.adapt(ColumnMetadata.Builder.column().type(Type.INTEGER).build());
     }
 
     @Test
@@ -60,9 +60,9 @@ public class FillWithNumericIfInvalidTest extends AbstractMetadataBaseTest {
         values.put("0002", "Something");
 
         final DataSetRow row = new DataSetRow(values);
+        row.setInvalid("0001");
         final RowMetadata rowMetadata = row.getRowMetadata();
         rowMetadata.getById("0001").setType(Type.INTEGER.getName());
-        rowMetadata.getById("0001").getQuality().setInvalidValues(Collections.singleton("N"));
 
         Map<String, String> parameters = ActionMetadataTestUtils
                 .parseParameters(this.getClass().getResourceAsStream("fillInvalidIntegerAction.json"));
@@ -89,7 +89,6 @@ public class FillWithNumericIfInvalidTest extends AbstractMetadataBaseTest {
         final DataSetRow row = new DataSetRow(values);
         final RowMetadata rowMetadata = row.getRowMetadata();
         rowMetadata.getById("0001").setType(Type.INTEGER.getName());
-        rowMetadata.getById("0001").getQuality().setInvalidValues(Collections.singleton("N"));
 
         Map<String, String> parameters = ActionMetadataTestUtils
                 .parseParameters(this.getClass().getResourceAsStream("fillInvalidIntegerAction.json"));

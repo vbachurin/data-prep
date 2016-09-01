@@ -6,7 +6,7 @@ import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 
 @Component
 class LimitDataSetContent implements DataSetContentLimit {
@@ -26,57 +26,57 @@ class LimitDataSetContent implements DataSetContentLimit {
 
     private class LimitDataSetContentStore extends DataSetContentStore {
 
-        private final DataSetContentStore store;
+        private final DataSetContentStore delegate;
 
         private LimitDataSetContentStore(DataSetContentStore store) {
-            this.store = store;
+            this.delegate = store;
         }
 
         @Override
         public void storeAsRaw(DataSetMetadata dataSetMetadata, InputStream dataSetContent) {
-            store.storeAsRaw(dataSetMetadata, dataSetContent);
+            delegate.storeAsRaw(dataSetMetadata, dataSetContent);
         }
 
         @Override
         public InputStream get(DataSetMetadata dataSetMetadata) {
-            return store.get(dataSetMetadata, limit);
+            return delegate.get(dataSetMetadata, limit);
         }
 
         @Override
         public Stream<DataSetRow> stream(DataSetMetadata dataSetMetadata, long limit) {
-            return stream(dataSetMetadata);
+            return delegate.stream(dataSetMetadata, LimitDataSetContent.this.limit);
         }
 
         @Override
         public Stream<DataSetRow> stream(DataSetMetadata dataSetMetadata) {
-            Stream<DataSetRow> dataSetRowStream = super.stream(dataSetMetadata, limit);
+            Stream<DataSetRow> dataSetRowStream = delegate.stream(dataSetMetadata, limit);
             // deal with dataset size limit (ignored if limit is <= 0)
             return dataSetRowStream.limit(limit);
         }
 
         @Override
         public InputStream getAsRaw(DataSetMetadata dataSetMetadata) {
-            return store.getAsRaw(dataSetMetadata, limit);
+            return delegate.getAsRaw(dataSetMetadata, limit);
         }
 
         @Override
         public InputStream getAsRaw(DataSetMetadata dataSetMetadata, long limit) {
-            return getAsRaw(dataSetMetadata);
+            return delegate.getAsRaw(dataSetMetadata);
         }
 
         @Override
         protected InputStream get(DataSetMetadata dataSetMetadata, long limit) {
-            return get(dataSetMetadata);
+            return delegate.get(dataSetMetadata);
         }
 
         @Override
         public void delete(DataSetMetadata dataSetMetadata) {
-            store.delete(dataSetMetadata);
+            delegate.delete(dataSetMetadata);
         }
 
         @Override
         public void clear() {
-            store.clear();
+            delegate.clear();
         }
     }
 }

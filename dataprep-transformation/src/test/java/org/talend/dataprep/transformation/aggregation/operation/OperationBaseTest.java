@@ -16,7 +16,7 @@ package org.talend.dataprep.transformation.aggregation.operation;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.transformation.aggregation.api.AggregationOperation;
 import org.talend.dataprep.transformation.aggregation.api.AggregationParameters;
 import org.talend.dataprep.transformation.aggregation.api.Operator;

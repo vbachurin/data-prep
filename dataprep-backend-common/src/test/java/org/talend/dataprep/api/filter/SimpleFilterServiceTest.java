@@ -23,16 +23,14 @@ import static org.mockito.Mockito.when;
 import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.function.Predicate;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.actions.date.DateParser;
 
@@ -50,11 +48,8 @@ public class SimpleFilterServiceTest {
     public void init() {
         datasetRowFromValues = new DataSetRow(new HashMap<>());
 
-        final Set<String> invalidValues = new HashSet<>();
-        invalidValues.add("invalid value");
         final ColumnMetadata column = new ColumnMetadata();
         column.setId("0001");
-        column.getQuality().setInvalidValues(invalidValues);
         rowMetadata = new RowMetadata();
         rowMetadata.setColumns(singletonList(column));
         datasetRowFromMetadata = new DataSetRow(rowMetadata);
@@ -520,11 +515,10 @@ public class SimpleFilterServiceTest {
         final Predicate<DataSetRow> filter = service.build(filtersDefinition, rowMetadata);
 
         //then
-        datasetRowFromMetadata.set("0001", "invalid value"); //value in invalid array in column metadata
+        datasetRowFromMetadata.setInvalid("0001"); //value in invalid array in column metadata
         assertThat(filter.test(datasetRowFromMetadata), is(true));
-        datasetRowFromMetadata.set("0001", ""); //empty but not invalid
+        datasetRowFromMetadata.unsetInvalid("0001");
         assertThat(filter.test(datasetRowFromMetadata), is(false));
-        datasetRowFromMetadata.set("0001", "toto"); //correct value
         assertThat(filter.test(datasetRowFromMetadata), is(false));
     }
 
@@ -541,11 +535,12 @@ public class SimpleFilterServiceTest {
         final Predicate<DataSetRow> filter = service.build(filtersDefinition, rowMetadata);
 
         //then
-        datasetRowFromMetadata.set("0001", "invalid value"); //value in invalid array in column metadata
+        datasetRowFromMetadata.setInvalid("0001"); // value is marked as invalid
         assertThat(filter.test(datasetRowFromMetadata), is(false));
         datasetRowFromMetadata.set("0001", ""); //empty
         assertThat(filter.test(datasetRowFromMetadata), is(false));
-        datasetRowFromMetadata.set("0001", "toto"); //correct value
+        datasetRowFromMetadata.unsetInvalid("0001"); // value is marked as valid
+        datasetRowFromMetadata.set("0001", "toto"); // correct value
         assertThat(filter.test(datasetRowFromMetadata), is(true));
     }
 

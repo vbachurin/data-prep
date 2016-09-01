@@ -22,19 +22,18 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.actions.AbstractMetadataBaseTest;
 import org.talend.dataprep.transformation.actions.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.actions.category.ActionCategory;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 
 /**
  * Test class for ClearInvalid action. Creates one consumer, and test it.
@@ -81,11 +80,12 @@ public class ClearInvalidTest extends AbstractMetadataBaseTest {
         values.put("0002", "Something");
 
         final DataSetRow row = new DataSetRow(values);
+        row.setInvalid("0001");
         final RowMetadata rowMetadata = row.getRowMetadata();
         rowMetadata.getById("0001").setType(Type.STRING.getName());
-        rowMetadata.getById("0001").getQuality().getInvalidValues().add("N");
 
         final Map<String, Object> expectedValues = new LinkedHashMap<>();
+        expectedValues.put("__tdpInvalid", "0001");
         expectedValues.put("0000", "David Bowie");
         expectedValues.put("0001", "");
         expectedValues.put("0002", "Something");
@@ -152,10 +152,6 @@ public class ClearInvalidTest extends AbstractMetadataBaseTest {
 
         // then
         assertEquals(expectedValues, row.values());
-
-        // ... and column metadata invalid values are also updated
-        final Set<String> invalidValues = row.getRowMetadata().getById("0002").getQuality().getInvalidValues();
-        assertTrue(invalidValues.isEmpty());
     }
 
 

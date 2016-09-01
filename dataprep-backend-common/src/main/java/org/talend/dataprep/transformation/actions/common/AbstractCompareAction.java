@@ -25,13 +25,13 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataprep.parameters.SelectParameter;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
 public abstract class AbstractCompareAction extends AbstractActionMetadata
         implements ColumnAction, OtherColumnParameters, CompareAction {

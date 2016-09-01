@@ -12,16 +12,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSet;
-import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.api.dataset.statistics.StatisticsAdapter;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataprep.quality.AnalyzerService;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ImplicitParameters;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.transformer.json.NullAnalyzer;
 import org.talend.dataprep.transformation.pipeline.node.*;
 import org.talend.dataquality.common.inference.Analyzer;
@@ -279,18 +279,16 @@ public class Pipeline implements Node, RuntimeNode {
             }
             if (allowMetadataChange) {
                 if (actionToMetadata.get(action).getBehavior().contains(ActionMetadata.Behavior.NEED_STATISTICS)) {
-                    if (actionRegistry != null) {
-                        builder.to(new ReservoirNode(inlineAnalyzer, getReservoirStats(), analysis.filter, adapter));
-                    } else {
-                        builder.to(new ReservoirNode(inlineAnalyzer, getReservoirStats(), c -> true, adapter));
-                    }
+                    builder.to(new TypeDetectionNode(inlineAnalyzer, analysis.filter, adapter));
+                    builder.to(new InvalidDetectionNode(analyzerService, analysis.filter));
                 }
                 if (action.getParameters().containsKey(ImplicitParameters.FILTER.getKey())) {
                     // action has a filter, to cover cases where filters are on invalid values
                     final String filterAsString = action.getParameters().get(ImplicitParameters.FILTER.getKey());
                     if (StringUtils.contains(filterAsString, "valid") || StringUtils.contains(filterAsString, "invalid")) {
                         // TODO Perform static analysis of filter to discover which column is the filter on.
-                        builder.to(new ReservoirNode(inlineAnalyzer, getReservoirStats(), c -> true, adapter));
+                        builder.to(new TypeDetectionNode(inlineAnalyzer, analysis.filter, adapter));
+                        builder.to(new InvalidDetectionNode(analyzerService, analysis.filter));
                     }
                 }
             }
@@ -306,7 +304,7 @@ public class Pipeline implements Node, RuntimeNode {
             }
             if (rowMetadata.getColumns().isEmpty()) {
                 LOGGER.debug("No initial metadata submitted for transformation, computing new one.");
-                current.to(new ReservoirNode(inlineAnalyzer, getReservoirStats(), c -> true, adapter));
+                current.to(new TypeDetectionNode(inlineAnalyzer, c -> true, adapter));
             }
             // Apply actions
             for (Action action : actions) {
@@ -317,7 +315,8 @@ public class Pipeline implements Node, RuntimeNode {
             }
             // Analyze (delayed)
             if (analysis.needDelayedAnalysis && needGlobalStatistics) {
-                current.to(new ReservoirNode(inlineAnalyzer, delayedAnalyzer, analysis.filter, adapter));
+                current.to(new TypeDetectionNode(inlineAnalyzer, analysis.filter, adapter));
+                current.to(new StatisticsNode(delayedAnalyzer, analysis.filter, adapter));
             }
             // Output
             if (outFilter != null) {
@@ -328,16 +327,6 @@ public class Pipeline implements Node, RuntimeNode {
             current.to(monitorSupplier.get());
             // Finally build pipeline
             return new Pipeline(current.build());
-        }
-
-        private Function<List<ColumnMetadata>, Analyzer<Analyzers.Result>> getReservoirStats() {
-            return c -> {
-                if (analyzerService != null) {
-                    return analyzerService.build(c, AnalyzerService.Analysis.QUALITY);
-                } else {
-                    return delayedAnalyzer.apply(c);
-                }
-            };
         }
 
         private class ActionAnalysis {

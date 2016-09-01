@@ -30,14 +30,15 @@ import org.hamcrest.collection.IsIterableContainingInAnyOrder;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
+import org.talend.dataprep.api.dataset.row.FlagNames;
 import org.talend.dataprep.parameters.Parameter;
-import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.actions.AbstractMetadataBaseTest;
 import org.talend.dataprep.transformation.actions.common.ImplicitParameters;
 import org.talend.dataprep.transformation.actions.common.ReplaceOnValueHelper;
+import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 
 /**
  * Test class for Replace value action
@@ -419,7 +420,7 @@ public class ReplaceOnValueTest extends AbstractMetadataBaseTest {
 
         final Map<String, String> values = new HashMap<>();
         values.put(columnId, "Toto");
-        values.put(DataSetRow.TDP_ID, "85");
+        values.put(FlagNames.TDP_ID, "85");
         final DataSetRow row = new DataSetRow(values);
 
         final Map<String, String> parameters = new HashMap<>();

@@ -2,8 +2,8 @@ package org.talend.dataprep.transformation.pipeline.node;
 
 import java.util.function.Predicate;
 
-import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 
 public class FilteredSourceNode extends SourceNode {
 

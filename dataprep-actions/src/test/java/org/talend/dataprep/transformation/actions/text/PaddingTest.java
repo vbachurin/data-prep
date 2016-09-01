@@ -26,12 +26,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.actions.AbstractMetadataBaseTest;
 import org.talend.dataprep.transformation.actions.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.actions.category.ActionCategory;
+import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 
 /**
  * Test class for Padding action. Creates one consumer, and test it.
@@ -66,15 +66,15 @@ public class PaddingTest extends AbstractMetadataBaseTest {
     public void test_basic() {
         // given
         final Map<String, String> values = new HashMap<>();
-        values.put("name", "Vincent");
+        values.put("0000", "Vincent");
         values.put("0001", "10");
-        values.put("joined", "May 20th 2015");
+        values.put("0002", "May 20th 2015");
         final DataSetRow row = new DataSetRow(values);
 
         final Map<String, Object> expectedValues = new HashMap<>();
-        expectedValues.put("name", "Vincent");
+        expectedValues.put("0000", "Vincent");
         expectedValues.put("0001", "0010");
-        expectedValues.put("joined", "May 20th 2015");
+        expectedValues.put("0002", "May 20th 2015");
 
         // when
         ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));

@@ -21,8 +21,8 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import org.apache.commons.lang.StringUtils;
-import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.format.export.ExportFormat;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.format.JsonFormat;

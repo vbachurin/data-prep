@@ -1,5 +1,7 @@
 package org.talend.dataprep.transformation.pipeline;
 
+import org.talend.dataprep.api.dataset.row.DataSetRow;
+
 /**
  * To be implemented to indicate pipeline element can monitor performance.
  */
@@ -11,7 +13,7 @@ public interface Monitored {
     long getTotalTime();
 
     /**
-     * @return The number of {@link org.talend.dataprep.api.dataset.DataSetRow row} processed by this pipeline element.
+     * @return The number of {@link DataSetRow row} processed by this pipeline element.
      */
     long getCount();
 }

@@ -626,7 +626,6 @@ public class XlsSerializerTest extends AbstractSchemaTestUtils {
         try (InputStream inputStream = Files.newInputStream(path)) {
             List<Map<String, String>> values = getValuesFromInputStream( inputStream, dataSetMetadata );
             logger.debug("values: {}", values);
-            System.out.println( "values:" + values.size() + ";" + values.get( 0 ).size() );
         }
 
     }

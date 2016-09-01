@@ -24,14 +24,14 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.api.preparation.Action;
-import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.actions.AbstractMetadataBaseTest;
 import org.talend.dataprep.transformation.actions.column.Concat;
 import org.talend.dataprep.transformation.actions.common.ImplicitParameters;
 import org.talend.dataprep.transformation.actions.common.OtherColumnParameters;
 import org.talend.dataprep.transformation.actions.text.UpperCase;
+import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 
 public class MakeLineHeaderTest extends AbstractMetadataBaseTest {
 

@@ -11,10 +11,9 @@
 //
 // ============================================================================
 
-package org.talend.dataprep.api.dataset;
+package org.talend.dataprep.api.dataset.row;
 
 import static java.util.stream.StreamSupport.stream;
-import static org.talend.dataprep.api.dataset.diff.Flag.*;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -22,7 +21,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
-import org.talend.dataprep.api.dataset.diff.FlagNames;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 
 /**
@@ -30,12 +30,21 @@ import org.talend.dataprep.api.type.Type;
  */
 public class DataSetRow implements Cloneable {
 
-    public static final String TDP_ID = "tdpId";
-
     /**
+     * <p>
      * Filter for {@link #toArray(Predicate[])} that filters out TDP_ID column in results.
+     * </p>
+     * <p>
+     * Example:<br/>
+     * <code>
+     *      String[] filteredValues = row.toArray(DataSetRow.SKIP_TDP_ID);
+     * </code>
+     * </p>
      */
-    public static final Predicate<Map.Entry<String, String>> SKIP_TDP_ID = e -> !DataSetRow.TDP_ID.equals(e.getKey());
+    public static final Predicate<Map.Entry<String, String>> SKIP_TDP_ID = e -> !FlagNames.TDP_ID.equals(e.getKey());
+
+    /** Internal values (not set by user). */
+    private Map<String, String> internalValues = new TreeMap<>();
 
     /** Metadata information (columns...) about this DataSetRow */
     private RowMetadata rowMetadata;
@@ -50,7 +59,10 @@ public class DataSetRow implements Cloneable {
     private DataSetRow oldValue;
 
     /** Row id */
-    private Long tdpId;
+    private Long rowId;
+
+    /** A structure to speed up invalid related operations */
+    private final Set<String> invalidColumnIds = new HashSet<>();
 
     /**
      * Constructor with values.
@@ -67,11 +79,13 @@ public class DataSetRow implements Cloneable {
      */
     public DataSetRow(RowMetadata rowMetadata, Map<String, ?> values) {
         this(rowMetadata);
-        values.forEach((k, v) -> this.values.put(k, String.valueOf(v)));
+        values.forEach((k, v) -> set(k, String.valueOf(v)));
     }
 
     public DataSetRow(Map<String, String> values) {
-        this.values.putAll(values);
+        for (Map.Entry<String, String> entry : values.entrySet()) {
+            set(entry.getKey(), entry.getValue());
+        }
         List<ColumnMetadata> columns = values.keySet().stream() //
                 .map(columnName -> ColumnMetadata.Builder.column().name(columnName).type(Type.STRING).build()) //
                 .collect(Collectors.toList());
@@ -92,11 +106,17 @@ public class DataSetRow implements Cloneable {
     /**
      * Set an entry in the dataset row
      *
-     * @param name - the key
+     * @param id - the key
      * @param value - the value
      */
-    public DataSetRow set(final String name, final String value) {
-        values.put(name, value);
+    public DataSetRow set(final String id, final String value) {
+        if (StringUtils.startsWith(id, FlagNames.INTERNAL_PROPERTY_PREFIX)) {
+            internalValues.put(id, value);
+        } else if (FlagNames.TDP_ID.equals(id)) {
+            setTdpId(Long.parseLong(value));
+        } else {
+            values.put(id, value);
+        }
         return this;
     }
 
@@ -107,7 +127,11 @@ public class DataSetRow implements Cloneable {
      * @return - the value as string
      */
     public String get(final String id) {
-        return values.get(id);
+        if (StringUtils.startsWith(id, FlagNames.INTERNAL_PROPERTY_PREFIX)) {
+            return internalValues.get(id);
+        } else {
+            return values.get(id);
+        }
     }
 
     /**
@@ -145,6 +169,9 @@ public class DataSetRow implements Cloneable {
 
         final Map<String, Object> result = new LinkedHashMap<>(values.size() + 1);
 
+        // put all invalid column ids
+        result.putAll(internalValues);
+
         // if not old value, no diff to compute
         if (this.oldValue == null) {
             result.putAll(values);
@@ -153,12 +180,12 @@ public class DataSetRow implements Cloneable {
 
         // row is no more deleted : we write row values with the *NEW* flag
         if (oldValue.isDeleted() && !isDeleted()) {
-            result.put(FlagNames.ROW_DIFF_KEY, NEW.getValue());
+            result.put(FlagNames.ROW_DIFF_KEY, Flag.NEW.getValue());
             result.putAll(values);
         }
         // row has been deleted : we write row values with the *DELETED* flag
         else if (!oldValue.isDeleted() && isDeleted()) {
-            result.put(FlagNames.ROW_DIFF_KEY, DELETE.getValue());
+            result.put(FlagNames.ROW_DIFF_KEY, Flag.DELETE.getValue());
             result.putAll(oldValue.values());
         }
 
@@ -169,27 +196,27 @@ public class DataSetRow implements Cloneable {
         final Map<String, Object> originalValues = oldValue.values();
 
         // compute the new value (column is not found in old value)
-        values.entrySet().stream().forEach(entry -> {
+        values.entrySet().forEach(entry -> {
             if (!originalValues.containsKey(entry.getKey())) {
-                diff.put(entry.getKey(), NEW.getValue());
+                diff.put(entry.getKey(), Flag.NEW.getValue());
             }
         });
 
         // compute the deleted values (column is deleted)
-        originalValues.entrySet().stream().forEach(entry -> {
+        originalValues.entrySet().forEach(entry -> {
             if (!values.containsKey(entry.getKey())) {
-                diff.put(entry.getKey(), DELETE.getValue());
+                diff.put(entry.getKey(), Flag.DELETE.getValue());
                 // put back the original entry so that the value can be displayed
-                values.put(entry.getKey(), (String) entry.getValue());
+                set(entry.getKey(), (String) entry.getValue());
             }
         });
 
         // compute the update values (column is still here but value is different)
-        values.entrySet().stream().forEach(entry -> {
+        values.entrySet().forEach(entry -> {
             if (originalValues.containsKey(entry.getKey())) {
                 final Object originalValue = originalValues.get(entry.getKey());
                 if (!StringUtils.equals(entry.getValue(), (String) originalValue)) {
-                    diff.put(entry.getKey(), UPDATE.getValue());
+                    diff.put(entry.getKey(), Flag.UPDATE.getValue());
                 }
             }
         });
@@ -205,7 +232,7 @@ public class DataSetRow implements Cloneable {
     public Map<String, Object> valuesWithId() {
         final Map<String, Object> temp = values();
         if (getTdpId() != null) {
-            temp.put(TDP_ID, getTdpId());
+            temp.put(FlagNames.TDP_ID, getTdpId());
         }
         return temp;
     }
@@ -217,8 +244,10 @@ public class DataSetRow implements Cloneable {
     public void clear() {
         deleted = false;
         oldValue = null;
-        tdpId = null;
+        rowId = null;
         values.clear();
+        internalValues.clear();
+        invalidColumnIds.clear();
     }
 
     /**
@@ -227,8 +256,9 @@ public class DataSetRow implements Cloneable {
     @Override
     public DataSetRow clone() {
         final DataSetRow clone = new DataSetRow(rowMetadata, values);
+        clone.internalValues = new HashMap<>(internalValues);
         clone.setDeleted(this.isDeleted());
-        clone.setTdpId(this.tdpId);
+        clone.setTdpId(this.rowId);
         return clone;
     }
 
@@ -253,7 +283,7 @@ public class DataSetRow implements Cloneable {
         if (o == null || getClass() != o.getClass())
             return false;
         DataSetRow that = (DataSetRow) o;
-        return Objects.equals(deleted, that.deleted) && Objects.equals(values, that.values) && Objects.equals(tdpId, that.tdpId);
+        return Objects.equals(deleted, that.deleted) && Objects.equals(values, that.values) && Objects.equals(rowId, that.rowId);
     }
 
     /**
@@ -266,11 +296,13 @@ public class DataSetRow implements Cloneable {
 
     @Override
     public String toString() {
-        return "DataSetRow{" +
-                ", values=" + values +
-                ", deleted=" + deleted +
-                ", oldValue=" + oldValue +
-                ", tdpId=" + tdpId +
+        return "DataSetRow{" + //
+                "internalValues=" + internalValues + //
+                ", rowMetadata=" + rowMetadata + //
+                ", values=" + values + //
+                ", deleted=" + deleted + //
+                ", oldValue=" + oldValue + //
+                ", rowId=" + rowId + //
                 '}';
     }
 
@@ -348,16 +380,16 @@ public class DataSetRow implements Cloneable {
         // Get as string array the selected columns
         final List<String> strings = stream.map(Map.Entry::getValue) //
                 .map(String::valueOf) //
-                .collect(Collectors.<String> toList());
+                .collect(Collectors.toList());
         return strings.toArray(new String[strings.size()]);
     }
 
     public Long getTdpId() {
-        return tdpId;
+        return rowId;
     }
 
     public void setTdpId(Long tdpId) {
-        this.tdpId = tdpId;
+        this.rowId = tdpId;
     }
 
     /**
@@ -385,13 +417,56 @@ public class DataSetRow implements Cloneable {
         final Set<ColumnMetadata> columnsToDelete = rowMetadata.getColumns().stream() //
                 .filter(c -> !columnsToKeep.contains(c.getId())) //
                 .collect(Collectors.toSet());
-        final RowMetadata clone = rowMetadata.clone();
+        final RowMetadata rowMetadataClone = rowMetadata.clone();
         final LinkedHashMap<String, String> filteredValues = new LinkedHashMap<>(this.values);
         for (ColumnMetadata columnMetadata : columnsToDelete) {
             filteredValues.remove(columnMetadata.getId());
-            clone.deleteColumnById(columnMetadata.getId());
+            rowMetadataClone.deleteColumnById(columnMetadata.getId());
         }
-        return new DataSetRow(clone, filteredValues);
+        final DataSetRow filteredDataSetRow = new DataSetRow(rowMetadataClone, filteredValues);
+        filteredDataSetRow.internalValues = new HashMap<>(internalValues);
+        return filteredDataSetRow;
+    }
+
+    /**
+     * Check if a column has an invalid value in this row.
+     * 
+     * @param columnId A column id in the line.
+     * @return <code>true</code> if column is marked as invalid in row, <code>false</code> otherwise or if column does not exist.
+     */
+    public boolean isInvalid(String columnId) {
+        final String currentInvalidColumnIds = get(FlagNames.TDP_INVALID);
+        return currentInvalidColumnIds != null && currentInvalidColumnIds.contains(columnId);
+    }
+
+    /**
+     * Mark column <code>columnId</code> as invalid.
+     * 
+     * @param columnId A column id in the line.
+     * @see #unsetInvalid(String)
+     */
+    public void setInvalid(String columnId) {
+        invalidColumnIds.add(columnId);
+        set(FlagNames.TDP_INVALID, invalidColumnIds.stream().collect(Collectors.joining(",")));
+    }
+
+    /**
+     * Unmark column <code>columnId</code> as invalid.
+     * 
+     * @param columnId A column id in the line.
+     * @see #setInvalid(String)
+     */
+    public void unsetInvalid(String columnId) {
+        invalidColumnIds.remove(columnId);
+        set(FlagNames.TDP_INVALID, invalidColumnIds.stream().collect(Collectors.joining(",")));
+    }
+
+    /**
+     * @return All technical/internal values in this line (values not meant to be displayed as is).
+     * @see FlagNames
+     */
+    public Map<String, String> getInternalValues() {
+        return internalValues;
     }
 
     /**
@@ -406,7 +481,7 @@ public class DataSetRow implements Cloneable {
 
         private final boolean deleted;
 
-        public UnmodifiableDataSetRow(DataSetRow delegate) {
+        private UnmodifiableDataSetRow(DataSetRow delegate) {
             super(delegate.rowMetadata);
             this.delegate = delegate;
             deleted = delegate.isDeleted();
@@ -420,14 +495,14 @@ public class DataSetRow implements Cloneable {
         /**
          * This method prevents changes on previous values and set empty string for all new columns.
          * 
-         * @param name - the key A column name.
+         * @param id - the key A column name.
          * @param value - the value The value to be set for column name.
          * @return This data set row for chaining calls.
          */
         @Override
-        public DataSetRow set(String name, String value) {
-            if (delegate.get(name) == null) {
-                return delegate.set(name, StringUtils.EMPTY);
+        public DataSetRow set(String id, String value) {
+            if (delegate.get(id) == null) {
+                return delegate.set(id, StringUtils.EMPTY);
             }
             return this;
         }
@@ -468,7 +543,7 @@ public class DataSetRow implements Cloneable {
         }
 
         @Override
-        public DataSetRow clone() {
+        public DataSetRow clone() { // NOSONAR
             return this;
         }
 
@@ -478,7 +553,7 @@ public class DataSetRow implements Cloneable {
         }
 
         @Override
-        public boolean equals(Object o) {
+        public boolean equals(Object o) { // NOSONAR
             return delegate.equals(o);
         }
 

@@ -12,14 +12,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.api.filter.FilterService;
 import org.talend.dataprep.api.preparation.Action;
+import org.talend.dataprep.transformation.actions.category.ScopeCategory;
 import org.talend.dataprep.transformation.api.action.DataSetMetadataAction;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.actions.category.ScopeCategory;
 import org.talend.dataprep.transformation.api.action.validation.ActionMetadataValidation;
 
 @Component

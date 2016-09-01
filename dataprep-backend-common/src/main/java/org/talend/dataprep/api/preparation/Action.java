@@ -19,7 +19,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 import org.springframework.data.annotation.Transient;
-import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 

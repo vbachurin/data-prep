@@ -1,5 +1,7 @@
 package org.talend.dataprep.transformation.pipeline;
 
+import static org.junit.Assert.*;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -10,7 +12,11 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.DisposableBean;
-import org.talend.dataprep.api.dataset.*;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.DataSet;
+import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
@@ -18,10 +24,6 @@ import org.talend.dataprep.transformation.api.action.context.TransformationConte
 import org.talend.dataprep.transformation.pipeline.link.BasicLink;
 import org.talend.dataprep.transformation.pipeline.link.CloneLink;
 import org.talend.dataprep.transformation.pipeline.node.*;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 public class PipelineTest {
 

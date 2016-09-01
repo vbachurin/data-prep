@@ -5,8 +5,8 @@ import java.io.OutputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.cache.ContentCache;
 import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
 import org.talend.dataprep.transformation.cache.TransformationMetadataCacheKey;

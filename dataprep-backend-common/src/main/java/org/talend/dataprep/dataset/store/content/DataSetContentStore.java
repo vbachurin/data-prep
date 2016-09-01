@@ -14,20 +14,26 @@
 package org.talend.dataprep.dataset.store.content;
 
 import java.io.InputStream;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetContent;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.json.DataSetRowIterator;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
+import org.talend.dataprep.api.dataset.row.InvalidMarker;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
+import org.talend.dataprep.quality.AnalyzerService;
 import org.talend.dataprep.schema.FormatFamily;
 import org.talend.dataprep.schema.Serializer;
+import org.talend.dataquality.common.inference.Analyzer;
+import org.talend.dataquality.common.inference.Analyzers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -38,6 +44,9 @@ public abstract class DataSetContentStore {
 
     @Value("${dataset.records.limit}")
     private long sampleSize;
+
+    @Autowired
+    AnalyzerService service;
 
     /** Format guesser factory. */
     @Autowired
@@ -126,10 +135,19 @@ public abstract class DataSetContentStore {
         Stream<DataSetRow> dataSetRowStream = StreamSupport.stream(rowIterable.spliterator(), false);
         // make sure to close the original input stream when closing this one
         AtomicLong tdpId = new AtomicLong(1);
+        final List<ColumnMetadata> columns = dataSetMetadata.getRowMetadata().getColumns();
+        final Analyzer<Analyzers.Result> analyzer = service.build(columns, AnalyzerService.Analysis.QUALITY);
+
         dataSetRowStream = dataSetRowStream.map(r -> {
+            final String[] values = r.order(columns).toArray(DataSetRow.SKIP_TDP_ID);
+            analyzer.analyze(values);
+            return r;
+        }) //
+        .map(new InvalidMarker(columns, analyzer)) // Mark invalid columns as detected by provided analyzer.
+        .map(r -> { //
             r.setTdpId(tdpId.getAndIncrement());
             return r;
-        }).onClose(() -> {
+        }).onClose(() -> { //
             try {
                 inputStream.close();
             } catch (Exception e) {

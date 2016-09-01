@@ -16,7 +16,11 @@ package org.talend.dataprep.transformation.api.action;
 import java.util.*;
 import java.util.function.Function;
 
-import org.talend.dataprep.api.dataset.*;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.DataSet;
+import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.api.dataset.statistics.StatisticsAdapter;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;

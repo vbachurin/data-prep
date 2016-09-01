@@ -13,13 +13,7 @@
 
 package org.talend.dataprep.transformation.actions.date;
 
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.api.dataset.statistics.PatternFrequency;
-import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.actions.ActionMetadataTestUtils;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -31,7 +25,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
+import org.talend.dataprep.api.dataset.statistics.PatternFrequency;
+import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.actions.ActionMetadataTestUtils;
 
 /**
  * Unit test for the DateParser class.

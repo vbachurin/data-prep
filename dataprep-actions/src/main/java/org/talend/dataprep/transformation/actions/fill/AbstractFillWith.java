@@ -28,8 +28,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
@@ -62,7 +62,7 @@ public abstract class AbstractFillWith extends AbstractActionMetadata implements
 
     protected Type type;
 
-    public abstract boolean shouldBeProcessed(String value, ColumnMetadata colMetadata);
+    public abstract boolean shouldBeProcessed(DataSetRow dataSetRow, String columnId);
 
     @Override
     public void compile(ActionContext actionContext) {
@@ -78,8 +78,7 @@ public abstract class AbstractFillWith extends AbstractActionMetadata implements
         final String columnId = context.getColumnId();
         final ColumnMetadata columnMetadata = context.getRowMetadata().getById(columnId);
 
-        final String value = row.get(columnId);
-        if (shouldBeProcessed(value, columnMetadata)) {
+        if (shouldBeProcessed(row, columnId)) {
             String newValue;
             // First, get raw new value regarding mode (constant or other column):
             if (parameters.get(MODE_PARAMETER).equals(CONSTANT_MODE)) {
@@ -101,7 +100,7 @@ public abstract class AbstractFillWith extends AbstractActionMetadata implements
                     newValue = ourNiceFormatter.format(date);
                 } catch (DateTimeException e) {
                     // Nothing to do, if we can't get a valid pattern, keep the raw value
-                    LOGGER.debug("Unable to parse date {}.", value, e);
+                    LOGGER.debug("Unable to parse date {}.", row.get(columnId), e);
                 }
             }
 

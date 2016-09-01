@@ -15,8 +15,8 @@ package org.talend.dataprep.transformation.api.transformer;
 
 import java.io.IOException;
 
-import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 
 /**
  * Writer used to write transformed datasets. This interface provides an common abstraction of the output format (JSON,

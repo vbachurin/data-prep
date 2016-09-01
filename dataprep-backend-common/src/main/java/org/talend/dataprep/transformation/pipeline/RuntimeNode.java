@@ -1,7 +1,7 @@
 package org.talend.dataprep.transformation.pipeline;
 
-import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 
 /**
  * A node is a processing unit inside the transformation pipeline.

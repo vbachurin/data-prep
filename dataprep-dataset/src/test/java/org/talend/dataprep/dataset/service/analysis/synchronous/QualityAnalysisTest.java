@@ -18,9 +18,7 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import java.io.InputStream;
-import java.util.HashSet;
 import java.util.Random;
-import java.util.Set;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,10 +93,6 @@ public class QualityAnalysisTest extends DataSetBaseTest {
         assertThat(quality.getValid(), is(6));
         assertThat(quality.getInvalid(), is(2));
         assertThat(quality.getEmpty(), is(1));
-
-        Set<String> expectedInvalidValues = new HashSet<>(1);
-        expectedInvalidValues.add("N/A");
-        assertThat(quality.getInvalidValues(), is(expectedInvalidValues));
 
     }
 

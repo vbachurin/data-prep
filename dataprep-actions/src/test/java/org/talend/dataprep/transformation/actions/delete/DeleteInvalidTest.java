@@ -13,25 +13,25 @@
 
 package org.talend.dataprep.transformation.actions.delete;
 
-import static com.google.common.collect.Sets.newHashSet;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.junit.Assert.*;
 import static org.talend.dataprep.transformation.actions.ActionMetadataTestUtils.getColumn;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.quality.AnalyzerService;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.actions.AbstractMetadataBaseTest;
 import org.talend.dataprep.transformation.actions.ActionMetadataTestUtils;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 
 /**
  * Test class for DeleteInvalid action. Creates one consumer, and test it.
@@ -71,9 +71,9 @@ public class DeleteInvalidTest extends AbstractMetadataBaseTest {
         values.put("0002", "Something");
 
         final DataSetRow row = new DataSetRow(values);
+        row.setInvalid("0001");
         final RowMetadata rowMetadata = row.getRowMetadata();
         rowMetadata.getById("0001").setType(Type.STRING.getName());
-        rowMetadata.getById("0001").getQuality().setInvalidValues(Collections.singleton("N"));
 
         //when
         final Action action = factory.create(deleteInvalid, parameters);

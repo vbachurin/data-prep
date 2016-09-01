@@ -18,23 +18,19 @@ import static org.junit.Assert.*;
 import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
 import static org.talend.dataprep.transformation.actions.ActionMetadataTestUtils.getColumn;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.actions.AbstractMetadataBaseTest;
 import org.talend.dataprep.transformation.actions.common.ImplicitParameters;
+import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 
 public class DeleteColumnTest extends AbstractMetadataBaseTest {
 

@@ -22,6 +22,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ColumnAction;
@@ -88,8 +89,8 @@ public class FillInvalid extends AbstractFillWith implements ColumnAction {
     }
 
     @Override
-    public boolean shouldBeProcessed(String value, ColumnMetadata colMetadata) {
-        return colMetadata.getQuality().getInvalidValues().contains(value);
+    public boolean shouldBeProcessed(DataSetRow dataSetRow, String columnId) {
+        return dataSetRow.isInvalid(columnId);
     }
 
     @Override

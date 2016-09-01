@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.talend.daikon.exception.ExceptionContext;
 import org.talend.daikon.number.BigDecimalParser;
-import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.parameters.Parameter;

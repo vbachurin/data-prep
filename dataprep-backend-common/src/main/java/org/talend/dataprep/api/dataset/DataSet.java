@@ -17,6 +17,7 @@ import java.util.stream.Stream;
 
 import org.talend.dataprep.api.dataset.json.DataSetRowStreamDeserializer;
 import org.talend.dataprep.api.dataset.json.DataSetRowStreamSerializer;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;

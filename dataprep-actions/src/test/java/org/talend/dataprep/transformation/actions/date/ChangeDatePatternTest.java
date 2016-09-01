@@ -26,13 +26,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.api.dataset.statistics.PatternFrequency;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.actions.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.actions.category.ActionCategory;
+import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 
 /**
  * Unit test for the ChangeDatePattern action.

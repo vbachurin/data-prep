@@ -24,7 +24,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.api.dataset.statistics.StatisticsAdapter;
 import org.talend.dataprep.dataset.store.content.ContentStoreRouter;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;

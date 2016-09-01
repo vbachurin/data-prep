@@ -18,7 +18,7 @@ import static org.talend.dataprep.transformation.actions.category.ActionCategory
 import java.util.EnumSet;
 import java.util.Set;
 
-import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ColumnAction;
@@ -41,11 +41,11 @@ public abstract class AbstractDelete extends AbstractActionMetadata implements C
      * Return true if the given value should be deleted.
      *
      *
-     * @param context
-     * @param value the value to delete.
-     * @return true if the given value should be deleted.
+     * @param dataSetRow the value to delete.
+     * @param columnId
+     *@param context  @return true if the given value should be deleted.
      */
-    public abstract boolean toDelete(ActionContext context, final String value);
+    public abstract boolean toDelete(final DataSetRow dataSetRow, String columnId, ActionContext context);
 
     /**
      * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext)
@@ -53,8 +53,7 @@ public abstract class AbstractDelete extends AbstractActionMetadata implements C
     @Override
     public void applyOnColumn(DataSetRow row, ActionContext context) {
         final String columnId = context.getColumnId();
-        final String value = row.get(columnId);
-        if (toDelete(context, value)) {
+        if (toDelete(row, columnId, context)) {
             row.setDeleted(true);
         }
     }

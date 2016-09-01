@@ -25,6 +25,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.ParameterType;
@@ -114,11 +116,14 @@ public class ClearMatching extends AbstractClear implements ColumnAction {
     }
 
     @Override
-    public boolean toClear(ColumnMetadata colMetadata, String value, ActionContext context) {
-        Map<String, String> parameters = context.getParameters();
-        String equalsValue = parameters.get(VALUE_PARAMETER);
+    public boolean toClear(DataSetRow dataSetRow, String columnId, ActionContext actionContext) {
+        final Map<String, String> parameters = actionContext.getParameters();
+        final RowMetadata rowMetadata = actionContext.getRowMetadata();
+        final ColumnMetadata columnMetadata = rowMetadata.getById(columnId);
+        final String value = dataSetRow.get(columnId);
+        final String equalsValue = parameters.get(VALUE_PARAMETER);
 
-        if (Type.get(colMetadata.getType()) == Type.BOOLEAN) { // for boolean we can accept True equalsIgnoreCase true
+        if (Type.get(columnMetadata.getType()) == Type.BOOLEAN) { // for boolean we can accept True equalsIgnoreCase true
             return StringUtils.equalsIgnoreCase(value, equalsValue);
         } else {
             ReplaceOnValueHelper replaceOnValueHelper = regexParametersHelper.build(equalsValue, true);

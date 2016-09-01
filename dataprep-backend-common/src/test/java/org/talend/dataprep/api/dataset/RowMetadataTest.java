@@ -16,14 +16,14 @@ package org.talend.dataprep.api.dataset;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
-import static org.talend.dataprep.api.dataset.diff.Flag.UPDATE;
+import static org.talend.dataprep.api.dataset.row.Flag.UPDATE;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
-import org.talend.dataprep.api.dataset.diff.Flag;
+import org.talend.dataprep.api.dataset.row.Flag;
 import org.talend.dataprep.api.type.Type;
 
 /**

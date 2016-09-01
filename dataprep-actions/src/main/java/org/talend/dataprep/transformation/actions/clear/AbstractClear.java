@@ -17,8 +17,7 @@ import java.util.EnumSet;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
@@ -31,21 +30,19 @@ public abstract class AbstractClear extends AbstractActionMetadata implements Co
     @Override
     public void applyOnColumn(DataSetRow row, ActionContext context) {
         final String columnId = context.getColumnId();
-        final String value = row.get(columnId);
-        final ColumnMetadata colMetadata = context.getRowMetadata().getById(columnId);
-        if (toClear(colMetadata, value, context)) {
+        if (toClear(row, columnId, context)) {
             row.set(columnId, StringUtils.EMPTY);
         }
     }
 
     /**
      *
-     * @param colMetadata
-     * @param value
-     * @param context
-     * @return return <code>true</code> if the column must be cleared
+     *
+     * @param dataSetRow @return return <code>true</code> if the column must be cleared
+     * @param columnId
+     * @param actionContext
      */
-    protected abstract boolean toClear(ColumnMetadata colMetadata, String value, ActionContext context);
+    protected abstract boolean toClear(DataSetRow dataSetRow, String columnId, ActionContext actionContext);
 
     @Override
     public Set<Behavior> getBehavior() {

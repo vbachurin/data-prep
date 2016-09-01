@@ -29,11 +29,11 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.transformation.actions.AbstractMetadataBaseTest;
 import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ImplicitParameters;
+import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 
 /**
  * Test class for Delete action. Creates one consumer, and test it.

@@ -11,7 +11,7 @@
 //
 //  ============================================================================
 
-package org.talend.dataprep.api.dataset.diff;
+package org.talend.dataprep.api.dataset.row;
 
 /**
  * Interface that holds constants on flag names.
@@ -26,6 +26,12 @@ public final class FlagNames {
 
     /** Key to put in the result values that tells that there is a difference at column level. */
     public static final String COLUMN_DIFF_KEY = "__tdpColumnDiff";
+
+    public static final String TDP_ID = "tdpId";
+
+    public static final String TDP_INVALID = "__tdpInvalid";
+
+    public static final String INTERNAL_PROPERTY_PREFIX = "__tdp";
 
     /**
      * Default private constructor.

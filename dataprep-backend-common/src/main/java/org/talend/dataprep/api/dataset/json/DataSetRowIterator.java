@@ -13,7 +13,7 @@
 
 package org.talend.dataprep.api.dataset.json;
 
-import static org.talend.dataprep.api.dataset.DataSetRow.TDP_ID;
+import static org.talend.dataprep.api.dataset.row.FlagNames.TDP_ID;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,8 +22,9 @@ import java.util.Iterator;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
+import org.talend.dataprep.api.dataset.row.FlagNames;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 
@@ -117,7 +118,7 @@ public class DataSetRowIterator implements Iterator<DataSetRow> {
                     break;
                 case VALUE_NUMBER_INT:
                 case VALUE_NUMBER_FLOAT:
-                    if (DataSetRow.TDP_ID.equals(currentFieldName)) {
+                    if (FlagNames.TDP_ID.equals(currentFieldName)) {
                         row.setTdpId(Long.parseLong(parser.getText()));
                     }
                     break;

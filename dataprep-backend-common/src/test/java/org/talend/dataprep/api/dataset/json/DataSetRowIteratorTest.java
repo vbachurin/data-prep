@@ -23,7 +23,7 @@ import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 
 /**
  * Unit test for the DataSetRowIterator.

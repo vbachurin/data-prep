@@ -18,8 +18,8 @@ import java.text.DecimalFormat;
 import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
-import org.talend.dataprep.api.dataset.diff.FlagNames;
 import org.talend.dataprep.api.dataset.location.SemanticDomain;
+import org.talend.dataprep.api.dataset.row.FlagNames;
 import org.talend.dataprep.api.dataset.statistics.Statistics;
 import org.talend.dataprep.api.type.Type;
 
@@ -540,7 +540,6 @@ public class ColumnMetadata implements Serializable {
             this.empty = originalQuality.getEmpty();
             this.invalid = originalQuality.getInvalid();
             this.valid = originalQuality.getValid();
-            this.invalidValues = originalQuality.getInvalidValues();
             this.headerSize = original.getHeaderSize();
             this.type = Type.get(original.getType());
             this.diffFlagValue = original.getDiffFlagValue();
@@ -566,7 +565,6 @@ public class ColumnMetadata implements Serializable {
             columnMetadata.getQuality().setEmpty(empty);
             columnMetadata.getQuality().setInvalid(invalid);
             columnMetadata.getQuality().setValid(valid);
-            columnMetadata.getQuality().setInvalidValues(invalidValues);
             columnMetadata.setHeaderSize(this.headerSize);
             columnMetadata.setDiffFlagValue(this.diffFlagValue);
             columnMetadata.setStatistics(this.statistics);

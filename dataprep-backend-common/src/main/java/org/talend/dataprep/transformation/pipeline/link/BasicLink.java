@@ -1,7 +1,7 @@
 package org.talend.dataprep.transformation.pipeline.link;
 
-import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.transformation.pipeline.*;
 
 public class BasicLink implements Link, RuntimeLink {

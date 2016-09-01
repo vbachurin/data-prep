@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ColumnAction;
@@ -67,10 +68,11 @@ public class DeleteEmpty extends AbstractDelete implements ColumnAction {
     }
 
     /**
-     * @see AbstractDelete#toDelete(ActionContext, String)
+     * @see AbstractDelete#toDelete(DataSetRow, String, ActionContext)
      */
     @Override
-    public boolean toDelete(ActionContext context, final String value) {
+    public boolean toDelete(final DataSetRow dataSetRow, String columnId, ActionContext context) {
+        final String value = dataSetRow.get(columnId);
         return value == null || value.trim().length() == 0;
     }
 }

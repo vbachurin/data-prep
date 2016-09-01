@@ -230,8 +230,6 @@ public class AnalyzerService implements DisposableBean {
                 }) //
                 .collect(Collectors.toList());
         final String[] domains = domainList.toArray(new String[domainList.size()]);
-        // Semantic indexes
-
 
         // Build all analyzers
         List<Analyzer> analyzers = new ArrayList<>();
@@ -249,8 +247,7 @@ public class AnalyzerService implements DisposableBean {
             case QUALITY:
                 final DataTypeQualityAnalyzer dataTypeQualityAnalyzer = new DataTypeQualityAnalyzer(types);
                 columns.forEach(c -> dataTypeQualityAnalyzer.addCustomDateTimePattern(getMostUsedDatePattern(c)));
-                analyzers.add(new ValueQualityAnalyzer(dataTypeQualityAnalyzer, new SemanticQualityAnalyzer(builder, domains),
-                        true)); // NOSONAR
+                analyzers.add(new ValueQualityAnalyzer(dataTypeQualityAnalyzer, new SemanticQualityAnalyzer(builder, domains, false), true)); // NOSONAR
                 break;
             case CARDINALITY:
                 analyzers.add(new CardinalityAnalyzer());

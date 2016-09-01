@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import org.springframework.stereotype.Component;
 import org.talend.daikon.number.BigDecimalParser;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ActionMetadata;
@@ -54,10 +55,11 @@ public class DeleteNegativeValues extends AbstractDelete {
     }
 
     /**
-     * @see AbstractDelete#toDelete(ActionContext, String)
+     * @see AbstractDelete#toDelete(DataSetRow, String, ActionContext)
      */
     @Override
-    public boolean toDelete(ActionContext context, String value) {
+    public boolean toDelete(DataSetRow dataSetRow, String columnId, ActionContext context) {
+        final String value = dataSetRow.get(columnId);
         if (value == null) {
             return false;
         }

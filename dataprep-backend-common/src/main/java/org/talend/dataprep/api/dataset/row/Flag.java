@@ -11,7 +11,7 @@
 //
 //  ============================================================================
 
-package org.talend.dataprep.api.dataset.diff;
+package org.talend.dataprep.api.dataset.row;
 
 /**
  * Flag used for the diff.

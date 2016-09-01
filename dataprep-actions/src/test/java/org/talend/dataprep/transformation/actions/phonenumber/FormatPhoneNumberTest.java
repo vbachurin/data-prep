@@ -12,24 +12,17 @@
 // ============================================================================
 package org.talend.dataprep.transformation.actions.phonenumber;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.talend.dataprep.transformation.actions.ActionMetadataTestUtils.getColumn;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.transformation.actions.AbstractMetadataBaseTest;

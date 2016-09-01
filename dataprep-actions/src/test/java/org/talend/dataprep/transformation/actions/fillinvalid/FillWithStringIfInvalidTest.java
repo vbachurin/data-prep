@@ -13,7 +13,6 @@
 
 package org.talend.dataprep.transformation.actions.fillinvalid;
 
-import static com.google.common.collect.Sets.newHashSet;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 import static org.talend.dataprep.transformation.actions.ActionMetadataTestUtils.getColumn;
@@ -27,17 +26,17 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.actions.AbstractMetadataBaseTest;
 import org.talend.dataprep.transformation.actions.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.actions.common.ImplicitParameters;
 import org.talend.dataprep.transformation.actions.fill.FillIfEmpty;
 import org.talend.dataprep.transformation.actions.fill.FillInvalid;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 
 /**
  * Unit test for the FillWithStringIfInvalid action.
@@ -52,7 +51,7 @@ public class FillWithStringIfInvalidTest extends AbstractMetadataBaseTest {
 
     @PostConstruct
     public void init() {
-        fillInvalid = (FillInvalid) fillInvalid.adapt(ColumnMetadata.Builder.column().type(Type.STRING).build());
+        fillInvalid = fillInvalid.adapt(ColumnMetadata.Builder.column().type(Type.STRING).build());
     }
 
     @Test
@@ -64,9 +63,9 @@ public class FillWithStringIfInvalidTest extends AbstractMetadataBaseTest {
         values.put("0002", "100");
 
         final DataSetRow row = new DataSetRow(values);
+        row.setInvalid("0002");
         final RowMetadata rowMetadata = row.getRowMetadata();
         rowMetadata.getById("0002").setType(Type.STRING.getName());
-        rowMetadata.getById("0002").getQuality().setInvalidValues(newHashSet("100"));
 
         Map<String, String> parameters = ActionMetadataTestUtils
                 .parseParameters(this.getClass().getResourceAsStream("fillInvalidStringAction.json"));
@@ -94,7 +93,6 @@ public class FillWithStringIfInvalidTest extends AbstractMetadataBaseTest {
         final DataSetRow row = new DataSetRow(values);
         final RowMetadata rowMetadata = row.getRowMetadata();
         rowMetadata.getById("0002").setType(Type.STRING.getName());
-        rowMetadata.getById("0002").getQuality().setInvalidValues(newHashSet("100"));
 
         Map<String, String> parameters = ActionMetadataTestUtils
                 .parseParameters(this.getClass().getResourceAsStream("fillInvalidStringAction.json"));
@@ -120,9 +118,9 @@ public class FillWithStringIfInvalidTest extends AbstractMetadataBaseTest {
         values.put("0002", "Something");
 
         final DataSetRow row = new DataSetRow(values);
+        row.setInvalid("0001");
         final RowMetadata rowMetadata = row.getRowMetadata();
         rowMetadata.getById("0001").setType(Type.STRING.getName());
-        rowMetadata.getById("0001").getQuality().setInvalidValues(newHashSet("DC"));
         rowMetadata.getById("0002").setType(Type.STRING.getName());
 
         Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
