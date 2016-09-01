@@ -172,51 +172,50 @@ public class TransformationServiceImpl extends BaseTransformationService impleme
             throw new TDPException(CommonErrorCodes.BAD_AGGREGATION_PARAMETERS, e);
         }
 
-        InputStream contentToAggregate;
-
-        // get the content of the preparation (internal call with piped streams)
-        if (StringUtils.isNotBlank(parameters.getPreparationId())) {
-            try {
-                PipedOutputStream temp = new PipedOutputStream();
-                contentToAggregate = new PipedInputStream(temp);
-
-                // because of piped streams, processing must be asynchronous
-                Runnable r = () -> {
-                    try {
-                        final ExportParameters exportParameters = new ExportParameters();
-                        exportParameters.setPreparationId(parameters.getPreparationId());
-                        exportParameters.setDatasetId(parameters.getDatasetId());
-                        if (parameters.getFilter() != null) {
-                            exportParameters.setFilter(mapper.readTree(parameters.getFilter()));
-                        }
-                        exportParameters.setExportType(JsonFormat.JSON);
-                        exportParameters.setStepId(parameters.getStepId());
-
-                        final StreamingResponseBody body = executeSampleExportStrategy(exportParameters);
-                        body.writeTo(temp);
-                    } catch (IOException e) {
-                        throw new TDPException(CommonErrorCodes.UNABLE_TO_AGGREGATE, e);
-                    }
-                };
-                executor.execute(r);
-            } catch (IOException e) {
-                throw new TDPException(CommonErrorCodes.UNABLE_TO_AGGREGATE, e);
-            }
-        } else {
-            contentToAggregate = clientService.of(DataSetService.class).get(true, parameters.getDatasetId());;
-        }
-
-        // apply the aggregation
-        try (JsonParser parser = mapper.getFactory().createParser(contentToAggregate)) {
-            final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
-            return aggregationService.aggregate(parameters, dataSet);
-        } catch (IOException e) {
-            throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
-        } finally {
-            // don't forget to release the connection
-            if (contentToAggregate != null) {
+        Closeable closeable = null;
+        try {
+            final DataSet dataSet;
+            // get the content of the preparation (internal call with piped streams)
+            if (StringUtils.isNotBlank(parameters.getPreparationId())) {
                 try {
-                    contentToAggregate.close();
+                    PipedOutputStream temp = new PipedOutputStream();
+                    InputStream contentToAggregate = new PipedInputStream(temp);
+
+                    // because of piped streams, processing must be asynchronous
+                    Runnable r = () -> {
+                        try {
+                            final ExportParameters exportParameters = new ExportParameters();
+                            exportParameters.setPreparationId(parameters.getPreparationId());
+                            exportParameters.setDatasetId(parameters.getDatasetId());
+                            if (parameters.getFilter() != null) {
+                                exportParameters.setFilter(mapper.readTree(parameters.getFilter()));
+                            }
+                            exportParameters.setExportType(JsonFormat.JSON);
+                            exportParameters.setStepId(parameters.getStepId());
+
+                            final StreamingResponseBody body = executeSampleExportStrategy(exportParameters);
+                            body.writeTo(temp);
+                        } catch (IOException e) {
+                            throw new TDPException(CommonErrorCodes.UNABLE_TO_AGGREGATE, e);
+                        }
+                    };
+                    executor.execute(r);
+                    JsonParser parser = mapper.getFactory().createParser(contentToAggregate);
+                    closeable = parser;
+                    dataSet = mapper.readerFor(DataSet.class).readValue(parser);
+                } catch (IOException e) {
+                    throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
+                }
+            } else {
+                dataSet = clientService.of(DataSetService.class).get(true, parameters.getDatasetId()).call();
+            }
+            return aggregationService.aggregate(parameters, dataSet);
+        } catch (Exception e) {
+            throw new TDPException(TransformationErrorCodes.UNEXPECTED_EXCEPTION, e);
+        } finally {
+            if (closeable != null) {
+                try {
+                    closeable.close();
                 } catch (IOException e) {
                     LOG.warn("Could not close dataset input stream while aggregating", e);
                 }
