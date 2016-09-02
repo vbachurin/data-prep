@@ -121,8 +121,6 @@ export default class DatagridStyleService {
      * @param {object} col The column to format
      */
     columnFormatter(col) {
-        const isInvalid = (value) => col.quality.invalidValues.indexOf(value) >= 0;
-
         function formatter(row, cell, value, columnDef, dataContext) {
             let classNames = (col.id === this.hightlightedColumnId) && (value === this.hightlightedContent) ?
                 'highlight' :
@@ -157,7 +155,8 @@ export default class DatagridStyleService {
             }
 
             const formattedValue = `<div class="${classNames}">${returnStr}</div>`;
-            const indicator = isInvalid(value) ?
+            const isInvalid = dataContext.__tdpInvalid && dataContext.__tdpInvalid.indexOf(columnDef.id) > -1;
+            const indicator = isInvalid ?
                 '<div title="Invalid Value" class="red-rect"></div>' :
                 '<div class="invisible-rect"></div>';
 

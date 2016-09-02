@@ -347,12 +347,11 @@ describe('Filter service', function () {
             it('should create filter', inject(function (FilterService, StateService) {
                 //given
                 expect(StateService.addGridFilter).not.toHaveBeenCalled();
-                var invalidValues = ['NA', 'N/A', 'N.A'];
                 var data = {
                     metadata: {
                         columns: [
-                            { id: 'col0', quality: { invalidValues: [] } },
-                            { id: 'col1', quality: { invalidValues: invalidValues } },
+                            { id: 'col0' },
+                            { id: 'col1' }
                         ],
                     },
                 };
@@ -370,8 +369,8 @@ describe('Filter service', function () {
                 expect(filterInfo.value[0].label).toBe('invalid records');
                 expect(filterInfo.editable).toBe(false);
                 expect(filterInfo.args).toBeFalsy();
-                expect(filterInfo.filterFn(data)({ col1: 'NA' })).toBeTruthy();
-                expect(filterInfo.filterFn(data)({ col1: ' tata est ici' })).toBeFalsy();
+                expect(filterInfo.filterFn(data)({ col1: 'NA', __tdpInvalid: 'col1' })).toBeTruthy();
+                expect(filterInfo.filterFn(data)({ col1: ' tata est ici', __tdpInvalid: '' })).toBeFalsy();
             }));
 
             it('should remove filter when it already exists', inject(function (FilterService, StateService) {

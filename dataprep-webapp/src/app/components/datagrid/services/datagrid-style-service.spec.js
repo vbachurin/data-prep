@@ -262,10 +262,10 @@ describe('Datagrid style service', () => {
             it('should add red rectangle on invalid value', inject((DatagridStyleService) => {
                 //given
                 DatagridStyleService.init(gridMock);
-                var col = { quality: { invalidValues: ['my value'] } };
+                var col = {};
                 var value = 'my value';
                 var columnDef = gridColumns[1];
-                var dataContext = {};
+                var dataContext = {__tdpInvalid: gridColumns[1].id};
 
                 //when
                 var formatter = DatagridStyleService.columnFormatter(col);
