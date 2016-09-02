@@ -148,7 +148,12 @@ export default function PlaygroundCtrl($timeout, $state, $stateParams, state, St
     vm.beforeClose = function beforeClose() {
         const isDraft = state.playground.preparation && state.playground.preparation.draft;
         if (isDraft) {
-            vm.showNameValidation = true;
+            if (state.playground.recipe.current.steps.length) {
+                vm.showNameValidation = true;
+            }
+            else {
+                vm.discardSaveOnClose();
+            }
         }
         else {
             vm.close();

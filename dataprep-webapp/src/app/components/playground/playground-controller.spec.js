@@ -681,17 +681,26 @@ describe('Playground controller', () => {
                 expect($state.go).toHaveBeenCalledWith('nav.index.preparations', undefined);
             }));
 
-            it('should show preparation save/discard modal with implicit preparation', () => {
+            it('should show preparation save/discard modal with implicit preparation if there are steps', () => {
                 //given
                 expect(ctrl.showNameValidation).toBeFalsy();
-                spyOn(ctrl, 'close').and.returnValue();
-
+                stateMock.playground.recipe.current.steps = [{id: '000'}];
                 //when
                 ctrl.beforeClose();
 
                 //then
                 expect(ctrl.showNameValidation).toBe(true);
-                expect(ctrl.close).not.toHaveBeenCalled();
+            });
+
+            it('should discard the preparation if there are no steps', () => {
+                //given
+                spyOn(ctrl, 'discardSaveOnClose').and.returnValue();
+
+                //when
+                ctrl.beforeClose();
+
+                //then
+                expect(ctrl.discardSaveOnClose).toHaveBeenCalled();
             });
         });
 
