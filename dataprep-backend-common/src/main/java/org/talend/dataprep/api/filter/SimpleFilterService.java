@@ -20,6 +20,7 @@ import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
+import java.util.List;
 import java.util.function.Predicate;
 
 import org.apache.commons.lang.StringUtils;
@@ -100,48 +101,68 @@ public class SimpleFilterService implements FilterService {
 
     private Predicate<DataSetRow> buildFilter(JsonNode currentNode, RowMetadata rowMetadata) {
         final Iterator<JsonNode> children = currentNode.elements();
-        final JsonNode currentNodeContent = children.next();
-        final String columnId = currentNodeContent.has("field") ? currentNodeContent.get("field").asText() : null;
-        final String value = currentNodeContent.has("value") ? currentNodeContent.get("value").asText() : null;
+        final JsonNode operationContent = children.next();
+        final String columnId = operationContent.has("field") ? operationContent.get("field").asText() : null;
+        final String value = operationContent.has("value") ? operationContent.get("value").asText() : null;
 
         final Iterator<String> propertiesIterator = currentNode.fieldNames();
         if (!propertiesIterator.hasNext()) {
             throw new UnsupportedOperationException("Unsupported query, empty filter definition: " + currentNode.toString());
         }
 
-        final String currentNodeName = propertiesIterator.next();
-        switch (currentNodeName) {
-        case EQ:
-            return createEqualsPredicate(currentNode, columnId, value);
-        case GT:
-            return createGreaterThanPredicate(currentNode, columnId, value);
-        case LT:
-            return createLowerThanPredicate(currentNode, columnId, value);
-        case GTE:
-            return createGreaterOrEqualsPredicate(currentNode, columnId, value);
-        case LTE:
-            return createLowerOrEqualsPredicate(currentNode, columnId, value);
-        case CONTAINS:
-            return createContainsPredicate(currentNode, columnId, value);
-        case MATCHES:
-            return createMatchesPredicate(currentNode, columnId, value);
-        case INVALID:
-            return createInvalidPredicate(columnId);
-        case VALID:
-            return createValidPredicate(columnId);
-        case EMPTY:
-            return createEmptyPredicate(columnId);
-        case RANGE:
-            return createRangePredicate(columnId, currentNodeContent, rowMetadata);
-        case AND:
-            return createAndPredicate(currentNodeContent, rowMetadata);
-        case OR:
-            return createOrPredicate(currentNodeContent, rowMetadata);
-        case NOT:
-            return createNotPredicate(currentNodeContent, rowMetadata);
-        default:
-            throw new UnsupportedOperationException(
-                    "Unsupported query, unknown filter '" + currentNodeName + "': " + currentNode.toString());
+        final String operation = propertiesIterator.next();
+        if (columnId == null) {
+            final List<ColumnMetadata> columns = rowMetadata.getColumns();
+            Predicate<DataSetRow> predicate = null;
+            if (!columns.isEmpty()) {
+                predicate = buildOperationFilter(currentNode, rowMetadata, columns.get(0).getId(), operation, value);
+                for (int i = 1; i < columns.size(); i++) {
+                    predicate = predicate.or(buildOperationFilter(currentNode, rowMetadata, columns.get(i).getId(), operation, value));
+                }
+            }
+            return predicate;
+        } else {
+            return buildOperationFilter(currentNode, rowMetadata, columnId, operation, value);
+        }
+    }
+
+    private Predicate<DataSetRow> buildOperationFilter(JsonNode currentNode, //
+                                                       RowMetadata rowMetadata, //
+                                                       String columnId, //
+                                                       String operation, //
+                                                       String value) {
+        switch (operation) {
+            case EQ:
+                return createEqualsPredicate(currentNode, columnId, value);
+            case GT:
+                return createGreaterThanPredicate(currentNode, columnId, value);
+            case LT:
+                return createLowerThanPredicate(currentNode, columnId, value);
+            case GTE:
+                return createGreaterOrEqualsPredicate(currentNode, columnId, value);
+            case LTE:
+                return createLowerOrEqualsPredicate(currentNode, columnId, value);
+            case CONTAINS:
+                return createContainsPredicate(currentNode, columnId, value);
+            case MATCHES:
+                return createMatchesPredicate(currentNode, columnId, value);
+            case INVALID:
+                return createInvalidPredicate(columnId);
+            case VALID:
+                return createValidPredicate(columnId);
+            case EMPTY:
+                return createEmptyPredicate(columnId);
+            case RANGE:
+                return createRangePredicate(columnId, currentNode.elements().next(), rowMetadata);
+            case AND:
+                return createAndPredicate(currentNode.elements().next(), rowMetadata);
+            case OR:
+                return createOrPredicate(currentNode.elements().next(), rowMetadata);
+            case NOT:
+                return createNotPredicate(currentNode.elements().next(), rowMetadata);
+            default:
+                throw new UnsupportedOperationException(
+                        "Unsupported query, unknown filter '" + operation + "': " + currentNode.toString());
         }
     }
 
