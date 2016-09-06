@@ -48,6 +48,8 @@ public class CopyColumnMetadata extends AbstractActionMetadata implements Column
      */
     public static final String COPY_APPENDIX = "_copy"; //$NON-NLS-1$
 
+    private static final String TARGET_COLUMN_ID_KEY = "TARGET_COLUMN_ID_KEY";
+
     /**
      * @see ActionMetadata#getName()
      */
@@ -87,7 +89,7 @@ public class CopyColumnMetadata extends AbstractActionMetadata implements Column
             final RowMetadata rowMetadata = actionContext.getRowMetadata();
             final String columnId = actionContext.getColumnId();
             final ColumnMetadata column = rowMetadata.getById(columnId);
-            actionContext.column(COPY_APPENDIX, r -> {
+            String copyColumnId = actionContext.column(column.getName() + COPY_APPENDIX, r -> {
                 final ColumnMetadata newColumn = column() //
                         .copy(column) //
                         .computedId(StringUtils.EMPTY) //
@@ -96,15 +98,13 @@ public class CopyColumnMetadata extends AbstractActionMetadata implements Column
                 rowMetadata.insertAfter(columnId, newColumn);
                 return newColumn;
             });
+            actionContext.get(TARGET_COLUMN_ID_KEY, m -> copyColumnId);
         }
     }
 
-    /**
-     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext)
-     */
     @Override
     public void applyOnColumn(DataSetRow row, ActionContext context) {
-        final String copyColumn = context.column(COPY_APPENDIX);
+        final String copyColumn = context.get(TARGET_COLUMN_ID_KEY);
         final String columnId = context.getColumnId();
         row.set(copyColumn, row.get(columnId));
     }

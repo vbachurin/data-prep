@@ -16,6 +16,7 @@ package org.talend.dataprep.transformation.api.transformer.json;
 import java.util.List;
 import java.util.function.Predicate;
 
+import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,18 +46,19 @@ class PipelineDiffTransformer implements Transformer {
     private static final Logger LOGGER = LoggerFactory.getLogger(PipelineDiffTransformer.class);
 
     @Autowired
-    ActionParser actionParser;
-
-    @Autowired ActionRegistry actionRegistry;
+    private ActionParser actionParser;
 
     @Autowired
-    AnalyzerService analyzerService;
+    private ActionRegistry actionRegistry;
 
     @Autowired
-    WriterRegistrationService writerRegistrationService;
+    private AnalyzerService analyzerService;
 
     @Autowired
-    StatisticsAdapter adapter;
+    private WriterRegistrationService writerRegistrationService;
+
+    @Autowired
+    private StatisticsAdapter adapter;
 
     /**
      * Starts the transformation in preview mode.
@@ -66,9 +68,7 @@ class PipelineDiffTransformer implements Transformer {
      */
     @Override
     public void transform(DataSet input, Configuration configuration) {
-        if (input == null) {
-            throw new IllegalArgumentException("Input cannot be null.");
-        }
+        Validate.notNull(input, "Input cannot be null.");
         final PreviewConfiguration previewConfiguration = (PreviewConfiguration) configuration;
         final RowMetadata rowMetadata = input.getMetadata().getRowMetadata();
         final TransformerWriter writer = writerRegistrationService.getWriter(configuration.formatId(), configuration.output(),

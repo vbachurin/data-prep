@@ -60,12 +60,11 @@ public class PreparationAddAction extends ChainedCommand<Void, InputStream> {
         on(HttpStatus.OK).then(asNull());
     }
 
-
     private HttpRequestBase onExecute(String preparationId, AppendStep step) {
         try {
             final List<StepDiff> stepDiffs = objectMapper.readValue(getInput(), new TypeReference<List<StepDiff>>(){});
             final List<AppendStep> steps = IntStream.range(0, step.getActions().size())
-                    .mapToObj((index) -> {
+                    .mapToObj(index -> {
                         final Action action = step.getActions().get(index);
                         final StepDiff diff = stepDiffs.get(index);
 

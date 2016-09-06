@@ -15,7 +15,6 @@ package org.talend.dataprep.transformation.service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.apache.http.client.HttpClient;
 import org.slf4j.Logger;
@@ -91,11 +90,9 @@ public abstract class BaseTransformationService {
         LOG.debug("Export for preparation #{}.", parameters.getPreparationId());
         // Full run execution (depends on the export parameters).
         try {
-            final List<ExportStrategy> orderedStrategies = sampleExportStrategies.stream() //
-                    .sorted((s1, s2) -> Integer.compare(s1.order(), s2.order())) //
-                    .collect(Collectors.toList());
-            final Optional<ExportStrategy> electedStrategy = orderedStrategies.stream()
+            final Optional<? extends ExportStrategy> electedStrategy = sampleExportStrategies.stream() //
                     .filter(exportStrategy -> exportStrategy.accept(parameters)) //
+                    .sorted((s1, s2) -> Integer.compare(s1.order(), s2.order())) //
                     .findFirst();
             if (electedStrategy.isPresent()) {
                 LOG.debug("Strategy for execution: {}", electedStrategy.get().getClass());

@@ -13,23 +13,10 @@
 
 package org.talend.dataprep.transformation.service;
 
-import static java.util.stream.Collectors.toList;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
-import static org.talend.daikon.exception.ExceptionContext.build;
-import static org.talend.dataprep.transformation.actions.category.ScopeCategory.COLUMN;
-import static org.talend.dataprep.transformation.actions.category.ScopeCategory.LINE;
-
-import java.io.*;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-
-import javax.annotation.Resource;
-import javax.validation.Valid;
-
+import com.fasterxml.jackson.core.JsonParser;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,9 +30,13 @@ import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.dataset.row.Flag;
 import org.talend.dataprep.api.org.talend.dataprep.api.export.ExportParameters;
+import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.preparation.StepDiff;
 import org.talend.dataprep.command.dataset.DataSetGet;
+import org.talend.dataprep.command.dataset.DataSetGetMetadata;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.exception.error.TransformationErrorCodes;
@@ -55,12 +46,14 @@ import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.metrics.VolumeMetered;
 import org.talend.dataprep.security.PublicAPI;
 import org.talend.dataprep.security.SecurityProxy;
+import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.transformation.aggregation.AggregationService;
 import org.talend.dataprep.transformation.aggregation.api.AggregationParameters;
 import org.talend.dataprep.transformation.aggregation.api.AggregationResult;
+import org.talend.dataprep.transformation.api.action.ActionParser;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.dynamic.DynamicType;
 import org.talend.dataprep.transformation.api.action.dynamic.GenericParameter;
-import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.transformer.TransformerFactory;
 import org.talend.dataprep.transformation.api.transformer.configuration.Configuration;
 import org.talend.dataprep.transformation.api.transformer.configuration.PreviewConfiguration;
@@ -69,12 +62,23 @@ import org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionE
 import org.talend.dataprep.transformation.format.JsonFormat;
 import org.talend.dataprep.transformation.preview.api.PreviewParameters;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.JsonNode;
+import javax.annotation.Resource;
+import javax.validation.Valid;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import static java.util.stream.Collectors.toList;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
+import static org.talend.daikon.exception.ExceptionContext.build;
+import static org.talend.dataprep.transformation.actions.category.ScopeCategory.COLUMN;
+import static org.talend.dataprep.transformation.actions.category.ScopeCategory.LINE;
 
 @RestController
 @Api(value = "transformations", basePath = "/transform", description = "Transformations on data")
@@ -110,6 +114,9 @@ public class TransformationService extends BaseTransformationService {
     /** Security proxy enable a thread to borrow the identity of another user. */
     @Autowired
     private SecurityProxy securityProxy;
+
+    @Autowired
+    private ActionParser actionParser;
 
     @RequestMapping(value = "/apply", method = POST, consumes = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Run the transformation given the provided export parameters", notes = "This operation transforms the dataset or preparation using parameters in export parameters.")
@@ -311,45 +318,37 @@ public class TransformationService extends BaseTransformationService {
      * Compare the results of 2 sets of actions, and return the diff metadata Ex : the created columns ids
      */
     private StepDiff getCreatedColumns(final PreviewParameters previewParameters) {
-        boolean identityReleased = false;
-        securityProxy.asTechnicalUser();
-        final DataSetGet dataSetGet = context.getBean(DataSetGet.class, previewParameters.getDataSetId(), false);
-        try (InputStream content = dataSetGet.execute(); //
-             JsonParser parser = mapper.getFactory().createParser(content)) {
+        final DataSetGetMetadata dataSetGetMetadata = context.getBean(DataSetGetMetadata.class, previewParameters.getDataSetId());
+        DataSetMetadata dataSetMetadata = dataSetGetMetadata.execute();
+        StepDiff stepDiff;
+        if (dataSetGetMetadata.isSuccessfulExecution() && dataSetMetadata != null) {
+            RowMetadata metadataBase = dataSetMetadata.getRowMetadata();
+            RowMetadata metadataAfter = metadataBase.clone();
 
-            securityProxy.releaseIdentity();
-            identityReleased = true;
+            applyActionsOnMetadata(metadataBase, previewParameters.getBaseActions());
+            applyActionsOnMetadata(metadataAfter, previewParameters.getNewActions());
 
-            final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
-            dataSet.setRecords(dataSet.getRecords().limit(1));
+            metadataAfter.diff(metadataBase);
 
-            final OutputStream output = new ByteArrayOutputStream();
+            List<String> createdColumnIds = metadataAfter.getColumns().stream()
+                    .filter(c -> Flag.NEW.getValue().equals(c.getDiffFlagValue()))
+                    .map(ColumnMetadata::getId)
+                    .collect(Collectors.toList());
 
-            // call diff
-            executePreview(previewParameters.getNewActions(), previewParameters.getBaseActions(), null, dataSet, output);
+            stepDiff = new StepDiff();
+            stepDiff.setCreatedColumns(createdColumnIds);
+        } else {
+            stepDiff = null;
+            // maybe throw an exception...
+        }
+        return stepDiff;
+    }
 
-            // extract created columns ids
-            final JsonNode node = mapper.readTree(output.toString());
-            final JsonNode columnsNode = node.findPath("columns");
-            final List<String> createdColumns;
-            try (Stream<JsonNode> stream = StreamSupport.stream(columnsNode.spliterator(), false)) {
-                createdColumns = stream.filter(col -> "new".equals(col.path("__tdpColumnDiff").asText())) //
-                        .map(col -> col.path("id").asText()) //
-                        .collect(toList());
-            }
-
-            // create/return diff
-            final StepDiff diff = new StepDiff();
-            diff.setCreatedColumns(createdColumns);
-            LOG.debug("{} creates {} columns", previewParameters, diff);
-            return diff;
-        } catch (IOException e) {
-            throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
-        } finally {
-            // make sure the identity is released !
-            if (!identityReleased) {
-                securityProxy.releaseIdentity();
-            }
+    private void applyActionsOnMetadata(RowMetadata metadata, String actionsAsJson) {
+        List<Action> actions = actionParser.parse(actionsAsJson);
+        ActionContext contextWithMetadata = new ActionContext(null, metadata);
+        for (Action action : actions) {
+            action.getRowAction().compile(contextWithMetadata);
         }
     }
 

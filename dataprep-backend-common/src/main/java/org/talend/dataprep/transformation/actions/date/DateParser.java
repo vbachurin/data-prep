@@ -161,13 +161,13 @@ public class DateParser {
             try {
                 return LocalDateTime.parse(value, formatter);
             } catch (DateTimeException e) {
-                LOGGER.debug("Unable to parse date '{}' using LocalDateTime.", value, e);
+                LOGGER.trace("Unable to parse date '{}' using LocalDateTime.", value, e);
                 // if it fails, let's try the LocalDate first
                 try {
                     LocalDate temp = LocalDate.parse(value, formatter);
                     return temp.atStartOfDay();
                 } catch (DateTimeException e2) {
-                    LOGGER.debug("Unable to parse date '{}' using LocalDate.", value, e2);
+                    LOGGER.trace("Unable to parse date '{}' using LocalDate.", value, e2);
                     // nothing to do here, just try the next formatter
                 }
             }

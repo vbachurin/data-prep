@@ -13,12 +13,6 @@
 
 package org.talend.dataprep.transformation.api.action.context;
 
-import java.util.*;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -26,6 +20,12 @@ import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.transformation.actions.category.ScopeCategory;
 import org.talend.dataprep.transformation.actions.common.ImplicitParameters;
+
+import java.util.*;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * Context for an action within a transformation. Hence, several instance of the same action can have their own context.
@@ -109,9 +109,9 @@ public class ActionContext {
      * <b>Note</b>It is up to the caller to insert column in a {@link org.talend.dataprep.api.dataset.RowMetadata row}.
      * </p>
      *
-     * @param name A column name as string. All values are accepted, no collision with other action can occur.
+     * @param name   A column name as string. All values are accepted, no collision with other action can occur.
      * @param create A {@link Function function} that provides a new {@link ColumnMetadata} in case no column with
-     * <code>name</code> was previously created. Function is <b>not</b> allowed to return <code>null</code>.
+     *               <code>name</code> was previously created. Function is <b>not</b> allowed to return <code>null</code>.
      * @return A {@link ColumnMetadata column} id with name <code>name</code>.
      * @throws IllegalArgumentException In case the <code>supplier</code> returned a <code>null</code> instance.
      */
@@ -129,6 +129,13 @@ public class ActionContext {
         }
     }
 
+    /**
+     * Fetch the column ID based on the column name.
+     * <strong>WARNING: the column name is not mandatory unique!</strong>
+     *
+     * @param name the column name
+     * @return the column ID
+     */
     public String column(String name) {
         String key = getColumnKey(name);
         if (context.containsKey(key)) {
@@ -168,7 +175,7 @@ public class ActionContext {
     /**
      * Return the object from the context or use the supplier to create it and cache it.
      *
-     * @param key the object key.
+     * @param key      the object key.
      * @param supplier the supplier to use to create the object in case it is not found in the context.
      * @return the object (stored in the context).
      */
@@ -205,7 +212,11 @@ public class ActionContext {
     public void setRowMetadata(RowMetadata rowMetadata) {
         this.rowMetadata = rowMetadata;
         // Remove previous columns
-        final List<String> toRemove = context.keySet().stream().filter(s -> s.startsWith(COLUMN_CONTEXT_PREFIX)).collect(Collectors.toList());
+        final List<String> toRemove =
+                context.keySet()
+                        .stream()
+                        .filter(s -> s.startsWith(COLUMN_CONTEXT_PREFIX))
+                        .collect(Collectors.toList());
         for (String column : toRemove) {
             context.remove(column);
         }
@@ -281,7 +292,7 @@ public class ActionContext {
 
         @Override
         public void setParameters(Map<String, String> parameters) {
-             // No op: unable to modify once immutable.
+            // No op: unable to modify once immutable.
         }
 
         @Override

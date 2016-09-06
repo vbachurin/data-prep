@@ -13,21 +13,20 @@
 
 package org.talend.dataprep.configuration;
 
-import java.io.IOException;
-import java.util.Collections;
-
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
-import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.preparation.PreparationActions;
 import org.talend.dataprep.api.preparation.Step;
 import org.talend.dataprep.api.service.info.VersionService;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import java.io.IOException;
+import java.util.Collections;
 
 /**
  * Provide instance for root/initial content with current application version.
@@ -42,9 +41,10 @@ public class BaseContent {
     @Bean
     public Converter<String, JsonNode> jsonNodeConverter() {
         return new Converter<String, JsonNode>() {
+
             @Override
             public JsonNode convert(String source) {
-                com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+                ObjectMapper mapper = new ObjectMapper();
                 try {
                     return mapper.readTree(source);
                 } catch (IOException e) {
@@ -53,12 +53,13 @@ public class BaseContent {
             }
         };
     }
+
     /**
      * @return the preparation root content (no actions).
      */
     @Bean(name = "rootContent")
     public PreparationActions initRootContent() {
-        return new PreparationActions(Collections.<Action> emptyList(), versionService.version().getVersionId());
+        return new PreparationActions(Collections.emptyList(), versionService.version().getVersionId());
     }
 
     /**
