@@ -1,0 +1,62 @@
+/*  ============================================================================
+
+  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+
+  This source code is available under agreement available at
+  https://github.com/Talend/data-prep/blob/master/LICENSE
+
+  You should have received a copy of the agreement
+  along with this program; if not, write to Talend SA
+  9 rue Pages 92150 Suresnes, France
+
+  ============================================================================*/
+
+$recipe-knot-active-color: $dark-green !default;
+$recipe-knot-inactive-color: $medium-gray !default;
+
+.knot {
+  @include display(flex);
+  @include flex-direction(column);
+  @include flex-basis(20px);
+  @include flex-grow(0);
+  @include flex-shrink(0);
+  height: 100%;
+  cursor: pointer;
+  align-items: center;
+
+  .line {
+    width: 1px;
+    height: 13px;
+    background: $recipe-knot-active-color;
+
+    &.bottom-line {
+      @include flex-grow(1);
+    }
+
+    &.no-line {
+      background: transparent;
+    }
+  }
+
+  .circle {
+    position: relative;
+    width: 17px;
+    height: 17px;
+    background:  $recipe-knot-active-color;
+    border-radius: 50%;
+
+    &.inactive-knot {
+      background: $recipe-knot-inactive-color;
+    }
+
+    &.to-be-deactivated {
+      background: transparent;
+      border: 3px solid $recipe-knot-active-color;
+    }
+
+    &.to-be-activated {
+      background: $white;
+      border: 3px solid $recipe-knot-inactive-color;
+    }
+  }
+}
