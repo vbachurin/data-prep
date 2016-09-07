@@ -28,7 +28,6 @@ import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Provide instance for root/initial content with current application version.
@@ -42,16 +41,18 @@ public class BaseContent {
 
     @Bean
     public Converter<String, JsonNode> jsonNodeConverter() {
-        return source -> {
-            ObjectMapper mapper = new ObjectMapper();
-            try {
-                return mapper.readTree(source);
-            } catch (IOException e) {
-                throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
+        return new Converter<String, JsonNode>() {
+            @Override
+            public JsonNode convert(String source) {
+                com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+                try {
+                    return mapper.readTree(source);
+                } catch (IOException e) {
+                    throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
+                }
             }
         };
     }
-
     /**
      * @return the preparation root content (no actions).
      */
