@@ -92,11 +92,11 @@ describe('Datagrid column service', () => {
             //then
             expect(createdColumns[0].id).toEqual('tdpId');
             expect(createdColumns[0].field).toEqual('tdpId');
-            expect(createdColumns[0].name).toEqual('<div class="slick-header-column-index">#</div>');
+            expect(createdColumns[0].name).toEqual('');
             expect(createdColumns[0].resizable).toBeFalsy();
             expect(createdColumns[0].selectable).toBeFalsy();
             expect(createdColumns[0].formatter(1, 2, 3)).toEqual('<div class="index-cell">3</div>');
-            expect(createdColumns[0].maxWidth).toEqual(45);
+            expect(createdColumns[0].maxWidth).toEqual(60);
 
             expect(createdColumns[1].id).toEqual('0000');
             expect(createdColumns[1].field).toEqual('0000');
@@ -129,11 +129,11 @@ describe('Datagrid column service', () => {
             //then
             expect(createdColumns[0].id).toEqual('tdpId');
             expect(createdColumns[0].field).toEqual('tdpId');
-            expect(createdColumns[0].name).toEqual('<div class="slick-header-column-index">#</div>');
+            expect(createdColumns[0].name).toEqual('');
             expect(createdColumns[0].resizable).toBeFalsy();
             expect(createdColumns[0].selectable).toBeFalsy();
             expect(createdColumns[0].formatter(1, 2, 3)).toEqual('<div class="index-cell">3</div>');
-            expect(createdColumns[0].maxWidth).toEqual(45);
+            expect(createdColumns[0].maxWidth).toEqual(60);
 
             expect(createdColumns[1].id).toEqual('0000');
             expect(createdColumns[1].field).toEqual('0000');
@@ -371,7 +371,7 @@ describe('Datagrid column service', () => {
             expect(angular.element(columnsArgs.node).find('datagrid-header').length).toBe(0);
         }));
 
-        it('should do nothing if column is index column', inject(function () {
+        it('should create and attach index column header', inject(function () {
             //given
             var columnsArgs = {
                 column: {
@@ -385,10 +385,10 @@ describe('Datagrid column service', () => {
             onHeaderCellRendered(null, columnsArgs);
 
             //then
-            expect(columnsArgs.column.scope).not.toBeDefined();
-            expect(columnsArgs.column.header).not.toBeDefined();
+            expect(columnsArgs.column.scope).toBeDefined();
+            expect(columnsArgs.column.header).toBeDefined();
 
-            expect(angular.element(columnsArgs.node).find('datagrid-header').length).toBe(0);
+            expect(angular.element(columnsArgs.node).find('datagrid-index-header').length).toBe(1);
         }));
     });
 

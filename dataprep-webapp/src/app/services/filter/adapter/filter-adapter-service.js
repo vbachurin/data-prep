@@ -20,13 +20,19 @@ const EMPTY_RECORDS = 'empty_records';
 const VALID_RECORDS = 'valid_records';
 const INSIDE_RANGE = 'inside_range';
 const MATCHES = 'matches';
+const QUALITY = 'quality';
 
 const EMPTY_RECORDS_LABEL = 'empty records';
 const INVALID_RECORDS_LABEL = 'invalid records';
 const VALID_RECORDS_LABEL = 'valid records';
+const INVALID_EMPTY_RECORDS_LABEL = 'invalid or empty records';
 
 const INVALID_RECORDS_VALUES = [{
     label: INVALID_RECORDS_LABEL,
+}];
+
+const INVALID_EMPTY_RECORDS_VALUES = [{
+    label: INVALID_EMPTY_RECORDS_LABEL,
 }];
 
 const EMPTY_RECORDS_VALUES = [{
@@ -49,6 +55,7 @@ export default function FilterAdapterService() {
         EMPTY_RECORDS_LABEL,
         INVALID_RECORDS_LABEL,
         VALID_RECORDS_LABEL,
+        INVALID_EMPTY_RECORDS_LABEL,
 
         createFilter,
         toTree,
@@ -83,6 +90,7 @@ export default function FilterAdapterService() {
             removeFilterFn,
         };
 
+        filter.__defineGetter__('badgeClass', getBadgeClass.bind(filter)); // eslint-disable-line no-underscore-dangle
         filter.__defineGetter__('value', getFilterValueGetter.bind(filter)); // eslint-disable-line no-underscore-dangle
         filter.__defineSetter__('value', (value) => getFilterValueSetter.call(filter, value)); // eslint-disable-line no-underscore-dangle
         filter.toTree = getFilterTree.bind(filter);
@@ -108,11 +116,44 @@ export default function FilterAdapterService() {
             return EMPTY_RECORDS_VALUES;
         case VALID_RECORDS:
             return VALID_RECORDS_VALUES;
+        case QUALITY: // TODO: refacto QUALITY filter
+            if (this.args.invalid && this.args.empty) {
+                return INVALID_EMPTY_RECORDS_VALUES;
+            }
+            break;
         case INSIDE_RANGE:
             return this.args.intervals;
         case MATCHES:
             return this.args.patterns;
         }
+    }
+
+    /**
+     * @ngdoc method
+     * @name getBadgeClass
+     * @methodOf data-prep.services.filter.service:FilterAdapterService
+     * @description Return a usable class name for the filter
+     * @returns {Object} The class name
+     */
+    function getBadgeClass() {
+        if (this.type === QUALITY) {
+            let className = '';
+
+            if (this.args.valid) {
+                className += ` ${VALID_RECORDS}`;
+            }
+
+            if (this.args.empty) {
+                className += ` ${EMPTY_RECORDS}`;
+            }
+
+            if (this.args.invalid) {
+                className += ` ${INVALID_RECORDS}`;
+            }
+
+            return className;
+        }
+        return this.type;
     }
 
     /**
@@ -192,6 +233,21 @@ export default function FilterAdapterService() {
                         };
                     })
                     .reduce(reduceOrFn);
+        case QUALITY:  // TODO: refacto QUALITY filter
+            if (args.invalid && args.empty) {
+                return {
+                    or: [{
+                        invalid: {
+                            field: colId,
+                        },
+                    }, {
+                        empty: {
+                            field: colId,
+                        },
+                    }],
+                };
+            }
+            break;
         case INVALID_RECORDS:
             return {
                 invalid: {
@@ -320,24 +376,33 @@ export default function FilterAdapterService() {
                 const newFilter = fromTree(nodeChild, columns);
                 const existingFilterFirstValue = existingFilter[0];
                 const newFilterFirstValue = newFilter[0];
-                if (existingFilterFirstValue && existingFilterFirstValue.args) {
-                    const getExistingArgs = getFilterValueGetter.bind(existingFilterFirstValue);
-                    const newValues = getExistingArgs().concat(newFilterFirstValue.value);
-                    switch (existingFilterFirstValue.type) {
-                    case CONTAINS:
-                    case EXACT:
-                        existingFilterFirstValue.args.phrase = newValues;
-                        break;
-                    case INSIDE_RANGE:
-                        existingFilterFirstValue.args.intervals = newValues;
-                        break;
-                    case MATCHES:
-                        existingFilterFirstValue.args.patterns = newValues;
-                        break;
+                if (existingFilterFirstValue) {
+                    if (existingFilterFirstValue.args) {
+                        const getExistingArgs = getFilterValueGetter.bind(existingFilterFirstValue);
+                        const newValues = getExistingArgs().concat(newFilterFirstValue.value);
+                        switch (existingFilterFirstValue.type) {
+                        case CONTAINS:
+                        case EXACT:
+                            existingFilterFirstValue.args.phrase = newValues;
+                            break;
+                        case INSIDE_RANGE:
+                            existingFilterFirstValue.args.intervals = newValues;
+                            break;
+                        case MATCHES:
+                            existingFilterFirstValue.args.patterns = newValues;
+                            break;
+                        }
+                    }
+                    else { // TODO: refacto QUALITY filter
+                        if (tree.or.length === 2 && !existingFilterFirstValue.colId && !newFilterFirstValue.colId) {
+                            if (existingFilterFirstValue.type === INVALID_RECORDS && newFilterFirstValue.type === EMPTY_RECORDS ||
+                                existingFilterFirstValue.type === EMPTY_RECORDS && newFilterFirstValue.type === INVALID_RECORDS) {
+                                return [createFilter(QUALITY, undefined, undefined, false, { invalid: true, empty: true })];
+                            }
+                        }
                     }
                     return existingFilter;
                 }
-
                 return accu.concat(newFilter);
             }, []);
             return reducedOrTree;

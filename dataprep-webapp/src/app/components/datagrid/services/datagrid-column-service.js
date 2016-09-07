@@ -11,6 +11,8 @@
 
  ============================================================================*/
 
+export const COLUMN_INDEX_ID = 'tdpId';
+
 /**
  * @ngdoc service
  * @name data-prep.datagrid.service:DatagridColumnService
@@ -34,7 +36,6 @@ export default function DatagridColumnService($rootScope, $compile, $log, $trans
     let grid;
     let renewAllFlag;
     let availableHeaders = [];
-    const colIndexName = 'tdpId';
 
     /**
      * contains a backup of the columnsMetadata to find which has been moved after a reorder
@@ -124,14 +125,13 @@ export default function DatagridColumnService($rootScope, $compile, $log, $trans
     function createColumns(columnsMetadata, preview) {
         // create new SlickGrid columns
         const colIndexArray = [];
-        const colIndexNameTemplate = '<div class="slick-header-column-index">#</div>';
 
         // Add index column
         colIndexArray.push({
-            id: colIndexName,
-            name: colIndexNameTemplate,
-            field: colIndexName,
-            maxWidth: 45,
+            id: COLUMN_INDEX_ID,
+            name: '',
+            field: COLUMN_INDEX_ID,
+            maxWidth: 60,
             formatter: function formatterIndex(row, cell, value) {
                 return '<div class="index-cell">' + value + '</div>';
             },
@@ -293,6 +293,29 @@ export default function DatagridColumnService($rootScope, $compile, $log, $trans
 
     /**
      * @ngdoc method
+     * @name createIndexHeader
+     * @methodOf data-prep.datagrid.service:DatagridColumnService
+     * @description [PRIVATE] Create the index column header object containing
+     * <ul>
+     *     <li>the element directive</li>
+     *     <li>The directive scope</li>
+     *     <li>The column metadata</li>
+     * </ul>
+     */
+    function createIndexHeader() {
+        const headerScope = $rootScope.$new(true);
+        const headerElement = angular.element('<datagrid-index-header></datagrid-index-header>');
+        $compile(headerElement)(headerScope);
+
+        return {
+            id: COLUMN_INDEX_ID,
+            scope: headerScope,
+            header: headerElement,
+        };
+    }
+
+    /**
+     * @ngdoc method
      * @name detachAndSaveHeader
      * @methodOf data-prep.datagrid.service:DatagridColumnService
      * @param {object} event The Slickgrid header destroy event
@@ -306,7 +329,7 @@ export default function DatagridColumnService($rootScope, $compile, $log, $trans
     function detachAndSaveHeader(event, columnsArgs) {
         // No header to detach on preview
         const columnDef = columnsArgs.column;
-        if (columnDef.preview || columnDef.id === colIndexName) {
+        if (columnDef.preview) {
             return;
         }
 
@@ -319,12 +342,14 @@ export default function DatagridColumnService($rootScope, $compile, $log, $trans
             const scope = columnDef.scope;
             const header = columnDef.header;
 
-            header.detach();
-            availableHeaders.push({
-                id: columnDef.id,
-                scope,
-                header,
-            });
+            if (scope && header) {
+                header.detach();
+                availableHeaders.push({
+                    id: columnDef.id,
+                    scope,
+                    header,
+                });
+            }
         }
     }
 
@@ -342,7 +367,7 @@ export default function DatagridColumnService($rootScope, $compile, $log, $trans
     function createAndAttachHeader(event, columnsArgs) {
         // No header to append on preview
         const columnDef = columnsArgs.column;
-        if (columnDef.preview || columnDef.id === colIndexName) {
+        if (columnDef.preview) {
             return;
         }
 
@@ -353,13 +378,18 @@ export default function DatagridColumnService($rootScope, $compile, $log, $trans
             availableHeaders.splice(headerIndex, 1);
         }
 
-        // Create the header if no available created header, update it otherwise
+        // Update column metadata in header if there is an available one
         if (headerDefinition) {
-            headerDefinition.scope.column = columnDef.tdpColMetadata;
-            headerDefinition.scope.$digest();
+            if (columnDef.id !== COLUMN_INDEX_ID) {
+                headerDefinition.scope.column = columnDef.tdpColMetadata;
+                headerDefinition.scope.$digest();
+            }
         }
+        // Create the header if no available created header
         else {
-            headerDefinition = createHeader(columnDef.tdpColMetadata);
+            headerDefinition = columnDef.id === COLUMN_INDEX_ID ?
+                createIndexHeader() :
+                createHeader(columnDef.tdpColMetadata);
         }
 
         // Update column definition

@@ -13,6 +13,7 @@
 
 import angular from 'angular';
 import DATAGRID_HEADER_MODULE from './header/datagrid-header-module';
+import DATAGRID_INDEX_HEADER_MODULE from './index-header/datagrid-index-header-module';
 import SERVICES_DATEGRID_MODULE from '../../services/datagrid/datagrid-module';
 import SERVICES_PLAYGROUND_MODULE from '../../services/playground/playground-module';
 import SERVICES_PREVIEW_MODULE from '../../services/preview/preview-module';
@@ -29,15 +30,14 @@ import DatagridStyleService from './services/datagrid-style-service';
 import DatagridTooltipService from './services/datagrid-tooltip-service';
 import Datagrid from './datagrid-directive';
 
+
 Slick.Editors.TalendEditor = TalendEditor;
-
-const MODULE_NAME = 'data-prep.datagrid';
-
 /**
  * @ngdoc object
  * @name data-prep.datagrid
  * @description This module contains the controller and directives for the datagrid
  * @requires data-prep.datagrid-header
+ * @requires data-prep.datagrid-index-header
  * @requires data-prep.services.datagrid
  * @requires data-prep.services.playground
  * @requires data-prep.services.preview
@@ -45,9 +45,12 @@ const MODULE_NAME = 'data-prep.datagrid';
  * @requires data-prep.services.statistics
  * @requires data-prep.services.utils
  */
+
+const MODULE_NAME = 'data-prep.datagrid';
 angular.module(MODULE_NAME,
     [
         DATAGRID_HEADER_MODULE,
+        DATAGRID_INDEX_HEADER_MODULE,
         SERVICES_DATEGRID_MODULE,
         SERVICES_PLAYGROUND_MODULE,
         SERVICES_PREVIEW_MODULE,

@@ -20,7 +20,7 @@ export default function DatagridSizeService($window, state) {
     'ngInject';
 
     let grid;
-    const MIN_COLUMN_WIDTH = 40;
+    const MIN_COLUMN_WIDTH = 60;
     const INITIAL_COLUMN_WIDTH = 120;
 
     return {

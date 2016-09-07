@@ -12,6 +12,7 @@
  ============================================================================*/
 
 import angular from 'angular';
+import { COLUMN_INDEX_ID } from './datagrid-column-service';
 
 /**
  * @ngdoc service
@@ -86,6 +87,9 @@ export default class DatagridGridService {
         });
 
         this.grid.onHeaderContextMenu.subscribe((e, args) => {
+            if (args.column.id === COLUMN_INDEX_ID) {
+                return;
+            }
             this.$timeout(() => this.StateService.setGridSelection([args.column.tdpColMetadata], null));
         });
 

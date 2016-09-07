@@ -125,6 +125,10 @@
   "REMOVE_ALL_FILTERS": "Remove all filters",
   "TOOGLE_ALL_FILTERS": "Enable/Disable all filters",
   "FILTER_VALUES_SEPARATOR": "OR",
+  "DISPLAY_LINES_INVALID_VALUES": "Display lines with invalid values",
+  "DISPLAY_LINES_EMPTY_VALUES": "Display lines with empty values",
+  "DISPLAY_LINES_INVALID_EMPTY_VALUES": "Display lines with invalid or empty values",
+  "FILTER_TITLE": "Filter",
 
   "_comment": "Buttons",
   "CANCEL": "Cancel",

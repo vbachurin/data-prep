@@ -26,16 +26,16 @@ describe('Filter Adapter Service', () => {
     describe('create filter', () => {
         it('should create filter', inject((FilterAdapterService) => {
             //given
-            var type = 'contains';
-            var colId = '0001';
-            var colName = 'firstname';
-            var editable = true;
-            var args = {};
-            var filterFn = jasmine.createSpy('filterFn');
-            var removeFilterFn = jasmine.createSpy('removeFilterFn');
+            const type = 'contains';
+            const colId = '0001';
+            const colName = 'firstname';
+            const editable = true;
+            const args = {};
+            const filterFn = jasmine.createSpy('filterFn');
+            const removeFilterFn = jasmine.createSpy('removeFilterFn');
 
             //when
-            var filter = FilterAdapterService.createFilter(type, colId, colName, editable, args, filterFn, removeFilterFn);
+            const filter = FilterAdapterService.createFilter(type, colId, colName, editable, args, filterFn, removeFilterFn);
 
             //then
             expect(filter.type).toBe(type);
@@ -50,8 +50,8 @@ describe('Filter Adapter Service', () => {
         describe('get value', () => {
             it('should return value on CONTAINS filter', inject((FilterAdapterService) => {
                 //given
-                var type = 'contains';
-                var args = {
+                const type = 'contains';
+                const args = {
                     phrase: [
                         {
                             value: 'Jimmy',
@@ -60,7 +60,7 @@ describe('Filter Adapter Service', () => {
                 };
 
                 //when
-                var filter = FilterAdapterService.createFilter(type, null, null, null, args, null, null);
+                const filter = FilterAdapterService.createFilter(type, null, null, null, args, null, null);
 
                 //then
                 expect(filter.value).toEqual([
@@ -72,8 +72,8 @@ describe('Filter Adapter Service', () => {
 
             it('should return value on EXACT filter', inject((FilterAdapterService) => {
                 //given
-                var type = 'exact';
-                var args = {
+                const type = 'exact';
+                const args = {
                     phrase: [
                         {
                             value: 'Jimmy',
@@ -82,7 +82,7 @@ describe('Filter Adapter Service', () => {
                 };
 
                 //when
-                var filter = FilterAdapterService.createFilter(type, null, null, null, args, null, null);
+                const filter = FilterAdapterService.createFilter(type, null, null, null, args, null, null);
 
                 //then
                 expect(filter.value).toEqual([
@@ -94,10 +94,10 @@ describe('Filter Adapter Service', () => {
 
             it('should return value on INVALID_RECORDS filter', inject((FilterAdapterService) => {
                 //given
-                var type = 'invalid_records';
+                const type = 'invalid_records';
 
                 //when
-                var filter = FilterAdapterService.createFilter(type, null, null, null, null, null, null);
+                const filter = FilterAdapterService.createFilter(type, null, null, null, null, null, null);
 
                 //then
                 expect(filter.value).toEqual([
@@ -107,12 +107,27 @@ describe('Filter Adapter Service', () => {
                 ]);
             }));
 
-            it('should return value on EMPTY_RECORDS filter', inject((FilterAdapterService) => {
+            it('should return value on QUALITY filter', inject((FilterAdapterService) => {
                 //given
-                var type = 'empty_records';
+                const type = 'quality';
 
                 //when
-                var filter = FilterAdapterService.createFilter(type, null, null, null, null, null, null);
+                const filter = FilterAdapterService.createFilter(type, null, null, null, { invalid: true, empty: true }, null, null);
+
+                //then
+                expect(filter.value).toEqual([
+                    {
+                        label: 'invalid or empty records',
+                    },
+                ]);
+            }));
+
+            it('should return value on EMPTY_RECORDS filter', inject((FilterAdapterService) => {
+                //given
+                const type = 'empty_records';
+
+                //when
+                const filter = FilterAdapterService.createFilter(type, null, null, null, null, null, null);
 
                 //then
                 expect(filter.value).toEqual([
@@ -125,10 +140,10 @@ describe('Filter Adapter Service', () => {
 
             it('should return value on VALID_RECORDS filter', inject((FilterAdapterService) => {
                 //given
-                var type = 'valid_records';
+                const type = 'valid_records';
 
                 //when
-                var filter = FilterAdapterService.createFilter(type, null, null, null, null, null, null);
+                const filter = FilterAdapterService.createFilter(type, null, null, null, null, null, null);
 
                 //then
                 expect(filter.value).toEqual([
@@ -140,8 +155,8 @@ describe('Filter Adapter Service', () => {
 
             it('should return value on INSIDE_RANGE filter', inject((FilterAdapterService) => {
                 //given
-                var type = 'inside_range';
-                var args = {
+                const type = 'inside_range';
+                const args = {
                     intervals: [
                         {
                             label: '[1,000 .. 2,000[',
@@ -152,7 +167,7 @@ describe('Filter Adapter Service', () => {
                 };
 
                 //when
-                var filter = FilterAdapterService.createFilter(type, null, null, null, args, null, null);
+                const filter = FilterAdapterService.createFilter(type, null, null, null, args, null, null);
 
                 //then
                 expect(filter.value).toEqual([
@@ -165,8 +180,8 @@ describe('Filter Adapter Service', () => {
 
             it('should return value on MATCHES filter', inject((FilterAdapterService) => {
                 //given
-                var type = 'matches';
-                var args = {
+                const type = 'matches';
+                const args = {
                     patterns: [
                         {
                             value: 'Aa9',
@@ -175,7 +190,7 @@ describe('Filter Adapter Service', () => {
                 };
 
                 //when
-                var filter = FilterAdapterService.createFilter(type, null, null, null, args, null, null);
+                const filter = FilterAdapterService.createFilter(type, null, null, null, args, null, null);
 
                 //then
                 expect(filter.value).toEqual([
@@ -189,9 +204,9 @@ describe('Filter Adapter Service', () => {
         describe('to tree', () => {
             it('should return tree corresponding to CONTAINS filter', inject((FilterAdapterService) => {
                 //given
-                var type = 'contains';
-                var colId = '0001';
-                var args = {
+                const type = 'contains';
+                const colId = '0001';
+                const args = {
                     phrase: [
                         {
                             value: 'Jimmy',
@@ -199,10 +214,10 @@ describe('Filter Adapter Service', () => {
                     ],
                 };
 
-                var filter = FilterAdapterService.createFilter(type, colId, null, null, args, null, null);
+                const filter = FilterAdapterService.createFilter(type, colId, null, null, args, null, null);
 
                 //when
-                var tree = filter.toTree();
+                const tree = filter.toTree();
 
                 //then
                 expect(tree).toEqual({
@@ -215,9 +230,9 @@ describe('Filter Adapter Service', () => {
 
             it('should return tree corresponding to EXACT filter', inject((FilterAdapterService) => {
                 //given
-                var type = 'exact';
-                var colId = '0001';
-                var args = {
+                const type = 'exact';
+                const colId = '0001';
+                const args = {
                     phrase: [
                         {
                             value: 'Jimmy',
@@ -225,10 +240,10 @@ describe('Filter Adapter Service', () => {
                     ],
                 };
 
-                var filter = FilterAdapterService.createFilter(type, colId, null, null, args, null, null);
+                const filter = FilterAdapterService.createFilter(type, colId, null, null, args, null, null);
 
                 //when
-                var tree = filter.toTree();
+                const tree = filter.toTree();
 
                 //then
                 expect(tree).toEqual({
@@ -241,9 +256,9 @@ describe('Filter Adapter Service', () => {
 
             it('should return tree corresponding to EXACT multi-valued filter', inject((FilterAdapterService) => {
                 //given
-                var type = 'exact';
-                var colId = '0001';
-                var args = {
+                const type = 'exact';
+                const colId = '0001';
+                const args = {
                     phrase: [
                         {
                             value: 'Jimmy',
@@ -257,10 +272,10 @@ describe('Filter Adapter Service', () => {
                     ],
                 };
 
-                var filter = FilterAdapterService.createFilter(type, colId, null, null, args, null, null);
+                const filter = FilterAdapterService.createFilter(type, colId, null, null, args, null, null);
 
                 //when
-                var tree = filter.toTree();
+                const tree = filter.toTree();
 
                 //then
                 expect(tree).toEqual({
@@ -291,15 +306,38 @@ describe('Filter Adapter Service', () => {
                 });
             }));
 
-            it('should return tree corresponding to INVALID_RECORDS filter', inject((FilterAdapterService) => {
+            it('should return tree corresponding to QUALITY filter', inject((FilterAdapterService) => {
                 //given
-                var type = 'invalid_records';
-                var colId = '0001';
+                const type = 'quality';
 
-                var filter = FilterAdapterService.createFilter(type, colId, null, null, null, null, null);
+                const filter = FilterAdapterService.createFilter(type, null, null, null, { invalid: true, empty: true }, null, null);
 
                 //when
-                var tree = filter.toTree();
+                const tree = filter.toTree();
+
+                //then
+                expect(tree).toEqual({
+                    or: [{
+                        invalid: {
+                            field: null,
+                        },
+                    }, {
+                        empty: {
+                            field: null,
+                        },
+                    }],
+                });
+            }));
+
+            it('should return tree corresponding to INVALID_RECORDS filter', inject((FilterAdapterService) => {
+                //given
+                const type = 'invalid_records';
+                const colId = '0001';
+
+                const filter = FilterAdapterService.createFilter(type, colId, null, null, null, null, null);
+
+                //when
+                const tree = filter.toTree();
 
                 //then
                 expect(tree).toEqual({
@@ -311,13 +349,13 @@ describe('Filter Adapter Service', () => {
 
             it('should return tree corresponding to EMPTY_RECORDS filter', inject((FilterAdapterService) => {
                 //given
-                var type = 'empty_records';
-                var colId = '0001';
+                const type = 'empty_records';
+                const colId = '0001';
 
-                var filter = FilterAdapterService.createFilter(type, colId, null, null, null, null, null);
+                const filter = FilterAdapterService.createFilter(type, colId, null, null, null, null, null);
 
                 //when
-                var tree = filter.toTree();
+                const tree = filter.toTree();
 
                 //then
                 expect(tree).toEqual({
@@ -329,13 +367,13 @@ describe('Filter Adapter Service', () => {
 
             it('should return tree corresponding to VALID_RECORDS filter', inject((FilterAdapterService) => {
                 //given
-                var type = 'valid_records';
-                var colId = '0001';
+                const type = 'valid_records';
+                const colId = '0001';
 
-                var filter = FilterAdapterService.createFilter(type, colId, null, null, null, null, null);
+                const filter = FilterAdapterService.createFilter(type, colId, null, null, null, null, null);
 
                 //when
-                var tree = filter.toTree();
+                const tree = filter.toTree();
 
                 //then
                 expect(tree).toEqual({
@@ -347,9 +385,9 @@ describe('Filter Adapter Service', () => {
 
             it('should return tree corresponding to INSIDE_RANGE filter', inject((FilterAdapterService) => {
                 //given
-                var type = 'inside_range';
-                var colId = '0001';
-                var args = {
+                const type = 'inside_range';
+                const colId = '0001';
+                const args = {
                     intervals: [
                         {
                             label: '[1000 .. 2000[',
@@ -359,10 +397,10 @@ describe('Filter Adapter Service', () => {
                     type: 'integer',
                 };
 
-                var filter = FilterAdapterService.createFilter(type, colId, null, null, args, null, null);
+                const filter = FilterAdapterService.createFilter(type, colId, null, null, args, null, null);
 
                 //when
-                var tree = filter.toTree();
+                const tree = filter.toTree();
 
                 //then
                 expect(tree).toEqual({
@@ -378,9 +416,9 @@ describe('Filter Adapter Service', () => {
 
             it('should return tree corresponding to MATCHES filter', inject((FilterAdapterService) => {
                 //given
-                var type = 'matches';
-                var colId = '0001';
-                var args = {
+                const type = 'matches';
+                const colId = '0001';
+                const args = {
                     patterns: [
                         {
                             value: 'Aa9',
@@ -388,10 +426,10 @@ describe('Filter Adapter Service', () => {
                     ],
                 };
 
-                var filter = FilterAdapterService.createFilter(type, colId, null, null, args, null, null);
+                const filter = FilterAdapterService.createFilter(type, colId, null, null, args, null, null);
 
                 //when
-                var tree = filter.toTree();
+                const tree = filter.toTree();
 
                 //then
                 expect(tree).toEqual({
@@ -407,7 +445,7 @@ describe('Filter Adapter Service', () => {
     describe('adaptation to tree', () => {
         it('should return empty object when there is no filter', inject((FilterAdapterService) => {
             //when
-            var tree = FilterAdapterService.toTree([]);
+            const tree = FilterAdapterService.toTree([]);
 
             //then
             expect(tree).toEqual({});
@@ -415,9 +453,9 @@ describe('Filter Adapter Service', () => {
 
         it('should create single filter tree', inject((FilterAdapterService) => {
             //given
-            var type = 'inside_range';
-            var colId = '0001';
-            var args = {
+            const type = 'inside_range';
+            const colId = '0001';
+            const args = {
                 intervals: [
                     {
                         label: '[1,000 .. 2,000[',
@@ -427,10 +465,10 @@ describe('Filter Adapter Service', () => {
                 type: 'integer',
             };
 
-            var filter = FilterAdapterService.createFilter(type, colId, null, null, args, null, null);
+            const filter = FilterAdapterService.createFilter(type, colId, null, null, args, null, null);
 
             //when
-            var tree = FilterAdapterService.toTree([filter]);
+            const tree = FilterAdapterService.toTree([filter]);
 
             //then
             expect(tree).toEqual({
@@ -448,7 +486,7 @@ describe('Filter Adapter Service', () => {
 
         it('should create multiple filters tree', inject((FilterAdapterService) => {
             //given
-            var rangeArgs = {
+            const rangeArgs = {
                 intervals: [
                     {
                         label: '[1,000 .. 2,000[',
@@ -457,14 +495,14 @@ describe('Filter Adapter Service', () => {
                 ],
                 type: 'integer',
             };
-            var containsArgs = {
+            const containsArgs = {
                 phrase: [
                     {
                         value: 'Jimmy',
                     },
                 ],
             };
-            var exactArgs = {
+            const exactArgs = {
                 phrase: [
                     {
                         value: 'Jimmy',
@@ -477,8 +515,8 @@ describe('Filter Adapter Service', () => {
                     },
                 ],
             };
-            var dateRangeOffset = new Date(-631152000000).getTimezoneOffset() * 60 * 1000;
-            var dateRangeArgs = {
+            const dateRangeOffset = new Date(-631152000000).getTimezoneOffset() * 60 * 1000;
+            const dateRangeArgs = {
                 intervals: [
                     {
                         label: '[1950, 1960[',
@@ -491,13 +529,13 @@ describe('Filter Adapter Service', () => {
                 type: 'date',
             };
 
-            var rangeFilter = FilterAdapterService.createFilter('inside_range', '0001', null, null, rangeArgs, null, null);
-            var containsFilter = FilterAdapterService.createFilter('contains', '0002', null, null, containsArgs, null, null);
-            var exactFilter = FilterAdapterService.createFilter('exact', '0003', null, null, exactArgs, null, null);
-            var dateRangeFilter = FilterAdapterService.createFilter('inside_range', '0004', null, null, dateRangeArgs, null, null);
+            const rangeFilter = FilterAdapterService.createFilter('inside_range', '0001', null, null, rangeArgs, null, null);
+            const containsFilter = FilterAdapterService.createFilter('contains', '0002', null, null, containsArgs, null, null);
+            const exactFilter = FilterAdapterService.createFilter('exact', '0003', null, null, exactArgs, null, null);
+            const dateRangeFilter = FilterAdapterService.createFilter('inside_range', '0004', null, null, dateRangeArgs, null, null);
 
             //when
-            var tree = FilterAdapterService.toTree([rangeFilter, containsFilter, exactFilter, dateRangeFilter]);
+            const tree = FilterAdapterService.toTree([rangeFilter, containsFilter, exactFilter, dateRangeFilter]);
 
             //then
             expect(tree).toEqual({
@@ -570,7 +608,7 @@ describe('Filter Adapter Service', () => {
     describe('adaptation from tree', () => {
         it('should return nothing when there is no filter tree', inject((FilterAdapterService) => {
             //when
-            var filters = FilterAdapterService.fromTree();
+            const filters = FilterAdapterService.fromTree();
 
             //then
             expect(filters).toBeFalsy();
@@ -578,7 +616,7 @@ describe('Filter Adapter Service', () => {
 
         it('should create single CONTAINS filter from leaf', inject((FilterAdapterService) => {
             //given
-            var tree = {
+            const tree = {
                 contains: {
                     field: '0001',
                     value: 'Jimmy',
@@ -586,12 +624,12 @@ describe('Filter Adapter Service', () => {
             };
 
             //when
-            var filters = FilterAdapterService.fromTree(tree, columns);
+            const filters = FilterAdapterService.fromTree(tree, columns);
 
             //then
             expect(filters.length).toBe(1);
 
-            var singleFilter = filters[0];
+            const singleFilter = filters[0];
             expect(singleFilter.type).toBe('contains');
             expect(singleFilter.colId).toBe('0001');
             expect(singleFilter.colName).toBe('lastname');
@@ -607,7 +645,7 @@ describe('Filter Adapter Service', () => {
 
         it('should create single EXACT filter from leaf', inject((FilterAdapterService) => {
             //given
-            var tree = {
+            const tree = {
                 eq: {
                     field: '0001',
                     value: 'Jimmy',
@@ -615,12 +653,12 @@ describe('Filter Adapter Service', () => {
             };
 
             //when
-            var filters = FilterAdapterService.fromTree(tree, columns);
+            const filters = FilterAdapterService.fromTree(tree, columns);
 
             //then
             expect(filters.length).toBe(1);
 
-            var singleFilter = filters[0];
+            const singleFilter = filters[0];
             expect(singleFilter.type).toBe('exact');
             expect(singleFilter.colId).toBe('0001');
             expect(singleFilter.colName).toBe('lastname');
@@ -636,7 +674,7 @@ describe('Filter Adapter Service', () => {
 
         it('should create single number INSIDE_RANGE filter from leaf', inject((FilterAdapterService) => {
             //given
-            var tree = {
+            const tree = {
                 range: {
                     field: '0001',
                     start: 1000,
@@ -647,12 +685,12 @@ describe('Filter Adapter Service', () => {
             };
 
             //when
-            var filters = FilterAdapterService.fromTree(tree, columns);
+            const filters = FilterAdapterService.fromTree(tree, columns);
 
             //then
             expect(filters.length).toBe(1);
 
-            var singleFilter = filters[0];
+            const singleFilter = filters[0];
             expect(singleFilter.type).toBe('inside_range');
             expect(singleFilter.colId).toBe('0001');
             expect(singleFilter.colName).toBe('lastname');
@@ -670,7 +708,7 @@ describe('Filter Adapter Service', () => {
 
         it('should create single date INSIDE_RANGE filter from leaf', inject((FilterAdapterService) => {
             //given
-            var tree = {
+            const tree = {
                 range: {
                     field: '0001',
                     start: -631152000000, // UTC 1950-01-01
@@ -681,12 +719,12 @@ describe('Filter Adapter Service', () => {
             };
 
             //when
-            var filters = FilterAdapterService.fromTree(tree, columns);
+            const filters = FilterAdapterService.fromTree(tree, columns);
 
             //then
             expect(filters.length).toBe(1);
 
-            var singleFilter = filters[0];
+            const singleFilter = filters[0];
             expect(singleFilter.type).toBe('inside_range');
             expect(singleFilter.colId).toBe('0001');
             expect(singleFilter.colName).toBe('lastname');
@@ -706,21 +744,47 @@ describe('Filter Adapter Service', () => {
             });
         }));
 
+        it('should create single QUALITY filter from OR subtree', inject((FilterAdapterService) => {
+            //given
+            const tree = {
+                or: [{
+                    invalid: {
+                    },
+                }, {
+                    empty: {
+                    },
+                }],
+            };
+
+            //when
+            const filters = FilterAdapterService.fromTree(tree, columns);
+
+            //then
+            expect(filters.length).toBe(1);
+
+            const singleFilter = filters[0];
+            expect(singleFilter.type).toBe('quality');
+            expect(singleFilter.colId).toBe(undefined);
+            expect(singleFilter.colName).toBe(undefined);
+            expect(singleFilter.editable).toBe(false);
+            expect(singleFilter.args).toEqual({ invalid: true, empty: true });
+        }));
+
         it('should create single INVALID_RECORDS filter from leaf', inject((FilterAdapterService) => {
             //given
-            var tree = {
+            const tree = {
                 invalid: {
                     field: '0001',
                 },
             };
 
             //when
-            var filters = FilterAdapterService.fromTree(tree, columns);
+            const filters = FilterAdapterService.fromTree(tree, columns);
 
             //then
             expect(filters.length).toBe(1);
 
-            var singleFilter = filters[0];
+            const singleFilter = filters[0];
             expect(singleFilter.type).toBe('invalid_records');
             expect(singleFilter.colId).toBe('0001');
             expect(singleFilter.colName).toBe('lastname');
@@ -730,19 +794,19 @@ describe('Filter Adapter Service', () => {
 
         it('should create single EMPTY_RECORDS filter from leaf', inject((FilterAdapterService) => {
             //given
-            var tree = {
+            const tree = {
                 empty: {
                     field: '0001',
                 },
             };
 
             //when
-            var filters = FilterAdapterService.fromTree(tree, columns);
+            const filters = FilterAdapterService.fromTree(tree, columns);
 
             //then
             expect(filters.length).toBe(1);
 
-            var singleFilter = filters[0];
+            const singleFilter = filters[0];
             expect(singleFilter.type).toBe('empty_records');
             expect(singleFilter.colId).toBe('0001');
             expect(singleFilter.colName).toBe('lastname');
@@ -752,19 +816,19 @@ describe('Filter Adapter Service', () => {
 
         it('should create single VALID_RECORDS filter from leaf', inject((FilterAdapterService) => {
             //given
-            var tree = {
+            const tree = {
                 valid: {
                     field: '0001',
                 },
             };
 
             //when
-            var filters = FilterAdapterService.fromTree(tree, columns);
+            const filters = FilterAdapterService.fromTree(tree, columns);
 
             //then
             expect(filters.length).toBe(1);
 
-            var singleFilter = filters[0];
+            const singleFilter = filters[0];
             expect(singleFilter.type).toBe('valid_records');
             expect(singleFilter.colId).toBe('0001');
             expect(singleFilter.colName).toBe('lastname');
@@ -774,7 +838,7 @@ describe('Filter Adapter Service', () => {
 
         it('should create single MATCHES filter from leaf', inject((FilterAdapterService) => {
             //given
-            var tree = {
+            const tree = {
                 matches: {
                     field: '0001',
                     value: 'Aa9',
@@ -782,12 +846,12 @@ describe('Filter Adapter Service', () => {
             };
 
             //when
-            var filters = FilterAdapterService.fromTree(tree, columns);
+            const filters = FilterAdapterService.fromTree(tree, columns);
 
             //then
             expect(filters.length).toBe(1);
 
-            var singleFilter = filters[0];
+            const singleFilter = filters[0];
             expect(singleFilter.type).toBe('matches');
             expect(singleFilter.colId).toBe('0001');
             expect(singleFilter.colName).toBe('lastname');
@@ -803,7 +867,7 @@ describe('Filter Adapter Service', () => {
 
         it('should create multiple filters from tree', inject((FilterAdapterService) => {
             //given
-            var tree = {
+            const tree = {
                 and: [
                     {
                         and: [
@@ -844,12 +908,12 @@ describe('Filter Adapter Service', () => {
             };
 
             //when
-            var filters = FilterAdapterService.fromTree(tree, columns);
+            const filters = FilterAdapterService.fromTree(tree, columns);
 
             //then
             expect(filters.length).toBe(4);
 
-            var rangeFilter = filters[0];
+            const rangeFilter = filters[0];
             expect(rangeFilter.type).toBe('inside_range');
             expect(rangeFilter.colId).toBe('0001');
             expect(rangeFilter.colName).toBe('lastname');
@@ -864,7 +928,7 @@ describe('Filter Adapter Service', () => {
                 type: 'integer',
             });
 
-            var containsFilter = filters[1];
+            const containsFilter = filters[1];
             expect(containsFilter.type).toBe('contains');
             expect(containsFilter.colId).toBe('0002');
             expect(containsFilter.colName).toBe('birthdate');
@@ -877,7 +941,7 @@ describe('Filter Adapter Service', () => {
                 ],
             });
 
-            var exactFilter = filters[2];
+            const exactFilter = filters[2];
             expect(exactFilter.type).toBe('exact');
             expect(exactFilter.colId).toBe('0003');
             expect(exactFilter.colName).toBe('address');
@@ -890,7 +954,7 @@ describe('Filter Adapter Service', () => {
                 ],
             });
 
-            var matchesFilter = filters[3];
+            const matchesFilter = filters[3];
             expect(matchesFilter.type).toBe('matches');
             expect(matchesFilter.colId).toBe('0004');
             expect(matchesFilter.colName).toBe('gender');

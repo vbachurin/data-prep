@@ -27,12 +27,6 @@ $matches-color: $brown;
     }
   }
 
-  &.invalid_records {
-    .badge {
-      @include badge($invalid_records-color);
-    }
-  }
-
   &.empty_records {
     .badge {
       @include badge($empty_records-color);
@@ -42,6 +36,12 @@ $matches-color: $brown;
       &-btn-close {
         color: $black;
       }
+    }
+  }
+
+  &.invalid_records {
+    .badge {
+      @include badge($invalid_records-color);
     }
   }
 

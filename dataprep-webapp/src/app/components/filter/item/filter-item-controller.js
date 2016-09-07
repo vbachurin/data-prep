@@ -57,6 +57,19 @@ export default class FilterItemCtrl {
 
     /**
      * @ngdoc method
+     * @name getBadgeClassByFilterType
+     * @methodOf data-prep.filter-item:FilterItemCtrl
+     * @description get badge class by filter type
+     */
+    getBadgeClassByFilterType(filter) {
+        if (filter.type === 'quality' && filter.args && filter.args.invalid && filter.args.empty) {
+            return 'invalid_empty_records';
+        }
+        return filter.type;
+    }
+
+    /**
+     * @ngdoc method
      * @name submit
      * @methodOf data-prep.filter-item:FilterItemCtrl
      * @description Apply changes
