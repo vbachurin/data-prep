@@ -22,7 +22,6 @@ import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
-import org.talend.dataprep.transformation.Application;
 
 import com.jayway.restassured.path.json.JsonPath;
 
@@ -35,7 +34,7 @@ public class SuggestionTests extends TransformationServiceBaseTests {
     public void dataSetSuggest() throws Exception {
         // given
         final String dataSetMetadata = IOUtils
-                .toString(Application.class.getResourceAsStream("suggestions/dataset_metadata.json"));
+                .toString(SuggestionTests.class.getResourceAsStream("suggestions/dataset_metadata.json"));
 
         // when
         final String response = given() //
@@ -66,9 +65,9 @@ public class SuggestionTests extends TransformationServiceBaseTests {
     @Test
     public void stringColumnSuggest() throws Exception {
         // given
-        final String columnMetadata = IOUtils.toString(Application.class.getResourceAsStream("suggestions/string_column.json"));
+        final String columnMetadata = IOUtils.toString(SuggestionTests.class.getResourceAsStream("suggestions/string_column.json"));
         final String expectedSuggestions = IOUtils
-                .toString(Application.class.getResourceAsStream("suggestions/string_column_suggestions.json"));
+                .toString(SuggestionTests.class.getResourceAsStream("suggestions/string_column_suggestions.json"));
 
         // when
         final String response = given() //
@@ -85,7 +84,7 @@ public class SuggestionTests extends TransformationServiceBaseTests {
     @Test
     public void suggestLimit() throws Exception {
         // given
-        final String columnMetadata = IOUtils.toString(Application.class.getResourceAsStream("suggestions/date_column.json"));
+        final String columnMetadata = IOUtils.toString(SuggestionTests.class.getResourceAsStream("suggestions/date_column.json"));
 
         // when
         final String response = given() //
@@ -103,7 +102,7 @@ public class SuggestionTests extends TransformationServiceBaseTests {
     @Test
     public void suggestLimitDefault() throws Exception {
         // given
-        final String columnMetadata = IOUtils.toString(Application.class.getResourceAsStream("suggestions/date_column.json"));
+        final String columnMetadata = IOUtils.toString(SuggestionTests.class.getResourceAsStream("suggestions/date_column.json"));
 
         // when
         final String response = given() //
@@ -121,9 +120,9 @@ public class SuggestionTests extends TransformationServiceBaseTests {
     @Test
     public void floatColumnSuggest() throws Exception {
         // given
-        final String columnMetadata = IOUtils.toString(Application.class.getResourceAsStream("suggestions/float_column.json"));
+        final String columnMetadata = IOUtils.toString(SuggestionTests.class.getResourceAsStream("suggestions/float_column.json"));
         final String expectedSuggestions = IOUtils
-                .toString(Application.class.getResourceAsStream("suggestions/float_column_suggestions.json"));
+                .toString(SuggestionTests.class.getResourceAsStream("suggestions/float_column_suggestions.json"));
 
         // when
         final String response = given() //
@@ -140,9 +139,9 @@ public class SuggestionTests extends TransformationServiceBaseTests {
     @Test
     public void integerColumnSuggest() throws Exception {
         // given
-        final String columnMetadata = IOUtils.toString(Application.class.getResourceAsStream("suggestions/integer_column.json"));
+        final String columnMetadata = IOUtils.toString(SuggestionTests.class.getResourceAsStream("suggestions/integer_column.json"));
         final String expectedSuggestions = IOUtils
-                .toString(Application.class.getResourceAsStream("suggestions/integer_column_suggestions.json"));
+                .toString(SuggestionTests.class.getResourceAsStream("suggestions/integer_column_suggestions.json"));
 
         // when
         final String response = given() //
@@ -159,9 +158,9 @@ public class SuggestionTests extends TransformationServiceBaseTests {
     @Test
     public void booleanColumnSuggest() throws Exception {
         // given
-        final String columnMetadata = IOUtils.toString(Application.class.getResourceAsStream("suggestions/boolean_column.json"));
+        final String columnMetadata = IOUtils.toString(SuggestionTests.class.getResourceAsStream("suggestions/boolean_column.json"));
         final String expectedSuggestions = IOUtils
-                .toString(Application.class.getResourceAsStream("suggestions/boolean_column_suggestions.json"));
+                .toString(SuggestionTests.class.getResourceAsStream("suggestions/boolean_column_suggestions.json"));
 
         // when
         final String response = given() //
@@ -178,9 +177,9 @@ public class SuggestionTests extends TransformationServiceBaseTests {
     @Test
     public void dateColumnSuggest() throws Exception {
         // given
-        final String columnMetadata = IOUtils.toString(Application.class.getResourceAsStream("suggestions/date_column.json"));
+        final String columnMetadata = IOUtils.toString(SuggestionTests.class.getResourceAsStream("suggestions/date_column.json"));
         final String expectedSuggestions = IOUtils
-                .toString(Application.class.getResourceAsStream("suggestions/date_column_suggestions.json"));
+                .toString(SuggestionTests.class.getResourceAsStream("suggestions/date_column_suggestions.json"));
 
         // when
         final String response = given() //
@@ -198,9 +197,9 @@ public class SuggestionTests extends TransformationServiceBaseTests {
     public void dateColumnSuggestWithStringType() throws Exception {
         // given
         final String columnMetadata = IOUtils
-                .toString(Application.class.getResourceAsStream("suggestions/date_column_string_type.json"));
+                .toString(SuggestionTests.class.getResourceAsStream("suggestions/date_column_string_type.json"));
         String expectedSuggestions = IOUtils
-                .toString(Application.class.getResourceAsStream("suggestions/date_column_string_type_suggestions.json"));
+                .toString(SuggestionTests.class.getResourceAsStream("suggestions/date_column_string_type_suggestions.json"));
 
         // when
         final String response = given() //

@@ -34,14 +34,9 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.dataset.row.DataSetRow;
-import org.talend.dataprep.command.dataset.DataSetGet;
-import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.exception.error.TransformationErrorCodes;
 
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -92,8 +87,9 @@ public class LookupRowMatcher implements DisposableBean {
      */
     @PostConstruct
     private void init() {
-
-        final DataSetGet dataSetGet = context.getBean(DataSetGet.class, datasetId, false, true);
+        // TODO
+        /*
+        final DataSetGet dataSetGet = context.getBean(DataSetGet.class, datasetId, false);
 
         LOGGER.debug("opening {}", datasetId);
 
@@ -106,6 +102,7 @@ public class LookupRowMatcher implements DisposableBean {
         } catch (IOException e) {
             throw new TDPException(TransformationErrorCodes.UNABLE_TO_READ_LOOKUP_DATASET, e);
         }
+        */
     }
 
     /**

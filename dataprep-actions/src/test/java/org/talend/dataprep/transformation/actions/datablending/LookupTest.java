@@ -14,7 +14,6 @@
 package org.talend.dataprep.transformation.actions.datablending;
 
 import static org.junit.Assert.*;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.talend.dataprep.transformation.actions.common.ImplicitParameters.COLUMN_ID;
 import static org.talend.dataprep.transformation.actions.datablending.Lookup.Parameters.*;
 
@@ -28,20 +27,16 @@ import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
-import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.mock.env.MockPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.talend.dataprep.ServiceBaseTests;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadataBuilder;
 import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.parameters.Parameter;
-import org.talend.dataprep.test.MockTestApplication;
 import org.talend.dataprep.transformation.actions.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.actions.common.ActionFactory;
 import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
@@ -52,9 +47,7 @@ import org.talend.dataprep.transformation.pipeline.ActionRegistry;
  * 
  * @see Lookup
  */
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = { MockTestApplication.class }, webEnvironment = RANDOM_PORT)
-public class LookupTest {
+public class LookupTest extends ServiceBaseTests {
 
     @Value("${local.server.port}")
     public int port;
@@ -71,9 +64,6 @@ public class LookupTest {
 
     @Autowired
     private DataSetMetadataBuilder metadataBuilder;
-
-    @Autowired
-    protected ConfigurableEnvironment environment;
 
     /** The action to test. */
     private Lookup action;

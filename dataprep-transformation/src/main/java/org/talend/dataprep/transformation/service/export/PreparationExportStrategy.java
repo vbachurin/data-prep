@@ -15,7 +15,6 @@ package org.talend.dataprep.transformation.service.export;
 
 import static org.talend.dataprep.api.export.ExportParameters.SourceType.HEAD;
 
-import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.apache.commons.io.output.TeeOutputStream;
@@ -25,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
+import org.talend.daikon.annotation.Client;
 import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.export.ExportParameters;
 import org.talend.dataprep.api.preparation.Preparation;
@@ -38,18 +38,23 @@ import org.talend.dataprep.security.SecurityProxy;
 import org.talend.dataprep.transformation.api.transformer.configuration.Configuration;
 import org.talend.dataprep.transformation.cache.CacheKeyGenerator;
 import org.talend.dataprep.transformation.cache.TransformationCacheKey;
+import org.talend.services.dataprep.DataSetService;
 import org.talend.dataprep.transformation.service.ExportStrategy;
 import org.talend.dataprep.transformation.service.ExportUtils;
 
 import com.fasterxml.jackson.core.JsonParser;
 
 /**
- * A {@link ExportStrategy strategy} to export a preparation, using its default data set with {@link ExportParameters.SourceType HEAD} sample.
+ * A {@link ExportStrategy strategy} to apply a preparation on a different dataset (different from the one initially
+ * in the preparation).
  */
 @Component
 public class PreparationExportStrategy extends StandardExportStrategy {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PreparationExportStrategy.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ApplyPreparationExportStrategy.class);
+
+    @Client
+    DataSetService dataSetService;
 
     @Autowired
     private CacheKeyGenerator cacheKeyGenerator;
@@ -90,60 +95,42 @@ public class PreparationExportStrategy extends StandardExportStrategy {
         final String dataSetId = preparation.getDataSetId();
         final ExportFormat format = getFormat(parameters.getExportType());
 
+        // head is not allowed as step id
+        String version = stepId;
+        if (StringUtils.equals("head", stepId) || StringUtils.isEmpty(stepId)) {
+            version = preparation.getSteps().get(preparation.getSteps().size() - 1);
+        }
+
+        final TransformationCacheKey key = new TransformationCacheKey(preparationId, dataSetId, formatName, version);
         // get the dataset content (in an auto-closable block to make sure it is properly closed)
-        boolean releasedIdentity = false;
-        securityProxy.asTechnicalUser(); // Allow get dataset and get dataset metadata access whatever share status is
-        final DataSetGet dataSetGet = applicationContext.getBean(DataSetGet.class, dataSetId, false, true);
-        final DataSetGetMetadata dataSetGetMetadata = applicationContext.getBean(DataSetGetMetadata.class, dataSetId);
-        try (InputStream datasetContent = dataSetGet.execute()) {
-            try (JsonParser parser = mapper.getFactory().createParser(datasetContent)) {
-                // head is not allowed as step id
-                final String version = getCleanStepId(preparation, stepId);
+        try {
 
-                // Create dataset
-                final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
-                dataSet.setMetadata(dataSetGetMetadata.execute());
+            // Create dataset
+            final DataSet dataSet = dataSetService.get(true, dataSetId).call();
+            // get the actions to apply (no preparation ==> dataset export ==> no actions)
+            String actions = getActions(preparationId, version);
 
-                // All good, can already release identity
-                securityProxy.releaseIdentity();
-                releasedIdentity = true;
-
-                // get the actions to apply (no preparation ==> dataset export ==> no actions)
-                final String actions = getActions(preparationId, version);
-
-                final TransformationCacheKey key = cacheKeyGenerator.generateContentKey(
-                        dataSetId,
-                        preparationId,
-                        version,
-                        formatName,
-                        parameters.getFrom()
-                );
-                LOGGER.debug("Cache key: " + key.getKey());
-                LOGGER.debug("Cache key details: " + key.toString());
-
-                try (final TeeOutputStream tee = new TeeOutputStream(outputStream,
-                        contentCache.put(key, ContentCache.TimeToLive.DEFAULT))) {
-                    final Configuration configuration = Configuration.builder() //
-                            .args(parameters.getArguments()) //
-                            .outFilter(rm -> filterService.build(parameters.getFilter(), rm)) //
-                            .sourceType(parameters.getFrom())
-                            .format(format.getName()) //
-                            .actions(actions) //
-                            .preparationId(preparationId) //
-                            .stepId(version) //
-                            .volume(Configuration.Volume.SMALL) //
-                            .output(tee) //
-                            .build();
-                    factory.get(configuration).transform(dataSet, configuration);
-                    tee.flush();
-                } catch (Throwable e) { // NOSONAR
-                    contentCache.evict(key);
-                    throw e;
-                }
+            LOGGER.debug("Cache key: " + key.getKey());
+            LOGGER.debug("Cache key details: " + key.toString());
+            TeeOutputStream tee = new TeeOutputStream(outputStream, contentCache.put(key, ContentCache.TimeToLive.DEFAULT));
+            try {
+                Configuration configuration = Configuration.builder() //
+                        .args(parameters.getArguments()) //
+                        .outFilter(rm -> filterService.build(parameters.getFilter(), rm)) //
+                        .format(format.getName()) //
+                        .actions(actions) //
+                        .preparationId(preparationId) //
+                        .stepId(version) //
+                        .volume(Configuration.Volume.SMALL) //
+                        .output(tee) //
+                        .build();
+                factory.get(configuration).transform(dataSet, configuration);
+                tee.flush();
+            } finally {
+                tee.close();
             }
-        } catch (TDPException e) {
-            throw e;
-        } catch (Exception e) {
+        } catch (Throwable e) { // NOSONAR
+            contentCache.evict(key);
             throw new TDPException(TransformationErrorCodes.UNABLE_TO_TRANSFORM_DATASET, e);
         } finally {
             if (!releasedIdentity) {
