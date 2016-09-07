@@ -11,7 +11,7 @@
 
  ============================================================================*/
 
-import d3 from "d3";
+import d3 from 'd3';
 
 const RANGE_SEPARATOR = ' .. ';
 const INTERVAL_SEPARATOR = ',';
@@ -216,7 +216,7 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
     function createInvalidFilterFn(colId) {
         return function () {
             return function (item) {
-                return item.__tdpInvalid && item.__tdpInvalid.indexOf(colId) > -1;;
+                return item.__tdpInvalid && item.__tdpInvalid.indexOf(colId) > -1;
             };
         };
     }
