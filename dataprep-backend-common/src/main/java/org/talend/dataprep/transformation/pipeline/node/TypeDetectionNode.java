@@ -4,7 +4,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.zip.GZIPInputStream;
@@ -114,7 +117,7 @@ public class TypeDetectionNode extends ColumnFilteredNode implements Monitored {
                 resultAnalyzer = analyzer.apply(filteredColumns);
             }
             final String[] values = row.filter(filteredColumns) //
-                    .order(filteredColumns) //
+                    .order(rowMetadata.getColumns()) //
                     .toArray(DataSetRow.SKIP_TDP_ID.and(e -> filteredColumnNames.contains(e.getKey())));
             try {
                 resultAnalyzer.analyze(values);
