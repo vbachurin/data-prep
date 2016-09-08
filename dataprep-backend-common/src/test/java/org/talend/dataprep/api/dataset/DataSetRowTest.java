@@ -315,13 +315,13 @@ public class DataSetRowTest {
         List<ColumnMetadata> filter = new ArrayList<ColumnMetadata>() {
 
             {
-                add(column().computedId("0001").type(Type.STRING).build());
-                add(column().computedId("0002").type(Type.STRING).build());
+                add(column().computedId("age").type(Type.STRING).build());
+                add(column().computedId("firstName").type(Type.STRING).build());
             }
         };
-        assertThat(row.getRowMetadata().getColumns().size(), is(4));
+        assertThat(row.values().size(), is(4));
         final DataSetRow newRow = row.filter(filter);
-        assertThat(newRow.getRowMetadata().getColumns().size(), is(2));
+        assertThat(newRow.values().size(), is(2));
     }
 
 

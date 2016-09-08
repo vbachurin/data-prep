@@ -27,6 +27,8 @@ import org.talend.dataprep.transformation.pipeline.node.*;
 import org.talend.dataquality.common.inference.Analyzer;
 import org.talend.dataquality.common.inference.Analyzers;
 
+import static java.util.stream.Collectors.toSet;
+
 public class Pipeline implements Node, RuntimeNode {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Pipeline.class);
@@ -200,11 +202,19 @@ public class Pipeline implements Node, RuntimeNode {
 
         private ActionAnalysis analyzeActions() {
             // Compile actions
-            final Set<String> readOnlyColumns = rowMetadata.getColumns().stream().map(ColumnMetadata::getId)
-                    .collect(Collectors.toSet());
-            final Set<String> modifiedColumns = new HashSet<>();
+            final Set<String> originalColumns = rowMetadata.getColumns()
+                    .stream()
+                    .map(ColumnMetadata::getId)
+                    .collect(toSet());
+            final Set<String> valueModifiedColumns = new HashSet<>();
+            final Set<String> metadataModifiedColumns = new HashSet<>();
             int createColumnActions = 0;
-            ActionAnalysis analysisResult = new ActionAnalysis();
+
+            boolean needFullAnalysis = false;
+            boolean needOnlyInvalidAnalysis = false;
+            Predicate<ColumnMetadata> filterForFullAnalysis = c -> true;
+            Predicate<ColumnMetadata> filterForInvalidAnalysis = c -> true;
+
             if (actionRegistry != null) {
                 for (Action action : actions) {
                     final ActionMetadata actionMetadata = actionRegistry.get(action.getName());
@@ -217,50 +227,56 @@ public class Pipeline implements Node, RuntimeNode {
                     Set<ActionMetadata.Behavior> behavior = actionMetadata.getBehavior();
                     for (ActionMetadata.Behavior currentBehavior : behavior) {
                         switch (currentBehavior) {
-                        case VALUES_ALL:
-                            // All values are going to be changed, and all original columns are going to be modified.
-                            modifiedColumns.addAll(readOnlyColumns);
-                            readOnlyColumns.clear();
-                            break;
-                        case METADATA_CHANGE_TYPE:
-                        case VALUES_COLUMN:
-                            final String modifiedColumnId = action.getParameters().get(ImplicitParameters.COLUMN_ID.getKey());
-                            modifiedColumns.add(modifiedColumnId);
-                            break;
-                        case VALUES_MULTIPLE_COLUMNS:
-                            // Add the action's source column
-                            modifiedColumns.add(action.getParameters().get(ImplicitParameters.COLUMN_ID.getKey()));
-                            // ... then add all column parameter (COLUMN_ID is string, not column)
-                            final List<Parameter> parameters = actionMetadata.getParameters();
-                            modifiedColumns.addAll(parameters.stream() //
-                                    .filter(parameter -> ParameterType
-                                            .valueOf(parameter.getType().toUpperCase()) == ParameterType.COLUMN) //
-                                    .map(parameter -> action.getParameters().get(parameter.getName())) //
-                                    .collect(Collectors.toList()));
-                            break;
-                        case METADATA_COPY_COLUMNS:
-                            // TODO Ignore column copy from analysis (metadata did not change)
-                            break;
-                        case METADATA_CREATE_COLUMNS:
-                            createColumnActions++;
-                            break;
-                        case METADATA_DELETE_COLUMNS:
-                        case METADATA_CHANGE_NAME:
-                            // Do nothing: no need to re-analyze where only name was changed.
-                            break;
-                        default:
-                            break;
+                            case VALUES_ALL:
+                                // All values are going to be changed, and all original columns are going to be modified.
+                                valueModifiedColumns.addAll(originalColumns);
+                                break;
+                            case METADATA_CHANGE_TYPE:
+                                metadataModifiedColumns.add(action.getParameters().get(ImplicitParameters.COLUMN_ID.getKey()));
+                                break;
+                            case VALUES_COLUMN:
+                                valueModifiedColumns.add(action.getParameters().get(ImplicitParameters.COLUMN_ID.getKey()));
+                                break;
+                            case VALUES_MULTIPLE_COLUMNS:
+                                // Add the action's source column
+                                valueModifiedColumns.add(action.getParameters().get(ImplicitParameters.COLUMN_ID.getKey()));
+                                // ... then add all column parameter (COLUMN_ID is string, not column)
+                                final List<Parameter> parameters = actionMetadata.getParameters();
+                                valueModifiedColumns.addAll(parameters.stream() //
+                                        .filter(parameter -> ParameterType
+                                                .valueOf(parameter.getType().toUpperCase()) == ParameterType.COLUMN) //
+                                        .map(parameter -> action.getParameters().get(parameter.getName())) //
+                                        .collect(Collectors.toList()));
+                                break;
+                            case METADATA_COPY_COLUMNS:
+                                // TODO Ignore column copy from analysis (metadata did not change)
+                                break;
+                            case METADATA_CREATE_COLUMNS:
+                                createColumnActions++;
+                                break;
+                            case METADATA_DELETE_COLUMNS:
+                            case METADATA_CHANGE_NAME:
+                                // Do nothing: no need to re-analyze where only name was changed.
+                                break;
+                            default:
+                                break;
                         }
                     }
                 }
-                analysisResult.filter = c -> modifiedColumns.contains(c.getId()) || !readOnlyColumns.contains(c.getId());
-                analysisResult.needDelayedAnalysis = !modifiedColumns.isEmpty() || createColumnActions > 0;
+
+                // when values are modified, we need to do a full analysis (schema + invalid + stats)
+                needFullAnalysis = !valueModifiedColumns.isEmpty() || createColumnActions > 0;
+                // when only metadata is modified, we need to re-evaluate the invalids entries
+                needOnlyInvalidAnalysis = !needFullAnalysis && !metadataModifiedColumns.isEmpty();
+                // only the columns with modified values or new columns need the schema + stats analysis
+                filterForFullAnalysis = c -> valueModifiedColumns.contains(c.getId()) || !originalColumns.contains(c.getId());
+                // only the columns with metadata change or value changes need to re-evaluate invalids
+                filterForInvalidAnalysis = filterForFullAnalysis.or(c -> metadataModifiedColumns.contains(c.getId()));
+
             } else {
                 LOGGER.warn("Unable to statically analyze actions (no action registry defined).");
-                analysisResult.filter = c -> true;
-                analysisResult.needDelayedAnalysis = true;
             }
-            return analysisResult;
+            return new ActionAnalysis(needFullAnalysis, needOnlyInvalidAnalysis, filterForFullAnalysis, filterForInvalidAnalysis);
         }
 
         public Builder withFilterOut(Function<RowMetadata, Predicate<DataSetRow>> outFilter) {
@@ -279,16 +295,16 @@ public class Pipeline implements Node, RuntimeNode {
             }
             if (allowMetadataChange) {
                 if (actionToMetadata.get(action).getBehavior().contains(ActionMetadata.Behavior.NEED_STATISTICS)) {
-                    builder.to(new TypeDetectionNode(inlineAnalyzer, analysis.filter, adapter));
-                    builder.to(new InvalidDetectionNode(analyzerService, analysis.filter));
+                    builder.to(new TypeDetectionNode(inlineAnalyzer, analysis.filterForFullAnalysis, adapter));
+                    builder.to(new InvalidDetectionNode(analyzerService, analysis.filterForInvalidAnalysis));
                 }
                 if (action.getParameters().containsKey(ImplicitParameters.FILTER.getKey())) {
-                    // action has a filter, to cover cases where filters are on invalid values
+                    // action has a filterForFullAnalysis, to cover cases where filters are on invalid values
                     final String filterAsString = action.getParameters().get(ImplicitParameters.FILTER.getKey());
                     if (StringUtils.contains(filterAsString, "valid") || StringUtils.contains(filterAsString, "invalid")) {
-                        // TODO Perform static analysis of filter to discover which column is the filter on.
-                        builder.to(new TypeDetectionNode(inlineAnalyzer, analysis.filter, adapter));
-                        builder.to(new InvalidDetectionNode(analyzerService, analysis.filter));
+                        // TODO Perform static analysis of filterForFullAnalysis to discover which column is the filterForFullAnalysis on.
+                        builder.to(new TypeDetectionNode(inlineAnalyzer, analysis.filterForFullAnalysis, adapter));
+                        builder.to(new InvalidDetectionNode(analyzerService, analysis.filterForInvalidAnalysis));
                     }
                 }
             }
@@ -314,9 +330,11 @@ public class Pipeline implements Node, RuntimeNode {
                 actionIndex++; // Keep track of the being applied action (to decide whether recomputing stats is worth it).
             }
             // Analyze (delayed)
-            if (analysis.needDelayedAnalysis && needGlobalStatistics) {
-                current.to(new TypeDetectionNode(inlineAnalyzer, analysis.filter, adapter));
-                current.to(new StatisticsNode(delayedAnalyzer, analysis.filter, adapter));
+            if (needGlobalStatistics) {
+                final Node[] statisticsNodes = analysis.getStatisticsNodes();
+                for (final Node nextStatsNode: statisticsNodes) {
+                    current.to(nextStatsNode);
+                }
             }
             // Output
             if (outFilter != null) {
@@ -331,9 +349,36 @@ public class Pipeline implements Node, RuntimeNode {
 
         private class ActionAnalysis {
 
-            private boolean needDelayedAnalysis;
+            private final boolean needFullAnalysis;
+            private final boolean needOnlyInvalidAnalysis;
+            private final Predicate<ColumnMetadata> filterForFullAnalysis;
+            private final Predicate<ColumnMetadata> filterForInvalidAnalysis;
 
-            private Predicate<ColumnMetadata> filter = c -> true;
+            public ActionAnalysis(final boolean needFullAnalysis, final boolean needOnlyInvalidAnalysis, final Predicate<ColumnMetadata> filterForFullAnalysis, final Predicate<ColumnMetadata> filterForInvalidAnalysis) {
+                this.needFullAnalysis = needFullAnalysis;
+                this.needOnlyInvalidAnalysis = needOnlyInvalidAnalysis;
+                this.filterForFullAnalysis = filterForFullAnalysis;
+                this.filterForInvalidAnalysis = filterForInvalidAnalysis;
+            }
+
+            public Node[] getStatisticsNodes() {
+                if (needFullAnalysis) {
+                    return new Node[]{
+                            new TypeDetectionNode(inlineAnalyzer, filterForFullAnalysis, adapter),
+                            new InvalidDetectionNode(analyzerService, filterForInvalidAnalysis),
+                            new StatisticsNode(delayedAnalyzer, filterForFullAnalysis, adapter)
+                    };
+                }
+
+                if (needOnlyInvalidAnalysis) {
+                    return new Node[]{
+                            new InvalidDetectionNode(analyzerService, filterForInvalidAnalysis),
+                            //TODO JSO do only quality analysis
+                            new StatisticsNode(delayedAnalyzer, filterForInvalidAnalysis, adapter)
+                    };
+                }
+                return new Node[0];
+            }
         }
 
     }

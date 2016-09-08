@@ -12,17 +12,19 @@ import org.talend.dataprep.transformation.pipeline.Signal;
 import org.talend.dataquality.common.inference.Analyzer;
 import org.talend.dataquality.common.inference.Analyzers;
 
+import static java.util.stream.Collectors.toList;
+
 public class StatisticsNode extends ColumnFilteredNode {
 
-    private final Function<List<ColumnMetadata>, Analyzer<Analyzers.Result>> delayedAnalyzer;
+    private final Function<List<ColumnMetadata>, Analyzer<Analyzers.Result>> analyzer;
 
     private final StatisticsAdapter adapter;
 
     private Analyzer<Analyzers.Result> configuredAnalyzer;
 
-    public StatisticsNode(Function<List<ColumnMetadata>, Analyzer<Analyzers.Result>> delayedAnalyzer, Predicate<ColumnMetadata> filter, StatisticsAdapter adapter) {
+    public StatisticsNode(Function<List<ColumnMetadata>, Analyzer<Analyzers.Result>> analyzer, Predicate<ColumnMetadata> filter, StatisticsAdapter adapter) {
         super(filter);
-        this.delayedAnalyzer = delayedAnalyzer;
+        this.analyzer = analyzer;
         this.adapter = adapter;
     }
 
@@ -30,15 +32,15 @@ public class StatisticsNode extends ColumnFilteredNode {
     public void receive(DataSetRow row, RowMetadata metadata) {
         performColumnFilter(row, metadata);
         if (configuredAnalyzer == null) {
-            this.configuredAnalyzer = delayedAnalyzer.apply(metadata.getColumns());
+            this.configuredAnalyzer = analyzer.apply(filteredColumns);
         }
-        configuredAnalyzer.analyze(row.filter(metadata.getColumns()).order(metadata.getColumns()).toArray(DataSetRow.SKIP_TDP_ID));
+        configuredAnalyzer.analyze(row.filter(filteredColumns).order(filteredColumns).toArray(DataSetRow.SKIP_TDP_ID));
         super.receive(row, metadata);
     }
 
     @Override
     public void signal(Signal signal) {
-        adapter.adapt(rowMetadata.getColumns(), configuredAnalyzer.getResult());
+        adapter.adapt(filteredColumns, configuredAnalyzer.getResult());
         super.signal(signal);
     }
 }

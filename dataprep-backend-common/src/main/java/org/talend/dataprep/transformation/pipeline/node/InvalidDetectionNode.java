@@ -4,17 +4,23 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.api.dataset.row.InvalidMarker;
 import org.talend.dataprep.quality.AnalyzerService;
+import org.talend.dataprep.transformation.api.transformer.json.NullAnalyzer;
 import org.talend.dataprep.transformation.pipeline.Monitored;
+import org.talend.dataprep.transformation.pipeline.Signal;
 import org.talend.dataprep.transformation.pipeline.Visitor;
 import org.talend.dataquality.common.inference.Analyzer;
 import org.talend.dataquality.common.inference.Analyzers;
 
 public class InvalidDetectionNode extends ColumnFilteredNode implements Monitored {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(InvalidDetectionNode.class);
 
     private final Function<List<ColumnMetadata>, Analyzer<Analyzers.Result>> analyzer;
 
@@ -28,7 +34,11 @@ public class InvalidDetectionNode extends ColumnFilteredNode implements Monitore
 
     public InvalidDetectionNode(AnalyzerService analyzerService, Predicate<? super ColumnMetadata> filter) {
         super(filter);
-        this.analyzer = c -> analyzerService.build(c, AnalyzerService.Analysis.QUALITY);
+        if (analyzerService != null) {
+            this.analyzer = c -> analyzerService.build(c, AnalyzerService.Analysis.QUALITY);
+        } else {
+            this.analyzer = c -> Analyzers.with(NullAnalyzer.INSTANCE);
+        }
     }
 
     @Override
@@ -46,6 +56,16 @@ public class InvalidDetectionNode extends ColumnFilteredNode implements Monitore
             totalTime += System.currentTimeMillis() - start;
             count++;
         }
+    }
+
+    @Override
+    public void signal(Signal signal) {
+        try {
+            configuredAnalyzer.close();
+        } catch (Exception e) {
+            LOGGER.error("Unable to close analyzer.", e);
+        }
+        super.signal(signal);
     }
 
     @Override

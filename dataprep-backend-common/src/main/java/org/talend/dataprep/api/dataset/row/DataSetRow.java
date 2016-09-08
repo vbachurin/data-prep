@@ -170,7 +170,11 @@ public class DataSetRow implements Cloneable {
         final Map<String, Object> result = new LinkedHashMap<>(values.size() + 1);
 
         // put all invalid column ids
-        result.putAll(internalValues);
+        internalValues.entrySet().forEach(e -> {
+            if (!StringUtils.isEmpty(e.getValue())) {
+                values.put(e.getKey(), e.getValue());
+            }
+        });
 
         // if not old value, no diff to compute
         if (this.oldValue == null) {
@@ -414,14 +418,15 @@ public class DataSetRow implements Cloneable {
 
     public DataSetRow filter(List<ColumnMetadata> filteredColumns) {
         final Set<String> columnsToKeep = filteredColumns.stream().map(ColumnMetadata::getId).collect(Collectors.toSet());
-        final Set<ColumnMetadata> columnsToDelete = rowMetadata.getColumns().stream() //
-                .filter(c -> !columnsToKeep.contains(c.getId())) //
+        final Set<String> columnsToDelete = values.entrySet().stream()
+                .filter(e -> !columnsToKeep.contains(e.getKey())) //
+                .map(Map.Entry::getKey)
                 .collect(Collectors.toSet());
         final RowMetadata rowMetadataClone = rowMetadata.clone();
         final LinkedHashMap<String, String> filteredValues = new LinkedHashMap<>(this.values);
-        for (ColumnMetadata columnMetadata : columnsToDelete) {
-            filteredValues.remove(columnMetadata.getId());
-            rowMetadataClone.deleteColumnById(columnMetadata.getId());
+        for (String columnId : columnsToDelete) {
+            filteredValues.remove(columnId);
+            rowMetadataClone.deleteColumnById(columnId);
         }
         final DataSetRow filteredDataSetRow = new DataSetRow(rowMetadataClone, filteredValues);
         filteredDataSetRow.internalValues = new HashMap<>(internalValues);
