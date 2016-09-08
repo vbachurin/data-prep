@@ -90,8 +90,25 @@ public class AESEncryption {
     }
 
     /**
-     * Generates the key used to encrypt and decrypt.
+     * Return the decrypted string or the original value if needed.
      * 
+     * @param name the string name to decrypt (useful for debugging purpose)
+     * @param src the string to decrypt.
+     * @return the decrypted string or the original value if needed.
+     */
+    public static String decrypt(final String name, final String src) {
+        try {
+            return decrypt(src);
+        } catch (Exception e) {
+            LOGGER.debug("could not decrypt {}, return it as it is", name);
+            return src;
+        }
+
+    }
+
+    /**
+     * Generates the key used to encrypt and decrypt.
+     *
      * @return the key used to encrypt and decrypt
      * @throws Exception
      */
