@@ -15,6 +15,9 @@ package org.talend.dataprep.metrics;
 
 import java.lang.annotation.*;
 
+/**
+ * Identify a method which duration should be stored in the metrics repository.
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Target({ ElementType.METHOD })

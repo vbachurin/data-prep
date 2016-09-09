@@ -16,13 +16,15 @@ package org.talend.dataprep.api.preparation;
 import java.io.Serializable;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.annotation.PersistenceConstructor;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
+/**
+ * Represents one step of a {@link Preparation}.
+ */
 public class Step extends Identifiable implements Serializable {
 
     /** Serialization UID. */

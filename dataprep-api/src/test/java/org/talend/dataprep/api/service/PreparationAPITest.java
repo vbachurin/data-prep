@@ -87,7 +87,8 @@ public class PreparationAPITest extends ApiServiceTestBase {
     @Test
     public void testPreparationsList() throws Exception {
         // given
-        String preparationId = createPreparationFromDataset("1234", "testPreparation");
+        String tagadaId = createDataset("dataset/dataset.csv", "tagada", "text/csv");
+        String preparationId = createPreparationFromDataset(tagadaId, "testPreparation");
 
         // when : short format
         final JsonPath shortFormat = when().get("/api/preparations/?format=short").jsonPath();
@@ -101,7 +102,7 @@ public class PreparationAPITest extends ApiServiceTestBase {
 
         // then
         assertThat(longFormat.getList("dataSetId").size(), is(1));
-        assertThat(longFormat.getList("dataSetId").get(0), is("1234"));
+        assertThat(longFormat.getList("dataSetId").get(0), is(tagadaId));
         assertThat(longFormat.getList("author").size(), is(1));
         assertThat(longFormat.getList("author").get(0), is(security.getUserId()));
         assertThat(longFormat.getList("id").size(), is(1));
@@ -253,7 +254,8 @@ public class PreparationAPITest extends ApiServiceTestBase {
     @Test
     public void testPreparationUpdate() throws Exception {
         // given
-        final String preparationId = createPreparationFromDataset("1234", "original_name");
+        String tagadaId = createDataset("dataset/dataset.csv", "tagada", "text/csv");
+        final String preparationId = createPreparationFromDataset(tagadaId, "original_name");
 
         JsonPath longFormat = when().get("/api/preparations/?format=long").jsonPath();
         assertThat(longFormat.getList("name").size(), is(1));
@@ -262,7 +264,7 @@ public class PreparationAPITest extends ApiServiceTestBase {
         assertThat(longFormat.getList("id").get(0), is(preparationId));
 
         // when
-        given().contentType(ContentType.JSON).body("{ \"name\": \"updated_name\", \"dataSetId\": \"1234\" }")
+        given().contentType(ContentType.JSON).body("{ \"name\": \"updated_name\", \"dataSetId\": \"" + tagadaId + "\" }")
                 .put("/api/preparations/{id}", preparationId).asString();
 
         // then
@@ -274,7 +276,8 @@ public class PreparationAPITest extends ApiServiceTestBase {
     @Test
     public void testPreparationDelete() throws Exception {
         // given
-        final String preparationId = createPreparationFromDataset("1234", "original_name");
+        String tagadaId = createDataset("dataset/dataset.csv", "tagada", "text/csv");
+        final String preparationId = createPreparationFromDataset(tagadaId, "original_name");
 
         String list = when().get("/api/preparations").asString();
         assertTrue(list.contains(preparationId));
@@ -290,8 +293,9 @@ public class PreparationAPITest extends ApiServiceTestBase {
     @Test
     public void testPreparationCacheDeletion() throws Exception {
         // given
-        final String prepId = "1234";
-        final String preparationId = createPreparationFromDataset(prepId, "original_name");
+
+        String tagadaId = createDataset("dataset/dataset.csv", "tagada", "text/csv");
+        final String preparationId = createPreparationFromDataset(tagadaId, "original_name");
 
         final String list = when().get("/api/preparations").asString();
         assertThat(list.contains(preparationId), is(true));
@@ -347,7 +351,6 @@ public class PreparationAPITest extends ApiServiceTestBase {
                 .getList("steps");
         assertThat(steps.size(), is(2));
         assertThat(steps.get(0), is(rootStep.id()));
-        assertThat(steps.get(1), is("c19c0f82ff8c2296acb4da9c485e6dc83ead6c45"));
     }
 
     @Test
@@ -363,8 +366,6 @@ public class PreparationAPITest extends ApiServiceTestBase {
                 .getList("steps");
         assertThat(steps.size(), is(3));
         assertThat(steps.get(0), is(rootStep.id()));
-        assertThat(steps.get(1), is("81d219222e99d73b6a762cf2b0ec74261196df75"));
-        assertThat(steps.get(2), is("3505adaabdcdb1d7fd4e7d2898a2782ec572401d"));
     }
 
     @Test
@@ -410,22 +411,18 @@ public class PreparationAPITest extends ApiServiceTestBase {
         List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
         assertThat(steps.size(), is(3));
         assertThat(steps.get(0), is(rootStep.id()));
-        assertThat(steps.get(1), is("81d219222e99d73b6a762cf2b0ec74261196df75")); // <- transformation/upper_case_lastname
-        assertThat(steps.get(2), is("3505adaabdcdb1d7fd4e7d2898a2782ec572401d")); // <- upper_case_firstname
 
         // when : Update first action (transformation/upper_case_lastname / "2b6ae58738239819df3d8c4063e7cb56f53c0d59") with another action
         final String actionContent3 = IOUtils.toString(PreparationAPITest.class.getResourceAsStream("transformation/lower_case_lastname.json"));
         given().contentType(ContentType.JSON)
                 .body(actionContent3)
                 .put("/api/preparations/{preparation}/actions/{action}", preparationId,
-                        "81d219222e99d73b6a762cf2b0ec74261196df75").then().statusCode(is(200));
+                        steps.get(1)).then().statusCode(is(200));
 
         // then : Steps id should have changed due to update
         steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
         assertThat(steps.size(), is(3));
         assertThat(steps.get(0), is(rootStep.id()));
-        assertThat(steps.get(1), is("434e7fc9005014ea6636a5c0803932db9dcc0943"));
-        assertThat(steps.get(2), is("ef5c618b0648b5a9888e92c20424d00b7bbda180"));
     }
 
     @Test
@@ -436,7 +433,6 @@ public class PreparationAPITest extends ApiServiceTestBase {
         applyActionFromFile(preparationId, "transformation/upper_case_firstname.json");
 
         final List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
-        assertThat(steps.get(1), is("81d219222e99d73b6a762cf2b0ec74261196df75")); // <- transformation/upper_case_lastname
 
         // when : Update first action (transformation/upper_case_lastname / "2b6ae58738239819df3d8c4063e7cb56f53c0d59")
         // with another action that create a column
@@ -444,7 +440,7 @@ public class PreparationAPITest extends ApiServiceTestBase {
         given().contentType(ContentType.JSON)
                 .body(updateAction)
                 .put("/api/preparations/{preparation}/actions/{action}", preparationId,
-                        "81d219222e99d73b6a762cf2b0ec74261196df75").then().statusCode(is(200));
+                        steps.get(1)).then().statusCode(is(200));
 
         // then
         final JsonPath jsonPath = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath();
@@ -495,7 +491,6 @@ public class PreparationAPITest extends ApiServiceTestBase {
         steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
         assertThat(steps.size(), is(2));
         assertThat(steps.get(0), is(rootStep.id()));
-        assertThat(steps.get(1), is("c19c0f82ff8c2296acb4da9c485e6dc83ead6c45"));
     }
 
     @Test
@@ -530,7 +525,8 @@ public class PreparationAPITest extends ApiServiceTestBase {
     @Test
     public void should_throw_exception_on_preparation_head_change_with_unknown_step() throws Exception {
         //given
-        final String preparationId = createPreparationFromDataset("1234", "testPreparation");
+        String tagadaId = createDataset("dataset/dataset.csv", "tagada", "text/csv");
+        final String preparationId = createPreparationFromDataset(tagadaId, "testPreparation");
 
         //when
         final Response response = given().when()//

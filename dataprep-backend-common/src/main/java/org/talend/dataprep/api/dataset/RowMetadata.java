@@ -13,15 +13,6 @@
 
 package org.talend.dataprep.api.dataset;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.talend.dataprep.api.dataset.row.Flag;
-import org.talend.dataprep.api.dataset.json.ColumnContextDeserializer;
-
-import javax.annotation.Nonnull;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -29,9 +20,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import javax.annotation.Nonnull;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.talend.dataprep.api.dataset.json.ColumnContextDeserializer;
+import org.talend.dataprep.api.dataset.row.Flag;
 
 /**
  * Models metadata information for a row of a data set.
+ * More of a DI Schema Metadata albeit it contains indirectly data quality reports and statistics from its dataset.
  */
 public class RowMetadata implements Serializable {
 
@@ -46,7 +47,7 @@ public class RowMetadata implements Serializable {
     /** List of row metadata. */
     @JsonProperty("columns")
     @JsonDeserialize(using = ColumnContextDeserializer.class)
-    private List<ColumnMetadata> columns = new ArrayList<>();
+    private final List<ColumnMetadata> columns = new ArrayList<>();
 
     private int nextId = 0;
 
@@ -211,9 +212,9 @@ public class RowMetadata implements Serializable {
      * @return True if the name, domain or type has changed
      */
     private boolean columnHasChanged(final ColumnMetadata column, final ColumnMetadata reference) {
-        return !column.getName().equals(reference.getName()) //
-                || !column.getDomain().equals(reference.getDomain()) //
-                || !column.getType().equals(reference.getType());
+        return !Objects.equals(column.getName(), reference.getName()) //
+                || !Objects.equals(column.getDomain(), reference.getDomain()) //
+                || !Objects.equals(column.getType(), reference.getType());
     }
 
     /**
@@ -232,17 +233,11 @@ public class RowMetadata implements Serializable {
         return columns.size();
     }
 
-    /**
-     * @see Object#toString()
-     */
     @Override
     public String toString() {
         return "RowMetadata{" + "columns=" + columns + '}';
     }
 
-    /**
-     * @see Object#equals(Object)
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o)
@@ -253,9 +248,6 @@ public class RowMetadata implements Serializable {
         return Objects.equals(columns, that.columns);
     }
 
-    /**
-     * @see Object#hashCode()
-     */
     @Override
     public int hashCode() {
         return Objects.hash(columns);
@@ -282,9 +274,6 @@ public class RowMetadata implements Serializable {
         return column.getId();
     }
 
-    /**
-     * @see Object#clone()
-     */
     @Override
     public RowMetadata clone() {
         // also copy the columns !

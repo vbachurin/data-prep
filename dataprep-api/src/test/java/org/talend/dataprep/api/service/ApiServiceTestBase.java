@@ -13,17 +13,13 @@
 
 package org.talend.dataprep.api.service;
 
-import static com.jayway.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-
 import java.io.IOException;
 import java.io.InputStream;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.restassured.http.ContentType;
+import com.jayway.restassured.response.Response;
+import com.jayway.restassured.specification.RequestSpecification;
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -47,10 +43,13 @@ import org.talend.dataprep.preparation.store.PreparationRepository;
 import org.talend.dataprep.transformation.aggregation.api.AggregationParameters;
 import org.talend.dataprep.transformation.test.TransformationServiceUrlRuntimeUpdater;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jayway.restassured.http.ContentType;
-import com.jayway.restassured.response.Response;
-import com.jayway.restassured.specification.RequestSpecification;
+import static com.jayway.restassured.RestAssured.given;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 /**
  * Base test for all API service unit.
@@ -121,7 +120,7 @@ public abstract class ApiServiceTestBase {
     }
 
 
-
+    /** @return the dataset id **/
     protected String createDataset(final String file, final String name, final String type) throws IOException {
         final String datasetContent = IOUtils.toString(PreparationAPITest.class.getResourceAsStream(file));
         final Response post = given() //
@@ -173,8 +172,6 @@ public abstract class ApiServiceTestBase {
                 .when() //
                 .expect().statusCode(200).log().ifError() //
                 .post("/api/preparations");
-
-        assertThat(response.getStatusCode(), is(200));
 
         final String preparationId = response.asString();
         assertThat(preparationId, notNullValue());

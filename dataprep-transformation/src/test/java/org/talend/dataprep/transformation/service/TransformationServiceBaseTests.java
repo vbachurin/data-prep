@@ -13,15 +13,11 @@
 
 package org.talend.dataprep.transformation.service;
 
-import static com.jayway.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-
 import java.io.IOException;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.restassured.http.ContentType;
+import com.jayway.restassured.response.Response;
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -38,9 +34,12 @@ import org.talend.dataprep.folder.store.FolderRepository;
 import org.talend.dataprep.transformation.TransformationBaseTest;
 import org.talend.dataprep.transformation.test.TransformationServiceUrlRuntimeUpdater;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jayway.restassured.http.ContentType;
-import com.jayway.restassured.response.Response;
+import static com.jayway.restassured.RestAssured.given;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 /**
  * Base class for TransformationService integration tests.
@@ -121,7 +120,7 @@ public abstract class TransformationServiceBaseTests extends TransformationBaseT
         final Response post = given() //
                 .contentType(ContentType.JSON)//
                 .accept(ContentType.ANY) //
-                .body("{ \"name\": \"" + name + "\", \"dataSetId\": \"" + dataSetId + "\"}")//
+                .body("{ \"name\": \"" + name + "\", \"dataSetId\": \"" + dataSetId + "\", \"rowMetadata\":{\"columns\":[]}}")//
                 .when()//
                 .post("/preparations?folderId=" + home.getId());
 

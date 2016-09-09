@@ -13,22 +13,26 @@
 
 package org.talend.dataprep.api.preparation;
 
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.springframework.data.annotation.Transient;
+import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.share.Owner;
 import org.talend.dataprep.api.share.SharedResource;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
+/**
+ * The Preparation class represents the series of {@link Step steps} one can apply on a dataset to transform it.
+ */
 public class Preparation extends Identifiable implements SharedResource, Serializable {
 
     /** Serialization UID. */
@@ -36,6 +40,9 @@ public class Preparation extends Identifiable implements SharedResource, Seriali
 
     /** The dataset id. */
     private String dataSetId;
+
+    /** Metadata on which the preparation is based. **/
+    private RowMetadata rowMetadata;
 
     /** The author name. */
     private String author;
@@ -138,6 +145,14 @@ public class Preparation extends Identifiable implements SharedResource, Seriali
         this.dataSetId = dataSetId;
     }
 
+    public RowMetadata getRowMetadata() {
+        return rowMetadata;
+    }
+
+    public void setRowMetadata(RowMetadata rowMetadata) {
+        this.rowMetadata = rowMetadata;
+    }
+
     public String getAuthor() {
         return author;
     }
@@ -162,61 +177,37 @@ public class Preparation extends Identifiable implements SharedResource, Seriali
         this.lastModificationDate = lastModificationDate;
     }
 
-    /**
-     * @return the HeadId
-     */
     public String getHeadId() {
         return headId;
     }
 
-    /**
-     * @param headId the headId to set.
-     */
     public void setHeadId(String headId) {
         this.headId = headId;
     }
 
-    /**
-     * @see Identifiable#id()
-     */
     @Override
     public String id() {
         return getId();
     }
 
-    /**
-     * @see Identifiable#getId()
-     */
     @Override
     public String getId() {
         return id;
     }
 
-    /**
-     * @see Identifiable#setId(String)
-     */
     @Override
     public void setId(String id) {
         this.id = id;
     }
 
-    /**
-     * @return the AppVersion
-     */
     public String getAppVersion() {
         return appVersion;
     }
 
-    /**
-     * @param appVersion the appVersion to set.
-     */
     public void setAppVersion(String appVersion) {
         this.appVersion = appVersion;
     }
 
-    /**
-     * @return the Owner
-     */
     public Owner getOwner() {
         return owner;
     }
@@ -229,70 +220,36 @@ public class Preparation extends Identifiable implements SharedResource, Seriali
         this.owner = owner;
     }
 
-    /**
-     * @see SharedResource#setSharedResource(boolean)
-     */
     @Override
     public void setSharedResource(boolean shared) {
         this.sharedPreparation = shared;
     }
 
-    /**
-     * @return sharedByMe
-     */
     public boolean isSharedByMe() {
         return sharedByMe;
     }
 
-    /**
-     * @see SharedResource#setSharedByMe(boolean)
-     */
     @Override
     public void setSharedByMe(boolean sharedByMe) {
         this.sharedByMe = sharedByMe;
     }
 
-    /**
-     * @see SharedResource#setRoles(Set)
-     */
     @Override
     public void setRoles(Set<String> roles) {
         this.roles = roles;
     }
 
-    /**
-     * @return the SharedPreparation
-     */
     public boolean isSharedPreparation() {
         return sharedPreparation;
     }
 
-    /**
-     * @return the Roles
-     */
     public Set<String> getRoles() {
         return roles;
     }
 
-    /**
-     * @return this shared resource owner/author id.
-     */
     @Override
     public String getOwnerId() {
         return author;
-    }
-
-    @Override
-    public String toString() {
-        return "Preparation {" + //
-                "name='" + name + '\'' + //
-                ", id='" + id + '\'' + //
-                ", dataSetId='" + dataSetId + '\'' + //
-                ", author='" + author + '\'' + //
-                ", owner='" + owner + '\'' + //
-                ", creationDate=" + creationDate + //
-                ", lastModificationDate=" + lastModificationDate + //
-                ", headId='" + headId +"'}";
     }
 
     public void updateLastModificationDate() {
@@ -310,9 +267,24 @@ public class Preparation extends Identifiable implements SharedResource, Seriali
         return merge;
     }
 
-    /**
-     * @see Object#equals(Object)
-     */
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this).append("dataSetId", dataSetId)
+                .append("rowMetadata", rowMetadata)
+                .append("author", author)
+                .append("name", name)
+                .append("creationDate", creationDate)
+                .append("lastModificationDate", lastModificationDate)
+                .append("headId", headId)
+                .append("appVersion", appVersion)
+                .append("steps", steps)
+                .append("owner", owner)
+                .append("sharedPreparation", sharedPreparation)
+                .append("sharedByMe", sharedByMe)
+                .append("roles", roles)
+                .toString();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -323,6 +295,7 @@ public class Preparation extends Identifiable implements SharedResource, Seriali
         }
         Preparation that = (Preparation) o;
         return Objects.equals(id, that.id) && // NOSONAR generated code that's easy to read
+                Objects.equals(rowMetadata, that.rowMetadata) &&
                 Objects.equals(creationDate, that.creationDate) &&
                 Objects.equals(lastModificationDate, that.lastModificationDate) &&
                 Objects.equals(dataSetId, that.dataSetId) &&
@@ -331,11 +304,8 @@ public class Preparation extends Identifiable implements SharedResource, Seriali
                 Objects.equals(headId, that.headId);
     }
 
-    /**
-     * @see Object#hashCode()
-     */
     @Override
     public int hashCode() {
-        return Objects.hash(id, dataSetId, author, name, creationDate, lastModificationDate, headId);
+        return Objects.hash(id, rowMetadata, dataSetId, author, name, creationDate, lastModificationDate, headId);
     }
 }

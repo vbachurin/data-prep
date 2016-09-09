@@ -13,15 +13,6 @@
 
 package org.talend.dataprep.folder.store.file;
 
-import static java.util.Collections.emptyList;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
-import static org.talend.daikon.exception.ExceptionContext.build;
-import static org.talend.dataprep.api.folder.FolderBuilder.folder;
-import static org.talend.dataprep.exception.error.DataSetErrorCodes.*;
-import static org.talend.dataprep.folder.store.FoldersRepositoriesConstants.PATH_SEPARATOR;
-import static org.talend.dataprep.folder.store.file.FileSystemUtils.*;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -32,7 +23,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
@@ -50,6 +40,15 @@ import org.talend.dataprep.folder.store.FolderRepository;
 import org.talend.dataprep.folder.store.NotEmptyFolderException;
 import org.talend.dataprep.security.Security;
 import org.talend.dataprep.util.StringsHelper;
+
+import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
+import static org.talend.daikon.exception.ExceptionContext.build;
+import static org.talend.dataprep.api.folder.FolderBuilder.folder;
+import static org.talend.dataprep.exception.error.DataSetErrorCodes.*;
+import static org.talend.dataprep.folder.store.FoldersRepositoriesConstants.PATH_SEPARATOR;
+import static org.talend.dataprep.folder.store.file.FileSystemUtils.*;
 
 /**
  * File system folder repository implementation.
@@ -192,21 +191,21 @@ public class FileSystemFolderRepository implements FolderRepository {
         try {
             String fileName = buildFileName(folderEntry);
 
-            Path path = pathsConverter.toPath(folderPath).resolve(fileName);
+            Path entryFilepath = pathsConverter.toPath(folderPath).resolve(fileName);
 
             // we delete it if exists
-            Files.deleteIfExists(path);
+            Files.deleteIfExists(entryFilepath);
 
-            Path parentPath = path.getParent();
+            Path parentPath = entryFilepath.getParent();
             // check parent path first
             if (Files.notExists(parentPath)) {
                 Files.createDirectories(parentPath);
             }
 
-            path = Files.createFile(path);
+            entryFilepath = Files.createFile(entryFilepath);
             folderEntry.setFolderId(folderId);
 
-            try (OutputStream outputStream = Files.newOutputStream(path)) {
+            try (OutputStream outputStream = Files.newOutputStream(entryFilepath)) {
                 writeEntryToStream(folderEntry, outputStream);
             }
             return folderEntry;

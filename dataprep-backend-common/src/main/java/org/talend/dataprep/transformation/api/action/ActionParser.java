@@ -13,6 +13,11 @@
 
 package org.talend.dataprep.transformation.api.action;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -23,12 +28,6 @@ import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.transformation.actions.common.ActionFactory;
 import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.transformation.pipeline.ActionRegistry;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Parse the actions a dataset and prepare the closures to apply.
@@ -65,14 +64,7 @@ public class ActionParser {
             final Actions parsedActions = mapper.readerFor(Actions.class).readValue(actions);
             // Create closures from parsed actions
             final List<Action> allActions = parsedActions.getActions();
-            final List<Action> builtActions = new ArrayList<>(allActions.size() + 1);
-            for (Action parsedAction : parsedActions.getActions()) {
-                if (parsedAction != null && parsedAction.getName() != null) {
-                    String actionNameLowerCase = parsedAction.getName().toLowerCase();
-                    final ActionMetadata metadata = actionRegistry.get(actionNameLowerCase);
-                    builtActions.add(factory.create(metadata, parsedAction.getParameters()));
-                }
-            }
+            final List<Action> builtActions = buildActions(allActions);
             // all set: wraps everything and return to caller
             return builtActions;
         }
@@ -83,5 +75,21 @@ public class ActionParser {
         catch (Exception e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
         }
+    }
+
+    /**
+     * Given a list of actions recreate but with the Spring Context {@link ActionMetadata}. It is mandatory to use any
+     * action parsed from JSon.
+     */
+    public List<Action> buildActions(List<Action> allActions) {
+        final List<Action> builtActions = new ArrayList<>(allActions.size() + 1);
+        for (Action parsedAction : allActions) {
+            if (parsedAction != null && parsedAction.getName() != null) {
+                String actionNameLowerCase = parsedAction.getName().toLowerCase();
+                final ActionMetadata metadata = actionRegistry.get(actionNameLowerCase);
+                builtActions.add(factory.create(metadata, parsedAction.getParameters()));
+            }
+        }
+        return builtActions;
     }
 }

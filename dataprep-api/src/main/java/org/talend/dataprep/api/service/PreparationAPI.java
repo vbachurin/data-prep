@@ -13,26 +13,22 @@
 
 package org.talend.dataprep.api.service;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
-import static org.springframework.web.bind.annotation.RequestMethod.*;
-import static org.talend.daikon.exception.ExceptionContext.withBuilder;
-import static org.talend.dataprep.exception.error.PreparationErrorCodes.UNABLE_TO_READ_PREPARATION;
-import static org.talend.dataprep.util.SortAndOrderHelper.Order;
-import static org.talend.dataprep.util.SortAndOrderHelper.Sort;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.validation.Valid;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.netflix.hystrix.HystrixCommand;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
+import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.export.ExportParameters;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.preparation.AppendStep;
@@ -44,6 +40,7 @@ import org.talend.dataprep.api.service.command.dataset.CompatibleDataSetList;
 import org.talend.dataprep.api.service.command.preparation.*;
 import org.talend.dataprep.command.CommandHelper;
 import org.talend.dataprep.command.GenericCommand;
+import org.talend.dataprep.command.dataset.DataSetGetMetadata;
 import org.talend.dataprep.command.preparation.PreparationDetailsGet;
 import org.talend.dataprep.command.preparation.PreparationGetActions;
 import org.talend.dataprep.exception.TDPException;
@@ -51,11 +48,15 @@ import org.talend.dataprep.exception.error.APIErrorCodes;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.util.SortAndOrderHelper;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.netflix.hystrix.HystrixCommand;
-
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.toList;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
+import static org.springframework.web.bind.annotation.RequestMethod.*;
+import static org.talend.daikon.exception.ExceptionContext.withBuilder;
+import static org.talend.dataprep.exception.error.PreparationErrorCodes.UNABLE_TO_READ_PREPARATION;
+import static org.talend.dataprep.util.SortAndOrderHelper.Order;
+import static org.talend.dataprep.util.SortAndOrderHelper.Sort;
 
 @RestController
 public class PreparationAPI extends APIService {
@@ -138,6 +139,10 @@ public class PreparationAPI extends APIService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Creating a preparation in {} (pool: {} )...", folder, getConnectionStats());
         }
+
+        DataSetGetMetadata dataSetMetadata = getCommand(DataSetGetMetadata.class, preparation.getDataSetId());
+        DataSetMetadata execute = dataSetMetadata.execute();
+        preparation.setRowMetadata(execute.getRowMetadata());
 
         PreparationCreate preparationCreate = getCommand(PreparationCreate.class, preparation, folder);
         final String preparationId = preparationCreate.execute();
@@ -280,34 +285,30 @@ public class PreparationAPI extends APIService {
         }
     }
 
-    //@formatter:off
+    // TODO: this API should take a list of AppendStep.
     @RequestMapping(value = "/api/preparations/{id}/actions", method = POST, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Adds an action at the end of preparation.", notes = "Does not return any value, client may expect successful operation based on HTTP status code.")
     @Timed
     public void addPreparationAction(@ApiParam(name = "id", value = "Preparation id.") @PathVariable(value = "id")  final String preparationId,
-                                     @ApiParam("Action to add at end of the preparation.") @RequestBody final AppendStep step) {
-    //@formatter:on
+                                     @ApiParam("Action to add at end of the preparation.") @RequestBody final AppendStep actionsContainer) {
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Adding action to preparation (pool: {} )...", getConnectionStats());
         }
 
-        // get the preparation
-        Preparation preparation = internalGetPreparation(preparationId);
+        // This trick is to keep the API taking and unrolling ONE AppendStep until the codefreeze but this must not stay that way
+        List<AppendStep> stepsToAppend = actionsContainer.getActions().stream().map(a -> {
+            AppendStep s = new AppendStep();
+            s.setActions(singletonList(a));
+            return s;
+        }).collect(toList());
 
-        // get the preparation actions
-        final PreparationGetActions getActionsCommand = getCommand(PreparationGetActions.class, preparationId);
+        getCommand(org.talend.dataprep.api.PreparationAddAction.class, preparationId, stepsToAppend).execute();
 
-        // get the diff
-        final DiffMetadata diffCommand = getCommand(DiffMetadata.class, preparation.getDataSetId(), preparationId,
-                step.getActions(), getActionsCommand);
-
-        // add the action
-        final HystrixCommand<Void> command = getCommand(PreparationAddAction.class, preparationId, step, diffCommand);
-        command.execute();
         if (LOG.isDebugEnabled()) {
             LOG.debug("Added action to preparation (pool: {} )...", getConnectionStats());
         }
+
     }
 
     //@formatter:off

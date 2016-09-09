@@ -8,8 +8,5 @@
         "scope": "column"
       }
     }
-  ],
-  "diff": {
-    "createdColumns": ["0006"]
-  }
+  ]
 }]

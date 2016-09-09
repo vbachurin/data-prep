@@ -13,8 +13,6 @@
 
 package org.talend.dataprep.command;
 
-import static org.apache.http.HttpHeaders.AUTHORIZATION;
-
 import java.io.IOException;
 import java.util.Collection;
 import java.util.EnumMap;
@@ -23,11 +21,18 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.netflix.hystrix.HystrixCommand;
+import com.netflix.hystrix.HystrixCommandGroupKey;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,15 +48,11 @@ import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.security.Security;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.netflix.hystrix.HystrixCommand;
-import com.netflix.hystrix.HystrixCommandGroupKey;
+import static org.apache.http.HttpHeaders.AUTHORIZATION;
 
 /**
  * Base Hystrix command request for all DataPrep commands.
- * 
+ *
  * @param <T> Command result type.
  */
 @Component
@@ -142,7 +143,7 @@ public class GenericCommand<T> extends HystrixCommand<T> {
      * <li>If no behavior was defined for returned code, returns an error as defined in {@link #onError(Function)}</li>
      * <li>If a behavior was defined, invokes defined behavior.</li>
      * </ul>
-     * 
+     *
      * @return A instance of <code>T</code>.
      * @throws Exception If command execution fails.
      */
@@ -202,7 +203,7 @@ public class GenericCommand<T> extends HystrixCommand<T> {
             LOGGER.error("Unable to process message for request {} (response code: {}).", req,
                     res.getStatusLine().getStatusCode());
             req.releaseConnection();
-            return Defaults.<T> asNull().apply(req, res);
+            return Defaults.<T>asNull().apply(req, res);
         };
     }
 
@@ -212,51 +213,12 @@ public class GenericCommand<T> extends HystrixCommand<T> {
      * @see Defaults#passthrough()
      */
     private BiFunction<HttpRequestBase, HttpResponse, T> callOnError(Function<Exception, RuntimeException> onError) {
-        return (req, res) -> {
-            LOGGER.trace("request on error {} -> {}", req.toString(), res.getStatusLine());
-            final int statusCode = res.getStatusLine().getStatusCode();
-            String content = StringUtils.EMPTY;
-            try {
-                if(res.getEntity() != null) {
-                    content = IOUtils.toString(res.getEntity().getContent());
-                }
-                JsonErrorCode code = objectMapper.readerFor(JsonErrorCode.class).readValue(content);
-                code.setHttpStatus(statusCode);
-                final TDPException cause = new TDPException(code);
-                throw onError.apply(cause);
-            } catch (JsonMappingException e) {
-                LOGGER.debug("Cannot parse response content as JSON.", e);
-                // Failed to parse JSON error, returns an unexpected code with returned HTTP code
-                final TDPException exception = new TDPException(new JsonErrorCode() {
-
-                    @Override
-                    public String getProduct() {
-                        return CommonErrorCodes.UNEXPECTED_EXCEPTION.getProduct();
-                    }
-
-                    @Override
-                    public String getCode() {
-                        return CommonErrorCodes.UNEXPECTED_EXCEPTION.getCode();
-                    }
-
-                    @Override
-                    public int getHttpStatus() {
-                        return statusCode;
-                    }
-                });
-                throw onError.apply(exception);
-            } catch (IOException e) {
-                LOGGER.error("Unexpected error message: {}", content);
-                throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
-            } finally {
-                req.releaseConnection();
-            }
-        };
+        return new ErrorHandler(onError);
     }
 
     /**
      * Declares what exception should be thrown in case of error.
-     * 
+     *
      * @param onError A {@link Function function} that returns a {@link RuntimeException}.
      * @see TDPException
      */
@@ -266,7 +228,7 @@ public class GenericCommand<T> extends HystrixCommand<T> {
 
     /**
      * Declares which {@link HttpRequestBase http request} to execute in command.
-     * 
+     *
      * @param call The {@link Supplier} to provide the {@link HttpRequestBase} to execute.
      */
     protected void execute(Supplier<HttpRequestBase> call) {
@@ -275,7 +237,7 @@ public class GenericCommand<T> extends HystrixCommand<T> {
 
     /**
      * Starts declaration of behavior(s) to adopt when HTTP response has status code <code>status</code>.
-     * 
+     *
      * @param status One of more HTTP {@link HttpStatus status(es)}.
      * @return A {@link BehaviorBuilder builder} to continue behavior declaration for the HTTP status(es).
      * @see BehaviorBuilder#then(BiFunction)
@@ -313,6 +275,79 @@ public class GenericCommand<T> extends HystrixCommand<T> {
             for (HttpStatus currentStatus : status) {
                 GenericCommand.this.behavior.put(currentStatus, action);
             }
+        }
+    }
+
+    private class ErrorHandler implements BiFunction<HttpRequestBase, HttpResponse, T> {
+
+        private final Function<Exception, RuntimeException> onError;
+
+        private ErrorHandler(Function<Exception, RuntimeException> onError) {
+            this.onError = onError;
+        }
+
+        @Override
+        public T apply(HttpRequestBase req, HttpResponse res) {
+            LOGGER.trace("request on error {} -> {}", req.toString(), res.getStatusLine());
+            final int statusCode = res.getStatusLine().getStatusCode();
+            String content = StringUtils.EMPTY;
+            try {
+                if (res.getEntity() != null) {
+                    content = IOUtils.toString(res.getEntity().getContent());
+                }
+                JsonErrorCode code = objectMapper.readerFor(JsonErrorCode.class).readValue(content);
+                code.setHttpStatus(statusCode);
+                final TDPException cause = new TDPException(code);
+                throw onError.apply(cause);
+            } catch (JsonMappingException e) {
+                LOGGER.debug("Cannot parse response content as JSON.", e);
+                // Failed to parse JSON error, returns an unexpected code with returned HTTP code
+                final TDPException exception = new TDPException(new JsonErrorCode() {
+
+                    @Override
+                    public String getProduct() {
+                        return CommonErrorCodes.UNEXPECTED_EXCEPTION.getProduct();
+                    }
+
+                    @Override
+                    public String getCode() {
+                        return CommonErrorCodes.UNEXPECTED_EXCEPTION.getCode();
+                    }
+
+                    @Override
+                    public int getHttpStatus() {
+                        return statusCode;
+                    }
+                });
+                throw onError.apply(exception);
+            } catch (IOException e) {
+                LOGGER.error("Unexpected error message: {}", buildRequestReport(req, res));
+                throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
+            } finally {
+                req.releaseConnection();
+            }
+        }
+
+        public String buildRequestReport(HttpRequestBase req, HttpResponse res) {
+            StringBuilder builder = new StringBuilder("{request:{\n");
+            builder.append("uri:").append(req.getURI()).append(",\n");
+            builder.append("request:").append(req.getRequestLine()).append(",\n");
+            builder.append("method:").append(req.getMethod()).append(",\n");
+            if (req instanceof HttpEntityEnclosingRequestBase) {
+                try {
+                    builder.append("load:").append(IOUtils.toString(((HttpPost) req).getEntity().getContent())).append(",\n");
+                } catch (IOException e) {
+                    // We ignore the field
+                }
+            }
+            builder.append("}, response:{\n");
+            try {
+                builder.append(IOUtils.toString(res.getEntity().getContent()));
+            } catch (IOException e) {
+                // We ignore the field
+            }
+            builder.append("}\n}");
+            return builder.toString();
         }
     }
 }
