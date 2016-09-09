@@ -190,6 +190,7 @@ describe('Preparation Service', () => {
                     column_id: '0001',
                     row_id: '256',
                     column_name: 'state',
+                    filter: {empty: {}},
                 };
 
                 //when
@@ -202,6 +203,7 @@ describe('Preparation Service', () => {
                     column_id: '0001',
                     row_id: '256',
                     column_name: 'state',
+                    filter: {empty: {}},
                 });
             }));
 

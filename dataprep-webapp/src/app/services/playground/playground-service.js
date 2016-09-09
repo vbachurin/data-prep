@@ -414,7 +414,7 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
         PreparationService.copyImplicitParameters(newParams, step.actionParameters.parameters);
 
         if (!PreparationService.paramsHasChanged(step, newParams)) {
-            return;
+            return $q.when();
         }
 
         /* jshint camelcase: false */
