@@ -16,6 +16,7 @@ export const playgroundState = {
     preparation: null,
     candidatePreparations: [],
     isSavingPreparation: false,
+    sampleType: 'HEAD',
 };
 
 export function PlaygroundStateService(RecipeStateService, recipeState,
@@ -47,6 +48,7 @@ export function PlaygroundStateService(RecipeStateService, recipeState,
         setData,
         updateDatasetRecord,
         updateDatasetStatistics,
+        setSampleType,
 
         // parameters
         toggleDatasetParameters,
@@ -111,6 +113,10 @@ export function PlaygroundStateService(RecipeStateService, recipeState,
     //--------------------------------------------------------------------------------------------------------------
     // --------------------------------------------------PLAYGROUND--------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------
+    function setSampleType(type) {
+        playgroundState.sampleType = type;
+    }
+
     function setDataset(dataset) {
         playgroundState.dataset = dataset;
     }

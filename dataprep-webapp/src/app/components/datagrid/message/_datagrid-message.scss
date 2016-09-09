@@ -11,28 +11,29 @@
 
   ============================================================================*/
 
-#filter-monitor {
-  @include display(flex);
-  @include flex-direction(row);
-  @include justify-content(center);
-  @include align-items(center);
-  @include align-content(center);
+.datagrid-message {
+  position: absolute;
+  top: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  right: 0;
+  left: 0;
+  color: $dark-gray;
+  text-align: center;
 
-  .label-switch {
-    input[type="checkbox"] + .checkbox {
-      margin: 0;
+  .here {
+    padding: 0 2px;
+    font-weight: bold;
+    color: $dark-blue;
+    cursor: pointer;
+
+    &:hover {
+      color: $blue;
     }
 
-    margin-right: 10px;
-    float: none;
-  }
-
-  #reset-filters{
-    font-size: 0.7em;
-    color: $white;
-
-    &:hover{
-      color: $blue;
+    &:active {
+      color: $light-blue;
     }
   }
 }

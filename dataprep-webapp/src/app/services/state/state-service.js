@@ -56,6 +56,7 @@ export function StateService(RouteStateService, routeState,
         setPreparationName: PlaygroundStateService.setPreparationName,
         updateDatasetStatistics: PlaygroundStateService.updateDatasetStatistics,
         updateDatasetRecord: PlaygroundStateService.updateDatasetRecord,
+        setCurrentSampleType: PlaygroundStateService.setSampleType,
 
         // playground - dataset parameters
         toggleDatasetParameters: PlaygroundStateService.toggleDatasetParameters,

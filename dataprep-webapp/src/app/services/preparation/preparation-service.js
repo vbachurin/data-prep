@@ -15,12 +15,11 @@
  * @ngdoc service
  * @name data-prep.services.preparation.service:PreparationService
  * @description Preparation list service. this service manage the operations that touches the preparations
- * @requires data-prep.services.state.constant:state
  * @requires data-prep.services.state.service:StateService
  * @requires data-prep.services.utils.service:StorageService
  * @requires data-prep.services.preparation.service:PreparationRestService
  */
-export default function PreparationService($q, $state, $window, $stateParams, state, StateService, StorageService, PreparationRestService) {
+export default function PreparationService($q, $state, $window, $stateParams, StateService, StorageService, PreparationRestService) {
     'ngInject';
 
     return {

@@ -14,16 +14,11 @@
 #filter-bar {
   background-color: $shadow-gray;
   color: $dark-gray;
-  min-height: 60px;
-  padding: 4px 0;
+  height: 80px;
+  padding: 4px 0 4px 25px;
   @include display(flex);
-  @include flex-direction(row);
-  @include align-items(center);
-  .label-switch {
-    input[type="checkbox"] + .checkbox {
-      margin: 0;
-    }
-  }
+  @include flex-direction(column);
+  @include align-items( flex-start);
 
   .search {
     @include flex-grow(0);
@@ -39,15 +34,33 @@
     overflow-y: auto;
   }
 
+  .filter-list {
+    @include display(flex);
+    @include flex-direction(row);
+    @include align-items(center);
+    @include flex-basis(50px);
+
+    width: 100%;
+
+    #filter-list {
+      padding: 3px 10px;
+    }
+  }
+
   .monitor {
     @include flex-grow(0);
     @include flex-shrink(0);
-    @include flex-basis(80px);
+    @include flex-basis(25px);
+
+    padding: 2px 0;
   }
 
   .filters-remove {
     font-size: 0.7em;
-    padding-right: 10px;
+    padding: 0 10px;
     color: $dark-gray;;
+    position: absolute;
+    right: 15px;
+    top: 20px;
   }
 }

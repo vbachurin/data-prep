@@ -31,7 +31,8 @@ const CTRL_KEY_NAME = 'ctrl';
  * @requires data-prep.services.utils.service:TextFormatService
  * @requires data-prep.services.utils.service:DateService
  */
-export default function FilterService($timeout, state, StateService, FilterAdapterService, StatisticsService, ConverterService, TextFormatService, DateService) {
+export default function FilterService($timeout, state, StateService, FilterAdapterService, StatisticsService,
+                                      ConverterService, TextFormatService, DateService, StorageService) {
     'ngInject';
 
     const service = {
@@ -852,6 +853,10 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
 
         StateService.updateGridFilter(oldFilter, newFilter);
         StatisticsService.updateFilteredStatistics();
+        StorageService.saveFilter(
+            state.playground.preparation ? state.playground.preparation.id : state.playground.dataset.id,
+            state.playground.filter.gridFilters
+        );
     }
 
     /**
@@ -1004,6 +1009,7 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
             .forEach((filter) => filter.removeFilterFn(filter))
             .value();
         StatisticsService.updateFilteredStatistics();
+        StorageService.removeFilter(state.playground.preparation ? state.playground.preparation.id : state.playground.dataset.id);
     }
 
     /**
@@ -1020,6 +1026,10 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
         }
 
         StatisticsService.updateFilteredStatistics();
+        StorageService.saveFilter(
+            state.playground.preparation ? state.playground.preparation.id : state.playground.dataset.id,
+            state.playground.filter.gridFilters
+        );
     }
 
     /**
@@ -1032,6 +1042,10 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
     function pushFilter(filter) {
         StateService.addGridFilter(filter);
         StatisticsService.updateFilteredStatistics();
+        StorageService.saveFilter(
+            state.playground.preparation ? state.playground.preparation.id : state.playground.dataset.id,
+            state.playground.filter.gridFilters
+        );
     }
 
     /**

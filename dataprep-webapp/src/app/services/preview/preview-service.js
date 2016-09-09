@@ -176,6 +176,7 @@ export default function PreviewService($q, state, DatagridService, PreparationSe
             currentStepId: currentStep.transformation.stepId,
             previewStepId: previewStep.transformation.stepId,
             tdpIds: displayedTdpIds,
+            sourceType: state.playground.sampleType,
         };
         return PreparationService.getPreviewDiff(params, previewCanceler)
             .then(function (response) {
@@ -214,6 +215,7 @@ export default function PreviewService($q, state, DatagridService, PreparationSe
                 action: updateStep.actionParameters.action,
                 parameters: newParams,
             },
+            sourceType: state.playground.sampleType,
         };
         return PreparationService.getPreviewUpdate(params, previewCanceler)
             .then(function (response) {
@@ -248,6 +250,7 @@ export default function PreviewService($q, state, DatagridService, PreparationSe
             tdpIds: displayedTdpIds,
             datasetId,
             preparationId,
+            sourceType: state.playground.sampleType,
         };
         return PreparationService.getPreviewAdd(params, previewCanceler)
             .then(function (response) {

@@ -13,16 +13,17 @@
   ~ ============================================================================
   -->
 
-<div id="filter-monitor">
-    <label class="label-switch" ng-if="filterMonitorCtrl.filters.length">
+<div id="filter-monitor" insertion-fetch-data>
+    <label class="label-switch" ng-if="filterMonitorCtrl.filters.length"
+           title="{{::'TOOGLE_ALL_FILTERS' | translate}}">
         <input type="checkbox"
                ng-model="filterMonitorCtrl.state"
                ng-change="filterMonitorCtrl.onToogle()"/>
         <div id="filter-toggle-switch" class="checkbox"></div>
     </label>
 
-    <div id="filters-monitor-stats"
+    <span id="filters-monitor-stats"
          title="{{ 'NB_LINES_MATCHING_FILTERS' | translate:{percentage: filterMonitorCtrl.percentage} }}">
         {{filterMonitorCtrl.nbLines}}/{{filterMonitorCtrl.nbTotalLines}}
-    </div>
+    </span>
 </div>

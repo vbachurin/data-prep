@@ -30,6 +30,7 @@ import DatagridStyleService from './services/datagrid-style-service';
 import DatagridTooltipService from './services/datagrid-tooltip-service';
 import Datagrid from './datagrid-directive';
 
+import DatagridMessageComponent from './message/datagrid-message-compnent';
 
 Slick.Editors.TalendEditor = TalendEditor;
 /**
@@ -64,6 +65,7 @@ angular.module(MODULE_NAME,
     .service('DatagridSizeService', DatagridSizeService)
     .service('DatagridStyleService', DatagridStyleService)
     .service('DatagridTooltipService', DatagridTooltipService)
-    .directive('datagrid', Datagrid);
+    .directive('datagrid', Datagrid)
+    .component('datagridMessage', DatagridMessageComponent);
 
 export default MODULE_NAME;

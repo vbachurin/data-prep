@@ -22,6 +22,7 @@ describe('Filter service', () => {
 
         stateMock = {
             playground: {
+                preparation: {id: 'abcd'},
                 filter: { gridFilters: [] },
                 data: { metadata: { columns: columns } },
             },
@@ -29,9 +30,11 @@ describe('Filter service', () => {
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(inject((StateService, StatisticsService) => {
+    beforeEach(inject((StateService, StatisticsService, StorageService) => {
         spyOn(StateService, 'addGridFilter').and.returnValue();
         spyOn(StatisticsService, 'updateFilteredStatistics').and.returnValue();
+        spyOn(StorageService, 'saveFilter').and.returnValue();
+        spyOn(StorageService, 'removeFilter').and.returnValue();
     }));
 
     describe('get range label for', () => {
@@ -964,6 +967,25 @@ describe('Filter service', () => {
             //then
             expect(StatisticsService.updateFilteredStatistics).toHaveBeenCalled();
         }));
+
+        it('should save filter in localstorage', inject((FilterService, StorageService) => {
+            //given
+            var removeFnCallback = function () {};
+
+            expect(StorageService.saveFilter).not.toHaveBeenCalled();
+
+            //when
+            FilterService.addFilter('contains', 'col1', 'column name', {
+                phrase: [
+                    {
+                        value: 'toto',
+                    },
+                ],
+            }, removeFnCallback);
+
+            //then
+            expect(StorageService.saveFilter).toHaveBeenCalledWith('abcd', []);
+        });
     });
 
     describe('add filter and digest', () => {
@@ -1023,6 +1045,14 @@ describe('Filter service', () => {
             expect(StateService.removeAllGridFilters).toHaveBeenCalled();
         }));
 
+        it('should remove filter in the localstorage when removing all filters', inject((FilterService, StorageService) => {
+            //when
+            FilterService.removeAllFilters();
+
+            //then
+            expect(StorageService.removeFilter).toHaveBeenCalledWith('abcd');
+        });
+
         it('should call each filter remove callback', inject((FilterService) => {
             //given
             const removeFn1 = jasmine.createSpy('removeFilterCallback');
@@ -1051,6 +1081,18 @@ describe('Filter service', () => {
             //then
             expect(StateService.removeGridFilter).toHaveBeenCalledWith(filter);
         }));
+
+        it('should save filter in the localstorage when removing a filter', inject((FilterService, StorageService) => {
+            //given
+            var filter = {};
+
+            //when
+            FilterService.removeFilter(filter);
+
+            //then
+            expect(StorageService.saveFilter).toHaveBeenCalledWith('abcd', []);
+        });
+
 
         it('should call filter remove callback', inject((FilterService) => {
             //given
@@ -1415,6 +1457,34 @@ describe('Filter service', () => {
             //then
             expect(StatisticsService.updateFilteredStatistics).toHaveBeenCalled();
         }));
+
+        it('should save filter in localstorage', inject((FilterService, StorageService) => {
+            //given
+            var oldFilter = {
+                type: 'contains',
+                colId: 'col2',
+                colName: 'column 2',
+                args: {
+                    phrase: [
+                        {
+                            value: 'Tata',
+                        },
+                    ],
+                },
+                filterFn: function () {},
+            };
+            expect(StorageService.saveFilter).not.toHaveBeenCalled();
+
+            //when
+            FilterService.updateFilter(oldFilter, [
+                {
+                    value: 'Tata',
+                },
+            ]);
+
+            //then
+            expect(StorageService.saveFilter).toHaveBeenCalledWith('abcd', []);
+        });
 
         it('should update exact filter while several values are selected', inject((FilterService, StateService) => {
             //given

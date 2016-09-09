@@ -42,7 +42,8 @@ $slide-action-background: $base-background-color;
 
     #playground-datagrid-container {
       margin: 10px;
-      @include calc(height, "100vh - 130px");
+      @include calc(height, "100vh - 150px");
+      position: relative;
     }
 
     .lookup-slide {

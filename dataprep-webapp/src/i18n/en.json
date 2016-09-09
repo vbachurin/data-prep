@@ -113,6 +113,9 @@
   "ONLY_2_ADDED_COLS": "The columns <span class=\"recipe-column-name\">{{firstCol}}</span> and <span class=\"recipe-column-name\">{{secondCol}}</span> have been added.",
   "MORE_THEN_2_ADDED_COLS": "The columns <span class=\"recipe-column-name\">{{firstCol}}</span>, <span class=\"recipe-column-name\">{{secondCol}}</span> and <span class=\"recipe-column-name\" title=\"{{restOfCols}}\">{{restOfColsNbr}}</span> other(s) have been added.",
   "NO_TRANSFORMATION": "No transformation available.",
+  "EMPTY_GRID_1": "No rows matching your filter: You can click",
+  "EMPTY_GRID_2": "to remove all your filters.",
+  "HERE": "here",
 
   "_comment": "Datagrid",
   "ENTER_PREPARATION_NAME": "Enter a name for your preparation",
@@ -331,7 +334,7 @@
 
   "_comment": "playground",
   "CHOOSE_PREPARATION_TO_APPLY": "Choose a preparation to apply to this dataset",
-  "NO_COMPATIBLE_PREPARATIONS": "There are no compatible preparations to dataset: {{name}}",
+  "NO_COMPATIBLE_PREPARATIONS": "There are no compatible preparations with the dataset: {{name}}",
 
   "_comment": "Confirm Popup",
   "SAVE_CHANGE": "Do you want to save your changes?",

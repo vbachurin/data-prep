@@ -59,8 +59,8 @@ export default function PreparationRestService($http, RestURLs) {
      * @description Get preparation records at the specific step
      * @returns {promise} The GET promise
      */
-    function getContent(preparationId, stepId) {
-        const url = `${RestURLs.preparationUrl}/${preparationId}/content?version=${stepId}`;
+    function getContent(preparationId, stepId, sampleType) {
+        const url = `${RestURLs.preparationUrl}/${preparationId}/content?version=${stepId}&from=${sampleType}`;
         return $http.get(url).then((res) => res.data);
     }
 

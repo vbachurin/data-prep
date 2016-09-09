@@ -208,11 +208,11 @@ describe('Preparation REST Service', () => {
             let content = null;
             const preparationId = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
             $httpBackend
-                .expectGET(RestURLs.preparationUrl + '/' + preparationId + '/content?version=head')
+                .expectGET(RestURLs.preparationUrl + '/' + preparationId + '/content?version=head&from=HEAD')
                 .respond(200, records);
 
-            // when
-            PreparationRestService.getContent(preparationId, 'head')
+            //when
+            PreparationRestService.getContent(preparationId, 'head', 'HEAD')
                 .then((response) => {
                     content = response;
                 });

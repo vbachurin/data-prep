@@ -44,6 +44,40 @@ describe('Storage service', () => {
         }));
     });
 
+    describe('filter', () => {
+        const PREFIX_FILTER = 'org.talend.dataprep.filter_';
+
+        it('should return filter in local storage', inject(($window, StorageService) => {
+            // given
+            $window.localStorage.setItem(PREFIX_FILTER + '0000', '"{eq: {}}"');
+
+            // when
+            const filter = StorageService.getFilter('0000');
+
+            // then
+            expect(filter).toEqual('{eq: {}}');
+        }));
+
+        it('should save filter in local storage', inject(($window, StorageService) => {
+            // when
+            StorageService.saveFilter('0000', '{eq: {}}');
+
+            // then
+            expect($window.localStorage.getItem(PREFIX_FILTER + '0000')).toEqual('"{eq: {}}"');
+        }));
+
+        it('should remove filter in local storage', inject(($window, StorageService) => {
+            // given
+            $window.localStorage.setItem(PREFIX_FILTER + '0000', '{eq: {}}');
+
+            // when
+            StorageService.removeFilter('0000');
+
+            // then
+            expect($window.localStorage.getItem(PREFIX_FILTER + '0000')).toBeFalsy();
+        }));
+    });
+
     describe('export', () => {
         const EXPORT_KEY = 'org.talend.dataprep.export.params';
 

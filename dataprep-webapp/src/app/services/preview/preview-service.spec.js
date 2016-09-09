@@ -45,7 +45,7 @@ describe('Preview Service', () => {
     const reverterExecutor = {};
 
     beforeEach(angular.mock.module('data-prep.services.preview', ($provide) => {
-        stateMock = { playground: { grid: {} } };
+        stateMock = { playground: { grid: {}, sampleType: 'HEAD' } };
         $provide.constant('state', stateMock);
     }));
 
@@ -120,6 +120,7 @@ describe('Preview Service', () => {
                 currentStepId: currentStep.transformation.stepId,
                 previewStepId: previewStep.transformation.stepId,
                 tdpIds: displayedTdpIds,
+                sourceType: 'HEAD',
             });
 
             expect(DatagridService.execute).toHaveBeenCalledWith(undefined); //reverter but no preview to revert
@@ -231,6 +232,7 @@ describe('Preview Service', () => {
                     action: updateStep.actionParameters.action,
                     parameters: newParams,
                 },
+                sourceType: 'HEAD',
             });
 
             expect(DatagridService.execute).toHaveBeenCalledWith(undefined); //reverter but no preview to revert
@@ -345,6 +347,7 @@ describe('Preview Service', () => {
                 tdpIds: displayedTdpIds,
                 datasetId: datasetId,
                 preparationId: preparationId,
+                sourceType: 'HEAD',
             });
 
             expect(DatagridService.execute).toHaveBeenCalledWith(undefined); //reverter but no preview to revert

@@ -41,7 +41,7 @@ const EVENT_LOADING_STOP = 'talend.loading.stop';
 
 export default function PlaygroundService($state, $rootScope, $q, $translate, $timeout, $stateParams,
                                           state, StateService, StepUtilsService,
-                                          DatasetService, DatagridService,
+                                          DatasetService, DatagridService, StorageService, FilterService,
                                           FilterAdapterService, PreparationService, PreviewService,
                                           RecipeService, TransformationCacheService,
                                           StatisticsService, HistoryService,
@@ -64,6 +64,8 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
         // preparation
         createOrUpdatePreparation,
         updatePreparationDetails,
+        getCurrentPreparation,
+        updatePreparationDatagrid,
 
         // steps
         appendStep,
@@ -91,6 +93,7 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
         StateService.setCurrentData(data);
         StateService.setCurrentPreparation(preparation);
         this.updatePreparationDetails();
+        updateFilter(dataset, preparation);
         TransformationCacheService.invalidateCache();
         HistoryService.clear();
         PreviewService.reset(false);
@@ -140,7 +143,7 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
      */
     function load(preparation) {
         $rootScope.$emit(EVENT_LOADING_START);
-        return PreparationService.getContent(preparation.id, 'head')
+        return PreparationService.getContent(preparation.id, 'head', state.playground.sampleType)
             .then((response) => {
                 StateService.setPreparationName(preparation.name);
                 reset.call(this, state.playground.dataset ? state.playground.dataset : { id: preparation.dataSetId }, response, preparation);
@@ -163,7 +166,7 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
      */
     function loadStep(step) {
         $rootScope.$emit(EVENT_LOADING_START);
-        return PreparationService.getContent(state.playground.preparation.id, step.transformation.stepId)
+        return PreparationService.getContent(state.playground.preparation.id, step.transformation.stepId, state.playground.sampleType)
             .then((response) => {
                 DatagridService.updateData(response);
                 StateService.disableRecipeStepsAfter(step);
@@ -184,7 +187,7 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
      */
     function getMetadata() {
         if (state.playground.preparation) {
-            return PreparationService.getContent(state.playground.preparation.id, 'head')
+            return PreparationService.getContent(state.playground.preparation.id, 'head', state.playground.sampleType)
                 .then((response) => {
                     if (!response.metadata.columns[0].statistics.frequencyTable.length) {
                         return $q.reject();
@@ -219,6 +222,19 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
         return getMetadata()
             .then(StateService.updateDatasetStatistics)
             .then(StatisticsService.updateStatistics);
+    }
+
+    /**
+     * @ngdoc method
+     * @name updateFilter
+     * @methodOf data-prep.services.playground.service:PlaygroundService
+     * @description add the least applied filters
+     */
+    function updateFilter(dataset, prepparation) {
+        const filters = StorageService.getFilter(prepparation ? prepparation.id : dataset.id);
+        filters.forEach((filter) => {
+            FilterService.addFilter(filter.type, filter.colId, filter.colName, filter.args);
+        });
     }
 
     // --------------------------------------------------------------------------------------------
@@ -732,7 +748,7 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
      * @description Perform an datagrid refresh with the preparation head
      */
     function updatePreparationDatagrid() {
-        return PreparationService.getContent(state.playground.preparation.id, 'head')
+        return PreparationService.getContent(state.playground.preparation.id, 'head', state.playground.sampleType)
             .then((response) => {
                 DatagridService.updateData(response);
                 PreviewService.reset(false);

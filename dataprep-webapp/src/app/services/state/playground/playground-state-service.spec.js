@@ -67,6 +67,24 @@ describe('Playground state service', () => {
         }));
     });
 
+    describe('sample type', () => {
+        it('should init sample type', inject((playgroundState) => {
+            // then
+            expect(playgroundState.sampleType).toBe('HEAD');
+        }));
+
+        it('should set sample type flag', inject((playgroundState, PlaygroundStateService) => {
+            // given
+            expect(playgroundState.sampleType).toBe('HEAD');
+
+            // when
+            PlaygroundStateService.setSampleType('FILTER');
+
+            // then
+            expect(playgroundState.sampleType).toBe('FILTER');
+        }));
+    });
+
     describe('preparation', () => {
         it('should set preparation in state', inject((playgroundState, PlaygroundStateService) => {
             //given

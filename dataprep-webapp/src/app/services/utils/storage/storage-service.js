@@ -21,6 +21,7 @@ const PREPARATIONS_SORT_KEY = 'org.talend.dataprep.preparations.sort';
 const PREPARATIONS_ORDER_KEY = 'org.talend.dataprep.preparations.order';
 const FEEDBACK_USER_MAIL_KEY = 'org.talend.dataprep.feedback_user_mail';
 const EXPORT_PARAMS_KEY = 'org.talend.dataprep.export.params';
+const PREFIX_FILTER = 'org.talend.dataprep.filter_';
 
 /**
  * @ngdoc service
@@ -73,6 +74,49 @@ export default class StorageService {
      */
     removeItem(key) {
         this.$window.localStorage.removeItem(key);
+    }
+
+
+    // --------------------------------------------------------------------------------------------
+    // -------------------------------------------FILTER-----------------------------------------
+    // --------------------------------------------------------------------------------------------
+    /**
+     * @ngdoc method
+     * @name saveFilter
+     * @methodOf data-prep.services.utils.service:StorageService
+     * @param {string} prepId The dataset/preparation Id
+     * @param {any} value The value to save
+     * @description Save the value with the provided key in localStorage.
+     * The value us stringified to get back the same type.
+     */
+    saveFilter(prepId, value) {
+        this.setItem(PREFIX_FILTER + prepId, value);
+    }
+
+    /**
+     * @ngdoc method
+     * @name getFilter
+     * @methodOf data-prep.services.utils.service:StorageService
+     * @param {string} prepId The dataset/preparation Id
+     * @description Get the value associated to the provided key.
+     * The result have the same type as the saved value.
+     * @returns {array} The value associated to the provided key.
+     */
+    getFilter(prepId) {
+        return this.getItem(PREFIX_FILTER + prepId, []);
+    }
+
+    /**
+     * @ngdoc method
+     * @name getFilter
+     * @methodOf data-prep.services.utils.service:StorageService
+     * @param {string} prepId The dataset/preparation Id
+     * @description Get the value associated to the provided key.
+     * The result have the same type as the saved value.
+     * @returns {array} The value associated to the provided key.
+     */
+    removeFilter(prepId) {
+        return this.removeItem(PREFIX_FILTER + prepId);
     }
 
     // --------------------------------------------------------------------------------------------
