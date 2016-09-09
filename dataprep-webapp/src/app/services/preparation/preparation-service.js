@@ -135,7 +135,7 @@ export default function PreparationService($q, $state, $window, $stateParams, st
             parameters.row_id = originalParameters.row_id;
         }
 
-        if ('filter' in originalParameters) {
+        if ('filter' in originalParameters && !('filter' in parameters)) {
             parameters.filter = originalParameters.filter;
         }
     }

@@ -207,6 +207,32 @@ describe('Preparation Service', () => {
                 });
             }));
 
+            it('should not copy filter implicit parameters', inject((PreparationService) => {
+                //given
+                const newParams = { value: 'tata', filter: {invalid: {}}};
+                const oldParams = {
+                    value: 'toto',
+                    scope: 'cell',
+                    column_id: '0001',
+                    row_id: '256',
+                    column_name: 'state',
+                    filter: {empty: {}},
+                };
+
+                //when
+                PreparationService.copyImplicitParameters(newParams, oldParams);
+
+                //then
+                expect(newParams).toEqual({
+                    value: 'tata',
+                    scope: 'cell',
+                    column_id: '0001',
+                    row_id: '256',
+                    column_name: 'state',
+                    filter: {invalid: {}},
+                });
+            }));
+
             it('should NOT copy implicit parameters when they are NOT in original params', inject((PreparationService) => {
                 //given
                 const newParams = { value: 'tata' };
