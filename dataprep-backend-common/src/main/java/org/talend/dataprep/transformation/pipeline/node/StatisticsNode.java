@@ -12,8 +12,6 @@ import org.talend.dataprep.transformation.pipeline.Signal;
 import org.talend.dataquality.common.inference.Analyzer;
 import org.talend.dataquality.common.inference.Analyzers;
 
-import static java.util.stream.Collectors.toList;
-
 public class StatisticsNode extends ColumnFilteredNode {
 
     private final Function<List<ColumnMetadata>, Analyzer<Analyzers.Result>> analyzer;
@@ -34,7 +32,9 @@ public class StatisticsNode extends ColumnFilteredNode {
         if (configuredAnalyzer == null) {
             this.configuredAnalyzer = analyzer.apply(filteredColumns);
         }
-        configuredAnalyzer.analyze(row.filter(filteredColumns).order(filteredColumns).toArray(DataSetRow.SKIP_TDP_ID));
+        if (!row.isDeleted()) {
+            configuredAnalyzer.analyze(row.filter(filteredColumns).order(filteredColumns).toArray(DataSetRow.SKIP_TDP_ID));
+        }
         super.receive(row, metadata);
     }
 
