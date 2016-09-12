@@ -30,10 +30,11 @@ const CLUSTER_TYPE = 'CLUSTER';
  */
 export default class RecipeCtrl {
 
-    constructor(FilterAdapterService, LookupService, MessageService, ParametersService,
+    constructor($timeout, FilterAdapterService, LookupService, MessageService, ParametersService,
                 PlaygroundService, PreviewService, StateService, state, RecipeKnotService) {
         'ngInject';
 
+        this.$timeout = $timeout;
         this.FilterAdapterService = FilterAdapterService;
         this.LookupService = LookupService;
         this.MessageService = MessageService;
@@ -48,6 +49,9 @@ export default class RecipeCtrl {
 
         // Cancel current preview and restore original data
         this.cancelPreview = this.PreviewService.cancelPreview;
+
+        // Flag that indicates if a step update is in progress
+        this.updateStepInProgress = false;
     }
 
     /**
@@ -260,7 +264,15 @@ export default class RecipeCtrl {
      */
     stepUpdateClosure(step) {
         return (newParams) => {
-            this.updateStep(step, newParams);
+            if (!this.updateStepInProgress) {
+                this.updateStepInProgress = true;
+                this.updateStep(step, newParams)
+                    .finally(() => {
+                        this.$timeout(() => {
+                            this.updateStepInProgress = false;
+                        }, 500, false);
+                    });
+            }
         };
     }
 
