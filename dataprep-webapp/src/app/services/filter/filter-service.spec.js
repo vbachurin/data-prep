@@ -365,7 +365,7 @@ describe('Filter service', () => {
                 expect(filterInfo.type).toBe('quality');
                 expect(filterInfo.colId).toBe(undefined);
                 expect(filterInfo.colName).toBe(undefined);
-                expect(filterInfo.value[0].label).toBe('invalid or empty records');
+                expect(filterInfo.value[0].label).toBe('rows with invalid or empty values');
                 expect(filterInfo.editable).toBeFalsy();
                 expect(filterInfo.args).toEqual({ invalid: true, empty: true });
                 expect(filterInfo.filterFn(data)({ col0: 'test', col1: 'NA', __tdpInvalid: ['col1'] })).toBeTruthy();
@@ -410,7 +410,7 @@ describe('Filter service', () => {
                 expect(filterInfo.type).toBe('invalid_records');
                 expect(filterInfo.colId).toBe('col1');
                 expect(filterInfo.colName).toBe('column name');
-                expect(filterInfo.value[0].label).toBe('invalid records');
+                expect(filterInfo.value[0].label).toBe('rows with invalid values');
                 expect(filterInfo.editable).toBe(false);
                 expect(filterInfo.args).toBeFalsy();
                 expect(filterInfo.filterFn(data)({ col1: 'NA', __tdpInvalid: ['col1'] })).toBeTruthy();
@@ -439,7 +439,7 @@ describe('Filter service', () => {
                 expect(filterInfo.type).toBe('invalid_records');
                 expect(filterInfo.colId).toBe(undefined);
                 expect(filterInfo.colName).toBe(undefined);
-                expect(filterInfo.value[0].label).toBe('invalid records');
+                expect(filterInfo.value[0].label).toBe('rows with invalid values');
                 expect(filterInfo.editable).toBe(false);
                 expect(filterInfo.args).toBeFalsy();
                 expect(filterInfo.filterFn(data)({ col0: 'NA',col1: 'NA', __tdpInvalid: ['col1'] })).toBeTruthy();
@@ -476,7 +476,7 @@ describe('Filter service', () => {
                 expect(filterInfo.type).toBe('empty_records');
                 expect(filterInfo.colId).toBe('col1');
                 expect(filterInfo.colName).toBe('column name');
-                expect(filterInfo.value[0].label).toBe('empty records');
+                expect(filterInfo.value[0].label).toBe('rows with empty values');
                 expect(filterInfo.editable).toBe(false);
                 expect(filterInfo.args).toBeFalsy();
                 expect(filterInfo.filterFn()({ col1: '' })).toBeTruthy();
@@ -505,7 +505,7 @@ describe('Filter service', () => {
                 expect(filterInfo.type).toBe('empty_records');
                 expect(filterInfo.colId).toBe(undefined);
                 expect(filterInfo.colName).toBe(undefined);
-                expect(filterInfo.value[0].label).toBe('empty records');
+                expect(filterInfo.value[0].label).toBe('rows with empty values');
                 expect(filterInfo.editable).toBe(false);
                 expect(filterInfo.args).toBeFalsy();
                 expect(filterInfo.filterFn(data)({ col0: '', col1: '' })).toBeTruthy();
@@ -550,7 +550,7 @@ describe('Filter service', () => {
                 expect(filterInfo.type).toBe('valid_records');
                 expect(filterInfo.colId).toBe('col1');
                 expect(filterInfo.colName).toBe('column name');
-                expect(filterInfo.value[0].label).toBe('valid records');
+                expect(filterInfo.value[0].label).toBe('rows with valid values');
                 expect(filterInfo.editable).toBe(false);
                 expect(filterInfo.args).toBeFalsy();
                 expect(filterInfo.filterFn(data)({ col1: 'a' })).toBeTruthy();

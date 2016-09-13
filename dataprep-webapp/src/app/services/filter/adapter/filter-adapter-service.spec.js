@@ -102,7 +102,7 @@ describe('Filter Adapter Service', () => {
                 //then
                 expect(filter.value).toEqual([
                     {
-                        label: 'invalid records',
+                        label: 'rows with invalid values',
                     },
                 ]);
             }));
@@ -117,7 +117,7 @@ describe('Filter Adapter Service', () => {
                 //then
                 expect(filter.value).toEqual([
                     {
-                        label: 'invalid or empty records',
+                        label: 'rows with invalid or empty values',
                     },
                 ]);
             }));
@@ -132,7 +132,7 @@ describe('Filter Adapter Service', () => {
                 //then
                 expect(filter.value).toEqual([
                     {
-                        label: 'empty records',
+                        label: 'rows with empty values',
                         isEmpty: true,
                     },
                 ]);
@@ -148,7 +148,7 @@ describe('Filter Adapter Service', () => {
                 //then
                 expect(filter.value).toEqual([
                     {
-                        label: 'valid records',
+                        label: 'rows with valid values',
                     },
                 ]);
             }));
