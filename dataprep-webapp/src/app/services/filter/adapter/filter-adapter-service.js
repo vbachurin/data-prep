@@ -22,10 +22,10 @@ const INSIDE_RANGE = 'inside_range';
 const MATCHES = 'matches';
 const QUALITY = 'quality';
 
-const EMPTY_RECORDS_LABEL = 'empty records';
-const INVALID_RECORDS_LABEL = 'invalid records';
-const VALID_RECORDS_LABEL = 'valid records';
-const INVALID_EMPTY_RECORDS_LABEL = 'invalid or empty records';
+const EMPTY_RECORDS_LABEL = 'rows with empty values';
+const INVALID_RECORDS_LABEL = 'rows with invalid values';
+const VALID_RECORDS_LABEL = 'rows with valid values';
+const INVALID_EMPTY_RECORDS_LABEL = 'rows with invalid or empty values';
 
 const INVALID_RECORDS_VALUES = [{
     label: INVALID_RECORDS_LABEL,
