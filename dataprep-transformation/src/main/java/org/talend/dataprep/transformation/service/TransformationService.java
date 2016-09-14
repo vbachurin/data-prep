@@ -78,6 +78,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.talend.daikon.exception.ExceptionContext.build;
 import static org.talend.dataprep.transformation.actions.category.ScopeCategory.COLUMN;
+import static org.talend.dataprep.transformation.actions.category.ScopeCategory.DATASET;
 import static org.talend.dataprep.transformation.actions.category.ScopeCategory.LINE;
 
 @RestController
@@ -465,6 +466,23 @@ public class TransformationService extends BaseTransformationService {
             return stream //
                     .filter(action -> action.acceptScope(LINE)) //
                     .map(action -> action.adapt(LINE)) //
+                    .collect(toList());
+        }
+    }
+
+    /**
+     * Returns all {@link ActionMetadata actions} data prep may apply to a dataset.
+     *
+     * @return A list of {@link ActionMetadata} that can be applied to a dataset.
+     */
+    @RequestMapping(value = "/actions/dataset", method = GET, produces = APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Return all actions on dataset", notes = "This operation returns an array of actions.")
+    @ResponseBody
+    public List<ActionMetadata> datasetActions() {
+        try (Stream<ActionMetadata> stream = Stream.of(this.allActions)) {
+            return stream //
+                    .filter(action -> action.acceptScope(DATASET)) //
+                    .map(action -> action.adapt(DATASET)) //
                     .collect(toList());
         }
     }

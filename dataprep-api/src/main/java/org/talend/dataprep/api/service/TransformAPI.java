@@ -28,10 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 import org.talend.dataprep.api.service.api.DynamicParamsInput;
 import org.talend.dataprep.api.service.command.preparation.PreparationGetContent;
-import org.talend.dataprep.api.service.command.transformation.ColumnActions;
-import org.talend.dataprep.api.service.command.transformation.LineActions;
-import org.talend.dataprep.api.service.command.transformation.SuggestActionParams;
-import org.talend.dataprep.api.service.command.transformation.SuggestColumnActions;
+import org.talend.dataprep.api.service.command.transformation.*;
 import org.talend.dataprep.command.CommandHelper;
 import org.talend.dataprep.command.GenericCommand;
 import org.talend.dataprep.command.dataset.DataSetGet;
@@ -84,10 +81,21 @@ public class TransformAPI extends APIService {
      * Get all the possible actions available on lines.
      */
     @RequestMapping(value = "/api/transform/actions/line", method = GET, produces = APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Get all actions on line", notes = "Returns all actions for the given column.")
+    @ApiOperation(value = "Get all actions on line", notes = "Returns all actions for a line.")
     @Timed
     public StreamingResponseBody lineActions() {
         final HystrixCommand<InputStream> getSuggestedActions = getCommand(LineActions.class);
+        return CommandHelper.toStreaming(getSuggestedActions);
+    }
+
+    /**
+     * Get all the possible actions available on lines.
+     */
+    @RequestMapping(value = "/api/transform/actions/dataset", method = GET, produces = APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get all actions on dataset", notes = "Returns all actions for a dataset.")
+    @Timed
+    public StreamingResponseBody datasetActions() {
+        final HystrixCommand<InputStream> getSuggestedActions = getCommand(DatasetActions.class);
         return CommandHelper.toStreaming(getSuggestedActions);
     }
 
