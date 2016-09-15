@@ -421,13 +421,12 @@ public class ComputeTimeSinceTest extends BaseDateTests {
         );
     }
 
-
     @Test
     public void should_compute_days_since_value() throws IOException {
         //given
         String date = "16/07/2015 13:00:00";
-        String compare = "06/07/2015 13:00:00";
-        String result = computeTimeSince(date, "dd/MM/yyyy HH:mm:ss", ChronoUnit.DAYS, compare);
+        String compare = "2015-07-06 13:00";
+        String result = "-10";
 
         DataSetRow row = getDefaultRow("statistics_MM_dd_yyyy_HH_mm.json");
         row.set("0001", date);
@@ -445,6 +444,32 @@ public class ComputeTimeSinceTest extends BaseDateTests {
             MapEntry.entry( "0001", date ), //
             MapEntry.entry( "0003", result ), //
             MapEntry.entry( "0002", "Bacon" )
+        );
+    }
+
+    @Test
+    public void test_TDP_2532() throws IOException {
+        //given
+        String date = "16/07/2015 13:00:00";
+        String compare = "2016-07-18 13:00";
+        String result = "1";
+
+        DataSetRow row = getDefaultRow("statistics_MM_dd_yyyy_HH_mm.json");
+        row.set("0001", date);
+
+        parameters.put(TIME_UNIT_PARAMETER, YEARS.name());
+        parameters.put(SINCE_WHEN_PARAMETER, SPECIFIC_DATE_MODE);
+        parameters.put(SPECIFIC_DATE_PARAMETER, compare );
+
+        //when
+        ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
+
+        //then
+        Assertions.assertThat(row.values()).contains(
+                MapEntry.entry( "0000", "lorem bacon" ), //
+                MapEntry.entry( "0001", date ), //
+                MapEntry.entry( "0003", result ), //
+                MapEntry.entry( "0002", "Bacon" )
         );
     }
 

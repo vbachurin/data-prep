@@ -67,7 +67,7 @@ public class ComputeTimeSince extends AbstractDate implements ColumnAction {
 
     protected static final String SPECIFIC_DATE_PARAMETER = "specific_date"; //$NON-NLS-1$
 
-    private static final String DATE_PATTERN = "dd/MM/yyyy HH:mm:ss";
+    private static final String DATE_PATTERN = "yyyy-MM-dd HH:mm";
 
     private static final DateTimeFormatter DEFAULT_FORMATTER = DateTimeFormatter.ofPattern(DATE_PATTERN);
     
