@@ -307,7 +307,7 @@
   "STATS_TAB_CHART": "Chart",
   "STATS_TAB_VALUE": "Value",
   "STATS_TAB_PATTERN": "Pattern",
-  "STATS_TAB_ADVANCED": "ADvanced",
+  "STATS_TAB_ADVANCED": "Advanced",
 
   "_comment": "Dataset actions",
   "REPLACE_FILE_CONTENT": "Overwrite dataset with another file",
