@@ -80,7 +80,7 @@ public class ClearInvalid extends AbstractClear implements ColumnAction {
     @Override
     public Set<Behavior> getBehavior() {
         final EnumSet<Behavior> behaviors = EnumSet.copyOf(super.getBehavior());
-        behaviors.add(Behavior.NEED_STATISTICS);
+        behaviors.add(Behavior.NEED_STATISTICS_INVALID);
         return behaviors;
     }
 }

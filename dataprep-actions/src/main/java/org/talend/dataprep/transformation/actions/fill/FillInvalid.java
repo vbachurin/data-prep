@@ -112,7 +112,7 @@ public class FillInvalid extends AbstractFillWith implements ColumnAction {
     @Override
     public Set<Behavior> getBehavior() {
         Set<Behavior> behaviors = super.getBehavior();
-        behaviors.add(Behavior.NEED_STATISTICS);
+        behaviors.add(Behavior.NEED_STATISTICS_INVALID);
         return behaviors;
     }
 }

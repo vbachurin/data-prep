@@ -69,31 +69,36 @@ public class TypeChange extends AbstractActionMetadata implements ColumnAction {
         return ActionCategory.COLUMN_METADATA.getDisplayName();
     }
 
-    /**
-     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext)
-     */
     @Override
-    public void applyOnColumn(DataSetRow row, ActionContext context) {
-        final String columnId = context.getColumnId();
-        final Map<String, String> parameters = context.getParameters();
-        LOGGER.debug("TypeChange for columnId {} with parameters {} ", columnId, parameters);
-        final ColumnMetadata columnMetadata = context.getRowMetadata().getById(columnId);
-        final String newType = parameters.get(NEW_TYPE_PARAMETER_KEY);
-        if (StringUtils.isNotEmpty(newType)) {
-            columnMetadata.setType(newType);
-            columnMetadata.setTypeForced(true);
-            // erase domain
-            columnMetadata.setDomain("");
-            columnMetadata.setDomainLabel("");
-            columnMetadata.setDomainFrequency(0);
-            // We must set this to fix TDP-838: we force the domain to empty
-            columnMetadata.setDomainForced(true);
+    public void compile(ActionContext context) {
+        super.compile(context);
+        if (context.getActionStatus() == ActionContext.ActionStatus.OK) {
+            final String columnId = context.getColumnId();
+            final Map<String, String> parameters = context.getParameters();
+            LOGGER.debug("TypeChange for columnId {} with parameters {} ", columnId, parameters);
+            final ColumnMetadata columnMetadata = context.getRowMetadata().getById(columnId);
+            final String newType = parameters.get(NEW_TYPE_PARAMETER_KEY);
+            if (StringUtils.isNotEmpty(newType)) {
+                columnMetadata.setType(newType);
+                columnMetadata.setTypeForced(true);
+                // erase domain
+                columnMetadata.setDomain("");
+                columnMetadata.setDomainLabel("");
+                columnMetadata.setDomainFrequency(0);
+                // We must set this to fix TDP-838: we force the domain to empty
+                columnMetadata.setDomainForced(true);
+            }
+            context.setActionStatus(ActionContext.ActionStatus.DONE);
         }
-        context.setActionStatus(ActionContext.ActionStatus.DONE);
     }
 
     @Override
     public Set<Behavior> getBehavior() {
         return EnumSet.of(Behavior.METADATA_CHANGE_TYPE);
+    }
+
+    @Override
+    public void applyOnColumn(DataSetRow row, ActionContext context) {
+        // Nothing to do.
     }
 }
