@@ -13,10 +13,6 @@
 
 package org.talend.dataprep.transformation.actions.date;
 
-import static org.talend.dataprep.api.type.Type.INTEGER;
-import static org.talend.dataprep.transformation.actions.common.OtherColumnParameters.OTHER_COLUMN_MODE;
-import static org.talend.dataprep.transformation.actions.common.OtherColumnParameters.SELECTED_COLUMN_PARAMETER;
-
 import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -40,9 +36,12 @@ import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataprep.parameters.SelectParameter;
 import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
-import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
+
+import static org.talend.dataprep.api.type.Type.INTEGER;
+import static org.talend.dataprep.transformation.actions.common.OtherColumnParameters.OTHER_COLUMN_MODE;
+import static org.talend.dataprep.transformation.actions.common.OtherColumnParameters.SELECTED_COLUMN_PARAMETER;
 
 @Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + ComputeTimeSince.TIME_SINCE_ACTION_NAME)
 public class ComputeTimeSince extends AbstractDate implements ColumnAction {
@@ -67,10 +66,12 @@ public class ComputeTimeSince extends AbstractDate implements ColumnAction {
 
     protected static final String SPECIFIC_DATE_PARAMETER = "specific_date"; //$NON-NLS-1$
 
-    private static final String DATE_PATTERN = "dd/MM/yyyy HH:mm:ss";
+    protected static final String SINCE_DATE_PARAMETER = "since_date";
+
+    private static final String DATE_PATTERN = "yyyy-MM-dd HH:mm";
 
     private static final DateTimeFormatter DEFAULT_FORMATTER = DateTimeFormatter.ofPattern(DATE_PATTERN);
-    
+
     /**
      * The new column prefix.
      */
@@ -83,22 +84,13 @@ public class ComputeTimeSince extends AbstractDate implements ColumnAction {
 
     private static final String NOW_SERVER_SIDE_MODE = "now_server_side";
 
-    /**
-     * This class' logger.
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(ComputeTimeSince.class);
+    private static final Logger log = LoggerFactory.getLogger(ComputeTimeSince.class);
 
-    /**
-     * @see ActionMetadata#getName()
-     */
     @Override
     public String getName() {
         return TIME_SINCE_ACTION_NAME;
     }
 
-    /**
-     * @see ActionMetadata#getParameters()
-     */
     @Override
     public List<Parameter> getParameters() {
         List<Parameter> parameters = super.getParameters();
@@ -116,18 +108,16 @@ public class ComputeTimeSince extends AbstractDate implements ColumnAction {
                 .name(SINCE_WHEN_PARAMETER) //
                 .canBeBlank(false) //
                 .item(NOW_SERVER_SIDE_MODE) //
-                .item(SPECIFIC_DATE_MODE,
-                        new Parameter(SPECIFIC_DATE_PARAMETER, //
-                                ParameterType.DATE, //
-                                StringUtils.EMPTY, //
-                                false, //
-                                false)) //
-                .item(OTHER_COLUMN_MODE,
-                        new Parameter(SELECTED_COLUMN_PARAMETER, //
-                                ParameterType.COLUMN, //
-                                StringUtils.EMPTY, //
-                                false, //
-                                false)) //
+                .item(SPECIFIC_DATE_MODE, new Parameter(SPECIFIC_DATE_PARAMETER, //
+                        ParameterType.DATE, //
+                        StringUtils.EMPTY, //
+                        false, //
+                        false)) //
+                .item(OTHER_COLUMN_MODE, new Parameter(SELECTED_COLUMN_PARAMETER, //
+                        ParameterType.COLUMN, //
+                        StringUtils.EMPTY, //
+                        false, //
+                        false)) //
                 .defaultValue(NOW_SERVER_SIDE_MODE) //
                 .build());
 
@@ -143,7 +133,7 @@ public class ComputeTimeSince extends AbstractDate implements ColumnAction {
             String columnId = context.getColumnId();
             TemporalUnit unit = ChronoUnit.valueOf(parameters.get(TIME_UNIT_PARAMETER).toUpperCase());
             ColumnMetadata column = context.getRowMetadata().getById(columnId);
-            context.column("result", (r) -> {
+            context.column("result", r -> {
                 final ColumnMetadata c = ColumnMetadata.Builder //
                         .column() //
                         .copy(column)//
@@ -156,12 +146,13 @@ public class ComputeTimeSince extends AbstractDate implements ColumnAction {
                 context.getRowMetadata().insertAfter(columnId, c);
                 return c;
             });
+            context.get(SINCE_WHEN_PARAMETER, m -> parameters.containsKey(SINCE_WHEN_PARAMETER) ?
+                    parameters.get(SINCE_WHEN_PARAMETER) :
+                    NOW_SERVER_SIDE_MODE);
+            context.get(SINCE_DATE_PARAMETER, m -> parseSinceDateIfConstant(parameters));
         }
     }
 
-    /**
-     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext)
-     */
     @Override
     public void applyOnColumn(DataSetRow row, ActionContext context) {
         RowMetadata rowMetadata = context.getRowMetadata();
@@ -171,44 +162,67 @@ public class ComputeTimeSince extends AbstractDate implements ColumnAction {
         final String newColumnId = context.column("result");
 
         TemporalUnit unit = ChronoUnit.valueOf(parameters.get(TIME_UNIT_PARAMETER).toUpperCase());
-
+        String newValue;
         try {
-            LocalDateTime since = null;
-
-            String mode = parameters.containsKey(SINCE_WHEN_PARAMETER) ? parameters.get(SINCE_WHEN_PARAMETER)
-                    : NOW_SERVER_SIDE_MODE;
-
+            String mode = context.get(SINCE_WHEN_PARAMETER);
+            LocalDateTime since;
             switch (mode) {
-            case SPECIFIC_DATE_MODE:
-                since = LocalDateTime.parse(parameters.get(SPECIFIC_DATE_PARAMETER), DEFAULT_FORMATTER);
-                break;
             case OTHER_COLUMN_MODE:
                 ColumnMetadata selectedColumn = rowMetadata.getById(parameters.get(SELECTED_COLUMN_PARAMETER));
                 String dateToCompare = row.get(selectedColumn.getId());
-
                 since = dateParser.parse(dateToCompare, selectedColumn);
                 break;
+            case SPECIFIC_DATE_MODE:
             case NOW_SERVER_SIDE_MODE:
             default:
-                since = LocalDateTime.now();
+                since = context.get(SINCE_DATE_PARAMETER);
                 break;
             }
 
             // parse the date
-            String value = row.get(columnId);
-            LocalDateTime temporalAccessor = dateParser.parse(value, context.getRowMetadata().getById(columnId));
-            Temporal valueAsDate = LocalDateTime.from(temporalAccessor);
-            long newValue = unit.between(valueAsDate, since);
-            row.set(newColumnId, String.valueOf(newValue));
+            if (since == null) {
+                newValue = StringUtils.EMPTY;
+            } else {
+                String value = row.get(columnId);
+                LocalDateTime temporalAccessor = dateParser.parse(value, context.getRowMetadata().getById(columnId));
+                Temporal valueAsDate = LocalDateTime.from(temporalAccessor);
+                newValue = String.valueOf(unit.between(valueAsDate, since));
+            }
         } catch (DateTimeException e) {
+            log.trace("Error on dateTime parsing", e);
             // Nothing to do: in this case, temporalAccessor is left null
-            row.set(newColumnId, StringUtils.EMPTY);
+            newValue = StringUtils.EMPTY;
         }
+        row.set(newColumnId, newValue);
     }
 
     @Override
     public Set<Behavior> getBehavior() {
         return EnumSet.of(Behavior.METADATA_CREATE_COLUMNS);
+    }
+
+    private static LocalDateTime parseSinceDateIfConstant(Map<String, String> parameters) {
+        String mode = parameters.containsKey(SINCE_WHEN_PARAMETER) ? parameters.get(SINCE_WHEN_PARAMETER) : NOW_SERVER_SIDE_MODE;
+
+        LocalDateTime since;
+        switch (mode) {
+        case SPECIFIC_DATE_MODE:
+            try {
+                since = LocalDateTime.parse(parameters.get(SPECIFIC_DATE_PARAMETER), DEFAULT_FORMATTER);
+            } catch (DateTimeException e) {
+                log.info("Error parsing input date. The front-end might have supplied a corrupted value.", e);
+                since = null;
+            }
+            break;
+        case OTHER_COLUMN_MODE:
+            since = null; // It will be computed in apply
+            break;
+        case NOW_SERVER_SIDE_MODE:
+        default:
+            since = LocalDateTime.now();
+            break;
+        }
+        return since;
     }
 
 }
