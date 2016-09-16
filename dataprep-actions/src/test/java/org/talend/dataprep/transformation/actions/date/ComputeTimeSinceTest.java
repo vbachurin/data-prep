@@ -12,15 +12,6 @@
 //  ============================================================================
 package org.talend.dataprep.transformation.actions.date;
 
-import static java.time.temporal.ChronoUnit.*;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
-import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
-import static org.talend.dataprep.transformation.actions.ActionMetadataTestUtils.getColumn;
-import static org.talend.dataprep.transformation.actions.common.OtherColumnParameters.OTHER_COLUMN_MODE;
-import static org.talend.dataprep.transformation.actions.common.OtherColumnParameters.SELECTED_COLUMN_PARAMETER;
-import static org.talend.dataprep.transformation.actions.date.ComputeTimeSince.*;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
@@ -44,6 +35,15 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.actions.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.actions.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
+
+import static java.time.temporal.ChronoUnit.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.*;
+import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
+import static org.talend.dataprep.transformation.actions.ActionMetadataTestUtils.getColumn;
+import static org.talend.dataprep.transformation.actions.common.OtherColumnParameters.OTHER_COLUMN_MODE;
+import static org.talend.dataprep.transformation.actions.common.OtherColumnParameters.SELECTED_COLUMN_PARAMETER;
+import static org.talend.dataprep.transformation.actions.date.ComputeTimeSince.*;
 
 /**
  * Test class for ComputeTimeSince action. Creates one consumer, and test it.
@@ -288,9 +288,6 @@ public class ComputeTimeSinceTest extends BaseDateTests {
         assertEquals(expectedValues, row.values());
     }
 
-    /**
-     * @see Action#getRowAction()
-     */
     @Test
     public void should_update_metadata() throws IOException {
         //given
@@ -387,12 +384,10 @@ public class ComputeTimeSinceTest extends BaseDateTests {
         ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         //then
-        Assertions.assertThat(row.values()).contains(
-            MapEntry.entry( "0000", "lorem bacon" ), //
-            MapEntry.entry( "0001", date ), //
-            MapEntry.entry( "0003", "10" ), //
-            MapEntry.entry( "0002", compare )
-        );
+        Assertions.assertThat(row.values()).contains(MapEntry.entry("0000", "lorem bacon"), //
+                MapEntry.entry("0001", date), //
+                MapEntry.entry("0003", "10"), //
+                MapEntry.entry("0002", compare));
     }
 
     @Test
@@ -413,12 +408,10 @@ public class ComputeTimeSinceTest extends BaseDateTests {
         ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         //then
-        Assertions.assertThat(row.values()).contains(
-            MapEntry.entry( "0000", "lorem bacon" ), //
-            MapEntry.entry( "0001", date ), //
-            MapEntry.entry( "0003", StringUtils.EMPTY ), //
-            MapEntry.entry( "0002", compare )
-        );
+        Assertions.assertThat(row.values()).contains(MapEntry.entry("0000", "lorem bacon"), //
+                MapEntry.entry("0001", date), //
+                MapEntry.entry("0003", StringUtils.EMPTY), //
+                MapEntry.entry("0002", compare));
     }
 
     @Test
@@ -433,22 +426,20 @@ public class ComputeTimeSinceTest extends BaseDateTests {
 
         parameters.put(TIME_UNIT_PARAMETER, DAYS.name());
         parameters.put(SINCE_WHEN_PARAMETER, SPECIFIC_DATE_MODE);
-        parameters.put(SPECIFIC_DATE_PARAMETER, compare );
+        parameters.put(SPECIFIC_DATE_PARAMETER, compare);
 
         //when
         ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         //then
-        Assertions.assertThat(row.values()).contains(
-            MapEntry.entry( "0000", "lorem bacon" ), //
-            MapEntry.entry( "0001", date ), //
-            MapEntry.entry( "0003", result ), //
-            MapEntry.entry( "0002", "Bacon" )
-        );
+        Assertions.assertThat(row.values()).contains(MapEntry.entry("0000", "lorem bacon"), //
+                MapEntry.entry("0001", date), //
+                MapEntry.entry("0003", result), //
+                MapEntry.entry("0002", "Bacon"));
     }
 
     @Test
-    public void test_TDP_2532() throws IOException {
+    public void testApplyOnColumn_specificDate_inYears_TDP_2532() throws IOException {
         //given
         String date = "16/07/2015 13:00:00";
         String compare = "2016-07-18 13:00";
@@ -459,18 +450,16 @@ public class ComputeTimeSinceTest extends BaseDateTests {
 
         parameters.put(TIME_UNIT_PARAMETER, YEARS.name());
         parameters.put(SINCE_WHEN_PARAMETER, SPECIFIC_DATE_MODE);
-        parameters.put(SPECIFIC_DATE_PARAMETER, compare );
+        parameters.put(SPECIFIC_DATE_PARAMETER, compare);
 
         //when
         ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         //then
-        Assertions.assertThat(row.values()).contains(
-                MapEntry.entry( "0000", "lorem bacon" ), //
-                MapEntry.entry( "0001", date ), //
-                MapEntry.entry( "0003", result ), //
-                MapEntry.entry( "0002", "Bacon" )
-        );
+        Assertions.assertThat(row.values()).contains(MapEntry.entry("0000", "lorem bacon"), //
+                MapEntry.entry("0001", date), //
+                MapEntry.entry("0003", result), //
+                MapEntry.entry("0002", "Bacon"));
     }
 
     @Test
@@ -484,38 +473,36 @@ public class ComputeTimeSinceTest extends BaseDateTests {
 
         parameters.put(TIME_UNIT_PARAMETER, DAYS.name());
         parameters.put(SINCE_WHEN_PARAMETER, SPECIFIC_DATE_MODE);
-        parameters.put(SPECIFIC_DATE_PARAMETER, compare );
+        parameters.put(SPECIFIC_DATE_PARAMETER, compare);
 
         //when
         ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         //then
-        Assertions.assertThat(row.values()).contains(
-            MapEntry.entry( "0000", "lorem bacon" ), //
-            MapEntry.entry( "0001", date ), //
-            MapEntry.entry( "0003", StringUtils.EMPTY ), //
-            MapEntry.entry( "0002", "Bacon" )
-        );
+        Assertions.assertThat(row.values()).contains(MapEntry.entry("0000", "lorem bacon"), //
+                MapEntry.entry("0001", date), //
+                MapEntry.entry("0003", StringUtils.EMPTY), //
+                MapEntry.entry("0002", "Bacon"));
     }
 
     /**
      * Compute time since now.
      *
-     * @param date the date to compute from.
+     * @param date    the date to compute from.
      * @param pattern the pattern to use.
-     * @param unit the unit for the result.
+     * @param unit    the unit for the result.
      * @return time since now in the wanted unit.
      */
     String computeTimeSince(String date, String pattern, ChronoUnit unit) {
-        return computeTimeSince( date, pattern, unit, null );
+        return computeTimeSince(date, pattern, unit, null);
     }
 
     /**
      * Compute time since .
      *
-     * @param date the date to compute from.
-     * @param pattern the pattern to use.
-     * @param unit the unit for the result.
+     * @param date      the date to compute from.
+     * @param pattern   the pattern to use.
+     * @param unit      the unit for the result.
      * @param sinceWhen the date to calculate since when
      * @return time since now in the wanted unit.
      */
@@ -523,7 +510,7 @@ public class ComputeTimeSinceTest extends BaseDateTests {
 
         DateTimeFormatter format = DateTimeFormatter.ofPattern(pattern);
         Temporal since;
-        if (sinceWhen == null){
+        if (sinceWhen == null) {
             since = LocalDateTime.now();
         } else {
             since = LocalDateTime.parse(sinceWhen, format);
