@@ -1,5 +1,7 @@
 package org.talend.dataprep.transformation.pipeline;
 
+import static java.util.stream.Collectors.toSet;
+
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -26,8 +28,6 @@ import org.talend.dataprep.transformation.api.transformer.json.NullAnalyzer;
 import org.talend.dataprep.transformation.pipeline.node.*;
 import org.talend.dataquality.common.inference.Analyzer;
 import org.talend.dataquality.common.inference.Analyzers;
-
-import static java.util.stream.Collectors.toSet;
 
 public class Pipeline implements Node, RuntimeNode {
 
@@ -294,7 +294,11 @@ public class Pipeline implements Node, RuntimeNode {
                         action);
             }
             if (allowMetadataChange) {
-                if (actionToMetadata.get(action).getBehavior().contains(ActionMetadata.Behavior.NEED_STATISTICS)) {
+                final Set<ActionMetadata.Behavior> behavior = actionToMetadata.get(action).getBehavior();
+                if (behavior.contains(ActionMetadata.Behavior.NEED_STATISTICS_PATTERN)) {
+                    builder.to(new TypeDetectionNode(c -> analyzerService.build(c, AnalyzerService.Analysis.PATTERNS), analysis.filterForFullAnalysis, adapter));
+                }
+                if (behavior.contains(ActionMetadata.Behavior.NEED_STATISTICS_INVALID)) {
                     builder.to(new TypeDetectionNode(inlineAnalyzer, analysis.filterForFullAnalysis, adapter));
                     builder.to(new InvalidDetectionNode(analyzerService, analysis.filterForInvalidAnalysis));
                 }

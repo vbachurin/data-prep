@@ -179,7 +179,7 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction, Dat
 
     @Override
     public Set<Behavior> getBehavior() {
-        return EnumSet.of(Behavior.VALUES_COLUMN, Behavior.METADATA_CHANGE_TYPE);
+        return EnumSet.of(Behavior.VALUES_COLUMN, Behavior.METADATA_CHANGE_TYPE, Behavior.NEED_STATISTICS_PATTERN);
     }
 
 }

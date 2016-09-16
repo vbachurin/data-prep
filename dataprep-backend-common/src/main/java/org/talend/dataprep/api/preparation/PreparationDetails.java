@@ -18,7 +18,7 @@ package org.talend.dataprep.api.preparation;
  * 
  * @see org.talend.dataprep.api.preparation.json.PreparationDetailsJsonSerializer
  */
-public class PreparationDetails {
+public class    PreparationDetails {
 
     /** The wrapped Preparation. */
     private Preparation preparation;

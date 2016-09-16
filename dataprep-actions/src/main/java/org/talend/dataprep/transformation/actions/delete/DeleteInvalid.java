@@ -67,7 +67,7 @@ public class DeleteInvalid extends AbstractDelete {
     @Override
     public Set<Behavior> getBehavior() {
         Set<Behavior> behaviors = super.getBehavior();
-        behaviors.add(Behavior.NEED_STATISTICS);
+        behaviors.add(Behavior.NEED_STATISTICS_INVALID);
         return behaviors;
     }
 }

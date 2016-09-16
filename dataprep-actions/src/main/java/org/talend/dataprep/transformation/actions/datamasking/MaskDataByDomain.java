@@ -126,7 +126,7 @@ public class MaskDataByDomain extends AbstractActionMetadata implements ColumnAc
 
     @Override
     public Set<Behavior> getBehavior() {
-        return EnumSet.of(Behavior.VALUES_COLUMN, Behavior.NEED_STATISTICS);
+        return EnumSet.of(Behavior.VALUES_COLUMN, Behavior.NEED_STATISTICS_INVALID);
     }
 
 }

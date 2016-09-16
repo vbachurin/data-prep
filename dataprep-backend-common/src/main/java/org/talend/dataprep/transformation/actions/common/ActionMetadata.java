@@ -13,17 +13,18 @@
 
 package org.talend.dataprep.transformation.actions.common;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.List;
+import java.util.Set;
+
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.i18n.MessagesBundle;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.transformation.actions.category.ActionCategory;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.actions.category.ActionScope;
 import org.talend.dataprep.transformation.actions.category.ScopeCategory;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
-import java.util.List;
-import java.util.Set;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * Model an action to perform on a dataset.
@@ -64,9 +65,13 @@ public interface ActionMetadata {
          */
         VALUES_MULTIPLE_COLUMNS,
         /**
-         * Action requires up-to-date statistics before it can be executed.
+         * Action requires up-to-date statistics (for pattern) before it can be executed.
          */
-        NEED_STATISTICS
+        NEED_STATISTICS_PATTERN,
+        /**
+         * Action requires up-to-date statistics (for invalid) before it can be executed.
+         */
+        NEED_STATISTICS_INVALID
     }
 
     /**
