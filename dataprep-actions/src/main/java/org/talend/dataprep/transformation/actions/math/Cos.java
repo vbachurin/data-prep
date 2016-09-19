@@ -12,12 +12,15 @@
 // ============================================================================
 package org.talend.dataprep.transformation.actions.math;
 
-import static org.talend.dataprep.transformation.actions.math.Cos.COS_NAME;
+import java.util.Map;
 
 import org.apache.commons.math3.util.FastMath;
 import org.springframework.stereotype.Component;
 import org.talend.daikon.number.BigDecimalParser;
 import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
+
+import static org.talend.dataprep.transformation.actions.math.Cos.COS_NAME;
 
 /**
  * Create a new column with Cos
@@ -28,7 +31,7 @@ public class Cos extends AbstractMathNoParameterAction {
     protected static final String COS_NAME = "cos_numbers";
 
     @Override
-    protected String calculateResult(String columnValue) {
+    protected String calculateResult(String columnValue, ActionContext context) {
         double value = BigDecimalParser.toBigDecimal(columnValue).doubleValue();
 
         double result = FastMath.cos(value);
@@ -37,7 +40,7 @@ public class Cos extends AbstractMathNoParameterAction {
     }
 
     @Override
-    protected String getColumnNameSuffix() {
+    protected String getColumnNameSuffix(Map<String, String> parameters) {
         return "cos";
     }
 

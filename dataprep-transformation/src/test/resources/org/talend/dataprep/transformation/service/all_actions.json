@@ -4411,5 +4411,9 @@
   {
     "name": "modify_date",
     "category": "dates"
+  },
+  {
+    "name": "temperatures_converter",
+    "category": "Conversions"
   }
 ]
