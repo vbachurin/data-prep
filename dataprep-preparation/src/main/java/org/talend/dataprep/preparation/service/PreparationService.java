@@ -13,18 +13,6 @@
 
 package org.talend.dataprep.preparation.service;
 
-import static java.lang.Integer.MAX_VALUE;
-import static java.util.Collections.emptyList;
-import static java.util.stream.Collectors.toList;
-import static org.apache.http.HttpHeaders.CONTENT_TYPE;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
-import static org.springframework.web.bind.annotation.RequestMethod.*;
-import static org.talend.daikon.exception.ExceptionContext.build;
-import static org.talend.dataprep.api.folder.FolderContentType.PREPARATION;
-import static org.talend.dataprep.exception.error.PreparationErrorCodes.*;
-import static org.talend.dataprep.util.SortAndOrderHelper.getPreparationComparator;
-
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.*;
@@ -34,9 +22,11 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-
 import javax.annotation.Resource;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,8 +46,8 @@ import org.talend.dataprep.exception.json.JsonErrorCodeDescription;
 import org.talend.dataprep.folder.store.FolderRepository;
 import org.talend.dataprep.http.HttpResponseContext;
 import org.talend.dataprep.lock.store.LockedResource;
-import org.talend.dataprep.lock.store.LockedResourceRepository;
 import org.talend.dataprep.lock.store.LockedResource.LockUserInfo;
+import org.talend.dataprep.lock.store.LockedResourceRepository;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.preparation.store.PreparationRepository;
 import org.talend.dataprep.preparation.task.PreparationCleaner;
@@ -66,9 +56,17 @@ import org.talend.dataprep.transformation.actions.common.ImplicitParameters;
 import org.talend.dataprep.transformation.api.action.validation.ActionMetadataValidation;
 import org.talend.dataprep.transformation.pipeline.ActionRegistry;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import static java.lang.Integer.MAX_VALUE;
+import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toList;
+import static org.apache.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
+import static org.springframework.web.bind.annotation.RequestMethod.*;
+import static org.talend.daikon.exception.ExceptionContext.build;
+import static org.talend.dataprep.api.folder.FolderContentType.PREPARATION;
+import static org.talend.dataprep.exception.error.PreparationErrorCodes.*;
+import static org.talend.dataprep.util.SortAndOrderHelper.getPreparationComparator;
 
 @RestController
 @Api(value = "preparations", basePath = "/preparations", description = "Operations on preparations")
@@ -131,7 +129,10 @@ public class PreparationService {
     private LockedResourceRepository lockedResourceRepository;
 
     @Autowired
-    PreparationCleaner preparationCleaner;
+    private PreparationCleaner preparationCleaner;
+
+    @Autowired
+    private ReorderStepsUtils reorderStepsUtils;
 
     /**
      * Create a preparation from the http request body.
@@ -188,7 +189,8 @@ public class PreparationService {
 
         final List<String> preparations = preparationRepository.list(Preparation.class) //
                 .sorted(getPreparationComparator(sort, order)) //
-                .map(Preparation::id).collect(toList());
+                .map(Preparation::id)
+                .collect(toList());
 
         LOGGER.info("found {} preparation(s) ID in total", preparations.size());
         return preparations;
@@ -336,7 +338,7 @@ public class PreparationService {
     @ApiOperation(value = "Copy a preparation", produces = TEXT_PLAIN_VALUE, notes = "Copy the preparation to the new name / folder and returns the new id.")
     @Timed
     public String copy(
-            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the preparation to copy") String preparationId,
+            @ApiParam(name = "id", value = "Id of the preparation to copy") @PathVariable(value = "id") String preparationId,
             @ApiParam(value = "The name of the copied preparation.") @RequestParam(required = false) String name,
             @ApiParam(value = "The folder path to create the copy.") @RequestParam() String destination)
             throws IOException {
@@ -416,7 +418,7 @@ public class PreparationService {
     @RequestMapping(value = "/preparations/{id}/move", method = PUT, produces = TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Move a preparation", produces = TEXT_PLAIN_VALUE, notes = "Move a preparation to an other folder.")
     @Timed
-    public void move(@PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the preparation to move") String preparationId,
+    public void move(@ApiParam(name = "id", value = "Id of the preparation to move") @PathVariable(value = "id") String preparationId,
                      @ApiParam(value = "The original folder path of the preparation.") @RequestParam String folder,
                      @ApiParam(value = "The new folder path of the preparation.") @RequestParam String destination,
                      @ApiParam(value = "The new name of the moved dataset.") @RequestParam(defaultValue = "", required = false) String newName)
@@ -469,7 +471,7 @@ public class PreparationService {
     @RequestMapping(value = "/preparations/{id}", method = RequestMethod.DELETE, consumes = MediaType.ALL_VALUE, produces = TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Delete a preparation by id", notes = "Delete a preparation content based on provided id. Id should be a UUID returned by the list operation. Not valid or non existing preparation id returns empty content.")
     @Timed
-    public void delete(@PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the preparation to delete") String id) {
+    public void delete(@ApiParam(name = "id", value = "Id of the preparation to delete") @PathVariable(value = "id") String id) {
 
         LOGGER.debug("Deletion of preparation #{} requested.", id);
 
@@ -504,7 +506,7 @@ public class PreparationService {
     @ApiOperation(value = "Create a preparation", notes = "Returns the id of the updated preparation.")
     @Timed
     public String update(@ApiParam("id") @PathVariable("id") String id,
-                         @RequestBody @ApiParam("preparation") final Preparation preparation) {
+                         @ApiParam("preparation") @RequestBody final Preparation preparation) {
         //@formatter:on
 
         Preparation previousPreparation = preparationRepository.get(id, Preparation.class);
@@ -703,8 +705,9 @@ public class PreparationService {
                 // not anymore
                 .filter(id -> !updatedCreatedColumns.contains(id)).collect(toList());
         final int columnsDiffNumber = updatedCreatedColumns.size() - originalCreatedColumns.size();
-        final int maxCreatedColumnIdBeforeUpdate = !originalCreatedColumns.isEmpty()
-                ? originalCreatedColumns.stream().mapToInt(Integer::parseInt).max().getAsInt() : MAX_VALUE;
+        final int maxCreatedColumnIdBeforeUpdate = !originalCreatedColumns.isEmpty() ?
+                originalCreatedColumns.stream().mapToInt(Integer::parseInt).max().getAsInt() :
+                MAX_VALUE;
 
         // Build list of actions from modified one to the head
         final List<AppendStep> actionsSteps = getStepsWithShiftedColumnIds(steps, stepToModifyId, deletedColumns,
@@ -751,24 +754,8 @@ public class PreparationService {
         }
         // Ensure that the preparation is not locked elsewhere
         lock(id);
-        final List<String> steps = extractSteps(preparation, stepToDeleteId); // throws an exception if stepId is not in
+        deleteAction(preparation, stepToDeleteId);
 
-        // get created columns by step to delete
-        final Step std = getStep(stepToDeleteId);
-        final List<String> deletedColumns = std.getDiff().getCreatedColumns();
-        final int columnsDiffNumber = -deletedColumns.size();
-        final int maxCreatedColumnIdBeforeUpdate = deletedColumns.isEmpty() ? MAX_VALUE
-                : deletedColumns.stream().mapToInt(Integer::parseInt).max().getAsInt();
-
-        LOGGER.debug("Deleting actions in preparation #{} at step #{}", id, stepToDeleteId); //$NON-NLS-1$
-
-        // get new actions to rewrite history from deleted step
-        final List<AppendStep> actions = getStepsWithShiftedColumnIds(steps, stepToDeleteId, deletedColumns,
-                maxCreatedColumnIdBeforeUpdate, columnsDiffNumber);
-
-        // rewrite history
-        final Step stepToDelete = getStep(stepToDeleteId);
-        replaceHistory(preparation, stepToDelete.getParent(), actions);
     }
 
     @RequestMapping(value = "/preparations/{id}/head/{headId}", method = PUT)
@@ -866,6 +853,34 @@ public class PreparationService {
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * Moves the step with specified <i>stepId</i> just after the step with <i>parentStepId</i> as identifier within the specified
+     * preparation.
+     *
+     * @param preparationId the id of the preparation containing the step to move
+     * @param stepId        the id of the step to move
+     * @param parentStepId  the id of the step which wanted as the parent of the step to move
+     */
+    // formatter:off
+    @RequestMapping(value = "/preparations/{id}/steps/{stepId}/order", method = POST)
+    @ApiOperation(value = "Moves a step within a preparation after a specified step",
+                  notes = "Moves a step within a preparation after a specified step.")
+    @Timed
+    public void moveStep(@PathVariable("id") final String preparationId,
+                         @ApiParam(value = "The id of the step we want to move.") @PathVariable String stepId,
+                         @ApiParam(value = "The step that will become the parent of stepId") @RequestParam String parentStepId) {
+        //@formatter:on
+
+        LOGGER.debug("Moving step {} after step {}, within preparation {}", stepId, parentStepId, preparationId);
+
+        final Preparation preparation = getPreparation(preparationId);
+
+        // Ensure that the preparation is not locked elsewhere
+        lock(preparationId);
+
+        reorderSteps(preparation, stepId, parentStepId);
+    }
+
     // ------------------------------------------------------------------------------------------------------------------
     // ------------------------------------------------GETTERS/EXTRACTORS------------------------------------------------
     // ------------------------------------------------------------------------------------------------------------------
@@ -955,6 +970,15 @@ public class PreparationService {
                 return appendStep;
             }).collect(toList());
         }
+    }
+
+    private List<Action> extractActionsAtStep(final Step step) {
+
+        Step parentStep = getStep(step.getParent());
+        List<Action> current = getActions(step);
+        int numberOfActionsBeforeStep = getActions(parentStep).size();
+
+        return current.subList(numberOfActionsBeforeStep, current.size());
     }
 
     /**
@@ -1239,4 +1263,85 @@ public class PreparationService {
         return new PreparationDetails(preparation);
     }
 
+    /**
+     * Deletes the step of specified id of the specified preparation
+     *
+     * @param preparation    the specified preparation
+     * @param stepToDeleteId the specified step id to delete
+     */
+    private void deleteAction(Preparation preparation, String stepToDeleteId) {
+        final List<String> steps = extractSteps(preparation, stepToDeleteId); // throws an exception if stepId is not in
+
+        // get created columns by step to delete
+        final Step std = getStep(stepToDeleteId);
+        final List<String> deletedColumns = std.getDiff().getCreatedColumns();
+        final int columnsDiffNumber = -deletedColumns.size();
+        final int maxCreatedColumnIdBeforeUpdate = deletedColumns.isEmpty() ?
+                MAX_VALUE :
+                deletedColumns.stream().mapToInt(Integer::parseInt).max().getAsInt();
+
+        LOGGER.debug("Deleting actions in preparation #{} at step #{}", preparation.getId(), stepToDeleteId); //$NON-NLS-1$
+
+        // get new actions to rewrite history from deleted step
+        final List<AppendStep> actions = getStepsWithShiftedColumnIds(steps, stepToDeleteId, deletedColumns,
+                maxCreatedColumnIdBeforeUpdate, columnsDiffNumber);
+
+        // rewrite history
+        final Step stepToDelete = getStep(stepToDeleteId);
+        replaceHistory(preparation, stepToDelete.getParent(), actions);
+    }
+
+    /**
+     * Moves the step with specified <i>stepId</i> just after the step with <i>parentStepId</i> as identifier within the
+     * specified preparation.
+     *
+     * @param preparation  the preparation containing the step to move
+     * @param stepId       the id of the step to move
+     * @param parentStepId the id of the step which wanted as the parent of the step to move
+     */
+    private void reorderSteps(final Preparation preparation, final String stepId, final String parentStepId) {
+        final List<String> steps = extractSteps(preparation, rootStep.getId());
+
+        // extract all appendStep
+        final List<AppendStep> allAppendSteps = extractActionsAfterStep(steps, steps.get(0));
+
+        final int stepIndex = steps.indexOf(stepId);
+        final int parentIndex = steps.indexOf(parentStepId);
+
+        if (stepIndex < 0) {
+            throw new TDPException(PREPARATION_STEP_DOES_NOT_EXIST, build().put("id", preparation.getId()).put("stepId", stepId));
+        }
+        if (parentIndex < 0) {
+            throw new TDPException(PREPARATION_STEP_DOES_NOT_EXIST,
+                    build().put("id", preparation.getId()).put("stepId", parentStepId));
+        }
+
+        if (stepIndex - 1 == parentIndex) {
+            LOGGER.debug("No need to Move step {} after step {}, within preparation {}: already at the wanted position.", stepId,
+                    parentStepId, preparation.getId());
+        } else {
+            final int lastUnchangedIndex;
+
+            if (parentIndex < stepIndex) {
+                lastUnchangedIndex = parentIndex;
+            } else {
+                lastUnchangedIndex = stepIndex - 1;
+            }
+
+            final AppendStep removedStep = allAppendSteps.remove(stepIndex - 1);
+            allAppendSteps.add(lastUnchangedIndex == stepIndex - 1 ? parentIndex - 1 : parentIndex, removedStep);
+
+            // check that the wanted reordering is legal
+            if (!reorderStepsUtils.isStepOrderValid(allAppendSteps)) {
+                throw new TDPException(PREPARATION_STEP_CANNOT_BE_REORDERED, build(), true);
+            }
+
+            // rename created columns to conform to the way the transformation are performed
+            reorderStepsUtils.renameCreatedColumns(allAppendSteps);
+
+            // apply the reordering since it seems to be legal
+            final List<AppendStep> result = allAppendSteps.subList(lastUnchangedIndex, allAppendSteps.size());
+            replaceHistory(preparation, steps.get(lastUnchangedIndex), result);
+        }
+    }
 }
