@@ -12,16 +12,16 @@
   ============================================================================*/
 
 .quality-bar {
-
-  box-sizing: border-box;
   position:relative;
   height: 14px;
   line-height: 14px;
   white-space: nowrap;
   overflow: hidden;
+  box-sizing: border-box;
   background-color: $unknown-color;
 
   > div {
+    @include display(flex);
     height: 100%;
   }
 
@@ -42,11 +42,20 @@
   }
 
   .sub-bar {
-    @include transition(width .75s ease-out);
+    @include flex-grow(0);
+    @include flex-shrink(0);
+    @include flex-basis(0px); // Unit is needed for IE11
+    @include transition(flex .75s ease-out);
     border: 1px solid transparent;
-    height: 100%;
-    display: inline-block;
-    float: left;
+
+    &.fixed-width {
+      @include flex-basis(10px);
+    }
+
+    &.not-fixed-width {
+      @include flex-grow(1);
+      @include flex-shrink(1);
+    }
 
     &.no-transition {
       @include transition(none);
@@ -102,5 +111,4 @@
       background-color: $unknown-color;
     }
   }
-
 }
