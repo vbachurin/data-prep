@@ -1,20 +1,18 @@
 package org.talend.dataprep.transformation.pipeline.builder;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static java.util.stream.Collectors.toSet;
+import static org.talend.dataprep.transformation.actions.common.ImplicitParameters.COLUMN_ID;
+
+import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.parameters.ParameterType;
 import org.talend.dataprep.transformation.actions.common.ActionMetadata;
 import org.talend.dataprep.transformation.pipeline.ActionRegistry;
-
-import java.util.*;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.toSet;
-import static org.talend.dataprep.transformation.actions.common.ImplicitParameters.COLUMN_ID;
 
 public class ActionsStaticProfiler {
     private final ActionRegistry actionRegistry;
@@ -104,7 +102,10 @@ public class ActionsStaticProfiler {
         Predicate<ColumnMetadata> filterForFullAnalysis = c -> valueModifiedColumns.contains(c.getId()) || !originalColumns.contains(c.getId());
         // only the columns with metadata change or value changes need to re-evaluate invalids
         Predicate<ColumnMetadata> filterForInvalidAnalysis = filterForFullAnalysis.or(c -> metadataModifiedColumns.contains(c.getId()));
+        Predicate<ColumnMetadata> filterForPatternAnalysis = filterForFullAnalysis
+                .or(c -> metadataModifiedColumns.contains(c.getId()));
 
-        return new ActionsProfile(needFullAnalysis, needOnlyInvalidAnalysis, filterForFullAnalysis, filterForInvalidAnalysis);
+        return new ActionsProfile(needFullAnalysis, needOnlyInvalidAnalysis, filterForFullAnalysis, filterForInvalidAnalysis,
+                filterForPatternAnalysis);
     }
 }

@@ -23,7 +23,6 @@ import org.talend.dataprep.api.dataset.row.FlagNames;
 import org.talend.dataprep.api.dataset.statistics.StatisticsAdapter;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
-import org.talend.dataprep.quality.AnalyzerService;
 import org.talend.dataprep.transformation.pipeline.Monitored;
 import org.talend.dataprep.transformation.pipeline.Signal;
 import org.talend.dataprep.transformation.pipeline.Visitor;
@@ -56,11 +55,10 @@ public class TypeDetectionNode extends ColumnFilteredNode implements Monitored {
 
     private long count;
 
-    public TypeDetectionNode(final AnalyzerService analyzerService, //
-                             Predicate<ColumnMetadata> filter, //
-                             StatisticsAdapter adapter) {
+    public TypeDetectionNode(Predicate<ColumnMetadata> filter, StatisticsAdapter adapter,
+            Function<List<ColumnMetadata>, Analyzer<Analyzers.Result>> analyzer) {
         super(filter);
-        this.analyzer = analyzerService::schemaAnalysis;
+        this.analyzer = analyzer;
         this.filter = filter;
         this.adapter = adapter;
         try {
