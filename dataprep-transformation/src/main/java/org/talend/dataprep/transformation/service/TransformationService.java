@@ -72,6 +72,7 @@ import org.talend.dataprep.transformation.aggregation.api.AggregationParameters;
 import org.talend.dataprep.transformation.aggregation.api.AggregationResult;
 import org.talend.dataprep.transformation.api.action.ActionParser;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.dynamic.DynamicType;
 import org.talend.dataprep.transformation.api.action.dynamic.GenericParameter;
 import org.talend.dataprep.transformation.api.transformer.TransformerFactory;
@@ -432,12 +433,13 @@ public class TransformationService extends BaseTransformationService {
         final DataSetGetMetadata dataSetGetMetadata = context.getBean(DataSetGetMetadata.class, previewParameters.getDataSetId());
         DataSetMetadata dataSetMetadata = dataSetGetMetadata.execute();
         StepDiff stepDiff;
+        TransformationContext context = new TransformationContext();
         if (dataSetGetMetadata.isSuccessfulExecution() && dataSetMetadata != null) {
             RowMetadata metadataBase = dataSetMetadata.getRowMetadata();
             RowMetadata metadataAfter = metadataBase.clone();
 
-            applyActionsOnMetadata(metadataBase, previewParameters.getBaseActions());
-            applyActionsOnMetadata(metadataAfter, previewParameters.getNewActions());
+            applyActionsOnMetadata(context, metadataBase, previewParameters.getBaseActions());
+            applyActionsOnMetadata(context, metadataAfter, previewParameters.getNewActions());
 
             metadataAfter.diff(metadataBase);
 
@@ -455,9 +457,9 @@ public class TransformationService extends BaseTransformationService {
         return stepDiff;
     }
 
-    private void applyActionsOnMetadata(RowMetadata metadata, String actionsAsJson) {
+    private void applyActionsOnMetadata(TransformationContext context, RowMetadata metadata, String actionsAsJson) {
         List<Action> actions = actionParser.parse(actionsAsJson);
-        ActionContext contextWithMetadata = new ActionContext(null, metadata);
+        ActionContext contextWithMetadata = new ActionContext(context, metadata);
         for (Action action : actions) {
             action.getRowAction().compile(contextWithMetadata);
 

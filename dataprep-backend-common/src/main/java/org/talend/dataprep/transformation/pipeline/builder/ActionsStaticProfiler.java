@@ -63,6 +63,7 @@ public class ActionsStaticProfiler {
                         valueModifiedColumns.addAll(originalColumns);
                         break;
                     case METADATA_CHANGE_TYPE:
+                        valueModifiedColumns.add(action.getParameters().get(COLUMN_ID.getKey()));
                         metadataModifiedColumns.add(action.getParameters().get(COLUMN_ID.getKey()));
                         break;
                     case VALUES_COLUMN:
