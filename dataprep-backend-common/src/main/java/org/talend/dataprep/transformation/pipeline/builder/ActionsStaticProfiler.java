@@ -79,8 +79,6 @@ public class ActionsStaticProfiler {
                                 .collect(Collectors.toList()));
                         break;
                     case METADATA_COPY_COLUMNS:
-                        // TODO Ignore column copy from analysis (metadata did not change)
-                        break;
                     case METADATA_CREATE_COLUMNS:
                         createColumnActions++;
                         break;
