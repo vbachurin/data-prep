@@ -773,6 +773,7 @@ describe('Playground Service', () => {
                     expect(PreparationService.getContent.calls.count()).toBe(2);
                     expect(PreparationService.getContent.calls.argsFor(1)[0]).toBe('15de46846f8a46');
                     expect(PreparationService.getContent.calls.argsFor(1)[1]).toBe('head');
+                    expect(PreparationService.getContent.calls.argsFor(1)[2]).toBe('HEAD');
                     expect(DatagridService.focusedColumn).toBeFalsy();
                     expect(DatagridService.updateData.calls.count()).toBe(2);
                     expect(DatagridService.updateData.calls.argsFor(1)[0]).toBe(preparationHeadContent);
@@ -1080,7 +1081,7 @@ describe('Playground Service', () => {
                 $rootScope.$digest();
 
                 // then
-                expect(PreparationService.getContent).toHaveBeenCalledWith(preparationId, 'head');
+                expect(PreparationService.getContent).toHaveBeenCalledWith(preparationId, 'head', 'HEAD');
                 expect(DatagridService.focusedColumn).toBeFalsy();
                 expect(DatagridService.updateData).toHaveBeenCalledWith(preparationHeadContent);
                 expect(PreviewService.reset).toHaveBeenCalledWith(false);
@@ -1139,7 +1140,7 @@ describe('Playground Service', () => {
                     $rootScope.$digest();
 
                     // then
-                    expect(PreparationService.getContent).toHaveBeenCalledWith(preparationId, 'head');
+                    expect(PreparationService.getContent).toHaveBeenCalledWith(preparationId, 'head', 'HEAD');
                     expect(DatagridService.updateData).toHaveBeenCalledWith(preparationHeadContent);
                     expect(PreviewService.reset).toHaveBeenCalledWith(false);
                 }));
