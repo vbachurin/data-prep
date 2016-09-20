@@ -10,6 +10,7 @@
   9 rue Pages 92150 Suresnes, France
 
   ============================================================================*/
+$lookup-datagrid-height: 273px;
 
 .lookup {
 
@@ -24,7 +25,7 @@
   }
 
   .lookup-container {
-    @include flex-basis(273px);
+    @include flex-basis($lookup-datagrid-height);
     @include flex-grow(0);
     @include flex-shrink(0);
     border-top: 1px solid $medium-gray;
@@ -37,6 +38,7 @@
       @include flex-grow(1);
       @include flex-shrink(1);
 
+      height: $lookup-datagrid-height;
       position: relative;
 
       #lookup-add-instruction {
