@@ -45,7 +45,7 @@ describe('Preview Service', () => {
     const reverterExecutor = {};
 
     beforeEach(angular.mock.module('data-prep.services.preview', ($provide) => {
-        stateMock = { playground: { grid: {}, sampleType: 'HEAD' } };
+        stateMock = { playground: { grid: { nbLines : 1000}, sampleType: 'HEAD' } };
         $provide.constant('state', stateMock);
     }));
 
@@ -93,6 +93,93 @@ describe('Preview Service', () => {
         spyOn(PreparationService, 'getPreviewUpdate').and.callFake(previewMock);
         spyOn(PreparationService, 'getPreviewAdd').and.callFake(previewMock);
     }));
+
+    describe('Disable preview when the datagrid is empty', () => {
+        it('should not call getPreviewDiff', inject(($rootScope, PreviewService, PreparationService) => {
+            // given
+            const preparationId = '86c4135ab218646f54';
+            const currentStep = {
+                column: { id: '0001' },
+                transformation: { stepId: '1' },
+            };
+            const previewStep = {
+                column: { id: '0000' },
+                transformation: { stepId: '2' },
+            };
+            stateMock.playground.grid.nbLines = 0;
+            // when
+            PreviewService.getPreviewDiffRecords(preparationId, currentStep, previewStep, null);
+
+            // then
+            expect(PreparationService.getPreviewDiff).not.toHaveBeenCalled();
+        }));
+
+        it('should not call getPreviewAdd', inject(($rootScope, PreviewService, PreparationService) => {
+            // given
+            const preparationId = '86c4135ab218646f54';
+            const datasetId = '46c541b683ef5151';
+            const action = 'fillEmptyWithValue';
+            const actionParams = [
+                { scope: 'column', column_id: '0001', value: '--' },
+                { scope: 'column', column_id: '0002', value: '--' },
+            ];
+            stateMock.playground.grid.nbLines = 0;
+            // when
+            PreviewService.getPreviewAddRecords(preparationId, datasetId, action, actionParams);
+
+            // then
+            expect(PreparationService.getPreviewAdd).not.toHaveBeenCalled();
+        }));
+
+        it('should not call getPreviewUpdate', inject(($rootScope, PreviewService, PreparationService) => {
+            // given
+            const preparationId = '86c4135ab218646f54';
+            const currentStep = {
+                column: { id: '0001' },
+                transformation: { stepId: '1' },
+                actionParameters: { action: 'fillEmptyWithValue' },
+            };
+            const updateStep = {
+                column: { id: '0000' },
+                transformation: { stepId: '2' },
+                actionParameters: { action: 'fillEmptyWithValue' },
+            };
+            const newParams = { value: '--' };
+            stateMock.playground.grid.nbLines = 0;
+            // when
+            PreviewService.getPreviewUpdateRecords(preparationId, currentStep, updateStep, newParams);
+
+            // then
+            expect(PreparationService.getPreviewUpdate).not.toHaveBeenCalled();
+        }));
+
+        it('should not call getPreviewUpdateRecords', inject(($rootScope, PreviewService) => {
+            // given
+            $rootScope.$digest();
+            const step = {
+                column: { id: '0', name: 'state' },
+                transformation: {
+                    stepId: 'a598bc83fc894578a8b823',
+                    name: 'cut',
+                },
+                actionParameters: {
+                    action: 'cut',
+                    parameters: { pattern: '.', column_id: '0', column_name: 'state', scope: 'column' },
+                },
+            };
+            const parameters = { pattern: '--' };
+            stateMock.playground.grid.nbLines = 0;
+
+            spyOn(PreviewService, 'getPreviewUpdateRecords');
+
+            // when
+            PreviewService.updatePreview(step, parameters);
+
+            // then
+            expect(PreviewService.getPreviewUpdateRecords).not.toHaveBeenCalled();
+        }));
+
+    });
 
     describe('diff preview', () => {
         it('should call and display preview', inject(($rootScope, PreviewService, PreparationService, DatagridService) => {

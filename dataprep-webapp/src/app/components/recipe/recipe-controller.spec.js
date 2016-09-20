@@ -36,6 +36,7 @@ describe('Recipe controller', () => {
                         name: 'lastName',
                     },],
                 },
+                grid: { nbLines : 1000},
                 lookup: { visibility: false },
                 data: { metadata: {} },
                 recipe: {

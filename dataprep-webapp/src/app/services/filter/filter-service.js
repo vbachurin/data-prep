@@ -53,6 +53,7 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
         removeAllFilters,
         removeFilter,
         toggleFilters,
+        initFilters,
     };
     return service;
 
@@ -853,10 +854,7 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
 
         StateService.updateGridFilter(oldFilter, newFilter);
         StatisticsService.updateFilteredStatistics();
-        StorageService.saveFilter(
-            state.playground.preparation ? state.playground.preparation.id : state.playground.dataset.id,
-            state.playground.filter.gridFilters
-        );
+        saveFilters();
     }
 
     /**
@@ -1026,10 +1024,7 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
         }
 
         StatisticsService.updateFilteredStatistics();
-        StorageService.saveFilter(
-            state.playground.preparation ? state.playground.preparation.id : state.playground.dataset.id,
-            state.playground.filter.gridFilters
-        );
+        saveFilters();
     }
 
     /**
@@ -1042,10 +1037,7 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
     function pushFilter(filter) {
         StateService.addGridFilter(filter);
         StatisticsService.updateFilteredStatistics();
-        StorageService.saveFilter(
-            state.playground.preparation ? state.playground.preparation.id : state.playground.dataset.id,
-            state.playground.filter.gridFilters
-        );
+        saveFilters();
     }
 
     /**
@@ -1063,5 +1055,34 @@ export default function FilterService($timeout, state, StateService, FilterAdapt
         }
 
         StatisticsService.updateFilteredStatistics();
+    }
+
+    /**
+     * @ngdoc method
+     * @name saveFilters
+     * @methodOf data-prep.services.filter.service:FilterService
+     * @description Save filter in the localStorage
+     */
+    function saveFilters() {
+        StorageService.saveFilter(
+            state.playground.preparation ? state.playground.preparation.id : state.playground.dataset.id,
+            state.playground.filter.gridFilters
+        );
+    }
+
+
+    /**
+     * @ngdoc method
+     * @name initFilters
+     * @methodOf data-prep.services.filter.service:FilterService
+     * @param {object} dataset The dataset
+     * @param {object} preparation The preparation
+     * @description Init filter in the playground
+     */
+    function initFilters(dataset, preparation) {
+        const filters = StorageService.getFilter(preparation ? preparation.id : dataset.id);
+        filters.forEach((filter) => {
+            this.addFilter(filter.type, filter.colId, filter.colName, filter.args);
+        });
     }
 }

@@ -88,14 +88,15 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
     // --------------------------------------------------------------------------------------------
     // -------------------------------------------INIT/LOAD----------------------------------------
     // --------------------------------------------------------------------------------------------
-    function reset(dataset, data, preparation) {
+    function reset(dataset, data, preparation, sampleType = 'HEAD') {
         StateService.resetPlayground();
         StateService.setCurrentDataset(dataset);
         StateService.setCurrentData(data);
         StateService.setCurrentPreparation(preparation);
+        StateService.setCurrentSampleType(sampleType);
         updateGridSelection(dataset, preparation);
         this.updatePreparationDetails();
-        updateFilter(dataset, preparation);
+        FilterService.initFilters(dataset, preparation);
         TransformationCacheService.invalidateCache();
         HistoryService.clear();
         PreviewService.reset(false);
@@ -149,6 +150,7 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
      * @name load
      * @methodOf data-prep.services.playground.service:PlaygroundService
      * @param {object} preparation - the preparation to load
+     * @param {string} sampleType - the sample type
      * @description Load an existing preparation in the playground :
      <ul>
      <li>set name</li>
@@ -158,12 +160,12 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
      </ul>
      * @returns {Promise} The process promise
      */
-    function load(preparation) {
+    function load(preparation, sampleType = 'HEAD') {
         $rootScope.$emit(EVENT_LOADING_START);
-        return PreparationService.getContent(preparation.id, 'head', state.playground.sampleType)
+        return PreparationService.getContent(preparation.id, 'head', sampleType)
             .then((response) => {
                 StateService.setPreparationName(preparation.name);
-                reset.call(this, state.playground.dataset ? state.playground.dataset : { id: preparation.dataSetId }, response, preparation);
+                reset.call(this, state.playground.dataset ? state.playground.dataset : { id: preparation.dataSetId }, response, preparation, sampleType);
                 StateService.showRecipe();
                 StateService.setNameEditionMode(false);
                 return response;
@@ -239,19 +241,6 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
         return getMetadata()
             .then(StateService.updateDatasetStatistics)
             .then(StatisticsService.updateStatistics);
-    }
-
-    /**
-     * @ngdoc method
-     * @name updateFilter
-     * @methodOf data-prep.services.playground.service:PlaygroundService
-     * @description add the least applied filters
-     */
-    function updateFilter(dataset, prepparation) {
-        const filters = StorageService.getFilter(prepparation ? prepparation.id : dataset.id);
-        filters.forEach((filter) => {
-            FilterService.addFilter(filter.type, filter.colId, filter.colName, filter.args);
-        });
     }
 
     // --------------------------------------------------------------------------------------------

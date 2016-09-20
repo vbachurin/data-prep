@@ -143,6 +143,10 @@ export default function PreviewService($q, state, DatagridService, PreparationSe
      *     steps
      */
     function updatePreview(updateStep, params) {
+        if (!state.playground.grid.nbLines) {
+            return $q.when();
+        }
+
         const originalParameters = updateStep.actionParameters.parameters;
         PreparationService.copyImplicitParameters(params, originalParameters);
 
@@ -168,6 +172,10 @@ export default function PreviewService($q, state, DatagridService, PreparationSe
      * It cancel the previous preview first
      */
     function getPreviewDiffRecords(preparationId, currentStep, previewStep, targetColumnId) {
+        if (!state.playground.grid.nbLines) {
+            return $q.when();
+        }
+
         stopPendingPreview();
         initPreviewIdNeeded();
 
@@ -203,6 +211,10 @@ export default function PreviewService($q, state, DatagridService, PreparationSe
      * It cancel the previous preview first
      */
     function getPreviewUpdateRecords(preparationId, currentStep, updateStep, newParams) {
+        if (!state.playground.grid.nbLines) {
+            return $q.when();
+        }
+
         stopPendingPreview();
         initPreviewIdNeeded();
 
@@ -242,6 +254,10 @@ export default function PreviewService($q, state, DatagridService, PreparationSe
      * It cancel the previous preview first
      */
     function getPreviewAddRecords(preparationId, datasetId, action, actionParams) {
+        if (!state.playground.grid.nbLines) {
+            return $q.when();
+        }
+
         stopPendingPreview();
         initPreviewIdNeeded();
 

@@ -12,11 +12,12 @@
   ============================================================================*/
 
 .datagrid-message {
+  @include display(flex);
+  @include align-items(center);
+  @include justify-content(center);
+
   position: absolute;
   top: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   right: 0;
   left: 0;
   color: $dark-gray;

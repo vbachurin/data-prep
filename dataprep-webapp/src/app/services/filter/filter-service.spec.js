@@ -37,6 +37,47 @@ describe('Filter service', () => {
         spyOn(StorageService, 'removeFilter').and.returnValue();
     }));
 
+    describe('initFilters', () => {
+        //given
+        const filter = [{
+            type: 'exact',
+            colId: 'col2',
+            colName: 'column 2',
+            args: {
+                phrase: [
+                    {
+                        value: 'Toto',
+                    },
+                ],
+            },
+            filterFn: () => {},
+        }];
+
+        beforeEach(inject(($q, StorageService, FilterService) => {
+            spyOn(StorageService, 'getFilter').and.returnValue(filter);
+            spyOn(FilterService, 'addFilter').and.returnValue();
+        }));
+
+        it('should get the filter from localStorage and add it', inject((StateService, FilterService) => {
+            //given
+            const preparation = {id: '0000'};
+            const dataset = {id: '0000'};
+
+            //when
+            FilterService.initFilters(dataset, preparation);
+
+            //then
+            expect(FilterService.addFilter).toHaveBeenCalledWith('exact', 'col2', 'column 2', {
+                phrase: [
+                    {
+                        value: 'Toto',
+                    },
+                ],
+            });
+        }));
+    });
+
+
     describe('get range label for', () => {
         it('should construct range label', inject((FilterService) => {
             //given
@@ -970,8 +1011,6 @@ describe('Filter service', () => {
 
         it('should save filter in localstorage', inject((FilterService, StorageService) => {
             //given
-            var removeFnCallback = function () {};
-
             expect(StorageService.saveFilter).not.toHaveBeenCalled();
 
             //when
@@ -981,7 +1020,7 @@ describe('Filter service', () => {
                         value: 'toto',
                     },
                 ],
-            }, removeFnCallback);
+            });
 
             //then
             expect(StorageService.saveFilter).toHaveBeenCalledWith('abcd', []);

@@ -69,7 +69,7 @@ describe('Playground Service', () => {
 
     beforeEach(inject(($q, $state, StateService, DatasetService, RecipeService, DatagridService,
                        PreparationService, TransformationCacheService,
-                       HistoryService, PreviewService) => {
+                       HistoryService, PreviewService, FilterService) => {
         stateMock.playground.preparationName = '';
         createdPreparation = {
             id: '32cd7869f8426465e164ab85',
@@ -95,11 +95,13 @@ describe('Playground Service', () => {
         spyOn(StateService, 'setCurrentData').and.returnValue();
         spyOn(StateService, 'setCurrentDataset').and.returnValue();
         spyOn(StateService, 'setCurrentPreparation').and.returnValue();
+        spyOn(StateService, 'setCurrentSampleType').and.returnValue();
         spyOn(StateService, 'setPreparationName').and.returnValue();
         spyOn(StateService, 'setNameEditionMode').and.returnValue();
         spyOn(StateService, 'showRecipe').and.returnValue();
         spyOn(StateService, 'hideRecipe').and.returnValue();
         spyOn(TransformationCacheService, 'invalidateCache').and.returnValue();
+        spyOn(FilterService, 'initFilters').and.returnValue();
     }));
 
     describe('update preparation', () => {
@@ -182,16 +184,18 @@ describe('Playground Service', () => {
         let assertNewPreparationInitialization;
 
         beforeEach(inject(($rootScope, TransformationCacheService,
-                           HistoryService,
+                           HistoryService, FilterService,
                            PreviewService, StateService) => {
             spyOn($rootScope, '$emit').and.returnValue();
             assertNewPreparationInitialization = () => {
                 expect(StateService.resetPlayground).toHaveBeenCalled();
                 expect(StateService.setCurrentDataset).toHaveBeenCalledWith(dataset);
                 expect(StateService.setCurrentData).toHaveBeenCalledWith(datasetColumns);
+                expect(StateService.setCurrentSampleType).toHaveBeenCalledWith('HEAD');
                 expect(TransformationCacheService.invalidateCache).toHaveBeenCalled();
                 expect(HistoryService.clear).toHaveBeenCalled();
                 expect(PreviewService.reset).toHaveBeenCalledWith(false);
+                expect(FilterService.initFilters).toHaveBeenCalled();
             };
         }));
 
@@ -288,7 +292,7 @@ describe('Playground Service', () => {
 
         beforeEach(inject(($rootScope, $q, StateService,
                            PreparationService, RecipeService, StorageService,
-                           TransformationCacheService, HistoryService, PreviewService) => {
+                           TransformationCacheService, HistoryService, PreviewService, FilterService) => {
             spyOn($rootScope, '$emit').and.returnValue();
             spyOn(PreparationService, 'getContent').and.returnValue($q.when(data));
             spyOn(StorageService, 'getSelectedColumns').and.returnValue(["0001"]);
@@ -300,10 +304,12 @@ describe('Playground Service', () => {
                 expect(StateService.resetPlayground).toHaveBeenCalled();
                 expect(StateService.setCurrentDataset).toHaveBeenCalledWith(metadata);
                 expect(StateService.setCurrentData).toHaveBeenCalledWith(data);
+                expect(StateService.setCurrentSampleType).toHaveBeenCalledWith('HEAD');
                 expect(RecipeService.refresh).toHaveBeenCalled();
                 expect(TransformationCacheService.invalidateCache).toHaveBeenCalled();
                 expect(HistoryService.clear).toHaveBeenCalled();
                 expect(PreviewService.reset).toHaveBeenCalledWith(false);
+                expect(FilterService.initFilters).toHaveBeenCalled();
                 expect(StateService.setGridSelection).toHaveBeenCalledWith([{ id: '0001' }]);
             };
 
@@ -311,10 +317,12 @@ describe('Playground Service', () => {
                 expect(StateService.resetPlayground).not.toHaveBeenCalled();
                 expect(StateService.setCurrentDataset).not.toHaveBeenCalled();
                 expect(StateService.setCurrentData).not.toHaveBeenCalled();
+                expect(StateService.setCurrentSampleType).not.toHaveBeenCalled();
                 expect(RecipeService.refresh).not.toHaveBeenCalled();
                 expect(TransformationCacheService.invalidateCache).not.toHaveBeenCalled();
                 expect(HistoryService.clear).not.toHaveBeenCalled();
                 expect(PreviewService.reset).not.toHaveBeenCalled();
+                expect(FilterService.initFilters).not.toHaveBeenCalled();
                 expect(StateService.setGridSelection).not.toHaveBeenCalled();
             };
         }));
@@ -1686,6 +1694,7 @@ describe('Playground Service', () => {
                 expect(StateService.resetPlayground).toHaveBeenCalled();
                 expect(StateService.setCurrentDataset).toHaveBeenCalledWith(dataset);
                 expect(StateService.setCurrentData).toHaveBeenCalledWith(datasetColumns);
+                expect(StateService.setCurrentSampleType).toHaveBeenCalledWith('HEAD');
                 expect(TransformationCacheService.invalidateCache).toHaveBeenCalled();
                 expect(HistoryService.clear).toHaveBeenCalled();
                 expect(PreviewService.reset).toHaveBeenCalledWith(false);

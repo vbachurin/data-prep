@@ -65,6 +65,7 @@ $slide-action-background: $base-background-color;
     }
 
     .steps-header {
+      @include display(flex);
       margin: 15px 10px 0 0;
       border-bottom: 1px solid $shadow-gray;
 

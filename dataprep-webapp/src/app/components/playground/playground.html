@@ -33,7 +33,14 @@
                          visible="playgroundCtrl.state.playground.recipe.visible"
                          side="left">
             <!-- Recipe Header -->
-            <div class="steps-header">
+            <div class="steps-header" id="help-preparation-name">
+                <talend-editable-text edition-mode="playgroundCtrl.state.playground.nameEditionMode"
+                                      on-validate="playgroundCtrl.confirmPrepNameEdition(text)"
+                                      placeholder="ENTER_PREPARATION_NAME"
+                                      text="playgroundCtrl.state.playground.preparationName"
+                                      text-class="steps-header-preparation-text"
+                                      text-title="{{playgroundCtrl.state.playground.preparationName}}"></talend-editable-text>
+
                 <label class="label-switch"
                        ng-if="playgroundCtrl.state.playground.recipe.current.steps.length"
                        title="{{::'ENABLE_DISABLE_STEPS' | translate}}">
@@ -43,15 +50,6 @@
 
                     <div id="recipe-toggle-switch" class="checkbox"></div>
                 </label>
-
-                <div id="help-preparation-name">
-                    <talend-editable-text edition-mode="playgroundCtrl.state.playground.nameEditionMode"
-                                          on-validate="playgroundCtrl.confirmPrepNameEdition(text)"
-                                          placeholder="ENTER_PREPARATION_NAME"
-                                          text="playgroundCtrl.state.playground.preparationName"
-                                          text-class="steps-header-preparation-text"
-                                          text-title="{{playgroundCtrl.state.playground.preparationName}}"></talend-editable-text>
-                </div>
             </div>
 
             <!-- Recipe -->

@@ -85,39 +85,35 @@ export default class StorageService {
      * @ngdoc method
      * @name saveFilter
      * @methodOf data-prep.services.utils.service:StorageService
-     * @param {string} prepId The dataset/preparation Id
+     * @param {string} entityId The dataset/preparation Id
      * @param {any} value The value to save
      * @description Save the value with the provided key in localStorage.
-     * The value us stringified to get back the same type.
      */
-    saveFilter(prepId, value) {
-        this.setItem(PREFIX_FILTER + prepId, value);
+    saveFilter(entityId, value) {
+        this.setItem(PREFIX_FILTER + entityId, value);
     }
 
     /**
      * @ngdoc method
      * @name getFilter
      * @methodOf data-prep.services.utils.service:StorageService
-     * @param {string} prepId The dataset/preparation Id
-     * @description Get the value associated to the provided key.
-     * The result have the same type as the saved value.
-     * @returns {array} The value associated to the provided key.
+     * @param {string} entityId The dataset/preparation Id
+     * @description Get the saved filters for the entity.
+     * @returns {array} The filters or an empty array is no saved filter found.
      */
-    getFilter(prepId) {
-        return this.getItem(PREFIX_FILTER + prepId, []);
+    getFilter(entityId) {
+        return this.getItem(PREFIX_FILTER + entityId, []);
     }
 
     /**
      * @ngdoc method
      * @name getFilter
      * @methodOf data-prep.services.utils.service:StorageService
-     * @param {string} prepId The dataset/preparation Id
-     * @description Get the value associated to the provided key.
-     * The result have the same type as the saved value.
-     * @returns {array} The value associated to the provided key.
+     * @param {string} entityId The dataset/preparation Id
+     * @description Remove the saved filters associated to the entity.
      */
-    removeFilter(prepId) {
-        return this.removeItem(PREFIX_FILTER + prepId);
+    removeFilter(entityId) {
+        return this.removeItem(PREFIX_FILTER + entityId);
     }
 
     // --------------------------------------------------------------------------------------------

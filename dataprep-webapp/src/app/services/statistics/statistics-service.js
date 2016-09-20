@@ -810,7 +810,9 @@ export default function StatisticsService($q, $log, $filter, state, StateService
 
         if (!aggregationName) {
             const column = state.playground.grid.selectedColumns[0];
-
+            if (!column) {
+                return;
+            }
             const simplifiedType = ConverterService.simplifyType(column.type);
             switch (simplifiedType) {
             case 'integer':

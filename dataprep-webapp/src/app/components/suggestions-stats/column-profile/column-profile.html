@@ -31,7 +31,10 @@
                 group="columnProfileCtrl.state.playground.statistics.histogram.column"
                 on-aggregation-change="columnProfileCtrl.changeAggregation(column, aggregation)"></column-profile-options>
 
-        <div id="column-profile-chart-container" style="min-height: 160px;" insertion-charts>
+        <div id="column-profile-chart-container"
+             ng-if="columnProfileCtrl.state.playground.statistics.histogram"
+             style="min-height: 160px;"
+             insertion-charts>
             <horizontal-barchart id="hBarChart"
                                  ng-if="!columnProfileCtrl.state.playground.statistics.histogram.vertical"
                                  width="300"

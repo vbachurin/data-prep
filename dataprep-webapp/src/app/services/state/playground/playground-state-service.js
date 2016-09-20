@@ -231,6 +231,7 @@ export function PlaygroundStateService(RecipeStateService, recipeState,
         playgroundState.lookupData = null;
         playgroundState.isFetchingStats = false;
         playgroundState.isSavingPreparation = false;
+        playgroundState.sampleType = 'HEAD';
 
         RecipeStateService.reset();
         FilterStateService.reset();

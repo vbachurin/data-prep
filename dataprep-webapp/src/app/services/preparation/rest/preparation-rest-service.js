@@ -56,6 +56,7 @@ export default function PreparationRestService($http, RestURLs) {
      * @methodOf data-prep.services.preparation.service:PreparationRestService
      * @param {string} preparationId The preparation id to load
      * @param {string} stepId The step id to load
+     * @param {string} sampleType The sample type
      * @description Get preparation records at the specific step
      * @returns {promise} The GET promise
      */

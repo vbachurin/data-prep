@@ -34,7 +34,7 @@
     overflow-y: auto;
   }
 
-  .filter-list {
+  .filter-line {
     @include display(flex);
     @include flex-direction(row);
     @include align-items(center);
