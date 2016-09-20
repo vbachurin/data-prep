@@ -59,9 +59,8 @@ public class TemperaturesConverter extends AbstractMathNoParameterAction {
         TemperatureImpl fromTemp = new TemperatureImpl(value, fromTemperatureUnit.asJavaUnit());
         TemperatureImpl temperature = fromTemp.convertTo(toTemperatureUnit.asJavaUnit());
 
-        Integer targetPrecision = NumberUtils.toInt(precisionParameter, value.precision());
-
-        int targetScale = value.scale() - value.precision() +  targetPrecision;
+        // Precision is used as scale, for precision as significant digits, see history
+        Integer targetScale = NumberUtils.toInt(precisionParameter, value.scale());
 
         return temperature.getValue().setScale(targetScale, RoundingMode.HALF_UP).toPlainString();
     }
