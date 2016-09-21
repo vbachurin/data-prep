@@ -28,6 +28,7 @@
  * @requires data-prep.services.onboarding.service:OnboardingService
  * @requires data-prep.services.utils.service:MessageService
  * @requires data-prep.services.utils.service:StepUtilsService
+ * @requires data-prep.services.utils.service:StorageService
  */
 
 import { map } from 'lodash';
@@ -92,11 +93,27 @@ export default function PlaygroundService($state, $rootScope, $q, $translate, $t
         StateService.setCurrentDataset(dataset);
         StateService.setCurrentData(data);
         StateService.setCurrentPreparation(preparation);
+        updateGridSelection(dataset, preparation);
         this.updatePreparationDetails();
         updateFilter(dataset, preparation);
         TransformationCacheService.invalidateCache();
         HistoryService.clear();
         PreviewService.reset(false);
+    }
+
+    /**
+     * @ngdoc method
+     * @name updateGridSelection
+     * @methodOf data-prep.services.playground.service:PlaygroundService
+     * @param {object} dataset The dataset to update
+     * @param {object} preparation The preparation to update
+     * @description Update grid selection by using localstorage
+     */
+    function updateGridSelection(dataset, preparation) {
+        const selectedCols = StorageService.getSelectedColumns(preparation ? preparation.id : dataset.id);
+        if (selectedCols.length) {
+            StateService.setGridSelection(state.playground.grid.columns.filter((col) => selectedCols.indexOf(col.id) > -1));
+        }
     }
 
     /**
