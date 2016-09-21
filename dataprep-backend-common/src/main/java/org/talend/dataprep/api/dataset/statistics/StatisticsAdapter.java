@@ -252,6 +252,7 @@ public class StatisticsAdapter {
         if (result.exist(QuantileStatistics.class)) {
             try {
                 final QuantileStatistics quantileStatistics = result.get(QuantileStatistics.class);
+                quantileStatistics.endAddValue();
                 final Quantiles quantiles = column.getStatistics().getQuantiles();
                 quantiles.setLowerQuantile(quantileStatistics.getLowerQuartile());
                 quantiles.setMedian(quantileStatistics.getMedian());
