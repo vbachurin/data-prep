@@ -159,6 +159,11 @@ public class TypeDetectionNode extends ColumnFilteredNode implements Monitored {
         } catch (Exception e) {
             LOGGER.warn("Unable to perform delayed analysis.", e);
         } finally {
+            try {
+                generator.close();
+            } catch (IOException e) {
+                LOGGER.error("Unable to close JSON generator (causing potential temp file delete issues).", e);
+            }
             FilesHelper.deleteQuietly(reservoir);
             totalTime += System.currentTimeMillis() - start;
         }
