@@ -109,8 +109,9 @@ public class WriterNode extends BasicNode implements Monitored {
             break;
         default:
             LOGGER.debug("Unhandled signal {}.", signal);
-                super.signal(signal);
         }
+
+        super.signal(signal);
     }
 
     /**
@@ -119,7 +120,6 @@ public class WriterNode extends BasicNode implements Monitored {
     private void cancel() {
         // just set stopped flag to true so that the writer is not used anymore
         this.isStopped.set(true);
-        super.signal(Signal.CANCEL);
     }
 
 
@@ -129,7 +129,6 @@ public class WriterNode extends BasicNode implements Monitored {
     private void endOfStream() {
         if (isStopped.get()) {
             LOGGER.debug("cannot process {} because WriterNode is already finished or canceled", END_OF_STREAM);
-            super.signal(END_OF_STREAM);
             return;
         }
 

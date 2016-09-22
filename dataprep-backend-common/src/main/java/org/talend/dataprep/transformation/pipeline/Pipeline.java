@@ -5,6 +5,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -63,6 +64,8 @@ public class Pipeline implements Node, RuntimeNode {
             // get the lock on isFinished to make the signal(STOP) method wait for the whole pipeline to finish
             synchronized (isFinished) {
 
+                AtomicLong counter = new AtomicLong();
+
                 // we use map/allMatch to stop the stream when isStopped = true
                 // with only forEach((row) -> if(isStopped)) for ex we just stop the processed code
                 // but we proceed all the rows of the stream
@@ -70,9 +73,11 @@ public class Pipeline implements Node, RuntimeNode {
                 records //
                         .map(row -> { //
                             node.exec().receive(row, rowMetadata);
+                            counter.addAndGet(1L);
                             return row;
                         }) //
                         .allMatch((row) -> !isStopped.get());
+                LOG.debug("{} sent in the pipeline", counter.get());
                 node.exec().signal(Signal.END_OF_STREAM);
             }
         }
