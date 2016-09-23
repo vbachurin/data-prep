@@ -985,7 +985,7 @@ describe('Filter service', () => {
 
             //then
             expect(StorageService.saveFilter).toHaveBeenCalledWith('abcd', []);
-        });
+        }));
     });
 
     describe('add filter and digest', () => {
@@ -1051,7 +1051,7 @@ describe('Filter service', () => {
 
             //then
             expect(StorageService.removeFilter).toHaveBeenCalledWith('abcd');
-        });
+        }));
 
         it('should call each filter remove callback', inject((FilterService) => {
             //given
@@ -1091,7 +1091,7 @@ describe('Filter service', () => {
 
             //then
             expect(StorageService.saveFilter).toHaveBeenCalledWith('abcd', []);
-        });
+        }));
 
 
         it('should call filter remove callback', inject((FilterService) => {
@@ -1484,7 +1484,7 @@ describe('Filter service', () => {
 
             //then
             expect(StorageService.saveFilter).toHaveBeenCalledWith('abcd', []);
-        });
+        }));
 
         it('should update exact filter while several values are selected', inject((FilterService, StateService) => {
             //given
