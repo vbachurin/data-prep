@@ -23,7 +23,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.WordUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -160,12 +159,12 @@ public class DateParser {
 
             // first try to parse directly as LocalDateTime
             try {
-                return LocalDateTime.parse(WordUtils.capitalizeFully(value), formatter);
+                return LocalDateTime.parse(value, formatter);
             } catch (DateTimeException e) {
                 LOGGER.trace("Unable to parse date '{}' using LocalDateTime.", value, e);
                 // if it fails, let's try the LocalDate first
                 try {
-                    LocalDate temp = LocalDate.parse(WordUtils.capitalizeFully(value), formatter);
+                    LocalDate temp = LocalDate.parse(value, formatter);
                     return temp.atStartOfDay();
                 } catch (DateTimeException e2) {
                     LOGGER.trace("Unable to parse date '{}' using LocalDate.", value, e2);
