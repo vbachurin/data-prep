@@ -76,7 +76,7 @@ describe('Transformation menu directive', function () {
 
         //then (beware of the space char between "is a " and "CITY" which is not exactly a space)
         expect(element.find('>li >span').eq(0).text()).toBe('This column is a ');
-        expect(element.find('>li >a').text().trim()).toBe('CITY');
+        expect(element.find('>li >.info').text().trim()).toBe('CITY');
     });
 
     it('should display simplified type when there is no domain', function () {
@@ -90,7 +90,7 @@ describe('Transformation menu directive', function () {
 
         //then (beware of the space char between "is a " and "text which is not exactly a space)
         expect(element.find('>li >span').eq(0).text()).toBe('This column is a ');
-        expect(element.find('>li >a').text().trim()).toBe('text');
+        expect(element.find('>li >.info').text().trim()).toBe('text');
     });
 
     it('should render domain items with percentages', function () {
