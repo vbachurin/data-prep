@@ -133,7 +133,7 @@ public abstract class DataSetBaseTest {
     }
 
     @After
-    public void tearDown() throws IOException {
+    public void tearDown() {
         dataSetMetadataRepository.clear();
         contentStore.clear();
         userDataRepository.clear();
