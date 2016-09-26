@@ -20,9 +20,11 @@ import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.WordUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,8 +65,8 @@ public class DateParser {
     /**
      * Parse the date time out of the given value based on the column date pattern.
      * <p>
-     * At first uses the known date patterns from the column statistics. If it fails, the DQ library is called to try to
-     * get the pattern.
+     * At first uses the known date patterns from the column statistics. If it fails, the DQ library is called to try to get the
+     * pattern.
      *
      * @param value the value to get the date time from. Value can't be be empty or null/
      * @param column the column to get the date patterns from.
@@ -155,7 +157,10 @@ public class DateParser {
         }
 
         for (DatePattern pattern : patterns) {
-            final DateTimeFormatter formatter = pattern.getFormatter();
+                final DateTimeFormatter formatter = new DateTimeFormatterBuilder()
+                    .parseCaseInsensitive()
+                    .append(pattern.getFormatter())
+                    .toFormatter(Locale.ENGLISH);
 
             // first try to parse directly as LocalDateTime
             try {

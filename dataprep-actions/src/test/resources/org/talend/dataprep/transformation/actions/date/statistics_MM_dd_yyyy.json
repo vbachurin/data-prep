@@ -81,6 +81,22 @@
       "occurrences": 27
     },
     {
+      "pattern": "MMM-dd-yyyy",
+      "occurrences": 1
+    },
+    {
+      "pattern": "d-MMM-yyyy",
+      "occurrences": 1
+    },
+    {
+      "pattern": "M/d/yyyy H:mm",
+      "occurrences": 1
+    },
+    {
+      "pattern": "M/d/yyyy h:mm a",
+      "occurrences": 1
+    },
+    {
       "pattern": "",
       "occurrences": 18
     }
