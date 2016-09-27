@@ -69,8 +69,9 @@ $slide-action-background: $base-background-color;
       margin: 15px 10px 0 0;
       border-bottom: 1px solid $shadow-gray;
 
-      .editable-text {
+      talend-editable-text {
         padding: 5px;
+        width: 100%;
       }
 
       .steps-header-preparation-text {
