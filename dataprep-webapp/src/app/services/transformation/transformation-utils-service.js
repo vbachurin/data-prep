@@ -140,7 +140,7 @@ export default class TransformationUtilsService {
             .value();
 
         return chain(Object.getOwnPropertyNames(groupedTransformations))
-            .sort()
+            .sortBy((key) => key.toLowerCase())
             .map((key) => {
                 return {
                     category: key,

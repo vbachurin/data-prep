@@ -117,7 +117,7 @@ function generateTransformations() {
             ]
         },
         {
-            "category": "numbers",
+            "category": "Numbers",
             "name": "compare_numbers",
             "parameters": [
                 {
@@ -359,7 +359,7 @@ function generateTransformations() {
         },
         {
             "name": "round",
-            "category": "numbers",
+            "category": "Numbers",
             "parameters": [
                 {
                     "name": "column_id",
@@ -496,7 +496,7 @@ function generateCategories() {
             ],
         },
         {
-            category: 'numbers',
+            category: 'Numbers',
             categoryHtml: 'NUMBERS',
             transformations: [
                 transformations[2],
@@ -717,7 +717,7 @@ describe('Transformation Utils Service', () => {
                 // then
                 expect(categories.length).toBe(3);
                 expect(categories[0].category).toBe('filtered');
-                expect(categories[1].category).toBe('numbers');
+                expect(categories[1].category).toBe('Numbers');
                 expect(categories[2].category).toBe('strings');
             })
         );
@@ -756,14 +756,14 @@ describe('Transformation Utils Service', () => {
                 const adaptedCategories =
                     TransformationUtilsService.adaptCategories(suggestions, categories);
 
-                // then : 
+                // then :
                 // - "suggestions" category before the others
                 // - "filtered" category non present
                 expect(adaptedCategories[0].category).toBe('suggestion');
-                expect(adaptedCategories[1].category).toBe('numbers');
+                expect(adaptedCategories[1].category).toBe('Numbers');
                 expect(adaptedCategories[2].category).toBe('strings');
 
-                // then : filtered transformations are in suggestions as first actions 
+                // then : filtered transformations are in suggestions as first actions
                 expect(adaptedCategories[0].transformations[0].name).toBe('delete_lines');
                 expect(adaptedCategories[0].transformations[1].name).toBe('keep_only');
                 expect(adaptedCategories[0].transformations[2].name).toBe('lowercase');
