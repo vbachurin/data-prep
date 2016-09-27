@@ -126,7 +126,7 @@ public class DataSetService extends BaseDataSetService {
     protected ContentStoreRouter contentStore;
 
     @Autowired
-    ApplicationEventPublisher publisher;
+    private ApplicationEventPublisher publisher;
 
     /**
      * DQ asynchronous analyzers.
@@ -636,6 +636,9 @@ public class DataSetService extends BaseDataSetService {
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to update") String dataSetId, //
             @RequestParam(value = "name", required = false) @ApiParam(name = "name", value = "New value for the data set name") String name, //
             @ApiParam(value = "content") InputStream dataSetContent) {
+
+        LOG.debug("updating dataset content #{}", dataSetId);
+
         final DistributedLock lock = dataSetMetadataRepository.createDatasetMetadataLock(dataSetId);
         try {
             lock.lock();
