@@ -13,9 +13,7 @@
 
 package org.talend.dataprep.api.dataset;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.statistics.Statistics;
@@ -53,6 +51,16 @@ public class ColumnMetadataTest {
         int id = 1;
         ColumnMetadata metadata1 = ColumnMetadata.Builder.column().id(id).name("name").type(Type.STRING).build();
         ColumnMetadata metadata2 = ColumnMetadata.Builder.column().id(id).name("name").type(Type.STRING).build();
+        assertTrue(metadata1.compatible(metadata1));
+        assertTrue(metadata1.compatible(metadata2));
+        assertTrue(metadata2.compatible(metadata1));
+    }
+
+    @Test
+    public void should_be_compatible_no_case_sensitive() {
+        int id = 1;
+        ColumnMetadata metadata1 = ColumnMetadata.Builder.column().id(id).name("name").type(Type.STRING).build();
+        ColumnMetadata metadata2 = ColumnMetadata.Builder.column().id(id).name("Name").type(Type.STRING).build();
         assertTrue(metadata1.compatible(metadata1));
         assertTrue(metadata1.compatible(metadata2));
         assertTrue(metadata2.compatible(metadata1));

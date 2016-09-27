@@ -13,9 +13,13 @@
 
 package org.talend.dataprep.api.dataset;
 
+import static java.util.Collections.emptyList;
+
 import java.io.Serializable;
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.dataset.location.SemanticDomain;
@@ -25,8 +29,6 @@ import org.talend.dataprep.api.type.Type;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import static java.util.Collections.emptyList;
 
 /**
  * Represents information about a column in a data set. It includes:
@@ -203,7 +205,7 @@ public class ColumnMetadata implements Serializable {
      */
     public boolean compatible(ColumnMetadata columnMetadata) {
         if (columnMetadata != null) {
-            return StringUtils.equals(typeName, columnMetadata.getType()) && StringUtils.equals(name, columnMetadata.getName());
+            return StringUtils.equals(typeName, columnMetadata.getType()) && StringUtils.equalsIgnoreCase(name, columnMetadata.getName());
         }
         return false;
     }
