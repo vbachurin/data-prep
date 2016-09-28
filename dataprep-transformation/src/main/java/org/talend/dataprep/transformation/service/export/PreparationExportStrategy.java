@@ -34,6 +34,7 @@ import org.talend.dataprep.command.dataset.DataSetGetMetadata;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.TransformationErrorCodes;
 import org.talend.dataprep.format.export.ExportFormat;
+import org.talend.dataprep.security.SecurityProxy;
 import org.talend.dataprep.transformation.api.transformer.configuration.Configuration;
 import org.talend.dataprep.transformation.cache.CacheKeyGenerator;
 import org.talend.dataprep.transformation.cache.TransformationCacheKey;
@@ -52,6 +53,9 @@ public class PreparationExportStrategy extends StandardExportStrategy {
 
     @Autowired
     private CacheKeyGenerator cacheKeyGenerator;
+
+    @Autowired
+    private SecurityProxy securityProxy;
 
     @Override
     public int order() {
@@ -87,6 +91,8 @@ public class PreparationExportStrategy extends StandardExportStrategy {
         final ExportFormat format = getFormat(parameters.getExportType());
 
         // get the dataset content (in an auto-closable block to make sure it is properly closed)
+        boolean releasedIdentity = false;
+        securityProxy.asTechnicalUser(); // Allow get dataset and get dataset metadata access whatever share status is
         final DataSetGet dataSetGet = applicationContext.getBean(DataSetGet.class, dataSetId, false, true);
         final DataSetGetMetadata dataSetGetMetadata = applicationContext.getBean(DataSetGetMetadata.class, dataSetId);
         try (InputStream datasetContent = dataSetGet.execute()) {
@@ -97,6 +103,10 @@ public class PreparationExportStrategy extends StandardExportStrategy {
                 // Create dataset
                 final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
                 dataSet.setMetadata(dataSetGetMetadata.execute());
+
+                // All good, can already release identity
+                securityProxy.releaseIdentity();
+                releasedIdentity = true;
 
                 // get the actions to apply (no preparation ==> dataset export ==> no actions)
                 final String actions = getActions(preparationId, version);
@@ -135,6 +145,10 @@ public class PreparationExportStrategy extends StandardExportStrategy {
             throw e;
         } catch (Exception e) {
             throw new TDPException(TransformationErrorCodes.UNABLE_TO_TRANSFORM_DATASET, e);
+        } finally {
+            if (!releasedIdentity) {
+                securityProxy.releaseIdentity(); // Release identity in case of error.
+            }
         }
     }
 }
