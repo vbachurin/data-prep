@@ -67,16 +67,16 @@ public class PipelineTransformer implements Transformer {
         final TransformationMetadataCacheKey metadataKey = cacheKeyGenerator.generateMetadataKey(configuration.getPreparationId(), configuration.stepId(), configuration.getSourceType());
         final Pipeline pipeline = Pipeline.Builder.builder()
                 .withAnalyzerService(analyzerService) //
-                .withActionRegistry(actionRegistry)
-                .withActions(actionParser.parse(configuration.getActions()))
-                .withInitialMetadata(rowMetadata, configuration.volume() == SMALL)
-                .withMonitor(configuration.getMonitor())
-                .withFilter(configuration.getFilter())
-                .withFilterOut(configuration.getOutFilter())
-                .withOutput(() -> new WriterNode(writer, metadataWriter, metadataKey, fallBackRowMetadata))
-                .withStatisticsAdapter(adapter)
-                .withGlobalStatistics(configuration.isGlobalStatistics())
-                .allowMetadataChange(configuration.isAllowMetadataChange())
+                .withActionRegistry(actionRegistry) //
+                .withActions(actionParser.parse(configuration.getActions())) //
+                .withInitialMetadata(rowMetadata, configuration.volume() == SMALL) //
+                .withMonitor(configuration.getMonitor()) //
+                .withFilter(configuration.getFilter()) //
+                .withFilterOut(configuration.getOutFilter()) //
+                .withOutput(() -> new WriterNode(writer, metadataWriter, metadataKey, fallBackRowMetadata)) //
+                .withStatisticsAdapter(adapter) //
+                .withGlobalStatistics(configuration.isGlobalStatistics()) //
+                .allowMetadataChange(configuration.isAllowMetadataChange()) //
                 .build();
         try {
             LOGGER.debug("Before transformation: {}", pipeline);
