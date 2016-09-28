@@ -31,6 +31,11 @@ $recipe-step-draggable-background-color: #808080 !default;
     @include justify-content(space-between);
     border-bottom: 1px solid $recipe-step-border-color;
 
+    .step-trigger {
+      position: relative;
+      margin-right: 15px;
+    }
+
     &.disabled-step {
       color: $recipe-step-disabled-color;
       background-color: $recipe-step-disabled-background-color;
