@@ -48,6 +48,10 @@ public class TdpExceptionDto {
         return contextValuesAsString.toArray(new String[contextValuesAsString.size()]);
     }
 
+    public TdpExceptionDto(String message, String messageTitle, Map<String, Object> context) {
+        this(null, null, message, messageTitle, context);
+    }
+
     public TdpExceptionDto(String code, String cause, String message, String messageTitle, Map<String, Object> context) {
         this.code = code;
         this.cause = cause;

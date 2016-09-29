@@ -15,8 +15,6 @@ package org.talend.dataprep.exception;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -117,22 +115,11 @@ public class TDPException extends TalendRuntimeException {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES);
-            objectMapper.writerFor(TdpExceptionDto.class).writeValue(writer, TdpExceptionDto.from(this));
+            objectMapper.writeValue(writer, TdpExceptionDto.from(this));
             writer.flush();
         } catch (IOException e) {
             LOGGER.error("Unable to write exception to " + writer + ".", e);
         }
-    }
-
-    /**
-     * Method needed as long as the context does not expose a values() method.
-     *
-     * @return the context values.
-     */
-    private List<String> getContextValues() {
-        List<String> values = new ArrayList<>();
-        getContext().entries().forEach(e -> values.add(e.getValue().toString()));
-        return values;
     }
 
     /**
