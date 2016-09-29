@@ -13,16 +13,13 @@
 
 package org.talend.dataprep.exception;
 
-import java.io.StringWriter;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.talend.dataprep.http.HttpResponseContext;
 
 /**
  * Controller advice applied to all controllers so that they can handle TDPExceptions.
@@ -41,17 +38,13 @@ public class TDPExceptionController {
      */
     @ExceptionHandler(TDPException.class)
     @ResponseBody
-    public String handleError(TDPException e) {
+    public ResponseEntity<TdpExceptionDto> handleError(TDPException e) {
         if (!e.isError()) {
             LOGGER.error("An error occurred", e);
         } else if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("An error occurred", e);
         }
-        HttpResponseContext.status(HttpStatus.valueOf(e.getCode().getHttpStatus()));
-        HttpResponseContext.header("Content-Type", MediaType.APPLICATION_JSON_VALUE);
-        final StringWriter message = new StringWriter();
-        e.writeTo(message);
-        return message.toString();
+        return new ResponseEntity<>(TdpExceptionDto.from(e), HttpStatus.valueOf(e.getCode().getHttpStatus()));
     }
 
 }

@@ -15,29 +15,30 @@ package org.talend.dataprep.configuration;
 
 import java.util.List;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.Module;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.Module;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-
 @Configuration
 @SuppressWarnings("InsufficientBranchCoverage")
 public class Serialization {
 
     @Autowired
-    List<Module> modules;
+    private List<Module> modules;
 
     @Bean
     @Primary
     public ObjectMapper jacksonBuilder() {
         Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder();
         builder.featuresToDisable(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES);
+        builder.propertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES);
         builder.indentOutput(false);
         modules.add(new Jdk8Module()); // needed to [de]serialize java8 Optional (among other things)
         builder.modules(modules);
