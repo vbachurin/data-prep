@@ -33,6 +33,13 @@ public class ErrorMessage {
     public static final String TITLE_SUFFIX = ".TITLE";
 
     /**
+     * Default empty constructor.
+     */
+    private ErrorMessage() {
+        // private constructor for this utility class
+    }
+
+    /**
      * Returns the desired message to send to the frontend according to the specified error code.
      * 
      * @param errorCode the specified error code

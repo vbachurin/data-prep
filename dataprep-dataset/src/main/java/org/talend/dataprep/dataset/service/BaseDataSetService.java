@@ -5,7 +5,8 @@ import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.DataSetErrorCodes;
 
-public class BaseDataSetService {
+public abstract class BaseDataSetService {
+
     static void assertDataSetMetadata(DataSetMetadata dataSetMetadata, String dataSetId) {
         if (dataSetMetadata == null) {
             throw new TDPException(DataSetErrorCodes.DATASET_DOES_NOT_EXIST, ExceptionContext.build().put("id", dataSetId));
@@ -17,4 +18,5 @@ public class BaseDataSetService {
             throw new TDPException(DataSetErrorCodes.UNABLE_TO_SERVE_DATASET_CONTENT, context);
         }
     }
+
 }

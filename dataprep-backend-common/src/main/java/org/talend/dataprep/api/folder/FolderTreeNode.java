@@ -40,7 +40,9 @@ public class FolderTreeNode implements Serializable {
     /**
      * Default empty constructor.
      */
-    public FolderTreeNode() {}
+    public FolderTreeNode() {
+        // for the json serialization
+    }
 
     public FolderTreeNode(final Folder folder, final List<FolderTreeNode> children) {
         this.folder = folder;

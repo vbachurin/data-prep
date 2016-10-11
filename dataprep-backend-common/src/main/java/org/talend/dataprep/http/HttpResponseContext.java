@@ -25,6 +25,13 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 public class HttpResponseContext {
 
     /**
+     * Default empty constructor.
+     */
+    private HttpResponseContext() {
+        // private constructor for this utility class
+    }
+
+    /**
      * Set the http status to set to the request (if available).
      * 
      * @param status the http status to set.

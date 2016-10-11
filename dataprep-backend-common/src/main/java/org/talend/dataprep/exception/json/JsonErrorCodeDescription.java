@@ -46,6 +46,7 @@ public class JsonErrorCodeDescription implements ErrorCode {
      * Default empty constructor needed for json parsing.
      */
     public JsonErrorCodeDescription() {
+        // needed for json de/serialization
     }
 
     /**

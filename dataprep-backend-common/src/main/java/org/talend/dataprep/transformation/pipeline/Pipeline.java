@@ -40,12 +40,13 @@ public class Pipeline implements Node, RuntimeNode {
      * 
      * @see Pipeline#signal(Signal)
      */
-    private final Boolean isFinished = Boolean.FALSE;
+    private final Object isFinished = new Object();
 
     /**
      * Default empty constructor.
      */
     public Pipeline() {
+        // needed for Serialization
     }
 
     /**
@@ -76,7 +77,7 @@ public class Pipeline implements Node, RuntimeNode {
                             counter.addAndGet(1L);
                             return row;
                         }) //
-                        .allMatch((row) -> !isStopped.get());
+                        .allMatch(row -> !isStopped.get());
                 LOG.debug("{} rows sent in the pipeline", counter.get());
                 node.exec().signal(Signal.END_OF_STREAM);
             }

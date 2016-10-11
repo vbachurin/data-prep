@@ -49,7 +49,7 @@ public class HtmlSerializer implements Serializer {
             PipedInputStream pipe = new PipedInputStream();
             PipedOutputStream jsonOutput = new PipedOutputStream(pipe);
 
-            Runnable r = doSerialize(rawContent, metadata, jsonOutput, limit);
+            Runnable r = () -> deserialize(rawContent, metadata, jsonOutput, limit);
             executor.execute(r);
             return pipe;
         } catch (IOException e) {
@@ -57,63 +57,59 @@ public class HtmlSerializer implements Serializer {
         }
     }
 
-    private Runnable doSerialize(InputStream rawContent, DataSetMetadata dataSetMetadata, OutputStream jsonOutput, long limit) {
+    private void deserialize(InputStream rawContent, DataSetMetadata dataSetMetadata, OutputStream jsonOutput, long limit) {
+        try {
 
-        return () -> {
-            try {
+            List<ColumnMetadata> columns = dataSetMetadata.getRowMetadata().getColumns();
+            SimpleValuesContentHandler valuesContentHandler = new SimpleValuesContentHandler(columns.size(), limit);
 
-                List<ColumnMetadata> columns = dataSetMetadata.getRowMetadata().getColumns();
-                SimpleValuesContentHandler valuesContentHandler = new SimpleValuesContentHandler(columns.size(), limit);
+            HtmlParser htmlParser = new HtmlParser();
+            Metadata metadata = new Metadata();
 
-                HtmlParser htmlParser = new HtmlParser();
-                Metadata metadata = new Metadata();
+            htmlParser.parse(rawContent, valuesContentHandler, metadata, new ParseContext());
 
-                htmlParser.parse(rawContent, valuesContentHandler, metadata, new ParseContext());
+            JsonGenerator generator = new JsonFactory().createGenerator(jsonOutput);
+            generator.writeStartArray(); // start the record
 
-                JsonGenerator generator = new JsonFactory().createGenerator(jsonOutput);
-                generator.writeStartArray(); // start the record
+            for (List<String> values : valuesContentHandler.getValues()) {
 
-                for (List<String> values : valuesContentHandler.getValues()) {
+                if (values.isEmpty()) {
+                    // avoid empty record which can fail analysis
+                    continue;
+                }
 
-                    if (values.isEmpty()) {
-                        // avoid empty record which can fail analysis
-                        continue;
-                    }
+                generator.writeStartObject();
 
-                    generator.writeStartObject();
+                int idx = 0;
 
-                    int idx = 0;
-
-                    for (String value : values) {
-                        if(idx < columns.size()) {
-                            ColumnMetadata columnMetadata = columns.get(idx);
-                            generator.writeFieldName(columnMetadata.getId());
-                            if (value != null) {
-                                generator.writeString(value);
-                            } else {
-                                generator.writeNull();
-                            }
-                            idx++;
+                for (String value : values) {
+                    if (idx < columns.size()) {
+                        ColumnMetadata columnMetadata = columns.get(idx);
+                        generator.writeFieldName(columnMetadata.getId());
+                        if (value != null) {
+                            generator.writeString(value);
+                        } else {
+                            generator.writeNull();
                         }
+                        idx++;
                     }
-                    generator.writeEndObject();
                 }
-
-                generator.writeEndArray(); // end the record
-                generator.flush();
-            } catch (Exception e) {
-                // Consumer may very well interrupt consumption of stream (in case of limit(n) use for sampling).
-                // This is not an issue as consumer is allowed to partially consumes results, it's up to the
-                // consumer to ensure data it consumed is consistent.
-                LOGGER.debug("Unable to continue serialization for {}. Skipping remaining content.", dataSetMetadata.getId(), e);
-            } finally {
-                try {
-                    jsonOutput.close();
-                } catch (IOException e) {
-                    LOGGER.error("Unable to close output", e);
-                }
+                generator.writeEndObject();
             }
-        };
 
+            generator.writeEndArray(); // end the record
+            generator.flush();
+        } catch (Exception e) {
+            // Consumer may very well interrupt consumption of stream (in case of limit(n) use for sampling).
+            // This is not an issue as consumer is allowed to partially consumes results, it's up to the
+            // consumer to ensure data it consumed is consistent.
+            LOGGER.debug("Unable to continue serialization for {}. Skipping remaining content.", dataSetMetadata.getId(), e);
+        } finally {
+            try {
+                jsonOutput.close();
+            } catch (IOException e) {
+                LOGGER.error("Unable to close output", e);
+            }
+        }
     }
 }

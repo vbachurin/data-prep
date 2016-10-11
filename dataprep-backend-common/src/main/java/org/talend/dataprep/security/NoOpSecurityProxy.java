@@ -34,7 +34,7 @@ public class NoOpSecurityProxy implements SecurityProxy {
      */
     @Override
     public void asTechnicalUser() {
-
+        // no op
     }
 
     /**

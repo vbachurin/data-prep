@@ -121,18 +121,15 @@ public class FolderAPI extends APIService {
         try {
             final HystrixCommand<HttpResponse> removeFolder = getCommand(RemoveFolder.class, id);
             final HttpResponse result = removeFolder.execute();
-            try {
-                HttpResponseContext.status(HttpStatus.valueOf(result.getStatusCode()));
-                HttpResponseContext.header("Content-Type", result.getContentType());
-                IOUtils.write(result.getHttpContent(), output);
-                output.flush();
-            } catch (IOException e) {
-                throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
-            }
 
-        } catch (Exception e) {
-            throw new TDPException(APIErrorCodes.UNABLE_TO_DELETE_FOLDER, e);
+            HttpResponseContext.status(HttpStatus.valueOf(result.getStatusCode()));
+            HttpResponseContext.header("Content-Type", result.getContentType());
+            IOUtils.write(result.getHttpContent(), output);
+            output.flush();
+        } catch (IOException e) {
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
+
     }
 
     @RequestMapping(value = "/api/folders/{id}/name", method = PUT)
@@ -158,14 +155,13 @@ public class FolderAPI extends APIService {
      *
      * @param name The folder to search.
      * @param strict Strict mode means searched name is the full name.
-     * @return
+     * @return the list of folders that match the given name.
      */
     @RequestMapping(value = "/api/folders/search", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Search Folders with parameter as part of the name", produces = APPLICATION_JSON_VALUE)
     @Timed
     public StreamingResponseBody search(@RequestParam final String name,
-                       @RequestParam(required = false) final boolean strict,
-                       final OutputStream output) {
+            @RequestParam(required = false) final boolean strict) {
         try {
             final GenericCommand<InputStream> searchFolders = getCommand(SearchFolders.class, name, strict);
             return CommandHelper.toStreaming(searchFolders);

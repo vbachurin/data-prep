@@ -42,7 +42,6 @@ import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.util.IOUtils;
-import org.openxmlformats.schemas.spreadsheetml.x2006.main.impl.CTSheetDimensionImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,7 +85,7 @@ public class XlsUtils {
             } catch (Exception e) {
                 // log error message and the formula
                 LOGGER.warn("Unable to evaluate cell (line: {}, col: {}) with formula '{}': {}", cell.getRowIndex(),
-                        cell.getColumnIndex(), cell.getCellFormula(), e.getMessage());
+                        cell.getColumnIndex(), cell.getCellFormula(), e.getMessage(), e);
                 return StringUtils.EMPTY;
             }
         case Cell.CELL_TYPE_NUMERIC:

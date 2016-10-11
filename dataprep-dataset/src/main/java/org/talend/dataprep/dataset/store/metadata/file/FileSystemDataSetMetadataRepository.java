@@ -74,7 +74,7 @@ public class FileSystemDataSetMetadataRepository extends ObjectDataSetMetadataRe
         try {
             Files.createDirectories(getRootFolder().toPath());
         } catch (IOException e) {
-            throw new RuntimeException("unable to create dataset metadata store folder", e);
+            throw new IllegalStateException("unable to create dataset metadata store folder", e);
         }
     }
 

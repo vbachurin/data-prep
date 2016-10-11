@@ -40,6 +40,7 @@ public class FolderInfo implements Serializable {
      * Default empty constructor.
      */
     public FolderInfo() {
+        // for the json serialization
     }
 
     /**

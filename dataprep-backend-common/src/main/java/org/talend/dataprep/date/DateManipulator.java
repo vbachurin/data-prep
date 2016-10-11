@@ -136,8 +136,9 @@ public class DateManipulator {
                 return localDate.plus(1, ChronoUnit.WEEKS);
             case DAY:
                 return localDate.plus(1, ChronoUnit.DAYS);
+        default:
+            return localDate;
         }
-        return localDate;
     }
 
     /**

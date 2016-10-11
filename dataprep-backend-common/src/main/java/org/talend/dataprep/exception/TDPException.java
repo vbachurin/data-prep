@@ -13,8 +13,12 @@
 
 package org.talend.dataprep.exception;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.daikon.exception.ExceptionContext;
@@ -23,11 +27,8 @@ import org.talend.daikon.exception.error.ErrorCode;
 import org.talend.daikon.exception.json.JsonErrorCode;
 import org.talend.dataprep.exception.error.ErrorMessage;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
 
 /**
  * Class for all business (TDP) exception.
@@ -116,32 +117,33 @@ public class TDPException extends TalendRuntimeException {
         try {
             JsonGenerator generator = (new JsonFactory()).createGenerator(writer);
             generator.writeStartObject();
-            {
-                generator.writeStringField("code",
-                        getCode().getProduct() + '_' + getCode().getGroup() + '_' + getCode().getCode());
-                List<String> values = getContextValues();
-                String message = ErrorMessage.getMessage(getCode(), values.toArray(new String[values.size()]));
-                String messageTitle = ErrorMessage.getMessageTitle(getCode(), values.toArray(new String[values.size()]));
-                generator.writeStringField("message", message);
-                generator.writeStringField("message_title", messageTitle);
-                if (getCause() != null) {
-                    generator.writeStringField("cause", getCause().getMessage());
-                }
-                if (getContext() != null) {
-                    generator.writeFieldName("context");
-                    generator.writeStartObject();
-                    for (Map.Entry<String, Object> entry : getContext().entries()) {
-                        generator.writeStringField(entry.getKey(), entry.getValue().toString());
-                    }
-                    generator.writeEndObject();
-                }
-            }
+            writeErrorContent(generator);
             generator.writeEndObject();
             generator.flush();
         } catch (IOException e) {
             LOGGER.error("Unable to write exception to " + writer + ".", e);
         }
 
+    }
+
+    private void writeErrorContent(JsonGenerator generator) throws IOException {
+        generator.writeStringField("code", getCode().getProduct() + '_' + getCode().getGroup() + '_' + getCode().getCode());
+        List<String> values = getContextValues();
+        String message = ErrorMessage.getMessage(getCode(), values.toArray(new String[values.size()]));
+        String messageTitle = ErrorMessage.getMessageTitle(getCode(), values.toArray(new String[values.size()]));
+        generator.writeStringField("message", message);
+        generator.writeStringField("message_title", messageTitle);
+        if (getCause() != null) {
+            generator.writeStringField("cause", getCause().getMessage());
+        }
+        if (getContext() != null) {
+            generator.writeFieldName("context");
+            generator.writeStartObject();
+            for (Map.Entry<String, Object> entry : getContext().entries()) {
+                generator.writeStringField(entry.getKey(), entry.getValue().toString());
+            }
+            generator.writeEndObject();
+        }
     }
 
     /**

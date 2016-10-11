@@ -172,6 +172,7 @@ public class DataSetMetadata implements Serializable, SharedResource {
     /**
      * @return the dataset id.
      */
+    @Override
     public String getId() {
         return id;
     }

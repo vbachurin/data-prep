@@ -13,6 +13,10 @@
 
 package org.talend.dataprep.transformation.actions.date;
 
+import static org.talend.dataprep.api.type.Type.INTEGER;
+import static org.talend.dataprep.transformation.actions.common.OtherColumnParameters.OTHER_COLUMN_MODE;
+import static org.talend.dataprep.transformation.actions.common.OtherColumnParameters.SELECTED_COLUMN_PARAMETER;
+
 import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -38,10 +42,6 @@ import org.talend.dataprep.parameters.SelectParameter;
 import org.talend.dataprep.transformation.actions.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.actions.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
-
-import static org.talend.dataprep.api.type.Type.INTEGER;
-import static org.talend.dataprep.transformation.actions.common.OtherColumnParameters.OTHER_COLUMN_MODE;
-import static org.talend.dataprep.transformation.actions.common.OtherColumnParameters.SELECTED_COLUMN_PARAMETER;
 
 @Component(AbstractActionMetadata.ACTION_BEAN_PREFIX + ComputeTimeSince.TIME_SINCE_ACTION_NAME)
 public class ComputeTimeSince extends AbstractDate implements ColumnAction {
@@ -84,7 +84,7 @@ public class ComputeTimeSince extends AbstractDate implements ColumnAction {
 
     private static final String NOW_SERVER_SIDE_MODE = "now_server_side";
 
-    private static final Logger log = LoggerFactory.getLogger(ComputeTimeSince.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ComputeTimeSince.class);
 
     @Override
     public String getName() {
@@ -189,7 +189,7 @@ public class ComputeTimeSince extends AbstractDate implements ColumnAction {
                 newValue = String.valueOf(unit.between(valueAsDate, since));
             }
         } catch (DateTimeException e) {
-            log.trace("Error on dateTime parsing", e);
+            LOGGER.trace("Error on dateTime parsing", e);
             // Nothing to do: in this case, temporalAccessor is left null
             newValue = StringUtils.EMPTY;
         }
@@ -210,7 +210,7 @@ public class ComputeTimeSince extends AbstractDate implements ColumnAction {
             try {
                 since = LocalDateTime.parse(parameters.get(SPECIFIC_DATE_PARAMETER), DEFAULT_FORMATTER);
             } catch (DateTimeException e) {
-                log.info("Error parsing input date. The front-end might have supplied a corrupted value.", e);
+                LOGGER.info("Error parsing input date. The front-end might have supplied a corrupted value.", e);
                 since = null;
             }
             break;

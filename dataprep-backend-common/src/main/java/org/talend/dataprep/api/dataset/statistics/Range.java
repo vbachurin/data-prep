@@ -39,6 +39,7 @@ public class Range implements Serializable {
      * Constructor
      */
     public Range() {
+        // needed for the json serialization
     }
 
     /**

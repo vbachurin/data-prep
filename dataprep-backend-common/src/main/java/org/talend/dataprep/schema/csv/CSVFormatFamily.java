@@ -15,8 +15,8 @@ package org.talend.dataprep.schema.csv;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.talend.dataprep.schema.FormatFamily;
 import org.talend.dataprep.schema.DraftValidator;
+import org.talend.dataprep.schema.FormatFamily;
 import org.talend.dataprep.schema.SchemaParser;
 import org.talend.dataprep.schema.Serializer;
 
@@ -47,6 +47,7 @@ public class CSVFormatFamily implements FormatFamily {
      * CSV
      */
     public CSVFormatFamily() {
+        // empty constructor needed for the json de/serialization
     }
 
     @Override
@@ -54,6 +55,7 @@ public class CSVFormatFamily implements FormatFamily {
         return MEDIA_TYPE; // $NON-NLS-1$
     }
 
+    @Override
     public SchemaParser getSchemaGuesser() {
         return this.schemaGuesser;
     }

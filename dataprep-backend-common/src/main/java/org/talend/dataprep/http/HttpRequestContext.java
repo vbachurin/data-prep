@@ -27,6 +27,13 @@ import org.springframework.web.context.request.ServletRequestAttributes;
  */
 public class HttpRequestContext {
 
+    /**
+     * Default empty constructor.
+     */
+    private HttpRequestContext() {
+        // private constructor for this utility class
+    }
+
     public static Enumeration<String> parameters() {
         final RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
         if (attributes != null && attributes instanceof ServletRequestAttributes) {

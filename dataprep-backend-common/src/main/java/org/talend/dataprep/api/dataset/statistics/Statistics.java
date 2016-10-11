@@ -30,49 +30,49 @@ public class Statistics implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @JsonProperty("count")
-    long count;
+    private long count;
 
     @JsonProperty("valid")
-    long valid;
+    private long valid;
 
     @JsonProperty("invalid")
-    long invalid;
+    private long invalid;
 
     @JsonProperty("empty")
-    long empty;
+    private long empty;
 
     @JsonProperty("max")
-    double max = 0;
+    private double max = 0;
 
     @JsonProperty("min")
-    double min = 0;
+    private double min = 0;
 
     @JsonProperty("mean")
-    double mean = 0;
+    private double mean = 0;
 
     @JsonProperty("variance")
-    double variance = 0;
+    private double variance = 0;
 
     @JsonProperty("duplicateCount")
-    long duplicateCount = 0;
+    private long duplicateCount = 0;
 
     @JsonProperty("distinctCount")
-    long distinctCount = 0;
+    private long distinctCount = 0;
 
     @JsonProperty("frequencyTable")
-    List<DataFrequency> dataFrequencies = new LinkedList<>();
+    private List<DataFrequency> dataFrequencies = new LinkedList<>();
 
     @JsonProperty("patternFrequencyTable")
-    List<PatternFrequency> patternFrequencies = new LinkedList<>();
+    private List<PatternFrequency> patternFrequencies = new LinkedList<>();
 
     @JsonProperty("quantiles")
-    Quantiles quantiles = new Quantiles();
+    private Quantiles quantiles = new Quantiles();
 
     @JsonProperty("histogram")
-    Histogram histogram;
+    private Histogram histogram;
 
     @JsonProperty("textLengthSummary")
-    TextLengthSummary textLengthSummary = new TextLengthSummary();
+    private TextLengthSummary textLengthSummary = new TextLengthSummary();
 
     public long getCount() {
         return count;

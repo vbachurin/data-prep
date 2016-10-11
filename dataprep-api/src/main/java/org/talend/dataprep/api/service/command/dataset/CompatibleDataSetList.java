@@ -1,5 +1,13 @@
 package org.talend.dataprep.api.service.command.dataset;
 
+import static org.talend.dataprep.command.Defaults.emptyStream;
+import static org.talend.dataprep.command.Defaults.pipeStream;
+import static org.talend.dataprep.util.SortAndOrderHelper.Order;
+import static org.talend.dataprep.util.SortAndOrderHelper.Sort;
+
+import java.io.InputStream;
+import java.net.URISyntaxException;
+
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.URIBuilder;
@@ -11,18 +19,18 @@ import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.APIErrorCodes;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 
-import java.io.InputStream;
-import java.net.URISyntaxException;
-
-import static org.talend.dataprep.command.Defaults.emptyStream;
-import static org.talend.dataprep.command.Defaults.pipeStream;
-import static org.talend.dataprep.util.SortAndOrderHelper.Order;
-import static org.talend.dataprep.util.SortAndOrderHelper.Sort;
-
 @Component
 @Scope("request")
 public class CompatibleDataSetList extends GenericCommand<InputStream> {
 
+    /**
+     * Constructor.
+     *
+     * @param dataSetId the dataset id.
+     * @param sort how to sort the datasets.
+     * @param order the order to apply to the sort.
+     */
+    // private constructor to ensure the IoC
     private CompatibleDataSetList(String dataSetId, Sort sort, Order order) {
         super(GenericCommand.DATASET_GROUP);
 

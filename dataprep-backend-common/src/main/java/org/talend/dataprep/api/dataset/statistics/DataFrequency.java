@@ -28,8 +28,11 @@ public class DataFrequency implements Serializable {
     @JsonProperty("occurrences")
     long occurrences;
 
-    // Here for JSON deserialization
+    /**
+     * Default empty constructor.
+     */
     public DataFrequency() {
+        // Here for JSON deserialization
     }
 
     public DataFrequency(String data, long occurrences) {

@@ -9,8 +9,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class NoCacheFilter implements Filter {
+
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
+        // nothing to do here...
     }
 
     @Override
@@ -24,5 +26,7 @@ public class NoCacheFilter implements Filter {
 
     @Override
     public void destroy() {
+        // still nothing to do here...
     }
+
 }

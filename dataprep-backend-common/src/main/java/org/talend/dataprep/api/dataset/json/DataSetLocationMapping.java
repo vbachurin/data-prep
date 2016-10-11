@@ -1,5 +1,7 @@
 package org.talend.dataprep.api.dataset.json;
 
+import java.io.Serializable;
+
 import org.talend.dataprep.api.dataset.DataSetLocation;
 
 /**
@@ -9,7 +11,7 @@ import org.talend.dataprep.api.dataset.DataSetLocation;
  *
  * See {@link DataSetLocationModule}
  */
-public interface DataSetLocationMapping {
+public interface DataSetLocationMapping extends Serializable {
 
     /**
      * @return the string identifying the {@link DataSetLocation} sub-type

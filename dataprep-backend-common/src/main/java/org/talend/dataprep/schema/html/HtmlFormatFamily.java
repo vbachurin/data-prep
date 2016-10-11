@@ -39,6 +39,7 @@ public class HtmlFormatFamily implements FormatFamily {
         return MEDIA_TYPE;
     }
 
+    @Override
     public SchemaParser getSchemaGuesser() {
         return schemaParser;
     }

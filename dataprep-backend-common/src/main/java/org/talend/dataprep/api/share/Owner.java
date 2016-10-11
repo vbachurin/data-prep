@@ -13,6 +13,7 @@
 
 package org.talend.dataprep.api.share;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -20,7 +21,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * Owner of a folder.
  */
-public class Owner {
+public class Owner implements Serializable {
+
+    /** For the Serializable interface. */
+    private static final long serialVersionUID = 1L;
 
     /** The owner user id. */
     private String id;

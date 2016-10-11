@@ -24,6 +24,7 @@ public class Version {
     private String serviceName;
 
     public Version() {
+        // needed for the json de/serialization
     }
 
     public Version(String versionId, String buildId) {

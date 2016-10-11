@@ -28,8 +28,11 @@ public class PatternFrequency implements Serializable {
     @JsonProperty("occurrences")
     long occurrences;
 
-    // Here for JSON deserialization
+    /**
+     * Default empty constructor.
+     */
     public PatternFrequency() {
+        // Here for JSON deserialization
     }
 
     public PatternFrequency(String pattern, long occurrences) {

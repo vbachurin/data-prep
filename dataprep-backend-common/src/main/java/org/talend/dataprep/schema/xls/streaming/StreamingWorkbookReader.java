@@ -12,8 +12,6 @@
 // ============================================================================
 package org.talend.dataprep.schema.xls.streaming;
 
-import static java.util.Arrays.asList;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -65,21 +63,6 @@ public class StreamingWorkbookReader implements Iterable<Sheet>, AutoCloseable {
     private File tmp;
 
     private OPCPackage pkg;
-
-    /**
-     * This constructor exists only so the StreamingReader can instantiate a StreamingWorkbook using its own reader
-     * implementation. Do not use going forward.
-     *
-     * @param pkg The POI package that should be closed when this workbook is closed
-     * @param reader A single streaming reader instance
-     * @param builder The builder containing all options
-     */
-    @Deprecated
-    public StreamingWorkbookReader(OPCPackage pkg, StreamingSheetReader reader, StreamingReader.Builder builder) {
-        this.pkg = pkg;
-        this.sheets = asList(new StreamingSheet(null, reader));
-        this.builder = builder;
-    }
 
     public StreamingWorkbookReader(StreamingReader.Builder builder) {
         this.sheets = new ArrayList<>();
@@ -244,7 +227,7 @@ public class StreamingWorkbookReader implements Iterable<Sheet>, AutoCloseable {
 
         @Override
         public void remove() {
-            throw new RuntimeException("NotSupported");
+            throw new UnsupportedOperationException("NotSupported");
         }
     }
 }

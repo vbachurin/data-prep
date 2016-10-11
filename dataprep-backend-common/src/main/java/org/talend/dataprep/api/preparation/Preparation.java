@@ -224,6 +224,7 @@ public class Preparation extends Identifiable implements SharedResource, Seriali
     /**
      * @see SharedResource#setOwner(Owner)
      */
+    @Override
     public void setOwner(Owner owner) {
         this.owner = owner;
     }
