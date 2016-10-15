@@ -13,22 +13,18 @@
 
 package org.talend.dataprep.api.preparation;
 
-import static java.util.Collections.unmodifiableList;
-
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import org.apache.commons.codec.digest.DigestUtils;
-import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.exception.error.CommonErrorCodes;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.MoreObjects;
+import org.apache.commons.codec.digest.DigestUtils;
+
+import static java.util.Collections.unmodifiableList;
 
 /**
  * Models a list of actions for a step within a preparation.
@@ -55,7 +51,7 @@ public class PreparationActions extends Identifiable implements Serializable {
 
     /**
      * Default constructor.
-     * 
+     *
      * @param appVersion the current application version for this PreparationActions.
      */
     public PreparationActions(String appVersion) {
@@ -64,7 +60,7 @@ public class PreparationActions extends Identifiable implements Serializable {
 
     /**
      * Create the PreparationActions with the given actions.
-     * 
+     *
      * @param actions the actions for this preparation.
      * @param appVersion the current application version for this PreparationActions.
      */
@@ -88,33 +84,23 @@ public class PreparationActions extends Identifiable implements Serializable {
         return new PreparationActions(appendedActions, getAppVersion());
     }
 
-    /**
-     * Transform actions list to readable JSON string
-     *
-     * @throws IOException
-     */
-    public String serializeActions() throws IOException {
-        final ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(actions);
-    }
-
     @Override
     public String id() {
         return getId();
     }
 
+    // JSon serialization is not deterministic due to actions hashmap order. We can't use it to create a stable id.
     @Override
     public String getId() {
-        try {
-            return DigestUtils.sha1Hex(serializeActions());
-        } catch (IOException e) {
-            throw new TDPException(CommonErrorCodes.UNABLE_TO_COMPUTE_ID, e);
+        if (id == null) {
+            id = DigestUtils.sha1Hex(Integer.toString(hashCode()));
         }
+        return id;
     }
 
     @Override
     public void setId(String id) {
-        // No op
+        this.id = id;
     }
 
     /**
@@ -135,13 +121,7 @@ public class PreparationActions extends Identifiable implements Serializable {
 
     @Override
     public String toString() {
-        String serializedActions;
-        try {
-            serializedActions = serializeActions();
-        } catch (IOException e) {
-            serializedActions = "invalid actions";
-        }
-        return "PreparationActions {" + "id:'" + id() + "', version: " + appVersion + ", actions: " + serializedActions + '}';
+        return MoreObjects.toStringHelper(this).add("actions", actions).add("appVersion", appVersion).toString();
     }
 
     @Override

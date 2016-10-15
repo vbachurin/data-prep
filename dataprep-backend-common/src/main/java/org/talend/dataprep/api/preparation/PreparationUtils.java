@@ -13,8 +13,6 @@
 
 package org.talend.dataprep.api.preparation;
 
-import static java.util.stream.Collectors.toList;
-
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -22,13 +20,14 @@ import java.io.OutputStreamWriter;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.preparation.store.PreparationRepository;
+
+import static java.util.stream.Collectors.toList;
 
 @Component
 public class PreparationUtils {
@@ -139,7 +138,7 @@ public class PreparationUtils {
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out));
             writer.append("\t\t\tContent: ").append("\n");
             writer.append("======").append("\n");
-            writer.append(blob.serializeActions()).append("\n");
+            writer.append(blob.toString()).append("\n");
             writer.append("======").append("\n");
             writer.flush();
         } catch (IOException e) {

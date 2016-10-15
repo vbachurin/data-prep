@@ -13,15 +13,10 @@
 
 package org.talend.dataprep.preparation;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.lessThan;
-import static org.junit.Assert.assertEquals;
-
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
 import javax.annotation.Resource;
 
 import org.hamcrest.core.Is;
@@ -37,6 +32,11 @@ import org.talend.dataprep.api.preparation.PreparationActions;
 import org.talend.dataprep.api.preparation.Step;
 import org.talend.dataprep.api.service.info.VersionService;
 import org.talend.dataprep.preparation.store.PreparationRepository;
+
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.lessThan;
+import static org.junit.Assert.assertEquals;
 
 
 @RunWith(SpringRunner.class)
@@ -70,10 +70,13 @@ public class PreparationTest {
 
     @Test
     public void rootObjects() throws Exception {
-        assertThat(repository.get("cdcd5c9a3a475f2298b5ee3f4258f8207ba10879", PreparationActions.class), notNullValue());
+        PreparationActions rootPreparationActions = new PreparationActions(Collections.emptyList(),
+                versionService.version().getVersionId());
+        assertThat(repository.get(rootPreparationActions.getId(), PreparationActions.class), notNullValue());
         assertThat(repository.get("cdcd5c9a3a475f2298b5ee3f4258f8207ba10879", Step.class), nullValue());
         assertThat(repository.get("f6e172c33bdacbc69bca9d32b2bd78174712a171", PreparationActions.class), nullValue());
-        assertThat(repository.get("f6e172c33bdacbc69bca9d32b2bd78174712a171", Step.class), notNullValue());
+        Step rootStep = new Step(null, rootPreparationActions.id(), versionService.version().getVersionId());
+        assertThat(repository.get(rootStep.getId(), Step.class), notNullValue());
     }
 
     @Test

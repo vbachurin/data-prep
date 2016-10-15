@@ -18,15 +18,14 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-import org.springframework.data.annotation.Transient;
-import org.talend.dataprep.api.dataset.row.DataSetRow;
-import org.talend.dataprep.transformation.api.action.DataSetRowAction;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonRootName;
+import org.springframework.data.annotation.Transient;
+import org.talend.dataprep.api.dataset.row.DataSetRow;
+import org.talend.dataprep.transformation.api.action.DataSetRowAction;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
 /**
  * Class used to wrap DataSetRowAction into json.
@@ -60,7 +59,7 @@ public class Action implements Serializable {
 
     /**
      * Create an Action from the given RowAction.
-     * 
+     *
      * @param rowAction the row action to build the Action from.
      */
     public Action(DataSetRowAction rowAction) {
@@ -130,7 +129,7 @@ public class Action implements Serializable {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(rowAction, action, parameters);
+        return Objects.hash(action, parameters);
     }
 
     /**
