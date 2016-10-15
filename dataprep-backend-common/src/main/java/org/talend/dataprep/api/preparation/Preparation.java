@@ -91,7 +91,7 @@ public class Preparation extends Identifiable implements SharedResource, Seriali
 
     /**
      * Default constructor.
-     * 
+     *
      * @param id the preparation id.
      * @param appVersion the application version to store within the preparation.
      */
@@ -259,6 +259,7 @@ public class Preparation extends Identifiable implements SharedResource, Seriali
     public Preparation merge(Preparation other) {
         Preparation merge = new Preparation(id, other.getAppVersion());
         merge.dataSetId = other.dataSetId != null ? other.dataSetId : dataSetId;
+        merge.rowMetadata = other.rowMetadata != null ? other.rowMetadata : rowMetadata;
         merge.author = other.author != null ? other.author : author;
         merge.name = other.name != null ? other.name : name;
         merge.creationDate = min(other.creationDate, creationDate);
