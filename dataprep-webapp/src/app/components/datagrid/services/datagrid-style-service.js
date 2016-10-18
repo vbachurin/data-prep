@@ -127,7 +127,7 @@ export default class DatagridStyleService {
                 '';
 
             // hidden characters need to be shown
-			const returnStr = this.TextFormatService.adaptToGridConstraints(value) || ' ';
+			const returnStr = this.TextFormatService.adaptToGridConstraints(value);
 
             // entire row modification preview
 			switch (dataContext.__tdpRowDiff) { // eslint-disable-line no-underscore-dangle

@@ -227,7 +227,7 @@ describe('Datagrid style service', () => {
             expect(result.indexOf('<span class="hiddenChars">  </span>my value<span class="hiddenChars">     </span>') > 0).toBe(true);
         }));
 
-        it('should add a space " " as value on empty cell', inject((DatagridStyleService) => {
+        it('should adapt value into html on empty cell', inject((DatagridStyleService) => {
             //given
             DatagridStyleService.init(gridMock);
             var col = { quality: { invalidValues: [] } };
@@ -239,7 +239,7 @@ describe('Datagrid style service', () => {
             var result = formatter(null, null, value, columnDef, {});
 
             //then
-            expect(result.indexOf('<div class=""> </div>')).toBe(0);
+            expect(result.indexOf('<div class=""></div>')).toBe(0);
         }));
 
         describe('indicator', () => {
