@@ -11,6 +11,21 @@
 
   ============================================================================*/
 
+body {
+  $gray:          #F2F2F2;
+  $blue:          #607d8b;
+  $dark-blue:     #3F5159;
+  $light-green:   #D6D88F;
+  $green:         #B9BF15;
+
+  $brand-primary: $blue;
+  $brand-success: $green;
+
+  $navbar-margin-bottom: 0;
+
+  @import "~bootstrap-talend-theme/src/theme/bootstrap";
+}
+
 @import "css/vendors/customisation/sunchoke";
 
 @import "css/vendors/libs/libs";
@@ -56,7 +71,6 @@
 @import "components/inventory/item/_inventory-item.scss";
 @import "components/inventory/tile/_inventory-tile.scss";
 @import "components/lookup/grid/_lookup-datagrid.scss";
-@import "components/playground/header/_playground-header-left.scss";
 @import "components/playground/header/_playground-header-right.scss";
 @import "components/playground/header/_playground-header.scss";
 @import "components/preparation/breadcrumb/_preparation-breadcrumb.scss";
@@ -72,7 +86,6 @@
 @import "components/suggestions-stats/stats-details/_stats-details.scss";
 @import "components/transformation/form/_transformation-form.scss";
 @import "components/widgets/badge/_badge.scss";
-@import "components/widgets/button-dropdown/_button-dropdown.scss";
 @import "components/widgets/button-loader/_button-loader.scss";
 @import "components/widgets/dropdown/_dropdown.scss";
 @import "components/widgets/editable-regex/_editable-regex.scss";

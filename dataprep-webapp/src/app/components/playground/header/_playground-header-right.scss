@@ -1,4 +1,4 @@
-$navigation-height: 50px;
+$navigation-height: 48px;
 
 @include keyframes(fadeIn) {
   from {
@@ -18,16 +18,72 @@ $navigation-height: 50px;
   }
 }
 
-#playground-right-header {
+&-right {
+  @include flex-row();
+  @include align-items(center);
+  @include justify-content(flex-end);
+  margin: 0;
+
+  a {
+    color: $white;
+    cursor: pointer;
+
+    &:hover, &:focus {
+      color: $white;
+      text-decoration: none;
+    }
+  }
+
+  li.nav-link {
+    @include flex-column();
+    @include justify-content(center);
+
+    padding: 0 15px;
+    height: 48px;
+
+    &.pressed {
+      background-color: darken($blue, 25);
+    }
+
+    &:hover{
+      background-color: darken($blue, 25);
+    }
+  }
+
+  .playground-help-menu{
+    @include display(flex);
+    @include flex-row-center();
+  }
+
+  .history-control > li {
+    @include flex-column();
+    @include justify-content(center);
+
+    padding: 0 15px;
+    height: 48px;
+
+    &:hover {
+      background-color: darken($blue, 25);
+    }
+  }
+
+  #export-data, #documentation-search-container {
+    padding: 0 15px;
+  }
+
+  #export-data {
+    button {
+      border-radius: 0;
+      height: 48px;
+      text-transform: uppercase;
+    }
+  }
+
   #playground-lookup-icon {
     > img {
       vertical-align: middle;
       min-width: 42px;
       max-width: 42px;
-    }
-
-    &.pressed {
-      @include background(linear-gradient(#4D4D50, #6E6D71) left repeat);
     }
   }
 

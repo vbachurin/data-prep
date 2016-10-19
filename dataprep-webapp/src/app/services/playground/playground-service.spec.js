@@ -1593,54 +1593,6 @@ describe('Playground Service', () => {
                 expect(PlaygroundService.loadStep).toHaveBeenCalledWith(previousStep);
             }));
         });
-
-        describe('toggle recipe', () => {
-
-            beforeEach(inject((StepUtilsService, PlaygroundService) => {
-                spyOn(PlaygroundService, 'loadStep').and.returnValue();
-            }));
-
-            it('should deactivate all the recipe', inject((PlaygroundService) => {
-                // given
-                const step1 = { inactive: false, column: { id: '0005' } };
-                const step2 = { inactive: false, column: { id: '0004' } };
-                stateMock.playground.recipe.current.steps = [step1, step2];
-
-                // when
-                PlaygroundService.toggleRecipe();
-
-                // then
-                expect(PlaygroundService.loadStep).toHaveBeenCalledWith(previousStep);
-            }));
-
-            it('should reactivate all the recipe', inject((PlaygroundService) => {
-                // given
-                const step1 = { inactive: true, column: { id: '0005' } };
-                const step2 = { inactive: true, column: { id: '0004' } };
-                stateMock.playground.recipe.current.steps = [step1, step2];
-
-                // when
-                PlaygroundService.toggleRecipe();
-
-                // then
-                expect(PlaygroundService.loadStep).toHaveBeenCalledWith(step2);
-            }));
-
-            it('should reactivate the recipe at the last active step before deactivation action', inject((PlaygroundService) => {
-                // given
-                const step1 = { inactive: true, column: { id: '0005' } };
-                const step2 = { inactive: true, column: { id: '0004' } };
-                stateMock.playground.recipe.current.steps = [step1, step2];
-
-                PlaygroundService.lastToggled = step1;
-
-                // when
-                PlaygroundService.toggleRecipe();
-
-                // then
-                expect(PlaygroundService.loadStep).toHaveBeenCalledWith(step1);
-            }));
-        });
     });
 
     describe('preparation name edition mode', () => {

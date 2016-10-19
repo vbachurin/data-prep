@@ -11,8 +11,6 @@
 
  ============================================================================*/
 
-import template from './dropdown.html';
-
 /**
  * @ngdoc directive
  * @name talend.widget.directive:TalendDropdown
@@ -52,7 +50,7 @@ export default function TalendDropdown($window, $timeout) {
 	return {
 		restrict: 'EA',
 		transclude: true,
-		templateUrl: template,
+		template: '<ng-transclude class="talend-dropdown"></ng-transclude>',
 		scope: {
 			closeOnSelect: '=',
 			onOpen: '&',

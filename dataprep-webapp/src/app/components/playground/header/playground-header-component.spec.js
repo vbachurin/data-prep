@@ -68,19 +68,11 @@ describe('Playground header component', () => {
             createElement();
 
             //then
-            expect(element.find('#preview').length).toBe(1);
+            expect(element.find('.preview').length).toBe(1);
         });
     });
 
     describe('left header', () => {
-        it('should render insertion playground left header', () => {
-            //when
-            createElement();
-
-            //then
-            expect(element.find('#playground-left-header').eq(0)[0].hasAttribute('insertion-playground-left-header')).toBe(true);
-        });
-
         it('should dataset parameters toggle button looks inactive by default', () => {
             //given
             createElement();
@@ -102,7 +94,7 @@ describe('Playground header component', () => {
             playgroundGearIcon.click();
 
             //then
-            expect(playgroundGearIcon.hasClass('pressed')).toBe(true);
+            expect(playgroundGearIcon.parent().hasClass('pressed')).toBe(true);
         });
 
         it('should call parameters callback', () => {
@@ -140,7 +132,7 @@ describe('Playground header component', () => {
             playgroundLookupIcon.click();
 
             //then
-            expect(playgroundLookupIcon.hasClass('pressed')).toBe(true);
+            expect(playgroundLookupIcon.parent().hasClass('pressed')).toBe(true);
         });
 
         it('should call lookup callback', () => {
