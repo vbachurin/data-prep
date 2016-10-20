@@ -15,8 +15,6 @@ package org.talend.dataprep.quality;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -37,8 +35,6 @@ import org.talend.dataprep.api.dataset.statistics.date.StreamDateHistogramStatis
 import org.talend.dataprep.api.dataset.statistics.number.StreamNumberHistogramAnalyzer;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.api.type.TypeUtils;
-import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.transformation.actions.date.DateParser;
 import org.talend.dataprep.transformation.api.transformer.json.NullAnalyzer;
 import org.talend.dataquality.common.inference.Analyzer;
@@ -90,9 +86,37 @@ public class AnalyzerService implements DisposableBean {
     @Value("#{'${luceneIndexStrategy:singleton}'}")
     private String luceneIndexStrategy;
 
+    /** Where the data quality indexes are extracted (default to ${java.io.tmpdir}/org.talend.dataquality.semantic). */
+    @Value("${dataquality.indexes.file.location:${java.io.tmpdir}/org.talend.dataquality.semantic}")
+    private String dataqualityIndexesLocation;
+
     private Set<Analyzer> openedAnalyzers = new HashSet<>();
 
     private CategoryRecognizerBuilder builder;
+
+    /**
+     * Initialize the AnalyzerService.
+     */
+    @PostConstruct
+    public void init() {
+
+        LOGGER.info("DataQuality indexes location : '{}'", dataqualityIndexesLocation);
+        ClassPathDirectory.setLocalIndexFolder(dataqualityIndexesLocation);
+
+        // Configure DQ index creation strategy (one copy per use or one copy shared by all calls).
+        LOGGER.info("Analyzer service lucene index strategy set to '{}'", luceneIndexStrategy);
+        if ("basic".equals(luceneIndexStrategy)) {
+            ClassPathDirectory.setProvider(new ClassPathDirectory.BasicProvider());
+        } else if ("singleton".equals(luceneIndexStrategy)) {
+            ClassPathDirectory.setProvider(new ClassPathDirectory.SingletonProvider());
+        } else {
+            // Default
+            LOGGER.warn("Not a supported strategy for lucene indexes: '{}'", luceneIndexStrategy);
+            ClassPathDirectory.setProvider(new ClassPathDirectory.BasicProvider());
+        }
+        // Semantic builder (a single instance to be shared among all analyzers for proper index file management).
+        builder = CategoryRecognizerBuilder.newBuilder().lucene();
+    }
 
     /**
      * In case of a date column, return the most used pattern.
@@ -151,32 +175,6 @@ public class AnalyzerService implements DisposableBean {
         }
 
         return patterns;
-    }
-
-    @PostConstruct
-    public void init() {
-        // Configure DQ index creation strategy (one copy per use or one copy shared by all calls).
-        LOGGER.info("Analyzer service lucene index strategy set to '{}'", luceneIndexStrategy);
-        if ("basic".equals(luceneIndexStrategy)) {
-            ClassPathDirectory.setProvider(new ClassPathDirectory.BasicProvider());
-        } else if ("singleton".equals(luceneIndexStrategy)) {
-            ClassPathDirectory.setProvider(new ClassPathDirectory.SingletonProvider());
-        } else {
-            // Default
-            LOGGER.warn("Not a supported strategy for lucene indexes: '{}'", luceneIndexStrategy);
-            ClassPathDirectory.setProvider(new ClassPathDirectory.BasicProvider());
-        }
-        // Semantic builder (a single instance to be shared among all analyzers for proper index file management).
-        try {
-            final URI ddPath = AnalyzerService.class.getResource("/luceneIdx/dictionary").toURI(); //$NON-NLS-1$
-            final URI kwPath = AnalyzerService.class.getResource("/luceneIdx/keyword").toURI(); //$NON-NLS-1$
-            builder = CategoryRecognizerBuilder.newBuilder() //
-                    .ddPath(ddPath) //
-                    .kwPath(kwPath) //
-                    .lucene();
-        } catch (URISyntaxException e) {
-            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
-        }
     }
 
     /**
@@ -457,13 +455,16 @@ public class AnalyzerService implements DisposableBean {
 
         @Override
         public String toString() {
-            StringBuilder builder = new StringBuilder();
-            builder.append(analyzer.toString()).append(' ').append(" last used (").append(System.currentTimeMillis() - lastCall)
+            StringBuilder toStringBuilder = new StringBuilder();
+            toStringBuilder //
+                    .append(analyzer.toString()).append(' ') //
+                    .append(" last used (").append(System.currentTimeMillis() - lastCall) //
                     .append(" ms ago) ");
-            final StringWriter caller = new StringWriter();
-            this.caller.printStackTrace(new PrintWriter(caller));
-            builder.append("caller: ").append(caller.toString());
-            return builder.toString();
+
+            final StringWriter toStringCaller = new StringWriter();
+            this.caller.printStackTrace(new PrintWriter(toStringCaller)); // NOSONAR (stacktrace printed in a String)
+            toStringBuilder.append("caller: ").append(toStringCaller.toString());
+            return toStringBuilder.toString();
         }
     }
 
