@@ -20,14 +20,16 @@ import PREPARATION_BREADCRUMB_MODULE from '../preparation/breadcrumb/preparation
 import PREPARATION_HEADER_MODULE from '../preparation/header/preparation-header-module';
 import PREPARATION_LIST from '../preparation/list/preparation-list-module';
 import TALEND_WIDGET_MODULE from '../widgets/widget-module';
-
 import SERVICES_DATASET_MODULE from '../../services/dataset/dataset-module';
 import SERVICES_DATASET_WORKFLOW_MODULE from '../../services/dataset-workflow/dataset-workflow-module';
 import SERVICES_STATE_MODULE from '../../services/state/state-module';
-
 import HomeComponent from './home-component';
 import HomeDatasetComponent from './dataset/home-dataset-component';
 import HomePreparationComponent from './preparation/home-preparation-component';
+
+// React home page
+import WIDGETS_CONTAINERS_MODULE from '../widgets-containers/widgets-containers-module';
+import ReactHomeComponent from './react-home-component';
 
 const MODULE_NAME = 'data-prep.home';
 
@@ -58,12 +60,15 @@ angular.module(MODULE_NAME,
 		PREPARATION_HEADER_MODULE,
 		PREPARATION_LIST,
 		TALEND_WIDGET_MODULE,
+		WIDGETS_CONTAINERS_MODULE, // react-talend-components containers
+
 		SERVICES_DATASET_MODULE,
 		SERVICES_DATASET_WORKFLOW_MODULE,
 		SERVICES_STATE_MODULE,
 	])
-    .component('home', HomeComponent)
-    .component('homeDataset', HomeDatasetComponent)
-    .component('homePreparation', HomePreparationComponent);
+	.component('home', HomeComponent)
+	.component('homeDataset', HomeDatasetComponent)
+	.component('homePreparation', HomePreparationComponent)
+	.component('reactHome', ReactHomeComponent);
 
 export default MODULE_NAME;

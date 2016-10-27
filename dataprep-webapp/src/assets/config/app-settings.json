@@ -1,0 +1,59 @@
+{
+  "views": {
+    "appheaderbar": {
+      "app": "Data Preparation",
+      "brandLink": {
+        "title": "Talend Data Preparation",
+        "onClick": "menu:preparations"
+      },
+      "actions": ["onboarding:preparation", "modal:feedback", "external:help"]
+    }
+  },
+  "actions": {
+    "menu:preparations": {
+      "id": "menu:preparations",
+      "name": "Preparations",
+      "icon": "icon-lab-mix",
+      "type": "@@router/GO",
+      "payload": {
+        "method": "go",
+        "args": [
+          "nav.index.preparations"
+        ]
+      }
+    },
+    "onboarding:preparation": {
+      "id": "onboarding:preparation",
+      "name": "Click here to discover the application",
+      "icon": "icon-student-user-2",
+      "type": "@@onboarding/START_TOUR",
+      "payload": {
+        "method": "startTour",
+        "args": [
+          "preparation"
+        ]
+      }
+    },
+    "modal:feedback": {
+      "id": "modal:feedback",
+      "name": "Send feedback to Talend",
+      "icon": "icon-bubbles-talk-1",
+      "type": "@@modal/SHOW",
+      "payload": {
+        "method": "showFeedback"
+      }
+    },
+    "external:help": {
+      "id": "external:help",
+      "name": "Open Online Help",
+      "icon": "icon-help",
+      "type": "@@external/OPEN_WINDOW",
+      "payload": {
+        "method": "open",
+        "args": [
+          "https://help.talend.com/pages/viewpage.action?pageId=266307043&utm_medium=dpdesktop&utm_source=header"
+        ]
+      }
+    }
+  }
+}
