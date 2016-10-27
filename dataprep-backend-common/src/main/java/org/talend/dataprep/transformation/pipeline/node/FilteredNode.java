@@ -12,10 +12,6 @@ public class FilteredNode extends BasicNode {
 
     private Predicate<DataSetRow> instance;
 
-    private boolean hasMatchedFilter = false;
-
-    private RowMetadata lastRowMetadata;
-
     public FilteredNode(Function<RowMetadata, Predicate<DataSetRow>> filter) {
         this.filter = filter;
     }
@@ -28,10 +24,7 @@ public class FilteredNode extends BasicNode {
             }
         }
         if (instance.test(row)) {
-            hasMatchedFilter = true;
             super.receive(row, metadata);
-        } else {
-            lastRowMetadata = metadata;
         }
     }
 }
