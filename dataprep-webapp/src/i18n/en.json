@@ -127,7 +127,7 @@
   "FILE_DETAILS_LIMIT": "cut at {{records}} rows",
   "FILTER": "Search and Filter",
   "NB_LINES_MATCHING_FILTERS": "{{percentage}}% of rows are matching your filter(s)",
-  "NEW_FILTER": "New filter...",
+  "NEW_FILTER": "Add a filter...",
   "PREPARATION": "Preparation",
   "REMOVE_ALL_FILTERS": "Remove all filters",
   "TOOGLE_ALL_FILTERS": "Enable/Disable all filters",
@@ -136,6 +136,7 @@
   "DISPLAY_ROWS_EMPTY_VALUES": "Display rows with empty values",
   "DISPLAY_ROWS_INVALID_EMPTY_VALUES": "Display rows with invalid or empty values",
   "FILTER_TITLE": "Filter",
+  "FILTERS": "Filters",
 
   "_comment": "Buttons",
   "CANCEL": "Cancel",

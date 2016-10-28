@@ -26,24 +26,40 @@ $slide-action-background: $base-background-color;
 @mixin playground-center-layout {
   .playground-center {
     @extend .flex-center;
+    @include display(flex);
+    @include flex-direction(column);
+
+    background-color: $shadow-gray;
     position: relative;
 
+    #playground-filter-bar {
+      @include flex-grow(0);
+      @include flex-shrink(0);
+    }
+
     #playground-dataset-parameters {
-      box-shadow: $box-shadow-to-bottom;
       @include slidable-top(200px, 0px);
       > * {
         margin: 10px;
       }
     }
 
-    #playground-filter-bar > * {
-      margin: 10px;
-    }
-
     #playground-datagrid-container {
-      margin: 10px;
-      @include calc(height, "100vh - 150px");
+      @include display(flex);
+      @include flex-grow(1);
+      @include flex-shrink(1);
+      @include flex-basis(500px);
+
+      margin: 0 30px;
       position: relative;
+
+      .datagrid-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+      }
     }
 
     .lookup-slide {
@@ -58,7 +74,6 @@ $slide-action-background: $base-background-color;
 @mixin recipe-layout {
   .playground-recipe {
     @include slidable-action-bar();
-    box-shadow: $box-shadow-to-right;
 
     > .content {
       overflow: hidden;
@@ -115,7 +130,6 @@ $slide-action-background: $base-background-color;
 @mixin suggestions-layout {
   .playground-suggestions {
     @include slidable-action-bar();
-    box-shadow: $box-shadow-to-left;
   }
 }
 

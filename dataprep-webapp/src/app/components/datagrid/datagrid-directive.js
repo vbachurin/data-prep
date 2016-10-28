@@ -187,6 +187,8 @@ export default function Datagrid($timeout, state, DatagridGridService, DatagridC
 					DatagridStyleService.resetCellStyles();
 					grid.scrollRowToTop(0);
 					DatagridExternalService.updateGridRangeIndex();
+					//resize grid
+					$timeout(grid.resizeCanvas, 500, false);
 				}
 			};
 
