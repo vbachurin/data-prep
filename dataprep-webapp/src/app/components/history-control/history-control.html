@@ -13,19 +13,21 @@
   ~ ============================================================================
   -->
 
-<ul class="history-control">
+<ul class="nav navbar-nav">
     <li>
-        <a ng-click="historyCtrl.service.undo()"
-           ng-class="{'inactive': !historyCtrl.service.canUndo()}"
+        <a ng-class="{'inactive': !historyCtrl.service.canUndo()}"
+           ng-click="historyCtrl.service.undo()"
            translate-once-title="UNDO_ICON_TOOLTIP"
-           class="undo" data-icon="F" alt="UNDO ({{historyCtrl.service.canUndo()}})">
+           ng-include="'assets/images/header/left_big.svg'"
+           alt="UNDO ({{historyCtrl.service.canUndo()}})">
         </a>
     </li>
     <li>
         <a ng-click="historyCtrl.service.redo()"
            ng-class="{'inactive': !historyCtrl.service.canRedo()}"
            translate-once-title="REDO_ICON_TOOLTIP"
-           class="redo" data-icon="G" alt="REDO ({{historyCtrl.service.canRedo()}})">
+           ng-include="'assets/images/header/right_big.svg'"
+           alt="REDO ({{historyCtrl.service.canRedo()}})">
         </a>
     </li>
 </ul>

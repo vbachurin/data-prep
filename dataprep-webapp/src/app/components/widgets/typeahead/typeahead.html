@@ -12,19 +12,20 @@
   ~
   ~ ============================================================================
   -->
-
-<form class="form-inline">
-    <div class="form-group-sm">
-        <label class="sr-only" for="typeheadSearchInput">{{typeaheadCtrl.placeholder}}</label>
-        <input type="search"
-               id="typeheadSearchInput"
-               class="form-control input-search"
-               placeholder="{{typeaheadCtrl.placeholder}}"
-               ng-model="typeaheadCtrl.searchString"
-               ng-model-options="{debounce: { default: 300, blur: 0 }}"
-               ng-change="typeaheadCtrl.onChange()">
-    </div>
-</form>
+<div class="typeahead-container" >
+    <i  class="search-icon"
+        ng-include="'assets/images/header/search.svg'"
+        ng-class="{inverse: typeaheadCtrl.inputVisible}"
+        ng-click="typeaheadCtrl.toogleSearchInput()"></i>
+    <input type="text"
+           class="search-input"
+           placeholder="{{typeaheadCtrl.placeholder}}"
+           ng-show="typeaheadCtrl.inputVisible"
+           ng-model="typeaheadCtrl.searchString"
+           ng-model-options="{debounce: { default: 300, blur: 0 }}"
+           ng-change="typeaheadCtrl.onChange()"
+           ng-blur="typeaheadCtrl.toogleSearchInput()">
+</div>
 
 <div class="typeahead-result"
      ng-if="typeaheadCtrl.searchString && typeaheadCtrl.visible">

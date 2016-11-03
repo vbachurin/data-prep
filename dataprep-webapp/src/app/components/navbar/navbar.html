@@ -13,42 +13,45 @@
   ~ ============================================================================
   -->
 
-<talend-navbar class="header">
-    <span class="logo-wrapper">
-        <span class="logo"></span>
-    </span>
-    <a href="javascript:void(0)" class="navigation-menu-button" translate-once="MENU"></a>
-    <nav role="navigation" class="navigation-items" insertion-home-right-header>
-        <ul class="navigation-menu show">
-            <li id="onboarding-icon" class="nav-link" translate-once-title="ONBOARDING">
-                <a class="icon enabled"
-                   data-icon="y"
-                   ng-click="navbarCtrl.startTour('preparation')">
-                </a>
-            </li>
-            <li id="message-icon" ng-if="!navbarCtrl.state.ee" class="nav-link" translate-once-title="FEEDBACK_TOOLTIP">
-                <a class="icon enabled"
-                   data-icon="H"
-                   ng-click="navbarCtrl.openFeedbackForm()">
-                </a>
-            </li>
-            <li id="online-help-icon" class="nav-link" translate-once-title="ONLINE_HELP_TOOLTIP">
-                <a class="icon enabled"
-                   data-icon="l"
-                   href="https://help.talend.com/pages/viewpage.action?pageId=266307043&utm_medium=dpdesktop&utm_source=header"
-                   target="_blank">
-                </a>
-            </li>
-        </ul>
-    </nav>
-    <div class="navigation-tools">
-        <div class="search-bar">
-            <inventory-search></inventory-search>
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" ng-click="isNavCollapsed = !isNavCollapsed">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#"><span class="sr-only">Talend</span>Data Preparation</a>
+        </div>
+
+        <div class="collapse navbar-collapse" uib-collapse="isNavCollapsed" insertion-home-right-header>
+            <ul class="nav navbar-nav navbar-right">
+                <li><inventory-search></inventory-search></li>
+                <li>
+                    <a id="onboarding-icon"
+                       ng-click="navbarCtrl.startTour('preparation')"
+                       translate-once-title="ONBOARDING"
+                       ng-include="'assets/images/header/board.svg'"></a>
+                </li>
+                <li ng-if="!navbarCtrl.state.ee">
+                    <a id="message-icon"
+                       ng-click="navbarCtrl.openFeedbackForm()"
+                       translate-once-title="FEEDBACK_TOOLTIP"
+                       ng-include="'assets/images/header/bubble.svg'"></a>
+                </li>
+                <li>
+                    <a id="online-help-icon"
+                       href="https://help.talend.com/pages/viewpage.action?pageId=266307043&utm_medium=dpdesktop&utm_source=header"
+                       target="_blank"
+                       translate-once-title="ONLINE_HELP_TOOLTIP"
+                       ng-include="'assets/images/header/info.svg'">
+                    </a>
+                </li>
+            </ul>
         </div>
     </div>
-
-
-</talend-navbar>
+</nav>
 
 <ui-view class="content"></ui-view>
 

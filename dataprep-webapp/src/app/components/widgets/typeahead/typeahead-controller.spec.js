@@ -112,4 +112,18 @@ describe('Typeahead widget controller', () => {
             expect(ctrl.visible).toBe(true);
         });
     });
+
+    describe('search input', () => {
+        it('should toogle search input visibility', () => {
+            //given
+            var ctrl = createController();
+            ctrl.inputVisible = true;
+
+            //when
+            ctrl.toogleSearchInput();
+
+            //then
+            expect(ctrl.inputVisible).toBe(false);
+        });
+    });
 });
