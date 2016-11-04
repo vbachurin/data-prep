@@ -9,6 +9,14 @@ e.g. https://jira.talendforge.org/browse/TDP-XXXX
 - [ ] The code coverage on new code is > 75 % for backend and > 95% for frontend
 - [ ] The new code does not introduce new technical issues (sonar / eslint)
 
+**Please check the browsers you've tested on**
+
+- [ ] Chrome
+- [ ] Firefox
+- [ ] Safari
+- [ ] Edge
+- [ ] IE11
+
 **(Optional) What is the current behavior?**
 (Additional information to the Jira)
 
