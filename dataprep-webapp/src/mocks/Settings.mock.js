@@ -27,6 +27,21 @@ const settingsMock = {
 				menu: ['user:logout'],
 			},
 		},
+		"sidepanel": {
+			"onToggleDock": "sidepanel:toggle",
+			"actions": [
+				{
+					"label": "Preparations",
+					"icon": "icon-lab-mix",
+					"onClick": "menu:preparations"
+				},
+				{
+					"label": "Datasets",
+					"icon": "icon-dataset",
+					"onClick": "menu:datasets"
+				}
+			]
+		},
 	},
 	actions: {
 		'menu:preparations': {
@@ -52,6 +67,16 @@ const settingsMock = {
 					'nav.index.datasets',
 				],
 			},
+		},
+		"sidepanel:toggle": {
+			"id": "sidepanel:toggle",
+			"name": "Click here to toggle the side panel",
+			"icon": "",
+			"type": "@@sidepanel/TOGGLE",
+			"payload": {
+				"method": "toggleHomeSidepanel",
+				"args": []
+			}
 		},
 		'user:logout': {
 			id: 'user:logout',
