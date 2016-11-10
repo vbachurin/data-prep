@@ -11,24 +11,13 @@
 
  ============================================================================*/
 
-export default class MenuActionsService {
-	constructor($state) {
-		'ngInject';
-		this.$state = $state;
-	}
+import BreadcrumbCtrl from './breadcrumb-controller';
 
-	dispatch(action) {
-		switch (action.type) {
-		case '@@router/GO': {
-			const { method, args } = action.payload;
-			this.$state[method](...args);
-			break;
-		}
-		case '@@router/GO_FOLDER': {
-			const { method, args, id } = action.payload;
-			this.$state[method](...args, { folderId: id });
-			break;
-		}
-		}
-	}
-}
+const BreadcrumbContainer = {
+	template: '<pure-breadcrumb items="$ctrl.breadcrumbItems" max-items="$ctrl.maxItems"></pure-breadcrumb>',
+	controller: BreadcrumbCtrl,
+	bindings: {
+		items: '<',
+	},
+};
+export default BreadcrumbContainer;

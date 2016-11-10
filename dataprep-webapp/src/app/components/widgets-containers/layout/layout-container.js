@@ -20,10 +20,15 @@ const LayoutContainer = {
 				<div class="sidemenu">
 					<side-panel><side-panel/>
 				</div>
-				<div class="main"></div>
+				<div class="main">
+					<breadcrumbs items="$ctrl.state.inventory.breadcrumb"></breadcrumbs>
+				</div>
 			</div>
 		</div>
 	`,
+	controller(state) {
+		this.state = state;
+	},
 };
 
 export default LayoutContainer;

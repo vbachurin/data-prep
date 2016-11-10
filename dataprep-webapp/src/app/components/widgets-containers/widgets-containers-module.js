@@ -13,11 +13,11 @@
 
 import angular from 'angular';
 
-import { AppHeaderBar, SidePanel } from 'react-talend-components';
+import { AppHeaderBar, Breadcrumbs,	SidePanel } from 'react-talend-components';
 import AppHeaderBarContainer from './app-header-bar/app-header-bar-container';
-import SidePanelContainer from './side-panel/side-panel-container';
+import BreadcrumbContainer from './breadcrumb/breadcrumb-container';
 import LayoutContainer from './layout/layout-container';
-
+import SidePanelContainer from './side-panel/side-panel-container';
 
 import SETTINGS_MODULE from '../../settings/settings-module';
 
@@ -30,8 +30,10 @@ angular.module(MODULE_NAME,
 		SETTINGS_MODULE,
 	])
 	.directive('pureAppHeaderBar', ['reactDirective', reactDirective => reactDirective(AppHeaderBar)])
+	.directive('pureBreadcrumb', ['reactDirective', reactDirective => reactDirective(Breadcrumbs)])
 	.directive('pureAppSidePanel', ['reactDirective', reactDirective => reactDirective(SidePanel)])
 	.component('appHeaderBar', AppHeaderBarContainer)
+	.component('breadcrumbs', BreadcrumbContainer)
 	.component('sidePanel', SidePanelContainer)
 	.component('layout', LayoutContainer);
 
