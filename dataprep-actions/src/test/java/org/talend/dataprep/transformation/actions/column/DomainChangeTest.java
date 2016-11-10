@@ -14,6 +14,8 @@
 package org.talend.dataprep.transformation.actions.column;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.talend.dataprep.transformation.actions.column.DomainChange.NEW_DOMAIN_ID_PARAMETER_KEY;
 
 import java.util.HashMap;
@@ -21,6 +23,7 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.talend.dataprep.api.action.ActionDefinition;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.dataset.row.DataSetRow;
@@ -98,4 +101,11 @@ public class DomainChangeTest extends AbstractMetadataBaseTest {
             assertThat(accepted).isTrue();
         }
     }
+
+    @Test
+    public void should_have_expected_behavior() {
+        assertEquals(1, domainChange.getBehavior().size());
+        assertTrue(domainChange.getBehavior().contains(ActionDefinition.Behavior.METADATA_CHANGE_TYPE));
+    }
+
 }

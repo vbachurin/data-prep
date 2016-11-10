@@ -13,10 +13,8 @@
 
 package org.talend.dataprep.transformation.actions.math;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
 import static org.talend.dataprep.transformation.actions.ActionMetadataTestUtils.getColumn;
 import static org.talend.dataprep.transformation.actions.ActionMetadataTestUtils.getRow;
@@ -32,6 +30,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.talend.dataprep.api.action.ActionDefinition;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.api.type.Type;
@@ -53,6 +52,7 @@ public class ExtractNumberTest extends AbstractMetadataBaseTest {
 
     /** The action parameters. */
     private Map<String, String> parameters;
+
     private Locale previousLocale;
 
     @Before
@@ -149,10 +149,10 @@ public class ExtractNumberTest extends AbstractMetadataBaseTest {
         test_valid_numbers("(12.5)", false, Type.DOUBLE); // (n) must be interpreted as -n (accounting convention).
     }
 
-    public void test_valid_numbers(String input, boolean expected, Type expectedType) throws Exception {
+    private void test_valid_numbers(String input, boolean expected, Type expectedType) throws Exception {
         // given
         DataSetRow row = getRow(input);
-        assertThat(row.getRowMetadata().getColumns()).isNotEmpty().hasSize(1);
+        Assertions.assertThat(row.getRowMetadata().getColumns()).isNotEmpty().hasSize(1);
 
         // when
         ActionTestWorkbench.test(Collections.singletonList(row), //
@@ -161,7 +161,7 @@ public class ExtractNumberTest extends AbstractMetadataBaseTest {
                 factory.create(action, parameters));
 
         // then
-        assertThat(row.getRowMetadata().getColumns()) //
+        Assertions.assertThat(row.getRowMetadata().getColumns()) //
                 .isNotEmpty().hasSize(2) //
                 .contains(ColumnMetadata.Builder //
                         .column() //
@@ -170,12 +170,12 @@ public class ExtractNumberTest extends AbstractMetadataBaseTest {
                         .computedId("0001") //
                         .build());
 
-        assertThat(row.values()).isNotEmpty().hasSize(2);
+        Assertions.assertThat(row.values()).isNotEmpty().hasSize(2);
 
         if (expected) {
-            assertThat(row.get("0001")).isEqualTo(input);
+            Assertions.assertThat(row.get("0001")).isEqualTo(input);
         } else {
-            assertThat(row.get("0001")).isNotEqualTo(input);
+            Assertions.assertThat(row.get("0001")).isNotEqualTo(input);
         }
     }
 
@@ -209,10 +209,16 @@ public class ExtractNumberTest extends AbstractMetadataBaseTest {
         inner_test("h2G", "2000000000", Type.INTEGER);
     }
 
-    public void inner_test(String from, String expected, Type expectedType) throws Exception {
+    @Test
+    public void should_have_expected_behavior() {
+        assertEquals(1, action.getBehavior().size());
+        assertTrue(action.getBehavior().contains(ActionDefinition.Behavior.METADATA_CREATE_COLUMNS));
+    }
+
+    private void inner_test(String from, String expected, Type expectedType) throws Exception {
         // given
         DataSetRow row = getRow(from);
-        assertThat(row.getRowMetadata().getColumns()).isNotEmpty().hasSize(1);
+        Assertions.assertThat(row.getRowMetadata().getColumns()).isNotEmpty().hasSize(1);
 
         // when
         ActionTestWorkbench.test(Collections.singletonList(row), //
@@ -221,7 +227,7 @@ public class ExtractNumberTest extends AbstractMetadataBaseTest {
                 factory.create(action, parameters));
 
         // then
-        assertThat(row.getRowMetadata().getColumns()) //
+        Assertions.assertThat(row.getRowMetadata().getColumns()) //
                 .isNotEmpty().hasSize(2) //
                 .contains(ColumnMetadata.Builder //
                         .column() //
@@ -230,9 +236,9 @@ public class ExtractNumberTest extends AbstractMetadataBaseTest {
                         .computedId("0001") //
                         .build());
 
-        assertThat(row.values()).isNotEmpty().hasSize(2);
+        Assertions.assertThat(row.values()).isNotEmpty().hasSize(2);
 
-        assertThat(row.get("0001")).isEqualTo(expected);
+        Assertions.assertThat(row.get("0001")).isEqualTo(expected);
     }
 
 }

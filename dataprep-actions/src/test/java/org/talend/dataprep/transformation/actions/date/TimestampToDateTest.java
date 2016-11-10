@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.talend.dataprep.api.action.ActionDefinition;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.dataset.row.DataSetRow;
@@ -253,6 +254,12 @@ public class TimestampToDateTest extends BaseDateTests {
         // then
         assertEquals(expectedValues, row.values());
         assertThat(row.getRowMetadata().getById("0003").getType(), is("string"));
+    }
+
+    @Test
+    public void should_have_expected_behavior() {
+        assertEquals(1, action.getBehavior().size());
+        assertTrue(action.getBehavior().contains(ActionDefinition.Behavior.METADATA_CREATE_COLUMNS));
     }
 
 }

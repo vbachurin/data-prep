@@ -12,9 +12,9 @@
 // ============================================================================
 package org.talend.dataprep.transformation.actions.column;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
 import static org.talend.dataprep.transformation.actions.AbstractMetadataBaseTest.ValueBuilder.value;
@@ -24,8 +24,10 @@ import static org.talend.dataprep.transformation.actions.ActionMetadataTestUtils
 import java.io.IOException;
 import java.util.Map;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
+import org.talend.dataprep.api.action.ActionDefinition;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.dataset.row.DataSetRow;
@@ -71,11 +73,11 @@ public class ReorderColumnTest extends AbstractMetadataBaseTest {
 
         // then
         final RowMetadata rowMetadata = row.getRowMetadata();
-        assertThat(rowMetadata.getColumns()).isNotEmpty().hasSize(2);
-        assertThat(rowMetadata.getColumns().get(0).getName()).isEqualTo("1 col");
-        assertThat(rowMetadata.getColumns().get(0).getId()).isEqualTo("0001");
-        assertThat(rowMetadata.getColumns().get(1).getName()).isEqualTo("0 col");
-        assertThat(rowMetadata.getColumns().get(1).getId()).isEqualTo("0000");
+        Assertions.assertThat(rowMetadata.getColumns()).isNotEmpty().hasSize(2);
+        Assertions.assertThat(rowMetadata.getColumns().get(0).getName()).isEqualTo("1 col");
+        Assertions.assertThat(rowMetadata.getColumns().get(0).getId()).isEqualTo("0001");
+        Assertions.assertThat(rowMetadata.getColumns().get(1).getName()).isEqualTo("0 col");
+        Assertions.assertThat(rowMetadata.getColumns().get(1).getId()).isEqualTo("0000");
         assertValuesNotTouched(2, row);
     }
 
@@ -93,11 +95,11 @@ public class ReorderColumnTest extends AbstractMetadataBaseTest {
 
         // then
         final RowMetadata rowMetadata = row.getRowMetadata();
-        assertThat(rowMetadata.getColumns()).isNotEmpty().hasSize(4);
-        assertThat(rowMetadata.getColumns().get(0).getId()).isEqualTo("0001");
-        assertThat(rowMetadata.getColumns().get(1).getId()).isEqualTo("0002");
-        assertThat(rowMetadata.getColumns().get(2).getId()).isEqualTo("0003");
-        assertThat(rowMetadata.getColumns().get(3).getId()).isEqualTo("0000");
+        Assertions.assertThat(rowMetadata.getColumns()).isNotEmpty().hasSize(4);
+        Assertions.assertThat(rowMetadata.getColumns().get(0).getId()).isEqualTo("0001");
+        Assertions.assertThat(rowMetadata.getColumns().get(1).getId()).isEqualTo("0002");
+        Assertions.assertThat(rowMetadata.getColumns().get(2).getId()).isEqualTo("0003");
+        Assertions.assertThat(rowMetadata.getColumns().get(3).getId()).isEqualTo("0000");
         assertValuesNotTouched(4, row);
     }
 
@@ -115,11 +117,11 @@ public class ReorderColumnTest extends AbstractMetadataBaseTest {
 
         // then
         final RowMetadata actual = row.getRowMetadata();
-        assertThat(actual.getColumns()).isNotEmpty().hasSize(4);
-        assertThat(actual.getColumns().get(0).getId()).isEqualTo("0003");
-        assertThat(actual.getColumns().get(1).getId()).isEqualTo("0000");
-        assertThat(actual.getColumns().get(2).getId()).isEqualTo("0001");
-        assertThat(actual.getColumns().get(3).getId()).isEqualTo("0002");
+        Assertions.assertThat(actual.getColumns()).isNotEmpty().hasSize(4);
+        Assertions.assertThat(actual.getColumns().get(0).getId()).isEqualTo("0003");
+        Assertions.assertThat(actual.getColumns().get(1).getId()).isEqualTo("0000");
+        Assertions.assertThat(actual.getColumns().get(2).getId()).isEqualTo("0001");
+        Assertions.assertThat(actual.getColumns().get(3).getId()).isEqualTo("0002");
         assertValuesNotTouched(4, row);
     }
 
@@ -137,12 +139,12 @@ public class ReorderColumnTest extends AbstractMetadataBaseTest {
 
         // then
         final RowMetadata rowMetadata = row.getRowMetadata();
-        assertThat(rowMetadata.getColumns()).isNotEmpty().hasSize(5);
-        assertThat(rowMetadata.getColumns().get(0).getId()).isEqualTo("0000");
-        assertThat(rowMetadata.getColumns().get(1).getId()).isEqualTo("0001");
-        assertThat(rowMetadata.getColumns().get(2).getId()).isEqualTo("0004");
-        assertThat(rowMetadata.getColumns().get(3).getId()).isEqualTo("0002");
-        assertThat(rowMetadata.getColumns().get(4).getId()).isEqualTo("0003");
+        Assertions.assertThat(rowMetadata.getColumns()).isNotEmpty().hasSize(5);
+        Assertions.assertThat(rowMetadata.getColumns().get(0).getId()).isEqualTo("0000");
+        Assertions.assertThat(rowMetadata.getColumns().get(1).getId()).isEqualTo("0001");
+        Assertions.assertThat(rowMetadata.getColumns().get(2).getId()).isEqualTo("0004");
+        Assertions.assertThat(rowMetadata.getColumns().get(3).getId()).isEqualTo("0002");
+        Assertions.assertThat(rowMetadata.getColumns().get(4).getId()).isEqualTo("0003");
 
         assertValuesNotTouched(5, row);
     }
@@ -164,12 +166,12 @@ public class ReorderColumnTest extends AbstractMetadataBaseTest {
 
         // then
         final RowMetadata rowMetadata = row.getRowMetadata();
-        assertThat(rowMetadata.getColumns()).isNotEmpty().hasSize(5);
-        assertThat(rowMetadata.getColumns().get(0).getId()).isEqualTo("0000");
-        assertThat(rowMetadata.getColumns().get(1).getId()).isEqualTo("0001");
-        assertThat(rowMetadata.getColumns().get(2).getId()).isEqualTo("0004");
-        assertThat(rowMetadata.getColumns().get(3).getId()).isEqualTo("0002");
-        assertThat(rowMetadata.getColumns().get(4).getId()).isEqualTo("0003");
+        Assertions.assertThat(rowMetadata.getColumns()).isNotEmpty().hasSize(5);
+        Assertions.assertThat(rowMetadata.getColumns().get(0).getId()).isEqualTo("0000");
+        Assertions.assertThat(rowMetadata.getColumns().get(1).getId()).isEqualTo("0001");
+        Assertions.assertThat(rowMetadata.getColumns().get(2).getId()).isEqualTo("0004");
+        Assertions.assertThat(rowMetadata.getColumns().get(3).getId()).isEqualTo("0002");
+        Assertions.assertThat(rowMetadata.getColumns().get(4).getId()).isEqualTo("0003");
 
         assertValuesNotTouched(5, row);
 
@@ -183,12 +185,12 @@ public class ReorderColumnTest extends AbstractMetadataBaseTest {
         ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
-        assertThat(rowMetadata.getColumns()).isNotEmpty().hasSize(5);
-        assertThat(rowMetadata.getColumns().get(0).getId()).isEqualTo("0002");
-        assertThat(rowMetadata.getColumns().get(1).getId()).isEqualTo("0000");
-        assertThat(rowMetadata.getColumns().get(2).getId()).isEqualTo("0001");
-        assertThat(rowMetadata.getColumns().get(3).getId()).isEqualTo("0004");
-        assertThat(rowMetadata.getColumns().get(4).getId()).isEqualTo("0003");
+        Assertions.assertThat(rowMetadata.getColumns()).isNotEmpty().hasSize(5);
+        Assertions.assertThat(rowMetadata.getColumns().get(0).getId()).isEqualTo("0002");
+        Assertions.assertThat(rowMetadata.getColumns().get(1).getId()).isEqualTo("0000");
+        Assertions.assertThat(rowMetadata.getColumns().get(2).getId()).isEqualTo("0001");
+        Assertions.assertThat(rowMetadata.getColumns().get(3).getId()).isEqualTo("0004");
+        Assertions.assertThat(rowMetadata.getColumns().get(4).getId()).isEqualTo("0003");
 
         assertValuesNotTouched(5, row);
     }
@@ -211,12 +213,12 @@ public class ReorderColumnTest extends AbstractMetadataBaseTest {
         // then
         final RowMetadata actualRowMetadata = row.getRowMetadata();
         final RowMetadata rowMetadata = actualRowMetadata;
-        assertThat(rowMetadata.getColumns()).isNotEmpty().hasSize(5);
-        assertThat(rowMetadata.getColumns().get(0).getId()).isEqualTo("0000");
-        assertThat(rowMetadata.getColumns().get(1).getId()).isEqualTo("0001");
-        assertThat(rowMetadata.getColumns().get(2).getId()).isEqualTo("0004");
-        assertThat(rowMetadata.getColumns().get(3).getId()).isEqualTo("0002");
-        assertThat(rowMetadata.getColumns().get(4).getId()).isEqualTo("0003");
+        Assertions.assertThat(rowMetadata.getColumns()).isNotEmpty().hasSize(5);
+        Assertions.assertThat(rowMetadata.getColumns().get(0).getId()).isEqualTo("0000");
+        Assertions.assertThat(rowMetadata.getColumns().get(1).getId()).isEqualTo("0001");
+        Assertions.assertThat(rowMetadata.getColumns().get(2).getId()).isEqualTo("0004");
+        Assertions.assertThat(rowMetadata.getColumns().get(3).getId()).isEqualTo("0002");
+        Assertions.assertThat(rowMetadata.getColumns().get(4).getId()).isEqualTo("0003");
 
         assertValuesNotTouched(5, row);
 
@@ -230,12 +232,12 @@ public class ReorderColumnTest extends AbstractMetadataBaseTest {
         ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
-        assertThat(rowMetadata.getColumns()).isNotEmpty().hasSize(5);
-        assertThat(rowMetadata.getColumns().get(0).getId()).isEqualTo("0004");
-        assertThat(rowMetadata.getColumns().get(1).getId()).isEqualTo("0000");
-        assertThat(rowMetadata.getColumns().get(2).getId()).isEqualTo("0001");
-        assertThat(rowMetadata.getColumns().get(3).getId()).isEqualTo("0002");
-        assertThat(rowMetadata.getColumns().get(4).getId()).isEqualTo("0003");
+        Assertions.assertThat(rowMetadata.getColumns()).isNotEmpty().hasSize(5);
+        Assertions.assertThat(rowMetadata.getColumns().get(0).getId()).isEqualTo("0004");
+        Assertions.assertThat(rowMetadata.getColumns().get(1).getId()).isEqualTo("0000");
+        Assertions.assertThat(rowMetadata.getColumns().get(2).getId()).isEqualTo("0001");
+        Assertions.assertThat(rowMetadata.getColumns().get(3).getId()).isEqualTo("0002");
+        Assertions.assertThat(rowMetadata.getColumns().get(4).getId()).isEqualTo("0003");
 
         assertValuesNotTouched(5, row);
 
@@ -249,12 +251,12 @@ public class ReorderColumnTest extends AbstractMetadataBaseTest {
         ActionTestWorkbench.test(row, actionRegistry, factory.create(action, parameters));
 
         // then
-        assertThat(actualRowMetadata.getColumns()).isNotEmpty().hasSize(5);
-        assertThat(actualRowMetadata.getColumns().get(0).getId()).isEqualTo("0002");
-        assertThat(actualRowMetadata.getColumns().get(1).getId()).isEqualTo("0004");
-        assertThat(actualRowMetadata.getColumns().get(2).getId()).isEqualTo("0000");
-        assertThat(actualRowMetadata.getColumns().get(3).getId()).isEqualTo("0001");
-        assertThat(actualRowMetadata.getColumns().get(4).getId()).isEqualTo("0003");
+        Assertions.assertThat(actualRowMetadata.getColumns()).isNotEmpty().hasSize(5);
+        Assertions.assertThat(actualRowMetadata.getColumns().get(0).getId()).isEqualTo("0002");
+        Assertions.assertThat(actualRowMetadata.getColumns().get(1).getId()).isEqualTo("0004");
+        Assertions.assertThat(actualRowMetadata.getColumns().get(2).getId()).isEqualTo("0000");
+        Assertions.assertThat(actualRowMetadata.getColumns().get(3).getId()).isEqualTo("0001");
+        Assertions.assertThat(actualRowMetadata.getColumns().get(4).getId()).isEqualTo("0003");
 
         assertValuesNotTouched(5, row);
     }
@@ -269,13 +271,19 @@ public class ReorderColumnTest extends AbstractMetadataBaseTest {
 
     protected void assertValuesNotTouched(int columnNumber, DataSetRow row) {
         for (int i = 0; i < columnNumber; i++) {
-            assertThat(row.get("000" + i)).isEqualTo("000" + i + " value");
+            Assertions.assertThat(row.get("000" + i)).isEqualTo("000" + i + " value");
         }
     }
 
     @Test
     public void should_accept_column() {
         assertTrue(action.acceptField(getColumn(Type.ANY)));
+    }
+
+    @Test
+    public void should_have_expected_behavior() {
+        assertEquals(1, action.getBehavior().size());
+        assertTrue(action.getBehavior().contains(ActionDefinition.Behavior.VALUES_COLUMN));
     }
 
 }

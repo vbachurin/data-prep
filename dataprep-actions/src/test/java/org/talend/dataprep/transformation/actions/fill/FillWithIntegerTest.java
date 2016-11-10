@@ -25,6 +25,7 @@ import javax.annotation.PostConstruct;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.talend.dataprep.api.action.ActionDefinition;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.dataset.row.DataSetRow;
@@ -136,6 +137,12 @@ public class FillWithIntegerTest extends AbstractMetadataBaseTest {
     public void should_not_accept_column() {
         assertFalse(action.acceptField(getColumn(Type.NUMERIC)));
         assertFalse(action.acceptField(getColumn(Type.ANY)));
+    }
+
+    @Test
+    public void should_have_expected_behavior() {
+        assertEquals(1, action.getBehavior().size());
+        assertTrue(action.getBehavior().contains(ActionDefinition.Behavior.VALUES_COLUMN));
     }
 
 }

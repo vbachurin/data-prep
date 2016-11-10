@@ -130,7 +130,7 @@ public class MakeLineHeader extends AbstractActionMetadata implements RowAction 
 
     @Override
     public Set<Behavior> getBehavior() {
-        return EnumSet.of(Behavior.METADATA_CHANGE_NAME, Behavior.VALUES_ALL);
+        return EnumSet.of(Behavior.METADATA_CHANGE_NAME, Behavior.VALUES_ALL, Behavior.FORBID_DISTRIBUTED);
     }
 
 }

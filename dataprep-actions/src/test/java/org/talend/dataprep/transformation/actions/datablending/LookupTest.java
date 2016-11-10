@@ -27,6 +27,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.talend.dataprep.api.action.ActionDefinition;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.RowMetadata;
@@ -64,7 +65,6 @@ public class LookupTest extends AbstractMetadataBaseTest {
 
     @Test
     public void testParameters() {
-
         // given
         final List<String> expectedParametersName = Arrays.asList( //
                 "column_id", //
@@ -238,4 +238,11 @@ public class LookupTest extends AbstractMetadataBaseTest {
         parameters.put(COLUMN_ID.getKey(), "0001");
         return parameters;
     }
+
+    @Test
+    public void should_have_expected_behavior() {
+        assertEquals(1, action.getBehavior().size());
+        assertTrue(action.getBehavior().contains(ActionDefinition.Behavior.METADATA_CREATE_COLUMNS));
+    }
+
 }

@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
+import org.talend.dataprep.api.action.ActionDefinition;
 import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.parameters.Parameter;
 import org.talend.dataprep.transformation.actions.AbstractMetadataBaseTest;
@@ -97,7 +98,13 @@ public class TemperaturesConverterTest extends AbstractMetadataBaseTest {
         assertTrue(expectedParametersNotFound.toString() + " not found", expectedParametersNotFound.isEmpty());
     }
 
-    public void testConversion(String from, TemperaturesConverter.TemperatureUnit fromUnit, String expected,
+    @Test
+    public void should_have_expected_behavior() {
+        assertEquals(1, action.getBehavior().size());
+        assertTrue(action.getBehavior().contains(ActionDefinition.Behavior.METADATA_CREATE_COLUMNS));
+    }
+
+    private void testConversion(String from, TemperaturesConverter.TemperatureUnit fromUnit, String expected,
                                TemperaturesConverter.TemperatureUnit toUnit) {
         // given
         long rowId = 120;

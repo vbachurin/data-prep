@@ -27,6 +27,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.talend.dataprep.api.action.ActionDefinition;
 import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.actions.AbstractMetadataBaseTest;
@@ -232,4 +233,12 @@ public class MaskDataByDomainTest extends AbstractMetadataBaseTest {
     public void should_not_accept_column() {
         assertFalse(maskDataByDomain.acceptField(getColumn(Type.ANY)));
     }
+
+    @Test
+    public void should_have_expected_behavior() {
+        assertEquals(2, maskDataByDomain.getBehavior().size());
+        assertTrue(maskDataByDomain.getBehavior().contains(ActionDefinition.Behavior.VALUES_COLUMN));
+        assertTrue(maskDataByDomain.getBehavior().contains(ActionDefinition.Behavior.NEED_STATISTICS_INVALID));
+    }
+
 }

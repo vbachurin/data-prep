@@ -28,6 +28,7 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
+import org.talend.dataprep.api.action.ActionDefinition;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.dataset.row.DataSetRow;
@@ -145,6 +146,13 @@ public class FillWithDateIfInvalidTest extends AbstractMetadataBaseTest {
     @Test
     public void should_adapt_null() throws Exception {
         assertThat(fillInvalid.adapt((ColumnMetadata) null), is(fillInvalid));
+    }
+
+    @Test
+    public void should_have_expected_behavior() {
+        assertEquals(2, fillInvalid.getBehavior().size());
+        assertTrue(fillInvalid.getBehavior().contains(ActionDefinition.Behavior.NEED_STATISTICS_INVALID));
+        assertTrue(fillInvalid.getBehavior().contains(ActionDefinition.Behavior.VALUES_COLUMN));
     }
 
     public Statistics getStatistics(InputStream source) throws IOException {

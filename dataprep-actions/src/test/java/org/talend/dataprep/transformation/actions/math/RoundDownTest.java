@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.talend.dataprep.api.action.ActionDefinition;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.actions.ActionMetadataTestUtils;
@@ -150,6 +151,12 @@ public class RoundDownTest extends AbstractRoundTest {
         assertFalse(action.acceptField(getColumn(Type.STRING)));
         assertFalse(action.acceptField(getColumn(Type.DATE)));
         assertFalse(action.acceptField(getColumn(Type.BOOLEAN)));
+    }
+
+    @Test
+    public void should_have_expected_behavior() {
+        assertEquals(1, action.getBehavior().size());
+        assertTrue(action.getBehavior().contains(ActionDefinition.Behavior.VALUES_COLUMN));
     }
 
     @Override

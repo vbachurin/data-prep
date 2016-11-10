@@ -16,8 +16,7 @@ package org.talend.dataprep.transformation.actions.delete;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.talend.dataprep.transformation.actions.category.ActionCategory.DATA_CLEANSING;
 import static org.talend.dataprep.transformation.actions.category.ScopeCategory.COLUMN;
 import static org.talend.dataprep.transformation.actions.category.ScopeCategory.LINE;
@@ -160,6 +159,13 @@ public class DeleteTest extends AbstractMetadataBaseTest {
         assertTrue(rows.get(1).isDeleted());
         assertTrue(rows.get(2).isDeleted());
         assertFalse(rows.get(3).isDeleted());
+    }
+
+    @Test
+    public void should_have_expected_behavior() {
+        assertEquals(2, action.getBehavior().size());
+        assertTrue(action.getBehavior().contains(ActionDefinition.Behavior.VALUES_ALL));
+        assertTrue(action.getBehavior().contains(ActionDefinition.Behavior.FORBID_DISTRIBUTED));
     }
 
 }

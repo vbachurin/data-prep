@@ -186,7 +186,13 @@ public interface ActionDefinition extends Serializable {
         /**
          * Action requires up-to-date statistics (for invalid) before it can be executed.
          */
-        NEED_STATISTICS_INVALID
+        NEED_STATISTICS_INVALID,
+        /**
+         * Action can not run in distributed environment (it needs a common context that can't be shared by multiple
+         * nodes in case of distributed run). Example for this includes: fill empty with non-empty value from above,
+         * make line as header...
+         */
+        FORBID_DISTRIBUTED
     }
 
 }

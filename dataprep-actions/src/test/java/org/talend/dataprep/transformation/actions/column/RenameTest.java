@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.talend.dataprep.api.action.ActionDefinition;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.dataset.row.DataSetRow;
@@ -117,6 +118,12 @@ public class RenameTest extends AbstractMetadataBaseTest {
         assertTrue(action.acceptField(getColumn(Type.FLOAT)));
         assertTrue(action.acceptField(getColumn(Type.DATE)));
         assertTrue(action.acceptField(getColumn(Type.BOOLEAN)));
+    }
+
+    @Test
+    public void should_have_expected_behavior() {
+        assertEquals(1, action.getBehavior().size());
+        assertTrue(action.getBehavior().contains(ActionDefinition.Behavior.METADATA_CHANGE_NAME));
     }
 
 }

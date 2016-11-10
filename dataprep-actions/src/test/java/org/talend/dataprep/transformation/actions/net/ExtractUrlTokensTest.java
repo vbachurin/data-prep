@@ -28,6 +28,7 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.talend.dataprep.api.action.ActionDefinition;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.dataset.row.DataSetRow;
@@ -256,6 +257,12 @@ public class ExtractUrlTokensTest extends AbstractMetadataBaseTest {
                 UrlTokenExtractors.PROTOCOL_TOKEN_EXTRACTOR.extractToken(new URI("mvn://server:21/this/is/a/resource")));
         assertEquals("tagada",
                 UrlTokenExtractors.PROTOCOL_TOKEN_EXTRACTOR.extractToken(new URI("tagada://server:21/this/is/a/resource")));
+    }
+
+    @Test
+    public void should_have_expected_behavior() {
+        assertEquals(1, action.getBehavior().size());
+        assertTrue(action.getBehavior().contains(ActionDefinition.Behavior.METADATA_CREATE_COLUMNS));
     }
 
 }

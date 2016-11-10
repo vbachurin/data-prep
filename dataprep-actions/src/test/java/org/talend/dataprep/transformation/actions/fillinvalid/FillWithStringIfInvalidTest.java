@@ -24,6 +24,7 @@ import javax.annotation.PostConstruct;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.talend.dataprep.api.action.ActionDefinition;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.dataset.row.DataSetRow;
@@ -151,4 +152,12 @@ public class FillWithStringIfInvalidTest extends AbstractMetadataBaseTest {
     public void should_not_accept_column() {
         assertFalse(fillInvalid.acceptField(getColumn(Type.ANY)));
     }
+
+    @Test
+    public void should_have_expected_behavior() {
+        assertEquals(2, fillInvalid.getBehavior().size());
+        assertTrue(fillInvalid.getBehavior().contains(ActionDefinition.Behavior.NEED_STATISTICS_INVALID));
+        assertTrue(fillInvalid.getBehavior().contains(ActionDefinition.Behavior.VALUES_COLUMN));
+    }
+
 }

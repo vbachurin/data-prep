@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
+import org.talend.dataprep.api.action.ActionDefinition;
 import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.transformation.actions.AbstractMetadataBaseTest;
@@ -282,6 +283,14 @@ public class MakeLineHeaderTest extends AbstractMetadataBaseTest {
 
         assertEquals("John", row2.getRowMetadata().getById("0000").getName());
         assertEquals("Col 2", row2.getRowMetadata().getById("0001").getName());
+    }
+
+    @Test
+    public void should_have_expected_behavior() {
+        assertEquals(3, action.getBehavior().size());
+        assertTrue(action.getBehavior().contains(ActionDefinition.Behavior.METADATA_CHANGE_NAME));
+        assertTrue(action.getBehavior().contains(ActionDefinition.Behavior.VALUES_ALL));
+        assertTrue(action.getBehavior().contains(ActionDefinition.Behavior.FORBID_DISTRIBUTED));
     }
 
 }

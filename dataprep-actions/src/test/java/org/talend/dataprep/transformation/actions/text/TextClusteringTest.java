@@ -22,6 +22,7 @@ import java.util.*;
 
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
+import org.talend.dataprep.api.action.ActionDefinition;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.api.type.Type;
@@ -114,4 +115,11 @@ public class TextClusteringTest extends AbstractMetadataBaseTest {
         assertFalse(textClustering.acceptField(getColumn(Type.DATE)));
         assertFalse(textClustering.acceptField(getColumn(Type.BOOLEAN)));
     }
+
+    @Test
+    public void should_have_expected_behavior() {
+        assertEquals(1, textClustering.getBehavior().size());
+        assertTrue(textClustering.getBehavior().contains(ActionDefinition.Behavior.VALUES_COLUMN));
+    }
+
 }

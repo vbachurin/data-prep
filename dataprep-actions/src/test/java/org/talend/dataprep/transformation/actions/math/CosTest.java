@@ -14,6 +14,7 @@
 package org.talend.dataprep.transformation.actions.math;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.talend.dataprep.transformation.actions.ActionMetadataTestUtils.getRow;
 
 import java.io.InputStream;
@@ -22,6 +23,7 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
+import org.talend.dataprep.api.action.ActionDefinition;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.api.type.Type;
@@ -85,6 +87,12 @@ public class CosTest extends AbstractMetadataBaseTest {
         // then
         assertColumnWithResultCreated(row);
         assertEquals(StringUtils.EMPTY, row.get("0003"));
+    }
+
+    @Test
+    public void should_have_expected_behavior() {
+        assertEquals(1, action.getBehavior().size());
+        assertTrue(action.getBehavior().contains(ActionDefinition.Behavior.METADATA_CREATE_COLUMNS));
     }
 
     private void assertColumnWithResultCreated(DataSetRow row) {

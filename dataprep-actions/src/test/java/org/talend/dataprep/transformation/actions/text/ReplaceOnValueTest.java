@@ -17,6 +17,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.talend.dataprep.api.type.Type.BOOLEAN;
 import static org.talend.dataprep.api.type.Type.STRING;
 import static org.talend.dataprep.transformation.actions.common.ImplicitParameters.*;
@@ -28,6 +29,7 @@ import java.util.Map;
 
 import org.hamcrest.collection.IsIterableContainingInAnyOrder;
 import org.junit.Test;
+import org.talend.dataprep.api.action.ActionDefinition;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.api.dataset.row.FlagNames;
@@ -470,6 +472,12 @@ public class ReplaceOnValueTest extends AbstractMetadataBaseTest {
             assertEquals("password swordfish with Halle Berry", action.computeNewValue(
                     buildPatternActionContext(generateJson("^(", op), "replaced", true), "password swordfish with Halle Berry"));
         }
+    }
+
+    @Test
+    public void should_have_expected_behavior() {
+        assertEquals(1, action.getBehavior().size());
+        assertTrue(action.getBehavior().contains(ActionDefinition.Behavior.VALUES_COLUMN));
     }
 
 }

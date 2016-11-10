@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
+import org.talend.dataprep.api.action.ActionDefinition;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.api.preparation.Action;
@@ -87,5 +88,13 @@ public class DeleteInvalidTest extends AbstractMetadataBaseTest {
             assertTrue(deleteInvalid.acceptField(getColumn(type)));
         }
     }
+
+    @Test
+    public void should_have_expected_behavior() {
+        assertEquals(2, deleteInvalid.getBehavior().size());
+        assertTrue(deleteInvalid.getBehavior().contains(ActionDefinition.Behavior.NEED_STATISTICS_INVALID));
+        assertTrue(deleteInvalid.getBehavior().contains(ActionDefinition.Behavior.VALUES_ALL));
+    }
+
 
 }

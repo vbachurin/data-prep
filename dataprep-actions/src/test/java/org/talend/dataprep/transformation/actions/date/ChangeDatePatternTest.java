@@ -27,6 +27,7 @@ import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.talend.daikon.exception.TalendRuntimeException;
+import org.talend.dataprep.api.action.ActionDefinition;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.api.dataset.statistics.PatternFrequency;
@@ -356,4 +357,13 @@ public class ChangeDatePatternTest extends BaseDateTests {
         assertFalse(action.acceptField(getColumn(Type.STRING)));
         assertFalse(action.acceptField(getColumn(Type.BOOLEAN)));
     }
+
+    @Test
+    public void should_have_expected_behavior() {
+        assertEquals(3, action.getBehavior().size());
+        assertTrue(action.getBehavior().contains(ActionDefinition.Behavior.VALUES_COLUMN));
+        assertTrue(action.getBehavior().contains(ActionDefinition.Behavior.METADATA_CHANGE_TYPE));
+        assertTrue(action.getBehavior().contains(ActionDefinition.Behavior.NEED_STATISTICS_PATTERN));
+    }
+
 }

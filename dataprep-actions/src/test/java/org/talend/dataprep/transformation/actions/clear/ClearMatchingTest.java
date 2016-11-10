@@ -1,8 +1,7 @@
 package org.talend.dataprep.transformation.actions.clear;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.talend.dataprep.transformation.actions.AbstractMetadataBaseTest.ValuesBuilder.builder;
 import static org.talend.dataprep.transformation.actions.ActionMetadataTestUtils.getColumn;
 
@@ -15,6 +14,7 @@ import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.data.MapEntry;
 import org.junit.Test;
+import org.talend.dataprep.api.action.ActionDefinition;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.api.type.Type;
@@ -293,6 +293,12 @@ public class ClearMatchingTest extends AbstractMetadataBaseTest {
         for (Type type : Type.values()) {
             assertTrue(action.acceptField(getColumn(type)));
         }
+    }
+
+    @Test
+    public void should_have_expected_behavior() {
+        assertEquals(1, action.getBehavior().size());
+        assertTrue(action.getBehavior().contains(ActionDefinition.Behavior.VALUES_COLUMN));
     }
 
 }

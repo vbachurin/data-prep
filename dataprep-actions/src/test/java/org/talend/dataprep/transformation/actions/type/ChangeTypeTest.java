@@ -14,6 +14,8 @@
 package org.talend.dataprep.transformation.actions.type;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.talend.dataprep.transformation.actions.AbstractMetadataBaseTest.ValueBuilder.value;
 import static org.talend.dataprep.transformation.actions.AbstractMetadataBaseTest.ValuesBuilder.builder;
 
@@ -21,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
+import org.talend.dataprep.api.action.ActionDefinition;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.row.DataSetRow;
 import org.talend.dataprep.api.type.Type;
@@ -78,4 +81,11 @@ public class ChangeTypeTest extends AbstractMetadataBaseTest {
             assertThat(typeChange.acceptField(columnMetadata)).isTrue();
         }
     }
+
+    @Test
+    public void should_have_expected_behavior() {
+        assertEquals(1, typeChange.getBehavior().size());
+        assertTrue(typeChange.getBehavior().contains(ActionDefinition.Behavior.METADATA_CHANGE_TYPE));
+    }
+
 }

@@ -22,6 +22,7 @@ import java.util.*;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.talend.dataprep.api.action.ActionDefinition;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.dataset.row.DataSetRow;
@@ -156,6 +157,12 @@ public class DeleteColumnTest extends AbstractMetadataBaseTest {
         assertThat(deleteColumn.adapt((ColumnMetadata) null), is(deleteColumn));
         ColumnMetadata column = column().name("myColumn").id(0).type(Type.STRING).build();
         assertThat(deleteColumn.adapt(column), is(deleteColumn));
+    }
+
+    @Test
+    public void should_have_expected_behavior() {
+        assertEquals(1, deleteColumn.getBehavior().size());
+        assertTrue(deleteColumn.getBehavior().contains(ActionDefinition.Behavior.METADATA_DELETE_COLUMNS));
     }
 
 }
