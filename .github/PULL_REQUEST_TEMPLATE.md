@@ -10,11 +10,8 @@ e.g. https://jira.talendforge.org/browse/TDP-XXXX
 - [ ] Functional tests have been performed
 
 **Please check the browsers you've tested on**
-- [ ] Chrome
-- [ ] Firefox
-- [ ] Safari
-- [ ] Edge
-- [ ] IE11
+- [ ] Chrome, Firefox, Safari, Edge, IE11
+- [ ] No, that's bad, this PR should not be merged !
 
 **(Optional) What is the current behavior?**
 (Additional information to the Jira)
