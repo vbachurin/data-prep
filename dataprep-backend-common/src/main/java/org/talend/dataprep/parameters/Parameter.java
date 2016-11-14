@@ -32,26 +32,29 @@ public class Parameter implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /** The parameter name. */
-    private final String name;
+    private String name;
 
     /** The parameter type. */
-    private final String type;
+    private String type;
 
     /** The parameter default value. */
-    private final String defaultValue;
+    private String defaultValue;
 
     /** True if the parameter is not displayed to the user. */
-    private final boolean implicit;
+    private boolean implicit;
 
     /** True if the parameter can be blank. */
-    private final boolean canBeBlank;
+    private boolean canBeBlank;
 
     /** Provides a hint to user on how to fill parameter (e.g "http://" for a url, "mm/dd/yy" for a date). */
-    private final String placeHolder;
+    private  String placeHolder;
 
     /** The configuration. */
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    private final Map<String, Object> configuration;
+    private Map<String, Object> configuration;
+
+    public Parameter() {
+    }
 
     /**
      * Minimal default constructor.
