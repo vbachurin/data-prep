@@ -27,6 +27,8 @@ const LayoutContainer = {
 		</div>
 	`,
 	controller(state) {
+		'ngInject';
+
 		this.state = state;
 	},
 };
