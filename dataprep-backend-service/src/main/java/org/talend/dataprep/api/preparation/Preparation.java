@@ -13,22 +13,23 @@
 
 package org.talend.dataprep.api.preparation;
 
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.springframework.data.annotation.Transient;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.share.Owner;
 import org.talend.dataprep.api.share.SharedResource;
 
-import static java.lang.Math.max;
-import static java.lang.Math.min;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * The Preparation class represents the series of {@link Step steps} one can apply on a dataset to transform it.
@@ -270,19 +271,14 @@ public class Preparation extends Identifiable implements SharedResource, Seriali
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("dataSetId", dataSetId)
-                .append("rowMetadata", rowMetadata)
+        return new ToStringBuilder(this).append("id", id)
+                .append("dataSetId", dataSetId)
                 .append("author", author)
                 .append("name", name)
                 .append("creationDate", creationDate)
                 .append("lastModificationDate", lastModificationDate)
                 .append("headId", headId)
-                .append("appVersion", appVersion)
-                .append("steps", steps)
                 .append("owner", owner)
-                .append("sharedPreparation", sharedPreparation)
-                .append("sharedByMe", sharedByMe)
-                .append("roles", roles)
                 .toString();
     }
 
