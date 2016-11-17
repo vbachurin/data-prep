@@ -56,6 +56,14 @@ function getDefaultConfig(options) {
 	};
 }
 
+function addProdEnvPlugin(config) {
+	config.plugins.push(new webpack.DefinePlugin({
+		'process.env': {
+			NODE_ENV: JSON.stringify("production")
+		}
+	}));
+}
+
 function addDevServerConfig(config) {
 	config.devServer = {
 		port: appConf.port,
@@ -182,6 +190,10 @@ function addLinterConfig(config) {
  */
 module.exports = (options) => {
 	const config = getDefaultConfig(options);
+
+	if (options.env === 'prod') {
+		addProdEnvPlugin(config);
+	}
 
 	if (options.devServer) {
 		addDevServerConfig(config);
