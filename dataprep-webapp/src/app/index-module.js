@@ -93,7 +93,7 @@ const app = angular.module(MODULE_NAME,
 				},
 			})
 			.state('nav.index.preparations', {
-				url: '/preparations/{folderId:.*}',
+				url: '/preparations/{folderId}',
 				views: {
 					'home-content': { template: '<home-preparation></home-preparation>' },
 				},
@@ -101,6 +101,12 @@ const app = angular.module(MODULE_NAME,
 			.state('reactHome', {
 				url: '/react',
 				template: '<react-home></react-home>',
+			})
+			.state('reactHome.preparations', {
+				url: '/preparations/{folderId}',
+				views: {
+					'home-content': { template: '<react-home-preparation></react-home-preparation>' },
+				},
 			})
 			.state('playground', {
 				url: '/playground',
