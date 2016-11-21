@@ -37,10 +37,10 @@
         "columns":[
           { "key": "name", "label": "Name" },
           { "key": "author", "label": "Author" },
-          { "key": "lastModificationDate", "label": "Last change" },
+          { "key": "lastModificationDate", "label": "Modified" },
           { "key": "dataset", "label": "Dataset" },
-          { "key": "nbLines", "label": "Nb lines" },
-          { "key": "nbSteps", "label": "Nb steps" }
+          { "key": "nbLines", "label": "Lines" },
+          { "key": "nbSteps", "label": "Steps" }
         ],
         "items": [],
         "iconKey": "icon",
