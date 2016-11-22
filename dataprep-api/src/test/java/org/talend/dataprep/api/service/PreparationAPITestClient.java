@@ -5,6 +5,7 @@ import static com.jayway.restassured.RestAssured.given;
 import java.util.List;
 import java.util.Map;
 
+import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.preparation.AppendStep;
 import org.talend.dataprep.api.preparation.Preparation;
