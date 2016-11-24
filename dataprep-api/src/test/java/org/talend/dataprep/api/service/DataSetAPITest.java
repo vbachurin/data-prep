@@ -733,6 +733,9 @@ public class DataSetAPITest extends ApiServiceTestBase {
         }
 
         @Override
+        public boolean isSchemaOriented() { return true; }
+
+        @Override
         public String getAcceptedContentType() {
             return "accepted content type";
         }
