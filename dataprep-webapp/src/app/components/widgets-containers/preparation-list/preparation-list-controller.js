@@ -19,7 +19,13 @@ export default class PreparationListCtrl {
 		this.$translate = $translate;
 		this.appSettings = appSettings;
 		this.SettingsActionsService = SettingsActionsService;
-		this.initState();
+
+		this.adapted = {
+			folders: [],
+			items: [],
+		};
+		this.initToolbarProps();
+		this.initListProps();
 	}
 
 	$onInit() {
@@ -34,10 +40,16 @@ export default class PreparationListCtrl {
 	}
 
 	$onChanges(changes) {
-		if (changes.items) {
+		if (changes.folders || changes.items) {
+			if (changes.folders) {
+				this.adapted.folders = this.adaptActions(changes.folders.currentValue || []);
+			}
+			if (changes.items) {
+				this.adapted.items = this.adaptActions(changes.items.currentValue || []);
+			}
 			this.listProps = {
 				...this.listProps,
-				items: this.adaptActions(changes.items.currentValue || []),
+				items: this.adapted.folders.concat(this.adapted.items),
 			};
 		}
 		if (changes.sortBy) {
@@ -76,23 +88,13 @@ export default class PreparationListCtrl {
 		}
 	}
 
-	initState() {
-		const listViewSettings = this.appSettings.views['listview:preparations'];
-
-		// list content props
-		const listSettings = listViewSettings.list;
-		const titleClickAction = this.appSettings.actions[listSettings.onTitleClick];
-		this.listProps = {
-			...listSettings,
-			onTitleClick: this.SettingsActionsService.createDispatcher(titleClickAction),
-		};
-
-		// toolbar props
-		const toolbarSettings = listViewSettings.toolbar;
+	initToolbarProps() {
+		const toolbarSettings = this.appSettings.views['listview:preparations'].toolbar;
 		const clickAddAction = this.appSettings.actions[toolbarSettings.onClickAdd];
 		const displayModeAction = this.appSettings.actions[toolbarSettings.onSelectDisplayMode];
 		const sortAction = this.appSettings.actions[toolbarSettings.onSelectSortBy];
 		const dispatchDisplayMode = this.SettingsActionsService.createDispatcher(displayModeAction);
+
 		this.toolbarProps = {
 			...toolbarSettings,
 			actions: toolbarSettings.actions
@@ -104,10 +106,36 @@ export default class PreparationListCtrl {
 		};
 	}
 
-	adaptActions(preparations) {
+	initListProps() {
+		// list title click
+		const listSettings = this.appSettings.views['listview:preparations'].list;
+		const titleClickAction = this.appSettings.actions[listSettings.onTitleClick];
+		const prepDispatcher = this.SettingsActionsService.createDispatcher(titleClickAction);
+
+		// folder title click
+		const folderListSettings = this.appSettings.views['listview:folders'].list;
+		const folderClickAction = this.appSettings.actions[folderListSettings.onTitleClick];
+		const folderDispatcher = this.SettingsActionsService.createDispatcher(folderClickAction);
+
+		// list item title click
+		const onTitleClick = (event, model) => {
+			if (this.adapted.folders.indexOf(model) > -1) {
+				return folderDispatcher(event, model);
+			}
+			return prepDispatcher(event, model);
+		};
+
+		// lit props
+		this.listProps = {
+			...listSettings,
+			onTitleClick,
+		};
+	}
+
+	adaptActions(items) {
 		const dispatchers = {};
-		return preparations.map((prep) => {
-			const actions = prep.actions.map((actionName) => {
+		return items.map((item) => {
+			const actions = item.actions.map((actionName) => {
 				const settingAction = this.appSettings.actions[actionName];
 				let dispatcher = dispatchers[actionName];
 				if (!dispatcher) {
@@ -118,12 +146,12 @@ export default class PreparationListCtrl {
 				return {
 					icon: settingAction.icon,
 					label: settingAction.name,
-					model: prep.model,
+					model: item.model,
 					onClick: dispatcher,
 				};
 			});
 			return {
-				...prep,
+				...item,
 				actions,
 			};
 		});

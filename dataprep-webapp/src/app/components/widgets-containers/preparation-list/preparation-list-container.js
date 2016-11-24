@@ -27,6 +27,7 @@ const PreparationListContainer = {
 	`,
 	bindings: {
 		displayMode: '<',
+		folders: '<',
 		items: '<',
 		sortBy: '<',
 		sortDesc: '<',

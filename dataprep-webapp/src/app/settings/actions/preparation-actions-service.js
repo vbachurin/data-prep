@@ -25,6 +25,18 @@ export default class PreparationActionsService {
 		this.TalendConfirmService = TalendConfirmService;
 	}
 
+	refreshCurrentFolder() {
+		this.FolderService.refresh(this.state.inventory.folder.metadata.id);
+	}
+
+	displayRemoveSuccess(preparation) {
+		this.MessageService.success(
+			'REMOVE_SUCCESS_TITLE',
+			'REMOVE_SUCCESS',
+			{ type: 'preparation', name: preparation.name }
+		);
+	}
+
 	dispatch(action) {
 		switch (action.type) {
 		case '@@preparation/DISPLAY_MODE':
@@ -75,16 +87,14 @@ export default class PreparationActionsService {
 					{ type: 'preparation', name: preparation.name }
 				)
 				.then(() => this.PreparationService.delete(preparation))
-				.then(() => {
-					this.FolderService.refresh(this.state.inventory.folder.metadata.id);
-				})
-				.then(() => {
-					this.MessageService.success(
-						'REMOVE_SUCCESS_TITLE',
-						'REMOVE_SUCCESS',
-						{ type: 'preparation', name: preparation.name }
-					);
-				});
+				.then(() => this.refreshCurrentFolder())
+				.then(() => this.displayRemoveSuccess(preparation));
+			break;
+		}
+		case '@@preparation/REMOVE_FOLDER': {
+			const folder = action.payload.model;
+			this.FolderService.remove(folder.id)
+				.then(() => this.refreshCurrentFolder());
 			break;
 		}
 		}

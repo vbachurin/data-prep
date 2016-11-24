@@ -46,6 +46,11 @@ const settingsMock = {
 				},
 			],
 		},
+		'listview:folders': {
+			list: {
+				onTitleClick: 'menu:folders',
+			},
+		},
 		'listview:preparations': {
 			didMountActionCreator: 'preparations:fetch',
 			list: {
@@ -238,6 +243,16 @@ const settingsMock = {
 			type: '@@preparation/REMOVE',
 			payload: {
 				method: 'remove',
+				args: [],
+			},
+		},
+		'preparation:remove:folder': {
+			id: 'preparation:remove:folder',
+			name: 'Remove folder',
+			icon: 'talend-trash',
+			type: '@@preparation/REMOVE_FOLDER',
+			payload: {
+				method: 'removeFolder',
 				args: [],
 			},
 		},

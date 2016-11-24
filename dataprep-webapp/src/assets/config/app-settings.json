@@ -31,6 +31,11 @@
         }
       ]
     },
+    "listview:folders": {
+      "list": {
+        "onTitleClick": "menu:folders"
+      }
+    },
     "listview:preparations": {
       "didMountActionCreator": "preparations:folder:fetch",
       "list": {
@@ -220,6 +225,16 @@
       "type": "@@preparation/REMOVE",
       "payload": {
         "method": "remove",
+        "args": []
+      }
+    },
+    "preparation:remove:folder": {
+      "id": "preparation:remove:folder",
+      "name": "Remove folder",
+      "icon": "talend-trash",
+      "type": "@@preparation/REMOVE_FOLDER",
+      "payload": {
+        "method": "removeFolder",
         "args": []
       }
     }

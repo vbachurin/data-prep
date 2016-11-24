@@ -68,7 +68,44 @@ const preparations = [
 	},
 ];
 
-describe('Preparation container', () => {
+const folders = [
+	{
+		id: 'folder1',
+		name: 'JSO folder 1',
+		author: 'jsomsanith',
+		creationDate: '2 minutes ago',
+		lastModificationDate: '2 minutes ago',
+		icon: 'talend-folder',
+		actions: ['preparation:remove:folder'],
+		model: {
+			id: 'Lw==',
+			path: 'toto',
+			name: 'toto',
+			owner: { displayName: 'jsomsanith' },
+			creationDate: 1495305349058340,
+			lastModificationDate: 1495305349058340,
+		},
+	},
+	{
+		id: 'folder2',
+		name: 'JSO folder 2',
+		author: 'jsomsanith',
+		creationDate: '5 days ago',
+		lastModificationDate: '5 days ago',
+		icon: 'talend-folder',
+		actions: ['preparation:remove:folder'],
+		model: {
+			id: 'Lw==2',
+			path: 'tata',
+			name: 'tata',
+			owner: { displayName: 'jsomsanith' },
+			creationDate: 1495305349058340,
+			lastModificationDate: 1495305349058340,
+		},
+	},
+];
+
+describe('Preparation list container', () => {
 	let scope;
 	let createElement;
 	let element;
@@ -83,6 +120,7 @@ describe('Preparation container', () => {
 			element = angular.element(`
 				<react-preparation-list
 					display-mode="displayMode"
+					folders="folders"
 					items="items"
 					sort-by="sortBy"
 					sort-desc="sortDesc"
@@ -106,6 +144,7 @@ describe('Preparation container', () => {
 		// when
 		createElement();
 		scope.items = preparations;
+		scope.folders = folders;
 		scope.$digest();
 	}));
 
@@ -121,24 +160,92 @@ describe('Preparation container', () => {
 			expect(element.find('div[role="toolbar"]').length).toBe(1);
 		});
 
+		it('should render folders', () => {
+			// then
+			const rows = element.find('.tc-list-display-table').eq(0).find('tbody tr');
+			expect(rows.length).toBe(4);
+			expect(rows.eq(0).find('td').eq(0).text()).toBe('JSO folder 1');
+			expect(rows.eq(1).find('td').eq(0).text()).toBe('JSO folder 2');
+		});
+
 		it('should render preparations', () => {
 			// then
 			const rows = element.find('.tc-list-display-table').eq(0).find('tbody tr');
-			expect(rows.length).toBe(2);
-			expect(rows.eq(0).find('td').eq(0).text()).toBe('JSO prep 1');
-			expect(rows.eq(1).find('td').eq(0).text()).toBe('JSO prep 2');
+			expect(rows.length).toBe(4);
+			expect(rows.eq(2).find('td').eq(0).text()).toBe('JSO prep 1');
+			expect(rows.eq(3).find('td').eq(0).text()).toBe('JSO prep 2');
 		});
 	});
 
-	describe('actions', () => {
-		it('should dispatch folder fetch on mount', inject((SettingsActionsService) => {
-			// then
-			expect(SettingsActionsService.dispatch.calls.count()).toBe(1);
-			const lastCallArgs = SettingsActionsService.dispatch.calls.argsFor(0)[0];
-			expect(lastCallArgs.id).toBe('preparations:fetch');
-			expect(lastCallArgs.type).toBe('@@preparation/FETCH');
-		}));
+	describe('toolbar actions', () => {
+		it('should dispatch preparation creation on "Add" click',
+			inject((SettingsActionsService) => {
+				// given
+				expect(SettingsActionsService.dispatch.calls.count()).toBe(1);
 
+				// when
+				element.find('div[role="toolbar"]').eq(0).find('button').eq(0).click(); // TODO id !
+
+				// then
+				expect(SettingsActionsService.dispatch.calls.count()).toBe(2);
+				const lastCallArgs = SettingsActionsService.dispatch.calls.argsFor(1)[0];
+				expect(lastCallArgs.id).toBe('preparation:create');
+				expect(lastCallArgs.type).toBe('@@preparation/CREATE');
+			})
+		);
+	});
+
+	describe('folder actions', () => {
+		it('should dispatch folder redirection on title click',
+			inject((SettingsActionsService) => {
+				// given
+				expect(SettingsActionsService.dispatch.calls.count()).toBe(1);
+
+				// when
+				element.find('.tc-list-display-table')
+					.eq(0)
+					.find('tbody tr')
+					.eq(0)
+					.find('button') // TODO id !
+					.eq(0)
+					.click();
+
+				// then
+				expect(SettingsActionsService.dispatch.calls.count()).toBe(2);
+				const lastCallArgs = SettingsActionsService.dispatch.calls.argsFor(1)[0];
+				expect(lastCallArgs.id).toBe('menu:folders');
+				expect(lastCallArgs.type).toBe('@@router/GO_FOLDER');
+				expect(lastCallArgs.payload.id).toBe(folders[0].id);
+			})
+		);
+
+		it('should dispatch folder remove on action click',
+			inject((SettingsActionsService) => {
+				// given
+				expect(SettingsActionsService.dispatch.calls.count()).toBe(1);
+
+				// when
+				element.find('.tc-list-display-table')
+					.eq(0)
+					.find('tbody tr')
+					.eq(0)
+					.find('.tc-actions')
+					.eq(0)
+					.find('button') // TODO id !
+					.eq(0)
+					.click();
+
+				// then
+				expect(SettingsActionsService.dispatch.calls.count()).toBe(2);
+				const lastCallArgs = SettingsActionsService.dispatch.calls.argsFor(1)[0];
+				expect(lastCallArgs.id).toBe('preparation:remove:folder');
+				expect(lastCallArgs.type).toBe('@@preparation/REMOVE_FOLDER');
+				expect(lastCallArgs.payload.model).toBe(folders[0].model);
+			})
+		);
+	});
+
+	describe('preparation actions', () => {
 		it('should dispatch preparation creation on "Add" click',
 			inject((SettingsActionsService) => {
 				// given
@@ -164,7 +271,7 @@ describe('Preparation container', () => {
 				element.find('.tc-list-display-table')
 					.eq(0)
 					.find('tbody tr')
-					.eq(0)
+					.eq(2)
 					.find('.tc-actions')
 					.eq(0)
 					.find('button') // TODO id !
@@ -189,7 +296,7 @@ describe('Preparation container', () => {
 				element.find('.tc-list-display-table')
 					.eq(0)
 					.find('tbody tr')
-					.eq(0)
+					.eq(2)
 					.find('.tc-actions')
 					.eq(0)
 					.find('button') // TODO id !
@@ -205,7 +312,7 @@ describe('Preparation container', () => {
 			})
 		);
 
-		it('should dispatch preparation playground on action click',
+		it('should dispatch preparation playground on title click',
 			inject((SettingsActionsService) => {
 				// given
 				expect(SettingsActionsService.dispatch.calls.count()).toBe(1);
@@ -214,7 +321,7 @@ describe('Preparation container', () => {
 				element.find('.tc-list-display-table')
 					.eq(0)
 					.find('tbody tr')
-					.eq(0)
+					.eq(2)
 					.find('button') // TODO id !
 					.eq(0)
 					.click();
