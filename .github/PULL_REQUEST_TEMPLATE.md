@@ -12,6 +12,7 @@ e.g. https://jira.talendforge.org/browse/TDP-XXXX
 **Please check the browsers you've tested on**
 - [ ] Chrome, Firefox, Safari, Edge, IE11
 - [ ] No, that's bad, this PR should not be merged !
+- [ ] No, and no need to (backend changes only)
 
 **(Optional) What is the current behavior?**
 (Additional information to the Jira)
