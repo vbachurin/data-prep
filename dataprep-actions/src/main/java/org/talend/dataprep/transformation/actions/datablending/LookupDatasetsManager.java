@@ -1,11 +1,11 @@
 package org.talend.dataprep.transformation.actions.datablending;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.dataprep.api.dataset.row.DataSetRow;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class LookupDatasetsManager {
 
@@ -50,7 +50,6 @@ public class LookupDatasetsManager {
     public static Map<String,DataSetRow> get(String dataSetId) {
         LOGGER.info("Retrieving the DATASET of id: "+ dataSetId);
         LOGGER.info("Retrieving the DATASET of id: "+ dataSetId);
-        System.out.println("Yahoo of id: "+ dataSetId);
         return uniqueInstance.getDatasets().get(dataSetId);
     }
 }
