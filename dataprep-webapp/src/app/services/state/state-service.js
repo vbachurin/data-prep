@@ -129,6 +129,8 @@ export function StateService(RouteStateService,	routeState,	PlaygroundStateServi
 		disableEasterEgg: EasterEggsStateService.disableEasterEgg,
 
 		// inventory
+		enableInventoryEdit: InventoryStateService.enableEdit,
+		disableInventoryEdit: InventoryStateService.disableEdit,
 		setDatasetName: InventoryStateService.setDatasetName,
 		setDatasets: InventoryStateService.setDatasets,
 		removeDataset: InventoryStateService.removeDataset,

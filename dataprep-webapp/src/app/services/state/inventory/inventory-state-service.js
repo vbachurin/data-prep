@@ -58,6 +58,9 @@ export const inventoryState = {
 
 export function InventoryStateService() {
 	return {
+		enableEdit,
+		disableEdit,
+
 		setDatasets,
 		removeDataset,
 		setDatasetName,
@@ -78,6 +81,63 @@ export function InventoryStateService() {
 		setFetchingDatasets,
 		setFetchingPreparations,
 	};
+
+	function createNextEntities(type, fn) {
+		switch (type) {
+		case 'folder': {
+			const folders = inventoryState.folder.content.folders;
+			inventoryState.folder.content.folders = fn(folders);
+			break;
+		}
+		case 'preparation': {
+			const preparations = inventoryState.folder.content.preparations;
+			inventoryState.folder.content.preparations = fn(preparations);
+			break;
+		}
+		}
+	}
+
+	/**
+	 * @ngdoc method
+	 * @name enableEdit
+	 * @methodOf data-prep.services.state.service:InventoryStateService
+	 * @param {string} type The entity type
+	 * @param {object} entity The entity to switch display mode
+	 * @description Switch the edit mode of the provided entity
+	 */
+	function enableEdit(type, entity) {
+		const nextEntities = entities => entities.map((item) => {
+			if (item.id === entity.id) {
+				return {
+					...item,
+					displayMode: 'input',
+				};
+			}
+			return item;
+		});
+		createNextEntities(type, nextEntities);
+	}
+
+	/**
+	 * @ngdoc method
+	 * @name cancelEdit
+	 * @methodOf data-prep.services.state.service:InventoryStateService
+	 * @param {string} type The entity type
+	 * @param {object} entity The entity to switch display mode
+	 * @description Switch the edit mode of the provided entity
+	 */
+	function disableEdit(type, entity) {
+		const nextEntities = entities => entities.map((item) => {
+			if (item.id === entity.id) {
+				return {
+					...item,
+					displayMode: undefined,
+				};
+			}
+			return item;
+		});
+		createNextEntities(type, nextEntities);
+	}
 
     /**
      * @ngdoc method

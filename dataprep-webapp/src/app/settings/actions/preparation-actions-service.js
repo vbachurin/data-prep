@@ -26,14 +26,14 @@ export default class PreparationActionsService {
 	}
 
 	refreshCurrentFolder() {
-		this.FolderService.refresh(this.state.inventory.folder.metadata.id);
+		return this.FolderService.refresh(this.state.inventory.folder.metadata.id);
 	}
 
-	displayRemoveSuccess(preparation) {
+	displaySuccess(messageKey, preparation) {
 		this.MessageService.success(
-			'REMOVE_SUCCESS_TITLE',
-			'REMOVE_SUCCESS',
-			{ type: 'preparation', name: preparation.name }
+			`${messageKey}_TITLE`,
+			messageKey,
+			preparation && { type: 'preparation', name: preparation.name }
 		);
 	}
 
@@ -51,8 +51,7 @@ export default class PreparationActionsService {
 
 			this.StateService.setPreparationsSortFromIds(sortBy, sortOrder);
 
-			this.FolderService
-				.refresh(this.state.inventory.folder.metadata.id)
+			this.refreshCurrentFolder()
 				.then(() => this.StorageService.setPreparationsSort(sortBy))
 				.then(() => this.StorageService.setPreparationsOrder(sortOrder))
 				.catch(() => {
@@ -78,6 +77,30 @@ export default class PreparationActionsService {
 				action.payload.model
 			);
 			break;
+		case '@@preparation/EDIT':
+		case '@@preparation/EDIT_FOLDER':
+		case '@@preparation/CANCEL_EDIT':
+		case '@@preparation/CANCEL_EDIT_FOLDER': {
+			const args = action.payload.args.concat(action.payload.model);
+			this.StateService[action.payload.method].apply(null, args);
+			break;
+		}
+		case '@@preparation/SUBMIT_EDIT':
+		case '@@preparation/SUBMIT_EDIT_FOLDER': {
+			const newName = action.payload.value;
+			const cleanName = newName && newName.trim();
+			const model = action.payload.model;
+			const type = action.payload.args[0];
+
+			this.StateService.disableInventoryEdit(type, model);
+			if (cleanName && cleanName !== model.name) {
+				const nameEdition = type === 'folder' ?
+					this.FolderService.rename(model.id, cleanName) :
+					this.PreparationService.setName(model.id, cleanName);
+				nameEdition.then(() => this.refreshCurrentFolder());
+			}
+			break;
+		}
 		case '@@preparation/REMOVE': {
 			const preparation = action.payload.model;
 			this.TalendConfirmService
@@ -88,7 +111,7 @@ export default class PreparationActionsService {
 				)
 				.then(() => this.PreparationService.delete(preparation))
 				.then(() => this.refreshCurrentFolder())
-				.then(() => this.displayRemoveSuccess(preparation));
+				.then(() => this.displaySuccess('REMOVE_SUCCESS', preparation));
 			break;
 		}
 		case '@@preparation/REMOVE_FOLDER': {
