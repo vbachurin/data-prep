@@ -98,7 +98,7 @@ const settingsMock = {
 		'menu:datasets': {
 			id: 'menu:datasets',
 			name: 'Datasets',
-			icon: 'talend-cluster',
+			icon: 'talend-datastore',
 			type: '@@router/GO',
 			payload: {
 				method: 'go',
