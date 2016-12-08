@@ -616,6 +616,12 @@ public class DataSetServiceTest extends DataSetBaseTest {
         List<String> ids = from(when().get("/datasets").asString()).get("id");
         assertThat(ids, hasItem(dataSetId));
         assertQueueMessages(dataSetId);
+
+        given().body(IOUtils.toString(this.getClass().getResourceAsStream("../avengers.csv"))).when()
+                .put("/datasets/{id}/raw", dataSetId).then().statusCode(OK.value());
+        ids = from(when().get("/datasets").asString()).get("id");
+        assertThat(ids, hasItem(dataSetId));
+        assertQueueMessages(dataSetId);
     }
 
     @Test
@@ -646,6 +652,20 @@ public class DataSetServiceTest extends DataSetBaseTest {
         assertThat(copy.getCreationDate(), equalTo(original.getCreationDate()));
         assertThat(copy.isFavorite(), equalTo(original.isFavorite()));
         assertThat(copy.getLocation(), equalTo(original.getLocation()));
+    }
+
+    @Test
+    public void updateRawContentWithDifferentSchema() throws Exception {
+        String dataSetId = "123456";
+        given().body(IOUtils.toString(this.getClass().getResourceAsStream(TAGADA_CSV))).when()
+                .put("/datasets/{id}/raw", dataSetId).then().statusCode(OK.value());
+        final DataSetMetadata dataSetMetadataBeforeUpdate = dataSetMetadataRepository.get(dataSetId);
+        assertEquals(6, dataSetMetadataBeforeUpdate.getRowMetadata().getColumns().size());
+
+        given().body(IOUtils.toString(this.getClass().getResourceAsStream("../avengers.csv"))).when()
+                .put("/datasets/{id}/raw", dataSetId).then().statusCode(OK.value());
+        final DataSetMetadata dataSetMetadataAfterUpdate = dataSetMetadataRepository.get(dataSetId);
+        assertEquals(5, dataSetMetadataAfterUpdate.getRowMetadata().getColumns().size());
     }
 
     @Test
