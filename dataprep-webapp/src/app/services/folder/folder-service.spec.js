@@ -40,6 +40,7 @@ const adaptedPreparation = {
 	nbSteps: 3,
 	icon: 'talend-dataprep',
 	displayMode: 'text',
+	className: 'list-item-preparation',
 	actions: ['preparation:edit', 'preparation:copy-move', 'preparation:remove'],
 	model: preparation,
 };
@@ -61,6 +62,7 @@ const adaptedFolder = {
 	lastModificationDate: 'a few seconds ago',
 	icon: 'talend-folder',
 	displayMode: 'text',
+	className: 'list-item-folder',
 	actions: ['preparation:edit:folder', 'preparation:remove:folder'],
 	model: folder,
 };
@@ -400,7 +402,7 @@ describe('Folder services', () => {
 	describe('getPreparationActions', () => {
 		it('should return fixed preparation actions', inject((FolderService) => {
 			// when
-			const actions = FolderService.getPreparationActions()
+			const actions = FolderService.getPreparationActions();
 
 			// then
 			expect(actions).toEqual(['preparation:edit', 'preparation:copy-move', 'preparation:remove']);
@@ -410,7 +412,7 @@ describe('Folder services', () => {
 	describe('getFolderActions', () => {
 		it('should return fixed folder actions', inject((FolderService) => {
 			// when
-			const actions = FolderService.getFolderActions()
+			const actions = FolderService.getFolderActions();
 
 			// then
 			expect(actions).toEqual(['preparation:edit:folder', 'preparation:remove:folder']);
