@@ -10,30 +10,22 @@
  9 rue Pages 92150 Suresnes, France
 
  ============================================================================*/
-
-import PreparationListCtrl from './preparation-list-controller';
-import './preparation-list-container.scss';
-
-/**
- * Preparation list container
- * @restrict E
- */
-const PreparationListContainer = {
+const HomeDatasetContainer = {
 	template: `
-		<pure-list
-			display-mode="$ctrl.displayMode"
-			list="$ctrl.listProps"
-			toolbar="$ctrl.toolbarProps"
-		/>
+		<div class="home-content">
+			<inventory-list
+				display-mode="$ctrl.state.inventory.datasetsDisplayMode"
+				items="$ctrl.state.inventory.datasets"
+				sort-by="$ctrl.state.inventory.datasetsSort.id"
+				sort-desc="$ctrl.state.inventory.datasetsOrder.id === 'desc'"
+				view-key="'listview:datasets'"
+			/>
+		</div>
 	`,
-	bindings: {
-		displayMode: '<',
-		folders: '<',
-		items: '<',
-		sortBy: '<',
-		sortDesc: '<',
+	controller(state) {
+		'ngInject';
+		this.state = state;
 	},
-	controller: PreparationListCtrl,
 };
 
-export default PreparationListContainer;
+export default HomeDatasetContainer;

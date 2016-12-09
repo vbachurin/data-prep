@@ -11,7 +11,7 @@
 
  ============================================================================*/
 
-export default class PreparationListCtrl {
+export default class InventoryListCtrl {
 	constructor($element, $translate, appSettings, SettingsActionsService) {
 		'ngInject';
 
@@ -31,7 +31,7 @@ export default class PreparationListCtrl {
 
 	$onInit() {
 		const didMountActionCreator = this.appSettings
-			.views['listview:preparations']
+			.views[this.viewKey]
 			.didMountActionCreator;
 		if (didMountActionCreator) {
 			const action = this.appSettings.actions[didMountActionCreator];
@@ -74,7 +74,7 @@ export default class PreparationListCtrl {
 	}
 
 	initToolbarProps() {
-		const toolbarSettings = this.appSettings.views['listview:preparations'].toolbar;
+		const toolbarSettings = this.appSettings.views[this.viewKey].toolbar;
 		const clickAddAction = this.appSettings.actions[toolbarSettings.onClickAdd];
 		const displayModeAction = this.appSettings.actions[toolbarSettings.onSelectDisplayMode];
 		const sortAction = this.appSettings.actions[toolbarSettings.onSelectSortBy];
@@ -98,16 +98,24 @@ export default class PreparationListCtrl {
 	}
 
 	initListProps() {
-		const listSettings = this.appSettings.views['listview:preparations'].list;
-		const onFolderClick = this.getTitleActionDispatcher('listview:folders', 'onClick');
-		const onPrepClick = this.getTitleActionDispatcher('listview:preparations', 'onClick');
-		const onClick = (event, payload) => {
-			return payload.type === 'folder' ?
-				onFolderClick(event, payload) :
-				onPrepClick(event, payload);
-		};
-		const onEditCancel = this.getTitleActionDispatcher('listview:preparations', 'onEditCancel');
-		const onEditSubmit = this.getTitleActionDispatcher('listview:preparations', 'onEditSubmit');
+		const listSettings = this.appSettings.views[this.viewKey].list;
+		const onItemClick = this.getTitleActionDispatcher(this.viewKey, 'onClick');
+
+		let onClick;
+		if (this.folderViewKey) {
+			const onFolderClick = this.getTitleActionDispatcher(this.folderViewKey, 'onClick');
+			onClick = (event, payload) => {
+				return payload.type === 'folder' ?
+					onFolderClick(event, payload) :
+					onItemClick(event, payload);
+			};
+		}
+		else {
+			onClick = onItemClick;
+		}
+
+		const onEditCancel = this.getTitleActionDispatcher(this.viewKey, 'onEditCancel');
+		const onEditSubmit = this.getTitleActionDispatcher(this.viewKey, 'onEditSubmit');
 		this.listProps = {
 			...listSettings,
 			titleProps: {

@@ -24,7 +24,9 @@ import ExternalActionsService from './external-actions-service';
 import MenuActionsService from './menu-actions-service';
 import ModalActionsService from './modal-actions-service';
 import OnboardingActionsService from './onboarding-actions-service';
+import DatasetActionsService from './dataset-actions-service';
 import PreparationActionsService from './preparation-actions-service';
+import InventoryActionsService from './inventory-actions-service';
 import SidePanelActionsService from './sidepanel-actions-service';
 
 const MODULE_NAME = 'app.settings.actions';
@@ -43,14 +45,18 @@ angular.module(MODULE_NAME,
 	.service('MenuActionsService', MenuActionsService)
 	.service('ModalActionsService', ModalActionsService)
 	.service('OnboardingActionsService', OnboardingActionsService)
+	.service('DatasetActionsService', DatasetActionsService)
 	.service('PreparationActionsService', PreparationActionsService)
+	.service('InventoryActionsService', InventoryActionsService)
 	.service('SidePanelActionsService', SidePanelActionsService)
 	.factory('SettingsActionsHandlers', function (
 		ExternalActionsService,
 		MenuActionsService,
 		ModalActionsService,
 		OnboardingActionsService,
+		DatasetActionsService,
 		PreparationActionsService,
+		InventoryActionsService,
 		SidePanelActionsService) {
 		'ngInject';
 		return [
@@ -58,7 +64,9 @@ angular.module(MODULE_NAME,
 			MenuActionsService,
 			ModalActionsService,
 			OnboardingActionsService,
+			DatasetActionsService,
 			PreparationActionsService,
+			InventoryActionsService,
 			SidePanelActionsService,
 		];
 	});
