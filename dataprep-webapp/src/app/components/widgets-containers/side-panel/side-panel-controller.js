@@ -12,13 +12,23 @@
  ============================================================================*/
 
 export default class SidePanelCtrl {
-	constructor(state, appSettings, SettingsActionsService) {
+	constructor($state, state, appSettings, SettingsActionsService) {
 		'ngInject';
 
+		this.$state = $state;
 		this.state = state;
 		this.appSettings = appSettings;
 		this.SettingsActionsService = SettingsActionsService;
 		this.init();
+	}
+
+	$onChanges(changes) {
+		if (changes.active) {
+			this.actions = this.actions.map(action => ({
+				...action,
+				active: changes.active.currentValue === action.payload.args[0],
+			}));
+		}
 	}
 
 	init() {
