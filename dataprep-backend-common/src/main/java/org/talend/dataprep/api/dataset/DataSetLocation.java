@@ -42,6 +42,15 @@ public interface DataSetLocation extends Serializable {
     String getLocationType();
 
     /**
+     * @return in case a content store deal with many types (e.g. oracle, mysql, postgres -> database)
+     */
+    @JsonIgnore
+    default String getStoreName() {
+        // default is the location type
+        return getLocationType();
+    }
+
+    /**
      * All needed parameters to use this location. Returns {@code null} if not relevant, when {@link #getParametersAsSchema} should
      * be used for instance.
      *
