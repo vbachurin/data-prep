@@ -228,50 +228,6 @@ describe('Preparation actions service', () => {
 		}));
 	});
 
-	describe('dispatch @@preparation/EDIT', () => {
-		it('should enable title edition', inject((StateService, PreparationActionsService) => {
-			// given
-			const preparation = { id: 'prep1', type: 'preparation', model: {} };
-			const action = {
-				type: '@@preparation/EDIT',
-				payload: {
-					method: 'enableInventoryEdit',
-					args: [],
-					...preparation,
-				}
-			};
-			spyOn(StateService, 'enableInventoryEdit').and.returnValue();
-
-			// when
-			PreparationActionsService.dispatch(action);
-
-			// then
-			expect(StateService.enableInventoryEdit).toHaveBeenCalledWith(action.payload);
-		}));
-	});
-
-	describe('dispatch @@preparation/CANCEL_EDIT', () => {
-		it('should disable title edition', inject((StateService, PreparationActionsService) => {
-			// given
-			const preparation = { id: 'prep1', type: 'preparation', model: {} };
-			const action = {
-				type: '@@preparation/EDIT',
-				payload: {
-					method: 'disableInventoryEdit',
-					args: ['preparation'],
-					...preparation,
-				}
-			};
-			spyOn(StateService, 'disableInventoryEdit').and.returnValue();
-
-			// when
-			PreparationActionsService.dispatch(action);
-
-			// then
-			expect(StateService.disableInventoryEdit).toHaveBeenCalledWith(action.payload);
-		}));
-	});
-
 	describe('dispatch @@preparation/SUBMIT_EDIT', () => {
 		let preparation;
 		let folder;
@@ -282,7 +238,7 @@ describe('Preparation actions service', () => {
 			action = {
 				type: '@@preparation/SUBMIT_EDIT',
 				payload: {
-					method: 'submitInventoryEdit',
+					method: '',
 					args: [],
 					model: preparation,
 				}

@@ -63,7 +63,7 @@ const settingsMock = {
 					iconKey: 'icon',
 					key: 'name',
 					onClick: 'menu:playground:preparation',
-					onEditCancel: 'preparation:cancel-edit',
+					onEditCancel: 'inventory:cancel-edit',
 					onEditSubmit: 'preparation:submit-edit',
 				},
 			},
@@ -97,6 +97,8 @@ const settingsMock = {
 					iconKey: 'icon',
 					key: 'name',
 					onClick: 'menu:playground:dataset',
+					onEditCancel: 'inventory:cancel-edit',
+					onEditSubmit: 'dataset:submit-edit',
 				},
 			},
 			toolbar: {
@@ -144,7 +146,7 @@ const settingsMock = {
 		},
 		'menu:playground:preparation': {
 			id: 'menu:playground:preparation',
-			name: 'Preparation Playground',
+			name: 'Open Preparation',
 			icon: 'talend-dataprep',
 			type: '@@router/GO_PREPARATION',
 			payload: {
@@ -154,7 +156,7 @@ const settingsMock = {
 		},
 		'menu:playground:dataset': {
 			id: 'menu:playground:dataset',
-			name: 'Dataset Playground',
+			name: 'Open Dataset',
 			icon: 'talend-dataprep',
 			type: '@@router/GO_DATASET',
 			payload: {
@@ -236,6 +238,52 @@ const settingsMock = {
 				args: [],
 			},
 		},
+		'dataset:submit-edit': {
+			id: 'dataset:submit-edit',
+			name: 'Submit name edition',
+			icon: 'talend-check',
+			type: '@@dataset/SUBMIT_EDIT',
+		},
+		'dataset:remove': {
+			id: 'dataset:remove',
+			name: 'Remove dataset',
+			icon: 'talend-trash',
+			type: '@@dataset/REMOVE',
+			payload: {
+				method: 'remove',
+				args: [],
+			},
+		},
+		'dataset:clone': {
+			id: 'dataset:clone',
+			name: 'Copy dataset',
+			icon: 'talend-files-o',
+			type: '@@dataset/CLONE',
+			payload: {
+				method: 'clone',
+				args: [],
+			},
+		},
+		'dataset:favourite': {
+			id: 'dataset:favourite',
+			name: 'Add dataset in your favourite list',
+			icon: 'talend-star',
+			type: '@@dataset/FAVOURITE',
+			payload: {
+				method: 'toggleFavorite',
+				args: [],
+			},
+		},
+		'dataset:update': {
+			id: 'dataset:update',
+			name: 'Update dataset ',
+			icon: 'talend-file-move',
+			type: '@@dataset/UPDATE',
+			payload: {
+				method: '',
+				args: [],
+			},
+		},
 		'datasets:fetch': {
 			id: 'datasets:fetch',
 			name: 'Fetch all datasets',
@@ -306,21 +354,21 @@ const settingsMock = {
 				args: [],
 			},
 		},
-		'preparation:edit': {
-			id: 'preparation:edit',
+		'inventory:edit': {
+			id: 'inventory:edit',
 			name: 'Edit name',
 			icon: 'talend-pencil',
-			type: '@@preparation/EDIT',
+			type: '@@inventory/EDIT',
 			payload: {
 				method: 'enableInventoryEdit',
 				args: [],
 			},
 		},
-		'preparation:cancel-edit': {
-			id: 'preparation:cancel-edit',
+		'inventory:cancel-edit': {
+			id: 'inventory:cancel-edit',
 			name: 'Cancel name edition',
 			icon: 'talend-crossbig',
-			type: '@@preparation/CANCEL_EDIT',
+			type: '@@inventory/CANCEL_EDIT',
 			payload: {
 				method: 'disableInventoryEdit',
 				args: [],
@@ -332,7 +380,7 @@ const settingsMock = {
 			icon: 'talend-check',
 			type: '@@preparation/VALIDATE_EDIT',
 			payload: {
-				method: 'validateInventoryEdit',
+				method: '',
 				args: [],
 			},
 		},

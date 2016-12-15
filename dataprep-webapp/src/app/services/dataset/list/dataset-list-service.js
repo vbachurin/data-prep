@@ -29,6 +29,8 @@ export default function DatasetListService($q, state, DatasetRestService, StateS
 	let datasetsPromise;
 
 	return {
+		adaptDatasets,
+		getDatasetActions,
 		refreshDatasets,
 		getDatasetsPromise,
 		hasDatasetsPromise,
@@ -70,7 +72,7 @@ export default function DatasetListService($q, state, DatasetRestService, StateS
 		deferredCancel = $q.defer();
 		datasetsPromise = DatasetRestService.getDatasets(sort, order, deferredCancel)
 			.then((res) => {
-				StateService.setDatasets(adaptDatasets(res.data));
+				StateService.setDatasets(this.adaptDatasets(res.data));
 				return res.data;
 			})
 			.catch(() => {
@@ -101,13 +103,16 @@ export default function DatasetListService($q, state, DatasetRestService, StateS
 			icon: 'talend-file-cog',
 			displayMode: 'text',
 			className: 'list-item-dataset',
-			actions: getDatasetActions(item),
+			actions: this.getDatasetActions(item),
 			model: item,
 		}));
 	}
 
-	function getDatasetActions() {
-		return [];
+	function getDatasetActions(item) {
+		if (item.preparations && item.preparations.length > 0) {
+			return ['inventory:edit', 'menu:playground:preparation', 'dataset:update', 'dataset:clone', 'dataset:remove', 'dataset:favourite'];
+		}
+		return ['inventory:edit', 'dataset:update', 'dataset:clone', 'dataset:remove', 'dataset:favourite'];
 	}
 	/**
 	 * @ngdoc method
@@ -119,7 +124,7 @@ export default function DatasetListService($q, state, DatasetRestService, StateS
 	 */
 	function clone(dataset) {
 		const promise = DatasetRestService.clone(dataset);
-		promise.then(refreshDatasets);
+		promise.then(() => this.refreshDatasets());
 
 		return promise;
 	}
@@ -139,7 +144,7 @@ export default function DatasetListService($q, state, DatasetRestService, StateS
 
 		// The appended promise is not returned because DatasetRestService.import return a $upload object with progress function
 		// which is used by the caller
-		promise.then(refreshDatasets);
+		promise.then(() => this.refreshDatasets());
 
 		return promise;
 	}
@@ -157,7 +162,7 @@ export default function DatasetListService($q, state, DatasetRestService, StateS
 
 		// The appended promise is not returned because DatasetRestService.import return a $upload object with progress function
 		// which is used by the caller
-		promise.then(refreshDatasets);
+		promise.then(() => this.refreshDatasets());
 
 		return promise;
 	}
@@ -172,7 +177,7 @@ export default function DatasetListService($q, state, DatasetRestService, StateS
 	 */
 	function processCertification(dataset) {
 		return DatasetRestService.processCertification(dataset.id)
-			.then(refreshDatasets);
+			.then(() => this.refreshDatasets());
 	}
 
 	/**
@@ -198,7 +203,7 @@ export default function DatasetListService($q, state, DatasetRestService, StateS
 	 * @returns {promise} Promise that resolves datasetsList
 	 */
 	function getDatasetsPromise() {
-		return datasetsPromise || refreshDatasets();
+		return datasetsPromise || this.refreshDatasets();
 	}
 
 	/**
@@ -223,6 +228,6 @@ export default function DatasetListService($q, state, DatasetRestService, StateS
 	function toggleFavorite(dataset) {
 		return DatasetRestService.toggleFavorite(dataset)
 			.then(() => dataset.favorite = !dataset.favorite)
-			.then(refreshDatasets);
+			.then(() => this.refreshDatasets());
 	}
 }
