@@ -35,6 +35,7 @@ import org.talend.dataprep.transformation.service.Dictionaries;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.response.Response;
+import org.talend.dataquality.semantic.classifier.custom.UserDefinedClassifier;
 
 /**
  * Unit test for Transformation API.
@@ -363,5 +364,7 @@ public class TransformAPITest extends ApiServiceTestBase {
         assertNotNull(dictionaryDirectory);
         final Directory keywordDirectory = serviceDictionary.getKeyword().get(); // Test Lucene directory creation.
         assertNotNull(keywordDirectory);
+        final UserDefinedClassifier regexClassifier = serviceDictionary.getRegex().get(); // Test Regex classifier creation.
+        assertNotNull(regexClassifier);
     }
 }

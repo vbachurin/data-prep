@@ -91,6 +91,9 @@ import com.fasterxml.jackson.core.JsonParser;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.talend.dataquality.semantic.broadcast.BroadcastRegexObject;
+import org.talend.dataquality.semantic.classifier.custom.UDCategorySerDeser;
+import org.talend.dataquality.semantic.classifier.custom.UserDefinedClassifier;
 
 @RestController
 @Api(value = "transformations", basePath = "/transform", description = "Transformations on data")
@@ -661,6 +664,8 @@ public class TransformationService extends BaseTransformationService {
             LOG.debug("Returning dictionary at path '{}'", dictionaryPath.getAbsoluteFile());
             final File keywordPath = new File(analyzerService.getIndexesLocation() + "/index/keyword/default/");
             LOG.debug("Returning keywords at path '{}'", keywordPath.getAbsoluteFile());
+            final File regexPath = new File(analyzerService.getIndexesLocation() + "/regex/default/");
+            LOG.debug("Returning regexes at path '{}'", regexPath.getAbsoluteFile());
 
             // Read lucene directory and build BroadcastIndexObject instance
             final BroadcastIndexObject dictionary, keyword;
@@ -671,9 +676,11 @@ public class TransformationService extends BaseTransformationService {
                 keyword = new BroadcastIndexObject(directory);
             }
 
+            final BroadcastRegexObject regex = new BroadcastRegexObject(regexPath.toURI());
+
             // Serialize it to output
-            LOG.debug("Returning dictionaries '{}' / '{}'", dictionary, keyword);
-            Dictionaries result = new Dictionaries(dictionary, keyword);
+            LOG.debug("Returning dictionaries '{}' / '{}'", dictionary, keyword, regex);
+            Dictionaries result = new Dictionaries(dictionary, keyword, regex);
             try (ObjectOutputStream oos = new ObjectOutputStream(new GZIPOutputStream(outputStream))) {
                 oos.writeObject(result);
             }

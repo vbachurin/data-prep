@@ -15,9 +15,10 @@ package org.talend.dataprep.transformation.service;
 import java.io.Serializable;
 
 import org.talend.dataquality.semantic.broadcast.BroadcastIndexObject;
+import org.talend.dataquality.semantic.broadcast.BroadcastRegexObject;
 
 /**
- * A container object for DQ dictionaries (keyword and dictionary).
+ * A container object for DQ category recognizers (regex, keyword and dictionary).
  */
 public class Dictionaries implements Serializable {
 
@@ -25,9 +26,12 @@ public class Dictionaries implements Serializable {
 
     private final BroadcastIndexObject keyword;
 
-    public Dictionaries(BroadcastIndexObject dictionary, BroadcastIndexObject keyword) {
+    private final BroadcastRegexObject regex;
+
+    public Dictionaries(BroadcastIndexObject dictionary, BroadcastIndexObject keyword, BroadcastRegexObject regex) {
         this.dictionary = dictionary;
         this.keyword = keyword;
+        this.regex = regex;
     }
 
     public BroadcastIndexObject getDictionary() {
@@ -37,4 +41,6 @@ public class Dictionaries implements Serializable {
     public BroadcastIndexObject getKeyword() {
         return keyword;
     }
+
+    public BroadcastRegexObject getRegex() { return regex; }
 }
