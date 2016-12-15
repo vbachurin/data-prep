@@ -12,14 +12,20 @@
  ============================================================================*/
 
 export default class DatasetActionsService {
-	constructor($stateParams, state, DatasetService,
-				StateService, StorageService) {
+	constructor($document, $stateParams, state, DatasetService,
+				MessageService, StateService, StorageService,
+				TalendConfirmService) {
 		'ngInject';
+		this.$document = $document;
 		this.$stateParams = $stateParams;
 		this.state = state;
 		this.DatasetService = DatasetService;
+		this.MessageService = MessageService;
 		this.StateService = StateService;
 		this.StorageService = StorageService;
+		this.TalendConfirmService = TalendConfirmService;
+
+		this.renamingList = [];
 	}
 
 	dispatch(action) {
@@ -48,6 +54,76 @@ export default class DatasetActionsService {
 				this.StateService.setFetchingInventoryDatasets(false);
 			});
 			break;
+		case '@@dataset/SUBMIT_EDIT': {
+			const newName = action.payload.value;
+			const cleanName = newName && newName.trim();
+			const dataset = action.payload.model;
+
+			this.StateService.disableInventoryEdit(dataset);
+			if (cleanName && cleanName !== dataset.name) {
+				if (this.renamingList.indexOf(dataset) > -1) {
+					this.MessageService.warning(
+						'DATASET_CURRENTLY_RENAMING_TITLE',
+						'DATASET_CURRENTLY_RENAMING'
+					);
+					return;
+				}
+
+				if (this.DatasetService.getDatasetByName(cleanName)) {
+					this.MessageService.error(
+						'DATASET_NAME_ALREADY_USED_TITLE',
+						'DATASET_NAME_ALREADY_USED'
+					);
+					return;
+				}
+
+				this.renamingList.push(dataset);
+
+				return this.DatasetService.rename(dataset.model, cleanName)
+					.then(() => {
+						this.MessageService.success(
+							'DATASET_RENAME_SUCCESS_TITLE',
+							'DATASET_RENAME_SUCCESS'
+						);
+					})
+					.finally(() => {
+						const index = this.renamingList.indexOf(dataset);
+						this.renamingList.splice(index, 1);
+					});
+			}
+			break;
+		}
+		case '@@dataset/REMOVE': {
+			const dataset = action.payload.model;
+			this.TalendConfirmService
+				.confirm(
+					{ disableEnter: true },
+					['DELETE_PERMANENTLY', 'NO_UNDONE_CONFIRM'],
+					{ type: 'dataset', name: dataset.name }
+				)
+				.then(() => this.DatasetService.delete(dataset))
+				.then(() => this.MessageService.success(
+					'REMOVE_SUCCESS_TITLE',
+					'REMOVE_SUCCESS',
+					{ type: 'dataset', name: dataset.name }
+				));
+			break;
+		}
+		case '@@dataset/CLONE': {
+			const dataset = action.payload.model;
+			this.DatasetService.clone(dataset)
+				.then(() => this.MessageService.success('COPY_SUCCESS_TITLE', 'COPY_SUCCESS'));
+			break;
+		}
+		case '@@dataset/FAVOURITE': {
+			this.DatasetService[action.payload.method](action.payload.model);
+			break;
+		}
+		case '@@dataset/UPDATE': {
+			this.$document[0].getElementById('inputUpdateDataset').click();
+			this.StateService.setDatasetToUpdate(action.payload.model);
+			break;
+		}
 		}
 	}
 }
