@@ -12,7 +12,7 @@
  ============================================================================*/
 
 import angular from 'angular';
-import FOLDER_SELECTION from '../../folder-selection/folder-selection-module';
+import FOLDER_SELECTION from '../../folder/selection/folder-selection-module';
 import TALEND_WIDGET_MODULE from '../../widgets/widget-module';
 
 import InventoryCopyMoveComponent from './inventory-copy-move-component';
