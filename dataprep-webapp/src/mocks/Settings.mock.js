@@ -22,13 +22,15 @@ const settingsMock = {
 			search: {
 				onToggle: 'search:toggle',
 				onBlur: 'search:toggle',
-				onChange: '"search:all',
+				onChange: 'search:all',
 				onSelect: {
-					preparation: '"menu:playground:preparation',
-					dataset: '"menu:playground:dataset',
-					folder: '"menu:folders',
+					preparation: 'menu:playground:preparation',
+					dataset: 'menu:playground:dataset',
+					folder: 'menu:folders',
 					documentation: 'external:documentation',
 				},
+				onKeyDown: 'search:focus',
+				debounceTimeout: 300,
 			},
 			actions: ['onboarding:preparation', 'modal:feedback', 'external:help'],
 			userMenuActions: {
@@ -79,15 +81,18 @@ const settingsMock = {
 				},
 			},
 			toolbar: {
-				sortOptions: [
-					{ id: 'name', name: 'Name' },
-					{ id: 'date', name: 'Creation Date' },
-				],
-				actions: {
-					left: ['preparation:create', 'preparation:create:folder'],
+				sort: {
+					options: [
+						{ id: 'name', name: 'Name' },
+						{ id: 'date', name: 'Creation Date' },
+					],
+					onChange: 'preparation:sort',
 				},
-				onSelectDisplayMode: 'preparation:display-mode',
-				onSelectSortBy: 'preparation:sort',
+				actionBar: {
+					actions: {
+						left: ['preparation:create', 'preparation:create:folder'],
+					},
+				},
 				searchLabel: 'Find a preparation',
 			},
 		},
@@ -114,13 +119,16 @@ const settingsMock = {
 				},
 			},
 			toolbar: {
-				sortOptions: [
-					{ id: 'name', name: 'Name' },
-					{ id: 'date', name: 'Creation Date' },
-				],
-				actions: [],
-				onSelectDisplayMode: 'dataset:display-mode',
-				onSelectSortBy: 'dataset:sort',
+				sort: {
+					options: [
+						{ id: 'name', name: 'Name' },
+						{ id: 'date', name: 'Creation Date' },
+					],
+					onChange: 'dataset:sort',
+				},
+				actionBar: {
+					actions: [],
+				},
 				searchLabel: 'Find a dataset',
 			},
 		},
@@ -433,6 +441,10 @@ const settingsMock = {
 		'search:all': {
 			id: 'search:all',
 			type: '@@search/ALL',
+		},
+		'search:focus': {
+			id: 'search:focus',
+			type: '@@search/FOCUS',
 		},
 		'external:documentation': {
 			id: 'external:documentation',
