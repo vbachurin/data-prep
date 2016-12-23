@@ -11,6 +11,7 @@
 
  ============================================================================*/
 
+const NO_OP = () => {};
 const DROPDOWN_ACTION = 'dropdown';
 
 export default class InventoryListCtrl {
@@ -55,13 +56,19 @@ export default class InventoryListCtrl {
 		if (changes.sortBy) {
 			this.toolbarProps = {
 				...this.toolbarProps,
-				sortBy: changes.sortBy.currentValue,
+				sort: {
+					...this.toolbarProps.sort,
+					field: changes.sortBy.currentValue,
+				},
 			};
 		}
 		if (changes.sortDesc) {
 			this.toolbarProps = {
 				...this.toolbarProps,
-				sortDesc: changes.sortDesc.currentValue,
+				sort: {
+					...this.toolbarProps.sort,
+					isDescending: changes.sortDesc.currentValue,
+				},
 			};
 		}
 	}
@@ -69,24 +76,40 @@ export default class InventoryListCtrl {
 	initToolbarProps() {
 		const toolbarSettings = this.appSettings.views[this.viewKey].toolbar;
 
-		const displayModeAction = this.appSettings.actions[toolbarSettings.onSelectDisplayMode];
-		const sortByAction = this.appSettings.actions[toolbarSettings.onSelectSortBy];
-
-		const onSelectSortBy = sortByAction && this.SettingsActionsService.createDispatcher(sortByAction);
+		// display mode action
+		const displayModeAction = toolbarSettings.display &&
+			toolbarSettings.display.onChange &&
+			this.appSettings.actions[toolbarSettings.display.onChange];
 		const dispatchDisplayMode = displayModeAction && this.SettingsActionsService.createDispatcher(displayModeAction);
-		const onSelectDisplayMode = dispatchDisplayMode && ((event, mode) => dispatchDisplayMode(event, { mode }));
+		const onDisplayModeChange = dispatchDisplayMode ? ((event, mode) => dispatchDisplayMode(event, { mode })) : NO_OP;
 
-		const actions = toolbarSettings.actions &&
+		// sort by action
+		const sortByAction = toolbarSettings.sort &&
+			toolbarSettings.sort.onChange &&
+			this.appSettings.actions[toolbarSettings.sort.onChange];
+		const onSortByChange = sortByAction ? this.SettingsActionsService.createDispatcher(sortByAction) : NO_OP;
+
+		// toolbar actions
+		const actions = toolbarSettings.actionBar && toolbarSettings.actionBar.actions &&
 			{
-				left: this.adaptActions(toolbarSettings.actions.left),
-				right: this.adaptActions(toolbarSettings.actions.right),
+				left: this.adaptActions(toolbarSettings.actionBar.actions.left),
+				right: this.adaptActions(toolbarSettings.actionBar.actions.right),
 			};
 
 		this.toolbarProps = {
 			...toolbarSettings,
-			actions,
-			onSelectDisplayMode,
-			onSelectSortBy,
+			actionBar: toolbarSettings.actionBar && {
+				...toolbarSettings.actionBar,
+				actions,
+			},
+			display: toolbarSettings.display && {
+				...toolbarSettings.display,
+				onChange: onDisplayModeChange,
+			},
+			sort: toolbarSettings.sort && {
+				...toolbarSettings.sort,
+				onChange: onSortByChange,
+			},
 		};
 	}
 
