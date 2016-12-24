@@ -220,8 +220,16 @@ public class SimpleFilterService implements FilterService {
      */
     private Predicate<DataSetRow> createEqualsPredicate(final JsonNode node, final String columnId, final String value) {
         checkValidValue(node, value);
-        return safeNumber(
-                r -> StringUtils.equals(r.get(columnId), value) || NumberUtils.compare(toBigDecimal(r.get(columnId)), toBigDecimal(value)) == 0);
+
+        try {
+            // Pre-compute value to compare as a double, to avoid do it on each row:
+            double valueAsDouble = toBigDecimal(value);
+            return safeNumber(
+                    r -> StringUtils.equals(r.get(columnId), value) || NumberUtils.compare(toBigDecimal(r.get(columnId)), valueAsDouble) == 0);
+        } catch (NumberFormatException e) {
+            // If the value to compare is not a number, then compare strings is enough:
+            return r -> StringUtils.equals(r.get(columnId), value);
+        }
     }
 
     /**
@@ -234,7 +242,8 @@ public class SimpleFilterService implements FilterService {
      */
     private Predicate<DataSetRow> createGreaterThanPredicate(final JsonNode node, final String columnId, final String value) {
         checkValidValue(node, value);
-        return safeNumber(r -> toBigDecimal(r.get(columnId)) > toBigDecimal(value));
+        final double valueAsDouble = toBigDecimal(value);
+        return safeNumber(r -> toBigDecimal(r.get(columnId)) >  valueAsDouble);
     }
 
     /**
@@ -247,7 +256,8 @@ public class SimpleFilterService implements FilterService {
      */
     private Predicate<DataSetRow> createLowerThanPredicate(final JsonNode node, final String columnId, final String value) {
         checkValidValue(node, value);
-        return safeNumber(r -> toBigDecimal(r.get(columnId)) < toBigDecimal(value));
+        final double valueAsDouble = toBigDecimal(value);
+        return safeNumber(r -> toBigDecimal(r.get(columnId)) < valueAsDouble);
     }
 
     /**
@@ -260,7 +270,8 @@ public class SimpleFilterService implements FilterService {
      */
     private Predicate<DataSetRow> createGreaterOrEqualsPredicate(final JsonNode node, final String columnId, final String value) {
         checkValidValue(node, value);
-        return safeNumber(r -> toBigDecimal(r.get(columnId)) >= toBigDecimal(value));
+        final double valueAsDouble = toBigDecimal(value);
+        return safeNumber(r -> toBigDecimal(r.get(columnId)) >=valueAsDouble);
     }
 
     /**
@@ -273,7 +284,8 @@ public class SimpleFilterService implements FilterService {
      */
     private Predicate<DataSetRow> createLowerOrEqualsPredicate(final JsonNode node, final String columnId, final String value) {
         checkValidValue(node, value);
-        return safeNumber(r -> toBigDecimal(r.get(columnId)) <= toBigDecimal(value));
+        final double valueAsDouble = toBigDecimal(value);
+        return safeNumber(r -> toBigDecimal(r.get(columnId)) <= valueAsDouble);
     }
 
     /**
