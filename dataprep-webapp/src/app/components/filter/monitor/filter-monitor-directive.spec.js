@@ -22,6 +22,7 @@ describe('Filter monitor directive', function () {
 
     beforeEach(angular.mock.module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
+            FILTERS: 'Filters',
             NB_LINES_MATCHING_FILTERS: '{{percentage}}% of lines are matching your filter(s)',
         });
         $translateProvider.preferredLanguage('en');
@@ -52,6 +53,14 @@ describe('Filter monitor directive', function () {
     });
 
     describe('render', function () {
+        it('should render filters label', function () {
+            //when
+            createElement();
+
+            //then
+            expect(element.find('#filter-monitor-left').text().trim()).toBe('Filters');
+        });
+
         it('should NOT render "remove all" icon when filters are empty', function () {
             //given
             scope.filters = [];
@@ -76,6 +85,14 @@ describe('Filter monitor directive', function () {
             var statsElement = element.find('#filters-monitor-stats').eq(0);
             expect(statsElement.attr('title')).toBe('25% of lines are matching your filter(s)');
             expect(statsElement.text().trim()).toBe('50/200');
+        });
+
+        it('should render filter search', () => {
+            //when
+            createElement();
+
+            //then
+            expect(element.find('filter-search').length).toBe(1);
         });
     });
 

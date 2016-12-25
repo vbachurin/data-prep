@@ -13,18 +13,20 @@
 
 #filter-search {
   input[type="search"] {
-    background-color: $shadow-gray;
+    background-color: $white;
+    border: none;
+    border-bottom: 1px solid transparent;
+    box-shadow: none;
     color: $dark-gray;
     font-size: 13px;
     margin: 0;
     padding: 5px 10px;
-    border-bottom: 1px solid lighten($black, 75%);
-    box-shadow: none;
 
     &:hover, &:focus {
       box-shadow: none;
-      border-color: $shadow-gray;
-      border-bottom: 1px solid lighten($black, 15%);
+      border-color: $blue;
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
     }
   }
 
