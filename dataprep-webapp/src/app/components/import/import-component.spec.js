@@ -11,7 +11,7 @@
 
  ============================================================================*/
 
-describe('Import directive', () => {
+describe('Import Component', () => {
     'use strict';
 
     var scope;

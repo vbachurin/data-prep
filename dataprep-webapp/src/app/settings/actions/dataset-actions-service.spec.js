@@ -13,8 +13,136 @@
 
 import angular from 'angular';
 
+const importTypes = [
+	{
+		locationType: 'hdfs',
+		contentType: 'application/vnd.remote-ds.hdfs',
+		parameters: [
+			{
+				name: 'name',
+				type: 'string',
+				implicit: false,
+				canBeBlank: false,
+				format: '',
+				default: '',
+				description: 'Name',
+				label: 'Enter the dataset name:',
+			},
+			{
+				name: 'url',
+				type: 'string',
+				implicit: false,
+				canBeBlank: false,
+				format: 'hdfs://host:port/file',
+				default: '',
+				description: 'URL',
+				label: 'Enter the dataset URL:',
+			},
+		],
+		defaultImport: false,
+		label: 'From HDFS',
+		title: 'Add HDFS dataset',
+	},
+	{
+		locationType: 'http',
+		contentType: 'application/vnd.remote-ds.http',
+		parameters: [
+			{
+				name: 'name',
+				type: 'string',
+				implicit: false,
+				canBeBlank: false,
+				format: '',
+				default: '',
+				description: 'Name',
+				label: 'Enter the dataset name:',
+			},
+			{
+				name: 'url',
+				type: 'string',
+				implicit: false,
+				canBeBlank: false,
+				format: 'http://',
+				default: '',
+				description: 'URL',
+				label: 'Enter the dataset URL:',
+			},
+		],
+		defaultImport: false,
+		label: 'From HTTP',
+		title: 'Add HTTP dataset',
+	},
+	{
+		locationType: 'local',
+		contentType: 'text/plain',
+		parameters: [
+			{
+				name: 'datasetFile',
+				type: 'file',
+				implicit: false,
+				canBeBlank: false,
+				format: '*.csv',
+				default: '',
+				description: 'File',
+				label: 'File',
+			},
+		],
+		defaultImport: true,
+		label: 'Local File',
+		title: 'Add local file dataset',
+	},
+	{
+		locationType: 'job',
+		contentType: 'application/vnd.remote-ds.job',
+		parameters: [
+			{
+				name: 'name',
+				type: 'string',
+				implicit: false,
+				canBeBlank: false,
+				format: '',
+				description: 'Name',
+				label: 'Enter the dataset name:',
+				default: '',
+			},
+			{
+				name: 'jobId',
+				type: 'select',
+				implicit: false,
+				canBeBlank: false,
+				format: '',
+				configuration: {
+					values: [
+						{
+							value: '1',
+							label: 'TestInput',
+						},
+					],
+					multiple: false,
+				},
+				description: 'Talend Job',
+				label: 'Select the Talend Job:',
+				default: '',
+			},
+		],
+		defaultImport: false,
+		label: 'From Talend Job',
+		title: 'Add Talend Job dataset',
+	},
+];
+
 describe('Datasets actions service', () => {
-	beforeEach(angular.mock.module('app.settings.actions'));
+	let stateMock;
+
+	beforeEach(angular.mock.module('app.settings.actions', ($provide) => {
+		stateMock = {
+			inventory: {
+				datasetsSort: {}
+			},
+			import: { importTypes },
+		};
+		$provide.constant('state', stateMock);
+	}));
 
 	describe('dispatch', () => {
 		beforeEach(inject(($q, DatasetService, StateService, StorageService) => {
@@ -106,7 +234,7 @@ describe('Datasets actions service', () => {
 				payload: {
 					method: 'clone',
 					args: [],
-					model: {id: 'dataset'}
+					model: { id: 'dataset' }
 				}
 			};
 			spyOn(MessageService, 'success').and.returnValue();
@@ -116,7 +244,7 @@ describe('Datasets actions service', () => {
 			$rootScope.$digest();
 
 			// then
-			expect(DatasetService.clone).toHaveBeenCalledWith({id: 'dataset'});
+			expect(DatasetService.clone).toHaveBeenCalledWith({ id: 'dataset' });
 			expect(MessageService.success).toHaveBeenCalled();
 		}));
 
@@ -127,7 +255,7 @@ describe('Datasets actions service', () => {
 				payload: {
 					method: 'toggleFavorite',
 					args: [],
-					model: {id: 'dataset'}
+					model: { id: 'dataset' }
 				}
 			};
 
@@ -135,7 +263,7 @@ describe('Datasets actions service', () => {
 			DatasetActionsService.dispatch(action);
 
 			// then
-			expect(DatasetService.toggleFavorite).toHaveBeenCalledWith({id: 'dataset'});
+			expect(DatasetService.toggleFavorite).toHaveBeenCalledWith({ id: 'dataset' });
 		}));
 
 		it('should update dataset', inject(($document, StateService, DatasetActionsService) => {
@@ -145,7 +273,7 @@ describe('Datasets actions service', () => {
 				payload: {
 					method: '',
 					args: [],
-					model: {id: 'dataset'}
+					model: { id: 'dataset' }
 				}
 			};
 
@@ -159,7 +287,7 @@ describe('Datasets actions service', () => {
 
 			// then
 			expect(element.click).toHaveBeenCalled();
-			expect(StateService.setDatasetToUpdate).toHaveBeenCalledWith({id: 'dataset'});
+			expect(StateService.setDatasetToUpdate).toHaveBeenCalledWith({ id: 'dataset' });
 		}));
 
 		it('should remove dataset', inject(($q, $rootScope, DatasetService, DatasetActionsService, MessageService, TalendConfirmService) => {
@@ -169,7 +297,7 @@ describe('Datasets actions service', () => {
 				payload: {
 					method: 'remove',
 					args: [],
-					model: {id: 'dataset', name: 'dataset'}
+					model: { id: 'dataset', name: 'dataset' }
 				}
 			};
 
@@ -182,7 +310,7 @@ describe('Datasets actions service', () => {
 
 			// then
 			expect(TalendConfirmService.confirm).toHaveBeenCalled();
-			expect(DatasetService.delete).toHaveBeenCalledWith({id: 'dataset', name: 'dataset'});
+			expect(DatasetService.delete).toHaveBeenCalledWith({ id: 'dataset', name: 'dataset' });
 			expect(MessageService.success).toHaveBeenCalled();
 		}));
 
@@ -194,7 +322,7 @@ describe('Datasets actions service', () => {
 					method: '',
 					args: [],
 					model: {
-						model: {id: 'dataset', name: 'dataset'}
+						model: { id: 'dataset', name: 'dataset' }
 					},
 					value: 'new dataset '
 				}
@@ -207,7 +335,10 @@ describe('Datasets actions service', () => {
 			$rootScope.$digest();
 
 			// then
-			expect(DatasetService.rename).toHaveBeenCalledWith({id: 'dataset', name: 'dataset'}, 'new dataset');
+			expect(DatasetService.rename).toHaveBeenCalledWith({
+				id: 'dataset',
+				name: 'dataset'
+			}, 'new dataset');
 			expect(MessageService.success).toHaveBeenCalled();
 		}));
 
@@ -219,7 +350,7 @@ describe('Datasets actions service', () => {
 					method: '',
 					args: [],
 					model: {
-						model: {id: 'dataset', name: 'dataset'}
+						model: { id: 'dataset', name: 'dataset' }
 					},
 					value: 'new dataset '
 				}
@@ -234,6 +365,47 @@ describe('Datasets actions service', () => {
 
 			// then
 			expect(MessageService.error).toHaveBeenCalledWith('DATASET_NAME_ALREADY_USED_TITLE', 'DATASET_NAME_ALREADY_USED');
+		}));
+
+		it('should create dataset with payload model', inject((DatasetActionsService, ImportService) => {
+			// given
+			const selectedType = importTypes[0];
+			const action = {
+				type: '@@dataset/CREATE',
+				payload: {
+					method: '',
+					args: [],
+					...selectedType,
+				}
+			};
+
+			spyOn(ImportService, 'startImport');
+
+			// when
+			DatasetActionsService.dispatch(action);
+
+			// then
+			expect(ImportService.startImport).toHaveBeenCalledWith(action.payload);
+		}));
+
+		it('should create dataset with default type', inject((DatasetActionsService, ImportService) => {
+			// given
+			const defaultType = importTypes[2];
+			const action = {
+				type: '@@dataset/CREATE',
+				payload: {
+					method: '',
+					args: [],
+				}
+			};
+
+			spyOn(ImportService, 'startImport').and.returnValue();
+
+			// when
+			DatasetActionsService.dispatch(action);
+
+			// then
+			expect(ImportService.startImport).toHaveBeenCalledWith(defaultType);
 		}));
 	});
 });
