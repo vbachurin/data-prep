@@ -99,9 +99,13 @@ window.fetchConfiguration = function fetchConfiguration() {
 				// Fetch dynamic configuration (export types, supported encodings, ...)
 				.run((SettingsService, ImportService, ExportService, DatasetService) => {
 					'ngInject';
+					// base settings
 					SettingsService.setSettings(appSettings);
-					ImportService.initImport();
+					// import types and inject them in app settings
+					ImportService.initImport().then(() => SettingsService.refreshSettings());
+					// export types
 					ExportService.refreshTypes();
+					// dataset encodings
 					DatasetService.refreshSupportedEncodings();
 				})
 				// Open a keepalive websocket if requested
