@@ -30,7 +30,7 @@
         <maven>3.1.0</maven>
     </prerequisites>
     <properties>
-        <docker.registry.name>registry.talend.com:5000</docker.registry.name>
+        <docker.registry.name>registry.datapwn.com</docker.registry.name>
         <docker.tools.image.name>${docker.registry.name}/talend/data-prep-webapp-tools:1.8</docker.tools.image.name>
         <docker.user>1000</docker.user>
         <docker.path.dataprep>/data-prep</docker.path.dataprep>
