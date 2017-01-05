@@ -708,22 +708,20 @@ describe('Recipe component', () => {
 
 	beforeEach(angular.mock.module('pascalprecht.translate', ($translateProvider) => {
 		$translateProvider.translations('en', {
-			RECIPE_ITEM_ON_COL: '{{index}}. {{label}} on column {{columnName}}',
-			RECIPE_ITEM_ON_CELL: '{{index}}. {{label}} on cell',
-			RECIPE_ITEM_ON_LINE: '{{index}}. {{label}} #{{rowId}}',
-			RECIPE_LOOKUP_MADE_ON_COL: 'made on the column',
-			LOOKUP_STEP_DESCRIPTION: '{{index}}. {{label}} done with dataset <span class=\"recipe-column-name\">{{lookupDsName}}</span>. Join has been set between <span class=\"recipe-column-name\">{{mainColName}}</span> and <span class=\"recipe-column-name\">{{lookupColName}}. </span>',
-			ONLY_1_ADDED_COL: 'The column <span class=\"recipe-column-name\">{{firstCol}}</span> has been added.',
-			RECIPE_LOOKUP_JOIN_COLS: 'Join has been set between',
-			AND: 'and',
+			RECIPE_ITEM_ON_COL: '<span class="step-number">{{index}}</span> <span class="step-label">{{label}}</span> on column <div class="step-scope" title="{{columnName}}">{{columnName}}</div>',
+			RECIPE_ITEM_ON_CELL: '<span class="step-number">{{index}}</span> <span class="step-label">{{label}}</span> on cell',
+			RECIPE_ITEM_ON_LINE: '<span class="step-number">{{index}}</span> <span class="step-label">{{label}}</span> <span class="step-scope">#{{rowId}}</span>',
+			LOOKUP_STEP_DESCRIPTION: '<span class="step-number">{{index}}</span> <span class="step-label">{{label}}</span> done with dataset <div class="step-scope" title="{{lookupDsName}}">{{lookupDsName}}</div>. Join has been set between <div class="step-scope" title="{{mainColName}}">{{mainColName}}</div> and <div class="step-scope" title="{{lookupColName}}">{{lookupColName}}</div>. ',
+			ONLY_1_ADDED_COL: 'The column <div class="step-scope" title="{{firstCol}}">{{firstCol}}</div> has been added.',
+			ONLY_2_ADDED_COLS: 'The columns <div class="step-scope" title="{{firstCol}}">{{firstCol}}</div> and <div class="step-scope" title="{{secondCol}}">{{secondCol}}</div> have been added.',
+			MORE_THEN_2_ADDED_COLS: 'The columns <div class="step-scope" title="{{firstCol}}">{{firstCol}}</div>, <div class="step-scope" title="{{secondCol}}">{{secondCol}}</div> and <span title="{{restOfCols}}">{{restOfColsNbr}}</span> other(s) have been added.',
 			OTHER: 'other',
-			RECIPE_LOOKUP_FOLLOWING_COLS_ADDED_PLURAL: 'column(s) have been added.',
-			RECIPE_LOOKUP_FOLLOWING_COLS_ADDED_SINGULAR: 'column has been added.',
 		});
 		$translateProvider.preferredLanguage('en');
 	}));
 
 	beforeEach(inject(($rootScope, $compile) => {
+
 		scope = $rootScope.$new();
 		element = angular.element('<recipe></recipe>');
 		$compile(element)(scope);
@@ -749,10 +747,10 @@ describe('Recipe component', () => {
 
 		// then
 		expect(element.find('.recipe ul sc-accordion-item').length).toBe(4);
-		expect(element.find('.recipe ul sc-accordion-item trigger step-description').eq(0).text().trim().replace(/\s+/g, ' ')).toBe('1. Split on column COL1');
-		expect(element.find('.recipe ul sc-accordion-item trigger step-description').eq(1).text().trim().replace(/\s+/g, ' ')).toBe('2. To uppercase on column COL2');
-		expect(element.find('.recipe ul sc-accordion-item trigger step-description').eq(2).text().trim().replace(/\s+/g, ' ')).toBe('3. Replace value on cell');
-		expect(element.find('.recipe ul sc-accordion-item trigger step-description').eq(3).text().trim().replace(/\s+/g, ' ')).toBe('4. Delete Line #125');
+		expect(element.find('.recipe ul sc-accordion-item trigger step-description').eq(0).text().trim().replace(/\s+/g, ' ')).toBe('1 Split on column COL1');
+		expect(element.find('.recipe ul sc-accordion-item trigger step-description').eq(1).text().trim().replace(/\s+/g, ' ')).toBe('2 To uppercase on column COL2');
+		expect(element.find('.recipe ul sc-accordion-item trigger step-description').eq(2).text().trim().replace(/\s+/g, ' ')).toBe('3 Replace value on cell');
+		expect(element.find('.recipe ul sc-accordion-item trigger step-description').eq(3).text().trim().replace(/\s+/g, ' ')).toBe('4 Delete Line #125');
 	});
 
 	it('should render recipe Lookup entry', () => {
@@ -763,7 +761,7 @@ describe('Recipe component', () => {
 
 		// then
 		expect(element.find('.recipe ul sc-accordion-item ').length).toBe(1);
-		expect(element.find('.recipe ul sc-accordion-item trigger step-description').eq(0).text().trim().replace(/\s+/g, ' ')).toBe('1. Lookup done with dataset customers_100_with_pb. Join has been set between id and id. The column firstname has been added.');
+		expect(element.find('.recipe ul sc-accordion-item trigger step-description').eq(0).text().trim().replace(/\s+/g, ' ')).toBe('1 Lookup done with dataset customers_100_with_pb. Join has been set between id and id. The column firstname has been added.');
 	});
 
 	it('should render early preview step', () => {

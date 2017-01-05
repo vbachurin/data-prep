@@ -139,7 +139,7 @@ describe('Recipe knot', () => {
         });
     });
 
-    describe('inactive knot', () => {
+    describe('active knot', () => {
         it('should render a single active knot', () => {
             //given
             scope.inactive = false;
