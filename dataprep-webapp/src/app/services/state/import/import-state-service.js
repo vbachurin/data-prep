@@ -8,20 +8,14 @@
  ============================================================================*/
 
 export const importState = {
-	importTypes: [],
 	visible: false,
 };
 
 export function ImportStateService() {
 	return {
 		hideImport,
-		setImportTypes,
 		showImport,
 	};
-
-	function setImportTypes(importTypes) {
-		importState.importTypes = importTypes;
-	}
 
 	function showImport() {
 		importState.visible = true;
