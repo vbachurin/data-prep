@@ -18,6 +18,13 @@ import java.util.stream.Stream;
 import org.talend.dataprep.api.preparation.*;
 import org.talend.dataprep.conversions.BeanConversionService;
 
+/**
+ * A {@link PreparationRepository} implementation that splits {@link Identifiable identifiable} into multiple ones for
+ * persistent storage.
+ *
+ * @see PersistentIdentifiable
+ * @see PreparationUtils#scatter(Identifiable)
+ */
 public class PersistentPreparationRepository implements PreparationRepository {
 
     private final BeanConversionService beanConversionService;
@@ -27,6 +34,13 @@ public class PersistentPreparationRepository implements PreparationRepository {
     public PersistentPreparationRepository(PreparationRepository delegate, BeanConversionService beanConversionService) {
         this.delegate = delegate;
         this.beanConversionService = beanConversionService;
+        initContent();
+    }
+
+    // Populate underlying repository with expected initial content (root step & root content).
+    private void initContent() {
+        add(Step.ROOT_STEP);
+        add(PreparationActions.ROOT_ACTIONS);
     }
 
     private static Class<? extends Identifiable> selectPersistentClass(Class<? extends Identifiable> identifiableClass) {
@@ -79,8 +93,7 @@ public class PersistentPreparationRepository implements PreparationRepository {
     @Override
     public void clear() {
         delegate.clear();
-        add(Step.ROOT_STEP);
-        add(PreparationActions.ROOT_ACTIONS);
+        initContent();
     }
 
     @Override
