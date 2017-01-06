@@ -1,4 +1,4 @@
-package org.talend.dataprep.dataset.service.api;
+package org.talend.dataprep.api.dataset;
 
 import static java.util.Collections.emptyList;
 
@@ -13,25 +13,30 @@ import org.talend.dataprep.parameters.Parameter;
  */
 public class Import {
 
+    private String locationType;
 
-    private final String locationType;
-
-    private final String contentType;
+    private String contentType;
 
     /** If the import has some parameters to display by the front end. */
-    private final List<Parameter> parameters;
+    private List<Parameter> parameters;
 
     /** If the import is dynamic, the parameters are provided by the backend via another rest call. */
-    private final boolean dynamic;
+    private boolean dynamic;
 
     /** True if it's the default import. */
-    private final boolean defaultImport;
+    private boolean defaultImport;
 
     /** The import label. */
     private String label = null;
 
     /** The import form title. */
     private String title = null;
+
+    /**
+     * Default constructor for jackson deserialization
+     */
+    public Import() {
+    }
 
     /**
      * Constructor.
@@ -92,6 +97,26 @@ public class Import {
 
     private void setTitle(String title) {
         this.title = title;
+    }
+
+    public void setLocationType(String locationType) {
+        this.locationType = locationType;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
+
+    public void setParameters(List<Parameter> parameters) {
+        this.parameters = parameters;
+    }
+
+    public void setDynamic(boolean dynamic) {
+        this.dynamic = dynamic;
+    }
+
+    public void setDefaultImport(boolean defaultImport) {
+        this.defaultImport = defaultImport;
     }
 
     /**

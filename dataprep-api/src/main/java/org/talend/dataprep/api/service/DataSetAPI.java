@@ -33,6 +33,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.api.dataset.Import;
 import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.service.api.EnrichedDataSetMetadata;
 import org.talend.dataprep.api.service.command.dataset.*;
@@ -472,14 +473,6 @@ public class DataSetAPI extends APIService {
     @PublicAPI
     public StreamingResponseBody getImportParameters(@PathVariable("import") final String importType) {
         return CommandHelper.toStreaming(getCommand(DataSetGetImportParameters.class, importType));
-    }
-
-    @RequestMapping(value = "/api/datasets/imports", method = GET, produces = APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "List supported imports for a dataset.", notes = "Returns the supported import types.")
-    @Timed
-    @PublicAPI
-    public StreamingResponseBody listImports() {
-        return CommandHelper.toStreaming(getCommand(DataSetGetImports.class));
     }
 
     /**
