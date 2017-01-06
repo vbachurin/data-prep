@@ -1,5 +1,4 @@
 // ============================================================================
-//
 // Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
@@ -44,6 +43,7 @@ public class EnrichedDataSetMetadata extends UserDataSetMetadata {
      */
     public EnrichedDataSetMetadata(UserDataSetMetadata source, List<Preparation> relatedPreparations) {
         this.setId(source.getId());
+        this.setFavorite(source.isFavorite());
         this.setName(source.getName());
         this.setAuthor(source.getAuthor());
         this.setCreationDate(source.getCreationDate());
