@@ -27,6 +27,7 @@ import java.util.zip.GZIPInputStream;
 import org.apache.commons.io.IOUtils;
 import org.apache.lucene.store.Directory;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
@@ -61,6 +62,7 @@ public class TransformAPITest extends ApiServiceTestBase {
     }
 
     @Test
+    @Ignore // see TDP-3189
     public void testTransformTwoActions() throws Exception {
         // given
         final String preparationId = createPreparationFromFile("dataset/dataset.csv", "another test Dataset", "text/csv");
