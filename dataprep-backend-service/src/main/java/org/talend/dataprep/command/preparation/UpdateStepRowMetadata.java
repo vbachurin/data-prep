@@ -12,8 +12,10 @@
 
 package org.talend.dataprep.command.preparation;
 
+import static org.springframework.http.HttpHeaders.ACCEPT;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
 import static org.talend.dataprep.command.Defaults.asString;
 import static org.talend.dataprep.exception.error.CommonErrorCodes.UNEXPECTED_EXCEPTION;
 
@@ -54,10 +56,11 @@ public class UpdateStepRowMetadata extends GenericCommand<String> {
     private HttpRequestBase onExecute(String preparationId, List<Step> steps) {
         try {
             final String stepsAsJson = objectMapper.writeValueAsString(steps);
-            final HttpPut preparationCreation = new HttpPut(preparationServiceUrl + "/preparations/" + preparationId + "/steps");
-            preparationCreation.setHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE);
-            preparationCreation.setEntity(new StringEntity(stepsAsJson));
-            return preparationCreation;
+            final HttpPut updater = new HttpPut(preparationServiceUrl + "/preparations/" + preparationId + "/steps");
+            updater.setHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE);
+            updater.setEntity(new StringEntity(stepsAsJson));
+            updater.setHeader(ACCEPT, TEXT_PLAIN_VALUE);
+            return updater;
         } catch (UnsupportedEncodingException | JsonProcessingException e) {
             throw new TDPException(UNEXPECTED_EXCEPTION, e);
         }
