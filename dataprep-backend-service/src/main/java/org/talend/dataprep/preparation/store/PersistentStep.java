@@ -29,10 +29,10 @@ public class PersistentStep extends PersistentIdentifiable {
     private static final long serialVersionUID = 1L;
 
     /** The parent step. */
-    private String parent;
+    private String parentId;
 
     /** The default preparation actions is the root actions. */
-    private String preparationActions;
+    private String contentId;
 
     /** The app version. */
     @JsonProperty("app-version")
@@ -51,12 +51,12 @@ public class PersistentStep extends PersistentIdentifiable {
         // needed for Serialization
     }
 
-    public String getParent() {
-        return parent;
+    public String getParentId() {
+        return parentId;
     }
 
-    public void setParent(String parent) {
-        this.parent = parent;
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
     }
 
     public StepDiff getDiff() {
@@ -87,11 +87,11 @@ public class PersistentStep extends PersistentIdentifiable {
     }
 
     public String getContent() {
-        return preparationActions;
+        return contentId;
     }
 
     public void setContent(String preparationActions) {
-        this.preparationActions = preparationActions;
+        this.contentId = preparationActions;
     }
 
     /**
@@ -113,13 +113,13 @@ public class PersistentStep extends PersistentIdentifiable {
     @Override
     public String toString() {
         String result = "PersistentStep{parentId='";
-        if (parent != null) {
-            result += parent;
+        if (parentId != null) {
+            result += parentId;
         } else {
             result += "null";
         }
         result += '\'' + //
-                ", actions='" + preparationActions + '\'' + //
+                ", actions='" + contentId + '\'' + //
                 ", appVersion='" + appVersion + '\'' + //
                 ", diff=" + diff + //
                 '}';

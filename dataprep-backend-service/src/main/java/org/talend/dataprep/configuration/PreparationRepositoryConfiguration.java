@@ -136,9 +136,12 @@ public class PreparationRepositoryConfiguration {
                         .toBeans(PersistentStep.class) //
                         .using(PersistentStep.class, (step, persistentStep) -> {
                             if (step.getParent() != null) {
-                                persistentStep.setParent(step.getParent().getId());
+                                persistentStep.setParentId(step.getParent().getId());
                             } else {
-                                persistentStep.setParent(Step.ROOT_STEP.getId());
+                                final String rootStepId = Step.ROOT_STEP.getId();
+                                if (!rootStepId.equals(step.getId())) {
+                                    persistentStep.setParentId(rootStepId);
+                                }
                             }
                             persistentStep.setContent(step.getContent().getId());
                             return persistentStep;
@@ -151,7 +154,7 @@ public class PreparationRepositoryConfiguration {
                             final PreparationRepository repository = getPreparationRepository();
                             if (!Step.ROOT_STEP.getId().equals(persistentStep.getId())) {
                                 step.setParent(conversionService
-                                        .convert(repository.get(persistentStep.getParent(), PersistentStep.class), Step.class));
+                                        .convert(repository.get(persistentStep.getParentId(), PersistentStep.class), Step.class));
                             }
                             final PreparationActions content = repository.get(persistentStep.getContent(),
                                     PreparationActions.class);
