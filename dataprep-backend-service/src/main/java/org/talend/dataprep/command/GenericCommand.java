@@ -13,6 +13,8 @@
 
 package org.talend.dataprep.command;
 
+import static org.apache.http.HttpHeaders.AUTHORIZATION;
+
 import java.io.IOException;
 import java.util.Collection;
 import java.util.EnumMap;
@@ -21,18 +23,12 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.netflix.hystrix.HystrixCommand;
-import com.netflix.hystrix.HystrixCommandGroupKey;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +44,11 @@ import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.security.Security;
 
-import static org.apache.http.HttpHeaders.AUTHORIZATION;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.netflix.hystrix.HystrixCommand;
+import com.netflix.hystrix.HystrixCommandGroupKey;
 
 /**
  * Base Hystrix command request for all DataPrep commands.
@@ -335,7 +335,9 @@ public class GenericCommand<T> extends HystrixCommand<T> {
             builder.append("method:").append(req.getMethod()).append(",\n");
             if (req instanceof HttpEntityEnclosingRequestBase) {
                 try {
-                    builder.append("load:").append(IOUtils.toString(((HttpPost) req).getEntity().getContent())).append(",\n");
+                    builder.append("load:")
+                            .append(IOUtils.toString(((HttpEntityEnclosingRequestBase) req).getEntity().getContent()))
+                            .append(",\n");
                 } catch (IOException e) {
                     // We ignore the field
                 }
