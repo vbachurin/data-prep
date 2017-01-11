@@ -73,8 +73,9 @@ describe('Dataset List Service', () => {
 				nbLines: datasets[0].records,
 				icon: 'talend-file-csv-o',
 				displayMode: 'text',
-				className: 'list-item-dataset',
-				actions: ['inventory:edit', 'list:dataset:preparations', 'dataset:update', 'dataset:clone', 'dataset:remove', 'dataset:favorite'],
+				className: '',
+				actions: ['inventory:edit', 'list:dataset:preparations', 'dataset:update', 'dataset:clone', 'dataset:remove'],
+				statusActions: ['dataset:favorite'],
 				preparations: datasets[0].preparations,
 				model: datasets[0],
 			},
@@ -88,8 +89,9 @@ describe('Dataset List Service', () => {
 				nbLines: datasets[1].records,
 				icon: 'talend-file-xls-o',
 				displayMode: 'text',
-				className: 'list-item-dataset',
-				actions: ['inventory:edit', 'dataset:update', 'dataset:clone', 'dataset:remove', 'dataset:favorite'],
+				className: '',
+				actions: ['inventory:edit', 'dataset:update', 'dataset:clone', 'dataset:remove'],
+				statusActions: ['dataset:favorite'],
 				preparations: undefined,
 				model: datasets[1],
 			},
@@ -103,8 +105,9 @@ describe('Dataset List Service', () => {
 				nbLines: datasets[2].records,
 				icon: 'talend-file-csv-o',
 				displayMode: 'text',
-				className: 'list-item-dataset',
-				actions: ['inventory:edit', 'dataset:update', 'dataset:clone', 'dataset:remove', 'dataset:favorite'],
+				className: '',
+				actions: ['inventory:edit', 'dataset:update', 'dataset:clone', 'dataset:remove'],
+				statusActions: ['dataset:favorite'],
 				preparations: undefined,
 				model: datasets[2],
 			},
@@ -118,8 +121,9 @@ describe('Dataset List Service', () => {
 				nbLines: datasets[3].records,
 				icon: 'talend-file-o',
 				displayMode: 'text',
-				className: 'list-item-dataset',
-				actions: ['inventory:edit', 'dataset:update', 'dataset:clone', 'dataset:remove', 'dataset:favorite'],
+				className: '',
+				actions: ['inventory:edit', 'dataset:update', 'dataset:clone', 'dataset:remove'],
+				statusActions: ['dataset:favorite'],
 				preparations: undefined,
 				model: datasets[3],
 			},
@@ -154,7 +158,6 @@ describe('Dataset List Service', () => {
 		spyOn(DatasetRestService, 'update').and.returnValue(restPromise);
 		spyOn(DatasetRestService, 'clone').and.returnValue(restPromise);
 		spyOn(DatasetRestService, 'delete').and.returnValue(restPromise);
-		spyOn(DatasetRestService, 'processCertification').and.returnValue(restPromise);
 		spyOn(DatasetRestService, 'toggleFavorite').and.returnValue(restPromise);
 
 		spyOn(StateService, 'setDatasets').and.returnValue();
@@ -386,36 +389,6 @@ describe('Dataset List Service', () => {
 		}));
 	});
 
-	describe('certification', () => {
-		beforeEach(inject(($q, DatasetRestService) => {
-			spyOn(DatasetRestService, 'getDatasets').and.returnValue($q.when({ data: datasets.slice(0) }));
-		}));
-
-		it('should process certification on dataset', inject(($rootScope, DatasetListService, DatasetRestService) => {
-			//given
-			const dataset = { id: '6a543545de46512bf8651c' };
-
-			//when
-			DatasetListService.processCertification(dataset);
-			$rootScope.$apply();
-
-			//then
-			expect(DatasetRestService.processCertification).toHaveBeenCalledWith('6a543545de46512bf8651c');
-		}));
-
-		it('should refresh datasets list', inject(($rootScope, DatasetListService, DatasetRestService) => {
-			//given
-			const dataset = { id: '6a543545de46512bf8651c' };
-
-			//when
-			DatasetListService.processCertification(dataset);
-			$rootScope.$apply();
-
-			//then
-			expect(DatasetRestService.getDatasets).toHaveBeenCalled();
-		}));
-	});
-
 	describe('toggle', () => {
 		beforeEach(inject(($q, DatasetRestService) => {
 			spyOn(DatasetRestService, 'getDatasets').and.returnValue($q.when({ data: datasets.slice(0) }));
@@ -453,7 +426,7 @@ describe('Dataset List Service', () => {
 			const dataset = { id: 'dataset' };
 
 			//then
-			expect(DatasetListService.getDatasetActions(dataset)).toEqual(['inventory:edit', 'dataset:update', 'dataset:clone', 'dataset:remove', 'dataset:favorite']);
+			expect(DatasetListService.getDatasetActions(dataset)).toEqual(['inventory:edit', 'dataset:update', 'dataset:clone', 'dataset:remove']);
 		}));
 
 		it('should return actions for a dataset which has related preparations', inject((DatasetListService) => {
@@ -461,7 +434,31 @@ describe('Dataset List Service', () => {
 			const dataset = { id: 'dataset', preparations: [{ id: 'preparation' }] };
 
 			//then
-			expect(DatasetListService.getDatasetActions(dataset)).toEqual(['inventory:edit', 'list:dataset:preparations', 'dataset:update', 'dataset:clone', 'dataset:remove', 'dataset:favorite']);
+			expect(DatasetListService.getDatasetActions(dataset)).toEqual(['inventory:edit', 'list:dataset:preparations', 'dataset:update', 'dataset:clone', 'dataset:remove']);
+		}));
+	});
+
+	describe('getClassName', () => {
+		it('should return favorite class', inject((DatasetListService) => {
+			// given
+			const dataset = { favorite: true };
+
+			// when
+			const classNames = DatasetListService.getClassName(dataset);
+
+			// then
+			expect(classNames).toEqual(['list-item-favorite']);
+		}));
+
+		it('should return empty array when dataset is not favorite', inject((DatasetListService) => {
+			// given
+			const dataset = { favorite: false };
+
+			// when
+			const classNames = DatasetListService.getClassName(dataset);
+
+			// then
+			expect(classNames).toEqual([]);
 		}));
 	});
 });
