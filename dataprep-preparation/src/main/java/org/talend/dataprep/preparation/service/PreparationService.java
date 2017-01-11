@@ -489,7 +489,7 @@ public class PreparationService {
      */
     public void updatePreparationSteps(final String preparationId, final List<Step> steps) {
 
-        log.info("update preparation #{}'s steps", preparationId);
+        log.debug("update preparation #{}'s steps", preparationId);
 
         int updatedSteps = 0;
         for (Step toUpdate : steps) {

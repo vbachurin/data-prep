@@ -36,7 +36,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
  * Hystrix command used to update a step row etadata.
  */
 @Component
-@Scope("request")
+@Scope("prototype")
 public class UpdateStepRowMetadata extends GenericCommand<String> {
 
     /**
