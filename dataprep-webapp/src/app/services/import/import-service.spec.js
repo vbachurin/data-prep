@@ -28,7 +28,7 @@ describe('Import service', () => {
 		};
 		$provide.constant('state', stateMock);
 	}));
-	
+
 	beforeEach(() => {
 		importTypes = [
 			{
@@ -165,169 +165,93 @@ describe('Import service', () => {
 		}));
 
 		it('should call REST service', inject((ImportService, ImportRestService) => {
-			//given
+			// given
 			const locationType = 'toto';
 
-			//when
+			// when
 			ImportService.importParameters(locationType);
 
-			//then
+			// then
 			expect(ImportRestService.importParameters).toHaveBeenCalledWith(locationType);
 		}));
 
 		it('should manage loader', inject(($rootScope, ImportService) => {
-			//given
+			// given
 			const locationType = 'toto';
 			spyOn($rootScope, '$emit').and.returnValue();
 
-			//when
+			// when
 			ImportService.importParameters(locationType);
 			expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.start');
 			$rootScope.$digest();
 
-			//then
+			// then
 			expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.stop');
-
 		}));
 	});
 
-	describe('refreshParameters', () => {
+	describe('refreshForm', () => {
 		beforeEach(inject(($q, ImportRestService) => {
-			spyOn(ImportRestService, 'refreshParameters').and.returnValue($q.when());
-
+			spyOn(ImportRestService, 'refreshForm').and.returnValue($q.when());
 		}));
 
 		it('should call REST service', inject((ImportService, ImportRestService) => {
-			//given
-			const formId = 'toto';
+			// given
 			const propertyName = 'tata';
 			const formData = {};
 
-			//when
-			ImportService.refreshParameters(formId, propertyName, formData);
+			// when
+			ImportService.refreshForm(propertyName, formData);
 
-			//then
-			expect(ImportRestService.refreshParameters).toHaveBeenCalledWith(formId, propertyName, formData);
+			// then
+			expect(ImportRestService.refreshForm).toHaveBeenCalledWith(propertyName, formData);
 		}));
 
 		it('should manage loader', inject(($rootScope, ImportService) => {
-			//given
-			const formId = 'toto';
+			// given
 			const propertyName = 'tata';
 			const formData = {};
 			spyOn($rootScope, '$emit').and.returnValue();
 
-			//when
-			ImportService.refreshParameters(formId, propertyName, formData);
+			// when
+			ImportService.refreshForm(propertyName, formData);
 			expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.start');
 			$rootScope.$digest();
 
-			//then
+			// then
 			expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.stop');
-
 		}));
 	});
 
 	describe('testConnection', () => {
 		beforeEach(inject(($q, ImportRestService) => {
 			spyOn(ImportRestService, 'testConnection').and.returnValue($q.when());
-
 		}));
 
 		it('should call REST service', inject((ImportService, ImportRestService) => {
-			//given
+			// given
 			const formId = 'toto';
 			const formData = {};
 
-			//when
+			// when
 			ImportService.testConnection(formId, formData);
 
-			//then
+			// then
 			expect(ImportRestService.testConnection).toHaveBeenCalledWith(formId, formData);
 		}));
 
 		it('should manage loader', inject(($rootScope, ImportService) => {
-			//given
+			// given
 			const formId = 'toto';
 			const formData = {};
 			spyOn($rootScope, '$emit').and.returnValue();
 
-			//when
+			// when
 			ImportService.testConnection(formId, formData);
 			expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.start');
 			$rootScope.$digest();
 
-			//then
-			expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.stop');
-
-		}));
-	});
-
-	describe('getDatasetForm', () => {
-		beforeEach(inject(($q, ImportRestService) => {
-			spyOn(ImportRestService, 'getDatasetForm').and.returnValue($q.when());
-
-		}));
-
-		it('should call REST service', inject((ImportService, ImportRestService) => {
-			//given
-			const datastoreId = 'toto';
-
-			//when
-			ImportService.getDatasetForm(datastoreId);
-
-			//then
-			expect(ImportRestService.getDatasetForm).toHaveBeenCalledWith(datastoreId);
-		}));
-
-		it('should manage loader', inject(($rootScope, ImportService) => {
-			//given
-			const datastoreId = 'toto';
-			spyOn($rootScope, '$emit').and.returnValue();
-
-			//when
-			ImportService.getDatasetForm(datastoreId);
-			expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.start');
-			$rootScope.$digest();
-
-			//then
-			expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.stop');
-
-		}));
-	});
-
-	describe('refreshDatasetForm', () => {
-		beforeEach(inject(($q, ImportRestService) => {
-			spyOn(ImportRestService, 'refreshDatasetForm').and.returnValue($q.when());
-
-		}));
-
-		it('should call REST service', inject((ImportService, ImportRestService) => {
-			//given
-			const datastoreId = 'toto';
-			const propertyName = 'tata';
-			const formData = {};
-
-			//when
-			ImportService.refreshDatasetForm(datastoreId, propertyName, formData);
-
-			//then
-			expect(ImportRestService.refreshDatasetForm).toHaveBeenCalledWith(datastoreId, propertyName, formData);
-		}));
-
-		it('should manage loader', inject(($rootScope, ImportService) => {
-			//given
-			const datastoreId = 'toto';
-			const propertyName = 'tata';
-			const formData = {};
-			spyOn($rootScope, '$emit').and.returnValue();
-
-			//when
-			ImportService.refreshDatasetForm(datastoreId, propertyName, formData);
-			expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.start');
-			$rootScope.$digest();
-
-			//then
+			// then
 			expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.stop');
 
 		}));
@@ -340,294 +264,94 @@ describe('Import service', () => {
 		}));
 
 		it('should call REST service', inject((ImportService, ImportRestService) => {
-			//given
-			const datastoreId = 'toto';
-			const formData = {};
+			// given
+			const definitionName = 'toto';
+			const formsData = {};
 
-			//when
-			ImportService.createDataset(datastoreId, formData);
+			// when
+			ImportService.createDataset(definitionName, formsData);
 
-			//then
-			expect(ImportRestService.createDataset).toHaveBeenCalledWith(datastoreId, formData);
+			// then
+			expect(ImportRestService.createDataset).toHaveBeenCalledWith(definitionName, formsData);
 		}));
 
 		it('should manage loader', inject(($rootScope, ImportService) => {
-			//given
-			const datastoreId = 'toto';
-			const formData = {};
+			// given
+			const definitionName = 'toto';
+			const formsData = {};
 			spyOn($rootScope, '$emit').and.returnValue();
 
-			//when
-			ImportService.createDataset(datastoreId, formData);
+			// when
+			ImportService.createDataset(definitionName, formsData);
 			expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.start');
 			$rootScope.$digest();
 
-			//then
+			// then
 			expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.stop');
-
 		}));
 	});
 
-	describe('startImport', () => {
-		it('should start import from local file', inject((ImportService) => {
-			// when
-			ImportService.startImport(importTypes[2]);
-
-			// then
-			expect(ImportService.currentInputType).toEqual(importTypes[2]);
+	describe('getFormsByDatasetId', () => {
+		beforeEach(inject(($q, ImportRestService) => {
+			spyOn(ImportRestService, 'getFormsByDatasetId').and.returnValue($q.when());
 		}));
 
-		it('should start import from remote', inject((ImportService, StateService) => {
-			// when
-			spyOn(StateService, 'showImport').and.returnValue();
-			ImportService.startImport(importTypes[0]);
-
-			// then
-			expect(ImportService.currentInputType).toEqual(importTypes[0]);
-			expect(StateService.showImport).toHaveBeenCalled();
-		}));
-
-		it('should start import from remote with dynamic parameters', inject((ImportService, $q, $rootScope) => {
+		it('should call REST service', inject((ImportService, ImportRestService) => {
 			// given
-			importTypes[0].dynamic = true;
-			spyOn(ImportService, 'importParameters').and.returnValue($q.when({ data: { name: 'url' } }));
+			const datasetId = '123-abc-456';
 
 			// when
-			ImportService.startImport(importTypes[0]);
-			$rootScope.$apply();
+			ImportService.getFormsByDatasetId(datasetId);
 
 			// then
-			expect(ImportService.importParameters).toHaveBeenCalledWith('hdfs');
-			expect(ImportService.currentInputType.parameters).toEqual({ name: 'url' });
+			expect(ImportRestService.getFormsByDatasetId).toHaveBeenCalledWith(datasetId);
 		}));
 
-		it('should start import from tcomp', inject(($rootScope, ImportService, $q) => {
+		it('should manage loader', inject(($rootScope, ImportService) => {
 			// given
-			const fakeData = { jsonSchema: {} };
-			spyOn(ImportService, 'importParameters').and.returnValue($q.when({ data: fakeData }));
+			const datasetId = '123-abc-456';
+			spyOn($rootScope, '$emit').and.returnValue();
 
 			// when
-			ImportService.startImport(importTypes[4]);
-			$rootScope.$apply();
+			ImportService.getFormsByDatasetId(datasetId);
+			expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.start');
+			$rootScope.$digest();
 
 			// then
-			expect(ImportService.importParameters).toHaveBeenCalledWith('tcomp-FullExampleDatastore');
-			expect(ImportService.datastoreForm).toEqual(fakeData);
+			expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.stop');
 		}));
 	});
 
-	describe('onDatastoreFormChange', () => {
-		let formData;
-		let formId;
-		let propertyName;
-		let fakeData;
+	describe('editDataset', () => {
+		const datasetId = '123-abc-456';
+		const formsData = {
+			dataStoreProperties: {},
+			dataSetProperties: {},
+		};
 
-		beforeEach(inject(() => {
-			formId = 'formId';
-			propertyName = 'propertyNameWithTrigger';
-			formData = {
-				propertyName: 'propertyValue1',
-			};
-			fakeData = {
-				jsonSchema: {},
-				uiSchema: {},
-				properties: {
-					propertyName: 'propertyValue2',
-				},
-			};
+		beforeEach(inject(($q, ImportRestService) => {
+			spyOn(ImportRestService, 'editDataset').and.returnValue($q.when());
 		}));
 
-		it('should refresh parameters', inject(($rootScope, ImportService, $q) => {
-			// given
-			spyOn(ImportService, 'refreshParameters').and.returnValue($q.when({ data: fakeData }));
-
+		it('should call REST service', inject((ImportService, ImportRestService) => {
 			// when
-			ImportService.onDatastoreFormChange(formData, formId, propertyName);
-			$rootScope.$apply();
+			ImportService.editDataset(datasetId, formsData);
 
 			// then
-			expect(ImportService.refreshParameters).toHaveBeenCalledWith(formId, propertyName, formData);
-			expect(ImportService.datastoreForm).toEqual(fakeData);
+			expect(ImportRestService.editDataset).toHaveBeenCalledWith(datasetId, formsData);
 		}));
 
-		it('should not refresh parameters if promise fails', inject(($rootScope, ImportService, $q) => {
+		it('should manage loader', inject(($rootScope, ImportService) => {
 			// given
-			spyOn(ImportService, 'refreshParameters').and.returnValue($q.reject());
+			spyOn($rootScope, '$emit').and.returnValue();
 
 			// when
-			ImportService.onDatastoreFormChange(formData, formId, propertyName);
-			$rootScope.$apply();
+			ImportService.editDataset(datasetId);
+			expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.start');
+			$rootScope.$digest();
 
 			// then
-			expect(ImportService.refreshParameters).toHaveBeenCalledWith(formId, propertyName, formData);
-			expect(ImportService.datastoreForm).not.toEqual(fakeData);
-		}));
-	});
-
-	describe('onDatastoreFormSubmit', () => {
-		let definitionName;
-		let uiSpecs;
-		let fakeDatastoreId;
-		let fakeDatasetForm;
-
-		beforeEach(inject(() => {
-			definitionName = 'formId';
-			uiSpecs = {
-				formData: {
-					propertyName: 'propertyValue1',
-				},
-			};
-			fakeDatastoreId = 'abc-123-def';
-			fakeDatasetForm = {
-				jsonSchema: {},
-				uiSchema: {},
-			};
-		}));
-
-		it('should get datastore id while testing connection', inject(($rootScope, $q, ImportService) => {
-			// given
-			spyOn(ImportService, 'testConnection').and.returnValue($q.when({ data: { dataStoreId: fakeDatastoreId } }));
-			spyOn(ImportService, 'getDatasetForm').and.returnValue($q.when({ data: fakeDatasetForm }));
-
-			// when
-			ImportService.onDatastoreFormSubmit(uiSpecs, definitionName);
-			$rootScope.$apply();
-
-			// then
-			expect(ImportService.testConnection).toHaveBeenCalledWith(definitionName, uiSpecs.formData);
-			expect(ImportService.dataStoreId).toEqual(fakeDatastoreId);
-			expect(ImportService.getDatasetForm).toHaveBeenCalledWith(fakeDatastoreId);
-			expect(ImportService.datasetForm).toEqual(fakeDatasetForm);
-		}));
-
-		it('should not get datastore id if promise fails', inject(($rootScope, $q, ImportService) => {
-			// given
-			spyOn(ImportService, 'testConnection').and.returnValue($q.reject());
-
-			// when
-			ImportService.onDatastoreFormSubmit(uiSpecs, definitionName);
-			$rootScope.$apply();
-
-			// then
-			expect(ImportService.testConnection).toHaveBeenCalledWith(definitionName, uiSpecs.formData);
-			expect(ImportService.dataStoreId).toBeFalsy();
-		}));
-	});
-
-	describe('onDatasetFormChange', () => {
-		let formData;
-		let datastoreFormId;
-		let propertyName;
-		let fakeData;
-
-		beforeEach(inject((ImportService) => {
-			datastoreFormId = 'datastoreFormId';
-			propertyName = 'propertyNameWithTrigger';
-			formData = {
-				propertyName: 'propertyValue1',
-			};
-			fakeData = {
-				jsonSchema: {},
-				uiSchema: {},
-				properties: {
-					propertyName: 'propertyValue2',
-				},
-			};
-			ImportService.dataStoreId = datastoreFormId;
-		}));
-
-		it('should refresh dataset form', inject(($rootScope, ImportService, $q) => {
-			// given
-			spyOn(ImportService, 'refreshDatasetForm').and.returnValue($q.when({ data: fakeData }));
-
-			// when
-			ImportService.onDatasetFormChange(formData, null, propertyName);
-			$rootScope.$apply();
-
-			// then
-			expect(ImportService.refreshDatasetForm).toHaveBeenCalledWith(datastoreFormId, propertyName, formData);
-			expect(ImportService.datasetForm).toEqual(fakeData);
-		}));
-
-		it('should not refresh dataset form if promise fails', inject(($rootScope, ImportService, $q) => {
-			// given
-			spyOn(ImportService, 'refreshDatasetForm').and.returnValue($q.reject());
-
-			// when
-			ImportService.onDatasetFormChange(formData, null, propertyName);
-			$rootScope.$apply();
-
-			// then
-			expect(ImportService.refreshDatasetForm).toHaveBeenCalledWith(datastoreFormId, propertyName, formData);
-			expect(ImportService.datasetForm).not.toEqual(fakeData);
-		}));
-	});
-
-	describe('onDatasetFormCancel', () => {
-
-		it('should reset modal display flag and datastore creation form', inject(($rootScope, ImportService, StateService) => {
-			// given
-			ImportService.datastoreForm = {};
-			ImportService.dataStoreId = '';
-			ImportService.datasetForm = {};
-			
-			spyOn(StateService, 'hideImport').and.returnValue();
-
-			// when
-			ImportService.onDatasetFormCancel();
-			$rootScope.$apply();
-
-			// then
-			expect(StateService.hideImport).toHaveBeenCalled();
-			expect(ImportService.datastoreForm).toBeNull();
-			expect(ImportService.dataStoreId).toBeNull();
-			expect(ImportService.datasetForm).toBeNull();
-		}));
-	});
-
-	describe('onDatasetFormSubmit', () => {
-		let dataStoreId;
-		let uiSpecs;
-		let fakeDatasetId;
-
-		beforeEach(inject((ImportService) => {
-			dataStoreId = 'datastoreId';
-			uiSpecs = {
-				formData: {
-					propertyName: 'propertyValue1',
-				},
-			};
-			fakeDatasetId = 'abc-123-def';
-			ImportService.dataStoreId = dataStoreId;
-		}));
-
-		it('should open dataset', inject(($rootScope, $q, ImportService, DatasetService, UploadWorkflowService) => {
-			// given
-			spyOn(ImportService, 'createDataset').and.returnValue($q.when({ data: { dataSetId: fakeDatasetId } }));
-			spyOn(DatasetService, 'getDatasetById').and.returnValue($q.when());
-			spyOn(UploadWorkflowService, 'openDataset');
-
-			// when
-			ImportService.onDatasetFormSubmit(uiSpecs, dataStoreId);
-			$rootScope.$apply();
-
-			// then
-			expect(ImportService.createDataset).toHaveBeenCalledWith(dataStoreId, uiSpecs.formData);
-			expect(DatasetService.getDatasetById).toHaveBeenCalledWith(fakeDatasetId);
-		}));
-
-		it('should not open dataset if promise fails', inject(($rootScope, $q, ImportService, DatasetService) => {
-			// given
-			spyOn(ImportService, 'createDataset').and.returnValue($q.reject());
-			spyOn(DatasetService, 'getDatasetById').and.returnValue();
-
-			// when
-			ImportService.onDatasetFormSubmit(uiSpecs, dataStoreId);
-			$rootScope.$apply();
-
-			// then
-			expect(ImportService.createDataset).toHaveBeenCalledWith(dataStoreId, uiSpecs.formData);
-			expect(DatasetService.getDatasetById).not.toHaveBeenCalled();
+			expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.stop');
 		}));
 	});
 
@@ -681,7 +405,7 @@ describe('Import service', () => {
 
 			// then
 			expect(ImportService.datasetNameModal).toBeFalsy();
-			const paramsExpected = { url: '', type: 'hdfs', name: 'my dataset'};
+			const paramsExpected = { url: '', type: 'hdfs', name: 'my dataset' };
 			expect(DatasetService.create).toHaveBeenCalledWith(paramsExpected, 'application/vnd.remote-ds.hdfs', { name: 'my dataset.csv' });
 		}));
 

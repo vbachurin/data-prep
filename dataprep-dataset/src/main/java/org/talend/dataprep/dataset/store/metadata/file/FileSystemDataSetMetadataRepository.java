@@ -77,11 +77,8 @@ public class FileSystemDataSetMetadataRepository extends ObjectDataSetMetadataRe
         }
     }
 
-    /**
-     * @see DataSetMetadataRepository#add(DataSetMetadata)
-     */
     @Override
-    public void add(DataSetMetadata metadata) {
+    public void save(DataSetMetadata metadata) {
 
         String id = metadata.getId();
 
@@ -142,7 +139,7 @@ public class FileSystemDataSetMetadataRepository extends ObjectDataSetMetadataRe
         final File folder = getRootFolder();
         final File[] files = folder.listFiles();
         if (files == null) {
-            return Stream.of();
+            return Stream.empty();
         }
 
         return Arrays.stream(files).map(f -> get(f.getName())).filter(m -> m != null);

@@ -11,19 +11,34 @@
 
   ============================================================================*/
 
-// Base scss only contains Reset, typography, ...
-// Do not import a file before 'normalize'
+.tcomp {
+	.datastore,
+	.dataset {
+		fieldset {
+			margin: 0 auto;
+			width: 75%;
 
-@import "fonts";
+			legend {
+				display: none;
+			}
+		}
+	}
 
-body {
-  background-color: white;
-  font-family: $sourcesanspro;
-  font-weight: normal;
+	.form-control + label {
+		left: 0;
+	}
 
-  select {
-    background-color: $white;
-    margin: 0;
-    width: 100%;
-  }
+	.form-actions {
+		display: flex;
+		justify-content: space-between;
+		margin: auto;
+		width: 75%;
+	}
+
+	.datastore {
+		.form-actions {
+			justify-content: flex-end;
+		}
+	}
 }
+
