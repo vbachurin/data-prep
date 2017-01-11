@@ -44,23 +44,22 @@ public class LookupDatasetsManager {
 
     public static synchronized boolean put(String dataSetId, LightweightExportableDataSet dataSet) {
         if (uniqueInstance.getDatasets().containsKey(dataSetId)) {
-            LOGGER.info("The DATASET of id: " + dataSetId + " has already been added");
+            LOGGER.debug("The DATASET of id: " + dataSetId + " has already been added");
             return false;
         } else {
-            LOGGER.info("Adding the DATASET of id: " + dataSetId);
+            LOGGER.debug("Adding the DATASET of id: " + dataSetId);
             uniqueInstance.getDatasets().put(dataSetId, dataSet);
             return true;
         }
     }
 
     public static synchronized LightweightExportableDataSet remove(String dataSetId) {
-        LOGGER.info("removing the DATASET of id: " + dataSetId);
+        LOGGER.debug("removing the DATASET of id: " + dataSetId);
         return uniqueInstance.getDatasets().remove(dataSetId);
     }
 
     public static LightweightExportableDataSet get(String dataSetId) {
-        LOGGER.info("Retrieving the DATASET of id: " + dataSetId);
-        LOGGER.info("Retrieving the DATASET of id: " + dataSetId);
+        LOGGER.debug("Retrieving the DATASET of id: " + dataSetId);
         return uniqueInstance.getDatasets().get(dataSetId);
     }
 }
