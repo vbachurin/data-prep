@@ -662,6 +662,7 @@ public class TransformationService extends BaseTransformationService {
     public List<ExportFormat> exportTypes() {
         return formatRegistrationService.getExternalFormats().stream() //
                 .sorted(Comparator.comparingInt(ExportFormat::getOrder)) // Enforce strict order.
+                .filter(ExportFormat::isEnabled) //
                 .collect(toList());
     }
 
