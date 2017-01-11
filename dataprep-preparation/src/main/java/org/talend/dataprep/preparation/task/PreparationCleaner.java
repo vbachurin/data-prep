@@ -50,7 +50,7 @@ public class PreparationCleaner {
 
     private Map<Step, Integer> orphansStepsTags = new HashMap<>();
 
-    @Value("${preparation.store.remove.hours}")
+    @Value("${preparation.store.remove.hours:24}")
     private int orphanTime;
 
     /** The root step. */
