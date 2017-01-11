@@ -139,8 +139,8 @@ public class DataSetAPI extends APIService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Creating or updating dataset #{} (pool: {})...", id, getConnectionStats());
         }
-        HystrixCommand<String> creation = getCommand(UpdateDataSet.class, id, dataSetContent);
-        creation.execute();
+        HystrixCommand<String> updateDataSetCommand = getCommand(UpdateDataSet.class, id, dataSetContent);
+        updateDataSetCommand.execute();
         LOG.debug("Dataset creation or update for #{} done.", id);
     }
 
@@ -275,13 +275,13 @@ public class DataSetAPI extends APIService {
             LOG.debug("Listing datasets summary (pool: {})...", getConnectionStats());
         }
 
-        int numberOfDataSets;
+        Integer numberOfDataSets;
         GenericCommand<InputStream> listDataSets = getCommand(DataSetList.class, sort, order, name, certified, favorite, limit);
         try (InputStream input = listDataSets.execute();
              final JsonGenerator generator = mapper.getFactory().createGenerator(output)) {
             List<UserDataSetMetadata> datasets = mapper.readValue(input, new TypeReference<List<UserDataSetMetadata>>() {
             });
-            numberOfDataSets = datasets.size();
+            numberOfDataSets = LOG.isInfoEnabled() ? datasets.size() : null;
             generator.writeStartArray();
             for (UserDataSetMetadata userDataSetMetadata : datasets) {
                 EnrichedDataSetMetadata enrichedDataSet = enrichDataSetMetadata(userDataSetMetadata);

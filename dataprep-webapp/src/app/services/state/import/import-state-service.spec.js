@@ -36,5 +36,17 @@ describe('Import', () => {
 			// then
 			expect(importState.visible).toBe(true);
 		}));
+
+		it('should set current import item', inject(function (importState, ImportStateService) {
+			// given
+			const item = { id: 'id' };
+			expect(importState.item).toBeNull();
+
+			// when
+			ImportStateService.setCurrentImportItem(item);
+
+			// then
+			expect(importState.item).toBe(item);
+		}));
 	});
 });

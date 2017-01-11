@@ -39,21 +39,43 @@ describe('Import REST Service', () => {
 		expect(params).toEqual({ name: 'url' });
 	}));
 
-	it('should refresh import parameters', inject(($rootScope, RestURLs, ImportRestService) => {
+	it('should get dataset form properties', inject(($rootScope, RestURLs, ImportRestService) => {
+		// given
+		const datastoreFormData = {};
+		const expectedResult = { jsonSchema: {}, uiSchema: {}, properties: {} };
+
+		$httpBackend
+			.expectPOST(`${RestURLs.tcompUrl}/datastores/dataset/properties`)
+			.respond(200, expectedResult);
+
+		// when
+		let forms = null;
+		ImportRestService.getDatasetForm(datastoreFormData)
+			.then((response) => {
+				forms = response.data;
+			});
+		$httpBackend.flush();
+		$rootScope.$digest();
+
+		// then
+		expect(forms).toEqual(expectedResult);
+	}));
+
+	it('should refresh datastore form properties', inject(($rootScope, RestURLs, ImportRestService) => {
 		// given
 		let params = null;
 
-		const formId = 'formId';
+		const definitionName = 'definitionName';
 		const propertyName = 'propertyName';
 		const formData = { propertyName: 'abc' };
 		const expectedResult = { jsonSchema: {}, uiSchema: {} };
 
 		$httpBackend
-			.expectPOST(`${RestURLs.tcompUrl}/properties/${formId}/after/${propertyName}`, formData)
+			.expectPOST(`${RestURLs.tcompUrl}/datastores/properties/trigger/after/${propertyName}`, formData)
 			.respond(200, expectedResult);
 
 		// when
-		ImportRestService.refreshParameters(formId, propertyName, formData)
+		ImportRestService.refreshForm(propertyName, formData)
 			.then((response) => {
 				params = response.data;
 			});
@@ -66,63 +88,35 @@ describe('Import REST Service', () => {
 
 	it('should test connection', inject(($rootScope, RestURLs, ImportRestService) => {
 		// given
-		const formId = 'formId';
-		const formData = { propertyName: 'abc' };
-		const expectedResult = 'abc-123-def';
+		const definitionName = 'definitionName';
+		const datastoreFormData = { propertyName: 'abc' };
 
 		$httpBackend
-			.expectPOST(`${RestURLs.tcompUrl}/datastores/${formId}`, formData)
-			.respond(200, { dataStoreId: expectedResult });
+			.expectPOST(`${RestURLs.tcompUrl}/datastores/${definitionName}/test`, datastoreFormData)
+			.respond(200);
 
 		// when
-		let dataStoreId = null;
-		ImportRestService.testConnection(formId, formData)
-			.then((response) => {
-				dataStoreId = response.data && response.data.dataStoreId;
-			});
+		ImportRestService.testConnection(definitionName, datastoreFormData);
 		$httpBackend.flush();
 		$rootScope.$digest();
 
 		// then
-		expect(dataStoreId).toBe(expectedResult);
-	}));
-
-	it('should get dataset form properties', inject(($rootScope, RestURLs, ImportRestService) => {
-		// given
-		const datastoreId = 'abc-123-def';
-		const expectedResult = { jsonSchema: {}, uiSchema: {} };
-
-		$httpBackend
-			.expectGET(`${RestURLs.tcompUrl}/datastores/${datastoreId}/dataset/properties`)
-			.respond(200, expectedResult);
-
-		// when
-		let datasetForm = null;
-		ImportRestService.getDatasetForm(datastoreId)
-			.then((response) => {
-				datasetForm = response.data;
-			});
-		$httpBackend.flush();
-		$rootScope.$digest();
-
-		// then
-		expect(datasetForm).toEqual(expectedResult);
+		// Expect http call to be performed. If not an error is thrown by $httpBackend
 	}));
 
 	it('should refresh dataset form properties', inject(($rootScope, RestURLs, ImportRestService) => {
 		// given
-		const datastoreId = 'abc-123-def';
 		const propertyName = 'propertyName';
 		const formData = { propertyName: 'abc' };
-		const expectedResult = { jsonSchema: {}, uiSchema: {} };
+		const expectedResult = { jsonSchema: {}, uiSchema: {}, properties: {} };
 
 		$httpBackend
-			.expectPOST(`${RestURLs.tcompUrl}/datastores/${datastoreId}/after/${propertyName}`, formData)
+			.expectPOST(`${RestURLs.tcompUrl}/datastores/properties/trigger/after/${propertyName}`, formData)
 			.respond(200, expectedResult);
 
 		// when
 		let datasetForm = null;
-		ImportRestService.refreshDatasetForm(datastoreId, propertyName, formData)
+		ImportRestService.refreshForm(propertyName, formData)
 			.then((response) => {
 				datasetForm = response.data;
 			});
@@ -135,24 +129,68 @@ describe('Import REST Service', () => {
 
 	it('should create dataset', inject(($rootScope, RestURLs, ImportRestService) => {
 		// given
-		const dataStoreId = 'formId';
-		const formData = { propertyName: 'abc' };
-		const expectedResult = 'abc-123-def';
+		const definitionName = 'definitionName';
+		const formsData = {
+			dataStoreProperties: {},
+			dataSetProperties: {},
+		};
 
 		$httpBackend
-			.expectPOST(`${RestURLs.tcompUrl}/datastores/${dataStoreId}/dataset`, formData)
-			.respond(200, { dataSetId: expectedResult });
+			.expectPOST(`${RestURLs.tcompUrl}/datastores/${definitionName}/dataset`, formsData)
+			.respond(200);
 
 		// when
-		let dataSetId = null;
-		ImportRestService.createDataset(dataStoreId, formData)
+		ImportRestService.createDataset(definitionName, formsData);
+		$httpBackend.flush();
+		$rootScope.$digest();
+
+		// then
+		// Expect http call to be performed. If not an error is thrown by $httpBackend
+	}));
+
+	it('should get filled datastore and dataset forms by dataset id', inject(($rootScope, RestURLs, ImportRestService) => {
+		// given
+		const datasetId = '123-abc-456';
+		const expectedResult = {
+			dataStoreForm: { jsonSchema: {}, uiSchema: {}, properties: {} },
+			dataSetForm: { jsonSchema: {}, uiSchema: {}, properties: {} },
+		};
+
+		$httpBackend
+			.expectGET(`${RestURLs.tcompUrl}/datasets/${datasetId}/properties`)
+			.respond(200, expectedResult);
+
+		// when
+		let forms = null;
+		ImportRestService.getFormsByDatasetId(datasetId)
 			.then((response) => {
-				dataSetId = response.data && response.data.dataSetId;
+				forms = response.data;
 			});
 		$httpBackend.flush();
 		$rootScope.$digest();
 
 		// then
-		expect(dataSetId).toBe(expectedResult);
+		expect(forms).toEqual(expectedResult);
+	}));
+
+	it('should edit dataset properties', inject(($rootScope, RestURLs, ImportRestService) => {
+		// given
+		const datasetId = '123-abc-456';
+		const formsData = {
+			dataStoreProperties: { jsonSchema: {}, uiSchema: {}, properties: {} },
+			dataSetProperties: { jsonSchema: {}, uiSchema: {}, properties: {} },
+		};
+
+		$httpBackend
+			.expectPOST(`${RestURLs.tcompUrl}/datasets/${datasetId}/properties`)
+			.respond(200);
+
+		// when
+		ImportRestService.editDataset(datasetId, formsData);
+		$httpBackend.flush();
+		$rootScope.$digest();
+
+		// then
+		// Expect http call to be performed. If not an error is thrown by $httpBackend
 	}));
 });

@@ -75,7 +75,7 @@ public class ContentAnalysis implements SynchronousDataSetAnalyzer {
                 updateLimit(metadata);
 
                 metadata.getLifecycle().contentIndexed(true);
-                repository.add(metadata);
+                repository.save(metadata);
                 LOG.info("Indexed content of data set #{}.", dataSetId);
             } else {
                 LOG.info("Data set #{} no longer exists.", dataSetId); //$NON-NLS-1$
@@ -108,7 +108,7 @@ public class ContentAnalysis implements SynchronousDataSetAnalyzer {
 
     /**
      * Update the dataset limit if it's too large for the system settings.
-     * 
+     *
      * @param metadata the dataset metadata to update.
      */
     private void updateLimit(DataSetMetadata metadata) {
