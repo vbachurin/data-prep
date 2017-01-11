@@ -76,8 +76,10 @@ public class PreparationConversions {
         private UserPreparation toUserPreparation(UserPreparation target) {
             final Security security = applicationContext.getBean(Security.class);
 
-            Owner owner = new Owner(security.getUserId(), security.getUserDisplayName(), StringUtils.EMPTY);
-            target.setOwner(owner);
+            if (target.getOwner() == null) {
+                Owner owner = new Owner(security.getUserId(), security.getUserDisplayName(), StringUtils.EMPTY);
+                target.setOwner(owner);
+            }
             return target;
         }
 

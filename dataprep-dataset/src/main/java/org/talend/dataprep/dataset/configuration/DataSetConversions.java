@@ -62,8 +62,10 @@ public class DataSetConversions {
                                 userDataSetMetadata.setFavorite(userData.getFavoritesDatasets().contains(dataSetMetadata.getId()));
                             }
 
-                            // and the owner
-                            userDataSetMetadata.setOwner(new Owner(userId, security.getUserDisplayName(), StringUtils.EMPTY));
+                            // and the owner (if not already present).
+                            if (userDataSetMetadata.getOwner() == null) {
+                                userDataSetMetadata.setOwner(new Owner(userId, security.getUserDisplayName(), StringUtils.EMPTY));
+                            }
 
                             return userDataSetMetadata;
                         }) //
