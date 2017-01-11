@@ -1,5 +1,4 @@
 // ============================================================================
-//
 // Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
@@ -33,7 +32,6 @@ import org.talend.dataprep.transformation.actions.PrototypeScope;
 
 /**
  * A default implementation of {@link LookupRowMatcher}.
- *
  */
 @PrototypeScope
 public class DefaultLookupRowMatcher implements LookupRowMatcher {
