@@ -60,8 +60,8 @@ $icon-xls-badge-color: #8ABC00;
 	}
 }
 
-.pending-certification-action {
-	.dataset-certify {
+.list-item-pending-certification {
+	button[id^="datasets-list-"][id$="dataset:certify"] {
 		visibility: visible;
 		svg {
 			fill: $icon-certify-pending-color;
