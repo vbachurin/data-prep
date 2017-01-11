@@ -109,6 +109,30 @@ const folders = [
 	},
 ];
 
+const datasets = [
+	{
+		id: '1',
+		type: 'dataset',
+		name: 'AMAA dataset 1',
+		author: 'amaalej',
+		lastModificationDate: '2 minutes ago',
+		dataset: 'Us states',
+		nbLines: 20,
+		icon: 'talend-dataprep',
+		actions: ['inventory:edit', 'dataset:remove'],
+		statusActions: ['dataset:favorite'],
+		model: {
+			id: '1',
+			dataSetId: 'de3cc32a-b624-484e-b8e7-dab9061a009c',
+			name: 'AMAA dataset 1',
+			author: 'amaalej',
+			creationDate: 1427447300000,
+			lastModificationDate: 1427447300300,
+			actions: [],
+		},
+	}
+];
+
 describe('Inventory list container', () => {
 	let scope;
 	let createElement;
@@ -130,7 +154,7 @@ describe('Inventory list container', () => {
 					items="items"
 					sort-by="sortBy"
 					sort-desc="sortDesc"
-					view-key="'listview:preparations'"
+					view-key="viewKey"
 					folder-view-key="'listview:folders'"
 				/>
 			`);
@@ -143,17 +167,7 @@ describe('Inventory list container', () => {
 	}));
 
 	beforeEach(inject((SettingsActionsService) => {
-		// given
-		scope.displayMode = 'table';
-		scope.sortBy = 'name';
-		scope.sortDesc = true;
 		spyOn(SettingsActionsService, 'dispatch').and.returnValue();
-
-		// when
-		createElement();
-		scope.items = preparations;
-		scope.folders = folders;
-		scope.$digest();
 	}));
 
 	afterEach(inject((SettingsService) => {
@@ -163,6 +177,20 @@ describe('Inventory list container', () => {
 	}));
 
 	describe('render', () => {
+		beforeEach(() => {
+			// given
+			scope.displayMode = 'table';
+			scope.sortBy = 'name';
+			scope.sortDesc = true;
+			scope.viewKey = 'listview:preparations';
+
+			// when
+			createElement();
+			scope.items = preparations;
+			scope.folders = folders;
+			scope.$digest();
+		});
+
 		it('should render loader', () => {
 			// when
 			scope.isLoading = true;
@@ -196,6 +224,20 @@ describe('Inventory list container', () => {
 	});
 
 	describe('folder actions', () => {
+		beforeEach(() => {
+			// given
+			scope.displayMode = 'table';
+			scope.sortBy = 'name';
+			scope.sortDesc = true;
+			scope.viewKey = 'listview:preparations';
+
+			// when
+			createElement();
+			scope.items = preparations;
+			scope.folders = folders;
+			scope.$digest();
+		});
+
 		it('should dispatch folder creation',
 			inject((SettingsActionsService) => {
 				// given
@@ -265,6 +307,19 @@ describe('Inventory list container', () => {
 	});
 
 	describe('preparation actions', () => {
+		beforeEach(() => {
+			// given
+			scope.displayMode = 'table';
+			scope.sortBy = 'name';
+			scope.sortDesc = true;
+			scope.viewKey = 'listview:preparations';
+
+			// when
+			createElement();
+			scope.items = preparations;
+			scope.folders = folders;
+			scope.$digest();
+		});
 
 		it('should dispatch preparation creation',
 			inject((SettingsActionsService) => {
@@ -367,5 +422,41 @@ describe('Inventory list container', () => {
 				expect(lastCallArgs.payload.isDescending).toBe(false);
 			})
 		);
+	});
+
+	describe('dataset actions', () => {
+		beforeEach(() => {
+			// given
+			scope.displayMode = 'table';
+			scope.sortBy = 'name';
+			scope.sortDesc = true;
+			scope.viewKey = 'listview:datasets';
+
+			// when
+			createElement();
+			scope.items = datasets;
+			scope.$digest();
+		});
+
+		it('should render favorite action', () => {
+			// then
+			const rows = element.find('.tc-list-display-table').eq(0).find('tbody tr');
+			console.log(rows.eq(0).find('td').eq(1)[0]);
+			expect(rows.eq(0).find('td').eq(1).find('#list-0-dataset\\:favorite').length).toBe(1);
+		});
+
+		it('should dispatch favorite toggle', inject((SettingsActionsService) => {
+			// given
+			expect(SettingsActionsService.dispatch.calls.count()).toBe(1);
+
+			// when
+			element.find('#list-0-dataset\\:favorite').click();
+
+			// then
+			//expect(SettingsActionsService.dispatch.calls.count()).toBe(2);
+			const lastCallArgs = SettingsActionsService.dispatch.calls.argsFor(1)[0];
+			expect(lastCallArgs.id).toBe('dataset:favorite');
+			expect(lastCallArgs.type).toBe('@@dataset/FAVORITE');
+		}));
 	});
 });

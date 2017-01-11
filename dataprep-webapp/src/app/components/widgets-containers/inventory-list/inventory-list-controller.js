@@ -51,7 +51,7 @@ export default class InventoryListCtrl {
 			const allItems = (this.folders || []).concat(this.items || []);
 			this.listProps = {
 				...this.listProps,
-				items: this.adaptItemActions(allItems),
+				items: this.adaptItemsActions(allItems),
 			};
 		}
 		if (changes.sortBy) {
@@ -223,16 +223,26 @@ export default class InventoryListCtrl {
 			});
 	}
 
-	adaptItemActions(items) {
+	adaptItemActions(item, actions, index) {
+		const adaptedActions = this.adaptActions(actions, item);
+		adaptedActions.forEach((action) => {
+			action.id = `${this.id}-${index}-${action.id}`;
+		});
+		return adaptedActions;
+	}
+
+	adaptItemsActions(items) {
+		const actionsColumns = this.listProps.columns.filter(column => column.type === 'actions');
 		return items.map((item, index) => {
-			const actions = this.adaptActions(item.actions, item);
-			actions.forEach((action) => {
-				action.id = `${this.id}-${index}-${action.id}`;
-			});
-			return {
+			const actions = this.adaptItemActions(item, item.actions, index);
+			const adaptedItem = {
 				...item,
 				actions,
 			};
+			actionsColumns.forEach(({ key }) => {
+				adaptedItem[key] = this.adaptItemActions(item, item[key], index);
+			});
+			return adaptedItem;
 		});
 	}
 }
