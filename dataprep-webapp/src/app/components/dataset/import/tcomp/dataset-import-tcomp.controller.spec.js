@@ -35,7 +35,6 @@ describe('Dataset Import TCOMP controller', () => {
 			ctrl = createController();
 		}));
 
-
 		describe('with location type', () => {
 			it('should get data store form', inject(($q, ImportService) => {
 				// given
@@ -55,6 +54,36 @@ describe('Dataset Import TCOMP controller', () => {
 				// then
 				expect(ctrl.datastoreForm).toBe(dataStoreFormData);
 				expect(ctrl.datasetForm).toBeUndefined();
+			}));
+
+			it('should get data set form if test connection button is disabled', inject(($q, ImportService) => {
+				// given
+				const dataStoreFormData = {
+					properties: {
+						tdp_isTestConnectionEnabled: false,
+					},
+				};
+				const dataSetFormData = {
+					properties: {},
+				};
+				spyOn(ImportService, 'importParameters').and.returnValue($q.when({
+					data: dataStoreFormData,
+				}));
+				spyOn(ImportService, 'getDatasetForm').and.returnValue($q.when({
+					data: dataSetFormData,
+				}));
+
+				// when
+				ctrl.$onChanges({
+					locationType: {
+						currentValue: 'locationType',
+					},
+				});
+				scope.$digest();
+
+				// then
+				expect(ctrl.datastoreForm).toBe(dataStoreFormData);
+				expect(ctrl.datasetForm).toBe(dataSetFormData);
 			}));
 		});
 
@@ -205,6 +234,29 @@ describe('Dataset Import TCOMP controller', () => {
 			expect(MessageService.success).not.toHaveBeenCalled();
 			expect(ImportService.getDatasetForm).not.toHaveBeenCalled();
 			expect(ctrl.datasetForm).toBeUndefined();
+		}));
+
+		it('should do nothing if datastore form without button is submitted', inject((ImportService) => {
+			// given
+			ctrl.submitLock = false;
+			ctrl.datastoreForm = {
+				properties: {
+					tdp_isTestConnectionEnabled: false,
+				},
+			};
+			spyOn(ImportService, 'testConnection').and.returnValue();
+			spyOn(ImportService, 'createDataset').and.returnValue();
+			spyOn(ImportService, 'editDataset').and.returnValue();
+			spyOn(ImportService, 'refreshForms').and.returnValue();
+
+			// when
+			ctrl.onDatastoreFormSubmit(uiSpecs, definitionName);
+
+			// then
+			expect(ImportService.testConnection).not.toHaveBeenCalled();
+			expect(ImportService.createDataset).not.toHaveBeenCalled();
+			expect(ImportService.editDataset).not.toHaveBeenCalled();
+			expect(ImportService.refreshForms).not.toHaveBeenCalled();
 		}));
 
 		it('should create dataset', inject(($q, DatasetService, ImportService, UploadWorkflowService) => {
