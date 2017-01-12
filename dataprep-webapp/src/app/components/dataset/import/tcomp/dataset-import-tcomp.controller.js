@@ -49,10 +49,10 @@ export default class DatasetImportTcompCtrl {
 		if (item) {
 			this.importService
 				.getFormsByDatasetId(this.item.id)
-				.then((response) => {
-					const { data } = response;
+				.then(({ data }) => {
 					const { dataStoreFormData, dataSetFormData } = data;
-					this._getDatastoreFormActions();
+					const { properties } = dataStoreFormData;
+					this._getDatastoreFormActions(properties);
 					this.datastoreForm = dataStoreFormData;
 					this._getDatasetFormActions();
 					this.datasetForm = dataSetFormData;
@@ -62,13 +62,38 @@ export default class DatasetImportTcompCtrl {
 		else if (locationType) {
 			this.importService
 				.importParameters(locationType)
-				.then((response) => {
-					const { data } = response;
-					this._getDatastoreFormActions();
+				.then(({ data }) => {
+					const { properties } = data;
+					this._getDatastoreFormActions(properties);
 					this.datastoreForm = data;
+					return properties;
+				})
+				.then((formData) => {
+					const hasHiddenTestConnectionBtn = formData && !formData.tdp_isTestConnectionEnabled;
+					if (hasHiddenTestConnectionBtn) {
+						return this._initDatasetForm(formData);
+					}
 				})
 				.catch(this._reset);
 		}
+	}
+
+	/**
+	 * @ngdoc method
+	 * @name _initDatasetForm
+	 * @methodOf data-prep.dataset-import-tcomp:DatasetImportTcompCtrl
+	 * @description Initialize dataset form from datastore form data
+	 * @param formData Datastore form data
+	 * @returns {Promise}
+	 * @private
+	 */
+	_initDatasetForm(formData) {
+		return this.importService
+			.getDatasetForm(formData)
+			.then(({ data }) => {
+				this._getDatasetFormActions();
+				this.datasetForm = data;
+			});
 	}
 
 	/**
@@ -77,15 +102,13 @@ export default class DatasetImportTcompCtrl {
 	 * @methodOf data-prep.dataset-import-tcomp:DatasetImportTcompCtrl
 	 * @description Populates datastore form actions if they don't exist
 	 */
-	_getDatastoreFormActions() {
+	_getDatastoreFormActions(properties) {
 		if (!this.datastoreFormActions) {
-			this.datastoreFormActions = [
-				{
-					style: 'info',
-					type: 'submit',
-					label: this.$translate.instant('DATASTORE_TEST_CONNECTION'),
-				},
-			];
+			this.datastoreFormActions = [{
+				style: `info ${properties && !properties.tdp_isTestConnectionEnabled && 'sr-only'}`,
+				type: 'submit',
+				label: this.$translate.instant('DATASTORE_TEST_CONNECTION'),
+			}];
 		}
 	}
 
@@ -125,8 +148,7 @@ export default class DatasetImportTcompCtrl {
 	onDatastoreFormChange(formData, definitionName, propertyName) {
 		this.importService
 			.refreshForm(propertyName, formData)
-			.then((response) => {
-				const { data } = response;
+			.then(({ data }) => {
 				this.datastoreForm = data;
 			});
 	}
@@ -167,6 +189,11 @@ export default class DatasetImportTcompCtrl {
 				this.submitLock = false;
 			});
 		}
+		// Datastore form submit without submit button
+		else if (this.datastoreForm && this.datastoreForm.properties && !this.datastoreForm.properties.tdp_isTestConnectionEnabled) {
+			// From datastore form submit (i.e. submit with keyboard)
+			return false;
+		}
 		// Datastore form submit
 		else {
 			this.importService
@@ -177,13 +204,7 @@ export default class DatasetImportTcompCtrl {
 				))
 				.then(() => {
 					if (!this.item && !this.datasetForm) {
-						this.importService
-							.getDatasetForm(formData)
-							.then((response) => {
-								const { data } = response;
-								this._getDatasetFormActions();
-								this.datasetForm = data;
-							});
+						return this._initDatasetForm(formData);
 					}
 				});
 		}
@@ -271,8 +292,7 @@ export default class DatasetImportTcompCtrl {
 	_create(formsData) {
 		return this.importService
 			.createDataset(this.locationType, formsData)
-			.then((response) => {
-				const { data } = response;
+			.then(({ data }) => {
 				const { dataSetId } = data;
 				return this.datasetService.getDatasetById(dataSetId);
 			});
