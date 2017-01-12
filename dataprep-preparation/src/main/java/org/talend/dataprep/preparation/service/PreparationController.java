@@ -81,7 +81,7 @@ public class PreparationController {
     @RequestMapping(value = "/preparations/details", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List all preparations", notes = "Returns the list of preparations details the current user is allowed to see. Creation date is always displayed in UTC time zone. This operation return all details on the preparations.")
     @Timed
-    public Collection<PreparationMessage> listAll(
+    public Collection<UserPreparation> listAll(
             @ApiParam(value = "Sort key (by name or date).") @RequestParam(defaultValue = "MODIF", required = false) String sort,
             @ApiParam(value = "Order for sort key (desc or asc).") @RequestParam(defaultValue = "DESC", required = false) String order) {
         return preparationService.listAll(sort, order);
