@@ -22,7 +22,7 @@ $recipe-step-draggable-background-color: #808080 !default;
 .recipe {
   display: block;
   font-size: 0.95em;
-  padding-right: 25px;
+  padding-right: 10px;
   padding-bottom: 10px;
 
   .step-container {
@@ -34,7 +34,7 @@ $recipe-step-draggable-background-color: #808080 !default;
 
     .step-trigger {
       position: relative;
-      padding-right: 11px;
+      padding-right: 9px;
     }
 
     &.disabled-step {
@@ -94,6 +94,7 @@ $recipe-step-draggable-background-color: #808080 !default;
         display: flex;
         flex-direction: row;
         font-size: .9em;
+        width: 275px;
 
         > * {
           flex: 0;
@@ -178,7 +179,7 @@ $recipe-step-draggable-background-color: #808080 !default;
 
   &-item-handle {
     &:hover {
-      background-color: darken($recipe-step-background-color, 1%);
+      background-color: darken($recipe-step-background-color, 2%);
     }
   }
 
