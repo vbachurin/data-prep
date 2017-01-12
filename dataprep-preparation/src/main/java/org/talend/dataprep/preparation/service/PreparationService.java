@@ -195,11 +195,11 @@ public class PreparationService {
      * @param order how to order the sort.
      * @return the preparation details.
      */
-    public Collection<PreparationMessage> listAll(String sort, String order) {
+    public Collection<UserPreparation> listAll(String sort, String order) {
         log.debug("Get list of preparations (with details).");
-        Collection<PreparationMessage> details = preparationRepository.list(Preparation.class) //
+        Collection<UserPreparation> details = preparationRepository.list(Preparation.class) //
                 .sorted(getPreparationComparator(sort, order)) //
-                .map(p -> beanConversionService.convert(p, PreparationMessage.class)) //
+                .map(p -> beanConversionService.convert(p, UserPreparation.class)) //
                 .collect(toList());
         log.info("found {} preparation(s) in total", details.size());
         return details;
