@@ -96,7 +96,7 @@ angular-animate@1.5.9, angular-animate@^1.5.3:
   version "1.5.9"
   resolved "https://registry.yarnpkg.com/angular-animate/-/angular-animate-1.5.9.tgz#c958d524f9333a48abdaefb32947c7e611f54453"
 
-angular-mass-autocomplete@^0.2.2:
+angular-mass-autocomplete@0.2.3:
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/angular-mass-autocomplete/-/angular-mass-autocomplete-0.2.3.tgz#d34914b17f5e8a5e652c5e760926a90ac11dba26"
   dependencies:
@@ -124,27 +124,27 @@ angular-sanitize@1.5.9:
   version "1.5.9"
   resolved "https://registry.yarnpkg.com/angular-sanitize/-/angular-sanitize-1.5.9.tgz#e2d7dd8e8587f1342b6d2efdfa67311fcf1f65ed"
 
-angular-translate-loader-static-files@^2.10.0:
+angular-translate-loader-static-files@2.13.1:
   version "2.13.1"
   resolved "https://registry.yarnpkg.com/angular-translate-loader-static-files/-/angular-translate-loader-static-files-2.13.1.tgz#61f0365fa749bc10afd6952eb1fa36de5f03569d"
   dependencies:
     angular-translate "~2.13.1"
 
-angular-translate-once@^1.0.3:
+angular-translate-once@1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/angular-translate-once/-/angular-translate-once-1.0.3.tgz#a3cb068ada267ed37feb38b3f1d1be4181dceb70"
 
-angular-translate@^2.10.0, angular-translate@~2.13.1:
+angular-translate@2.13.1, angular-translate@~2.13.1:
   version "2.13.1"
   resolved "https://registry.yarnpkg.com/angular-translate/-/angular-translate-2.13.1.tgz#05673eb371986fc11edc151f590299d7e0c46228"
   dependencies:
     angular ">=1.2.26 <=1.6"
 
-angular-ui-bootstrap@^2.1.3:
+angular-ui-bootstrap@2.4.0:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/angular-ui-bootstrap/-/angular-ui-bootstrap-2.4.0.tgz#1a46e1bfacedcf50281684a88f5548be01546e7a"
 
-angular-ui-router@^0.2.15:
+angular-ui-router@0.2.18:
   version "0.2.18"
   resolved "https://registry.yarnpkg.com/angular-ui-router/-/angular-ui-router-0.2.18.tgz#1dad70415c73d7046fd2e130df03d62fb7464360"
   dependencies:
@@ -158,11 +158,11 @@ angular@~1.3.15:
   version "1.3.20"
   resolved "https://registry.yarnpkg.com/angular/-/angular-1.3.20.tgz#b23a3d7c5e7f99f7d95b9b4d49b9ac355269baee"
 
-angularjs-toaster@^0.4.10:
+angularjs-toaster@0.4.15:
   version "0.4.15"
   resolved "https://registry.yarnpkg.com/angularjs-toaster/-/angularjs-toaster-0.4.15.tgz#12a581488a68f551af29e1bb6f01dfbc4bd7bb99"
 
-animate.css@^3.5.1:
+animate.css@3.5.2:
   version "3.5.2"
   resolved "https://registry.yarnpkg.com/animate.css/-/animate.css-3.5.2.tgz#91e668dc069a808e5e499514867b97aae0166c36"
 
@@ -973,19 +973,19 @@ bootstrap-sass@^3.3.7:
   version "3.3.7"
   resolved "https://registry.yarnpkg.com/bootstrap-sass/-/bootstrap-sass-3.3.7.tgz#6596c7ab40f6637393323ab0bc80d064fc630498"
 
-bootstrap-talend-theme@0.13.x:
-  version "0.13.14"
-  resolved "https://registry.yarnpkg.com/bootstrap-talend-theme/-/bootstrap-talend-theme-0.13.14.tgz#ef6a0632ef5e06bb54e15da29b17a55621964c6f"
+bootstrap-talend-theme@0.13.18:
+  version "0.13.18"
+  resolved "https://registry.yarnpkg.com/bootstrap-talend-theme/-/bootstrap-talend-theme-0.13.18.tgz#00a1dedd4178db2fbc40f3f121c21d7b8a696a78"
   dependencies:
     bootstrap-sass "^3.3.7"
 
-bourbon-neat@^1.8.0:
+bourbon-neat@1.8.0:
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/bourbon-neat/-/bourbon-neat-1.8.0.tgz#2ffd6dbfee45db5140f2fff280163302c73e7335"
   dependencies:
     node-sass "^3.4"
 
-bourbon@^4.2.6, bourbon@^4.2.7:
+bourbon@4.2.7, bourbon@^4.2.6:
   version "4.2.7"
   resolved "https://registry.yarnpkg.com/bourbon/-/bourbon-4.2.7.tgz#48a805dff475fbf61e002a64e1e4db68d2f82fba"
 
@@ -1668,13 +1668,13 @@ custom-event@~1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/custom-event/-/custom-event-1.0.1.tgz#5d02a46850adf1b4a317946a3928fccb5bfd0425"
 
-d3-tip@^0.6.7:
+d3-tip@0.6.8:
   version "0.6.8"
   resolved "https://registry.yarnpkg.com/d3-tip/-/d3-tip-0.6.8.tgz#e5b4491ae8983fde646ea49008ff542a033c0a2c"
   dependencies:
     d3 "^3.5.5"
 
-d3@^3.5.5:
+d3@3.5.17, d3@^3.5.5:
   version "3.5.17"
   resolved "https://registry.yarnpkg.com/d3/-/d3-3.5.17.tgz#bc46748004378b21a360c9fc7cf5231790762fb8"
 
@@ -3289,7 +3289,7 @@ interpret@^0.6.4:
   version "0.6.6"
   resolved "https://registry.yarnpkg.com/interpret/-/interpret-0.6.6.tgz#fecd7a18e7ce5ca6abfb953e1f86213a49f1625b"
 
-intro.js@^1.1.1:
+intro.js@1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/intro.js/-/intro.js-1.1.1.tgz#692292247fdb44a8942c8695d1973d563372ce5e"
 
@@ -3593,7 +3593,7 @@ jquery-datetimepicker@2.5.4:
   version "3.1.13"
   resolved "https://registry.yarnpkg.com/jquery-mousewheel/-/jquery-mousewheel-3.1.13.tgz#06f0335f16e353a695e7206bf50503cb523a6ee5"
 
-jquery-ui@1.10.x:
+jquery-ui@1.10.5:
   version "1.10.5"
   resolved "https://registry.yarnpkg.com/jquery-ui/-/jquery-ui-1.10.5.tgz#826aed3dd1f88d32ae75d74df48643dc431a5815"
 
@@ -4062,13 +4062,13 @@ lodash.topath@^4.5.2:
   version "4.5.2"
   resolved "https://registry.yarnpkg.com/lodash.topath/-/lodash.topath-4.5.2.tgz#3616351f3bba61994a0931989660bd03254fd009"
 
+lodash@3.10.1, lodash@^3.8.0:
+  version "3.10.1"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-3.10.1.tgz#5bf45e8e49ba4189e17d482789dfd15bd140b7b6"
+
 lodash@4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.0.0.tgz#9ac43844c595e28d30108b7ba583703395922dfc"
-
-lodash@^3.8.0, lodash@^3.9.3:
-  version "3.10.1"
-  resolved "https://registry.yarnpkg.com/lodash/-/lodash-3.10.1.tgz#5bf45e8e49ba4189e17d482789dfd15bd140b7b6"
 
 lodash@^4.0.0, lodash@^4.0.1, lodash@^4.14.0, lodash@^4.17.2, lodash@^4.17.3, lodash@^4.2.0, lodash@^4.3.0, lodash@^4.5.0:
   version "4.17.4"
@@ -4297,7 +4297,7 @@ mkdirp@0.5.1, mkdirp@0.5.x, mkdirp@0.x.x, "mkdirp@>=0.5 0", mkdirp@^0.5.0, mkdir
   dependencies:
     minimist "0.0.8"
 
-modernizr@^3.3.1:
+modernizr@3.3.1:
   version "3.3.1"
   resolved "https://registry.yarnpkg.com/modernizr/-/modernizr-3.3.1.tgz#2170b3438a7478c16654324f004802aae6a863e9"
   dependencies:
@@ -4320,7 +4320,7 @@ moment-duration-format@1.3.0:
   dependencies:
     moment ">=1.5.0"
 
-moment@>=1.5.0, moment@^2.13.0:
+moment@2.17.1, moment@>=1.5.0:
   version "2.17.1"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.17.1.tgz#fed9506063f36b10f066c8b59a144d7faebe1d82"
 
@@ -4432,7 +4432,7 @@ ng-sortable@1.3.6:
   version "1.3.6"
   resolved "https://registry.yarnpkg.com/ng-sortable/-/ng-sortable-1.3.6.tgz#f888aded361081d23abcee5c2ca9863fa1401e42"
 
-ngreact@^0.3.0:
+ngreact@0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/ngreact/-/ngreact-0.3.0.tgz#838bb767904629be80a5dbb29c0a7beb129b44a0"
 
@@ -5336,14 +5336,14 @@ rc@~1.1.6:
     minimist "^1.2.0"
     strip-json-comments "~1.0.4"
 
-react-autowhatever@^7.0.0:
+react-autowhatever@7.0.0, react-autowhatever@^7.0.0:
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/react-autowhatever/-/react-autowhatever-7.0.0.tgz#7ea19f8024183acf1568fc8e4b76c0d0cc250d00"
   dependencies:
     react-themeable "^1.1.0"
     section-iterator "^2.0.0"
 
-react-bootstrap@^0.30.3:
+react-bootstrap@0.30.7:
   version "0.30.7"
   resolved "https://registry.yarnpkg.com/react-bootstrap/-/react-bootstrap-0.30.7.tgz#39da80088693ecb71e8e63b5bdc313571fd993d1"
   dependencies:
@@ -5363,7 +5363,7 @@ react-debounce-input@^2.4.2:
   dependencies:
     lodash.debounce "^3 || ^4"
 
-react-dom@^15.4.1:
+react-dom@15.4.1:
   version "15.4.1"
   resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-15.4.1.tgz#d54c913261aaedb17adc20410d029dcc18a1344a"
   dependencies:
@@ -5371,7 +5371,7 @@ react-dom@^15.4.1:
     loose-envify "^1.1.0"
     object-assign "^4.1.0"
 
-react-jsonschema-form@^0.41.1:
+react-jsonschema-form@^0.41.2:
   version "0.41.2"
   resolved "https://registry.yarnpkg.com/react-jsonschema-form/-/react-jsonschema-form-0.41.2.tgz#a77921ceff102fc5d04344e50b8e622a7e0373c2"
   dependencies:
@@ -5401,11 +5401,11 @@ react-talend-components@0.50.0:
     react-autowhatever "^7.0.0"
     react-debounce-input "^2.4.2"
 
-react-talend-forms@0.9.x:
-  version "0.9.1"
-  resolved "https://registry.yarnpkg.com/react-talend-forms/-/react-talend-forms-0.9.1.tgz#585b1487fc1a43e0f3c880deb7bc6aeb7792bbe2"
+react-talend-forms@0.11.0:
+  version "0.11.0"
+  resolved "https://registry.yarnpkg.com/react-talend-forms/-/react-talend-forms-0.11.0.tgz#a6253d60b063fee980177444a62a0d4753222d0a"
   dependencies:
-    react-jsonschema-form "^0.41.1"
+    react-jsonschema-form "^0.41.2"
 
 react-themeable@^1.1.0:
   version "1.1.0"
@@ -5413,7 +5413,7 @@ react-themeable@^1.1.0:
   dependencies:
     object-assign "^3.0.0"
 
-react@^15.4.1:
+react@15.4.1:
   version "15.4.1"
   resolved "https://registry.yarnpkg.com/react/-/react-15.4.1.tgz#498e918602677a3983cd0fd206dfe700389a0dd6"
   dependencies:
@@ -6349,7 +6349,7 @@ table@^3.7.8:
     slice-ansi "0.0.4"
     string-width "^2.0.0"
 
-talend-icons@^0.16.0:
+talend-icons@0.16.4:
   version "0.16.4"
   resolved "https://registry.yarnpkg.com/talend-icons/-/talend-icons-0.16.4.tgz#5d43b134dfbf2ac3e6e13a14c1cc70082ed12213"
 
@@ -6673,7 +6673,7 @@ utils-merge@1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/utils-merge/-/utils-merge-1.0.0.tgz#0294fb922bb9375153541c4f7096231f287c8af8"
 
-uuid@^2.0.2, uuid@^2.0.3:
+uuid@2.0.3, uuid@^2.0.2:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-2.0.3.tgz#67e2e863797215530dff318e5bf9dcebfd47b21a"
 
