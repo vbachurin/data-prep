@@ -187,22 +187,18 @@ export default function TalendModal($timeout) {
 				 */
 				const attachListeners = () => {
 					innerElement.on('click', (e) => {
-						// FIXME Need to deal with this textContent value if i18n
-						const isReactCancelButton =
-							Object.keys(e.target).some(k => k.indexOf('__react') > -1)
-							&& e.target.textContent === 'Cancel'
-							&& e.target.tagName === 'BUTTON';
-						if (!isReactCancelButton) {
-							e.stopPropagation();
-							if (e.target.classList.contains('talend-modal-close')) {
-								hideModal();
-							}
+						if (e.target.classList.contains('talend-modal-close')) {
+							hideModal();
 						}
 					});
 
 					// Close action on modal background click
 					if (!ctrl.disableCloseOnBackgroundClick) {
-						iElement.find('.modal-window').on('click', hideModal);
+						iElement.find('.modal-window').on('click', (e) => {
+							if (e.target === e.currentTarget) {
+								hideModal();
+							}
+						});
 					}
 				};
 

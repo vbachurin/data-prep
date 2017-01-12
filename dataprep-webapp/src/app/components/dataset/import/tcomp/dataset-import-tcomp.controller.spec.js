@@ -245,54 +245,48 @@ describe('Dataset Import TCOMP controller', () => {
 			expect(UploadWorkflowService.openDataset).toHaveBeenCalledWith(dataset);
 			expect(ctrl.submitLock).toBeFalsy();
 		}));
+
+		it('should refresh dataset', inject(($q, ImportService) => {
+			// given
+			ctrl.submitLock = true;
+			ctrl.currentPropertyName = 'currentPropertyName';
+			ctrl.datasetFormData = fakeDatasetForm.properties;
+
+			spyOn(ImportService, 'refreshForms').and.returnValue($q.when(fakeDatastoreForm.properties));
+
+			// when
+			ctrl.onDatastoreFormSubmit(uiSpecs, definitionName);
+			scope.$digest();
+
+			// then
+			expect(ImportService.refreshForms).toHaveBeenCalledWith('currentPropertyName', fakeFormsData);
+			expect(ctrl.currentPropertyName).toBeNull();
+			expect(ctrl.submitLock).toBeFalsy();
+		}));
 	});
 
 	describe('onDatasetFormChange', () => {
 		let definitionName;
 		let formData;
 		let propertyName;
-		let fakeData;
 
 		beforeEach(inject(() => {
 			ctrl = createController();
 			definitionName = 'definitionName';
 			propertyName = 'propertyNameWithTrigger';
-			formData = {
-				propertyName: 'propertyValue1',
-			};
-			fakeData = {
-				jsonSchema: {},
-				uiSchema: {},
-				properties: {
-					propertyName: 'propertyValue2',
-				},
-			};
+			formData = {};
 		}));
 
-		it('should refresh dataset form', inject((ImportService, $q) => {
+		it('should refresh dataset form', inject(() => {
 			// given
-			spyOn(ImportService, 'refreshForm').and.returnValue($q.when({ data: fakeData }));
-
+			spyOn(ctrl, '_simulateDatastoreSubmit').and.returnValue();
 			// when
 			ctrl.onDatasetFormChange(formData, definitionName, propertyName);
 			scope.$digest();
 
 			// then
-			expect(ImportService.refreshForm).toHaveBeenCalledWith(propertyName, formData);
-			expect(ctrl.datasetForm).toEqual(fakeData);
-		}));
-
-		it('should not refresh dataset form if promise fails', inject((ImportService, $q) => {
-			// given
-			spyOn(ImportService, 'refreshForm').and.returnValue($q.reject());
-
-			// when
-			ctrl.onDatasetFormChange(formData, definitionName, propertyName);
-			scope.$digest();
-
-			// then
-			expect(ImportService.refreshForm).toHaveBeenCalledWith(propertyName, formData);
-			expect(ctrl.datasetForm).not.toEqual(fakeData);
+			expect(ctrl.currentPropertyName).toEqual(propertyName);
+			expect(ctrl._simulateDatastoreSubmit).toHaveBeenCalled();
 		}));
 	});
 
