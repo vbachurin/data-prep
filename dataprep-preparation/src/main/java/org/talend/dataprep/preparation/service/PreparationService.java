@@ -296,7 +296,7 @@ public class PreparationService {
         if (exactMatch) {
             filter = "name = '" + name + "'";
         } else {
-            filter = "name contains '" + name + "'";
+            filter = "name ~ '(?i)" + name + "'";
         }
         return preparationRepository.list(Preparation.class, filter).collect(toList());
     }

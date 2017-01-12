@@ -925,7 +925,7 @@ public class DataSetService extends BaseDataSetService {
         if (strict) {
             filter = "name = '" + name + "'";
         } else {
-            filter = "name contains '" + name + "'";
+            filter = "name ~ '(?i)" + name + "'";
         }
         final Set found = dataSetMetadataRepository.list(filter).collect(toSet());
 
