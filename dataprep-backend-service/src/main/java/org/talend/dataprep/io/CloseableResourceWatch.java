@@ -1,3 +1,15 @@
+// ============================================================================
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+//
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
+//
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
+//
+// ============================================================================
+
 package org.talend.dataprep.io;
 
 import java.io.*;
@@ -36,6 +48,10 @@ public class CloseableResourceWatch implements Condition {
     @Around("within(org.talend..*) && execution(public java.io.Closeable+ *(..))")
     public Object closeableWatch(ProceedingJoinPoint pjp) throws Throwable {
         final Object proceed = pjp.proceed();
+        if (proceed == null) {
+            LOGGER.warn("Unable to watch null closeable.");
+            return null;
+        }
         try {
             if (proceed instanceof InputStream) {
                 final CloseableHandler handler = new InputStreamHandler((InputStream) proceed);
@@ -71,7 +87,11 @@ public class CloseableResourceWatch implements Condition {
         synchronized (entries) {
             LOGGER.info("Logging closeable resources...");
             for (CloseableHandler entry : entries) {
-                LOGGER.info("{}", entry);
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("{}", entry.format());
+                } else {
+                    LOGGER.info("{}", entry);
+                }
             }
             LOGGER.info("Done logging closeable resources.");
         }
