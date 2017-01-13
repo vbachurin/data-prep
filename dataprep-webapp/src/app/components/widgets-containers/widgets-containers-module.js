@@ -15,6 +15,7 @@ import angular from 'angular';
 
 import AppHeaderBar from 'react-talend-components/lib/AppHeaderBar';
 import Breadcrumbs from 'react-talend-components/lib/Breadcrumbs';
+import CircularProgress from 'react-talend-components/lib/CircularProgress';
 import CollapsiblePanel from 'react-talend-components/lib/CollapsiblePanel';
 import Icon from 'react-talend-components/lib/Icon';
 import IconsProvider from 'react-talend-components/lib/IconsProvider';
@@ -44,6 +45,7 @@ angular.module(MODULE_NAME,
 	])
 	.directive('pureAppHeaderBar', ['reactDirective', reactDirective => reactDirective(AppHeaderBar)])
 	.directive('pureBreadcrumb', ['reactDirective', reactDirective => reactDirective(Breadcrumbs)])
+	.directive('pureCircularProgress', ['reactDirective', reactDirective => reactDirective(CircularProgress)])
 	.directive('pureCollapsiblePanel', ['reactDirective', reactDirective => reactDirective(CollapsiblePanel)])
 	.directive('pureList', ['reactDirective', reactDirective => reactDirective(List)])
 	.directive('pureSidePanel', ['reactDirective', reactDirective => reactDirective(SidePanel)])
