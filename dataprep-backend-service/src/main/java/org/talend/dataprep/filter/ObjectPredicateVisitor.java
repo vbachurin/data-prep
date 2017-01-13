@@ -1,3 +1,15 @@
+// ============================================================================
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+//
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
+//
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
+//
+// ============================================================================
+
 package org.talend.dataprep.filter;
 
 import java.lang.reflect.InvocationTargetException;
@@ -128,6 +140,24 @@ public class ObjectPredicateVisitor implements IASTVisitor {
     @Override
     public Predicate<Object> visit(ComparisonExpression comparisonExpression) {
         final Object value = comparisonExpression.getValueOrField().accept(this);
+        final String path = comparisonExpression.getField().getPath();
+
+        // Handle predicate on "_class"
+        if (path.endsWith("._class")) {
+            String field = StringUtils.substringBefore(path, "._class");
+            final Method[] methods = getMethods(field);
+            return o -> {
+                try {
+                    final Object fieldValue = invoke(o, methods);
+                    return String.valueOf(value).equals(fieldValue.getClass().getName());
+                } catch (Exception e) {
+                    LOGGER.error("Unable to evaluate comparison on '{}'", field);
+                    return false;
+                }
+            };
+        }
+
+        // Standard methods
         final Method[] getters = (Method[]) comparisonExpression.getField().accept(this);
         final ComparisonOperator operator = comparisonExpression.getOperator();
         switch (operator.getOperator()) {
