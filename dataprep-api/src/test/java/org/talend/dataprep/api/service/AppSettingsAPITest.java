@@ -122,7 +122,7 @@ public class AppSettingsAPITest extends ApiServiceTestBase {
 
         final ActionSettings menuPlaygroundDataset = settings.getActions().get("menu:playground:dataset");
         assertThat(menuPlaygroundDataset.getName(), is("Create new preparation"));
-        assertThat(menuPlaygroundDataset.getIcon(), is("talend-plus"));
+        assertThat(menuPlaygroundDataset.getIcon(), is("talend-datastore"));
         assertThat(menuPlaygroundDataset.getType(), is("@@router/GO_DATASET"));
         assertThat(menuPlaygroundDataset.getPayload().get(PAYLOAD_METHOD_KEY), is("go"));
         assertThat(((List<String>) menuPlaygroundDataset.getPayload().get(PAYLOAD_ARGS_KEY)).get(0), is("playground.dataset"));
