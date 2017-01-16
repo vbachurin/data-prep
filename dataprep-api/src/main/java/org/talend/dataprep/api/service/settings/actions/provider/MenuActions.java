@@ -62,7 +62,7 @@ public interface MenuActions {
     ActionSettings MENU_PLAYGROUND_DATASET = builder()
             .id("menu:playground:dataset")
             .name("Create new preparation")
-            .icon("talend-plus")
+            .icon("talend-datastore")
             .type("@@router/GO_DATASET")
             .payload(PAYLOAD_METHOD_KEY, "go")
             .payload(PAYLOAD_ARGS_KEY, new String[]{"playground.dataset"})
