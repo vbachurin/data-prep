@@ -30,7 +30,7 @@
             ng-repeat="exportType in exportCtrl.state.export.exportTypes track by exportType.id">
             <a ng-class="{'disabled' : !exportType.enabled}"
                ng-click="exportCtrl.selectType(exportType)">
-                {{exportType.id}}<span ng-if="!exportType.enabled"> - {{exportType.disableReason}}</span>
+                {{exportType.name}}<span ng-if="!exportType.enabled"> - {{exportType.disableReason}}</span>
             </a>
         </li>
     </ul>
