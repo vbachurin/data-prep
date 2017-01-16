@@ -149,6 +149,10 @@ public abstract class ExportFormat extends Parameterizable {
         return name;
     }
 
+    public String getDisplayName() {
+        return DataprepBundle.message("export." + name + ".display");
+    }
+
     public String getTitle() {
         return DataprepBundle.message("export." + name + ".title");
     }
