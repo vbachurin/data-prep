@@ -52,16 +52,25 @@ public class RowMetadataUtils {
     }
 
     public static Schema toSchema(List<ColumnMetadata> columns) {
+
         List<Schema.Field> fields = columns.stream() //
                 .map(RowMetadataUtils::toField) //
                 .collect(Collectors.toList());
-        return Schema.createRecord(fields);
+
+        final Schema schema = Schema.createRecord( //
+                "dataprep" + System.currentTimeMillis(), //
+                "a dataprep preparation", //
+                "org.talend.dataprep", //
+                false //
+        );
+
+        schema.setFields(fields);
+        return schema;
     }
 
     public static Schema.Field toField(ColumnMetadata column) {
         final String name = column.getName() == null ? DATAPREP_FIELD_PREFIX + column.getId() : toAvroFieldName(column);
-        final Schema.Field field = new Schema.Field(name, Schema.create(Schema.Type.STRING),
-                StringUtils.EMPTY, null);
+        final Schema.Field field = new Schema.Field(name, Schema.create(Schema.Type.STRING), StringUtils.EMPTY, null);
         try {
             final StringWriter writer = new StringWriter();
             new ObjectMapper().writerWithType(ColumnMetadata.class).writeValue(writer, column);
