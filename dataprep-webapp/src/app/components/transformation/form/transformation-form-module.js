@@ -15,6 +15,7 @@ import angular from 'angular';
 import TALEND_WIDGET_MODULE from '../../widgets/widget-module';
 import VALIDATION_MODULE from '../../validation/validation-module';
 import SERVICES_STATE_MODULE from '../../../services/state/state-module';
+import SERVICES_TRANSFORMATION_UTILS_MODULE from '../../../services/transformation/transformation-module';
 import SERVICES_UTILS_MODULE from '../../../services/utils/utils-module';
 
 import TransformChoiceParamCtrl from './choice/transformation-choice-param-controller';
@@ -50,6 +51,7 @@ angular.module(MODULE_NAME,
 		TALEND_WIDGET_MODULE,
 		VALIDATION_MODULE,
 		SERVICES_STATE_MODULE,
+		SERVICES_TRANSFORMATION_UTILS_MODULE,
 		SERVICES_UTILS_MODULE,
 	])
 
