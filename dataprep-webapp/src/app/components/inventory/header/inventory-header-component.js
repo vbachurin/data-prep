@@ -11,21 +11,18 @@
 
  ============================================================================*/
 
-import template from './import.html';
+import template from './inventory-header.html';
 
-/**
- * @ngdoc directive
- * @name data-prep.data-prep.import.component:ImportComponent
- * @description This directive display a import component
- * @restrict E
- * @usage <import></import>
- */
-
-import ImportCtrl from './import-controller';
-
-const ImportComponent = {
+const InventoryHeaderComponent = {
+	bindings: {
+		sort: '<',
+		order: '<',
+		sortList: '<',
+		orderList: '<',
+		onSortChange: '&',
+		onOrderChange: '&',
+	},
 	templateUrl: template,
-	controller: ImportCtrl,
 };
 
-export default ImportComponent;
+export default InventoryHeaderComponent;
