@@ -14,9 +14,6 @@
 import angular from 'angular';
 import EASTER_EGG_MODULE from '../easter-eggs/easter-eggs-module';
 import FEEDBACK_MODULE from '../feedback/feedback-module';
-import HOME_MODULE from '../home/home-module';
-import NAVBAR_MODULE from '../navbar/navbar-module';
-import PLAYGROUND_MODULE from '../playground/playground-module';
 import UPGRADE_VERSION_MODULE from '../upgrade-version/upgrade-version-module';
 import WIDGET_CONTAINERS from '../widgets-containers/widgets-containers-module';
 
@@ -28,9 +25,6 @@ angular.module(MODULE_NAME,
 	[
 		EASTER_EGG_MODULE,
 		FEEDBACK_MODULE,
-		HOME_MODULE,
-		NAVBAR_MODULE,
-		PLAYGROUND_MODULE,
 		UPGRADE_VERSION_MODULE,
 		WIDGET_CONTAINERS,
 	])
