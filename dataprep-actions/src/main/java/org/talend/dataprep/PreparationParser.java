@@ -17,10 +17,9 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.talend.dataprep.api.action.ActionDefinition;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.preparation.PreparationMessage;
@@ -30,13 +29,17 @@ import org.talend.dataprep.transformation.actions.common.RunnableAction;
 import org.talend.dataprep.transformation.pipeline.ActionRegistry;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import static org.talend.dataprep.api.action.ActionDefinition.Behavior.FORBID_DISTRIBUTED;
+import static org.talend.dataprep.api.action.ActionDefinition.Behavior.METADATA_CREATE_COLUMNS;
 
 /**
  * Provides utility to parses actions and associated {@link RowMetadata}.
  */
 public class PreparationParser {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(PreparationParser.class);
 
     public static final ActionRegistry actionRegistry = new ClassPathActionRegistry("org.talend.dataprep.transformation.actions");
 
@@ -76,8 +79,30 @@ public class PreparationParser {
         }
     }
 
-    public static List<RunnableAction> ensureActionRowsExistence(List<Action> actions) {
-        return actions.stream().map(a -> actionFactory.create(actionRegistry.get(a.getName()), a.getParameters()))
+    public static List<RunnableAction> ensureActionRowsExistence(List<Action> actions, boolean allowNonDistributedActions) {
+        return actions.stream() //
+                .map(action -> {
+                    final ActionDefinition actionDefinition = actionRegistry.get(action.getName());
+                    // Distributed run check for action
+                    final Set<ActionDefinition.Behavior> behavior = actionDefinition.getBehavior();
+                    // if non distributed actions are forbidden (e.g. running locally)
+                    if (!allowNonDistributedActions) {
+                        // if some actions cannot be run in distributed environment, let's see how bad it is...
+                        if (behavior.contains(FORBID_DISTRIBUTED)) {
+                            // actions that changes the schema (potentially really harmful for the preparation) throws an exception
+                            if (behavior.contains(METADATA_CREATE_COLUMNS)) {
+                                throw new IllegalArgumentException("Action '" + actionDefinition.getName() + "' cannot run in distributed environments.");
+                            } else {
+                                // else the action is just skipped
+                                LOGGER.warn("Action '{}' cannot run in distributed environment, skip its execution.");
+                                return null;
+                            }
+                        }
+                    }
+                    return action;
+                }) //
+                .filter(Objects::nonNull) //
+                .map(a -> actionFactory.create(actionRegistry.get(a.getName()), a.getParameters())) //
                 .collect(Collectors.toList());
     }
 
