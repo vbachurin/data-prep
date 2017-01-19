@@ -12,9 +12,15 @@
 
 package org.talend.dataprep;
 
+import static org.talend.dataprep.api.action.ActionDefinition.Behavior.FORBID_DISTRIBUTED;
+import static org.talend.dataprep.api.action.ActionDefinition.Behavior.METADATA_CREATE_COLUMNS;
+import static org.talend.dataprep.transformation.actions.common.ImplicitParameters.SCOPE;
+
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -24,15 +30,14 @@ import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.preparation.PreparationMessage;
 import org.talend.dataprep.api.preparation.json.MixedContentMapModule;
+import org.talend.dataprep.transformation.actions.category.ScopeCategory;
 import org.talend.dataprep.transformation.actions.common.ActionFactory;
 import org.talend.dataprep.transformation.actions.common.RunnableAction;
+import org.talend.dataprep.transformation.actions.text.ReplaceOnValue;
 import org.talend.dataprep.transformation.pipeline.ActionRegistry;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import static org.talend.dataprep.api.action.ActionDefinition.Behavior.FORBID_DISTRIBUTED;
-import static org.talend.dataprep.api.action.ActionDefinition.Behavior.METADATA_CREATE_COLUMNS;
 
 /**
  * Provides utility to parses actions and associated {@link RowMetadata}.
@@ -89,12 +94,22 @@ public class PreparationParser {
                     if (!allowNonDistributedActions) {
                         // if some actions cannot be run in distributed environment, let's see how bad it is...
                         if (behavior.contains(FORBID_DISTRIBUTED)) {
+                            // Special case for ReplaceOnValue -> same implementation is used both for cell edition
+                            // (not supported in distributed environments) *and* column-wise changes (supported in
+                            // distributed environments).
+                            if (actionDefinition instanceof ReplaceOnValue) {
+                                if (ScopeCategory.CELL.name().equalsIgnoreCase(action.getParameters().get(SCOPE.getKey()))) {
+                                    LOGGER.warn("Action '{}' cannot run in distributed environment (cell edition), skip its execution.", actionDefinition.getName());
+                                    return null;
+                                }
+                                return action;
+                            }
                             // actions that changes the schema (potentially really harmful for the preparation) throws an exception
                             if (behavior.contains(METADATA_CREATE_COLUMNS)) {
                                 throw new IllegalArgumentException("Action '" + actionDefinition.getName() + "' cannot run in distributed environments.");
                             } else {
                                 // else the action is just skipped
-                                LOGGER.warn("Action '{}' cannot run in distributed environment, skip its execution.");
+                                LOGGER.warn("Action '{}' cannot run in distributed environment, skip its execution.", actionDefinition.getName());
                                 return null;
                             }
                         }
