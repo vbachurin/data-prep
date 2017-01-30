@@ -14,6 +14,7 @@ $item-link-margin-spacing: -5px -20px;
 $item-padding-spacing: 5px 20px;
 
 @mixin menu-shape() {
+  font-family: $sourcesanspro;
   background-color: $white;
   border: 1px solid silver;
   box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
@@ -31,7 +32,7 @@ $item-padding-spacing: 5px 20px;
     color: #333;
     text-transform: none;
     font-weight: normal;
-    font-size: 0.8em;
+    font-size: 12px;
 
     min-height: 18px;
     min-width: 90px;
@@ -56,6 +57,13 @@ $item-padding-spacing: 5px 20px;
       color: #333;
       margin: $item-link-margin-spacing;
       padding: $item-padding-spacing;
+      cursor: pointer; // Needed because of SlickGrid
+
+      &:hover,
+      &:focus,
+      &:active {
+        text-decoration: none;
+      }
     }
 
     .info {
