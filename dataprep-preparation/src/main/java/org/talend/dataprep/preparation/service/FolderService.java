@@ -18,7 +18,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 import static org.talend.daikon.exception.ExceptionContext.build;
 import static org.talend.dataprep.api.folder.FolderContentType.PREPARATION;
-import static org.talend.dataprep.exception.error.FolderErrorCodes.FOLDER_NOT_EMPTY;
 import static org.talend.dataprep.exception.error.FolderErrorCodes.FOLDER_NOT_FOUND;
 import static org.talend.dataprep.util.SortAndOrderHelper.getFolderComparator;
 
@@ -33,7 +32,6 @@ import org.talend.dataprep.api.folder.Folder;
 import org.talend.dataprep.api.folder.FolderInfo;
 import org.talend.dataprep.api.folder.FolderTreeNode;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.exception.error.DataSetErrorCodes;
 import org.talend.dataprep.folder.store.FolderRepository;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.security.Security;

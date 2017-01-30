@@ -1,5 +1,4 @@
 // ============================================================================
-//
 // Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
@@ -86,10 +85,6 @@ public enum DataSetErrorCodes implements ErrorCode {
      * This dataset name is already used
      */
     DATASET_NAME_ALREADY_USED(CONFLICT.value(), "id", "name", "folder"),
-    /**
-     * Error when a folder is not empty
-     */
-    FOLDER_NOT_EMPTY(CONFLICT.value()),
     /**
      * Error return when the uploaded content is not supported by any
      * {@link org.talend.dataprep.schema.CompositeFormatDetector guesser}.
