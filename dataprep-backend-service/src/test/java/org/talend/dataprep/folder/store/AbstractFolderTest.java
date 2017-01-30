@@ -312,7 +312,7 @@ public abstract class AbstractFolderTest extends ServiceBaseTest {
             getFolderRepository().removeFolder(foo.getId());
             fail("Should throw exception because folder is not empty.");
         } catch (TDPException e) {
-            assertEquals(e.getCode(), FolderErrorCodes.FOLDER_NOT_EMPTY);
+            assertEquals(FolderErrorCodes.FOLDER_NOT_EMPTY, e.getCode());
         }
 
     }

@@ -22,15 +22,6 @@ import static org.talend.dataprep.exception.error.FolderErrorCodes.FOLDER_NOT_EM
 import static org.talend.dataprep.folder.store.FoldersRepositoriesConstants.PATH_SEPARATOR;
 import static org.talend.dataprep.folder.store.file.FileSystemUtils.*;
 
-import static java.util.Collections.emptyList;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
-import static org.talend.daikon.exception.ExceptionContext.build;
-import static org.talend.dataprep.api.folder.FolderBuilder.folder;
-import static org.talend.dataprep.exception.error.DataSetErrorCodes.*;
-import static org.talend.dataprep.folder.store.FoldersRepositoriesConstants.PATH_SEPARATOR;
-import static org.talend.dataprep.folder.store.file.FileSystemUtils.*;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
