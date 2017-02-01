@@ -23,6 +23,9 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.conversions.BeanConversionService;
 import org.talend.dataprep.format.export.ExportFormat;
 import org.talend.dataprep.format.export.ExportFormatMessage;
+import org.talend.dataprep.i18n.MessagesBundle;
+
+import java.util.Locale;
 
 @Configuration
 public class ExportFormatConversions {
@@ -41,12 +44,13 @@ public class ExportFormatConversions {
         public Object postProcessBeforeInitialization(Object bean, String beanName) {
             if (bean instanceof BeanConversionService) {
                 final BeanConversionService conversionService = (BeanConversionService) bean;
+                final MessagesBundle messagesBundle = applicationContext.getBean(MessagesBundle.class);
                 conversionService //
                         .register(fromBean(ExportFormat.class) //
                                 .toBeans(ExportFormatMessage.class) //
                                 .using(ExportFormatMessage.class, (exportFormat, exportFormatMessage) -> {
                                     exportFormatMessage.setId(exportFormat.getName());
-                                    exportFormatMessage.setName(exportFormat.getName());
+                                    exportFormatMessage.setName(messagesBundle.getString(Locale.ENGLISH, "export." + exportFormat.getName() + ".display"));
                                     exportFormatMessage.setSupportSampling(exportFormat.supportSampling());
                                     return exportFormatMessage;
                                 }) //
