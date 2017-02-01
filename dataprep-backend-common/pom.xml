@@ -20,12 +20,12 @@
     <parent>
         <groupId>org.talend.dataprep</groupId>
         <artifactId>dataprep-backend</artifactId>
-        <version>2.0.0</version>
+        <version>2.0.1-SNAPSHOT</version>
         <relativePath>../dataprep-backend/pom.xml</relativePath>
     </parent>
 
     <artifactId>dataprep-backend-common</artifactId>
-    <version>2.0.0</version>
+    <version>2.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>dataprep-backend-common</name>
 
