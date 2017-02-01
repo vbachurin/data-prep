@@ -2,7 +2,7 @@
   "mimeType": "text/csv",
   "extension": ".csv",
   "id": "CSV",
-  "name": "CSV",
+  "name": "Local CSV file",
   "needParameters": true,
   "defaultExport": false,
   "enabled": true,

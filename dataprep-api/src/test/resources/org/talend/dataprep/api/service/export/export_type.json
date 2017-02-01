@@ -56,7 +56,7 @@
       }
     ],
     "supportSampling": true,
-    "name": "CSV"
+    "name": "Local CSV file"
   },
   {
     "mimeType": "application/vnd.ms-excel",
@@ -80,6 +80,6 @@
       }
     ],
     "supportSampling": true,
-    "name": "XLSX"
+    "name": "Local XLSX file"
   }
 ]
