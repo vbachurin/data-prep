@@ -2,7 +2,7 @@
   "mimeType": "application/vnd.ms-excel",
   "extension": ".xlsx",
   "id": "XLSX",
-  "name": "XLSX",
+  "name": "Local XLSX file",
   "needParameters": true,
   "defaultExport": true,
   "enabled": true,
