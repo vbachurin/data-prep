@@ -77,7 +77,7 @@ public class ApplyDataSetRowAction implements DataSetRowAction {
             }
             // For following actions, returns the row as modifiable to allow further modifications.
             return actionRow.modifiable();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             LOGGER.error("Unable to use action '{}' (parameters: {}) due to unexpected error.", metadata.getName(),
                     parameters, e);
             context.setActionStatus(ActionContext.ActionStatus.CANCELED);
