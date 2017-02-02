@@ -15,8 +15,15 @@ package org.talend.dataprep.api.service;
 
 import static com.jayway.restassured.RestAssured.given;
 import static java.util.stream.Collectors.toList;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.talend.dataprep.api.folder.FolderContentType.DATASET;
 
 import java.io.IOException;
@@ -25,7 +32,6 @@ import java.util.List;
 import java.util.stream.StreamSupport;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.talend.dataprep.api.folder.Folder;
 import org.talend.dataprep.api.folder.FolderEntry;
@@ -81,51 +87,6 @@ public class FolderAPITest extends ApiServiceTestBase {
         assertThat(folders, hasSize(1));
         assertThat(folders.get(0).getName(), is("alcohol"));
         assertThat(folders.get(0).getPath(), is("/beer/alcohol"));
-    }
-
-    //TODO Ignored because deprecated
-    @Test
-    @Ignore
-    public void should_add_entry_in_folder() throws IOException {
-        //given
-        createFolder("beer", home.getId());
-        final Folder beerFolder = getFolder(home.getId(), "beer");
-        final FolderEntry folderEntry = new FolderEntry(DATASET, "6f8a54051bc454");
-
-        //when
-        final FolderEntry createdEntry = createFolderEntry(folderEntry, beerFolder.getId());
-
-        //then
-        final List<FolderEntry> entries = getFolderEntries("/beer");
-        assertThat(entries, hasSize(1));
-        assertThat(entries, contains(createdEntry));
-    }
-
-    //TODO Ignored because deprecated
-    @Test
-    @Ignore
-    public void should_remove_entry_from_folder() throws IOException {
-        //given
-        createFolder("beer", home.getId());
-        final Folder beerFolder = getFolder(home.getId(), "beer");
-
-        final FolderEntry firstFolderEntry = new FolderEntry(DATASET, "6f8a54051bc454");
-        final FolderEntry firstCreatedEntry = createFolderEntry(firstFolderEntry, beerFolder.getId());
-
-        final FolderEntry secondFolderEntry = new FolderEntry(DATASET, "32ac4646aa98b51");
-        final FolderEntry secondCreatedEntry = createFolderEntry(secondFolderEntry, beerFolder.getId());
-
-        final List<FolderEntry> entries = getFolderEntries("/beer");
-        assertThat(entries, hasSize(2));
-        assertThat(entries, containsInAnyOrder(firstCreatedEntry, secondCreatedEntry));
-
-        //when
-        removeFolderEntry(firstCreatedEntry.getContentId());
-
-        //then
-        final List<FolderEntry> updatedEntries = getFolderEntries("/beer");
-        assertThat(updatedEntries, hasSize(1));
-        assertThat(updatedEntries, contains(secondCreatedEntry));
     }
 
     @Test
