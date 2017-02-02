@@ -14,7 +14,7 @@
 package org.talend.dataprep.api.service.command.folder;
 
 import static org.talend.dataprep.command.Defaults.asNull;
-import static org.talend.dataprep.exception.error.APIErrorCodes.UNABLE_TO_DELETE_FOLDER;
+import static org.talend.dataprep.exception.error.APIErrorCodes.UNABLE_TO_RENAME_FOLDER;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
@@ -40,7 +40,7 @@ public class RenameFolder
     public RenameFolder(final String id, final String newName) {
         super(GenericCommand.DATASET_GROUP);
         execute(() -> onExecute(id, newName));
-        onError(e -> new TDPException(UNABLE_TO_DELETE_FOLDER, e, ExceptionContext.build()));
+        onError(e -> new TDPException(UNABLE_TO_RENAME_FOLDER, e, ExceptionContext.build()));
         on(HttpStatus.OK).then(asNull());
     }
 
