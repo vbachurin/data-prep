@@ -36,6 +36,7 @@ import java.util.zip.GZIPInputStream;
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -275,21 +276,27 @@ public class TransformationServiceTest extends TransformationServiceBaseTest {
         JSONAssert.assertEquals(expectedContent, exportContent, false);
     }
 
+    @Ignore // see TDP-3417
     @Test
     public void actionFailure() throws Exception {
         // given
         String dataSetId = createDataset("input_dataset.csv", "uppercase", "text/csv");
         String preparationId = createEmptyPreparationFromDataset(dataSetId, "uppercase prep");
+        applyActionFromFile(preparationId, "uppercase_action.json");
         applyActionFromFile(preparationId, "failed_transformation.json");
 
         // when
-        given() //
+        final Response response = given() //
                 .when() //
-                .get("/apply/preparation/{preparationId}/dataset/{datasetId}/{format}", preparationId, dataSetId, "JSON") //
-                .asString();
+                .get("/apply/preparation/{preparationId}/dataset/{datasetId}/{format}", preparationId, dataSetId, "JSON");
 
         // then
-        // Transformation failure
+        // (failed actions are ignored so the response should be 200)
+        assertEquals(200, response.getStatusCode());
+        // String result = '\'' + response.asString() + '\'';
+        // System.out.println("\n\n\net voila le résultat de la transformation : " + result + "\n\n\n");
+
+        // (make sure the result was not cached)
         final TransformationCacheKey key = cacheKeyGenerator.generateContentKey(
                 dataSetId,
                 preparationId,
@@ -297,7 +304,9 @@ public class TransformationServiceTest extends TransformationServiceBaseTest {
                 JSON,
                 HEAD
         );
-        Assert.assertFalse(contentCache.has(key));
+
+        // Thread.sleep(500L);
+        Assert.assertFalse("content cache '" + key.getKey() + "' was not evicted from the cache", contentCache.has(key));
     }
 
     @Test

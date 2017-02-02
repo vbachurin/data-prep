@@ -118,6 +118,7 @@ public class ApplyPreparationExportStrategy extends StandardExportStrategy {
                 factory.get(configuration).transform(dataSet, configuration);
                 tee.flush();
             } catch (Throwable e) { // NOSONAR
+                LOGGER.debug("evicting cache {}", key.getKey());
                 contentCache.evict(key);
                 throw e;
             }
