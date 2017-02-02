@@ -121,7 +121,8 @@ public class SimpleFilterService implements FilterService {
         }
 
         final String operation = propertiesIterator.next();
-        if (columnId == null) {
+        if (columnId == null && allowFullFilter(operation)) {
+            // Full data set filter (no column)
             final List<ColumnMetadata> columns = rowMetadata.getColumns();
             Predicate<DataSetRow> predicate = null;
             if (!columns.isEmpty()) {
@@ -134,6 +135,28 @@ public class SimpleFilterService implements FilterService {
             return predicate;
         } else {
             return buildOperationFilter(currentNode, rowMetadata, columnId, operation, value);
+        }
+    }
+
+    private static boolean allowFullFilter(String operation) {
+        switch (operation) {
+        case EQ:
+        case GT:
+        case LT:
+        case GTE:
+        case LTE:
+        case CONTAINS:
+        case MATCHES:
+        case INVALID:
+        case VALID:
+        case EMPTY:
+        case RANGE:
+            return true;
+        case AND:
+        case OR:
+        case NOT:
+        default:
+            return false;
         }
     }
 
