@@ -13,7 +13,9 @@
 package org.talend.dataprep.api.service;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.web.bind.annotation.RequestMethod.*;
+import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 import static org.talend.daikon.exception.ExceptionContext.build;
 
 import java.io.IOException;
@@ -26,14 +28,23 @@ import org.apache.commons.lang.StringUtils;
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.folder.Folder;
-import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.service.api.EnrichedPreparation;
-import org.talend.dataprep.api.service.command.common.HttpResponse;
-import org.talend.dataprep.api.service.command.folder.*;
+import org.talend.dataprep.api.service.command.folder.CreateChildFolder;
+import org.talend.dataprep.api.service.command.folder.FolderChildrenList;
+import org.talend.dataprep.api.service.command.folder.FolderTree;
+import org.talend.dataprep.api.service.command.folder.GetFolder;
+import org.talend.dataprep.api.service.command.folder.RemoveFolder;
+import org.talend.dataprep.api.service.command.folder.RenameFolder;
+import org.talend.dataprep.api.service.command.folder.SearchFolders;
 import org.talend.dataprep.api.service.command.preparation.PreparationListByFolder;
 import org.talend.dataprep.command.CommandHelper;
 import org.talend.dataprep.command.GenericCommand;
@@ -117,10 +128,9 @@ public class FolderAPI extends APIService {
     @RequestMapping(value = "/api/folders/{id}", method = DELETE)
     @ApiOperation(value = "Remove a Folder")
     @Timed
-    public ResponseEntity<Void> removeFolder(@PathVariable final String id, final OutputStream output) {
+    public ResponseEntity<String> removeFolder(@PathVariable final String id, final OutputStream output) {
         try {
-            final GenericCommand<HttpResponse> removeFolder = getCommand(RemoveFolder.class, id);
-            return CommandHelper.async(removeFolder);
+            return getCommand(RemoveFolder.class, id).execute();
         } catch (Exception e) {
             throw new TDPException(APIErrorCodes.UNABLE_TO_DELETE_FOLDER, e);
         }
