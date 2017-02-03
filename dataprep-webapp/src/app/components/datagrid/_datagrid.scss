@@ -11,269 +11,343 @@
 
   ============================================================================*/
 
-$datagrid-line-odd: #f9f9f9;
-$datagrid-line-border: #ddd;
-
+$datagrid-line-border: #E0E0E0;
 $datagrid-cell: $dark-gray;
-$datagrid-cell-bkg-active: #e1e1e1;
-
+$datagrid-cell-border-color-hover: $scooter;
 $datagrid-cell-font-size: .80em;
 
-@mixin cellImitation() {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  padding: 1px 4px 2px;
-}
+$datagrid-row-header-active-background: #7697C3;
+$datagrid-row-active-header-background: #737373;
+$datagrid-row-active-cells-background: $active-color;
+$datagrid-row-cell-active-background: $white;
 
-.index-column {
-  background-color: #555964 !important;
-  color: $white !important;
+$datagrid-column-active-cells-background: $datagrid-row-active-cells-background;
+$datagrid-column-preview-cells-background: #FCFFDE;
+
+@mixin cellImitation() {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	padding: 1px 4px 2px;
 }
 
 .slick-header-columns {
-  height: 59px;
+	height: 55px;
 }
 
 .slick-header-column-index {
-  height: 56px;
-  font-weight: bold;
-  background-color: #555964;
-  color: #ffffff;
-  padding: 5px 5px;
-}
-
-.index-cell {
-  text-align: right;
-  font-weight: bold;
-  @include ellipsis();
+	height: 40px;
+	font-weight: bold;
+	background-color: #808080;
+	color: $white;
+	padding: 5px 5px;
 }
 
 .tooltip-ruler {
-  font-size: $datagrid-cell-font-size;
-  font-family: $monospace;
-  display: none;
-  white-space: pre;
+	font-size: $datagrid-cell-font-size;
+	font-family: $monospace;
+	display: none;
+	white-space: pre;
 }
 
 .red-rect {
-  background-color: $nok-color;
-  width: 5px;
-  position: absolute;
-  right: 0;
-  top: 0;
-  height: 100%;
+	background-color: $nok-color;
+	width: 5px;
+	position: absolute;
+	right: 0;
+	top: 0;
+	height: 100%;
 }
 
 .invisible-rect {
-  background: transparent;
-  width: 5px;
-  position: absolute;
-  right: 0;
-  top: 0;
-  height: 100%;
+	background: transparent;
+	width: 5px;
+	position: absolute;
+	right: 0;
+	top: 0;
+	height: 100%;
 }
 
 .datagrid-tooltip {
 
-  .datagrid-tooltip-content {
-    white-space: pre-wrap;
-    cursor: pointer;
-    font-family: $monospace;
-    font-size: .80em;
+	.datagrid-tooltip-content {
+		white-space: pre-wrap;
+		cursor: pointer;
+		font-family: $monospace;
+		font-size: .80em;
 
-    .hiddenChars {
-      background-color: #E9E9E9;
-      border: 1px dotted #BABABA;
-    }
+		.hiddenChars {
+			background-color: #E9E9E9;
+			border: 1px dotted #BABABA;
+		}
 
-    .hiddenCharsBreakLine {
-      background-color: #e9e9e9;
-      border: 1px dotted #BABABA;
-    }
-  }
+		.hiddenCharsBreakLine {
+			background-color: #e9e9e9;
+			border: 1px dotted #BABABA;
+		}
+	}
 
-  .hiddenChars {
-    background-color: #E9E9E9;
-    border: 1px dotted #BABABA;
-  }
+	.hiddenChars {
+		background-color: #E9E9E9;
+		border: 1px dotted #BABABA;
+	}
 
-  .hiddenCharsBreakLine {
-    background-color: #e9e9e9;
-    border: 1px dotted #BABABA;
-  }
+	.hiddenCharsBreakLine {
+		background-color: #E9E9E9;
+		border: 1px dotted #BABABA;
+	}
 }
 
 .datagrid {
-  width: 100%;
-  height: 100%;
+	width: 100%;
+	height: 100%;
 
-  #datagrid{
-    width: 100%;
-    height: 100%;
-  }
-  //-------------------------------------------------Slickgrid hack-----------------------------------------------------
-  //not frozen columns width to fit resizable container
-  .slick-pane-right {
-    width: calc(100% - 60px) !important;
-  }
+	#datagrid {
+		width: 100%;
+		height: 100%;
+		background: $white;
+	}
 
-  //not frozen viewport should fit its container size (slick-pane-right)
-  .slick-viewport-right {
-    width: 100% !important;
-    background-color: $white;
-  }
-  .slick-viewport-left {
-    background-color: $white;
-  }
+	//-------------------------------------------------Slickgrid hack-----------------------------------------------------
+	//not frozen columns width to fit resizable container
+	.slick-pane-right {
+		width: calc(100% - 60px) !important;
+	}
 
-  //set the reorder placeholder height to fit column height
-  .slick-sortable-placeholder {
-    height: 59px !important;
-  }
+	.slick-pane-header {
+		position: absolute;
 
-  //------------------------------------------------Data prep column----------------------------------------------------
-  .slick-header-columns {
-    border-bottom: 1px solid silver;
-    box-sizing: content-box;
-    background-color: $white;
+		&.slick-pane-right {
+			box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.15);
+			z-index: 1;
+		}
+	}
 
-    .slick-header-column.ui-state-default {
-      line-height: inherit;
-      height: auto;
-      padding: 0;
-    }
-  }
+	//not frozen viewport should fit its container size (slick-pane-right)
+	.slick-viewport-right {
+		width: 100% !important;
+		background-color: $white;
+	}
 
-  //-----------------------------------------------Data prep content----------------------------------------------------
-  .slick-row {
-    position: absolute;
-    background: white;
-    border: 0;
-    line-height: 20px;
+	.slick-viewport-left {
+		background-color: $white;
+	}
 
-    &.ui-widget-content,
-    &.slick-row.ui-state-active {
-      position: absolute;
-      border: 0;
-      width: 100%;
-    }
+	//set the reorder placeholder height to fit column height
+	.slick-sortable-placeholder {
+		height: 50px !important;
+	}
 
-    &:nth-of-type(odd) {
-      background-color: $datagrid-line-odd;
-    }
+	//------------------------------------------------Data prep column----------------------------------------------------
+	.slick-header-columns {
+		box-sizing: content-box;
+		background-color: $white;
 
-    &.active {
-      background-color: #DFE8F6;
-    }
-  }
+		.slick-header-column {
+			&.ui-state-default {
+				line-height: inherit;
+				height: auto;
+				padding: 0;
+				border-color: #5a5a5a;
+			}
+			&.selected {
+				.grid-header {
+					background-color: $datagrid-row-header-active-background;
 
-  .slick-cell {
-    box-sizing: content-box;
-    border-color: $datagrid-line-border;
-    border-bottom-color: transparent;
-    border-left-color: transparent;
-    border-right-style: solid;
-    padding-left: 4px;
-    padding-right: 7px;
-    color: $datagrid-cell;
-    font-size: $datagrid-cell-font-size;
-    font-family: $monospace;
-    white-space: pre;
+					&-type {
+						color: $white;
+					}
+				}
+			}
+		}
+	}
 
-    &.selected {
-      background-color: #DFE8F6;
-    }
+	//-----------------------------------------------Data prep content----------------------------------------------------
+	.slick-row {
+		position: absolute;
+		background: white;
+		border: 0;
+		line-height: 20px;
 
-    &.numbers {
-      text-align: right;
-    }
+		&.ui-widget-content,
+		&.slick-row.ui-state-active {
+			position: absolute;
+			border: 0;
+			width: 100%;
+		}
 
-    &:hover {
-      background-color: $datagrid-cell-bkg-active;
-      cursor: cell;
-    }
+		&.active {
+			background-color: $datagrid-row-active-cells-background;
 
-    &.active {
-      border: 2px solid $black;
-      height: 19px;
-      padding: 0 7px 2px 3px;
-      background-color: $white;
-    }
+			.index-column {
+				background-color: $datagrid-row-active-header-background;
+			}
+		}
+	}
 
-    &.editable {
-      padding-left: 0;
+	.slick-cell {
+		box-sizing: content-box;
+		border-color: #E0E0E0;
+		border-bottom-color: transparent;
+		border-left-color: transparent;
+		border-right-style: solid;
+		padding-left: 4px;
+		padding-right: 7px;
+		color: $datagrid-cell;
+		font-size: $datagrid-cell-font-size;
+		font-family: $monospace;
+		white-space: pre;
+		z-index: auto;
 
-      .bottom {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-      }
+		&:hover {
+			cursor: cell;
+			border: 1px solid $datagrid-cell-border-color-hover;
+		}
 
-      textarea {
-        height: auto !important;
-        padding: 1px 0 0 2px;
-        margin: 0;
-        min-width: 280px;
-        min-height: 25px;
+		&.index-column {
+			font-family: $sourcesanspro;
+			font-size: 1.4rem;
+			color: $white;
+			background-color: #808080;
+			border-color: #707070;
+			border-bottom-color: transparent;
+		}
 
-        font-family: $monospace;
-      }
+		&.selected {
+			background-color: $datagrid-column-active-cells-background;
+		}
 
-      .checkboxContainer {
-        background: darkgray;
-        color: white;
-        margin-top: -5px;
-        text-align: center;
-        white-space: pre-line;
-        min-width: 280px;
+		&.preview {
+			background-color: $datagrid-column-preview-cells-background;
+		}
 
-        input[type="checkbox"] {
-          vertical-align: middle;
-        }
-      }
-    }
+		&.numbers {
+			text-align: right;
+		}
 
-    .highlight {
-      background-color: $green;
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      top: 0;
-      padding-left: 4px;
-      padding-right: 7px;
-    }
+		&.active {
+			border: 1px solid $scooter;
+			background-color: $white;
 
-    .cellNewValue {
-      @include cellImitation();
-      background-color: $new-color;
-    }
+			&.index-column {
+				background-color: $datagrid-row-header-active-background;
+			}
+		}
 
-    .cellUpdateValue {
-      @include cellImitation();
-      background-color: $update-color;
-    }
+		&.editable {
+			padding: 0;
 
-    .cellDeletedValue {
-      color: $medium-gray;
-      @include cellImitation();
-      background-color: $delete-color;
-      text-decoration: line-through;
-    }
+			> div {
+				position: relative;
+				z-index: 1;
+			}
 
-    .hiddenChars {
-      background-color: #e9e9e9;
-      border: 1px dotted #BABABA;
-    }
-  }
+			.bottom {
+				position: absolute;
+				bottom: 0;
+				left: 0;
+			}
 
-  //--------------------------------------------------Data lookup-------------------------------------------------------
-  &.lookup {
-    .slick-cell.selected {
-      background: rgba($lookup-selected-column, .6);
-    }
-  }
+			textarea {
+				margin: 0;
+				padding: 1px 0 0 2px;
+				font-size: 1.4rem;
+				border: none;
+			}
+
+			.checkboxContainer {
+				padding: 1.5rem 1rem 1rem;
+				min-width: 20rem;
+				text-align: left;
+				background-color: $white;
+				border-radius: 4px;
+				box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.2);
+
+				label {
+					font-family: $sourcesanspro;
+					font-size: 1.3rem;
+				}
+
+				input[type="checkbox"] {
+					margin-right: 10px;
+					width: 12px;
+
+					&:after {
+						width: 12px;
+						height: 12px;
+						margin-top: -14px;
+						border-width: 1px;
+					}
+					&:checked {
+						&:before {
+							top: -14px;
+							left: 4px;
+							width: 5px;
+							height: 10px;
+						}
+					}
+				}
+			}
+		}
+
+		.highlight {
+			background-color: $white;
+			position: absolute;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			top: 0;
+			padding-left: 4px;
+			padding-right: 7px;
+		}
+
+		.cellNewValue {
+			@include cellImitation();
+			background-color: $new-color;
+		}
+
+		.cellUpdateValue {
+			@include cellImitation();
+			background-color: $update-color;
+		}
+
+		.cellDeletedValue {
+			@include cellImitation();
+			background-color: $delete-color;
+		}
+
+		.hiddenChars {
+			background-color: #e9e9e9;
+			border: 1px dotted #BABABA;
+		}
+	}
+
+	.talend-dropdown-div {
+		float: right;
+	}
+
+	sc-dropdown {
+		.sc-dropdown {
+			$trigger-size: $svg-xs-size;
+			&-trigger {
+				padding: 0;
+				width: $trigger-size;
+				min-width: inherit;
+				&:after {
+					content: none;
+				}
+				svg {
+					height: $trigger-size;
+					width: $trigger-size;
+				}
+			}
+			&-content {
+				sc-dropdown-content {
+					overflow: visible;
+				}
+			}
+		}
+	}
 }
