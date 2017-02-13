@@ -12,12 +12,10 @@ module.exports = function (config) {
 
 		// frameworks to use
 		// available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-		frameworks: ['jasmine' ],
+		frameworks: ['jasmine'],
 
 		// list of files/patterns to load in the browser
-		files: [
-			{ pattern: './spec.bundle.js', watched: false },
-		],
+		files: ['./spec.bundle.js'],
 
 		// files to exclude
 		exclude: [],
