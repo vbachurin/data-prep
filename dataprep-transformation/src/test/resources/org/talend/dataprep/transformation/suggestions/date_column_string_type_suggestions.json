@@ -513,7 +513,7 @@
         "radio": false,
         "default": "yyyy-MM-dd",
         "description": "Choose the date format to use in the list or make your own",
-        "label": "New Format"
+        "label": "New format"
       }
     ],
     "category": "dates",
