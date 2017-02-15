@@ -538,7 +538,7 @@
           "multiple": false
         },
         "description": "Choose the date format to use in the list or make your own",
-        "label": "New Format",
+        "label": "New format",
         "default": "yyyy-MM-dd"
       }
     ],
@@ -771,7 +771,7 @@
           "multiple": false
         },
         "description": "Choose the date format to use in the list or make your own",
-        "label": "New Format",
+        "label": "New format",
         "default": "yyyy-MM-dd"
       }
     ],
