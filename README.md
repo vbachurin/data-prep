@@ -57,7 +57,7 @@ The following projects don't build any back-end artifacts but provide build util
 
 ## 2. Download
 
-You can download this product from the [Talend website](http://www.talend.com/download/talend-open-studio?qt-product_tos_download_new=5&utm_source=github&utm_campaign=dataprep).
+You can download this product from the [Talend website](http://www.talend.com/download/talend-open-studio?qt-product_tos_download_new=5&utm_medium=communityext&utm_source=github&utm_campaign=dataprep).
 
 
 ## 3. Usage and Documentation
