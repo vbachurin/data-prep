@@ -225,6 +225,8 @@ public class FolderAPI extends APIService {
                         .zipWith(dataSetMetadataPublisher, EnrichedPreparation::new); // Zip preparations and discovered metadata
                 writeFluxToJsonArray(preparations, "preparations", generator);
                 generator.writeEndObject();
+            } catch (EOFException e) {
+                LOG.debug("Output stream has been closed before finishing preparation writing.", e);
             } catch (IOException e) {
                 throw new TDPException(APIErrorCodes.UNABLE_TO_LIST_FOLDER_ENTRIES, e, build().put("destination", id));
             }
