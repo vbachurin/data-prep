@@ -1,5 +1,4 @@
 // ============================================================================
-//
 // Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
@@ -15,20 +14,15 @@ package org.talend.dataprep.api.dataset.statistics;
 
 import java.io.Serializable;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public class TextLengthSummary implements Serializable {
 
     /** Serialization UID. */
     private static final long serialVersionUID = 1L;
 
-    @JsonProperty("minimalLength")
     private double minimalLength = Double.NaN;
 
-    @JsonProperty("maximalLength")
     private double maximalLength = Double.NaN;
 
-    @JsonProperty("averageLength")
     private double averageLength = Double.NaN;
 
     public double getMinimalLength() {

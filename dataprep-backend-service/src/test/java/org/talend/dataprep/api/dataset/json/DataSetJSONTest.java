@@ -1,5 +1,4 @@
 // ============================================================================
-//
 // Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
@@ -154,8 +153,8 @@ public class DataSetJSONTest extends ServiceBaseTest {
         content.addParameter(CSVFormatFamily.SEPARATOR_PARAMETER, ",");
         content.setFormatFamilyId(new CSVFormatFamily().getBeanId());
         content.setMediaType("text/csv");
-        metadata.getLifecycle().qualityAnalyzed(true);
-        metadata.getLifecycle().schemaAnalyzed(true);
+        metadata.getLifecycle().setQualityAnalyzed(true);
+        metadata.getLifecycle().setSchemaAnalyzed(true);
         LocalStoreLocation location = new LocalStoreLocation();
         metadata.setLocation(location);
         StringWriter writer = new StringWriter();

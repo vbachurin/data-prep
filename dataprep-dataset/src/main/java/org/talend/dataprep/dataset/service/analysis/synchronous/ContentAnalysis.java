@@ -1,5 +1,4 @@
 // ============================================================================
-//
 // Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
@@ -74,7 +73,7 @@ public class ContentAnalysis implements SynchronousDataSetAnalyzer {
                 updateHeaderAndFooter(metadata);
                 updateLimit(metadata);
 
-                metadata.getLifecycle().contentIndexed(true);
+                metadata.getLifecycle().setContentIndexed(true);
                 repository.save(metadata);
                 LOG.info("Indexed content of data set #{}.", dataSetId);
             } else {

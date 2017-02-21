@@ -1,5 +1,4 @@
 // ============================================================================
-//
 // Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
@@ -75,7 +74,7 @@ public class BackgroundAnalysis {
 
         DataSetMetadata metadata = repository.get(dataSetId);
         if (metadata != null) {
-            if (!metadata.getLifecycle().schemaAnalyzed()) {
+            if (!metadata.getLifecycle().isSchemaAnalyzed()) {
                 LOGGER.debug(
                         "Dataset {}, schema information must be computed before quality analysis can be performed, ignoring message",
                         metadata.getId());
@@ -117,7 +116,7 @@ public class BackgroundAnalysis {
                     datasetLock.lock();
                     final DataSetMetadata dataSetMetadata = repository.get(dataSetId);
                     if (dataSetMetadata != null) {
-                        dataSetMetadata.getLifecycle().qualityAnalyzed(true);
+                        dataSetMetadata.getLifecycle().setQualityAnalyzed(true);
                         repository.save(metadata);
                     }
                 } finally {

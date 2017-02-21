@@ -1,5 +1,4 @@
 // ============================================================================
-//
 // Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
@@ -16,8 +15,6 @@ package org.talend.dataprep.api.dataset;
 import java.io.Serializable;
 import java.util.Objects;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 /**
  * Represents the lifecycle of the data set (information that can change over time).
  */
@@ -26,19 +23,14 @@ public class DataSetLifecycle implements Serializable {
     /** Serialization UID. */
     private static final long serialVersionUID = 1L;
 
-    @JsonProperty("inProgress")
     private boolean inProgress;
 
-    @JsonProperty("importing")
     private boolean importing;
 
-    @JsonProperty("contentAnalyzed")
     private boolean contentAnalyzed;
 
-    @JsonProperty("schemaAnalyzed")
     private boolean schemaAnalyzed;
 
-    @JsonProperty("qualityAnalyzed")
     private boolean qualityAnalyzed;
 
     /**
@@ -46,14 +38,14 @@ public class DataSetLifecycle implements Serializable {
      *
      * @param contentAnalyzed The new value for the information.
      */
-    public void contentIndexed(boolean contentAnalyzed) {
+    public void setContentIndexed(boolean contentAnalyzed) {
         this.contentAnalyzed = contentAnalyzed;
     }
 
     /**
      * @return <code>true</code> if data set content was indexed and can be queried, <code>false</code> otherwise.
      */
-    public boolean contentIndexed() {
+    public boolean isContentIndexed() {
         return contentAnalyzed;
     }
 
@@ -63,7 +55,7 @@ public class DataSetLifecycle implements Serializable {
      *
      * @param schemaAnalyzed The new value for the information.
      */
-    public void schemaAnalyzed(boolean schemaAnalyzed) {
+    public void setSchemaAnalyzed(boolean schemaAnalyzed) {
         this.schemaAnalyzed = schemaAnalyzed;
     }
 
@@ -72,7 +64,7 @@ public class DataSetLifecycle implements Serializable {
      * <code>false</code> otherwise.
      * @see RowMetadata
      */
-    public boolean schemaAnalyzed() {
+    public boolean isSchemaAnalyzed() {
         return schemaAnalyzed;
     }
 
@@ -82,7 +74,7 @@ public class DataSetLifecycle implements Serializable {
      *
      * @param qualityAnalyzed The new value for the information.
      */
-    public void qualityAnalyzed(boolean qualityAnalyzed) {
+    public void setQualityAnalyzed(boolean qualityAnalyzed) {
         this.qualityAnalyzed = qualityAnalyzed;
     }
 
@@ -90,7 +82,7 @@ public class DataSetLifecycle implements Serializable {
      * @return <code>true</code> if data set column values were analyzed and quality information is available,
      * <code>false</code> otherwise.
      */
-    public boolean qualityAnalyzed() {
+    public boolean isQualityAnalyzed() {
         return qualityAnalyzed;
     }
 
@@ -112,13 +104,6 @@ public class DataSetLifecycle implements Serializable {
     }
 
     /**
-     * @return <code>true</code> if all mandatory analysis were done <b>but</b> results are not yet complete.
-     */
-    public boolean isInProgress() {
-        return inProgress;
-    }
-
-    /**
      * Changes the inProgress status of the data set.
      *
      * @param inProgress <code>true</code> to indicate not all analysis are done, <code>false</code> to indicate all
@@ -127,6 +112,13 @@ public class DataSetLifecycle implements Serializable {
      */
     public void setInProgress(boolean inProgress) {
         this.inProgress = inProgress;
+    }
+
+    /**
+     * @return <code>true</code> if all mandatory analysis were done <b>but</b> results are not yet complete.
+     */
+    public boolean isInProgress() {
+        return inProgress;
     }
 
     @Override

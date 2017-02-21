@@ -1,5 +1,4 @@
 // ============================================================================
-//
 // Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
@@ -15,20 +14,15 @@ package org.talend.dataprep.api.dataset.statistics;
 
 import java.io.Serializable;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public class Quantiles implements Serializable {
 
     /** Serialization UID. */
     private static final long serialVersionUID = 1L;
 
-    @JsonProperty("median")
     private double median = Double.NaN;
 
-    @JsonProperty("lowerQuantile")
     private double lowerQuantile = Double.NaN;
 
-    @JsonProperty("upperQuantile")
     private double upperQuantile = Double.NaN;
 
     public double getMedian() {

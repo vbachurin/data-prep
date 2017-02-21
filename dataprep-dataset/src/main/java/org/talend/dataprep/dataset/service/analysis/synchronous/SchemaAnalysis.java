@@ -1,5 +1,4 @@
 // ============================================================================
-//
 // Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
@@ -86,7 +85,7 @@ public class SchemaAnalysis implements SynchronousDataSetAnalyzer {
                     // Find the best suitable type
                     adapter.adapt(columns, analyzer.getResult());
                     LOGGER.info("Analyzed schema in dataset #{}.", dataSetId);
-                    metadata.getLifecycle().schemaAnalyzed(true);
+                    metadata.getLifecycle().setSchemaAnalyzed(true);
                     repository.save(metadata);
                 }
             } catch (Exception e) {

@@ -1,5 +1,4 @@
 // ============================================================================
-//
 // Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
@@ -43,58 +42,45 @@ public class DataSetMetadata implements Serializable {
     /** Row description. */
     @JsonUnwrapped
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    @JsonProperty(value = "columns")
     private RowMetadata rowMetadata;
 
     /** Dataset life cycle status. */
-    @JsonProperty("lifecycle")
     private DataSetLifecycle lifecycle = new DataSetLifecycle();
 
-    @JsonProperty("content")
     @JsonUnwrapped
     private DataSetContent content = new DataSetContent();
 
     /** Dataset governance. */
-    @JsonProperty("governance")
     @JsonUnwrapped
     private DataSetGovernance governance = new DataSetGovernance();
 
     /** Dataset location. */
-    @JsonProperty("location")
     private DataSetLocation location;
 
     /** Dataset name. */
-    @JsonProperty("name")
     private String name;
 
     /** Dataset author ID. */
-    @JsonProperty("author")
     private String author;
 
-    @JsonProperty("created")
     private long creationDate;
 
-    @JsonProperty("lastModificationDate")
     private long lastModificationDate;
 
     /** Sheet number in case of excel source. */
-    @JsonProperty("sheetName")
     private String sheetName;
 
     /** The application version. */
-    @JsonProperty("app-version")
     private String appVersion;
 
     /**
      * if <code>true</code> this dataset is still a draft as we need more information from the user
      */
-    @JsonProperty("draft")
     private boolean draft = false;
 
     /**
      * available only when draft is <code>true</code> i.e until some information has been confirmed by the user
      */
-    @JsonProperty("schemaParserResult")
     private Schema schemaParserResult;
 
     /**
@@ -103,7 +89,6 @@ public class DataSetMetadata implements Serializable {
      *
      * @see Serializer#serialize(java.io.InputStream, DataSetMetadata, long)
      */
-    @JsonProperty("encoding")
     private String encoding = "UTF-8";
 
     /** A arbitrary tag for the data set (used by studio on creation for a visual distinction). */
@@ -163,6 +148,7 @@ public class DataSetMetadata implements Serializable {
     /**
      * @return the dataset row description.
      */
+    @JsonProperty(value = "columns")
     public RowMetadata getRowMetadata() {
         return rowMetadata;
     }
@@ -262,6 +248,7 @@ public class DataSetMetadata implements Serializable {
     /**
      * @return the dataset creation date in <strong>milliseconds</strong>.
      */
+    @JsonProperty("created")
     public long getCreationDate() {
         return creationDate;
     }
@@ -328,12 +315,10 @@ public class DataSetMetadata implements Serializable {
     /**
      * @return the Version
      */
+    @JsonProperty("app-version")
     public String getAppVersion() {
         return appVersion;
     }
-
-
-
 
     /**
      * @return The tag value for the data set metadata. This tag is for example used to distinguish data sets created by a job

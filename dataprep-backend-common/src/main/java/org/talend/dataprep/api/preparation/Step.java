@@ -39,7 +39,6 @@ public class Step extends Identifiable implements Serializable {
     private PreparationActions preparationActions = ROOT_ACTIONS;
 
     /** The app version. */
-    @JsonProperty("app-version")
     private String appVersion;
 
     /** The if there are any created column with this step. */
@@ -107,6 +106,7 @@ public class Step extends Identifiable implements Serializable {
         this.diff = diff;
     }
 
+    @JsonProperty("app-version")
     public String getAppVersion() {
         return appVersion;
     }

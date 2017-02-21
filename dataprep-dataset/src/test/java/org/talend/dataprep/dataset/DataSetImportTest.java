@@ -1,15 +1,14 @@
-//  ============================================================================
+// ============================================================================
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
-//
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.dataset;
 
@@ -97,9 +96,9 @@ public class DataSetImportTest extends DataSetBaseTest {
         assertThat(dataSetId, notNullValue());
         final DataSetMetadata metadata = dataSetMetadataRepository.get(dataSetId);
         assertThat(metadata.getLifecycle().isImporting(), is(false));
-        assertThat(metadata.getLifecycle().schemaAnalyzed(), is(true));
+        assertThat(metadata.getLifecycle().isSchemaAnalyzed(), is(true));
         // TDP-283: Quality analysis should be synchronous
-        assertThat(metadata.getLifecycle().qualityAnalyzed(), is(true));
+        assertThat(metadata.getLifecycle().isQualityAnalyzed(), is(true));
     }
 
     /**

@@ -1,5 +1,4 @@
 // ============================================================================
-//
 // Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
@@ -93,25 +92,25 @@ public class DataSetMetadataBuilderTest extends ServiceBaseTest {
     @Test
     public void testContentAnalyzed() throws Exception {
         final DataSetMetadata metadata = builder.metadata().id("1234").contentAnalyzed(false).build();
-        assertEquals(false, metadata.getLifecycle().contentIndexed());
-        metadata.getLifecycle().contentIndexed(true);
-        assertEquals(true, metadata.getLifecycle().contentIndexed());
+        assertEquals(false, metadata.getLifecycle().isContentIndexed());
+        metadata.getLifecycle().setContentIndexed(true);
+        assertEquals(true, metadata.getLifecycle().isContentIndexed());
     }
 
     @Test
     public void testSchemaAnalyzed() throws Exception {
         final DataSetMetadata metadata = builder.metadata().id("1234").schemaAnalyzed(false).build();
-        assertEquals(false, metadata.getLifecycle().schemaAnalyzed());
-        metadata.getLifecycle().schemaAnalyzed(true);
-        assertEquals(true, metadata.getLifecycle().schemaAnalyzed());
+        assertEquals(false, metadata.getLifecycle().isSchemaAnalyzed());
+        metadata.getLifecycle().setSchemaAnalyzed(true);
+        assertEquals(true, metadata.getLifecycle().isSchemaAnalyzed());
     }
 
     @Test
     public void testQualityAnalyzed() throws Exception {
         final DataSetMetadata metadata = builder.metadata().id("1234").qualityAnalyzed(false).build();
-        assertEquals(false, metadata.getLifecycle().qualityAnalyzed());
-        metadata.getLifecycle().qualityAnalyzed(true);
-        assertEquals(true, metadata.getLifecycle().qualityAnalyzed());
+        assertEquals(false, metadata.getLifecycle().isQualityAnalyzed());
+        metadata.getLifecycle().setQualityAnalyzed(true);
+        assertEquals(true, metadata.getLifecycle().isQualityAnalyzed());
     }
 
     @Test
@@ -239,9 +238,9 @@ public class DataSetMetadataBuilderTest extends ServiceBaseTest {
         metadata.setDraft(true);
         metadata.setContent(content);
         metadata.setEncoding("UTF-8");
-        metadata.getLifecycle().contentIndexed(true);
-        metadata.getLifecycle().qualityAnalyzed(true);
-        metadata.getLifecycle().schemaAnalyzed(true);
+        metadata.getLifecycle().setContentIndexed(true);
+        metadata.getLifecycle().setQualityAnalyzed(true);
+        metadata.getLifecycle().setSchemaAnalyzed(true);
         metadata.getLifecycle().setInProgress(true);
         metadata.getLifecycle().setImporting(true);
         metadata.setSchemaParserResult(schemaParserResult);
@@ -271,9 +270,9 @@ public class DataSetMetadataBuilderTest extends ServiceBaseTest {
         assertThat(copy.getContent().getMediaType(), equalTo(original.getContent().getMediaType()));
         assertThat(copy.getContent().getParameters(), equalTo(original.getContent().getParameters()));
         assertThat(copy.getEncoding(), equalTo(original.getEncoding()));
-        assertThat(copy.getLifecycle().contentIndexed(), equalTo(original.getLifecycle().contentIndexed()));
-        assertThat(copy.getLifecycle().qualityAnalyzed(), equalTo(original.getLifecycle().qualityAnalyzed()));
-        assertThat(copy.getLifecycle().schemaAnalyzed(), equalTo(original.getLifecycle().schemaAnalyzed()));
+        assertThat(copy.getLifecycle().isContentIndexed(), equalTo(original.getLifecycle().isContentIndexed()));
+        assertThat(copy.getLifecycle().isQualityAnalyzed(), equalTo(original.getLifecycle().isQualityAnalyzed()));
+        assertThat(copy.getLifecycle().isSchemaAnalyzed(), equalTo(original.getLifecycle().isSchemaAnalyzed()));
         assertThat(copy.getLifecycle().isInProgress(), equalTo(original.getLifecycle().isInProgress()));
         assertThat(copy.getLifecycle().isImporting(), equalTo(original.getLifecycle().isImporting()));
         assertThat(copy.getSchemaParserResult(), equalTo(original.getSchemaParserResult()));

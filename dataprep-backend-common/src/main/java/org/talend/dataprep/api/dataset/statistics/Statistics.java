@@ -1,5 +1,4 @@
 // ============================================================================
-//
 // Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
@@ -29,49 +28,34 @@ public class Statistics implements Serializable {
      */
     private static final long serialVersionUID = 1L;
 
-    @JsonProperty("count")
     private long count;
 
-    @JsonProperty("valid")
     private long valid;
 
-    @JsonProperty("invalid")
     private long invalid;
 
-    @JsonProperty("empty")
     private long empty;
 
-    @JsonProperty("max")
     private double max = 0;
 
-    @JsonProperty("min")
     private double min = 0;
 
-    @JsonProperty("mean")
     private double mean = 0;
 
-    @JsonProperty("variance")
     private double variance = 0;
 
-    @JsonProperty("duplicateCount")
     private long duplicateCount = 0;
 
-    @JsonProperty("distinctCount")
     private long distinctCount = 0;
 
-    @JsonProperty("frequencyTable")
     private List<DataFrequency> dataFrequencies = new LinkedList<>();
 
-    @JsonProperty("patternFrequencyTable")
     private List<PatternFrequency> patternFrequencies = new LinkedList<>();
 
-    @JsonProperty("quantiles")
     private Quantiles quantiles = new Quantiles();
 
-    @JsonProperty("histogram")
     private Histogram histogram;
 
-    @JsonProperty("textLengthSummary")
     private TextLengthSummary textLengthSummary = new TextLengthSummary();
 
     public long getCount() {
@@ -154,6 +138,7 @@ public class Statistics implements Serializable {
         this.distinctCount = distinctCount;
     }
 
+    @JsonProperty("frequencyTable")
     public List<DataFrequency> getDataFrequencies() {
         return dataFrequencies;
     }

@@ -1,5 +1,4 @@
 // ============================================================================
-//
 // Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
@@ -39,7 +38,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.util.ReflectionUtils;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetGovernance.Certification;
@@ -53,6 +51,7 @@ import org.talend.dataprep.dataset.DataSetBaseTest;
 import org.talend.dataprep.dataset.DataSetMetadataBuilder;
 import org.talend.dataprep.lock.DistributedLock;
 import org.talend.dataprep.schema.csv.CSVFormatFamily;
+import org.talend.services.dataprep.DataSetService;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;

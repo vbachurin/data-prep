@@ -1,5 +1,4 @@
 // ============================================================================
-//
 // Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
@@ -32,26 +31,19 @@ public class DataSetContent implements Serializable {
     /** Serialization UID. */
     private static final long serialVersionUID = 1L;
 
-    @JsonProperty("records")
     private long nbRecords = 0;
 
-    @JsonProperty("nbLinesHeader")
     private int nbLinesInHeader;
 
-    @JsonProperty("nbLinesFooter")
     private int nbLinesInFooter;
 
-    @JsonProperty("type")
     private String mediaType;
 
-    @JsonProperty("parameters")
     private Map<String, String> parameters = new HashMap<>();
 
-    @JsonProperty("formatGuess")
     private String formatFamilyId;
 
     /** If the dataset is too big, */
-    @JsonProperty("limit")
     @JsonInclude(value = NON_NULL)
     private Optional<Long> limit = Optional.empty();
 
@@ -70,6 +62,7 @@ public class DataSetContent implements Serializable {
         this.parameters.put(key, value);
     }
 
+    @JsonProperty("type")
     public String getMediaType() {
         return mediaType;
     }
@@ -78,6 +71,7 @@ public class DataSetContent implements Serializable {
         this.mediaType = mediaType;
     }
 
+    @JsonProperty("formatGuess")
     public String getFormatFamilyId() {
         return formatFamilyId;
     }
@@ -86,6 +80,7 @@ public class DataSetContent implements Serializable {
         this.formatFamilyId = formatFamilyId;
     }
 
+    @JsonProperty("records")
     public long getNbRecords() {
         return this.nbRecords;
     }

@@ -1,18 +1,19 @@
 <?xml version="1.0"?>
+
 <!--
-  ~  ============================================================================
+  ~ ============================================================================
+  ~ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
   ~
-  ~  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+  ~ This source code is available under agreement available at
+  ~ https://github.com/Talend/data-prep/blob/master/LICENSE
   ~
-  ~  This source code is available under agreement available at
-  ~  https://github.com/Talend/data-prep/blob/master/LICENSE
+  ~ You should have received a copy of the agreement
+  ~ along with this program; if not, write to Talend SA
+  ~ 9 rue Pages 92150 Suresnes, France
   ~
-  ~  You should have received a copy of the agreement
-  ~  along with this program; if not, write to Talend SA
-  ~  9 rue Pages 92150 Suresnes, France
-  ~
-  ~  ============================================================================
+  ~ ============================================================================
   -->
+
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
          xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -22,72 +23,61 @@
     </scm>
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.talend.dataprep</groupId>
-        <artifactId>dataprep-backend</artifactId>
-        <version>2.1.0-SNAPSHOT</version>
-        <relativePath>../dataprep-backend/pom.xml</relativePath>
+        <groupId>org.talend.daikon</groupId>
+        <artifactId>service-parent</artifactId>
+        <version>0.16.0-SNAPSHOT</version>
+        <relativePath/>
     </parent>
+
+    <groupId>org.talend.dataprep</groupId>
     <name>dataprep-backend-service-parent</name>
     <packaging>pom</packaging>
     <artifactId>dataprep-backend-service-parent</artifactId>
+    <version>2.1.0-SNAPSHOT</version>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>${spring-boot.version}</version>
+                <groupId>org.talend.dataprep</groupId>
+                <artifactId>dataprep-backend</artifactId>
+                <version>${project.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
     <dependencies>
+        <dependency>
+            <groupId>org.talend.dataprep</groupId>
+            <artifactId>dataprep-services</artifactId>
+            <version>2.1.0-SNAPSHOT</version>
+        </dependency>
         <!-- SPRING DEPENDENCIES -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-tomcat</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-jetty</artifactId>
-        </dependency>
         <dependency>
             <groupId>org.talend.dataprep</groupId>
             <artifactId>dataprep-backend-service</artifactId>
         </dependency>
         <!-- UNIT TEST DEPENDENCIES -->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
+            <groupId>org.talend.dataprep</groupId>
+            <artifactId>dataprep-backend-common</artifactId>
+            <type>test-jar</type>
         </dependency>
         <dependency>
             <groupId>com.jayway.restassured</groupId>
             <artifactId>rest-assured</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-all</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>uk.co.datumedge</groupId>
-            <artifactId>hamcrest-json</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.talend.dataprep</groupId>
             <artifactId>dataprep-backend-service</artifactId>
             <type>test-jar</type>
+            <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.talend.dataprep</groupId>
-            <artifactId>dataprep-backend-common</artifactId>
-            <type>test-jar</type>
+            <groupId>uk.co.datumedge</groupId>
+            <artifactId>hamcrest-json</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
     <build>
@@ -120,6 +110,19 @@
                     <execution>
                         <goals>
                             <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.0.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
                         </goals>
                     </execution>
                 </executions>

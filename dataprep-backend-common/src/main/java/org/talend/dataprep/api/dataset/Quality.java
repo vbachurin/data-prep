@@ -1,5 +1,4 @@
 // ============================================================================
-//
 // Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
@@ -14,10 +13,6 @@
 package org.talend.dataprep.api.dataset;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Quality bean linked to column metadata.
@@ -28,20 +23,13 @@ public class Quality implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /** Number of empty records. */
-    @JsonProperty("empty")
     private int empty;
 
     /** Number of invalid records. */
-    @JsonProperty("invalid")
     private int invalid;
 
     /** Number of valid records. */
-    @JsonProperty("valid")
     private int valid;
-
-    /** List of invalid values. */
-    @JsonProperty("invalidValues")
-    private Set<String> invalidValues = new HashSet<>();
 
     /**
      * @return the number of empty records.

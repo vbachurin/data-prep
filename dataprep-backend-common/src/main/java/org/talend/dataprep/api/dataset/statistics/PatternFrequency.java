@@ -1,5 +1,4 @@
 // ============================================================================
-//
 // Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
@@ -15,18 +14,14 @@ package org.talend.dataprep.api.dataset.statistics;
 
 import java.io.Serializable;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public class PatternFrequency implements Serializable {
 
     /** Serialization UID. */
     private static final long serialVersionUID = 1L;
 
-    @JsonProperty("pattern")
     private String pattern;
 
-    @JsonProperty("occurrences")
-    long occurrences;
+    private long occurrences;
 
     /**
      * Default empty constructor.

@@ -1,5 +1,4 @@
 // ============================================================================
-//
 // Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
@@ -81,7 +80,7 @@ public class QualityAnalysis implements SynchronousDataSetAnalyzer {
                 return;
             }
             try (Stream<DataSetRow> stream = store.stream(metadata)) {
-                if (!metadata.getLifecycle().schemaAnalyzed()) {
+                if (!metadata.getLifecycle().isSchemaAnalyzed()) {
                     LOGGER.debug(
                             "Schema information must be computed before quality analysis can be performed, ignoring message");
                     return; // no acknowledge to allow re-poll.
@@ -103,7 +102,7 @@ public class QualityAnalysis implements SynchronousDataSetAnalyzer {
                     metadata.getLifecycle().setInProgress(false);
                 }
                 // ... all quality is now analyzed, mark it so.
-                metadata.getLifecycle().qualityAnalyzed(true);
+                metadata.getLifecycle().setQualityAnalyzed(true);
                 repository.save(metadata);
                 LOGGER.debug("Analyzed quality of dataset #{}.", dataSetId);
             } catch (Exception e) {

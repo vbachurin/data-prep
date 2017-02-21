@@ -97,9 +97,9 @@ public abstract class DataSetBaseTest extends ServiceBaseTest {
         securityProxy.releaseIdentity();
         assertNotNull(metadata);
         DataSetLifecycle lifecycle = metadata.getLifecycle();
-        assertThat(lifecycle.contentIndexed(), is(true));
-        assertThat(lifecycle.schemaAnalyzed(), is(true));
-        assertThat(lifecycle.qualityAnalyzed(), is(true));
+        assertThat(lifecycle.isContentIndexed(), is(true));
+        assertThat(lifecycle.isSchemaAnalyzed(), is(true));
+        assertThat(lifecycle.isQualityAnalyzed(), is(true));
     }
 
     @After

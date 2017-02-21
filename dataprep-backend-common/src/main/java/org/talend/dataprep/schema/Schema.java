@@ -1,5 +1,4 @@
 // ============================================================================
-//
 // Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
@@ -20,8 +19,6 @@ import java.util.stream.Collectors;
 
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 /**
  * This class represents a schema of a dataset.
  */
@@ -30,13 +27,10 @@ public class Schema implements Serializable {
     /** Serialization UID. */
     private static final long serialVersionUID = 1L;
 
-    @JsonProperty("draft")
     private boolean draft;
 
-    @JsonProperty("sheetContents")
     private List<SheetContent> sheetContents;
 
-    @JsonProperty("sheetName")
     private String sheetName;
 
     private Schema(boolean draft, List<SheetContent> sheetContents, String sheetName) {
@@ -70,11 +64,9 @@ public class Schema implements Serializable {
         private static final long serialVersionUID = 1L;
 
         /** The sheet name. */
-        @JsonProperty("name")
         private String name;
 
         /** List of column metadata. */
-        @JsonProperty("columnMetadatas")
         private List<ColumnMetadata> columnMetadatas;
 
         /**

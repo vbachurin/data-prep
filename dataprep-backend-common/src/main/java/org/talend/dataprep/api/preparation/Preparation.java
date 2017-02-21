@@ -29,7 +29,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * The Preparation class represents the series of {@link Step steps} one can apply on a dataset to transform it.
  */
-public class Preparation extends Identifiable implements Serializable {
+public class Preparation extends Identifiable implements Serializable, org.talend.daikon.version.api.Identifiable {
 
     /** Serialization UID. */
     private static final long serialVersionUID = 1L;
@@ -56,7 +56,6 @@ public class Preparation extends Identifiable implements Serializable {
     private String headId;
 
     /** Version of the app */
-    @JsonProperty("app-version")
     private String appVersion;
 
     /** List of the steps id for this preparation. */
@@ -196,6 +195,7 @@ public class Preparation extends Identifiable implements Serializable {
         this.id = id;
     }
 
+    @JsonProperty("app-version")
     public String getAppVersion() {
         return appVersion;
     }

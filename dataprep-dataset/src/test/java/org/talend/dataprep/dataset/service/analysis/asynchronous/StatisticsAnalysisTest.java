@@ -1,15 +1,14 @@
-//  ============================================================================
+// ============================================================================
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
-//  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// This source code is available under agreement available at
+// https://github.com/Talend/data-prep/blob/master/LICENSE
 //
-//  This source code is available under agreement available at
-//  https://github.com/Talend/data-prep/blob/master/LICENSE
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
 //
-//  You should have received a copy of the agreement
-//  along with this program; if not, write to Talend SA
-//  9 rue Pages 92150 Suresnes, France
-//
-//  ============================================================================
+// ============================================================================
 
 package org.talend.dataprep.dataset.service.analysis.asynchronous;
 
@@ -101,7 +100,7 @@ public class StatisticsAnalysisTest extends DataSetBaseTest {
         statisticsAnalysis.onApplicationEvent(new DataSetImportedEvent(id));
 
         final DataSetMetadata analyzed = dataSetMetadataRepository.get(id);
-        assertThat(analyzed.getLifecycle().schemaAnalyzed(), is(true));
+        assertThat(analyzed.getLifecycle().isSchemaAnalyzed(), is(true));
         return analyzed;
     }
 

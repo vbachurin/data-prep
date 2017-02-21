@@ -1,5 +1,4 @@
 // ============================================================================
-//
 // Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
@@ -380,9 +379,9 @@ public class DataSetMetadataBuilder {
         this.parameters = original.getContent().getParameters();
         this.encoding = original.getEncoding();
 
-        this.contentAnalyzed = original.getLifecycle().contentIndexed();
-        this.qualityAnalyzed = original.getLifecycle().qualityAnalyzed();
-        this.schemaAnalyzed = original.getLifecycle().schemaAnalyzed();
+        this.contentAnalyzed = original.getLifecycle().isContentIndexed();
+        this.qualityAnalyzed = original.getLifecycle().isQualityAnalyzed();
+        this.schemaAnalyzed = original.getLifecycle().isSchemaAnalyzed();
         this.inProgress = original.getLifecycle().isInProgress();
         this.importing = original.getLifecycle().isImporting();
 
@@ -463,9 +462,9 @@ public class DataSetMetadataBuilder {
 
         // Lifecycle information
         DataSetLifecycle metadataLifecycle = metadata.getLifecycle();
-        metadataLifecycle.contentIndexed(contentAnalyzed);
-        metadataLifecycle.schemaAnalyzed(schemaAnalyzed);
-        metadataLifecycle.qualityAnalyzed(qualityAnalyzed);
+        metadataLifecycle.setContentIndexed(contentAnalyzed);
+        metadataLifecycle.setSchemaAnalyzed(schemaAnalyzed);
+        metadataLifecycle.setQualityAnalyzed(qualityAnalyzed);
         metadataLifecycle.setImporting(importing);
         metadataLifecycle.setInProgress(inProgress);
         return metadata;

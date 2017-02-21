@@ -36,7 +36,6 @@ public class PreparationActions extends Identifiable implements Serializable {
     private List<Action> actions = Collections.emptyList();
 
     /** The app version. */
-    @JsonProperty("app-version")
     private String appVersion;
 
     /**
@@ -115,6 +114,7 @@ public class PreparationActions extends Identifiable implements Serializable {
     /**
      * @return the AppVersion
      */
+    @JsonProperty("app-version")
     public String getAppVersion() {
         return appVersion;
     }

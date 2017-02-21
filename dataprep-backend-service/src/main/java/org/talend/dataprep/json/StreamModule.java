@@ -14,10 +14,17 @@ package org.talend.dataprep.json;
 
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.List;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import javax.annotation.PostConstruct;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +33,6 @@ import org.springframework.stereotype.Component;
 import org.talend.daikon.exception.TalendRuntimeException;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 @Component
@@ -88,6 +91,13 @@ public class StreamModule extends SimpleModule {
                     }
                     LOGGER.debug("Iterating done.");
                 }
+            }
+        });
+        addDeserializer(Stream.class, new JsonDeserializer<Stream>() {
+            @Override
+            public Stream deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+                return StreamSupport.stream(jsonParser.<List<Object>>readValueAs(new TypeReference<List<Object>>() {
+                }).spliterator(), false);
             }
         });
     }

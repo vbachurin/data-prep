@@ -1,5 +1,4 @@
 // ============================================================================
-//
 // Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
@@ -36,7 +35,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * <li>Name ({@link #getId()})</li>
  * <li>Type ({@link #getType()})</li>
  * </ul>
- * 
+ *
  * @see ColumnMetadata.Builder
  */
 public class ColumnMetadata implements Serializable {
@@ -45,50 +44,39 @@ public class ColumnMetadata implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /** Quality of the column. */
-    @JsonProperty("quality")
     private final Quality quality = new Quality();
 
     /** Technical id of the column (generated when instantiated). */
-    @JsonProperty("id")
     private String id;
 
     /** Human readable name of the column. */
     private String name;
 
-    /** Type of the column (N/A as default). */
-    @JsonProperty("type")
-    private String typeName = "N/A"; //$NON-NLS-1$
+    /** Type of the column (String as default). */
+    private String typeName = Type.STRING.getName();
 
     /** Number of first lines with a text header (none per default). */
     private int headerSize = 0;
 
     /** Optional diff flag that shows diff status of this column metadata. */
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    @JsonProperty(value = FlagNames.COLUMN_DIFF_KEY)
     private String diffFlagValue;
 
     /** Statistics of the column. */
-    @JsonProperty("statistics")
     private Statistics statistics = new Statistics();
 
-    @JsonProperty("domain")
     private String domain = StringUtils.EMPTY;
 
-    @JsonProperty("domainLabel")
     private String domainLabel = StringUtils.EMPTY;
 
-    @JsonProperty("domainFrequency")
     private float domainFrequency;
 
-    @JsonProperty("semanticDomains")
     private List<SemanticDomain> semanticDomains = emptyList();
 
     /** if the domain has been changed/forced manually by the user */
-    @JsonProperty("domainForced")
     private boolean domainForced;
 
     /** if the type has been changed/forced manually by the user */
-    @JsonProperty("typeForced")
     private boolean typeForced;
 
     /**
@@ -134,6 +122,7 @@ public class ColumnMetadata implements Serializable {
      * @return The column's type. It never returns <code>null</code>.
      * @see org.talend.dataprep.api.type.Type
      */
+    @JsonProperty("type")
     public String getType() {
         return typeName;
     }
@@ -148,6 +137,7 @@ public class ColumnMetadata implements Serializable {
     /**
      * @return the diff flag.
      */
+    @JsonProperty(value = FlagNames.COLUMN_DIFF_KEY)
     public String getDiffFlagValue() {
         return diffFlagValue;
     }
@@ -358,7 +348,7 @@ public class ColumnMetadata implements Serializable {
 
         /**
          * Set the name of the column.
-         * 
+         *
          * @param name the name of the column to set.
          * @return the builder to carry on building the column.
          */
@@ -369,7 +359,7 @@ public class ColumnMetadata implements Serializable {
 
         /**
          * Set the id of the column.
-         * 
+         *
          * @param id the id of the column to set.
          * @return the builder to carry on building the column.
          */
@@ -402,7 +392,7 @@ public class ColumnMetadata implements Serializable {
 
         /**
          * Set the type of the column.
-         * 
+         *
          * @param type the type of the column to set.
          * @return the builder to carry on building the column.
          */
@@ -416,7 +406,7 @@ public class ColumnMetadata implements Serializable {
 
         /**
          * Set the empty value of the column.
-         * 
+         *
          * @param value the empty value of the column to set.
          * @return the builder to carry on building the column.
          */
@@ -427,7 +417,7 @@ public class ColumnMetadata implements Serializable {
 
         /**
          * Set the invalid value of the column.
-         * 
+         *
          * @param value the invalid value of the column to set.
          * @return the builder to carry on building the column.
          */
@@ -438,7 +428,7 @@ public class ColumnMetadata implements Serializable {
 
         /**
          * Set the valid value of the column.
-         * 
+         *
          * @param value the valid value of the column to set.
          * @return the builder to carry on building the column.
          */
@@ -449,7 +439,7 @@ public class ColumnMetadata implements Serializable {
 
         /**
          * Set the header size value of the column.
-         * 
+         *
          * @param headerSize the header size value of the column to set.
          * @return the builder to carry on building the column.
          */
@@ -520,7 +510,7 @@ public class ColumnMetadata implements Serializable {
 
         /**
          * Copy the column from the given one.
-         * 
+         *
          * @param original the column to copy.
          * @return the builder to carry on building the column.
          */
@@ -546,7 +536,7 @@ public class ColumnMetadata implements Serializable {
 
         /**
          * Copy the column metadata type (without statistics)
-         * 
+         *
          * @param original the original column to copy.
          * @return the column metadata that only match the type.
          */
@@ -565,7 +555,7 @@ public class ColumnMetadata implements Serializable {
 
         /**
          * Build the column with the previously entered values.
-         * 
+         *
          * @return the built column metadata.
          */
         public ColumnMetadata build() {

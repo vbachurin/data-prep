@@ -1,5 +1,4 @@
 // ============================================================================
-//
 // Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
@@ -63,7 +62,7 @@ public class QualityAnalysisTest extends DataSetBaseTest {
         // Analyze quality
         qualityAnalysis.analyze("1234");
         final DataSetMetadata actual = dataSetMetadataRepository.get("1234");
-        assertThat(actual.getLifecycle().qualityAnalyzed(), is(true));
+        assertThat(actual.getLifecycle().isQualityAnalyzed(), is(true));
         assertThat(actual.getContent().getNbRecords(), is(5L));
         for (ColumnMetadata column : actual.getRowMetadata().getColumns()) {
             final Quality quality = column.getQuality();
@@ -85,7 +84,7 @@ public class QualityAnalysisTest extends DataSetBaseTest {
         // Analyze quality
         qualityAnalysis.analyze(dsId);
         final DataSetMetadata actual = dataSetMetadataRepository.get(dsId);
-        assertThat(actual.getLifecycle().qualityAnalyzed(), is(true));
+        assertThat(actual.getLifecycle().isQualityAnalyzed(), is(true));
         assertThat(actual.getContent().getNbRecords(), is(9L));
         assertThat(actual.getRowMetadata().getColumns().size(), is(2));
         ColumnMetadata secondColumn = actual.getRowMetadata().getColumns().get(1);
@@ -107,7 +106,7 @@ public class QualityAnalysisTest extends DataSetBaseTest {
     public void TDP_1150_full() throws Exception {
         final DataSetMetadata actual = initializeDataSetMetadata(
                 DataSetServiceTest.class.getResourceAsStream("../invalids_and_type_detection.csv"));
-        assertThat(actual.getLifecycle().schemaAnalyzed(), is(true));
+        assertThat(actual.getLifecycle().isSchemaAnalyzed(), is(true));
         String[] expectedNames = { "string_boolean", "double_integer", "string_integer", "string_double", "string_date",
                 "type_mix", "boolean", "integer", "double", "date", "string", "empty" };
         Type[] expectedTypes = { Type.BOOLEAN, Type.INTEGER, Type.INTEGER, Type.DOUBLE, Type.DATE, Type.STRING, Type.BOOLEAN,
@@ -131,7 +130,7 @@ public class QualityAnalysisTest extends DataSetBaseTest {
     public void TDP_1150_integer_must_be_detected_as_so_even_if_sampling_detects_text() throws Exception {
         final DataSetMetadata actual = initializeDataSetMetadata(
                 DataSetServiceTest.class.getResourceAsStream("../valid_must_be_integer.csv"));
-        assertThat(actual.getLifecycle().schemaAnalyzed(), is(true));
+        assertThat(actual.getLifecycle().isSchemaAnalyzed(), is(true));
         String expectedName =  "user_id" ;
         Type expectedType = Type.INTEGER ;
 
@@ -152,7 +151,7 @@ public class QualityAnalysisTest extends DataSetBaseTest {
     public void TDP_1150_string_must_be_detected_as_so_if_even_if_subtype_is_integer() throws Exception {
         final DataSetMetadata actual = initializeDataSetMetadata(
                 DataSetServiceTest.class.getResourceAsStream("../valid_must_be_text1.csv"));
-        assertThat(actual.getLifecycle().schemaAnalyzed(), is(true));
+        assertThat(actual.getLifecycle().isSchemaAnalyzed(), is(true));
         String expectedName =  "user_id" ;
         Type expectedType = Type.STRING ;
 
@@ -174,7 +173,7 @@ public class QualityAnalysisTest extends DataSetBaseTest {
     public void TDP_1150_text_must_be_detected_if_even_if_integer_is_more_frequent() throws Exception {
         final DataSetMetadata actual = initializeDataSetMetadata(
                 DataSetServiceTest.class.getResourceAsStream("../valid_must_be_text_2.csv"));
-        assertThat(actual.getLifecycle().schemaAnalyzed(), is(true));
+        assertThat(actual.getLifecycle().isSchemaAnalyzed(), is(true));
         String expectedName =  "user_id" ;
         Type expectedType = Type.INTEGER ;
 
@@ -201,7 +200,7 @@ public class QualityAnalysisTest extends DataSetBaseTest {
         qualityAnalysis.analyze(id);
 
         final DataSetMetadata analyzed = dataSetMetadataRepository.get(id);
-        assertThat(analyzed.getLifecycle().schemaAnalyzed(), is(true));
+        assertThat(analyzed.getLifecycle().isSchemaAnalyzed(), is(true));
         return analyzed;
     }
 }

@@ -1,5 +1,4 @@
 // ============================================================================
-//
 // Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
@@ -23,7 +22,6 @@ import org.talend.dataprep.async.AsyncGroupKey;
 import org.talend.dataprep.validation.OneNotBlank;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -72,11 +70,9 @@ public class ExportParameters implements AsyncGroupKey {
 
     private Map<String, String> arguments = new HashMap<>();
 
-    @JsonProperty("filter")
     @JsonRawValue
     private Object filter;
 
-    @JsonProperty("outFilter")
     @JsonRawValue
     private Object outFilter;
 
