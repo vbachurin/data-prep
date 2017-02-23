@@ -58,12 +58,12 @@ export default class DatagridGridService {
      * @methodOf data-prep.datagrid.service:DatagridGridService
      * @description Attaches listeners for data update to reRender the grid
      */
-	_attachLongTableListeners() {
-		this.state.playground.grid.dataView.onRowCountChanged.subscribe(() => {
+	attachLongTableListeners(grid) {
+		grid.dataView.onRowCountChanged.subscribe(() => {
 			this.grid.updateRowCount();
 			this.grid.render();
 		});
-		this.state.playground.grid.dataView.onRowsChanged.subscribe((e, args) => {
+		grid.dataView.onRowsChanged.subscribe((e, args) => {
 			this.grid.invalidateRows(args.rows);
 			this.grid.render();
 		});
@@ -143,7 +143,7 @@ export default class DatagridGridService {
      */
 	_initGridServices() {
 		_.forEach(this.gridServices, (service) => {
-			service.init(this.grid);
+			service.init(this.grid, this.state.playground.grid);
 		});
 	}
 
@@ -172,7 +172,7 @@ export default class DatagridGridService {
 		SingleColumnResizePlugin.patch(this.grid);
 
         // listeners
-		this._attachLongTableListeners();
+		this.attachLongTableListeners(this.state.playground.grid);
 		this._attachGridStateListeners();
 
         // init other services
