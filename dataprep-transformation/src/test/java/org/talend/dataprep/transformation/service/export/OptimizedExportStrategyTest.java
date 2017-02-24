@@ -20,6 +20,7 @@ import java.io.OutputStream;
 
 import javax.annotation.Resource;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.DataSet;
@@ -76,6 +77,7 @@ public class OptimizedExportStrategyTest extends TransformationServiceBaseTest {
         assertFalse(optimizedExportStrategy.accept(exportParameters));
     }
 
+    @Ignore
     @Test(expected = TDPException.class)
     public void testAcceptKO_preparationNotExist() throws Exception {
         // Given
