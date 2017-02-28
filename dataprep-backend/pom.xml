@@ -713,13 +713,6 @@
     </build>
     <repositories>
         <repository>
-            <id>spring-milestones</id>
-            <url>http://repo.spring.io/milestone/</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
             <id>snapshots</id>
             <url>https://artifacts-zl.talend.com/nexus/content/repositories/snapshots</url>
             <releases>
@@ -764,15 +757,6 @@
             </snapshots>
         </repository>
     </repositories>
-    <pluginRepositories>
-        <pluginRepository>
-            <id>spring-milestones</id>
-            <url>http://repo.spring.io/milestone/</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </pluginRepository>
-    </pluginRepositories>
     <distributionManagement>
         <snapshotRepository>
             <id>talend_nexus_deployment</id>
