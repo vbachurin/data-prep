@@ -26,11 +26,11 @@
     <distributionManagement>
         <snapshotRepository>
           <id>talend_nexus_deployment</id>
-          <url>http://newbuild.talend.com:8081/nexus/content/repositories/snapshots/</url>
+          <url>https://artifacts-zl.talend.com/nexus/content/repositories/snapshots/</url>
         </snapshotRepository>
         <repository>
           <id>talend_nexus_deployment</id>
-          <url>http://newbuild.talend.com:8081/nexus/content/repositories/releases/</url>
+          <url>https://artifacts-zl.talend.com/nexus/content/repositories/releases/</url>
         </repository>
     </distributionManagement>
     <repositories>
@@ -43,7 +43,7 @@
         </repository>
         <repository>
             <id>snapshots</id>
-            <url>http://newbuild.talend.com:8081/nexus/content/repositories/snapshots</url>
+            <url>https://artifacts-zl.talend.com/nexus/content/repositories/snapshots</url>
             <releases>
                 <enabled>false</enabled>
             </releases>
