@@ -51,10 +51,6 @@
             <artifactId>dataquality-standardization</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.talend.dataquality</groupId>
-            <artifactId>dataquality-converters</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>jsr305</artifactId>
         </dependency>

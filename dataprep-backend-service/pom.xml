@@ -101,10 +101,6 @@
             <artifactId>dataquality-standardization</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.talend.dataquality</groupId>
-            <artifactId>dataquality-converters</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.talend.daikon</groupId>
             <artifactId>daikon</artifactId>
         </dependency>
