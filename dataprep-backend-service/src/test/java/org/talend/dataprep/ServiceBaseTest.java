@@ -18,7 +18,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.mock.env.MockPropertySource;
@@ -29,10 +29,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.restassured.RestAssured;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = RANDOM_PORT, properties = "dataset.asynchronous.analysis=false")
+@SpringBootTest(webEnvironment = RANDOM_PORT, properties = {"dataset.asynchronous.analysis=false", "scim.url=placeholder-to-load-beans"})
 public abstract class ServiceBaseTest {
 
-    @Value("${local.server.port}")
+    @LocalServerPort
     protected int port;
 
     @Autowired
