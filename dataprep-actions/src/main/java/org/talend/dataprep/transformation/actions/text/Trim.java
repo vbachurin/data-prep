@@ -80,34 +80,34 @@ public class Trim extends AbstractActionMetadata implements ColumnAction {
         // @formatter:off
         parameters.add(SelectParameter.Builder.builder()
                 .name(PADDING_CHAR_PARAMETER)
-                .item("whitespace", " ") //$NON-NLS-1$
-                .item("character_tabulation"       , "\\u0009") //$NON-NLS-1$ //$NON-NLS-2$
-                .item("line_feed_(lf)"             , "\\u000A") //$NON-NLS-1$ //$NON-NLS-2$
-                .item("line_tabulation"            , "\\u000B") //$NON-NLS-1$ //$NON-NLS-2$
-                .item("form_feed_(ff)"             , "\\u000C") //$NON-NLS-1$ //$NON-NLS-2$
-                .item("carriage_return_(cr)"       , "\\u000D") //$NON-NLS-1$ //$NON-NLS-2$
-                .item("next_line_(nel)"            , "\\u0085") //$NON-NLS-1$ //$NON-NLS-2$
-                .item("no_break_space"             , "\\u00A0") //$NON-NLS-1$ //$NON-NLS-2$
-                .item("ogham_space_mark"           , "\\u1680") //$NON-NLS-1$ //$NON-NLS-2$
-                .item("mongolian_vowel_separator"  , "\\u180E") //$NON-NLS-1$ //$NON-NLS-2$
-                .item("en_quad"                    , "\\u2000") //$NON-NLS-1$ //$NON-NLS-2$
-                .item("em_quad"                    , "\\u2001") //$NON-NLS-1$ //$NON-NLS-2$
-                .item("en_space"                   , "\\u2002") //$NON-NLS-1$ //$NON-NLS-2$
-                .item("em_space"                   , "\\u2003") //$NON-NLS-1$ //$NON-NLS-2$
-                .item("three_per_em_space"         , "\\u2004") //$NON-NLS-1$ //$NON-NLS-2$
-                .item("four_per_em_space"          , "\\u2005") //$NON-NLS-1$ //$NON-NLS-2$
-                .item("six_per_em_space"           , "\\u2006") //$NON-NLS-1$ //$NON-NLS-2$
-                .item("figure_space"               , "\\u2007") //$NON-NLS-1$ //$NON-NLS-2$
-                .item("punctuation_space"          , "\\u2008") //$NON-NLS-1$ //$NON-NLS-2$
-                .item("thin_space"                 , "\\u2009") //$NON-NLS-1$ //$NON-NLS-2$
-                .item("hair_space"                 , "\\u200A") //$NON-NLS-1$ //$NON-NLS-2$
-                .item("line_separator"             , "\\u2028") //$NON-NLS-1$ //$NON-NLS-2$
-                .item("paragraph_separator"        , "\\u2029") //$NON-NLS-1$ //$NON-NLS-2$
-                .item("narrow_no_break_space"      , "\\u202F") //$NON-NLS-1$ //$NON-NLS-2$
-                .item("medium_mathematical_space"  , "\\u205F") //$NON-NLS-1$ //$NON-NLS-2$
-                .item("ideographic_space"          , "\\u3000") //$NON-NLS-1$ //$NON-NLS-2$
+                .item(" ",       "whitespace"               ) //$NON-NLS-1$ //$NON-NLS-2$
+                .item("\\u0009", "character_tabulation"     ) //$NON-NLS-1$ //$NON-NLS-2$
+                .item("\\u000A", "line_feed_(lf)"           ) //$NON-NLS-1$ //$NON-NLS-2$
+                .item("\\u000B", "line_tabulation"          ) //$NON-NLS-1$ //$NON-NLS-2$
+                .item("\\u000C", "form_feed_(ff)"           ) //$NON-NLS-1$ //$NON-NLS-2$
+                .item("\\u000D", "carriage_return_(cr)"     ) //$NON-NLS-1$ //$NON-NLS-2$
+                .item("\\u0085", "next_line_(nel)"          ) //$NON-NLS-1$ //$NON-NLS-2$
+                .item("\\u00A0", "no_break_space"           ) //$NON-NLS-1$ //$NON-NLS-2$
+                .item("\\u1680", "ogham_space_mark"         ) //$NON-NLS-1$ //$NON-NLS-2$
+                .item("\\u180E", "mongolian_vowel_separator") //$NON-NLS-1$ //$NON-NLS-2$
+                .item("\\u2000", "en_quad"                  ) //$NON-NLS-1$ //$NON-NLS-2$
+                .item("\\u2001", "em_quad"                  ) //$NON-NLS-1$ //$NON-NLS-2$
+                .item("\\u2002", "en_space"                 ) //$NON-NLS-1$ //$NON-NLS-2$
+                .item("\\u2003", "em_space"                 ) //$NON-NLS-1$ //$NON-NLS-2$
+                .item("\\u2004", "three_per_em_space"       ) //$NON-NLS-1$ //$NON-NLS-2$
+                .item("\\u2005", "four_per_em_space"        ) //$NON-NLS-1$ //$NON-NLS-2$
+                .item("\\u2006", "six_per_em_space"         ) //$NON-NLS-1$ //$NON-NLS-2$
+                .item("\\u2007", "figure_space"             ) //$NON-NLS-1$ //$NON-NLS-2$
+                .item("\\u2008", "punctuation_space"        ) //$NON-NLS-1$ //$NON-NLS-2$
+                .item("\\u2009", "thin_space"               ) //$NON-NLS-1$ //$NON-NLS-2$
+                .item("\\u200A", "hair_space"               ) //$NON-NLS-1$ //$NON-NLS-2$
+                .item("\\u2028", "line_separator"           ) //$NON-NLS-1$ //$NON-NLS-2$
+                .item("\\u2029", "paragraph_separator"      ) //$NON-NLS-1$ //$NON-NLS-2$
+                .item("\\u202F", "narrow_no_break_space"    ) //$NON-NLS-1$ //$NON-NLS-2$
+                .item("\\u205F", "medium_mathematical_space") //$NON-NLS-1$ //$NON-NLS-2$
+                .item("\\u3000", "ideographic_space"        ) //$NON-NLS-1$ //$NON-NLS-2$
                 .item(CUSTOM, CUSTOM,new Parameter(CUSTOM_PADDING_CHAR_PARAMETER, ParameterType.STRING, StringUtils.EMPTY)) 
-                .defaultValue(" ")
+                .defaultValue(" ") //$NON-NLS-1$
                 .build());
         // @formatter:on
         return ActionsBundle.attachToAction(parameters, this);
