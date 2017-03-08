@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.action.Action;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.row.DataSetRow;
@@ -80,7 +80,7 @@ public class Trim extends AbstractActionMetadata implements ColumnAction {
         // @formatter:off
         parameters.add(SelectParameter.Builder.builder()
                 .name(PADDING_CHAR_PARAMETER)
-                .item("whitespace", StringUtils.SPACE) //$NON-NLS-1$
+                .item("whitespace", " ") //$NON-NLS-1$
                 .item("character_tabulation"       , "\\u0009") //$NON-NLS-1$ //$NON-NLS-2$
                 .item("line_feed_(lf)"             , "\\u000A") //$NON-NLS-1$ //$NON-NLS-2$
                 .item("line_tabulation"            , "\\u000B") //$NON-NLS-1$ //$NON-NLS-2$
@@ -107,7 +107,7 @@ public class Trim extends AbstractActionMetadata implements ColumnAction {
                 .item("medium_mathematical_space"  , "\\u205F") //$NON-NLS-1$ //$NON-NLS-2$
                 .item("ideographic_space"          , "\\u3000") //$NON-NLS-1$ //$NON-NLS-2$
                 .item(CUSTOM, CUSTOM,new Parameter(CUSTOM_PADDING_CHAR_PARAMETER, ParameterType.STRING, StringUtils.EMPTY)) 
-                .defaultValue(StringUtils.SPACE)
+                .defaultValue(" ")
                 .build());
         // @formatter:on
         return ActionsBundle.attachToAction(parameters, this);
