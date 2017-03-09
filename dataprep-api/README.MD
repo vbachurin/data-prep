@@ -95,6 +95,7 @@ Adding actions to a preparation is a "step". A step is *at least* an action on t
     {
       "action": "uppercase",
       "parameters": {
+        "scope":"column",
         "column_name": "firstname"
       }
     }
