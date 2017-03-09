@@ -107,6 +107,7 @@ public class Trim extends AbstractActionMetadata implements ColumnAction {
                 .item("\\u205F", "medium_mathematical_space") //$NON-NLS-1$ //$NON-NLS-2$
                 .item("\\u3000", "ideographic_space"        ) //$NON-NLS-1$ //$NON-NLS-2$
                 .item(CUSTOM, CUSTOM,new Parameter(CUSTOM_PADDING_CHAR_PARAMETER, ParameterType.STRING, StringUtils.EMPTY)) 
+                .canBeBlank(true)
                 .defaultValue(" ") //$NON-NLS-1$
                 .build());
         // @formatter:on
