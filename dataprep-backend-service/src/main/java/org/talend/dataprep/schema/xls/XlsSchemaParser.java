@@ -18,27 +18,16 @@ import static org.talend.dataprep.api.type.Type.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.OptionalLong;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.FormulaEvaluator;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.ss.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.Type;
@@ -64,6 +53,9 @@ public class XlsSchemaParser implements SchemaParser {
     /** Constant used to record blank cell. */
     private static final String BLANK = "blank";
 
+    @Value("${dataset.import.xls.size.column.max:200}")
+    private int maxNumberOfColumns;
+
     /**
      * @see SchemaParser#parse(Request)
      */
@@ -82,9 +74,8 @@ public class XlsSchemaParser implements SchemaParser {
                             .draft(false) //
                             .sheetName(sheetContents.get(0).getName()) //
                             .build();
-                }
-                // multiple sheet, set draft flag on
-                else {
+                } else {
+                    // multiple sheet, set draft flag on
                     result = Schema.Builder.parserResult() //
                             .sheetContents(sheetContents) //
                             .draft(true) //
@@ -137,56 +128,15 @@ public class XlsSchemaParser implements SchemaParser {
             List<Schema.SheetContent> schemas = new ArrayList<>();
             int sheetNumber = 0;
             for (Sheet sheet : workbook) {
-                List<ColumnMetadata> columnsMetadata = new ArrayList<>();
-                int rowNumber = 0;
-                for (Row r : sheet) {
-                    if (rowNumber < 1) {
-                        if (((StreamingSheet) sheet).getReader().getFirstRowIndex() == 1) {
-                            for (Cell c : r) {
-                                String headerText = StringUtils.trim(c.getStringCellValue());
-                                // header text cannot be null so use a default one
-                                if (StringUtils.isEmpty(headerText)) {
-                                    headerText = "col_" + (columnsMetadata.size() + 1); // +1 because it starts from 0
-                                }
-                                columnsMetadata.add(ColumnMetadata.Builder //
-                                        .column() //
-                                        .name(headerText) //
-                                        .type(Type.STRING) //
-                                        .headerSize(1) //
-                                        .build());
-                            }
-                        }
-                    } else {
-                        break;
-                    }
-                    rowNumber++;
-                }
+                List<ColumnMetadata> columnsMetadata = createMetadataFromFirstNonEmptyrow(sheet);
 
                 String sheetName = sheet.getSheetName();
                 Schema.SheetContent sheetContent = new Schema.SheetContent(StringUtils.isEmpty(sheetName) ? "sheet-" + sheetNumber : sheetName, columnsMetadata);
-                int maxColNumber = (( StreamingSheet)sheet).getReader().getColNumber();
-                String dimension =  (( StreamingSheet)sheet).getReader().getDimension();
-
-                if (StringUtils.isNotEmpty(dimension)){
-                    int maxColNumberFromDimension = XlsUtils.getColumnsNumberFromDimension(dimension);
-                    // well for some files they can disagree so we use the biggest one
-                    if( maxColNumberFromDimension > maxColNumber) {
-                        maxColNumber = maxColNumberFromDimension;
-                    }
-                }
+                int maxColNumber = getTotalColumnsNumber((StreamingSheet) sheet);
 
                 // if less columns found than the metadata we complete
-                if (columnsMetadata.size() < maxColNumber) {
-                    int size = maxColNumber - columnsMetadata.size();
-                    for (int j = 0; j < size; j++) {
-                        columnsMetadata.add(ColumnMetadata.Builder //
-                                                .column() //
-                                                .name("col_" + j) //
-                                                .type(Type.STRING) //
-                                .headerSize(1) //
-                                                .build());
-                    }
-                }
+                // we should harden this as we are creating way too much column if the xls is too large => explosion in mongo....
+                completeWithEmptyColumnsMetadata(columnsMetadata, maxColNumber);
                 schemas.add(sheetContent);
             }
             return schemas;
@@ -197,6 +147,61 @@ public class XlsSchemaParser implements SchemaParser {
                 LOGGER.error("Unable to close excel file.", e);
             }
         }
+    }
+
+    private int getTotalColumnsNumber(StreamingSheet sheet) {
+        int maxColNumber = sheet.getReader().getColNumber();
+        String dimension =  sheet.getReader().getDimension();
+
+        if (StringUtils.isNotEmpty(dimension)){
+            int maxColNumberFromDimension = XlsUtils.getColumnsNumberFromDimension(dimension);
+            // well for some files they can disagree so we use the biggest one
+            if (maxColNumberFromDimension > maxColNumber) {
+                maxColNumber = Math.min(maxColNumberFromDimension, maxNumberOfColumns);
+            }
+        }
+        return maxColNumber;
+    }
+
+    private void completeWithEmptyColumnsMetadata(List<ColumnMetadata> columnsMetadata, int maxColNumber) {
+        int numberOfColumnsAlreadyFound = columnsMetadata.size();
+        if (numberOfColumnsAlreadyFound < maxColNumber) {
+            int lastColumnId = maxColNumber + 1;
+            for (int appendedColumnId = numberOfColumnsAlreadyFound; appendedColumnId < lastColumnId; appendedColumnId++) {
+                columnsMetadata.add(ColumnMetadata.Builder //
+                                        .column() //
+                                        .name("col_" + appendedColumnId) //
+                                        .type(Type.STRING) //
+                        .headerSize(1) //
+                                        .build());
+            }
+        }
+    }
+
+    private List<ColumnMetadata> createMetadataFromFirstNonEmptyrow(Sheet sheet) {
+        List<ColumnMetadata> columnsMetadata = new ArrayList<>();
+        for (Row r : sheet) {
+            if (r.getRowNum() <= 1) {
+                if (((StreamingSheet) sheet).getReader().getFirstRowIndex() == 1) {
+                    for (Cell c : r) {
+                        String headerText = StringUtils.trim(c.getStringCellValue());
+                        // header text cannot be null so use a default one
+                        if (StringUtils.isEmpty(headerText)) {
+                            headerText = "col_" + (columnsMetadata.size() + 1); // +1 because it starts from 0
+                        }
+                        columnsMetadata.add(ColumnMetadata.Builder //
+                                .column() //
+                                .name(headerText) //
+                                .type(Type.STRING) //
+                                .headerSize(1) //
+                                .build());
+                    }
+                }
+            } else {
+                break;
+            }
+        }
+        return columnsMetadata;
     }
 
     /**
